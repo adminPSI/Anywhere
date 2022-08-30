@@ -1,0 +1,128 @@
+
+
+body {
+    color: #404040;
+    font-family: 'Lucida Grande', Verdana, sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 20px;
+}
+table, caption, tbody, tfoot, thead, tr, th, td  {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* ========================================================
+   Calendar
+   ===================================================== */
+
+.datepicker{width:140px;}
+.navigationCalendar {
+    display: block;
+    width: 140px;
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+.navigationCalendar a:hover {
+    text-decoration: none;
+}
+.navigationCalendar caption {
+    display: block;
+    line-height: 32px;
+    text-align: center;
+    color: #e2e2e2;
+    font-weight: bold;
+    text-shadow: 0 -1px black;
+    background: #333;
+    background: rgba(0, 0, 0, 0.35);
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #313131;
+    -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+}
+.navigationCalendar caption a {
+    display: block;
+    line-height: 16px;
+    padding: 0 10px;
+    color: #e2e2e2;
+    font-size: 15px;
+}
+.navigationCalendar caption a:hover {
+    color: #fff;
+}
+.navigationCalendar caption .prev {
+    float: left;
+}
+.navigationCalendar caption .next {
+    float: right;
+}
+.navigationCalendar th, .navigationCalendar td {
+    width: 30px;
+    text-align: center;
+    text-shadow: 0 1px rgba(255, 255, 255, 0.8);
+}
+.navigationCalendar th:first-child, .navigationCalendar td:first-child {
+    border-left: 0;
+}
+.navigationCalendar th {
+    font-size: 8px;
+    text-transform: uppercase;
+    color: #696969;
+    line-height: 20px;
+    background: #f3f3f3;
+    border-left: 1px solid #f3f3f3;
+}
+.navigationCalendar td {
+    font-size: 11px;
+    font-weight: bold;
+    border-top: 1px solid #c2c2c2;
+    border-left: 1px solid #c2c2c2;
+}
+.navigationCalendar td a {
+    clear: both;
+    display: block;
+    position: relative;
+    color: #666;
+    line-height: 16px;
+    width: 20px;
+    background-color: #eaeaea;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eaeaea), color-stop(60%, #e5e5e5), color-stop(100%, #d9d9d9));
+    background-image: -webkit-linear-gradient(top, #eaeaea 0%, #e5e5e5 60%, #d9d9d9 100%);
+    background-image: -moz-linear-gradient(top, #eaeaea 0%, #e5e5e5 60%, #d9d9d9 100%);
+    background-image: -ms-linear-gradient(top, #eaeaea 0%, #e5e5e5 60%, #d9d9d9 100%);
+    background-image: -o-linear-gradient(top, #eaeaea 0%, #e5e5e5 60%, #d9d9d9 100%);
+    background-image: linear-gradient(top, #eaeaea 0%, #e5e5e5 60%, #d9d9d9 100%);
+    -webkit-box-shadow: inset 1px 1px rgba(255, 255, 255, 0.5);
+    box-shadow: inset 1px 1px rgba(255, 255, 255, 0.5);
+}
+.navigationCalendar td a:hover, .navigationCalendar td.notinmonth a {
+    background: #f3f3f3;
+}
+.navigationCalendar td.notinmonth a {
+    color: #b3b3b3;
+}
+
+.navigationCalendar td.navSelectedDay a, .navigationCalendar td a:active {
+    margin: -1px;
+    color: #f3f3f3;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+    background: #6dafbf;
+    border: 1px solid #598b94;
+    -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+.navigationCalendar td.navSelectedDay:first-child a, .navigationCalendar td:first-child a:active {
+    border-left: 0;
+    margin-left: 0;
+}
+.navigationCalendar td.navSelectedDay:last-child a, .navigationCalendar td:last-child a:active {
+    border-right: 0;
+    margin-right: 0;
+}
+.navigationCalendar tr:last-child td.active a, .navigationCalendar tr:last-child td a:active {
+    border-bottom: 0;
+    margin-bottom: 0;
+}

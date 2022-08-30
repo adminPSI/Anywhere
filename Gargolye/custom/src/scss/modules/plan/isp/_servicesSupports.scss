@@ -1,0 +1,463 @@
+.ispServicesSection {
+  margin-bottom: 20px;
+}
+// tables
+#paidSupportsTable {
+  margin-bottom: 10px;
+
+  .table {
+    .table__row {
+      cursor: pointer;
+
+      > div {
+        flex-grow: 1;
+        margin: 0 5px 0 0;
+        overflow-wrap: break-word;
+      }
+      > div:last-child {
+        margin: 0;
+      }
+    }
+  }
+
+  // assessment area, scope of service, begin date, end date, ...rest
+
+  &:not(.sortableTable) {
+    .table__row {
+      // Column Widths
+      > div:nth-child(1) {
+        // assessment area
+        display: block;
+        width: 115px;
+        max-width: 156px;
+      }
+      > div:nth-child(2) {
+        // funding source
+        display: none;
+        width: 80px;
+        max-width: 124px;
+      }
+      > div:nth-child(3) {
+        // service name
+        display: none;
+        width: 80px;
+      }
+      > div:nth-child(4) {
+        // provider name
+        display: none;
+        width: 111px;
+      }
+      > div:nth-child(5) {
+        // scope of service
+        display: block;
+        width: 80px;
+        flex-grow: 2;
+      }
+      > div:nth-child(6) {
+        // how often/how much
+        display: none;
+        width: 130px;
+        max-width: 140px;
+      }
+      > div:nth-child(7) {
+        // begin
+        display: block;
+        min-width: 86px;
+        max-width: 90px;
+      }
+      > div:nth-child(8) {
+        // end date
+        display: none;
+        min-width: 86px;
+        max-width: 90px;
+      }
+
+      @media screen and (min-width: 500px) {
+        > div:nth-child(8) {
+          // End Date
+          display: block;
+        }
+      }
+      @media screen and (min-width: 600px) {
+        > div:nth-child(2) {
+          // Assessment Area
+          display: block;
+        }
+      }
+      @media screen and (min-width: 700px) {
+        > div:nth-child(4) {
+          // Provider Name
+          display: block;
+        }
+      }
+      @media screen and (min-width: 800px) {
+        > div:nth-child(6) {
+          // how often/how much
+          display: block;
+        }
+      }
+      @media screen and (min-width: 900px) {
+        > div:nth-child(2) {
+          // funding source
+          display: none;
+          width: 80px;
+          max-width: 124px;
+        }
+        > div:nth-child(4) {
+          // Provider Name
+          display: block;
+          min-width: 86px;
+          max-width: 90px;
+        }
+        > div:nth-child(8) {
+          // end date
+          display: none;
+          min-width: 86px;
+          max-width: 90px;
+        }
+
+        @media screen and (min-width: 500px) {
+          > div:nth-child(2) {
+            display: block;
+          }
+        }
+        @media screen and (min-width: 600px) {
+          > div:nth-child(3) {
+            display: block;
+          }
+        }
+        @media screen and (min-width: 700px) {
+          > div:nth-child(4) {
+            display: block;
+          }
+        }
+        @media screen and (min-width: 800px) {
+          > div:nth-child(6) {
+            display: block;
+          }
+        }
+        @media screen and (min-width: 900px) {
+          > div:nth-child(8) {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+  &.sortableTable .table__row {
+    // Column Widths
+    > div:nth-child(2) {
+      // assessment area
+      display: block;
+      width: 120px;
+      max-width: 156px;
+    }
+    > div:nth-child(3) {
+      // funding source
+      display: none;
+      width: 120px;
+      max-width: 124px;
+    }
+    > div:nth-child(4) {
+      // service name
+      display: none;
+      width: 140px;
+    }
+    > div:nth-child(5) {
+      // provider name
+      display: none;
+      width: 111px;
+    }
+    > div:nth-child(6) {
+      // scope of service
+      display: block;
+      width: 80px;
+      flex-grow: 2;
+    }
+    > div:nth-child(7) {
+      // how often/how much
+      display: none;
+      width: 140px;
+      // max-width: 140px;
+    }
+    > div:nth-child(8) {
+      // begin
+      display: block;
+      min-width: 86px;
+      max-width: 90px;
+    }
+    > div:nth-child(9) {
+      // end date
+      display: none;
+      min-width: 86px;
+      max-width: 90px;
+    }
+
+    @media screen and (min-width: 500px) {
+      > div:nth-child(9) {
+        display: block;
+      }
+    }
+    @media screen and (min-width: 600px) {
+      > div:nth-child(3) {
+        display: block;
+      }
+    }
+    @media screen and (min-width: 700px) {
+      > div:nth-child(5) {
+        display: block;
+      }
+    }
+    @media screen and (min-width: 800px) {
+      > div:nth-child(7) {
+        display: block;
+      }
+    }
+    @media screen and (min-width: 900px) {
+      > div:nth-child(5) {
+        // provider name
+        display: block;
+        min-width: 111px;
+        max-width: 120px;
+      }
+      > div:nth-child(8) {
+        // end date
+        display: none;
+        min-width: 86px;
+        max-width: 90px;
+      }
+      > div:nth-child(9) {
+        // funding source
+        display: none;
+        width: 80px;
+        max-width: 124px;
+      }
+
+      @media screen and (min-width: 500px) {
+        > div:nth-child(8) {
+          // Start Date
+          display: block;
+        }
+      }
+      @media screen and (min-width: 600px) {
+        > div:nth-child(4) {
+          // Service name
+          display: block;
+        }
+      }
+      @media screen and (min-width: 700px) {
+        > div:nth-child(5) {
+          // provider name
+          display: block;
+        }
+      }
+      @media screen and (min-width: 800px) {
+        > div:nth-child(7) {
+          // How Often/How Much
+          display: block;
+        }
+      }
+      @media screen and (min-width: 900px) {
+        > div:nth-child(9) {
+          // End Date
+          display: block;
+        }
+      }
+    }
+  }
+}
+#additionalSupportsTable {
+  margin-bottom: 10px;
+
+  &.table,
+  &.sortableTable {
+    .table__row {
+      cursor: pointer;
+
+      > div {
+        flex-grow: 1;
+        margin: 0 5px 0 0;
+        overflow-wrap: break-word;
+      }
+      > div:last-child {
+        margin: 0;
+      }
+    }
+  }
+
+  &:not(.sortableTable) .table__row {
+    // Column Widths
+    > div:nth-child(1) {
+      // assessment area
+      display: block;
+      width: 115px;
+      max-width: 156px;
+    }
+    > div:nth-child(2) {
+      // who supports
+      display: block;
+      width: 80px;
+    }
+    > div:nth-child(3) {
+      // what support looks like
+      display: block;
+      width: 80px;
+      flex-grow: 2;
+    }
+    > div:nth-child(4) {
+      // when/how often
+      display: none;
+      width: 80px;
+    }
+
+    @media screen and (min-width: 500px) {
+      > div:nth-child(4) {
+        display: block;
+      }
+    }
+  }
+
+  &.sortableTable {
+    .table__row {
+      // Column Widths
+      > div:nth-child(2) {
+        // assessment area
+        display: block;
+        width: 115px;
+        max-width: 156px;
+      }
+      > div:nth-child(3) {
+        // who supports
+        display: block;
+        width: 80px;
+      }
+      > div:nth-child(4) {
+        // what support looks like
+        display: block;
+        width: 80px;
+        flex-grow: 2;
+      }
+      > div:nth-child(5) {
+        // when/how often
+        display: none;
+        width: 80px;
+      }
+
+      @media screen and (min-width: 500px) {
+        > div:nth-child(5) {
+          display: block;
+        }
+      }
+    }
+  }
+}
+#professionalReferralsTable {
+  margin-bottom: 10px;
+
+  &.table,
+  &.sortableTable {
+    .table__row {
+      cursor: pointer;
+
+      > div {
+        flex-grow: 1;
+        margin: 0 5px 0 0;
+        overflow-wrap: break-word;
+      }
+      > div:last-child {
+        margin: 0;
+      }
+    }
+  }
+
+  // assessment area, who supports, reason for refferal, ...rest
+  &:not(.sortableTable) .table__row {
+    // Column Widths
+    > div:nth-child(1) {
+      // assessment area
+      display: block;
+      width: 115px;
+      max-width: 156px;
+    }
+    > div:nth-child(2) {
+      // new or existing
+      display: none;
+      width: 80px;
+      max-width: 90px;
+    }
+    > div:nth-child(3) {
+      // who supports
+      display: block;
+      width: 80px;
+    }
+    > div:nth-child(4) {
+      // reason for referral
+      display: block;
+      width: 80px;
+      // flex-grow: 2;
+    }
+
+    @media screen and (min-width: 500px) {
+      > div:nth-child(2) {
+        display: block;
+      }
+    }
+  }
+
+  &.sortableTable {
+    .table__row {
+      // Column Widths
+      > div:nth-child(2) {
+        // assessment area
+        display: block;
+        width: 115px;
+        max-width: 156px;
+      }
+      > div:nth-child(3) {
+        // new or existing
+        display: none;
+        width: 80px;
+        max-width: 90px;
+      }
+      > div:nth-child(4) {
+        // who supports
+        display: block;
+        width: 80px;
+      }
+      > div:nth-child(5) {
+        // reason for referral
+        display: block;
+        width: 80px;
+        flex-grow: 2;
+      }
+
+      @media screen and (min-width: 500px) {
+        > div:nth-child(3) {
+          display: block;
+        }
+      }
+    }
+  }
+}
+// popups
+.paidSupportPopup {
+  .popup__header,
+  .btnWrap {
+    width: 100%;
+  }
+
+  @media screen and (min-width: '840px') {
+    display: flex;
+    flex-flow: row wrap;
+    max-width: 800px;
+
+    .left {
+      margin: 0 10px 0 0;
+    }
+
+    .left,
+    .right {
+      width: 49%;
+    }
+  }
+}

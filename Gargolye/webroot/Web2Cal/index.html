@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+    <title>Web2Cal - Ajax events calendar | Scheduler Demo Index</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <link href='//fonts.googleapis.com/css?family=Lato:100normal,100italic,300normal,300italic,400normal,400italic,700normal,700italic,900normal,900italic|Source+Sans+Pro:400normal|Open+Sans:400normal|Gloria+Hallelujah:400normal|Open+Sans:400normal|Roboto:400normal|Oswald:400normal|PT+Sans:400normal|Droid+Sans:400normal|Raleway:400normal|Indie+Flower:400normal&subset=all' rel='stylesheet' type='text/css'><script type='text/javascript' src='https://apis.google.com/js/plusone.js'></script>
+    <link href="css/demo.css" type="text/css" rel="stylesheet"/>
+    <script src="ext/jquery.1.7.1.js"></script>
+
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+
+    <script type="text/javascript" src="js/web2cal-3.0-min.js"></script>
+    <!--[if lt IE 9]>
+
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script>
+        if(typeof JSON!=="object"){JSON={}}(function(){"use strict";function f(e){return e<10?"0"+e:e}function quote(e){escapable.lastIndex=0;return escapable.test(e)?'"'+e.replace(escapable,function(e){var t=meta[e];return typeof t==="string"?t:"\\u"+("0000"+e.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+e+'"'}function str(e,t){var n,r,i,s,o=gap,u,a=t[e];if(a&&typeof a==="object"&&typeof a.toJSON==="function"){a=a.toJSON(e)}if(typeof rep==="function"){a=rep.call(t,e,a)}switch(typeof a){case"string":return quote(a);case"number":return isFinite(a)?String(a):"null";case"boolean":case"null":return String(a);case"object":if(!a){return"null"}gap+=indent;u=[];if(Object.prototype.toString.apply(a)==="[object Array]"){s=a.length;for(n=0;n<s;n+=1){u[n]=str(n,a)||"null"}i=u.length===0?"[]":gap?"[\n"+gap+u.join(",\n"+gap)+"\n"+o+"]":"["+u.join(",")+"]";gap=o;return i}if(rep&&typeof rep==="object"){s=rep.length;for(n=0;n<s;n+=1){if(typeof rep[n]==="string"){r=rep[n];i=str(r,a);if(i){u.push(quote(r)+(gap?": ":":")+i)}}}}else{for(r in a){if(Object.prototype.hasOwnProperty.call(a,r)){i=str(r,a);if(i){u.push(quote(r)+(gap?": ":":")+i)}}}}i=u.length===0?"{}":gap?"{\n"+gap+u.join(",\n"+gap)+"\n"+o+"}":"{"+u.join(",")+"}";gap=o;return i}}if(typeof Date.prototype.toJSON!=="function"){Date.prototype.toJSON=function(){return isFinite(this.valueOf())?this.getUTCFullYear()+"-"+f(this.getUTCMonth()+1)+"-"+f(this.getUTCDate())+"T"+f(this.getUTCHours())+":"+f(this.getUTCMinutes())+":"+f(this.getUTCSeconds())+"Z":null};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(){return this.valueOf()}}var cx,escapable,gap,indent,meta,rep;if(typeof JSON.stringify!=="function"){escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;meta={"\b":"\\b","  ":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"};JSON.stringify=function(e,t,n){var r;gap="";indent="";if(typeof n==="number"){for(r=0;r<n;r+=1){indent+=" "}}else if(typeof n==="string"){indent=n}rep=t;if(t&&typeof t!=="function"&&(typeof t!=="object"||typeof t.length!=="number")){throw new Error("JSON.stringify")}return str("",{"":e})}}if(typeof JSON.parse!=="function"){cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;JSON.parse=function(text,reviver){function walk(e,t){var n,r,i=e[t];if(i&&typeof i==="object"){for(n in i){if(Object.prototype.hasOwnProperty.call(i,n)){r=walk(i,n);if(r!==undefined){i[n]=r}else{delete i[n]}}}}return reviver.call(e,t,i)}var j;text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(e){return"\\u"+("0000"+e.charCodeAt(0).toString(16)).slice(-4)})}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,"@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]").replace(/(?:^|:|,)(?:\s*\[)+/g,""))){j=eval("("+text+")");return typeof reviver==="function"?walk({"":j},""):j}throw new SyntaxError("JSON.parse")}}})()
+    </script>
+    <![endif]-->
+</head>
+<body style="margin:0px; padding:0px;">
+<div class="cntnr">
+
+    <!-- RESPONSIVE LEFT SIDEBAR & LOGO -->
+    <div class="left hidden-xs">
+        <div class="logo"><a href="index.html"><img id="logo" src="images/logo.png" style="width:159px !important; height:52px; !important"></a></div>
+        <div class="sidebar" id="sidebar">
+            <div style="height:400px;">
+
+                <ul class="demo-list-nav" >
+                    <li class="nav-title"><span class="icon"></span>EXAMPLES</li>
+                    <ul>
+                        <li><a href="javascript:void(0)" demo-file="examples/simple.html">Simple</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/absolutePosition.html">Abs Position Container</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/callbacks.html">Callbacks</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/customTemplates.html">Custom Template</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/customheaderdemo.html">Custom Header</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/editEvent.html">Edit Event</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/eventflagsdemo.html">Event Flags</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/healthclubdemo.html">Health Club</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/languageSupport.html">Language Support</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/recurringevent.html">Recurring Calendar</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/manyEvents.html">Many Events</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/parseIcal.html">Load From .ics</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/personlist.html">Resource View</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/publicFunctions.html">Public Functions</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/readonly.html">Read Only</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/settingsDemo.html">Settings Demo</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="examples/themes.html">Multiple Themes</a></li>
+                    </ul>
+                </ul>
+                <ul class="demo-list-nav close">
+                    <li class="nav-title"><span class="icon"></span>EXTENSIONS</li>
+                    <ul>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/calendarmanager/example.html">Calendar Manager</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/advancedgroups/example.html">Advanced Groups </a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/dragdrop/example.html">Drag-Drop </a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/appointmentmanager/example.html">Appointment Manager </a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/pindropscheduler/example.html">Pindrop Scheduler</a>
+                            <ul>
+                                <li><a  href="javascript:void(0)"  demo-file="extensions/pindropscheduler/example.html">Example 1</a></li>
+                                <li><a  href="javascript:void(0)"  demo-file="extensions/pindropscheduler/example2.html">Example 2</a></li>
+
+                            </ul>
+                        </li>
+
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/scheduler/example.html">Scheduler</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/printAgenda/example.html">Print List</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/autoRefresh/example.html">Auto Refresh</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/smartminical/example.html">Advanced Minical</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/smartquickadd/example.html">Quick Add</a></li>
+                        <li><a  href="javascript:void(0)"  demo-file="extensions/eventhover/example.html">Event Hover</a></li>
+                    </ul>
+                </ul>
+
+                <ul class="demo-list-nav close">
+                    <li class="nav-title"><span class="icon"></span>PHP EXAMPLES</li>
+                    <ul>
+                        <li><a  href="examples/client/#calendar"  target="_blank">Backbone JS (<small>new win</small>)</a> </li>
+                        <li><a  href="javascript:void(0)"  demo-file="php-examples/example.php">PHP Impl</a></li>
+
+                    </ul>
+                </ul>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- END LEFT SIDEBAR & LOGO -->
+
+    <!-- RESPONSIVE NAVIGATION -->
+
+    <!-- END RESPONSIVE NAVIGATION -->
+
+    <!-- RIGHT NAV, CRUMBS, & CONTENT -->
+    <div class="right" >
+
+        <div class="nav"  >
+            <div class="bar" id="right-topbar" style=" ">
+                <ul class="menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a class="show-releasenotes" href="javascript:void(0)">Release Notes</a></li>
+                    <li><a href="docs/classes/Web2Cal.html">API</a></li>
+                    <li><a href="http://web2cal.com/documentation">Docs</a></li>
+                    <li><a href="javascript:void(0)">Support</a></li>
+                    <li><a href="javascript:void(0)">Forum</a></li>
+                    <li><div class="build-info" id="build-info"></div></li>
+                </ul>
+            </div>
+
+            <!-- BREADCRUMBS -->
+            <div class="crumbs">
+                <div style="  ">WEB2CAL EXAMPLES</div>
+            </div>
+
+        </div>
+        <div class="demo-content" id="demo-content">
+            <div style="text-align:center;margin-top:15%;line-height:1.8;">
+                <h1>WELCOME TO WEB2CAL 3.0</h1>
+                <p>
+                    Web2Cal helps you create interactive Calendar in your application with very little integration code.
+                </p>
+                <p style="color:#ccc;">
+                    Click the links on the left-nav to get started.
+                </p>
+
+                <div class="tech-query" style="width:45%; background-image: linear-gradient(to bottom, #fff, #f9f9f9);background-repeat: repeat-x;float:right; border: 1px solid #ddd; padding: 25px;margin: 35px 5px;text-align:left;">
+                    <div class="tech-support-icon" style="display:block;width:75px;height:55px;float:left;background:url('images/support-icon.png') no-repeat;"></div>
+                    <div class="tech-content" style="display:block;float:left; width:70%;">
+                        <p>Got a technical query? Use our Docs/Forum or write directly to our support team.</p>
+                        <p><a href="http://www.web2cal.com/support/contact" target="_blank">Help &amp; Support  &gt;</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <!-- BEGIN PAGE CONTENT -->
+
+        <!-- END PAGE CONTENT -->
+
+    </div>
+    <!-- END NAV, CRUMBS, & CONTENT -->
+
+</div>
+
+
+
+
+
+<div class="clearfix"></div>
+
+
+
+
+<div class="footer" style="margin-top:200px;">
+    <a href="http://web2cal.com">Visit Web2Cal.com to know more</a>
+    <a href="http://web2cal.com/documentation">Web2Cal Documentation</a>
+    <a href="http://web2cal.com/forum">Web2Cal Forum</a>
+    <a href="http://www.web2cal.com/support/contact-us">Contact Us</a>
+    <div class="copyright">
+        Copyright  &copy; 2008-2014  Web2Cal LLC. All rights reserved.
+    </div>
+</div>
+
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+
+        jQuery("#build-info").html("Version : "+Web2Cal.version);
+
+        if (location.href.indexOf("#") != -1) {
+            // Your code in here accessing the string like this
+            var url = location.href.substr(location.href.indexOf("#")+1);
+            if( url.length>10){
+                jQuery("#demo-content").load(url+"?rnd="+Math.random());
+            }
+            var obj = jQuery(".demo-list-nav").find("a[demo-file='"+url+"']").addClass("active");
+            var c=0;
+            while(c++ <= 5){
+                if( jQuery(obj).is("ul.demo-list-nav")){
+                    obj = obj.find(".nav-title")
+                    highlightDemoLink( obj );
+                    break;
+                }
+                obj = obj.parent();
+            }
+        }else{
+            highlightDemoLink(jQuery(".nav-title:eq(0)"))
+        }
+
+        function highlightDemoLink(obj){
+
+            if( jQuery(obj).parent().is(".open")){
+                jQuery(obj).parent().removeClass("open");
+            }else {
+                jQuery("#sidebar").find("ul").removeClass("open");
+                jQuery(obj).parent().addClass("open");
+            }
+            jQuery("body").scrollTop(0);
+        }
+
+        jQuery(".demo-list-nav").find("a").click(function(){
+            var $jq = jQuery(this);
+            jQuery(".demo-list-nav").find("a").removeClass("active");
+            $jq.addClass("active");
+            var path = $jq.attr("demo-file");
+            if( path ){
+                window.location.hash=path;
+                jQuery("#demo-content").html("<div style='text-align:center; margin-top:20%;'><h1>Please wait. Loading</h1></div>").load(path+"?rnd="+Math.random());
+                return false;
+            }
+        }).end()
+                .find(".nav-title").click(function(){
+                    highlightDemoLink(this);
+                });
+
+        jQuery("#right-topbar").find(".show-releasenotes").click(function(){
+            jQuery.ajax({url:"RELEASENOTES.txt?s=1", success: function(contents){
+                jQuery("#demo-content").empty();
+                var contents = JSON.parse(contents);
+                var releases = contents.releases;
+
+                var $maincontainer = jQuery("<div class='release-notes'></div>").appendTo("#demo-content");
+                for( var i=0; i< releases.length; i++){
+
+                    $container=jQuery("<section></section>").appendTo($maincontainer);
+
+                    var rObj = releases[i];
+                    $container.append( " <div class='release-header'>Release : "+rObj.version+"<span class='date'>Released: "+ rObj.date+"</span></div>");
+                    var changes = rObj.changes;
+                    if( changes.length>0){
+                        var $list = jQuery("<ul></ul>").appendTo($container );
+                        for( var x =0; x<changes.length; x++ ){
+                            var change = changes[x];
+                            $list.append("<li><b class='"+change.type+"'>"+change.type+"</b><p>"+change.desc+"</p></li>");
+                        }
+                    }
+
+                }
+
+            }})
+        })
+    })
+</script>
+</body>
+</html>

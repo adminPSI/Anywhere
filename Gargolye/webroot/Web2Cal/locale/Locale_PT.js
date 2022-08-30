@@ -1,0 +1,46 @@
+Web2Cal.LANG_PT={
+	 CLOSE: "Close"
+	 ,DAYS:[ "Domingo", "Segunda","Terça","Quarta", "Quinta" , "Sexta","Sábado"]
+	 ,DAYS_SHORT: [ "Dom","Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]
+	 ,DAYS_SHORT2: [ "Do","Se", "Te", "Qa", "Qi", "Sx", "Sa"]
+	 ,MONTHS_SHORT: ["Jan", "Fev","Mar", "Abr","Mai" ,"Jun", "Jul","Ago", "Set","Out","Nov","Dez"] 
+	 ,MONTHS: ["Janeiro", "Fevereiro","Março", "Abril","Maio" ,"Junho", "Julho","Agosto", "Setembro","Outubro","Novembro","Dezembro"]
+	,LABEL_MONTH: "Mês"
+	
+	,LABEL_WEEK: "Semana"
+	,LABEL_DAY: "Dia"
+	,LABEL_NEXT: "Próximo "
+	,LABEL_AGENDA: "Agenda"
+	,LABEL_WORKSHIFT: "Workshift"
+	,LABEL_DAYS: "Dias"
+	,LABEL_WORKWEEK: "Semana Útil"
+	,LABEL_HIDESHOW: "Ocultar / Exibir" 
+	,LABEL_RECUR_EDIT_WINDOW:"Editar Evento Recorrente"
+	,LABEL_EDIT_RECUR_EVENT_DESC: "	Gostaria de mudar somente este evento, todos os eventos ou este e todos os futuros eventos em série?"
+	,LABEL_IS_RECURRING_EVENT: "Este é um evento recorrente"
+	,LABEL_AM: "AM"
+	,LABEL_PM: "PM" 
+	,LABEL_EVENTNAME: "Nome do Evento"
+	,LABEL_STARTDATE: "Data Inicial"
+	,LABEL_STARTTIME: "Hora Inicial"
+	,LABEL_ENDDATE: "Data Final"
+	,LABEL_ENDTIME: "Hora Final"
+	,LABEL_GROUP: "Grupo"
+	,LABEL_ALLDAY: "Dia Todo?"
+	,LABEL_CREATEEVENT: "Criar Evento"
+	,LABEL_DESCRIPTION: "Descrição" 
+	,LABEL_INFORMATION: "Informação" 
+	,LABEL_VIEWALL: "Ver Todos"
+	,LABEL_DESCRIPTION: "Descrição"  
+	,LABEL_NOTITLE: "Sem Título" 
+	,LABEL_CREATENEWEVENT: "" 
+	,LABEL_CREATENEW: "Criar Novo" 
+	,LABEL_OPTIONS: "Configurações" 
+	,LABEL_FILTER: "Filtro" 
+	,LABEL_EXPAND_DETAILS: "Expandir Detalhes" 
+	,LABEL_COLLAPSE_DETAILS: "Contrair Detalhes" 
+	,LABEL_MORE: " Mais" 
+	,MSG_LOADINGMSG: "Carregando.. Por favor Aguarde"  
+	,MSG_RETRIEVING: "Recuperando Eventos"	
+	,MSG_VIEW_NOTFOUND:"Visualização '{0}' Não Encontrada. \nVerifique suas configurações. A visualização padrão pode não estar em suas visualizações selecionadas"
+}	

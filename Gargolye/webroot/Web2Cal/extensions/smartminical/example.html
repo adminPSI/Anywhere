@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+        <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+        <link type="text/css" rel="stylesheet" href="extensions/smartminical/css/styles.css">
+
+        <script src="js/web2cal.support.js">  </script>
+        <script src="js/web2cal.templates.js">  </script>
+        <script src="js/web2cal.dummydata.js">  </script>
+        <script src="js/optional/timecontrol.js">  </script>
+
+
+        <script src="extensions/smartminical/smartminical-min.js"></script>
+        <title>Web2Cal | Minical Demo</title>
+    </head>
+  
+    <body>    
+		<div class="sample-desc" >Advanced Minicalendar
+            <p>Hover over the highlighted dates in the minical</p>
+        </div>
+        <div id="calendarContainer">
+        </div>
+
+
+        <div id="miniCalEventsTemplate" style="display:none;">
+            <div style="border-bottom:1px solid #ccc;">
+                <div style="color:111; font-size:12px; padding:4px 0; font-weight:bold;">${eventName}</div>
+                <div style="color:#999; font-size:10px; text-align:right">${formattedStartTime} - ${formattedEndTime}</div>
+            </div>
+        </div>
+
+
+    </body> 
+</html>
+<script>
+    var ical,smartminical;
+    
+    /*
+     Create the Calendar.
+     */
+    function drawCalendar()
+    { 
+        ical = new Web2Cal('calendarContainer', {
+            loadEvents: function(start, end, viewName, autoRefresh){ 
+							ical.render(Web2Cal.sampleData());
+					},             
+            onNewEvent: onNewEvent 
+        });
+
+
+        smartminical = new Web2Cal.SmartMinical(ical, {
+            previewTemplate: "miniCalEventsTemplate"
+        });
+		
+        ical.build();
+    }
+     
+    /*
+     Method invoked when creating a new event, before showing the new event form.
+     @param obj - Object containing (startTime, endTime)
+     @param groups - List of Group objects ({groupId, name})
+     @param allday - boolean to indicate if the event created is allday event.
+     */
+    function onNewEvent(obj, groups, allday)
+    {
+        Web2Cal.defaultPlugins.onNewEvent(obj, groups, allday); 
+    }
+      
+    /**
+     * Onclick of Close in AddEvent Box.
+     */
+    function rzCloseAddEvent()
+    {
+        ical.closeAddEvent();
+    }
+    
+	WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+    /**
+     * Once page is loaded, invoke the Load Calendar Script.
+     */
+    jQuery(document).ready(function()
+    { 
+	 	drawCalendar(); 
+    });
+</script>

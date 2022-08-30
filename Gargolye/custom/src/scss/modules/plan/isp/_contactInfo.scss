@@ -1,0 +1,353 @@
+#isp-ciip-mainPopup,
+#isp-ciig-mainPopup {
+  div.textarea {
+    height: auto;
+    min-height: 100px;
+    textarea.autosize {
+      height: auto;
+      min-height: 100px;
+    }
+  }
+}
+.isp_ciip_gkRelationships,
+.isp_ciip_gkSignautres {
+  cursor: pointer;
+  font-weight: $bold;
+  color: $primary;
+  margin-bottom: 15px;
+  span {
+    font-weight: $light;
+    color: $font-dark;
+  }
+}
+.isp_ci_dateFundingSourceContainer {
+  display: flex;
+  flex-flow: row wrap;
+  padding-left: 10px;
+  h4 {
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #366a98;
+  }
+  .ispSpanDateContainer {
+    margin: 10px 0px;
+    min-width: 250px;
+    flex-grow: 1;
+    max-width: 380px;
+  }
+  .ispFSContainer {
+    margin: 10px 0px;
+    flex-grow: 1;
+    max-width: 400px;
+  }
+}
+.isp_ci_inputContainer1 {
+  display: flex;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  > div:nth-child(1) {
+    // Address
+    min-width: 200px;
+  }
+  > div:nth-child(2) {
+    // City
+    min-width: 260px;
+  }
+  > div:nth-child(3) {
+    // County
+    min-width: 200px;
+  }
+  @media screen and (min-width: 560px) {
+    > div:nth-child(3) {
+      // Address
+      min-width: 420px;
+    }
+  }
+}
+.isp_ci_inputContainer2 {
+  display: flex;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  > div:nth-child(1) {
+    // Phone
+    min-width: 190px;
+  }
+  > div:nth-child(2) {
+    // DOB
+    min-width: 260px;
+  }
+  > div:nth-child(3) {
+    // DODD #
+    min-width: 200px;
+    // Remove Arrows
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
+  }
+  > div:nth-child(4) {
+    // SEX
+    min-width: 100px;
+  }
+  > div:nth-child(5) {
+    // MARITAL STATUS
+    min-width: 200px;
+  }
+  @media screen and (min-width: 410px) {
+    > div:nth-child(4) {
+      // SEX
+      max-width: 140px;
+    }
+  }
+}
+.isp_ci_inputContainer3 {
+  display: flex;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  > div:nth-child(1) {
+    // SSN
+    min-width: 150px;
+  }
+  > div:nth-child(2) {
+    // MEDICAID
+    min-width: 200px;
+    // Remove Arrows
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
+  }
+  > div:nth-child(3) {
+    // MEDICARE
+    min-width: 200px;
+    // Remove Arrows
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
+  }
+}
+.isp_ci_inputContainer4 {
+  display: flex;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  > div:nth-child(1) {
+    // OTH PROVIDER
+    min-width: 150px;
+  }
+  > div:nth-child(2) {
+    // OTH PHONE
+    min-width: 200px;
+  }
+  > div:nth-child(3) {
+    // OTH POLICY
+    min-width: 200px;
+  }
+}
+.isp_ci_ohiContainer {
+  margin-right: 10px;
+  border: #272727;
+  border-style: solid;
+  padding: 8px;
+  padding-bottom: 0px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+#isp_ci_importantPeopleTable {
+  .table__row {
+    // cursor: pointer;
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+    > div:nth-child(2) {
+      // Type
+      flex-basis: 90px;
+    }
+    > div:nth-child(3) {
+      // Name
+      flex-basis: 70px;
+    }
+    > div:nth-child(4) {
+      // Relationship
+      flex-basis: 70px;
+    }
+    > div:nth-child(5) {
+      // Address
+      display: none;
+      flex-basis: 190px;
+    }
+    > div:nth-child(6) {
+      // Phone
+      display: none;
+      flex-basis: 30px;
+    }
+    @media screen and (min-width: 560px) {
+      > div:nth-child(5) {
+        // Address
+        display: block;
+      }
+      > div:nth-child(6) {
+        // Phone
+        display: block;
+      }
+    }
+  }
+  margin-bottom: 10px;
+}
+#isp_ci_importantGroupsTable {
+  .table__row {
+    // cursor: pointer;
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+    > div:nth-child(2) {
+      // Status
+      flex-basis: 90px;
+    }
+    > div:nth-child(3) {
+      // Name
+      flex-basis: 70px;
+    }
+    > div:nth-child(4) {
+      // Address
+      display: none;
+      flex-basis: 190px;
+    }
+    > div:nth-child(5) {
+      // Phone
+      display: none;
+      flex-basis: 30px;
+    }
+    > div:nth-child(6) {
+      // Meeting Info
+      display: none;
+      flex-basis: 40px;
+    }
+    > div:nth-child(7) {
+      // Who Helps
+      display: none;
+      flex-basis: 40px;
+    }
+    @media screen and (min-width: 560px) {
+      > div:nth-child(4) {
+        // Address
+        display: block;
+      }
+      > div:nth-child(5) {
+        // Phone
+        display: block;
+      }
+      > div:nth-child(6) {
+        // Meeting info
+        display: block;
+      }
+      > div:nth-child(7) {
+        // Who helps
+        display: block;
+      }
+    }
+  }
+  margin-bottom: 10px;
+}
+#isp_ci_importanPlacesTable {
+  .table__row {
+    // cursor: pointer;
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+    > div:nth-child(2) {
+      // Type
+      flex-basis: 90px;
+    }
+    > div:nth-child(3) {
+      // Name
+      flex-basis: 70px;
+    }
+    > div:nth-child(4) {
+      // Address
+      display: none;
+      flex-basis: 190px;
+    }
+    > div:nth-child(5) {
+      // Phone
+      display: none;
+      flex-basis: 30px;
+    }
+    > div:nth-child(6) {
+      // Schedule
+      display: none;
+      flex-basis: 40px;
+    }
+    > div:nth-child(7) {
+      // Acuity
+      display: none;
+      flex-basis: 40px;
+    }
+    @media screen and (min-width: 560px) {
+      > div:nth-child(4) {
+        // Address
+        display: block;
+      }
+      > div:nth-child(5) {
+        // Phone
+        display: block;
+      }
+      > div:nth-child(6) {
+        // Schedule
+        display: block;
+      }
+      > div:nth-child(7) {
+        // Acuity
+        display: block;
+      }
+    }
+  }
+  margin-bottom: 10px;
+}

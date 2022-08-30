@@ -1,0 +1,129 @@
+// OLD TABLE
+.table {
+    box-shadow: $shadow-m1;
+    border-radius: $r-sm;
+    overflow: hidden;
+    max-width: 100%;
+
+    &.sortableTable {
+        .dragHandle {
+            flex-grow: 0;
+            width: 24px;
+            max-width: 40px;
+            margin: 0;
+            pointer-events: unset;
+            padding: 0;
+
+            svg {
+                width: 24px;
+            }
+        }
+    }
+
+    .endIcon,
+    .copyIcon {
+        flex-grow: 0;
+        width: 24px;
+        max-width: 40px;
+        margin: 0;
+        pointer-events: all;
+        padding: 0;
+
+        svg {
+            width: 24px;
+        }
+    }
+
+    &__headline {
+        background: $bg-dark;
+        color: $font-light;
+        font-size: 1.125rem;
+        padding: 10px 8px 5px;
+    }
+
+    &__row {
+        align-items: center;
+        border-bottom: $w-sm solid rgba($black, 0.12);
+        color: $font-dark;
+        display: flex;
+        flex-flow: row nowrap;
+        min-height: 50px;
+        padding: 5px 8px;
+
+        * {
+            font-size: 0.875rem;
+            pointer-events: none;
+        }
+
+        div {
+            padding: 0 5px;
+            white-space: pre-wrap;
+
+            &:first-child {
+                padding-left: 0px;
+            }
+
+            &:last-child {
+                padding-right: 0px;
+            }
+        }
+    }
+
+    &__row:last-child {
+        border-bottom: 0;
+    }
+
+    &__row.header {
+        align-items: flex-end;
+        background: $bg-dark;
+        color: $font-light;
+        font-weight: $normal;
+        min-height: auto;
+        padding: 10px 8px 5px;
+        pointer-events: none;
+
+        div {
+            pointer-events: all;
+            cursor: pointer;
+        }
+
+        .headersortdown {
+            background-image: url(https://www.bu.edu/tech/wp-content/plugins/bu-front-end-library/css/tablesorter/asc.gif);
+            background-repeat: no-repeat;
+            background-position: center right;
+        }
+
+        .headersortup {
+            background-image: url(https://www.bu.edu/tech/wp-content/plugins/bu-front-end-library/css/tablesorter/desc.gif);
+            background-repeat: no-repeat;
+            background-position: center right;
+        }
+    }
+}
+.table__plain {
+    box-shadow: none;
+    border-radius: 0;
+
+    .table__headline {
+        background: none;
+        color: $font-dark;
+        padding: 10px 0;
+    }
+
+    .table__row {
+        padding: 0;
+    }
+
+    .table__row.header {
+        background: $bg-light-s;
+        color: $font-dark;
+        padding: 0 0 5px;
+    }
+}
+.table__row[data-valid='false'] {
+  color: $font-light;
+  background: $font-error;
+}
+.yellowbackground {
+  background: #ffff00;
+}

@@ -1,0 +1,321 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+    <link type="text/css" rel="stylesheet" href="css/web2cal-responsive.css">
+    <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+    <title>Web2Cal | Pindrop Scheduler Demo</title>
+</head>
+
+
+<body>
+<div class="demoList" ><a href="">&lt;&lt;&lt; &nbsp; Back to list of Examples</a></div>
+<!-- Calendar Container -->
+<div style="margin:30px; background-color:#ccc;">
+    <label><input type="checkbox" id="pinTypeToggle" > <b> Change Scheduler to Create Pin</b></label>
+</div>
+
+<div id="calendarContainer">
+</div>
+
+
+<div id="calendarmanagerTemplate" style="display: none;">
+    <a href="#">Public</a>
+    <a href="#">Private</a>
+    <a href="#">Share Calendar</a>
+    <a href="#">Send to Friend</a>
+    <a href="#">Export</a>
+    <div class="calendarTemplate">
+        <div class="label">Calendar Color</div>
+        <div field="colors">
+            <div class="calendarColor ${css}" onclick="calendarColorSelect('${css}', '${color}'  )">
+                <input type="hidden" class="colorCssName" value="${css}"/>  <div class="eventBody">&nbsp;</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="mySlotTemplate" style="display:none">
+    <div class="${color.css}">
+        <div class="eventBody" style="height:80px;">
+            <div class="row1">
+                <span class="category" style="float:left;">${name}</span>
+                <span style="float:right;">${company}</span>
+            </div>
+            <div class="row2">
+                <span style="float:left">Budget: ${budget}</span>
+                <span style="float:right;">Quote: ${budget}</span>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+
+<script src="js/web2cal.support.js">  </script>
+<script src="js/web2cal.templates.js">  </script>
+<script src="js/web2cal.dummydata.js">  </script>
+<script src="js/optional/timecontrol.js">  </script>
+
+
+<!-- LOAD EXTENSION -->
+<script src="extensions/pindropscheduler/pindropscheduler-min.js">  </script>
+<link type="text/css" rel="stylesheet" href="extensions/pindropscheduler/css/styles.css">
+
+<script src="extensions/advancedgroups/advancedgroups-min.js">  </script>
+<link type="text/css" rel="stylesheet" href="extensions/advancedgroups/css/styles.css">
+
+<script src="extensions/calendarmanager/calendarmanager-min.js">  </script>
+<link type="text/css" rel="stylesheet" href="extensions/calendarmanager/css/styles.css">
+
+</html>
+
+<script >
+
+function drawCalendar(){
+
+    ical = new Web2Cal( "calendarContainer"
+            , {
+                endTime: 22,
+                startTime:0,
+                defaultView: "month",
+                showLeftNav:false,
+                date: "10/11/2013",
+                onUpdateEvent: function( ev ){
+                    ical.updateEvent(ev);
+                },
+                loadEvents: function(st, ed, v){
+                    if(v=="pindropscheduler"){
+                        ical.render( getCustomData() )
+                    } else {
+                        ical.render( Web2Cal.sampleData() );
+                    }
+                },
+                onNewEvent: function(eventObject, allDay, groups){
+                    if( ical.getCurrentView().name=='pindropscheduler'){
+                        eventObject.eventId = Math.random();
+                        if(pindropScheduler.options.createMode=="pin"){
+                            eventObject.type="pin";
+                            eventObject.className = "pinType";
+                            ical.addEvent(eventObject);
+                        }else{
+                            Web2Cal.onNewEvent(jQuery("#defaultNewEventTemplate"), eventObject, allDay, groups)
+                        }
+                    }else{
+                        Web2Cal.onNewEvent(jQuery("#defaultNewEventTemplate"), eventObject, allDay, groups)
+                    }
+                },
+                onAfterPreview: function(event, fullPreview){
+                    fullPreview.find("div."+event.color.css).addClass("selected");
+                    fullPreview.find(".eventcolors div").click(function(){
+                        var className=jQuery(this).attr("class");
+                        var previewingEvent = ical.getPreviewingEvent();
+                        previewingEvent.color = {css:className};
+                        ical.updateEvent(previewingEvent);
+                        ical.showPreview(previewingEvent)
+                    })
+                }
+            } );
+
+
+
+    var advancedgroups = new AdvancedGroups(ical);
+    pindropScheduler = new PinDropScheduler(ical,{showOnStartup:true
+        , slotTemplate: "mySlotTemplate" // Templates defined on this page
+        , entityTemplate: "myEntityTemplate" // Template defined above
+        , dayWidth:"300"
+        , hourInterval: 1
+        , startAt0: true
+        , interval: 4
+        , weekends: {6:true, 0:true} // Define Weekends
+        , startOfDay: 9 // Define Start of Day ( Assuming work day is 9AM - 5PM
+        , endOfDay: 17 // Define End of Day ( Assuming work day is 9AM - 5PM
+        , headerLabel: ["1hr", "2hrs", "3hrs", "4hrs", "5hrs", "6hrs", "7hrs", "8hrs"] // What shows on the header
+    });
+
+    calmanager = new CalendarManager(ical,{
+        template:document.getElementById("calendarmanagerTemplate"),
+        onColorSelect: function(css, groupId){
+            calmanager.hide();
+
+
+            var allGroups = ical.getAllData();
+            for(var x=0;x<allGroups.length; x++){
+                var aGrp = allGroups[x];
+                if(aGrp.groupId == groupId){
+                    aGrp.color={color:"x",css: css};
+                    break;
+                }
+                if(aGrp.groups){
+                    for( var k=0; k<aGrp.groups.length; k++){
+                        var aGrpx=aGrp.groups[k];
+
+                        if(aGrpx.groupId == groupId){
+                            aGrpx.color={color:"x",css: css};
+                            break;
+                        }
+                    }
+                }
+            }
+
+            ical.render(allGroups);
+        }
+
+    });
+
+    ical.build();
+
+    new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0));
+    new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+        onTimeSelect: updateDateForTime,
+        dateField: "eventEndDate"
+    });
+}
+jQuery(document).ready(function(){
+
+    jQuery("#pinTypeToggle").click(function(){
+        if( this.checked ){
+            pindropScheduler.options.createMode="pin"
+        }else{
+            pindropScheduler.options.createMode="";
+        }
+    });
+
+    drawCalendar();
+});
+
+
+function getCustomData( ){
+    var date = new Date();
+    var d = date.getDate(), m = date.getMonth(), y = date.getFullYear();
+    var groups = [], events = [], id=900;
+
+
+    function setupHeaderString(event){
+        return "";
+        var days = Math.floor(event.startTime.daysBefore(event.endTime));
+        var hrs = event.startTime.hoursBefore(event.endTime);
+
+        var totalHours = days*8 + (event.endTime.getTimeInHours() - 9);
+
+        event.headerString = event.startTime.toString("MM/dd/yyyy") +" - "+event.endTime.toString("MM/dd/yyyy") +" @ "+totalHours+" Hrs";
+    }
+
+    var createCustomEvent= function( group, start, end, name, allDay, type, taskLength ){
+        var event =  {
+            eventId: id++,
+            startTime: start,
+            endTime: end,
+            name: name,
+            allDay: (allDay || false),
+            type: type,
+            group: group,
+            taskLength: taskLength
+        };
+        setupHeaderString(event);
+        return event;
+    };
+    var createCustomGroup = function( events, name, company, budget, quote ){
+        return {
+            groupId: id++,
+            name: name,
+            events: events,
+            company: company,
+            budget: budget,
+            quote: quote
+        }
+    };
+
+
+
+    var grp = createCustomGroup( [], "Plumber" , "TOPE Plumbing", "$ 75,000", "$ 65,000" );
+    groups.push(grp);
+    var grp = createCustomGroup( [], "Plasterer" ,  "Pauls Plastering", "$ 11,000", "$ 9,000" );
+    groups.push(grp);
+    // Creating events
+    var grp = createCustomGroup( [], "Carpenter", "Andrew Judd", "$ 680", "$ 620" );
+    groups.push(grp);
+
+    var event=createCustomEvent(grp, Date.parse("10/11/2013 9:00 AM"), null, "Estimated", false, "reference" ,  22 );
+    event.className = "referenceType";
+    grp.events.push(event);
+
+    var event=createCustomEvent(grp, Date.parse("10/11/2013 9:00 AM"),  null, "Actual", false, "", 18 );
+    grp.events.push(event);
+
+    var event=createCustomEvent(grp, Date.parse("10/13/2013 14:30 PM"),   Date.parse("10/13/2013 15:00 PM"), "Pin", false, "pin" );
+    event.className = "pinType";
+    grp.events.push(event);
+    groups.push(grp);
+
+    var grp = createCustomGroup( [], "Painter" , "Painting Services", "$ 6,000", "$ 5,000" );
+    var event=createCustomEvent( grp, Date.parse("10/11/2013 12:00 PM"),  null, "Estimated", false, "reference", 18 );
+    event.className = "referenceType";
+    grp.events.push(event);
+
+
+    var event=createCustomEvent( grp, Date.parse("10/11/2013 11:00 AM"),  null, "Actual", false, "", 18 );
+    grp.events.push(event);
+
+    var event=createCustomEvent( grp, Date.parse("10/14/2013 12:30 PM"),   Date.parse("10/14/2013 1:00 PM"), "Pin", false, "pin" );
+    event.className = "pinType";
+    grp.events.push(event);
+    groups.push(grp);
+
+
+    var slider=createCustomEvent( grp, Date.parse("10/12/2013 12:00 PM"),  Date.parse("10/12/2013 13:00 PM"), "Slider" );
+    slider.type="slider";
+    grp.events.push(slider);
+
+
+    return groups;
+}
+
+/**
+ *
+ */
+function rzAddEvent(){
+    var eventObject = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+    ical.addEvent(eventObject);
+}
+
+
+/*
+ Click on Edit Button in preview window
+ */
+function rzEditEvent(evId, event)
+{
+    var evObj=ical.getEventById(evId);
+
+    var groups=ical.getAllGroups();
+    groupDD=jQuery("#defaultNewEventTemplate").find("#eventGroup").get(0);
+    removeAllOptions(groupDD);
+    for(var g in groups)
+    {
+        if(!groups.hasOwnProperty(g))
+            continue;
+        var gId = groups[g].groupId;
+        addOption(groupDD, groups[g].groupName,groups[g].groupId,false);
+    }
+
+    jQuery("#defaultNewEventTemplate").find("#eventName").val(evObj.eventName).end()
+            .find("#eventGroup").val(evObj.groupId).end()
+            .find("#eventStartTime").val(evObj.startTime.toString("hh:mm tt")).end()
+            .find("#eventEndTime").val(evObj.endTime.toString("hh:mm tt")).end()
+            .find("#eventStartDate").val(evObj.startTime.toString("MM/dd/yyyy")).end()
+            .find("#eventEndDate").val(evObj.endTime.toString("MM/dd/yyyy")).end()
+            .find("#addEventBtn").hide().end()
+            .find("#updateEventBtn").show().end();
+
+    ical.showEditEventTemplate(jQuery("#defaultNewEventTemplate"), evObj.eventId, event);
+    Web2Cal.hidePreview ();
+}
+
+</script>

@@ -1,0 +1,73 @@
+[data-active-module="covid"] {
+
+  @media screen and (min-width: 900px) {
+   &[data-active-section="checklist"] {
+      display: grid;
+      grid-template-columns: repeat(2,auto);
+      .covidTableContainer {
+        margin-top: 0px;
+        margin-left: 10px;
+      }
+    }
+  }
+  .covidHeading {
+    margin-bottom: 20px;
+  }
+  .covidSubHeading {
+    margin-bottom: 10px;
+  }
+  .symptomSection {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    .input-field {
+      grid-column-end: span 2;
+      margin-top: 15px;
+    }
+    div > h4 {
+      padding: 5px 0 5px;
+    }
+    .covid_radioDiv {
+      :first-child {
+        padding-right: 10px;
+      }
+    }
+  }
+
+  .covidTableContainer {
+    margin-top: 15px;
+  }
+
+  #covidNewChecklist {
+    background: $secondary;
+  }
+  #covidDeleteChecklist {
+    background: $red;
+  }
+  .currConsumerDisp {
+
+    font-weight: 500;
+    span {
+      color: $primary;
+    }
+    margin-top: 10px;
+    padding-left: 8px;
+}
+
+// Table
+#employeeChecklistTable {
+  .table__row {
+    > div {
+      flex-grow: 1;
+    }
+    > div:nth-child(1) {// Time
+      width: 10px;
+    }
+    > div:nth-child(2) { // Location
+      width: 100px;
+    }
+    > div:nth-child(3) { // Setting
+      width: 150px;
+    }
+  }
+}
+}

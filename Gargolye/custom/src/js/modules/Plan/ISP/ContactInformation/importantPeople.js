@@ -1,0 +1,547 @@
+const isp_ci_importantPeople = (() => {
+  let cID;
+  let rawPeopleTableData;
+  let gkRelationships;
+  let readOnly;
+  let nameInput;
+  let relationshipInput;
+  let addressInput;
+  let phoneInput;
+  let emailInput;
+  let typeDropdown;
+  let saveBtn;
+
+  function popFromRelationships() {
+    const mainPopup = document.getElementById('isp-ciip-mainPopup');
+    mainPopup.style.display = 'none';
+
+    const importPopup = POPUP.build({
+      id: 'isp-ciip-importPopup',
+      closeCallback: () => {
+        overlay.show();
+        mainPopup.style.removeProperty('display');
+      },
+    });
+    const relationshipSection = document.createElement('div');
+
+    gkRelationships.forEach(rel => {
+      const name = contactInformation.cleanName(rel);
+      const address = contactInformation.cleanAddress(rel, true);
+      const cityStateZip = contactInformation.cleanCityStateZip(rel);
+
+      const relationshipDisp = document.createElement('div');
+      // relationshipDisp.innerHTML = `Name: <span>${name}</span><br>Relationship: <span>${rel.relationship}</span>`;
+      relationshipDisp.innerHTML = `Name: <span>${name}</span>`;
+      relationshipDisp.classList.add('isp_ciip_gkRelationships');
+
+      relationshipDisp.addEventListener('click', () =>
+        applyGKRelationship({
+          name: name,
+          relationship: rel.relationship,
+          address: address,
+          cityStateZip: cityStateZip,
+          phone: rel.phone,
+          popup: importPopup,
+          email: rel.email,
+        }),
+      );
+
+      relationshipSection.appendChild(relationshipDisp);
+    });
+
+    importPopup.appendChild(relationshipSection);
+    POPUP.show(importPopup);
+  }
+  function popFromSignatures() {
+    const mainPopup = document.getElementById('isp-ciip-mainPopup');
+    mainPopup.style.display = 'none';
+
+    const importPopup = POPUP.build({
+      id: 'isp-ciip-importPopup2',
+      closeCallback: () => {
+        overlay.show();
+        mainPopup.style.removeProperty('display');
+      },
+    });
+    const signaturesSection = document.createElement('div');
+
+    const signatureNames = planConsentAndSign.getNames();
+    signatureNames.forEach(name => {
+      const sigDiv = document.createElement('div');
+      sigDiv.innerHTML = `Name: <span>${name}</span>`;
+      sigDiv.classList.add('isp_ciip_gkSignautres');
+
+      sigDiv.addEventListener('click', () => {
+        POPUP.hide(importPopup);
+        overlay.show();
+        const mainPopup = document.getElementById('isp-ciip-mainPopup');
+        mainPopup.style.removeProperty('display');
+
+        nameInput.querySelector('input').value = name;
+        if (name === '') {
+          nameInput.classList.add('error');
+        } else {
+          nameInput.classList.remove('error');
+        }
+
+        checkForErrors();
+      });
+
+      signaturesSection.appendChild(sigDiv);
+    });
+
+    importPopup.appendChild(signaturesSection);
+    POPUP.show(importPopup);
+  }
+
+  function applyGKRelationship(opts) {
+    POPUP.hide(opts.popup);
+    overlay.show();
+    const mainPopup = document.getElementById('isp-ciip-mainPopup');
+    mainPopup.style.removeProperty('display');
+
+    let joinedAddress = '';
+
+    if (opts.address !== '') {
+      joinedAddress = opts.address;
+    }
+    if (opts.cityStateZip !== '') {
+      joinedAddress += '\n' + opts.cityStateZip;
+    }
+
+    const phoneDisp = contactInformation.formatPhone(opts.phone.trim()).disp;
+    // NAME
+    nameInput.querySelector('input').value = opts.name;
+    if (opts.name === '') {
+      nameInput.classList.add('error');
+    } else {
+      nameInput.classList.remove('error');
+    }
+    // RELATIONSHIP
+    // relationshipInput.querySelector('input').value = opts.relationship;
+    // if (opts.relationship === '') {
+    //   relationshipInput.classList.add('error');
+    // } else {
+    //   relationshipInput.classList.remove('error');
+    // }
+    // ADDRESS
+    addressInput.querySelector('textarea').value = joinedAddress.trim();
+    if (joinedAddress.trim() === '') {
+      addressInput.classList.add('error');
+    } else {
+      addressInput.classList.remove('error');
+    }
+    // PHONE
+    phoneInput.querySelector('input').value = phoneDisp;
+    if (phoneDisp === '') {
+      phoneInput.classList.add('error');
+    } else {
+      phoneInput.classList.remove('error');
+    }
+    // EMAIL
+    emailInput.querySelector('input').value = opts.email;
+    if (opts.email === '') {
+      emailInput.classList.add('error');
+    } else {
+      emailInput.classList.remove('error');
+    }
+    checkForErrors();
+  }
+
+  function tablePopup(popupData, isNew) {
+    const popup = POPUP.build({ id: 'isp-ciip-mainPopup' });
+
+    async function saveData() {
+      popup.style.display = 'none';
+      pendingSave.show('Saving...');
+
+      const typeDD = document.getElementById('isp-ciip-typeDropdown');
+      const typeVal = typeDD.options[typeDD.selectedIndex].value;
+      const nameVal = document.getElementById('isp-ciip-nameInput').value;
+      const relationshipVal = '';
+      const addressVal = document.getElementById('isp-ciip-addressInput').value;
+      const phoneVal = contactInformation.formatPhone(
+        document.getElementById('isp-ciip-phoneInput').value,
+      ).val;
+      const emailVal = document.getElementById('isp-ciip-emailInput').value;
+
+      if (isNew) {
+        //Insert
+        // UNSAVABLE NOTE TEXT IS REMOVED IN BACKEND ON INSERTS
+        const data = {
+          token: $.session.Token,
+          contactId: cID,
+          type: typeVal,
+          name: nameVal,
+          relationship: relationshipVal,
+          address: addressVal,
+          phone: phoneVal,
+          email: emailVal,
+        };
+        const importantPersonId = await contactInformationAjax.insertPlanContactImportantPeople(
+          data,
+        );
+        data.importantPersonId = importantPersonId;
+        data.token = null;
+        table.addRows(
+          'isp_ci_importantPeopleTable',
+          [
+            {
+              values: [typeVal, nameVal, addressVal, emailVal, UTIL.formatPhoneNumber(phoneVal)],
+              id: `ci-impPeople-${importantPersonId}`,
+              onClick: () => {
+                tablePopup(data, false);
+              },
+            },
+          ],
+          true,
+        );
+      } else {
+        //Update
+        const data = {
+          token: $.session.Token,
+          importantPersonId: popupData.importantPersonId,
+          type: typeVal,
+          name: UTIL.removeUnsavableNoteText(nameVal),
+          relationship: UTIL.removeUnsavableNoteText(relationshipVal),
+          address: UTIL.removeUnsavableNoteText(addressVal),
+          phone: UTIL.removeUnsavableNoteText(phoneVal),
+          email: emailVal,
+        };
+        await contactInformationAjax.updatePlanContactImportantPeople(data);
+        data.token = null;
+        table.updateRows(
+          'isp_ci_importantPeopleTable',
+          [
+            {
+              values: [typeVal, nameVal, addressVal, emailVal, UTIL.formatPhoneNumber(phoneVal)],
+              id: `ci-impPeople-${popupData.importantPersonId}`,
+              onClick: () => {
+                tablePopup(data, false);
+              },
+            },
+          ],
+          true,
+        );
+      }
+      pendingSave.fulfill('Saved');
+      setTimeout(() => {
+        const savePopup = document.querySelector('.successfulSavePopup');
+        DOM.ACTIONCENTER.removeChild(savePopup);
+        POPUP.hide(popup);
+      }, 700);
+    }
+
+    async function deleteData() {
+      const data = {
+        token: $.session.Token,
+        importantId: popupData.importantPersonId,
+        type: 2,
+      };
+      const tableRow = document.getElementById(`ci-impPeople-${popupData.importantPersonId}`);
+      tableRow.remove();
+      await contactInformationAjax.deletePlanContactImportant(data);
+    }
+
+    if (isNew) {
+      popupData = {
+        type: '',
+        name: '',
+        relationship: '',
+        address: '',
+        phone: '',
+        email: '',
+      };
+    }
+    typeDropdown = dropdown.build({
+      dropdownId: 'isp-ciip-typeDropdown',
+      label: 'Type',
+      readonly: readOnly,
+    });
+    if (popupData.type === '') typeDropdown.classList.add('error');
+    const typeDropdownValues = [
+      { text: '', value: '' },
+      { text: 'Family', value: 'Family' },
+      { text: 'Friend', value: 'Friend' },
+      { text: 'Partner', value: 'Partner' },
+      { text: 'Guardian of Person', value: 'Guardian of Person' },
+      { text: 'Guardian of Estate', value: 'Guardian of Estate' },
+      { text: 'Guardian of Person and Estate', value: 'Guardian of Person and Estate' },
+      { text: 'Payee', value: 'Payee' },
+      { text: 'Support Broker', value: 'Support Broker' },
+      { text: 'Home Provider', value: 'Home Provider' },
+      { text: 'Medical Provider', value: 'Medical Provider' },
+      { text: 'Case Manager', value: 'Case Manager' },
+      { text: 'Emergency Contact', value: 'Emergency Contact' },
+      { text: 'Primary Doctor', value: 'Primary Doctor' },
+      { text: 'Other', value: 'Other' },
+    ];
+
+    dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);
+
+    const importFromRelationshipsBtn = button.build({
+      text: 'Import from Relationships',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
+        popFromRelationships();
+      },
+    });
+    importFromRelationshipsBtn.style.width = '100%';
+    const importFromSignaturesBtn = button.build({
+      text: 'Import from Signatures',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
+        popFromSignatures();
+      },
+    });
+    importFromSignaturesBtn.style.width = '100%';
+
+    nameInput = input.build({
+      label: 'Name',
+      value: popupData.name,
+      id: `isp-ciip-nameInput`,
+      readonly: readOnly,
+    });
+    if (popupData.name === '') nameInput.classList.add('error');
+
+    // relationshipInput = input.build({
+    //   label: 'Relationship',
+    //   value: popupData.relationship,
+    //   id: `isp-ciip-relationshipInput`,
+    //   readonly: readOnly,
+    // });
+    // if (popupData.relationship === '') relationshipInput.classList.add('error');
+
+    addressInput = input.build({
+      label: 'Address',
+      value: popupData.address,
+      type: 'textarea',
+      id: `isp-ciip-addressInput`,
+      readonly: readOnly,
+      classNames: 'autosize',
+    });
+    if (popupData.address === '') addressInput.classList.add('error');
+
+    phoneInput = input.build({
+      label: 'Phone',
+      value: UTIL.formatPhoneNumber(popupData.phone),
+      id: `isp-ciip-phoneInput`,
+      readonly: readOnly,
+      type: 'tel',
+      attributes: [
+        { key: 'maxlength', value: '12' },
+        { key: 'pattern', value: '[0-9]{3}-[0-9]{3}-[0-9]{4}' },
+        { key: 'placeholder', value: '888-888-8888' },
+      ],
+    });
+    if (popupData.phone === '') phoneInput.classList.add('error');
+
+    emailInput = input.build({
+      label: 'Email',
+      value: popupData.email,
+      id: `isp-ciip-emailInput`,
+      readonly: readOnly,
+      type: 'email',
+    });
+    if (popupData.email === '') emailInput.classList.add('error');
+
+    saveBtn = button.build({
+      text: 'save',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        saveData();
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        POPUP.hide(popup);
+      },
+    });
+    const deleteBtn = button.build({
+      text: 'delete',
+      style: 'danger',
+      type: 'contained',
+      callback: () => {
+        popup.style.display = 'none';
+        UTIL.warningPopup({
+          message: 'Are you sure you would like to delete this entry?',
+          accept: {
+            text: 'Yes',
+            callback: () => {
+              deleteData();
+              POPUP.hide(popup);
+            },
+          },
+          reject: {
+            text: 'No',
+            callback: () => {
+              overlay.show();
+              popup.style.removeProperty('display');
+            },
+          },
+        });
+      },
+    });
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    const btnWrap2 = document.createElement('div');
+    btnWrap2.classList.add('btnWrap');
+
+    if (isNew) {
+      btnWrap.appendChild(saveBtn);
+      btnWrap.appendChild(cancelBtn);
+    } else if (readOnly) {
+      btnWrap.appendChild(cancelBtn);
+    } else if (!isNew) {
+      btnWrap.appendChild(saveBtn);
+      btnWrap.appendChild(deleteBtn);
+      btnWrap2.appendChild(cancelBtn);
+    }
+
+    popup.appendChild(typeDropdown);
+    if (!readOnly) popup.appendChild(importFromRelationshipsBtn);
+    if (!readOnly) popup.appendChild(importFromSignaturesBtn);
+    popup.appendChild(nameInput);
+    // popup.appendChild(relationshipInput);
+    popup.appendChild(addressInput);
+    popup.appendChild(emailInput);
+    popup.appendChild(phoneInput);
+    popup.appendChild(btnWrap);
+    if (!isNew && !readOnly) popup.appendChild(btnWrap2);
+
+    setupEvents();
+
+    POPUP.show(popup);
+    checkForErrors();
+    DOM.autosizeTextarea();
+  }
+
+  function setupEvents() {
+    phoneInput.addEventListener('input', event => {
+      if (event.target.value !== '' && contactInformation.validatePhone(event.target.value)) {
+        const phnDisp = contactInformation.formatPhone(event.target.value).disp;
+        event.target.value = phnDisp;
+        phoneInput.classList.remove('error');
+      } else {
+        phoneInput.classList.add('error');
+      }
+      checkForErrors();
+    });
+    typeDropdown.addEventListener('change', event => {
+      if (event.target.value === '') {
+        typeDropdown.classList.add('error');
+      } else {
+        typeDropdown.classList.remove('error');
+      }
+      checkForErrors();
+    });
+    nameInput.addEventListener('input', event => {
+      if (event.target.value === '') {
+        nameInput.classList.add('error');
+      } else {
+        nameInput.classList.remove('error');
+      }
+      checkForErrors();
+    });
+    // relationshipInput.addEventListener('input', event => {
+    //   if (event.target.value === '') {
+    //     relationshipInput.classList.add('error');
+    //   } else {
+    //     relationshipInput.classList.remove('error');
+    //   }
+    //   checkForErrors();
+    // });
+    addressInput.addEventListener('input', event => {
+      if (event.target.value === '') {
+        addressInput.classList.add('error');
+      } else {
+        addressInput.classList.remove('error');
+      }
+      checkForErrors();
+    });
+
+    emailInput.addEventListener('input', event => {
+      if (event.target.value === '') {
+        emailInput.classList.add('error');
+      } else {
+        emailInput.classList.remove('error');
+      }
+      checkForErrors();
+    });
+  }
+
+  function checkForErrors() {
+    const errors = document.getElementById('isp-ciip-mainPopup').querySelectorAll('.error');
+    if (errors.length > 0) {
+      saveBtn.classList.add('disabled');
+    } else saveBtn.classList.remove('disabled');
+  }
+
+  function buildTableMarkup() {
+    const peopleTable = table.build({
+      tableId: 'isp_ci_importantPeopleTable',
+      headline: 'Important People',
+      columnHeadings: ['Type', 'Name', 'Address', 'Email', 'Phone'],
+      sortable: true,
+      onSortCallback: res => {
+        contactInformationAjax.updatePlanContactImportantOrder({
+          contactId: cID,
+          importantId: res.row.id.split('-')[2],
+          newPos: res.newIndex,
+          oldPos: res.oldIndex,
+          type: 2,
+        });
+      },
+    });
+
+    if (readOnly) peopleTable.classList.add('disableDrag');
+
+    if (rawPeopleTableData) {
+      const tableData = rawPeopleTableData.map(d => {
+        return {
+          values: [d.type, d.name, d.address, d.email, UTIL.formatPhoneNumber(d.phone)],
+          id: `ci-impPeople-${d.importantPersonId}`,
+          onClick: () => {
+            tablePopup(d, false);
+          },
+        };
+      });
+      table.populate(peopleTable, tableData, true);
+    }
+
+    return peopleTable;
+  }
+
+  function buildSection(tableData, contactId, ro, relationships) {
+    readOnly = ro;
+    cID = contactId;
+    rawPeopleTableData = tableData;
+    gkRelationships = relationships;
+    const ipSection = document.createElement('div');
+
+    const addPersonBtn = button.build({
+      text: 'Add Person',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => tablePopup(null, true),
+    });
+    if (readOnly) addPersonBtn.classList.add('disabled');
+
+    const table = buildTableMarkup();
+    ipSection.appendChild(table);
+    ipSection.appendChild(addPersonBtn);
+
+    return ipSection;
+  }
+
+  return {
+    buildSection,
+  };
+})();

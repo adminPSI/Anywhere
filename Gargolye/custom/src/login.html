@@ -1,0 +1,440 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Anywhere</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+			default-src 'self'; 
+			script-src 'unsafe-inline' 'self'; 
+			connect-src 'self'; 
+			img-src 'self'; 
+			style-src 'self' 'unsafe-inline';
+			base-uri 'self';
+			object-src 'none';"
+    />
+    <link rel="icon" sizes="192x192" href="/webroot/Images/mobileIcons/AdvisorLogo - 192.png" />
+    <link rel="icon" sizes="128x128" href="/webroot/Images/mobileIcons/AdvisorLogo - 128.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/webroot/Images/mobileIcons/AdvisorLogo - 180.png"
+    />
+
+    <link href="dist/css/login.min.css" rel="stylesheet" />
+
+    <script src="session/landing.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <img class="anywhere-logo" src="/webroot/Images/logo/logo_anywhere.png" alt="Anywhere Logo" />
+    </header>
+
+    <main>
+      <div class="login-forms">
+        <div class="login-forms--inner">
+          <div class="custom-logo"></div>
+
+          <p id="customLoginText"></p>
+
+          <div id="formHolder">
+            <form
+              id="login"
+              class="form"
+              autocomplete="nope"
+              action="javascript:patchIt()"
+              method="GET"
+              accept-charset="utf-8"
+            >
+              <div class="input-field">
+                <input id="username" class="input-field__input" type="text" autocomplete="off" />
+                <div class="notched-outline">
+                  <div class="notched-outline__leading"></div>
+                  <div class="notched-outline__notch">
+                    <label for="username" class="floating-label">Login Name</label>
+                  </div>
+                  <div class="notched-outline__trailing"></div>
+                </div>
+              </div>
+
+              <div class="input-field">
+                <input
+                  id="password1"
+                  class="input-field__input"
+                  type="password"
+                  autocomplete="new-password"
+                />
+                <div class="notched-outline">
+                  <div class="notched-outline__leading"></div>
+                  <div class="notched-outline__notch">
+                    <label for="password" class="floating-label">Password</label>
+                  </div>
+                  <div class="notched-outline__trailing"></div>
+                </div>
+                <button
+                  type="button"
+                  id="passwordToggle1"
+                  data-visible-password="false"
+                  onclick="event.preventDefault(); togglePasswordVisibility(1)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <path
+                      class="fill-path"
+                      d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="password-help">
+                <a id="changePassword" onclick="customPasswordChangeClick()">change password</a>
+                <span>/</span>
+                <a id="resetPassword" onclick="resetPasswordClick();">forgot password</a>
+              </div>
+
+              <button type="submit" id="loginBtn" class="btn btn-login">Login</button>
+            </form>
+
+            <form
+              id="change"
+              class="form"
+              autocomplete="nope"
+              action="javascript:changeIt()"
+              method="GET"
+              accept-charset="utf-8"
+            >
+              <div class="input-field">
+                <input
+                  id="username2"
+                  class="input-field__input"
+                  type="text"
+                  autocomplete="off"
+                  tabindex="1"
+                />
+                <div class="notched-outline">
+                  <div class="notched-outline__leading"></div>
+                  <div class="notched-outline__notch">
+                    <label for="username2" class="floating-label">Login Name</label>
+                  </div>
+                  <div class="notched-outline__trailing"></div>
+                </div>
+              </div>
+
+              <div class="input-field">
+                <input
+                  id="password2"
+                  class="input-field__input"
+                  type="password"
+                  autocomplete="new-password"
+                  tabindex="2"
+                />
+                <div class="notched-outline">
+                  <div class="notched-outline__leading"></div>
+                  <div class="notched-outline__notch">
+                    <label for="password2" class="floating-label">Password</label>
+                  </div>
+                  <div class="notched-outline__trailing"></div>
+                </div>
+                <button
+                  type="button"
+                  id="passwordToggle2"
+                  data-visible-password="false"
+                  onclick="event.preventDefault(); togglePasswordVisibility(2)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <path
+                      class="fill-path"
+                      d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div id="confirmMessage" class="confirmMessage password-warning">
+                Your password has expired, please enter and confirm a new password.
+              </div>
+
+              <div class="input-field">
+                <input
+                  id="newpassword1"
+                  class="input-field__input"
+                  type="password"
+                  autocomplete="new-password"
+                  onkeyup="checkPass(); return false;"
+                  tabindex="3"
+                />
+                <div class="notched-outline">
+                  <div class="notched-outline__leading"></div>
+                  <div class="notched-outline__notch">
+                    <label for="newpassword1" class="floating-label">New Password</label>
+                  </div>
+                  <div class="notched-outline__trailing"></div>
+                </div>
+                <button
+                  type="button"
+                  id="passwordToggle3"
+                  data-visible-password="false"
+                  onclick="event.preventDefault(); togglePasswordVisibility(3)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <path
+                      class="fill-path"
+                      d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="input-field">
+                <input
+                  id="newpassword2"
+                  class="input-field__input"
+                  type="password"
+                  autocomplete="new-password"
+                  onkeyup="checkPass(); return false;"
+                  tabindex="4"
+                />
+                <div class="notched-outline">
+                  <div class="notched-outline__leading"></div>
+                  <div class="notched-outline__notch">
+                    <label for="newpassword2" class="floating-label">Confirm Password</label>
+                  </div>
+                  <div class="notched-outline__trailing"></div>
+                </div>
+                <button
+                  type="button"
+                  id="passwordToggle4"
+                  data-visible-password="false"
+                  onclick="event.preventDefault(); togglePasswordVisibility(4)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <path
+                      class="fill-path"
+                      d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <button type="submit" id="changebutton" class="btn btn-login" tabindex="5">
+                Change
+              </button>
+            </form>
+
+            <form
+              id="reset"
+              class="form"
+              autocomplete="nope"
+              action="javascript:resetIt()"
+              method="GET"
+              accept-charset="utf-8"
+            >
+              <div class="input-field">
+                <input id="username3" class="input-field__input" type="text" autocomplete="off" />
+                <div class="notched-outline">
+                  <div class="notched-outline__leading"></div>
+                  <div class="notched-outline__notch">
+                    <label for="username3" class="floating-label">Login Name</label>
+                  </div>
+                  <div class="notched-outline__trailing"></div>
+                </div>
+              </div>
+
+              <div id="confirmResetMessage" class="confirmMessage password-warning">
+                Please enter your login name, to receive an email containing further instructions.
+              </div>
+
+              <button id="resetButton" class="btn btn-login">Reset</button>
+            </form>
+          </div>
+
+          <div id="infalFormHolder">
+            <form
+              id="loginInfal"
+              class="form"
+              autocomplete="off"
+              action="javascript:checkLogin();"
+              method="get"
+              accept-charset="utf-8"
+            >
+              <div class="input-field">
+                <input
+                  id="userIDInfal"
+                  class="input-field__input"
+                  type="password"
+                  autocomplete="new-password"
+                />
+                <div class="notched-outline">
+                  <div class="notched-outline__leading"></div>
+                  <div class="notched-outline__notch">
+                    <label for="username" class="floating-label">Infal Login ID</label>
+                  </div>
+                  <div class="notched-outline__trailing"></div>
+                </div>
+              </div>
+              <button id="infalloginbutton" class="btn btn--primary btn-login">Login</button>
+            </form>
+          </div>
+
+          <button id="backToLogin" class="backToLogin" onclick="backToLoginPage()">
+            <span>Back To Login</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M19 11H7.83l4.88-4.88c.39-.39.39-1.03 0-1.42-.39-.39-1.02-.39-1.41 0l-6.59 6.59c-.39.39-.39 1.02 0 1.41l6.59 6.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.83 13H19c.55 0 1-.45 1-1s-.45-1-1-1z"
+              />
+            </svg>
+          </button>
+
+          <div id="error" class="error">
+            <div class="error__inner">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="none" d="M0 0h24v24H0V0z" />
+                <path
+                  d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                />
+              </svg>
+              <p id="errortext" class="error__text"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="versioning">
+      <div class="vertext">version:</div>
+      <div id="ver" class="version"></div>
+    </div>
+
+    <div class="overlay"></div>
+
+    <mainbodycell id="mainbody" class="mainbodycell"></mainbodycell>
+    <mobiledetector id="mobiledetector"></mobiledetector>
+
+    <script src="./dist/lib/js/jquery-1.8.3.min.js"></script>
+    <script src="./dist/lib/js/jquery.crypt.js"></script>
+    <script src="./session/connections.js"></script>
+    <script src="./dist/js/bundle.js"></script>
+
+    <script>
+      function customInputTextFields() {
+        var textfields = Array.prototype.slice.call(document.querySelectorAll('.input-field'));
+
+        textfields.forEach(function (textfield) {
+          var input = textfield.querySelector('.input-field__input');
+
+          input.addEventListener('focus', function (event) {
+            textfield.classList.add('input-field--focused');
+          });
+
+          input.addEventListener('blur', function () {
+            textfield.classList.remove('input-field--focused');
+          });
+        });
+      }
+      function ShowIEAlert() {
+        if (isIE()) {
+          $('form input').attr('disabled', 'disabled');
+          alert(
+            'You are using an internet browser that is no longer HIPAA compliant.  To log into Anywhere you must upgrade or switch to a HIPAA compliant browser.',
+          );
+        }
+      }
+      function isIE() {
+        var ua = window.navigator.userAgent; //Check the userAgent property of the window.navigator object
+        var msie = ua.indexOf('MSIE '); // IE 10 or older
+
+        return msie > 0;
+      }
+      function setCustomLogo() {
+        var imgHolder = document.querySelector('.custom-logo');
+        var img = new Image();
+        img.src = './images/custom-logo/customLogo.jpg';
+        img.onload = function () {
+          imgHolder.appendChild(img);
+        };
+        img.onerror = function () {
+          // console.clear();
+        };
+      }
+      function togglePasswordVisibility(value) {
+        var passwordInput = '';
+        var passwordToggleBtn = '';
+        switch (value) {
+          case 1:
+            passwordInput = document.getElementById('password1');
+            passwordToggleBtn = document.getElementById('passwordToggle1');
+            break;
+          case 2:
+            passwordInput = document.getElementById('password2');
+            passwordToggleBtn = document.getElementById('passwordToggle2');
+            break;
+          case 3:
+            passwordInput = document.getElementById('newpassword1');
+            passwordToggleBtn = document.getElementById('passwordToggle3');
+            break;
+          case 4:
+            passwordInput = document.getElementById('newpassword2');
+            passwordToggleBtn = document.getElementById('passwordToggle4');
+            break;
+          default:
+          //nothing
+        }
+        var isVisible = passwordToggleBtn.getAttribute('data-visible-password');
+
+        if (isVisible === 'false') {
+          passwordToggleBtn.innerHTML = icons.passwordHide;
+          passwordToggleBtn.setAttribute('data-visible-password', 'true');
+          passwordInput.type = 'text';
+        } else {
+          passwordToggleBtn.innerHTML = icons.passwordShow;
+          passwordToggleBtn.setAttribute('data-visible-password', 'false');
+          passwordInput.type = 'password';
+        }
+      }
+
+      $(document).ready(function () {
+        var usernameInput = document.querySelector('#login #username');
+        usernameInput.focus();
+
+        eraseCookie('psiuser');
+        ShowIEAlert();
+        strongPasswordValue();
+        getCustomLoginTextAndVersion(customTextVersionWork);
+        customInputTextFields();
+        setCustomLogo();
+
+        if (infalOnly) {
+          $('#formHolder').css('display', 'none');
+          $('#infalFormHolder').css('display', 'block');
+        }
+      });
+    </script>
+  </body>
+</html>

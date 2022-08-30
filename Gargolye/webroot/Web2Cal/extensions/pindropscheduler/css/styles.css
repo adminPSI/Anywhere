@@ -1,0 +1,97 @@
+
+
+.vdashedrule{
+    border-left: 1px dashed #ccc;
+    height: 100%; position: absolute;top: 0;
+    z-index: 1; border-color:#ccc;
+}
+.vsolidrule{
+    border-left: 1px solid #ccc;
+    height: 100%; position: absolute;top: 0;
+    z-index: 1; border-color:#ccc;
+}
+.darkBorder
+{
+    border-color:#666 !important;
+
+}
+div.web2CalScheduler .calTimeSlot{z-index: 12;}
+div.web2CalScheduler #gridYContainerTD, div.web2CalScheduler  .calTimeSlot{width:200px;}
+div.web2CalScheduler #calheaderContainer, div.web2CalScheduler #calsubheaderContainer{	margin:0px 15px 0px 200px;}
+div.web2CalScheduler #calheaderContainer div, div.web2CalScheduler #calsubheaderContainer div
+{	position:absolute;}
+
+div.web2CalScheduler #calheaderContainer div.calHeader{text-align: center !important;}
+       .calTimeSlot{background:#fff; border-right: 1px solid #ccc;  ;}
+/* make it scroll on x-axis. */
+div.web2CalScheduler #calbodyContainer{overflow-x: auto;}
+div.web2CalScheduler .vdottedrule, div.web2CalScheduler .vsolidrule{height:20px;}
+
+
+/*custom styling...*/
+#fixedSlots .row1{
+    background: url('../images/sprite2.png') 0 -107px;
+    height:30px;
+    color:#444;
+    padding:0 5px;
+    line-height: 30px;
+}
+#fixedSlots .row1 .category{
+    font-size:16px;
+    font-weight: bold;
+}
+#fixedSlots .row2{
+    padding:15px 5px;
+    color:#ccc;font-weight: normal;
+}
+
+div.referenceType{
+    background:#333 url("../images/bg-striped.png");
+    color:#999;
+}
+div.referenceType .hdr{
+    color:#999;
+}
+
+div.pinType{
+    background: url("../images/greenpin32.png") -1px no-repeat;
+    width:32px !important;
+    overflow: visible;
+}
+div.pinType .hdr{display:none}
+div.pinType .body{display:none}
+div.vert-slider{
+
+    width:10px;
+    position: absolute;
+    z-index: 99;
+}
+div.vert-slider .top-tip{
+    height:16px;
+    width:14px;
+    background: url('../images/arrows.png') -2px -115px no-repeat;
+}
+div.vert-slider .bottom-tip{
+    height:16px;
+    width:14px;
+    position: absolute;
+    bottom:0px;
+    background: url('../images/arrows.png') -2px -127px no-repeat;
+}
+div.vert-slider .slider-body{
+    width:1px;
+
+    position: absolute;
+    left:3px; top:-2px;
+    border-right:2px dashed #7a471f;
+    height:100%;
+}
+.weekend-event{
+    /*background:#fff !important;*/
+    opacity:0.3;
+    display:block;
+    color:#fff !important;
+}
+.pinType,
+.pinType .icon-east
+{border:none;}

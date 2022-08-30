@@ -1,0 +1,546 @@
+// General
+.seConsumerCard {
+  background: $bg-dark;
+  border-radius: $r-sm;
+  display: flex;
+  margin: 0 0 10px;
+  overflow: hidden;
+
+  .consumerCard {
+    box-shadow: none;
+    border-radius: 0;
+    flex-flow: row nowrap;
+    flex-grow: 1;
+
+    .portrait {
+      flex-basis: 60px;
+      padding: 0;
+      min-width: 60px;
+      img {
+        position: relative;
+      }
+    }
+    .details {
+      flex-grow: 1;
+      padding: 10px;
+    }
+    .icons {
+      display: none;
+    }
+  }
+  .extrasBtn {
+    margin: 0;
+    pointer-events: all;
+  }
+}
+// Time Entry Page
+.actioncenter[data-active-module="timeEntry"] {
+  .filteredByData {
+    margin-top: 25px;
+  }
+}
+.timeCard {
+  &__timeEntry {
+    margin: 0 0 26px;
+    
+    > div {
+      margin: 0 5px 0;
+    }
+    > div.textarea {
+      margin: 0 10px 20px;
+    }
+  }
+  &__consumers {
+    padding: 0 10px;
+    margin: 0 0 26px;
+
+    .consumerSectionError {
+      &.hidden {
+        display: none;
+      }
+    }
+  }
+  &__actions {
+    display: flex;
+    padding: 0 15px 0;
+
+    button {
+      margin: 0 10px 0 0;
+      pointer-events: all;
+      &:last-of-type {
+        margin: 0;
+      }
+    }
+  }
+
+  &__time,
+  &__date,
+  
+  &__other {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    margin: 0;
+  }
+  &__date {
+    > div {
+      flex-grow: 1;
+      min-width: 180px;
+      margin: 0 5px 20px;
+      width: 45%;
+    }
+  }
+  &__other {
+    > div {
+      flex-grow: 1;
+      min-width: 280px;
+      margin: 0 5px 20px;
+      width: 45%;
+    }
+  }
+  &__time {    
+    > div {
+      flex-grow: 1;
+      min-width: 130px;
+      margin: 0 5px 20px;
+      width: 25%;
+    }
+    > label {
+      margin: 0 5px 20px;
+      align-self: flex-end;
+    }
+  }
+  &__evv {
+    display: flex;
+    flex-flow: row wrap;
+    .dropdown {
+      flex-grow: 1;
+    }
+    > div {
+      margin: 0 5px 20px;
+    }
+    > label {
+      margin: 0 5px 20px;
+      align-self: flex-end;
+    }
+  }
+
+  @media screen and (min-width: 700px) {
+    .card__body {
+      display: flex;
+      flex-flow: row wrap;
+    }
+    
+    &__timeEntry {
+      width: 58%;
+    }
+    &__consumers {
+      width: 42%;
+    }
+    &__actions {
+      width: 100%;
+    }
+  }
+
+  .seRecordActivity {
+    margin-top: 10px;
+    margin-left: 15px;
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 600;
+  }
+}
+.transportationBtn {
+  margin: 0 10px 0;
+  pointer-events: all;
+  &.success {
+    color: $secondary;
+    border-color: $secondary;
+  }
+}
+.timeEntryTransportationPopup {
+  padding-top: 46px;
+
+  .cancelTransBtn {
+    pointer-events: all;
+  }
+
+  .btnWrap {
+    flex-flow: row nowrap;
+  }
+}
+
+// EVV Signature & Note
+.extras {
+  &--label {
+    text-transform: capitalize;
+    font-weight: $normal;
+    margin: 0 0 4px;
+  }
+
+  .evv--actions {
+    display: flex;
+
+    button {
+      margin: 0;
+
+      &:first-child {
+        margin-right: 10px;
+      }
+    }
+  }
+}
+.signature-pad {
+  margin: 0 0 15px;
+
+  &--actions {
+    display: flex;
+    button {
+      margin: 0;
+
+      &:first-child {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  img {
+    outline: 2px solid $font-dark;
+    width: 100%;
+  }
+
+  .evvCanvas {
+    outline: 2px solid $font-dark;
+    width: 100%;
+  }
+}
+.evv-note {
+  &--pad {
+    width: 100%;
+    height: 200px;
+    
+
+    &-wrap {
+      outline: 2px solid $font-dark;
+      margin: 0 0 15px;
+    }
+  }
+}
+button.evv-highlight {
+  background: $secondary;
+}
+.timeEntryReviewPayPeriodPopup {
+  button {
+    width: 100%;
+  }
+}
+// Time Review Page
+#singleEntryReviewTable {
+  .table__row {
+    &.selected {
+      background: $secondary;
+    }
+    > div {
+      flex-grow: 1;
+    }
+    // > div:last-child {
+    //   margin: 0;
+    // }
+    > div:nth-child(1) {// status
+      width: 60px;
+    }
+    > div:nth-child(2) {// date
+      width: 68px;
+    }
+    > div:nth-child(3) { // start time
+      width: 86px;
+    }
+    > div:nth-child(4) { // end time
+      display: none;
+      width: 86px;
+    }
+    > div:nth-child(5) {// hours
+      width: 52px;
+    }
+    > div:nth-child(6) {// location
+      flex-grow: 2;
+      width: 100px;
+    }
+    > div:nth-child(7) {// work code
+      display: none;
+      width: 80px;
+    }
+    > div:nth-child(8) {// Icons
+      display: none;
+      width: 70px;
+    }
+
+    @media screen and (min-width: 560px) {
+      > div:nth-child(4) {// end time
+        display: block;
+      }
+      > div:nth-child(7) {// work code
+        display: block;
+      }
+      > div:nth-child(8) {// Icons
+        display: inherit;
+      }
+    }
+  }
+  .multiSelectBtn {
+    &.enabled {
+      background: pink;
+    }
+  }
+  // svg {
+  //   width: 25px;
+  //   margin-left: 5px;
+  // }
+  // .consumerPresentIcon {
+  //   height: 26px;
+  //   width: 26px;
+  //   border-radius: 50%;
+  //   display: inline-block;
+  //   background: $primary;
+  //   text-align: center;
+  //   line-height: 28px;
+  //   color: $font-light;
+  //   &.consumersPresent {
+  //     background: $secondary;
+  //     color: $font-dark;
+  //   }
+  // }
+  // .additionalInfoBox {
+  //   display: flex;
+  //   text-align: center;
+  //   line-height: 28px;
+  //   color: $font-light;
+  //   height: 26px;
+  //   // width: auto;
+  //   background: $primary;
+  //   border-radius: 4px;
+  //   min-width: 20px;
+  //   font-weight: 500;
+  //   padding: 0 10px;
+  //   max-width: 54px;
+  //   box-shadow: $shadow-m1;
+  //   svg {
+  //     width: 25px;
+  //     padding-left: 7px;
+  //   }
+  // }
+  
+}
+#singleEntryReviewTable,
+#singleEntryAdminReviewTable {
+  .additionalInfoBox {
+    display: flex;
+    text-align: center;
+    line-height: 28px;
+    color: $font-light;
+    height: 26px;
+    // width: auto;
+    background: $primary;
+    border-radius: 4px;
+    min-width: 20px;
+    font-weight: 500;
+    padding: 0 10px;
+    max-width: 54px;
+    box-shadow: $shadow-m1;
+    svg {
+      min-width: 25px;
+      padding-left: 7px;
+    }
+  }
+}
+
+.actionButtonWrap {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 0 10px;
+
+  button {
+    box-shadow: $shadow-m1;
+    margin: 0 10px 0 10px;
+  }
+  .selectAllBtn {
+    margin-top: 10px;
+    @media screen and (min-width: 500px) {
+      margin-top: inherit;
+    }
+  }
+}
+
+.multiSelectBtn,
+.selectAllBtn {
+  &.enabled {
+    background: $secondary;
+  }
+}
+.timeEntryDetailsPopup {
+  #consumerDisplay, #transportationDisplay {
+    margin-bottom: 10px;
+    span {
+      font-weight: $normal;
+    }
+    .sectionHead {
+      font-weight: $bold;
+      font-size: 18px;
+      text-align: center;
+      padding-bottom: 10px;
+    }
+    .consumerRow, .transportationRow {
+      padding-left: 15px;
+    }
+  }
+  p {
+    margin: 0 0 10px;
+    
+    span {
+      font-weight: $normal;
+    }
+  }
+
+  .buttonWrap {
+    display: flex;
+
+    button {
+      margin: 0 1%;
+      width: 31%;
+    }
+  }
+}
+.timeEntryReviewPayPeriodPopup {
+  p {
+    font-weight: $normal;
+    margin: 0 0 20px;
+  }
+}
+
+.actioncenter[data-active-module="timeEntry"] {
+  .mapBtn {
+    margin-bottom: 5px;
+    margin-top: 20px;
+    svg {
+      width: 20px;
+      transform: translate(0px, 4px);
+    }
+  }
+}
+
+
+// Time Approval
+#singleEntryAdminReviewTable {
+  .table__row {
+    &.selected {
+      background: $secondary;
+    }
+    > div {
+      flex-grow: 1;
+    }
+
+    > div:nth-child(1) {// status
+      width: 52px;
+    }
+    > div:nth-child(2) {// employee
+      display: none;
+      width: 100px;
+    }
+    > div:nth-child(3) { // date
+      width: 68px;
+    }
+    > div:nth-child(4) { // start time
+      width: 82px;
+    }
+    > div:nth-child(5) {// end time
+      display: none;
+      width: 82px;
+    }
+    > div:nth-child(6) {// hours
+      width: 52px;
+    }
+    > div:nth-child(7) {// location
+      width: 100px;
+      display: none;
+    }
+    > div:nth-child(8) {// work code
+      width: 52px;
+      display: none;
+    }
+    > div:nth-child(9) {// Icons
+      display: none;
+      width: 70px;
+    }
+
+    @media screen and (min-width: 560px) {
+      > div:nth-child(2),
+      > div:nth-child(5),
+      > div:nth-child(7),
+      > div:nth-child(8) {
+        display: block;
+      }
+      > div:nth-child(9) {
+        display: inherit;
+      }
+    }
+  }
+
+  .seRecordActivity {
+    position: absolute;
+    // margin-top: 36px;
+    transform: translate(0,18px);
+    font-size: 11px;
+    font-style: italic;
+    font-weight: 600;
+  }
+
+}
+.actioncenter[data-active-section="timeEntry-approval"] {
+  .totalhoursdiv {
+    position: absolute;
+    margin-top: 30px;
+    margin-left: -90px;
+    font-weight: 500;
+    color: $font-dark;
+  }
+}
+
+.timeApprovalWarningPopup {
+  &__messages {
+    margin: 0 0 20px;
+  }
+  &__messageContainer {
+    margin: 0 0 12px;
+  }
+  &__messageWrap {
+    margin: 0 0 5px;
+  }
+
+  
+  .btnWrap {
+    button {
+      width: 49%;
+      &.enabled {
+        background: $secondary;
+        border: none;
+        color: $font-light;
+      }
+    }
+  }
+}
+
+.btnWrap {
+    button {
+        width: 49%;
+
+        &.enabled {
+            background: $secondary;
+            border: none;
+            color: $font-light;
+        }
+    }
+}
+
+.totalhoursdiv{
+    padding-top: 6px;
+}

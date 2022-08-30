@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+    <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+    <title>Web2Cal | Advanced Groups Demo</title>
+</head>
+
+<body>
+<div class="sample-desc" > Demo shows groups getting transformed into a heirarchical structure.
+    <p style="  ">Supports a tree structure of groups</p>
+</div>
+<!-- Calendar Container -->
+<div id="calendarContainer">
+</div>
+
+
+</body>
+
+
+
+<script src="ext/jquery.1.7.1.js"> </script>
+<script src="js/web2cal-3.0-min.js">  </script>
+<script src="js/web2cal.support.js">  </script>
+<script src="js/web2cal.templates.js">  </script>
+<script src="js/web2cal.dummydata.js">  </script>
+<script src="js/optional/timecontrol.js">  </script>
+
+<!-- LOAD EXTENSION -->
+<script src="extensions/advancedgroups/advancedgroups-min.js">  </script>
+<link type="text/css" rel="stylesheet" href="extensions/advancedgroups/css/styles.css">
+
+</html>
+
+<script >
+    jQuery(document).ready(function(){
+
+        ical = new Web2Cal( "calendarContainer"
+                , {
+                    endTime: 22,
+                    startTime:0,
+                    defaultView: "week",
+                    onUpdateEvent: function( ev ){
+                        ical.updateEvent(ev);
+                    },
+                    loadEvents: function(st, ed, v){
+                        ical.render( Web2Cal.sampleData() );
+                    },
+                    onNewEvent: function(eventObject, allDay, groups){
+                        Web2Cal.onNewEvent(jQuery("#defaultNewEventTemplate"), eventObject, allDay, groups)
+                    },
+                    onAfterPreview: function(event, fullPreview){
+
+                        fullPreview.find(".eventcolors div").removeClass("selected");
+                        fullPreview.find("div."+event.color.css).addClass("selected");
+
+                        fullPreview.find(".eventcolors div").click(function(){
+                            var className=jQuery(this).attr("class");
+                            className=className.replace("selected", "");
+                            var previewingEvent = ical.getPreviewingEvent();
+                            previewingEvent.color = {css:className};
+                            ical.updateEvent(previewingEvent);
+                            ical.showPreview(previewingEvent)
+                        })
+                    }
+                } );
+
+
+
+        var advancedgroups = new AdvancedGroups(ical);
+
+        ical.build();
+
+        new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0));
+        new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+            onTimeSelect: updateDateForTime,
+            dateField: "eventEndDate"
+        });
+    });
+
+
+    /**
+     *
+     */
+    function rzAddEvent(){
+        var eventObject = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+        ical.addEvent(eventObject);
+    }
+
+
+    /*
+     Click on Edit Button in preview window
+     */
+    function rzEditEvent(evId, event)
+    {
+        var evObj=ical.getEventById(evId);
+
+        var groups=ical.getAllGroups();
+        groupDD=jQuery("#defaultNewEventTemplate").find("#eventGroup").get(0);
+        removeAllOptions(groupDD);
+        for(var g in groups)
+        {
+            if(!groups.hasOwnProperty(g))
+                continue;
+            var gId = groups[g].groupId;
+            addOption(groupDD, groups[g].groupName,groups[g].groupId,false);
+        }
+
+        jQuery("#defaultNewEventTemplate").find("#eventName").val(evObj.eventName).end()
+                .find("#eventGroup").val(evObj.groupId).end()
+                .find("#eventStartTime").val(evObj.startTime.toString("hh:mm tt")).end()
+                .find("#eventEndTime").val(evObj.endTime.toString("hh:mm tt")).end()
+                .find("#eventStartDate").val(evObj.startTime.toString("MM/dd/yyyy")).end()
+                .find("#eventEndDate").val(evObj.endTime.toString("MM/dd/yyyy")).end()
+                .find("#addEventBtn").hide().end()
+                .find("#updateEventBtn").show().end();
+
+        ical.showEditEventTemplate(jQuery("#defaultNewEventTemplate"), evObj.eventId, event);
+        Web2Cal.hidePreview ();
+    }
+
+</script>

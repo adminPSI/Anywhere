@@ -1,0 +1,227 @@
+body.planActive {
+  overflow: hidden;
+  max-height: 100vh;
+
+  .miniRoster {
+    overflow-y: scroll;
+  }
+}
+
+.planLandingPage {
+  padding: 10px 10px 0;
+}
+
+// SPINNER
+.planActive .spinner {
+  margin-bottom: 20px;
+}
+
+// NEW PLAN SETUP PAGE
+.planSetupPage {
+  .dropdown {
+    margin: 0 1% 20px;
+  }
+
+  .planSetupDates {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+
+    > div {
+      flex-grow: 1;
+      min-width: 48%;
+      margin: 0 1% 20px;
+    }
+  }
+
+  .setupDoneBtn {
+    padding: 16px 0;
+    width: 100%;
+  }
+}
+
+.planConsumerCard {
+  margin: 0 0 20px;
+
+  .consumerCard {
+    box-shadow: none;
+    flex-flow: row nowrap;
+
+    .icons {
+      display: none;
+    }
+  }
+  .portrait {
+    padding: 0;
+    width: 60px;
+    img {
+      position: relative;
+    }
+  }
+  .details {
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 20px 10px;
+
+    .name {
+      display: flex;
+      .name_first {
+        margin: 0 0 0 5px;
+      }
+    }
+  }
+}
+
+#previousPlanTable {
+  max-height: 340px;
+  overflow: scroll;
+}
+
+.workflowListPopup {
+  .closePopupBtn {
+    display: none;
+  }
+  h2 {
+    margin: 0 0 10px;
+  }
+
+  .workflowList {
+    margin: 0 0 10px;
+  }
+
+  .workflowListItem {
+    border-bottom: 1px solid $black;
+    cursor: pointer;
+    padding: 8px 4px;
+    overflow: hidden;
+
+    &.selected {
+      background: $green;
+    }
+
+    h4,
+    p {
+      pointer-events: none;
+    }
+
+    p {
+      white-space: nowrap;
+    }
+  }
+}
+
+// OVERVIEW PAGE
+#planOverviewTable,
+#previousPlanTable {
+  .table__row {
+    cursor: pointer;
+    justify-content: space-between;
+
+    &[data-plan-active='true'] {
+      font-weight: $bold;
+      color: $font-dark;
+      background: $secondary;
+    }
+    &.selected {
+      font-weight: $bold;
+      color: $font-dark;
+      background: $secondary;
+    }
+    > div {
+      margin: 0 5px 0 0;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+    > div:nth-child(1) {
+      // PLAN TYPE
+      min-width: 64px;
+      max-width: 80px;
+    }
+    > div:nth-child(2) {
+      // REVISION #
+      min-width: 50px;
+      max-width: 70px;
+    }
+    > div:nth-child(3),
+    > div:nth-child(4) {
+      // START DATES
+      min-width: 94px;
+    }
+    div:nth-child(5) {
+      // REVIEW DATE
+      display: none;
+      min-width: 94px;
+    }
+
+    @media screen and (min-width: 500px) {
+      div:nth-child(5) {
+        // REVIEW DATE
+        display: block;
+      }
+    }
+  }
+}
+
+// PLAN TABS PAGE
+.planHeader {
+  background: $bg-light;
+  display: flex;
+  margin: 0 0 2px;
+  padding: 5px;
+  height: 75px;
+
+  @media screen and (min-width: '1000px') {
+    height: 55px;
+  }
+}
+.generalInfo {
+  min-width: 215px;
+  flex-grow: 1;
+
+  &__row1,
+  &__row2 {
+    display: flex;
+
+    p {
+      font-weight: $normal;
+      font-size: 14px;
+
+      @media screen and (min-width: 500px) {
+        font-size: 16px;
+      }
+    }
+
+    p:first-child {
+      margin-right: 14px;
+    }
+  }
+
+  &__row1 {
+    margin-bottom: 6px;
+  }
+  &__row2 {
+    flex-flow: row wrap;
+
+    p {
+      min-width: 210px;
+    }
+  }
+}
+.buttonBar {
+  display: flex;
+  flex-grow: 1;
+  max-width: 200px;
+
+  button.btn {
+    margin: 0;
+    padding: 0 12px;
+    flex-grow: 1;
+
+    &:first-child {
+      margin-right: 8px;
+    }
+  }
+}

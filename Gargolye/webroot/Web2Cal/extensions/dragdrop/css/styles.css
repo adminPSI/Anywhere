@@ -1,0 +1,19 @@
+
+.draggableEvent{
+    margin: 2px auto;
+    background: #3366CC;
+    border-radius: 3px;
+    border: 1px solid #fff;
+    width:90%;cursor:pointer;
+    color: #fff;
+    font-size: 15px;
+    padding: 2px;
+    text-align: center;
+    font-family: 'monotype corsiva';
+}
+.activeDrag{
+    width:120px;
+    z-index: 900;
+    position:absolute;
+}
+body{-moz-user-select: none;}

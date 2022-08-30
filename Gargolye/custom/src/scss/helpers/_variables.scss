@@ -1,0 +1,86 @@
+//=============================
+// Colors
+//-----------------------------
+$blue: #4181b9; // rgb(65,129,185)
+$blue2: rgb(54, 106, 152); // #366A98
+$green: rgb(129, 185, 65); // #81B941
+$green2: #6a9836; // rgb(106,152,54)
+$red: #db162f; // rgb(219,22,47)
+$yellow: #ffc857; // rgb(255,200,87)
+$orange: #ee8434; // rgb(238,132,52)
+$black: rgb(39, 39, 39); // #272727
+$white: rgb(255, 255, 255); // #FFFFFF
+$white2: rgb(250, 250, 250); // #FAFAFA
+$gray: rgb(211, 211, 211);
+
+$primary: $blue2;
+$secondary: $green;
+// backgrounds
+$bg-dark: $primary;
+$bg-dark2: $secondary;
+$bg-light: $white2;
+$bg-warning: $yellow;
+$bg-error: $red;
+// screens a.k.a component backgrounds
+$bg-light-s: $white;
+// fonts
+$font-dark: $black;
+$font-light: $white;
+$font-warning: $yellow;
+$font-error: $red;
+// buttons
+$btn-dark: $primary;
+$btn-light: $white;
+// inputs
+$input-blur--dark: $black;
+$input-focus--dark: $primary;
+$input-blur--light: $white;
+$input-focus--light: $white;
+$input-error: $red;
+
+//=============================
+// Font
+//-----------------------------
+$font-primary: 'helvetica', sans-serif;
+//$font-primary: 'Roboto', sans-serif;
+
+$thin: 300;
+$light: 400;
+$normal: 500;
+$bold: 700;
+
+//=============================
+// Borders
+//-----------------------------
+// border width
+$w-xs: 1px;
+$w-sm: 2px;
+$w-md: 3px;
+$w-lg: 4px;
+$w-xl: 6px;
+// border radius
+$r-sm: 4px;
+$r-md: 6px;
+$r-lg: 10px;
+$r-xl: 20px;
+$r-circle: 50%;
+
+//=============================
+// Shadows
+//-----------------------------
+$shadow-m1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+$shadow-m2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+$shadow-m3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+$shadow-m4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+$shadow-m5: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+
+//=============================
+// Timing
+//-----------------------------
+$bezier: cubic-bezier(0.4, 0, 0.2, 1);
+
+//=============================
+// By Module
+//-----------------------------
+$planTabsInnerHeight: calc(100vh - 167px);
+$planTabsInnerHeightMobile: calc(100vh - 195px);

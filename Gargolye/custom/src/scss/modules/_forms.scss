@@ -1,0 +1,72 @@
+// Forms Module
+//====================================
+#consumerFormsTable {
+    .table__row {
+      // cursor: pointer;
+      > div {
+        display: flex;
+        flex-grow: 1;
+        margin: 0 5px 0 0;
+      }
+      > div:last-child {
+        margin: 0;
+      }
+  
+      // Column Widths
+      > div:nth-child(1) {
+        display: flex;   //PDF Icon
+        flex-direction: column;
+        flex-wrap: wrap;
+        min-width: 10px;
+        padding: 10px 0px;
+        max-width: 25px;
+      }
+      > div:nth-child(2) {
+        flex-basis: 90px; // Type
+      }
+      > div:nth-child(3) {
+        // Completion Date
+        flex-basis: 80px;
+      }
+      > div:nth-child(4) {
+        // Last Update
+        flex-basis: 80px;
+      }
+
+      > div:nth-child(5) {
+        // User Update
+        flex-basis: 80px;
+      }
+
+      @media screen and (max-width: 560px) {
+       
+        > div:nth-child(5) {
+          // User Updated
+          display: none;
+        }
+       
+      }
+    }
+  
+    // .table__row[data-signed='false'] {
+    //   background: $bg-warning;
+    // }
+  
+    margin-bottom: 20px;
+  }
+
+  #formeditpopup {
+  &.popup {
+    &.miniform {
+     //@error background: $blue;
+
+      p {
+         // color: $font-light;
+          font-weight: $normal;
+      }
+      .btnWrap button:last-child {
+          margin: 10px;
+      }
+    }
+  }
+}

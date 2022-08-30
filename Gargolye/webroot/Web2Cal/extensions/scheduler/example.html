@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+    <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+    <title>Web2Cal | Callbacks Demo</title>
+</head>
+<body>
+<div class="sample-desc" >
+    Example of Scheduler view integration.
+    <p>Also Calendar Manager extension and Advanced Groups extension are integrated.  Any custom scheduler display range can be created. Simple to switch between different range.</p>
+</div>
+<!-- Calendar Container -->
+<div id="calendarContainer">
+</div>
+
+
+<div id="calendarmanagerTemplate" style="display: none;">
+    <a href="#">Public</a>
+    <a href="#">Private</a>
+    <a href="#">Share Calendar</a>
+    <a href="#">Send to Friend</a>
+    <a href="#">Export</a>
+    <div class="calendarTemplate">
+        <div class="label">Calendar Color</div>
+        <div field="colors">
+            <div class="calendarColor ${css}" onclick="calendarColorSelect('${css}', '${color}')">
+                <input type="hidden" class="colorCssName" value="${css}"/>  <div class="eventBody">&nbsp;</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="mySlotTemplate" style="display:none">
+    <div class="${color.css}">
+        <div class="eventBody" style="height:80px;">
+            <div class="row1">
+                <span class="category" style="float:left;">${name}</span>
+                <span style="float:right;">${company}</span>
+            </div>
+            <div class="row2">
+                <span style="float:left">Budget: ${budget}</span>
+                <span style="float:right;">Quote: ${budget}</span>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+
+<script src="js/web2cal.support.js">  </script>
+<script src="js/web2cal.templates.js">  </script>
+<script src="js/web2cal.dummydata.js">  </script>
+<script src="js/optional/timecontrol.js">  </script>
+
+
+<!-- LOAD EXTENSION -->
+<script src="extensions/scheduler/scheduler-min.js">  </script>
+<link type="text/css" rel="stylesheet" href="extensions/scheduler/css/styles.css">
+
+<script src="extensions/advancedgroups/advancedgroups-min.js">  </script>
+<link type="text/css" rel="stylesheet" href="extensions/advancedgroups/css/styles.css">
+
+<script src="extensions/calendarmanager/calendarmanager-min.js">  </script>
+<link type="text/css" rel="stylesheet" href="extensions/calendarmanager/css/styles.css">
+
+</html>
+
+<script >
+    var ical, activeEvent;
+    jQuery(document).ready(function(){
+
+        ical = new Web2Cal( "calendarContainer"
+                , {
+                    endTime: 22,
+                    readOnly: false,
+                    naturalOrderOfGroups: false ,
+                    startTime:0,
+                    defaultView: "month",
+                    showLeftNav:false,
+                    onUpdateEvent: function( ev ){
+                        ical.updateEvent(ev);
+                    },
+                    loadEvents: function(st, ed, v){
+                        ical.render(Web2Cal.sampleData())
+                    },
+                    onNewEvent: function(eventObject, allDay, groups){
+                        Web2Cal.onNewEvent(jQuery("#defaultNewEventTemplate"), eventObject, allDay, groups)
+                    },
+                    onAfterPreview: function(event, fullPreview){
+                        fullPreview.find("div."+event.color.css).addClass("selected");
+                        fullPreview.find(".eventcolors div").click(function(){
+                            var className=jQuery(this).attr("class");
+                            var previewingEvent = ical.getPreviewingEvent();
+                            previewingEvent.color = {css:className};
+                            ical.updateEvent(previewingEvent);
+                            ical.showPreview(previewingEvent)
+                        })
+                    }
+                } );
+
+
+
+        advancedgroups = new AdvancedGroups(ical);
+        scheduler = new Scheduler(ical,{
+            showOnStartup:true,
+            defaultMode:"1D",
+            customViews: [
+                {display:"Custom", code: "C", fitWidth:false, dayWidth: 500, interval:6, hourInterval:1, daycount:10, showHours: true, timeFormat:Web2Cal.WEEK_HEADER_DATE_FORMAT}
+                , {display:"1 Day", code: "1D", fitWidth:true, interval:24, hourInterval:2, daycount:1, showHours: true, timeFormat:"dddd, MMMM d"}
+                , {display:"2 Days", code: "2D", fitWidth:true, interval:24, hourInterval:1, daycount:2, showHours: true, timeFormat:"dddd, MMMM d"}
+                , {display:"1 Week", code: "1W", fitWidth:true,interval:1, hourInterval:0, daycount:7, showHours: false, timeFormat:"ddd, MMM d"}
+                , {display:"3 Weeks", code: "3W", fitWidth:true,interval:1, hourInterval:0, daycount:21, showHours: false, timeFormat:"M/d"}
+                , {display:"1 Month", code: "1M", fitWidth:true,interval:1, hourInterval:0, daycount:21, showHours: false,  timeFormat:"M/d"}
+            ]
+        });
+
+        ical.build();
+
+        new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0));
+        new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+            onTimeSelect: updateDateForTime,
+            dateField: "eventEndDate"
+        });
+    });
+
+
+    var rzUpdateEvent = function()
+    {
+        var updEv = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+        updEv['eventId']=activeEvent.eventId;
+        jQuery("#defaultNewEventTemplate").hide();
+        ical.updateEvent(updEv);
+
+    }
+
+
+    /**
+     *
+     */
+    function rzAddEvent(){
+        var eventObject = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+        ical.addEvent(eventObject);
+    }
+
+
+    /*
+     Click on Edit Button in preview window
+     */
+
+    function rzEditEvent(evId, event)
+    {
+        var evObj=ical.getEventById(evId);
+        activeEvent = evObj;
+        var groups=ical.getAllGroups();
+
+        var evObj=ical.getEventById(evId);
+
+        var groups=ical.getAllGroups();
+        var groupDD=jQuery("#defaultNewEventTemplate").find("#eventGroup").get(0);
+        removeAllOptions(groupDD);
+        for(var g in groups)
+        {
+            if(!groups.hasOwnProperty(g))
+                continue;
+            var gId = groups[g].groupId;
+            addOption(groupDD, groups[g].name,groups[g].groupId,false);
+        }
+
+        jQuery("#defaultNewEventTemplate").find("#eventName").val(evObj.eventName).end()
+                .find("#eventGroup").val(evObj.groupId).end()
+                .find("#eventStartTime").val(evObj.startTime.toString("hh:mm tt")).end()
+                .find("#eventEndTime").val(evObj.endTime.toString("hh:mm tt")).end()
+                .find("#eventStartDate").val(evObj.startTime.toString("MM/dd/yyyy")).end()
+                .find("#eventEndDate").val(evObj.endTime.toString("MM/dd/yyyy")).end()
+                .find("#addEventBtn").hide().end()
+                .find("#updateEventBtn").show().end();
+
+        ical.showEditEventTemplate(jQuery("#defaultNewEventTemplate").removeClass("minimode"), evObj.eventId, event);
+        Web2Cal.hidePreview ();
+    }
+</script>

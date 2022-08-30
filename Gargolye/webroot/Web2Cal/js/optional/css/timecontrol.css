@@ -1,0 +1,6 @@
+div.timecontrolContainer		{ background-color: #fff; border: 1px solid #7B9EBD; cursor: pointer; display: none;
+    height: 150px; overflow-X: hidden;overflow-Y: auto;position: absolute;z-index: 999999;
+    width:80px;}
+a.timeTxt						{ display: block; white-space:nowrap;  padding:0px  3px;height:19px; text-shadow: rgba(255, 255, 255, 0.1) 0 1px 0;}
+._diffed						{ width:140px !important;}
+.currTime						{ font-weight: bold;background-color: #C6DBFF;}

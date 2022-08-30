@@ -1,0 +1,285 @@
+
+/*Style for Web2Cal Samples only. Not required for actual integration. */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{
+    margin:0;
+    padding:0;
+    border:0;
+    vertical-align:baseline
+}
+
+body{
+    color: #000000;
+    color:#2a3744;text-rendering:optimizeLegibility;
+    -webkit-font-smoothing:antialiased;margin:0;padding:0;-webkit-text-size-adjust:none;
+    font-size: 14px;
+    font-weight:300;
+    font-family: "Lato","Helvetica Neue","Helvetica",sans-serif;
+    -moz-user-select: none;
+    padding:0px; margin:0px;
+}
+.web2cal{
+    font-size:13px;
+    font-weight: 300 !important;
+    font-family: "Lato","Helvetica Neue","Helvetica",sans-serif;
+}
+.cal-templates{
+    font-weight: 400;
+}
+.sample-desc {
+    font-family: "Lato","Helvetica Neue","Helvetica",sans-serif;
+    font-size: 22px;
+    margin:2px 0px 20px;
+}
+.sample-desc p{
+    font-size:12px;
+    color:#999;
+    font-style: italic;
+    margin-top: 5px;
+}
+#demo-content{
+    padding:5px 10px;
+}
+.crumbs div{
+    text-align:right;padding-right:0px;
+    font-family: "Lato","Helvetica Neue","Helvetica",sans-serif;
+    font-style: normal;
+    margin-right: 5px;
+    font-weight: 100;
+}
+.cntnr > .left > .logo {
+    width: 100%;
+    height: 71px;
+    line-height: 100px;
+    text-align: center;
+    background: url('../images/dark-bg.png') repeat scroll 0% 0% transparent;
+}
+.cntnr {
+    width: 100%;
+    height: 100%;
+    display: table;
+    content: "";
+    clear: both;
+    margin: 0px;
+    padding: 0px;
+}
+.cntnr > .left {
+    display: table-cell;
+    width: 200px;
+    height: 100%;
+    background: none repeat scroll 0% 0% #F3F3F3 !important;
+    box-shadow: -10px 0px 20px -10px #C6C6C6 inset !important;
+    vertical-align: top;
+}
+.cntnr > .right {
+    display: table-cell;
+    height: 100%;
+    background: none repeat scroll 0% 0% #FFF;
+    vertical-align: top;
+}.cntnr > .right > .nav {
+     width: 100%;
+     height: 61px;
+     padding: 0px;
+     margin: 0px;
+     border: 1px solid transparent;
+     background: url('../images/dark-bg.png') repeat scroll 0% 0% transparent;
+ }
+.nav {
+    margin-bottom: 0px;
+    padding-left: 0px;
+    list-style: none outside none;
+}
+.nav .bar {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+}
+.nav .crumbs {
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    background: none repeat scroll 0% 0% #F0F0F0;
+    border-top-left-radius: 5px;
+}
+.right .demo-content {
+    padding-top: 10px;
+    background: #fff;
+}
+div.sidebar ul{
+    list-style: none;;
+    padding: 0px;
+}
+div.sidebar ul li a{
+    padding: 6px 5px;
+    text-decoration: none;
+    display: block;
+    color:#333;
+    border-bottom: 1px solid #ccc;
+}
+div.sidebar ul li a.active{
+    background: #fff;
+    border-left:3px solid #448FBA;
+}
+div.sidebar ul li a:hover{
+    background: #fff;
+}
+div.sample-desc{
+
+}
+.demo-list-nav{
+    font-family: "Lato","Helvetica Neue","Helvetica",sans-serif;
+
+    font-size:100%;
+    font-weight:300;
+}
+.demo-list-nav ul{
+    margin-left:12px;
+    display:none;
+
+}
+.demo-list-nav .nav-title{
+    padding:7px 2px;
+    background: #3D3D3D;
+    color:#fff;
+    font-weight: bold;
+    cursor: default;;
+
+}
+.demo-list-nav .nav-title span{
+    display: inline-block;
+    width:20px;height: 20px;
+    background: url('../images/calIconsv3.png') -318px -469px;
+}
+.demo-list-nav.open .nav-title span{
+    background: url('../images/calIconsv3.png') -318px -440px;
+}
+.demo-list-nav.open .nav-title{
+    background: #aaa;
+    color:#fff;
+    border-bottom: 1px solid #ddd;
+    -webkit-box-shadow: 0px 1px 2px #999;
+    -moz-box-shadow: 0px 1px 2px #999;
+    box-shadow: 0px 1px 2px #999;
+    margin-bottom:4px;
+
+}
+.demo-list-nav.open  ul{
+    display:block;
+    background: #f7f7f7;
+}
+.clearfix:after {
+    content: " "; /* Older browser do not support empty content */
+    visibility: hidden;
+    display: block;
+    height: 0;
+    clear: both;
+}
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+::-webkit-input-placeholder {
+    color: red;
+}
+
+.footer{
+    margin-top: 200px;
+    background: #f8f8f8;
+    padding: 10px 5px;
+    color: #aaa;
+    font-size: 90%;
+    line-height: 21px;
+}
+.footer a{
+    margin-right: 22px;
+    color:#6BA6DA;
+    text-decoration: none;
+}
+.footer .copyright{
+    float:right;
+}
+
+.menu{
+    float:right;margin:2px 20px;
+    list-style: none;
+}
+.menu li{
+    float:left;
+    display: list-item;
+    text-align: -webkit-match-parent;
+
+    height: 25px;
+    line-height: 25px;
+}
+.menu li a:hover{
+    color:#59ABDA;
+}
+.menu li a{
+    float: left;
+    padding: 0 .5em;
+    text-decoration: none;
+    color: #ffffff;
+}
+.build-info{
+    padding: 1px 10px;
+    margin:0px 0px 0px 10px;
+    color: #fff;
+    background: #2CBB0F;
+    font-size: 90%;
+    letter-spacing: 2px;
+}
+.release-notes {    font-weight: 400;
+    padding:10px 5px;position: relative; background: #f3f3f3;}
+.release-notes section{ background: #fff; padding:10px; width:70%; margin:25px;}
+
+.release-notes ul li b.BREAKING{background-color: #cc0000;color:#fff;}
+.release-notes ul li b.NEW{background-color: #2CBB0F;color:#fff;}
+.release-notes ul li b{
+    background-color: #ffedcf;
+    color: #333;
+    display: inline-block;
+    font-size: 11px;
+    font-style: normal;
+    line-height: 14px;
+    padding: 4px 10px 4px 13px;
+    text-align: center;;
+    position: absolute;
+    top: .714rem;
+    left: 0;
+    text-transform: uppercase;
+    width: 102px;
+}
+.release-notes ul li{
+    display: list-item;
+    text-align: -webkit-match-parent;
+    list-style: none;
+    display: block;
+    padding-left: 20px;
+    padding-right: 20px;
+    position: relative;
+    border-top: 1px solid #d6d6d6;
+    margin: 0;
+    padding: .714rem 0 .5rem;
+    position: relative;
+
+}
+.release-header{font-size: 28px; font-weight: 200;
+    letter-spacing: -0.5px;}
+.release-header .date{font-size:15px; color:#666;display: block; float:right;}
+
+.release-notes ul li p{
+    margin: 0 0 .25em; padding-left: 180px;
+}
+.release-notes ul{
+    list-style: none;
+    margin: 0;
+    font-size: 110%;
+    display: block;
+    list-style-type: disc;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 40px;
+}

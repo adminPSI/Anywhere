@@ -1,0 +1,258 @@
+// Team Member Table
+#signaturesTable {
+  .table__row {
+    // cursor: pointer;
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+    > div:nth-child(2) {
+      flex-basis: 90px; // Team Member
+    }
+    > div:nth-child(3) {
+      // Name
+      flex-basis: 80px;
+    }
+    > div:nth-child(4) {
+      // Relationship
+      flex-basis: 80px;
+    }
+    > div:nth-child(5) {
+      // Participated
+      display: none;
+      flex-basis: 40px;
+    }
+    @media screen and (min-width: 560px) {
+      > div:nth-child(5) {
+        // Participated
+        display: block;
+      }
+    }
+  }
+
+  .table__row[data-signed='false'] {
+    background: $bg-warning;
+  }
+
+  margin-bottom: 20px;
+}
+#sig_addMember {
+  margin: 10px 0;
+}
+// Popup Globals
+#sig_mainPopup,
+#sig_signPopup {
+  .changeMindQuestion {
+    margin: 0 0 20px 0;
+  }
+  .changeMindQuestionText {
+    line-height: 1.4;
+    margin: 0 0 10px 0;
+  }
+  .contactQuestion {
+    margin: 0 0 20px 0;
+  }
+  .contactQuestionText {
+    line-height: 1.4;
+    margin: 0 0 8px 0;
+
+    &.disabled {
+      .inlineDropdown {
+        select {
+          color: rgba(0, 0, 0, 0.5);
+          // opacity: 0.6;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+  .csContactInput {
+    margin: 0 0 10px 0;
+  }
+  .inlineDropdown__select {
+    max-width: 100%;
+    min-width: 50px !important;
+  }
+  .h3Title {
+    margin: 0 0 14px 0;
+  }
+}
+// Team Member Popup *First Page
+#sig_mainPopup {
+  max-height: 700px;
+  padding-top: 20px;
+
+  .teamMemberDropdown {
+    margin-top: 20px;
+  }
+
+  // link btns
+  .linkBtn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  // change mind question / ssa dropdown
+  .changeMindQuestion {
+    &.error {
+      .inlineDropdown,
+      .inlineDropdown__select {
+        color: $font-error;
+      }
+    }
+  }
+  // contact question / vendor dropdown
+  .contactQuestionText {
+    margin: 0 0 26px;
+
+    &.error {
+      .inlineDropdown,
+      .inlineDropdown__select {
+        color: $font-error;
+      }
+    }
+  }
+  .csContactInput {
+    max-width: 600px;
+  }
+
+  // participation radios
+  .sig_radioContainer {
+    display: flex;
+    > p {
+      max-width: 175px;
+      padding-right: 20px;
+    }
+    .signatures_radioDiv {
+      display: inline-block;
+      padding: 5px;
+      margin-left: 10px;
+      &.error {
+        outline: 2px solid #db162f;
+        color: inherit;
+      }
+      > label:nth-child(1) {
+        margin-right: 15px;
+      }
+      > label span {
+        padding-left: 5px;
+      }
+    }
+    margin-bottom: 15px;
+  }
+  .deleteWrap {
+    border-top: 2px solid $gray;
+    padding-top: 10px;
+  }
+}
+
+// Sign & Dissent Popup *Second Page
+#sig_signPopup {
+  max-height: 700px;
+  max-width: 600px;
+
+  .popup__header {
+    margin: 0 0 14px;
+  }
+  .signature-pad--body {
+    &.disabled {
+      .evvCanvas {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+  }
+  div.textarea {
+    height: auto;
+    min-height: 100px;
+    textarea.autosize {
+      height: auto;
+      min-height: 100px;
+    }
+  }
+  .ic_questionContainer {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: flex-start;
+    margin: 0 0 10px;
+
+    .standardQuestionText,
+    .changeMindQuestionText,
+    .contactQuestionText {
+      flex-basis: 70%;
+      flex-grow: 1;
+      padding-right: 8px;
+    }
+
+    .csContactInput {
+      width: 100%;
+    }
+
+    .ic_questionRadioContainer {
+      display: flex;
+      flex-flow: column nowrap;
+      flex-basis: 30%;
+      max-width: 50px;
+
+      &.error {
+        outline: 2px solid $font-error;
+      }
+
+      &.disabled {
+        label {
+          pointer-events: none;
+          opacity: 0.5;
+        }
+      }
+
+      .radio {
+        margin-bottom: 4px;
+      }
+    }
+  }
+}
+
+// Import Popups
+#importRelationshipPopup,
+#importSalesforcePopup {
+  .message {
+    font-weight: 500;
+    margin: 0 0 10px;
+  }
+
+  .relationshipsWrap {
+    margin: 0 0 10px;
+  }
+
+  .relationship {
+    cursor: pointer;
+    font-weight: $bold;
+    color: $primary;
+    padding: 4px 0px 4px 4px;
+
+    &.selected {
+      background: $yellow;
+    }
+    &.error {
+      color: $font-error;
+    }
+
+    span {
+      font-weight: $light;
+      color: $font-dark;
+    }
+  }
+}
+
+#existingRelationshipPopup {
+  .message {
+    .prompt {
+      margin: 10px 0 0 0;
+    }
+  }
+}

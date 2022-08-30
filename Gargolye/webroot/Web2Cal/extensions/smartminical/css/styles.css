@@ -1,0 +1,25 @@
+.minical td a.highlight{
+    font-weight: bold;
+}
+
+ #minicalPreviewBox{
+    width:340px;
+    background:#fff;
+    position:absolute;
+    z-index:300;
+    display:none;
+}
+#minicalPreviewBox .whitebg{
+    background: #FFFCDF;
+}
+#minicalPreviewBox .data{
+    padding:5px 5px 0 5px;
+}
+
+#minicalPreviewBox .header{
+    text-align:center;
+    font-size:15px;
+    font-family: "Georgia";
+    padding:4px 0px;
+    border-bottom:1px solid #444;
+}

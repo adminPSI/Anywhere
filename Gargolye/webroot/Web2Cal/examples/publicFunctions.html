@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+    <link type="text/css" rel="stylesheet" href="css/web2cal-responsive.css">
+        <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+        <script src="js/web2cal.support.js">  </script>
+        <script src="js/web2cal.templates.js">  </script>
+
+
+        <script src="js/web2cal.dummydata.js">  </script>
+        <script src="js/optional/timecontrol.js">  </script>
+        <title>Web2Cal | Public Functions Demo</title>
+        <style>
+        .buttons-container input{ width:160px;margin-right: 25px;margin-top:15px; padding:6px 4px;border:1px solid #aaa; background: #f7f7f7; cursor:pointer;}
+        </style>
+    </head>
+  
+    <body> 
+		<div class="sample-desc" >Describes all the functions that can be invoked</div>
+
+        <div id="calendarContainer"></div>
+
+        <div style="margin-top:130px;margin-bottom: 100px;" class="buttons-container">
+            <input type="button" value="Get All Events" onclick="getAllEvents()"/>
+            <input type="button" value="Get All Groups" onclick="getAllGroups()"/>
+            <input type="button" value="Get Event By ID" onclick="getEventById()"/>
+            <input type="button" value="Show Status Message" onclick="showCalInfo()"/>
+            <input type="button" value="Hide Status Message" onclick="hideCalInfo()"/>
+            <input type="button" value="Go Next" onclick="doNext()"/>
+            <input type="button" value="Go Previous" onclick="doPrev()"/>
+            <input type="button" value="Re-Arrange" onclick="refreshCal()"/>
+            <input type="button" value="Active Date" onclick="activeDate()"/>
+            <input type="button" value="Is Mobile Mode?" onclick="isMobileMode()"/>
+            <input type="button" value="Switch To Mobile" onclick="switchToMobile()"/>
+            <input type="button" value="Switch To Desktop" onclick="switchToDesktop()"/>
+        </div>
+
+		<h3>Output: </h3>
+		<div id="outputContainer" style="width:500px; border:1px solid #ccc; "></div>
+		
+    </body> 
+</html>
+<script>
+    var ical; 
+    function activeDate()
+    {
+        alert(ical.getActiveDate());
+    }
+    function isMobileMode()
+    {
+        alert(ical.isMobileMode());
+    }
+    function switchToMobile()
+    {
+        ical.switchToMobileMode();
+    }
+	function switchToDesktop()
+	{
+        ical.switchToDesktopMode();
+	}
+	function getEventById()
+	{
+		alert("Getting event [eventId=15]...");
+		jQuery("#outputContainer").empty();
+		var ev=ical.getEventById(15); 
+		jQuery("#outputContainer").html(toString(ev) +"<br/>");
+	}
+	function refreshCal()
+	{
+		ical.refresh();
+	}
+	function doNext()
+	{
+		ical.doNext();
+	}
+	function doPrev()
+	{
+		ical.doPrevious();
+	}
+	function toString(obj)	
+	{
+		var str="";
+		for (x in obj)
+		{
+			if(obj.hasOwnProperty(x))
+			{
+				str+=x+":"+obj[x] +"<br/>";
+			}
+		}
+		return str;
+	}
+	function showCalInfo()
+	{
+		ical.showStatusMsg("Doing Something ... ");
+	}
+	function hideCalInfo()
+	{
+		ical.hideStatusMsg();
+	}
+    function getAllEvents()
+	{ 
+		jQuery("#outputContainer").empty();
+		var allEvents=ical.getAllEvents();
+		for(j in allEvents)
+		{
+			jQuery("#outputContainer").append(toString(allEvents[j]) +"<br/>");
+		}
+		
+	}
+	function getEventsForDay()
+	{
+		jQuery("#outputContainer").empty();
+		var allEvents=ical.getEventsForDay("2009/10/02");
+		for(j in allEvents)
+		{
+			jQuery("#outputContainer").append(toString(allEvents[j]) +"<br/>");
+		}
+	}
+	function getAllGroups()
+	{
+		jQuery("#outputContainer").empty();
+		var allEvents=ical.getAllGroups();
+		for(j in allEvents)
+		{
+			jQuery("#outputContainer").append(toString(allEvents[j]) +"<br/>");
+		}
+		
+	} 
+	
+    /*
+     Create the Calendar.
+     */
+    function drawCalendar()
+    {  
+        ical = new Web2Cal('calendarContainer', {
+            loadEvents: loadCalendarEvents,   
+                            detectMobileMode: true,
+
+			onPreview:	onPreview
+        });
+        ical.build();
+    }  
+	var activeEvent;
+	function onPreview(evt, dataObj, html)
+	{
+		activeEvent=dataObj;
+		eventObject=dataObj;
+		ical.showPreview(evt, html);
+	}
+    /*
+     Method invoked when event is moved or resized
+     @param event object containing eventID and newly updated Times
+     */
+    function updateEvent(event)
+    { 
+        ical.updateEvent(event);
+    }
+    
+    /*
+     Method invoked when creating a new event, before showing the new event form.
+     @param obj - Object containing (startTime, endTime)
+     @param groups - List of Group objects ({groupId, name})
+     @param allday - boolean to indicate if the event created is allday event.
+     */
+    function onNewEvent(obj, groups, allday)
+    {
+        if(ical.isMobileMode()){
+            Web2Cal.onNewEvent(jQuery("#"+mobileNewEventForm), obj, groups, allday);
+        } else {
+            Web2Cal.onNewEvent(jQuery("#"+newEventForm), obj, groups, allday);
+        }
+    } 
+    
+    /**
+     Method to get Events and display it in the calendar.
+     If you need to make an asynchronous call, invoke ical.render in the callback method.
+     @param startTime - Calendar Display Range start
+     @para endTime - Calendar End Range end
+     */
+    function loadCalendarEvents(startTime, endTime)
+    {  
+		ical.render(Web2Cal.sampleData());
+		
+    } 
+	
+
+    /**
+     Clicking delete in Preview window
+     */
+    function rzDeleteEvent()
+    {
+        //alert("Delete Event in DB and invoke ical.deleteEvent({eventId: id})");
+		ical.deleteEvent({eventId: activeEvent.eventId});
+		Web2Cal.hidePreview();
+    }
+    
+    /**
+     * Click of Add in add event box.
+     */
+    function rzAddEvent()
+    {
+        var newev = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+        ical.addEvent(newev);
+    }
+    
+    /**
+     * Onclick of Close in AddEvent Box.
+     */
+    function rzCloseAddEvent()
+    {
+        ical.closeAddEvent();
+		Web2Cal.hidePreview();
+    }
+    
+	WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+    /**
+     * Once page is loaded, invoke the Load Calendar Script.
+     */
+    jQuery(document).ready(function()
+    { 
+	 	drawCalendar(); 
+	 	
+		new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0));
+        new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+            onTimeSelect: updateDateForTime,
+            dateField: "eventEndDate"
+        });
+    });
+</script>

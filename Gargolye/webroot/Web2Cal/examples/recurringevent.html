@@ -1,0 +1,530 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+    <link type="text/css" rel="stylesheet" href="css/web2cal-responsive.css">
+    <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+
+
+
+    <script src="js/web2cal.support.js">  </script>
+    <script src="js/web2cal.templates.js">  </script>
+
+
+    <script src="js/web2cal.dummydata.js">  </script>
+    <script src="js/optional/timecontrol.js">  </script>
+
+    <title>RecurEvent Demo</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            margin:0px;
+            padding:0px;
+        }
+        div.calendarTemplate label{
+            font-weight:normal;
+            color:#555;
+        }
+        div.calendarTemplate .header{
+            font-size:19px;
+            font-weight:bold;
+            margin:auto;
+            text-align:center;
+            color:#686868;
+        }
+        .recurOptionsWeek{
+            width:90px;
+        }
+
+        .input-help{
+            color:#aaa;
+            font-style: italic;
+        }
+
+        #repeatInfo{
+            margin-bottom:25px;
+        }
+        .bottomborder{
+            border-bottom: 1px solid #ccc;
+        }
+        #repeatEndDate,.subrepeatpattern,.repeatPattern{display:none;}
+        .repeatdays .a-day{
+            display:inline-block;
+            padding:4px 14px;
+            margin-right: 10px;
+            color:#efefef;
+            background-color: #444;
+            border:2px solid transparent;
+        }
+        .repeatPattern{
+            margin-left:2px;
+            background: #eee;
+            padding:6px;
+            -moz-box-shadow:    inset 0 0 5px #000000;
+            -webkit-box-shadow: inset 0 0 5px #000000;
+            box-shadow:         inset 0 0 5px #000000;
+        }
+        .monthoptions{padding: 3px 0px; }
+
+        .monthoptions.selected{
+            background: #fff;
+            border: 1px solid inset;
+            padding:3px 35px 3px 3px;
+            -moz-box-shadow:    inset 0 0 2px #000000;
+            -webkit-box-shadow: inset 0 0 2px #000000;
+            box-shadow:         inset 0 0 2px #000000;
+            background: #fff url("images/eventindicator.png") top right no-repeat;
+        }
+
+        input[type="text"]{
+            height: 30px;
+            margin-top: 9px;
+            width:100%;
+        }
+        .a-day.selected{
+            border:2px solid #444;
+            color:#000;
+            padding-right:14px;
+            background: url("images/eventindicator.png") center right no-repeat;
+        }
+    </style>
+</head>
+<body>
+<div class="sample-desc">Example to show recurring events. </div>
+
+<div style="width:1000px; margin:0 auto;">
+    <div id="calendarContainer" >
+    </div>
+</div>
+<div id="customPTemplate"  class="calendarTemplate fullPreviewTemplate " style="display:none">
+    <div class="aPointer p-left" style="display: block; z-index: 2; "></div>
+    <div id="ds-right" class="dshadow ds-right"></div>
+    <div id="ds-bottom" class="dshadow ds-bottom"></div>
+    <div id="ds-corner" class="dshadow ds-corner"></div>
+    <div class="header">
+        ${eventName}
+    </div>
+    <table width="100%">
+        <tr>
+            <td valign="top">
+                <span class="TextSizeXSmall">Start: </SPAN><span class="startTime">${formattedStartTime}</span>
+                <br/>
+                <span class="TextSizeXSmall">End: </SPAN><span class="startTime">${formattedEndTime}</span>
+            </td>
+            <td valign="top">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="left">
+						<span class="callabel TextSizeXSmall">
+							Description: 
+						</span>
+                <div  class="EventDescription">
+                    ${description}
+                </div>
+						<span class="callabel TextSizeXSmall">
+							Location: 
+						</span>
+                <div  class="EventLocation">
+                    ${location} (<a target="newwin" href="#" onclick="showMap('${location}'); return false;">map</a>)
+                </div>
+
+            </td>
+        </tr>
+    </table>
+    <ul class="actions">
+        <li> <a href="javascript:rzEditEvent();" name="edit" class="websbutton"> Edit event </a> </li>
+        <li> <a href="javascript:rzDeleteEvent();" name="delete" class="websbutton"> Delete event </a> </li>
+    </ul>
+</div>
+</div>
+<div id="recurringeventnewevent" style="width:450px; padding:20px;" class='absPosition calComponent calendarTemplate  borderAndShadow fullPreview'>
+    <form class="">
+        <div class="aPointer p-left " ></div>
+        <div class="ev-time-summary in-mini-mode">
+            Mon Jun 6,  8PM - 9PM
+        </div>
+        <h4 class="in-max-mode ">Add/Edit Event</h4>
+        <input type="text" placeholder="Event Name..." name="eventName"   id="eventName">
+        <div class="value in-max-mode" >
+            <input type="Text" name="startDate" style="width:28%;" id="eventStartDate"/>
+            <input type="Text" name="startTimeTxt" style="width:18%;" id="eventStartTime"/>
+            <input type="Text" name="endDate" style="width:28%;" id="eventEndDate"/>
+            <input type="Text" name="endTimeTxt" style="width:18%;" id="eventEndTime"/>
+        </div>
+        <label class="checkbox in-max-mode">
+            <input type="checkbox" value="yes"  name="allDayEvent" id="allDayEvent"/> All Day?
+        </label>
+
+
+        <div class="  form-section   padded-control " >
+            <a class="in-mini-mode" onclick="Web2Cal.showMoreInfo(this);" style="float:right;font-size:80%; " href="javascript:void(0)">Add More Detail</a>
+            <span class="control-label" >Group: </span>
+            <div class="select_style">
+                <select id="eventGroup" name="eventGroup">
+                    <% _.each(groups, function (grp) { %>
+                    <option value="<%= grp.groupId %>"><%= grp.name %></option>
+                    <% }); %>
+                </select>
+                <span></span>
+            </div>
+
+        </div>
+
+
+        <div id="repeatInfo" class="padded-control form-section  in-max-mode" >
+            <span class="control-label" >Repeat: </span>
+            <div class="select_style">
+                <select id="repeatMode" name="repeatMode" onchange="showRepeatInfo(this);">
+                    <option value="">Doesn't repeat</option>
+                    <option value="day">Every day</option>
+                    <option value="weekday">Every week day</option>
+                    <option value="week">Every week</option>
+                    <option value="month">Every month</option>
+                    <option value="year">Every year</option>
+                    <option value="custom">Custom repeat...</option>
+                </select>
+                <span></span>
+            </div>
+            <span class="input-help">Select pre-defined pattern or create custom</span>
+
+            <div class="repeatPattern" id="repeatcustom">
+                Every <input type="text" class="span1" id="repeatCount" value="1" style="width:35px;">
+                <div class="select_style">
+                    <select id="repeatType" name="repeatType" onchange="showRepeatType(this)" class="repeatType default">
+                        <option value="day">Day</option>
+                        <option value="week">Week</option>
+                        <option value="month">Month</option>
+                        <option value="year">Year</option>
+                    </select>
+                    <span></span>
+                </div>
+
+                <div id="subrepeatday" class="subrepeatpattern default">
+                    <label class="checkbox"><input type="checkbox" id="onlyWeekDays" name="onlyWeekDays" value="yes"> Only Weekdays</label>
+                </div>
+                <div id="subrepeatweek" class="subrepeatpattern">
+                    Only on :
+                    <div class="repeatdays">
+                        <div class="a-day" onclick="toggleSelect(this)">S</div><div class="a-day" onclick="toggleSelect(this)">M</div><div class="a-day" onclick="toggleSelect(this)">T</div><div class="a-day" onclick="toggleSelect(this)">W</div><div class="a-day" onclick="toggleSelect(this)">T</div><div class="a-day" onclick="toggleSelect(this)">F</div><div class="a-day" onclick="toggleSelect(this)">S</div>
+                    </div>
+                </div>
+                <div id="subrepeatmonth" class="subrepeatpattern">
+                    <div class="monthoptions selected ondate">
+                        on <span id="monthRepeatDate" name="monthRepeatDate" class="uneditable-input span1"></span>
+                        <input type="hidden" class="" id="monthRepeatDateHdn"> of every month
+                    </div>
+                    <div>OR</div>
+                    <div  class="monthoptions onday">
+                        <div class="select_style">
+                            <select id="monthWeekNumber" name="monthWeekNumber">
+                                <option>Select</option>
+                                <option value="1">First</option>
+                                <option value="2">Second</option>
+                                <option value="3">Third</option>
+                                <option value="4">Fourth</option>
+                                <option value="-1">Last</option>
+                            </select>
+                            <span></span>
+                        </div>
+                        <div class="select_style">
+                            <select  id="monthDayNumber">
+                                <option value="-1">Select</option>
+                                <option value="0">Sunday</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                            </select>
+                            <span></span>
+                        </div>
+                        of the month
+                    </div>
+                </div>
+                <div id="subrepeatyear" class="subrepeatpattern">
+                    on <input class="span4" type="text" value="" id="yearRepeatDate" >
+                </div>
+                <div class="select_style">
+                    <select id="repeatUntil"  onchange="showRepeatEndDate(this)">
+                        <option value="">Never End</option>
+                        <option value="endsOn">Ends on</option>
+                    </select>
+                </div>
+                <input class="span4" type="text" style="width:100px;" placeholder="End Date" value="" id="repeatEndDate" >
+            </div>
+        </div>
+
+        <div class="form-section in-max-mode">
+            <textarea id="eventDescription" placeholder="Add note" style="width:100%;height:3em;"  ></textarea>
+        </div>
+
+        <div class="">
+            <a href="javascript:void(0)" id="addEventBtn"  onclick="rzAddEvent();"  class="btn btn-primary">Save</a>
+            <a  href="javascript:void(0)"  id="updateEventBtn"  class="btn btn-primary" style="display:none;">Update</a>
+            <a  href="javascript:void(0)"   id="closeNewEventBtn"  onclick="Web2Cal.closeAddEvent();"     class="closeNewEventBtn btn">Close</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script>
+var ical;
+function getCookieValue(name, defaultValue)
+{
+    var val=jQuery.cookie(name);
+    if(!val)
+    {
+        val=defaultValue;
+    }
+
+    return val;
+}
+
+/*
+ Create the Calendar.
+ */
+function drawCalendar()
+{
+    var status = ["accepted", "declined", "tentative"];
+
+
+    jQuery("#txtStatus").autocomplete(status, {
+        autoFill: true
+    });
+
+    ical = new Web2Cal('calendarContainer', {
+        loadEvents: loadCalendarEvents,
+        onUpdateEvent: updateEvent,
+        onNewEvent: onNewEvent,
+        collapseAllDay: true,
+        collapseByDefault:true,
+        defaultView: "week",
+        onPreview: onPreview,
+        showOptions: true,
+        views:  "day,month,week,agenda",
+        newEventTemplate:"recurringeventnewevent",
+        customTabs:[{tabName:"Account Profile", onclick:function(v){alert("hello")}},
+            {tabName:"Account Balance", onclick:function(v){alert("hello")}} ]
+    });
+    ical.build();
+
+}
+function agendaDeleteEvent(evId){
+    ical.deleteEvent({eventId:evId})
+}
+var activeEvent;
+function onPreview(evt, dataObj, html)
+{
+    activeEvent=dataObj;
+    ical.showPreview(evt, html);
+}
+/*
+ Method invoked when event is moved or resized
+ @param event object containing eventID and newly updated Times
+ */
+function updateEvent(event)
+{
+    ical.updateEvent(event);
+}
+function showRepeatEndDate(repeatEndDateSel){
+    if( repeatEndDateSel.value!=""){
+        jQuery("#repeatEndDate").show();
+    }else{
+        jQuery("#repeatEndDate").hide();
+    }
+}
+function showRepeatType(repeatTypeSel){
+    jQuery("#repeatInfo")
+            .find(".subrepeatpattern").hide().end()
+            .find("#subrepeat"+repeatTypeSel.value).show();
+}
+function toggleSelect(day){
+    jQuery(day).toggleClass("selected")
+}
+function showRepeatInfo(repeatModeSel){
+    jQuery("#repeatInfo")
+            .find(".repeatPattern").hide().end()
+            .find("#repeat"+repeatModeSel.value).show().end()
+            .find(".default").each(function(){
+                var jq=jQuery(this);
+                if(jq.is("select")){
+                    jq.find("option:eq(0)").attr("selected", true);
+                }else{
+                    jq.show();
+                }
+            });
+}
+
+/*
+ Method invoked when creating a new event, before showing the new event form.
+ @param obj - Object containing (startTime, endTime)
+ @param groups - List of Group objects ({groupId, name})
+ @param allday - boolean to indicate if the event created is allday event.
+ */
+function onNewEvent(obj, groups, allday)
+{
+    var newevt=jQuery("#recurringeventnewevent");
+    //Clear out and reset form
+    newevt.find(":input").val("").end()
+            .find("#eventStartDate").val( obj.startTime.toString("MM/dd/yyyy")).end()
+            .find("#eventEndDate").val(obj.endTime.toString("MM/dd/yyyy")).end()
+            .find("#addEventBtn").show().end()
+            .find("#repeatCount").val(1).end()
+            .find("#updateEventBtn").hide().end()
+            .find("#recurrenceStartLabel").html( obj.startTime.toString("MM/dd/yyyy")).end()
+            .find("#monthRepeatDate").html(obj.startTime.getDate() ).end()
+            .find("#monthRepeatDateHdn").val(obj.startTime).end()
+            .find(".a-day").removeClass("selected").end()
+            .find("#repeatcustom").hide();
+
+    if(allday)
+        newevt.find("#allDayEvent").attr("checked", true).end()
+                .find("#eventStartTime").val("").end()
+                .find("#eventEndTime").val("");
+    else
+        newevt.find("#allDayEvent").attr("checked", false).end()
+                .find("#eventStartTime").val( obj.startTime.toString("h:mm tt") ).end()
+                .find("#eventEndTime").val( obj.endTime.toString("h:mm tt") );
+
+    //display a list of groups to select from.
+    newevt.find("#eventGroup").empty();
+    for(var g in groups)
+    {
+        if(!groups.hasOwnProperty(g))continue;
+        var grp = groups[g];
+        newevt.find("#eventGroup").append('<option value="'+grp.groupId+'">'+grp.name+'</option> ')
+    }
+    if(obj.group && obj.group.groupId)
+        newevt.find("#eventGroup").val(obj.group.groupId);
+
+}
+
+function createRepeatObject(eventObject){
+    var repeatMode = jQuery("#repeatMode").val(), repeatObject, $form = jQuery("#recurringeventnewevent");
+    if( repeatMode == "" )
+        return null;
+    if( repeatMode == "day" ){
+        repeatObject = {mode: "day", day:{onlyWeekDays:false}};
+    } else
+    if( repeatMode == "weekday" ){
+        repeatObject = {mode: "day", day:{onlyWeekDays:true}};
+    } else
+    if( repeatMode == "week" ){
+        repeatObject = {mode: "week", week:{ days:eventObject.startTime.getDay()}};
+    } else
+    if( repeatMode == "month" ){
+        repeatObject = {mode: "month", month: {monthRepeatDate:eventObject.startTime.clone()} };
+    } else
+    if( repeatMode == "year" ){
+        repeatObject = {mode: "month", year: {repeatDate:eventObject.startTime.clone()} };
+    } else
+    if( repeatMode == "custom" ){
+
+        var custRepeatType = $form.find("#repeatType").val(), day={}, week={}, month={}, year={};
+        if( custRepeatType == "day"){
+            day.onlyWeekDays = $form.find("#onlyweekdays").get(0).checked;
+        } else
+        if( custRepeatType == "week"){
+            var daysArr=[];
+            $form.find(".a-day").each(function(i){
+                if( jQuery(this).is(".selected"))
+                    daysArr.push(i);
+            });
+            week.days=daysArr.join(",");
+        } else
+        if( custRepeatType == "month"){
+            $form.find("#repeatdays").find(".monthoptions.selected").each(function(){
+                var jqEle = jQuery(this);
+                if( jqEle.is(".ondate") ){
+                    month.repeatDate = eventObject.startTime.clone();
+                }else{
+                    month.weekNumber = $form.find("#monthWeekNumber").val();
+                    month.weekDay = $form.find("#monthDayNumber").val();
+                }
+            });
+        } else
+        if( custRepeatType == "year"){
+            year.repeatDate = $form.find("#yearRepeatDate").val();
+        }
+
+        repeatObject = {mode: custRepeatType, day: day, week: week, year: year, month:month};
+    }
+
+    repeatObject.repeatCount = $form.find("#repeatCount").val();
+    repeatObject.endDate = Date.parse($form.find("#repeatEndDate").val() );
+
+    return repeatObject;
+
+}
+
+/**
+ * Click of Add in add event box.
+ */
+function rzAddEvent()
+{
+    var newEventObject = Web2Cal.getNewEventObject(jQuery("#recurringeventnewevent"));
+    // get the recurring pattern.
+    newEventObject.repeatEvent = createRepeatObject(newEventObject);
+
+    ical.addEvent(newEventObject);
+}
+
+/**
+ Method to get Events and display it in the calendar.
+ If you need to make an asynchronous call, invoke ical.render in the callback method.
+ @param startTime - Calendar Display Range start
+ @para endTime - Calendar End Range end
+ */
+function loadCalendarEvents(startTime, endTime)
+{
+    ical.render(Web2Cal.sampleData());
+}
+/*
+ Click on Edit Button in preview window
+ */
+function rzEditEvent()
+{
+    //alert("editing");
+}
+
+/**
+ Clicking delete in Preview window
+ */
+function rzDeleteEvent(evId)
+{
+    //alert("Delete Event in DB and invoke ical.deleteEvent({eventId: id})");
+    ical.deleteEvent({eventId: evId});
+    Web2Cal.hidePreview();
+}
+
+/**
+ * Onclick of Close in AddEvent Box.
+ */
+function rzCloseAddEvent()
+{
+    ical.closeAddEvent();
+}
+/**
+ * Once page is loaded, invoke the Load Calendar Script.
+ */
+jQuery(document).ready(function()
+{
+    drawCalendar();
+    newevt = jQuery("#recurringeventnewevent");
+    newevt.find("#eventStartDate").datepicker();
+    newevt.find("#eventEndDate").datepicker();
+    newevt.find("#recurrenceRuleEndTimeDate").datepicker();
+    newevt.find("#recurrenceYearDate").datepicker();
+    new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0), null, {timeFormat:24});
+    new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+        onTimeSelect: updateDateForTime,
+        dateField: "eventEndDate"
+    });
+});
+
+</script> 

@@ -1,0 +1,66 @@
+.dropdown.multi {
+  cursor: pointer;
+  height: auto;
+  min-height: 50px;
+  flex-flow: row wrap;
+  select {
+    display: none !important;
+  }
+  .multiChip {
+    margin: 9px 5px;
+    padding: 4px;
+    display: flex;
+    padding: 5px 5px 5px 10px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    align-items: center;
+    transition: background-color 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    &:hover {
+      background: rgba(0, 0, 0, 0.35);
+      transition: background-color 0.4s cubic-bezier(0.4, 0, 1, 1);
+    }
+    svg {
+      margin-left: 5px;
+      position: initial;
+      top: 0;
+      width: 20px;
+      transform: translateY(0px);
+    }
+  }
+  .multiMenu {
+    cursor: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    border-top-width: 0 !important;
+    width: 100%;
+    display: none;
+    position: absolute;
+    background: #fff;
+    max-height: 20rem;
+    z-index: 11;
+    top: 100%;
+    box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.56);
+    outline: none;
+    &.visible {
+      display: block !important;
+    }
+    .item {
+      border-top: 1px solid #fafafa;
+      padding: 7px 0 7px 20px;
+      white-space: normal;
+      position: relative;
+      cursor: pointer;
+      display: block;
+      &.active {
+        display: none;
+      }
+      &:hover {
+        background: $primary;
+        color: #fff;
+        border: 2px;
+        border-color: #272727;
+      }
+    }
+  }
+}

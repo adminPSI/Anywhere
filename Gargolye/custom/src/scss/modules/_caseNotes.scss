@@ -1,0 +1,516 @@
+[data-active-module='casenotes'] {
+    .consumerSearch {
+        border-radius: $r-sm;
+        box-shadow: $shadow-m1;
+        flex-basis: 48%;
+        flex-grow: 1;
+        height: 46px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 25px;
+
+        button {
+            box-shadow: none;
+            height: 100%;
+            margin: 0;
+            position: absolute;
+            width: 100%;
+            z-index: 2;
+        }
+
+        input {
+            box-shadow: none;
+            border: $w-md solid $primary;
+            border-left: none;
+            border-radius: $r-sm;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            height: 100%;
+            text-indent: 10px;
+            position: absolute;
+            right: 0;
+            width: 90%;
+            z-index: 1;
+        }
+    }
+
+    .consumerSearch.searchOpen {
+        button {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            padding: 0 5px;
+            width: 10%;
+
+            svg {
+                margin: 0;
+            }
+
+            span {
+                display: none;
+            }
+        }
+    }
+
+    .consumerSearch {
+        margin-bottom: 25px;
+    }
+
+    .caseNotes {
+        &__consumer {
+            border-radius: $r-sm;
+            box-shadow: $shadow-m1;
+            margin: 0 0 20px;
+            overflow: hidden;
+
+            .consumerCard {
+                border-radius: 0;
+                box-shadow: none;
+                flex-flow: row nowrap;
+
+                .portrait {
+                    padding: 0;
+                    width: 60px;
+
+                    img {
+                        position: relative;
+                    }
+                }
+
+                .details {
+                    flex-grow: 1;
+                    padding: 10px;
+                }
+            }
+        }
+
+        #noConsumerMessage {
+            margin-bottom: 20px;
+            text-align: center;
+            color: $red;
+        }
+    }
+
+    #batchedMessage {
+        margin-bottom: 20px;
+        font-style: italic;
+        text-align: center;
+        color: $orange;
+    }
+    
+    #creditMessage {
+        margin-bottom: 20px;
+        font-style: italic;
+        text-align: center;
+        color: $orange;
+    }
+
+    .cnCurrentFilterDisplay {
+        font-weight: 500;
+
+        span {
+            color: $primary;
+        }
+
+        margin-bottom: 10px;
+    }
+
+    .caseNoteCard {
+        &__details {
+            .groupNoteDisplay {
+                margin-bottom: 25px;
+                font-style: italic;
+            }
+
+            @media screen and (min-width: 1000px) {
+                // display: flex;
+                // flex-flow: row wrap;
+                display: grid;
+                grid-template-columns: repeat(2, 50%);
+
+                > div {
+                    margin: 0 1%;
+                }
+
+                .caseNoteSave {
+                    margin: 0 1%;
+                }
+            }
+
+            .btnWrap {
+                max-height: 50pc;
+
+                button {
+                    flex-basis: 31%;
+                }
+
+                @media screen and (max-width: 440px) {
+                    svg {
+                        display: none;
+                    }
+                }
+
+                @media screen and (min-width: 1000px) and (max-width: 1100px) {
+                    svg {
+                        display: none;
+                    }
+                }
+            }
+        }
+
+        .checkbox {
+            margin: 0 0 20px;
+        }
+        // .caseNoteSave {
+        //   width: 100%;
+        // }
+        margin-bottom: 15px;
+    }
+    //Warninig Popup
+    //remove "X"
+    #warningPopup {
+        // .closePopupBtn {
+        //   display: none;
+        // }
+        p {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    }
+
+    .cnbtnWrap {
+        display: flex;
+
+        > button {
+            flex-grow: 1;
+        }
+        /*> button:first-child {
+            margin-right: 15px;
+        }*/
+    }
+
+    .cnbtnWrap {
+        button {
+            width: 30%;
+            margin-right: 4px;
+
+            &.enabled {
+                background: $secondary;
+                border: none;
+                color: $font-light;
+            }
+        }
+    }
+    // Case Notes Note textarea auto expand
+    .caseNoteCard__details {
+        div.textarea {
+            margin: 0 10px 20px;
+            height: auto;
+            min-height: 100px;
+
+            textarea.autosize {
+                height: auto;
+                min-height: 100px;
+            }
+        }
+    }
+    //Doc Time Section
+    #docTime {
+        .inputWrap {
+            display: flex;
+            flex-flow: row;
+            margin: 0 0 10px;
+
+            .input-field {
+                flex-grow: 1;
+                margin: 0 1% 0 0;
+
+                &:last-child() {
+                    margin: 0;
+                }
+            }
+        }
+    }
+    // New Case Note (SSA) -- Attachment Btn and Confidential Checkbox
+    .inputSSAWrap {
+        display: flex;
+        flex-flow: row wrap;
+        margin: 0 0 15px;
+        width: 400px;
+
+        button {
+            flex-grow: 1;
+            margin: 0 20px 0 0;
+
+            &:last-child() {
+                margin: 0;
+            }
+        }
+    }
+    // Note Overview Table
+    #caseNotesReviewTable {
+        .table__row {
+            // &.hidden {
+            //     display: none;
+            // }
+
+            // &.selected {
+            //     background: $secondary;
+            // }
+
+            > div {
+               // display: flex;
+                flex-grow: 1;
+               // margin: 0 5px 0 0;
+            }
+
+            > div:last-child {
+                margin: 0;
+              }
+
+            > div:nth-child(1) {
+                // service date
+                flex-basis: 225px;
+             justify-content: left;
+             max-width: 225px;
+            }
+
+            > div:nth-child(2) {
+                // start time
+                flex-basis: 225px;
+                justify-content: left;
+                max-width: 225px;
+            }
+            
+            > div:nth-child(3) {
+                // end time
+                flex-basis: 225px;
+                justify-content: left;
+                max-width: 225px;
+            }
+
+            > div:nth-child(4) {
+                // name
+                flex-basis: 225px;
+                justify-content: left;
+                max-width: 225px;
+            }
+
+            > div:nth-child(5) {
+                // date created
+              //  display: none;
+              flex-basis: 225px;
+              justify-content: left;
+              max-width: 225px;
+            }//
+
+            > div:nth-child(6) {
+                // user updated
+               // display: none;
+               flex-basis: 225px;
+               justify-content: left;
+               max-width: 225px;
+            }
+
+            > div:nth-child(7) {
+                // group count
+              //  display: none;
+              flex-basis: 225px;
+             justify-content: left;
+             max-width: 225px;
+            }
+
+            > div:nth-child(8) {
+                // attach icom
+              // display: none;
+              flex-basis: 100px;
+             justify-content: left;
+             max-width: 100px;
+            }
+
+
+            @media screen and (max-width: 560px) {
+                > div:nth-child(1) {
+                    // service date
+                   display: block;
+                }
+    
+                > div:nth-child(2) {
+                    // start time
+                    display: block;
+                }
+                
+                > div:nth-child(3) {
+                    // end time
+                    display: none;
+                }
+    
+                > div:nth-child(4) {
+                    // name
+                    display: block;
+                }
+    
+                > div:nth-child(5) {
+                    // date created
+                    display: none;
+                }//
+    
+                > div:nth-child(6) {
+                    // user updated
+                   // display: none;
+                   display: none;
+                }
+    
+                > div:nth-child(7) {
+                    // group count
+                  //  display: none;
+                  display: none;
+                }
+    
+                > div:nth-child(8) {
+                    // attach icom
+                  // display: none;
+                  display: none;
+                }
+           }
+        }
+    }
+
+    .hidden {
+        display: none;
+    }
+    //Phrase
+    #phrasesPopup {
+        .fullPhraseDisplay {
+            text-align: center;
+            padding-bottom: 10px;
+            font-weight: $thin;
+            font-style: italic;
+        }
+
+        #phraseDropdown {
+            padding-right: 38px;
+        }
+
+        #phraseInsertBtn {
+            width: 85%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cn__phraseRadioDiv {
+            display: inline-flex;
+            margin: 8px 0 8px;
+
+            :first-child {
+                padding-right: 20px;
+            }
+        }
+    }
+
+    .card.editPhrases {
+        max-width: 600px;
+    }
+
+    #cnAttachmentPopup {
+        .attachmentContainer {
+            display: flex;
+
+            .attachmentInput {
+                padding: 0 0 19px 5px;
+            }
+        }
+
+        .newAttachmentList,
+        .reviewAttachmentList {
+            .newAttachmentContainer,
+            .reviewAttachmentContainer {
+                display: flex;
+
+                button {
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                }
+
+                &.deleteAttachment {
+                    color: $font-error;
+                    text-decoration: line-through;
+                }
+            }
+
+            .reviewAttachmentContainer {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .hasAttachments {
+        background: $bg-dark2;
+    }
+
+    .caseNoteReviewFilterPopup {
+        .filterDateWrap {
+            justify-content: space-between;
+        }
+
+        .filterDateWrap > div {
+            width: 48%;
+            // max-width: 49%;
+            // min-width: 135px;
+            > input {
+                font-size: 0.87rem;
+            }
+        }
+
+        .cboxContainer {
+            display: grid;
+
+            .checkbox > span:after {
+                //left: -23px;
+                left: 352px;
+            }
+            // .btnWrap {
+            //   margin-top: 10px;
+            // }
+        }
+
+        .checkbox-mtd::before {
+            content: '';
+            box-sizing: border-box;
+            border: 2 px solid rgba(0, 0, 0, 0.6);
+            border-radius: 2 px;
+            display: inline-block;
+            height: 20 px;
+            margin: 0 6 px 0 0;
+            transition: border-color 0.2s, background-color 0.2s;
+            vertical-align: top;
+            min-width: 20 px;
+            order: 2;
+        }
+    }
+
+    #showOverlapCheckbox {
+        display: flex;
+        font-size: 14px;
+        justify-content: flex-end;
+
+        span {
+            width: auto;
+            margin-right: 6px;
+        }
+    }
+
+    .reviewMessage {
+        display: flex;
+        flex-direction: row;
+    
+    .correctedCheckbox {
+        display: flex;
+        font-size: 14px;
+        margin: auto;
+    }
+}
+}

@@ -1,0 +1,102 @@
+
+# dependencies
+**/node_modules
+/.pnp
+.pnp.js
+/.vs
+Blue.csproj
+system.bat
+unit.bat
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.dbversion
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# From Global SVN ignore
+*.o 
+*.lo
+*.la 
+*.al 
+*.libs 
+*.so 
+*.so.[0-9]*
+*.a 
+*.pyc 
+*.pyo __pycache__ 
+*.rej 
+[Tt]humbs.db 
+Web.config 
+*.csproj
+
+Gargolye/Web.config
+**/Anywhere.dll
+Gargolye/Blue.csproj.user
+Gargolye/Blue.Publish.xml
+Gargolye/builder.bat
+Gargolye/Gargoyle.csproj.user
+Gargolye/Gargoyle.Publish.xml
+Gargolye/log.txt
+
+
+# Packages
+packages/
+
+# Webroot
+/Gargolye/webroot/.idea
+/Gargolye/webroot/dist
+/Gargolye/webroot/documents
+/Gargolye/webroot/reports
+Gargolye/webroot/Images/mobileIcons/portraits
+Gargolye/webroot/Images/portraits
+
+# Properties
+Gargolye/Properties/PublishProfiles/Profile1.pubxml.user
+
+# obj
+Gargolye/obj/Release
+Gargolye/obj/x64
+Gargolye/obj/x86
+Gargolye/obj/debug
+
+
+# custom
+Gargolye/custom/.vscode/
+Gargolye/custom/bash/
+
+# Bin
+Gargolye/bin/*
+# !Gargolye/bin/x64
+# !Gargolye/bin/x86
+!Gargolye/bin/CrystalDecisions.CrystalReports.Engine.dll
+!Gargolye/bin/CrystalDecisions.ReportSource.dll
+!Gargolye/bin/CrystalDecisions.Shared.dll
+!Gargolye/bin/CrystalDecisions.Windows.Forms.dll
+!Gargolye/bin/Gargolye.dll
+!Gargolye/bin/Gargolye.pdb
+!Gargolye/bin/log4net.dll
+
+#.vs
+Gargolye/.vs/
+
+# Misc
+Gargolye/bin.zip
+Gargolye/global.js
+Gargolye/webroot.zip
+Gargolye/webroot/Images/intro.wav
+Gargolye/webroot/reportfiles/SingleEntry2.rpt
+Gargolye/service/Data/QueryStringHelper.cs
+Gargolye/packages.config
+Gargolye/Blue.scproj.user
+Gargolye/Blue.sln
+Gargolye/obj/Debug/Blue.csprojAssemblyReference.cache
+Gargolye/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+Gargolye/.vscode/launch.json
+Gargolye/webroot/*.html

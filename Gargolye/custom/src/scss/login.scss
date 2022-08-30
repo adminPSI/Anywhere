@@ -1,0 +1,209 @@
+//======================================
+// Login Page Stylesheet 
+//--------------------------------------
+@import './helpers/variables';
+@import './helpers/placeholders';
+@import './helpers/utilities';
+@import './helpers/typography';
+
+@import './base/reset';
+@import './base/global';
+@import './base/layout';
+
+@import './objects/buttons';
+@import './objects/dropdowns';
+@import './objects/inputs';
+
+@import './components/header';
+@import './components/forms';
+@import './components/popups';
+
+#infalFormHolder {
+  display: none;
+}
+#change {
+  display: none;
+}
+#reset {
+  display: none;
+}
+//============================
+// Page Heading 
+//----------------------------
+.anywhere-logo {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 226px;
+}
+//============================
+// Main Content 
+//----------------------------
+main {
+  background: $bg-dark;
+  padding: 20px 0 40px;
+}
+.login-forms {
+  background: $bg-light;
+  border-radius: $w-lg;
+  box-shadow: $shadow-m1;
+  margin: 0 auto;
+  max-width: 420px;
+  padding: 20px 0 30px;
+  width: 92%;
+
+  &--inner {
+    margin: 0 auto;
+    max-width: 340px;
+    width: 90%;
+  }
+}
+.custom-logo {
+  text-align: center;
+  margin: 0 0 1.5rem;
+}
+#customLoginText {
+  color: $font-dark;
+  margin: 0 0 20px;
+}
+//============================
+// Forms 
+//----------------------------
+form {
+  width: 100%;
+}
+#passwordToggle1, #passwordToggle2, #passwordToggle3, #passwordToggle4 {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 20px;
+}
+#loginPopup {
+  p {
+    font-weight: $normal;
+    margin: 0 0 20px;
+  }
+}
+//============================
+// Main Buttons
+//----------------------------
+.btn-login {
+  background: $secondary;
+  box-shadow: $shadow-m1;
+  border: none;
+  color: $white;
+  font-size: 1.2rem;
+  font-weight: $normal;
+  padding: 15px 0;
+  width: 100%;
+}
+//============================
+// Password Change/Reset 
+//----------------------------
+.confirmMessage {
+  border: $w-md solid;
+  border-color: $yellow;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-size: 1rem;
+  font-weight: $normal;
+  margin: 0 0 20px;
+  padding: 0 5px 5px;
+}
+.password-warning {
+  color: $font-dark;
+  border-color: $yellow;
+}
+.password-error {
+  color: $font-error;
+  border-color: $red;
+}
+// change/reset password
+.password-help {
+  color: $font-dark;
+  margin: 0 0 20px;
+}
+.password-help * {
+  color: inherit;
+  font-weight: $normal;
+}
+.password-help span {
+  position: relative;
+  top: 2px;
+}
+.password-help a {
+  cursor: pointer;
+  font-variant: small-caps;
+  font-size: 0.875rem;
+  @media screen and (min-width: 375px) {
+    font-size: 1rem;
+  }
+}
+//============================
+// Back To Login 
+//----------------------------
+.backToLogin {
+  align-items: center;
+  color: $font-dark;
+  display: none;
+  font-weight: $normal;
+
+  svg {
+    margin: 0 6px 0 0;
+    pointer-events: none;
+    width: 24px;
+  }
+
+  span {
+    color: inherit;
+    letter-spacing: 0.2px;
+    line-height: 1;
+    order: 1;
+  }
+}
+//============================
+// Error
+//----------------------------
+.error {
+  background-color: $red;
+  border-radius: 10px;
+  display: none;
+  padding: 10px;
+  z-index: 1;
+
+  &__inner {
+    align-items: center;
+    display: flex;
+  }
+
+  svg {
+    fill: $font-light;
+    margin: 0 10px 0 0;
+    min-width: 24px;
+  }
+
+  &__text {
+    color: $font-light;
+  }
+  &#mfaErrorBox {
+    text-align: center;
+  }
+}
+
+//============================
+// Version 
+//----------------------------
+.versioning {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+  width: 100%;
+}
+.vertext {
+  font-weight: 600;
+  margin: 0 5px 0 0;
+  text-transform: capitalize;
+}

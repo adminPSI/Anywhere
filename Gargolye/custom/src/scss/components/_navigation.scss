@@ -1,0 +1,240 @@
+// MOBILE NAVIGATION STYLES
+//-------------------------------------------
+// Bottom Mobile Navigation Bar
+.nav {
+  align-items: stretch;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.35), 0px -3px 6px rgba(0, 0, 0, 0.22);
+  background: $bg-light;
+  display: flex;
+  height: 70px;
+  padding: 0 0 10px;
+  width: 100%;
+
+  &.actionBtnActive {
+    padding: 0 100px 10px 0;
+  }
+
+  &__item {
+    color: $font-dark;
+    flex-grow: 1;
+    min-width: 60px;
+
+    svg {
+      height: 34px;
+      width: 34px;
+      pointer-events: none;
+    }
+  }
+}
+// Action Nav
+// actionable buttons unique to each module
+.action__nav {
+  align-items: stretch;
+  background: $bg-light;
+  box-shadow: $shadow-m1;
+  padding: 8px 5px 10px;
+
+  button {
+    flex-grow: 1;
+    margin: 0;
+    width: 100%;
+  }
+
+  &.twoCol {
+    button {
+      width: 48%;
+      margin: 0 1%;
+    }
+  }
+  &.threeCol {
+    button {
+      width: 48%;
+      margin: 0 1%;
+    }
+  }
+}
+// Default Menu Styles
+.menu {
+  background: $bg-dark;
+  border-top-left-radius: $r-xl;
+  border-top-right-radius: $r-xl;
+  box-shadow: 0px -2px 13px 0px rgba(0, 0, 0, 0.6);
+  color: $font-light;
+  height: 86%;
+  position: fixed;
+  bottom: 60px;
+  transform: translateY(130%);
+  transition: transform 350ms $bezier;
+  width: 100%;
+
+  &.menu-visible {
+    transform: translateY(0);
+  }
+}
+.submenu {
+  background: $bg-dark;
+  border-top-left-radius: $r-xl;
+  border-top-right-radius: $r-xl;
+  color: $font-light;
+  height: 100%;
+  padding: 30px 20px 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 350ms $bezier;
+  width: 100%;
+}
+// Module Menu
+// *access to dashboard, casenotes, etc..
+.module-menu {
+  overflow-y: auto;
+  display: flex;
+  align-items: flex-start;
+  padding: 0 0 0 8px;
+  transition: width 500ms;
+
+  &.toggleClosed {
+    width: 75px;
+
+    .menu__button .menu__text {
+      opacity: 0;
+      width: 0px;
+    }
+  }
+
+  .menu__inner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 30px;
+    padding: 30px 0 0;
+    flex-grow: 1;
+  }
+  .menu__button {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+
+    svg {
+      color: $font-light;
+      pointer-events: none;
+      width: 36px;
+    }
+    .menu__text {
+      color: $font-light;
+      display: block;
+      font-size: 14px;
+      opacity: 1;
+      pointer-events: none;
+      transition: all 100ms;
+      white-space: nowrap;
+    }
+
+    &.active {
+      color: $secondary;
+      svg {
+        color: $secondary;
+      }
+      .menu__text {
+        color: $secondary;
+      }
+    }
+  }
+  .menu__toggle {
+    cursor: pointer;
+    display: none;
+    background: rgba(0, 0, 0, 0.1);
+    align-self: stretch;
+
+    svg {
+      width: 20px;
+      pointer-events: none;
+    }
+  }
+}
+
+// Utility Menu
+// *sys settings, help, logout, etc..
+.util-menu {
+  // util main menu
+  &__main {
+    .btn--text {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 0;
+      padding: 15px 0;
+    }
+    > hr {
+      width: calc(100% + 40px);
+      margin-left: -20px;
+      margin-bottom: 0;
+      border-bottom: $w-sm solid rgba($white, 0.3);
+    }
+    [data-menu='defaults'] {
+      padding: 0 0 15px;
+    }
+  }
+  // defaults menu
+  &__defaults,
+  &__widgetSettings,
+  &__settings {
+    transform: translateX(100%);
+
+    &.menu-visible {
+      transform: translateX(0);
+    }
+  }
+
+  &__help {
+    transform: translateX(100%);
+
+    &.menu-visible {
+      transform: translateX(0);
+    }
+  }
+}
+// Default Settings Submenu
+.defaultLocation {
+  label {
+    align-items: center;
+    display: flex;
+  }
+  img {
+    margin: 0 6px 0 0;
+    width: 40px;
+  }
+}
+
+// MODULE MENU AS CARD
+// * if they go to roster first, module menu
+// * is shown as card after they select consumers
+//-----------------------------------------------------
+.menu.module-menu.menuAsCard {
+  background: $bg-light-s;
+  border-radius: $r-sm;
+  margin: 0 auto;
+  padding: 20px 10px 30px;
+  position: relative;
+  bottom: auto;
+  transform: translateY(0);
+  width: 96%;
+
+  .menu__header {
+    color: $font-dark;
+    margin: 0 0 20px;
+    text-align: center;
+  }
+
+  .menu__inner {
+    padding: 0;
+  }
+
+  .menu__text {
+    color: $font-dark;
+  }
+
+  svg {
+    color: $font-dark;
+  }
+}

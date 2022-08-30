@@ -1,0 +1,324 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+        <link type="text/css" rel="stylesheet" href="css/web2cal-responsive.css">
+        <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+        <script src="js/web2cal.support.js">  </script>
+        <script src="js/web2cal.templates.js">  </script>
+
+
+        <script src="js/web2cal.dummydata.js">  </script>
+        <script src="js/optional/timecontrol.js">  </script>
+        <title>Web2Cal | Workshift as Scheduler Demo</title>
+    </head>
+  
+    <body>
+		<div class="demoList" ><a href="">&lt;&lt;&lt; &nbsp; Back to list of Examples</a></div>
+        <div id="calendarContainer">
+        </div> 
+    </body> 
+</html>
+<script>
+
+    var WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+    var ical,activeEvent
+            , newEventForm="defaultNewEventTemplate"
+            , mobileNewEventForm="newEventFormMobile"
+            , preview="previewTemplate"
+            , mobilePreview="eventPreviewMobile"
+            ;
+    /**
+     * Create the Calendar.
+     */
+    function drawCalendar()
+    {
+        ical = new Web2Cal('calendarContainer', {
+            loadEvents:             loadWorkshiftEvents,
+            detectMobileMode:       true,
+            monthWithEvents:        true,
+            defaultView:            "month",
+            detectMobileMode:       true,
+            newEventTemplateMobile: mobileNewEventForm,
+            newEventTemplate:       newEventForm,
+            previewTemplate:        preview,
+            previewTemplateMobile:  mobilePreview,
+            wsStartTime:			5,
+            wsEndTime:				22,
+            onNewEvent: 			wsOnNewEvent,
+            onUpdateEvent: 			updateEvent,
+            onNewEvent:             onNewEvent,
+            onPreview:              onPreview
+        });
+        ical = new Web2Cal('calendarContainer', {
+            workshiftLoadEvents: 	loadWorkshiftEvents,
+            defaultView: 			"workshift",
+			date:					"06/02/2010",
+            views: 					"workshift"
+        });
+        ical.build();
+    }
+    
+    /*
+     Method returns data for workshift Tab
+     */
+    function loadWorkshiftEvents()
+    { 
+	
+		var evs = [ { "events" : [ { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 12:29:59",
+                      "eventId" : 78,
+                      "eventType" : "workday",
+                      "name" : "Forced Appointment",
+                      "personId" : -1,
+                      "personName" : "No Assigned User",
+                      "startTime" : "2010-06-02 09:30:00"
+                    },
+                    { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 15:29:59",
+                      "eventId" : 79,
+                      "eventType" : "workday",
+                      "name" : "Forced Appointment",
+                      "personId" : -1,
+                      "personName" : "No Assigned User",
+                      "startTime" : "2010-06-02 12:30:00"
+                    },
+                    { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 18:29:59",
+                      "eventId" : 81,
+                      "eventType" : "workday",
+                      "name" : "Forced Appointment",
+                      "personId" : -1,
+                      "personName" : "No Assigned User",
+                      "startTime" : "2010-06-02 15:30:00"
+                    },
+                    { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 10:29:59",
+                      "eventId" : 82,
+                      "eventType" : "workday",
+                      "name" : "Show Room Appointment",
+                      "personId" : -1,
+                      "personName" : "No Assigned User",
+                      "startTime" : "2010-06-02 09:30:00"
+                    },
+                    { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 13:29:59",
+                      "eventId" : 83,
+                      "eventType" : "workday",
+                      "name" : "Show Room Appointment",
+                      "personId" : -1,
+                      "personName" : "No Assigned User",
+                      "startTime" : "2010-06-02 12:30:00"
+                    },
+                    { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 15:59:59",
+                      "eventId" : 84,
+                      "eventType" : "workday",
+                      "name" : "Show Room Appointment",
+                      "personId" : -1,
+                      "personName" : "No Assigned User",
+                      "startTime" : "2010-06-02 15:00:00"
+                    }
+                  ],
+                "groupId" : -1,
+                "name" : "No Assigned User"
+              },
+              { "events" : [  ],
+                "groupId" : 52,
+                "name" : "Store Rep WS4"
+              },
+              { "events" : [  ],
+                "groupId" : 56,
+                "name" : "Store Rep DS4"
+              },
+              { "events" : [  ],
+                "groupId" : 12,
+                "name" : "Divisional Manager "
+              },
+              { "events" : [ { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 12:29:59",
+                      "eventId" : 75,
+                      "eventType" : "workday",
+                      "name" : "In Home Appointment",
+                      "personId" : 44,
+                      "personName" : "sr29",
+                      "startTime" : "2010-06-02 09:30:00"
+                    },
+                    { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 15:29:59",
+                      "eventId" : 76,
+                      "eventType" : "workday",
+                      "name" : "In Home Appointment",
+                      "personId" : 44,
+                      "personName" : "sr29",
+                      "startTime" : "2010-06-02 12:30:00"
+                    },
+                    { "allDay" : false,
+                      "description" : "<table><tr><th>Customer:</th><td>MARY BUTLER-SMITH</td></tr><tr><th>Contacts#:</th><td>(xxx) 574-1919 (H),</td></tr><tr><th>Address:</td><td>111 GREENWORLD, BETHESDA, MD 45248</td></tr><tr><th>Store:</th><td>Marriott @ Bethesda</td></tr><tr><th>Products:</th><td>Patio</td></tr><tr><th>Link:</th><td><a href=\"javascript:alert('Link...')return false;\" style=color:blue>View Appointment</a></td></tr>",
+                      "endTime" : "2010-06-02 18:29:59",
+                      "eventId" : 77,
+                      "eventType" : "workday",
+                      "name" : "In Home Appointment",
+                      "personId" : 44,
+                      "personName" : "sr29",
+                      "startTime" : "2010-06-02 15:30:00"
+                    }
+                  ],
+                "groupId" : 44,
+                "name" : "Store Rep P8"
+              },
+              { "events" : [  ],
+                "groupId" : 45,
+                "name" : "Store Rep WD1"
+              }
+            ];
+        ical.render(evs);
+    }
+	
+    /*
+     Method invoked when creating a new event in workshift view, before showing the new event form.
+     @param obj - Object containing (startTime, endTime)
+     @param groups - List of Group objects ({groupId, name})
+     @param isGroupEvent - boolean to indicate if the event was created at group level.
+     */
+	var wsPersonId, wsIsGroupEvent;
+    function wsOnNewEvent(obj, groups, isGroupEvent)
+    {
+		wsPersonId=obj.personId;
+		wsIsGroupEvent=isGroupEvent;
+        Web2Cal.onNewEvent(jQuery("#defaultNewEventTemplate"), obj, groups);
+		var newevt=jQuery("#defaultNewEventTemplate");
+		newevt.find("#eventGroup").val(obj.group.groupId); 
+    } 
+	var activeEvent;
+    function onPreview(evt, dataObj, html)
+	{
+		activeEvent=dataObj;
+		ical.showPreview(evt, html);
+	}
+    /*
+     Method invoked when event is moved or resized
+     @param event object containing eventID and newly updated Times
+     */
+    function updateEvent(event)
+    { 
+        ical.updateEvent(event);
+    }
+
+    /*
+     Method invoked when creating a new event, before showing the new event form.
+     @param obj - Object containing (startTime, endTime)
+     @param groups - List of Group objects ({groupId, name})
+     @param allday - boolean to indicate if the event created is allday event.
+     */
+    function onNewEvent(obj, groups, allday)
+    {
+        if(ical.isMobileMode()){
+            Web2Cal.onNewEvent(jQuery("#"+mobileNewEventForm), obj, groups, allday);
+        } else {
+            Web2Cal.onNewEvent(jQuery("#"+newEventForm), obj, groups, allday);
+        }
+    }
+
+
+    var setupEditEventForm = function($form, evObj ){
+        var groups=ical.getAllGroups();
+        activeEvent = evObj;
+        $form.find("#eventName").val(evObj.eventName).end()
+                .find("#eventGroup").val(evObj.groupId).end()
+                .find("#eventStartTime").val(evObj.startTime.toString("hh:mm tt")).end()
+                .find("#eventEndTime").val(evObj.endTime.toString("hh:mm tt")).end()
+                .find("#eventStartDate").val(evObj.startTime.toString("MM/dd/yyyy")).end()
+                .find("#eventEndDate").val(evObj.endTime.toString("MM/dd/yyyy")).end()
+                .find("#addEventBtn").hide().end()
+                .find("#updateEventBtn").show().end();
+
+        var groupDD = $form.find("#eventGroup").empty();
+        for(var g in groups)
+        {
+            if(!groups.hasOwnProperty(g))
+                continue;
+            addOption(groupDD, groups[g].name,groups[g].groupId,false);
+        }
+
+
+    }
+
+    var editMobileEvent = function(evId, event){
+        setupEditEventForm( jQuery("#"+mobileNewEventForm), event );
+        Web2Cal.PageHandler.showPage(jQuery("#"+mobilePreview), jQuery("#newEventFormMobile") );
+    }
+
+    /*
+     Click on Edit Button in preview window
+     */
+    var rzEditEvent = function(evId, event)
+    {
+        var evObj=ical.getEventById(evId);
+
+        if(ical.isMobileMode()){
+            editMobileEvent(evId, evObj);
+        } else {
+            setupEditEventForm( jQuery("#"+newEventForm), event );
+
+            ical.showEditEventTemplate(jQuery("#"+newEventForm), evObj.eventId, event);
+            Web2Cal.hidePreview();
+        }
+    }
+
+
+    /**
+     Clicking delete in Preview window
+     */
+    function rzDeleteEvent()
+    {
+        //alert("Delete Event in DB and invoke ical.deleteEvent({eventId: id})");
+        ical.deleteEvent({eventId: activeEvent.eventId});
+        Web2Cal.hidePreview();
+    }
+    
+    /**
+     * Click of Add in add event box.
+     */
+    function rzAddEvent()
+    {
+        var newev = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+		newev.personId=wsPersonId;
+		if(wsIsGroupEvent)
+		{
+			newev.eventType="workday";
+		}
+        ical.addEvent(newev);
+    }
+    
+    /**
+     * Onclick of Close in AddEvent Box.
+     */
+    function rzCloseAddEvent()
+    {
+        ical.closeAddEvent();
+    }
+
+    /**
+     * Once page is loaded, invoke the Load Calendar Script.
+     */
+    jQuery(document).ready(function()
+    { 
+	 	drawCalendar(); 
+	 	
+		new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0));
+        new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+            onTimeSelect: updateDateForTime,
+            dateField: "eventEndDate"
+        });
+    });
+</script>

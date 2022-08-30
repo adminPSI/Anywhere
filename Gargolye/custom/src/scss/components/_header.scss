@@ -1,0 +1,49 @@
+.site-header {
+  background: $white;
+  border-bottom: $w-xl solid $secondary;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  padding: 10px;
+
+  &.fadeOut {
+    opacity: 0.4;
+  }
+}
+
+.loginInfo {
+  display: flex;
+  flex-flow: row wrap;
+
+  p:first-child {
+    width: 100%;
+    margin-bottom: 2px;
+  }
+  &__firstName {
+    font-weight: 500;
+    margin-right: 4px;
+  }
+  &__lastName {
+    font-weight: 500;
+  }
+}
+
+.desktopUtilMenuBtn {
+  color: $font-dark;
+  position: relative;
+  transition: all 200ms ease-out;
+  width: 32px;
+
+  &.menu-visible {
+    color: $font-light;
+  }
+
+  @media screen and (max-width: 899px) {
+    display: none;
+  }
+}
+.mobileActive {
+  .desktopUtilMenuBtn {
+    display: none;
+  }
+}

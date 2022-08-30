@@ -1,0 +1,110 @@
+
+
+.leftnav-off  #topnavContainer .icon-calendar {
+  display: inline-block;
+}
+
+.leftnav-on  .icon-calendar {
+  display: none;
+}
+
+.popupCal {
+  max-width: 170px;
+  width: 170px;
+}
+
+/*DATE PICKER*/
+
+.datepicker {
+.tight-element();
+}
+
+.datepicker table {
+  width: 100%;
+  border-collapse: collapse
+}
+
+.datepicker td {
+  text-align: center;
+}
+
+.datepicker td,.datepicker th {
+  padding: 0px;
+  font-size:100%;
+  margin: 0px;
+}
+
+.datepicker td a {
+  display: block !important;
+  color: #333;
+  margin-bottom: 3px;
+  cursor: pointer;
+  padding: 3px;
+  text-decoration: none;
+}
+
+.datepicker td.old, .datepicker td.new {
+  color: #999999;
+}
+
+.datepicker td a:hover {
+ /* .border-radius(4px);*/
+  background: #eeeeee;
+  cursor: pointer;
+}
+
+.datepicker td.highlight a {
+  .buttonBackground(@calendarHighlightColor, spin( @calendarHighlightColor, 20%));
+  background-repeat: repeat-x;
+  color:@calendarHighlightFontColor;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  &:hover{
+    .buttonBackground(@calendarHoverColor, spin( @calendarHoverColor, 20%));
+  }
+}
+
+
+.datepicker .calnav {
+  float: right;
+}
+
+.datepicker .navHeaderRow {
+  vertical-align: middle;
+}
+
+.datepicker .navbtn {
+  font-size: 10px;
+  padding: 3px 8px;
+  margin: 0px;
+  line-height: 11px;
+  font-weight: normal;
+}
+
+/*END DATE PICKER*/
+
+
+.absright {
+  position: absolute;
+  right: 1px;
+  top: 20%;
+}
+
+.absleft {
+  position: absolute;
+  left: 1px;
+  top: 15%;
+}
+
+.absrightbottom {
+  position: absolute;
+  bottom: 1px;
+  right: 0px
+}
+
+.absrighttop {
+  position: absolute;
+  top: 1px;
+  right: 0px
+}
+
+/*END FORM Template*/

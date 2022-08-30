@@ -1,0 +1,141 @@
+<div id='eventDialog' class = "web2cal-form minimode">
+    <form class="">
+        <div class="aPointer p-left " ></div>
+        <div class="ev-time-summary in-mini-mode">
+            Mon Jun 6,  8PM - 9PM
+        </div>
+        <h4 class="in-max-mode ">Add/Edit Event</h4>
+        <input type="text" placeholder="Event Name..." name="eventName" style="width:25em;" id="eventName">
+        <div class="value in-max-mode" >
+            <input type="Text" name="startDate" style="width:6em;" id="startDate"/>
+            <input type="Text" name="startTimeTxt" style="width:5em;" id="startTimeTxt"/>
+            <input type="Text" name="endDate" style="width:6em;" id="endDate"/>
+            <input type="Text" name="endTimeTxt" style="width:5em;" id="endDateTxt"/>
+        </div>
+        <label class="checkbox in-max-mode">
+            <input type="checkbox" value="yes"  name="allDayEvent" id="allDayEvent"/> All Day?
+        </label>
+
+
+        <div class="  form-section   padded-control " >
+            <a class="in-mini-mode" onclick="Web2Cal.showMoreInfo(this);" style="float:right;font-size:80%; " href="javascript:void(0)">Add More Detail</a>
+            <span class="control-label" >Group: </span>
+            <div class="select_style">
+                <select id="groupsDropDown" name="groupsDropDown">
+                    <% _.each(groups, function (grp) { %>
+                    <option value="<%= grp.groupId %>"><%= grp.name %></option>
+                    <% }); %>
+                </select>
+                <span></span>
+            </div>
+
+        </div>
+
+
+        <div id="repeatInfo" class="padded-control form-section topborder bottomborder in-max-mode" >
+            <div class="select_style">
+                <select id="repeatMode" name="repeatMode">
+                    <option value="">Doesn't repeat</option>
+                    <option value="day">Every day</option>
+                    <option value="weekday">Every week day</option>
+                    <option value="week">Every week</option>
+                    <option value="month">Every month</option>
+                    <option value="year">Every year</option>
+                    <option value="custom">Custom repeat...</option>
+                </select>
+                <span></span>
+            </div>
+            <div class="repeatPattern" id="repeatcustom">
+                Every <input type="text" class="span1" id="repeatCount" value="1">
+                <div class="select_style">
+                    <select id="repeatType" name="repeatType" class="repeatType default">
+                        <option value="day">Day</option>
+                        <option value="week">Week</option>
+                        <option value="month">Month</option>
+                        <option value="year">Year</option>
+                    </select>
+                    <span></span>
+                </div>
+
+                <div id="subrepeatday" class="subrepeatpattern default">
+                    <label class="checkbox"><input type="checkbox" id="onlyWeekDays" name="onlyWeekDays" value="yes"> Only Weekdays</label>
+                </div>
+                <div id="subrepeatweek" class="subrepeatpattern">
+                    Only on :
+                    <div class="repeatdays">
+                        <div class="a-day">S</div><div class="a-day">M</div><div class="a-day">T</div><div class="a-day">W</div><div class="a-day">T</div><div class="a-day">F</div><div class="a-day">S</div>
+                    </div>
+                </div>
+                <div id="subrepeatmonth" class="subrepeatpattern">
+                    <div class="monthoptions selected ondate">
+                        on <span id="monthRepeatDate" name="monthRepeatDate" class="uneditable-input span1"></span> of every month
+                    </div>
+                    <div>OR</div>
+                    <div  class="monthoptions onday">
+                        <div class="select_style">
+                            <select id="monthWeekNumber" name="monthWeekNumber">
+                                <option>Select</option>
+                                <option value="1">First</option>
+                                <option value="2">Second</option>
+                                <option value="3">Third</option>
+                                <option value="4">Fourth</option>
+                                <option value="-1">Last</option>
+                            </select>
+                            <span></span>
+                        </div>
+                        <div class="select_style">
+                            <select  id="monthDayNumber">
+                                <option value="-1">Select</option>
+                                <option value="0">Sunday</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                            </select>
+                            <span></span>
+                        </div>
+                        of the month
+                    </div>
+                </div>
+                <div id="subrepeatyear" class="subrepeatpattern">
+                   on <input class="span4" type="text" value="" id="yearRepeatDate" >
+                </div>
+                <select id="repeatUntil">
+                    <option value="">Never End</option>
+                    <option value="endsOn">Ends on</option>
+                </select>
+                <input class="span4" type="text" value="" id="repeatEndDate" >
+            </div>
+        </div>
+
+        <div class="form-section in-max-mode">
+            <textarea id="eventDescription" placeholder="Add note" style="width:25em;height:3em;"  ></textarea>
+        </div>
+
+        <div class="">
+            <a href="javascript:void(0)" id="addEventBtn"   class="btn btn-primary">Save</a>
+            <a  href="javascript:void(0)"  id="updateEventBtn"  class="btn btn-primary" style="display:none;">Update</a>
+            <a  href="javascript:void(0)"   id="closeNewEventBtn"      class="closeNewEventBtn btn">Close</a>
+        </div>
+    </form>
+</div>
+
+
+        <script>
+            jQuery("#repeatUntil").bind('change', function(){
+                var $el = jQuery(this);
+                if( this.value!=""){
+                    jQuery("#repeatEndDate").show();
+                }else{
+                    jQuery("#repeatEndDate").hide();
+
+                }
+            })
+
+            jQuery("#repeatcustom").find(".monthoptions").bind('click', function(){
+                jQuery("#repeatcustom").find(".monthoptions").removeClass("selected");
+                jQuery(this).addClass("selected");
+            })
+        </script>

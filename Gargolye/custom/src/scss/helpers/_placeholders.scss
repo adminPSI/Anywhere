@@ -1,0 +1,101 @@
+// Material Design For Inputs AND Dropdowns
+%input-wrap {
+  border-radius: $r-sm $r-sm 0 0;
+  display: flex;
+  height: 50px;
+  margin: 0 0 20px;
+  position: relative;
+
+  .error {
+    color: $font-error;
+  }
+}
+%input {
+  align-self: flex-end;
+  background-color: transparent;
+  border: none;
+  border-radius: $r-sm;
+  color: inherit;
+  display: flex;
+  font-size: 1rem;
+  font-weight: 400;
+  height: 100%;
+  letter-spacing: 0.009375em;
+  //line-height: 1.75rem;
+  line-height: 1;
+  padding: 14px 14px 10px 18px;
+  width: 100%;
+}
+%notched-outline {
+  color: inherit;
+  display: flex;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  left: 0;
+  max-width: 100%;
+  pointer-events: none;
+  text-align: left;
+  width: 100%;
+
+  .notched-outline__leading,
+  .notched-outline__notch,
+  .notched-outline__trailing {
+    border-color: inherit;
+    border-style: solid;
+    border-width: $w-sm;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .notched-outline__leading {
+    border-radius: $r-sm 0 0 $r-sm;
+    border-right: none;
+    width: 12px;
+  }
+  .notched-outline__notch {
+    border-right: none;
+    border-left: none;
+    border-top: none;
+    flex: 0 0 auto;
+    max-width: calc(100% - 24px);
+    padding: 0 4px 0;
+    width: auto;
+
+    &.noLabel {
+      padding: 0;
+    }
+  }
+  .notched-outline__trailing {
+    border-radius: 0 $r-sm $r-sm 0;
+    border-left: none;
+    flex-grow: 1;
+  }
+}
+%floating-label {
+  cursor: text;
+  color: inherit;
+  display: inline-block;
+  //font-size: 1rem;
+  font-size: 14px;
+  font-weight: $normal;
+  //letter-spacing: 0.5px;
+  line-height: 1.15rem;
+  overflow: hidden;
+  pointer-events: none;
+  position: relative;
+  top: 15px;
+  bottom: auto;
+  //left: 4px;
+  right: initial;
+  max-width: 100%;
+  max-width: calc(100% / 0.75);
+  text-decoration: inherit;
+  text-transform: inherit;
+  transform-origin: left top;
+  transform: translateY(-130%) scale(1);
+  text-align: left;
+  text-overflow: ellipsis;
+  text-overflow: clip;
+  white-space: nowrap;
+}

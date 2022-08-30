@@ -1,0 +1,646 @@
+
+.calbodyContainer::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+.calbodyContainer::-webkit-scrollbar:vertical {
+  width: 16px;
+}
+
+.calbodyContainer::-webkit-scrollbar:horizontal {
+  height: 11px;
+}
+
+.calbodyContainer::-webkit-scrollbar-thumb {
+  border: 2px solid white; /* should match background, can't be transparent */
+  background-color:#efefef;
+}
+
+div.web2cal-container{
+  position: relative;
+}
+
+
+.web2CalWS .slotContainer{
+  position: relative;
+}
+
+div.web2cal {
+  -moz-user-select: none;
+  background: #fff;
+  cursor: default;
+  padding:0px;
+  a {
+    text-decoration: none;
+    color: @linkColor;
+  }
+  .leftNav {
+    width: 180px;
+    position: absolute;
+
+    left: 0px;
+    padding: 0px !important;
+    margin: 0px !important;
+
+
+    .quickAddLink{
+      margin:0px 0 10px 0;
+      background-color: @backgroudColor;
+      padding:3px
+    }
+
+  }
+  .gridYContainer {
+     .tight-container('relative', 'visible');
+   }
+
+  .settings-btn{
+    float: right;
+    background: url('../images/calIconsv3.png') repeat scroll -248px -293px;
+    width: 16px;
+    height: 16px;
+    margin-left: 16px;
+    display: none;
+    margin-top: 0px;
+    padding: 7px;
+    background-color: #f7f7f7;
+  }
+
+  .toggle-month-list{
+    display:none;
+  }
+
+}
+
+div.leftnav-on {
+  #calendarContent {
+    padding-left: 180px;
+  }
+  .leftNav {
+    display: block;
+  }
+  #topQuickAddContainer, .topHideShowLink {
+    display: none;
+  }
+}
+
+div.leftnav-off  {
+  #topQuickAddContainer, .topHideShowLink {
+    display: inline-block;
+  }
+  .leftNav {
+     display: none;
+   }
+}
+
+.topnavContainer {
+  padding: 0px;
+  margin: 0px;
+  .clearfix();
+  background-color: @backgroudColor;
+  color: @foregroundColor;
+}
+
+.viewSpecNav{
+  display:none;
+}
+
+div.calheaderContainer, div#calsubheaderContainer {
+  height: 20px;
+  margin: 0px;
+  position: relative;
+  overflow: hidden;
+}
+
+/*Show time slots with width of 40px*/
+#gridYContainerTD, div.gridYContainer{
+  width: 40px;
+}/*
+div.web2CalWeek #gridYContainerTD, div.web2CalWeek div.gridYContainer, div.web2CalW2C #gridYContainerTD, div.web2CalW2C div.gridYContainer {
+  width: 40px;
+}
+*/
+div.web2CalWeek div.calheaderContainer, div.web2CalW2C div.calheaderContainer, div#calsubheaderContainer {
+  margin: 0px 15px 0px 40px;
+}
+
+/*show slots and set width of 100px*/
+div.web2CalWS div.calheaderContainer {
+  margin: 0px 15px 0px 100px;
+}
+
+div.web2CalWS #gridYContainerTD, div.web2CalWS div.gridYContainer {
+  width: 100px;
+}
+
+/*For IE6*/
+* html div.calheaderContainer, * html div.allDayContainer {
+  padding: 0px 0px 0px 40px;
+}
+
+* html  div.plotterContent {
+  padding: 6px 1px 3px 6px;
+}
+
+*:first-child+html .web2CalWeek .gridContainer,
+.web2CalWS .gridContainer, *:first-child+html .web2CalWS .gridContainer {
+  margin: 0px 16px 0px 0px;
+}
+
+div#calsubheaderContainer, .calendarTemplate, .calStatus,
+div.web2CalAgenda #gridYContainerTD, div.web2CalMonth #gridYContainerTD,
+*:first-child+html  	.web2CalAgenda 	#gridYContainerTD {
+  display: none;
+}
+
+*:first-child+html .web2CalAgenda 	#gridXContainerTD {
+  width: 100%;
+}
+
+.calTitle {
+  width: 180px;
+  font-size: 120%;
+  display: inline-block;
+}
+
+div.calHeader {
+  overflow: hidden;
+  position: absolute;
+  text-align: center;
+  padding: 1px 0px;
+}
+
+div.plotterContent {
+  .tight-element();
+  clear: both;
+  font-size: 100%;
+  border: 1px solid #ebebeb;
+  margin: 0px 0px 0px 5px;
+  padding: 0px;
+}
+
+
+.folderMinus, .folderPlus {
+  width: 13px;
+  margin: 0px;
+  position: absolute;
+  top: 0px;
+  display: block;
+  height: 13px;
+}
+
+/*Actual Grid*/
+div.calTimeSlot {
+  border-top: 1px solid @gridColor;
+  height: 42px;
+  position: absolute;
+  width: 100%;
+}
+
+div.calTimeSlot span.timetxt {
+  padding: 3px 0px 0px 3px;
+  font-size: 90%;
+  font-weight: bold;
+}
+
+div.calTimeSlot .ampmtxt {
+  font-size: 75%;
+  color: @darkGrayText;
+}
+
+/*rules and lines*/
+
+.mcell {
+  background-color: #FFF;
+  border: 1px solid @gridColor;
+  border-bottom: none;
+  position: absolute;
+}
+
+.mcell .dateCont {
+  height: 12px;
+
+  font-size:70%;
+  color: @darkGrayText;
+  text-align: right;
+  padding-right: 2px;
+}
+
+.monthAllEventsContainer {
+  background: #fff;
+  font-size: 90%;
+  border: 1px solid @gridColor;
+}
+
+.monthAllEventsContainer .onerow {
+  margin-bottom: 2px;
+  overflow: hidden;
+}
+
+.monthAllEventsContainer .data {
+  padding: 1px;
+  overflow: auto;
+  cursor: default;
+  font-size: 90%;
+  color: #fff;
+}
+
+.monthAllEventsContainer .header {
+  padding: 2px;
+}
+
+.monthAllEventsContainer .eventBody, .monthEvent .eventBody {
+  padding-left: 14px;
+  white-space: nowrap;
+}
+
+.now-line {
+  z-index: 3;
+  margin-top: -2px;
+  position: absolute;
+  overflow: visible;
+  left: -1px;
+  right: 0px;
+  .marker {
+    position: relative;
+    height: 19px;
+    width: 18px;
+    float: left;
+    top: -5px;
+    left: -16px;
+    background: url('../images/calIconsv3.png') -53px -170px no-repeat;
+  }
+  .line {
+    top: 2px;
+    left: 0px;
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: @nowLineColor;
+    .drop-shadow(0,1px, 2px, 0.3);
+
+  }
+}
+
+div.dottedrule, div.hrule {
+  height: 1px;
+  position: absolute;
+  width: 100%;
+  z-index: 3;
+  border-color: @gridColor;
+}
+
+div.vrule {
+  border-left: 3px double @gridColor;
+}
+
+div.vdottedrule {
+  border-left: 1px dotted @gridColor;
+}
+
+div.dottedrule {
+  border-top: 1px dotted @gridColor;
+}
+
+div.hrule {
+  border-top: 1px solid @gridColor;
+}
+
+div.vrule, div.vdottedrule {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  border-color: @gridColor;
+}
+
+div.noscroll-grid div.calbodyContainer {
+  overflow: hidden;
+}
+
+div.calbodyContainer {
+  background: #fff;
+  border-top: 1px solid @gridColor;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+  padding: 0px;
+  overflow-y: auto;
+  position: relative;
+}
+
+div.allDayEventContainer {
+  position: relative;
+  z-index: 2;
+}
+.collapse-left-nav{ float:left; margin-right: 10px; width:15px;   height:30px;}
+
+.collapsedAllDayEvent {
+  position: absolute;
+  padding: 3px 0;
+  text-align: center;
+  background-color: #ccc;
+}
+
+#collapsedAllDayEvents {
+  display: none;
+  z-index: 8;
+  position: relative;
+}
+
+div.allDayContainer #allDayExpandCollapse {
+  display: none;
+  position: absolute;
+  left: 6px;
+  top: 5px;
+  z-index: 5;
+}
+
+div.allDayContainer {
+  display: none;
+  padding: 0px 17px 0px 40px;
+  margin-bottom: 5px;
+  height: 10px;
+}
+
+div.allDayGridContainer {
+  border: 1px solid #BFC7CF;
+}
+
+div.nopadright, div.noscrollbar {
+  padding-right: 0px !important;
+}
+
+div.nopadleft {
+  padding-left: 0px !important;
+}
+
+div.gridCanvas {
+  width: 100%;
+  overflow: visible;
+}
+
+div.gridContainer, div.allDayGridContainer {
+  padding: 0px;
+  height: 100%;
+  position: relative;
+}
+
+div.grid {
+  height: 100%;
+  width: 100%;
+  border-left: 1px solid @gridColor;
+}
+
+/**Links and icons*/
+div.leftNav div.quickAddLink a {
+  padding: 1px;
+  text-align: center;
+  display: block;
+}
+
+
+
+div.leftNavGroupsList{
+  margin: 8px 0px;
+  border-right: none;
+   .data{
+    padding: 0 5px;
+  }
+  .filterBoxColor, div.grp {
+    padding: 1px 5px;
+  }
+  .header {
+    padding:  5px;
+  }
+  .new-group, .data .filterBoxColor {
+    float: right;
+  }
+  .grp{
+    margin:5px 0px;
+  }
+}
+
+
+.colorbox .filterBoxColor {
+  width: 12px;
+  height: 12px;
+}
+
+/*topnav controls*/
+div.controlsContainer {
+  float: left;
+}
+
+div.controlsContainer div {
+  display: inline;
+}
+
+.dwToday {
+  background: #ebebeb;
+}
+
+.moreEvents {
+  font-size: 85%;
+}
+
+/*Agenda View*/
+.agendaDateEvents {
+  border-bottom: 1px solid @gridColor;
+  color: @darkGrayText;
+}
+
+.agendaDateEvents table {
+  width: 100%;
+}
+
+.agendaViewEvent {
+  margin: 8px 0px;
+}
+
+.agendaDateEvents .colorbox {
+  margin-right: 22px;
+  width: 20px;
+  height: 12px;
+  display: inline-block;
+}
+
+.agendaDateEvents .date {
+  width: 170px;
+  vertical-align: top;
+}
+
+.agendaDateEvents .date h2 {
+  font-size: 125%;
+  font-style: italic;
+  font-weight: normal;
+}
+
+div.row label {
+  font-weight: bold;
+  display: inline-block;
+  width: 80px;
+  text-align: right;
+}
+
+.web2cal div.row div {
+  display: inline-block;
+  width: 200px !important;
+}
+
+.agendaEventDetail {
+  position: relative;
+  border-bottom: 1px dotted @gridColor;
+  margin: 5px 0px;
+}
+
+.agendaEventDetail .well {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  padding: 5px 0px;
+}
+
+.highLightAgendaEvent {
+  background: #fcfcfc;
+}
+
+.valign {
+  margin: 200px auto;
+  text-align: center;
+}
+
+/*mini calendar*/
+.navHeaderRow, .navHeaderRow div {
+  display: inline;
+  font-weight: bold;
+  padding: 3px;
+}
+
+.popupCal, .calpop {
+  width: 200px;
+  display: none;
+  position: absolute;
+  z-index: 100;
+  background: #fff;
+  .border-radius(6px);
+  .drop-shadow(0, 3px, 7px, 0.3);
+}
+
+.popupCal .datepickerDoW th {
+  background-color: #F2F2F2;
+  padding: 4px;
+}
+
+/*
+.prevButton,.nextButton{float:left;margin-right: 5px;width:16px; height: 16px;border: 1px solid @gridColor;}
+*/
+/*Full Preview*/
+
+/*Forms & Preview*/
+.aPointer {
+  background-image: url(../images/calIconsv3.png);
+}
+
+div.aPointer {
+  height: 27px;
+  position: absolute;
+  top: 45px;
+  width: 14px;
+  display: block;
+  z-index: 40;
+}
+
+div.p-left {
+  background-position: -44px -44px;
+  left: -13px;
+  top: 45px;
+}
+
+div.p-bott
+div.p-bottom {
+  background-position: -190px -93px;
+  bottom: -3px;
+  left: 50%;
+  width: 29px;
+}
+
+div.p-top {
+  background-position: -190px -57px;
+  left: 50%;
+  top: -2px;
+  width: 29px;
+}
+
+div.p-right {
+  background-position: -59px -120px;
+  right: -13px;
+  top: 45px;
+}
+
+.calComponent {
+  display: none;
+}
+.calComponent h4{
+  margin:3px auto;
+}
+
+.absPosition {
+  position: absolute;
+  z-index: 15;
+}
+
+.viewNavBar div {
+  display: inline-block;
+  float: right;
+  margin-left: 25px;
+}
+
+.fright {
+  float: right
+}
+
+.fleft {
+  float: left
+}
+
+.no-quickadd .quickAddLink{
+  display: none;
+}
+
+
+
+.widemode .r1{
+  width:60%;
+  float:right;
+}
+.widemode .r2{
+  width:35%;
+  float:left;
+}
+.widemode .topnavContainer .topHideShowLink {
+  width: 16px;
+  height: 22px;
+  overflow: hidden;
+  text-indent: -300px;
+  margin: 0 4px;
+  background: url('../images/calIconsv3.png') -1px -475px ;
+}
+.widemode .topnavContainer .quickAddLink {
+  margin: 0 4px;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  text-indent: -300px;
+  background: url('../images/calIconsv3.png')  -319px -202px ;
+}
+
+.readOnly .rw{
+  display:none !important;
+  border:1px solid red;
+}
+
+.vertResizerIcon
+{cursor: col-resize;  background: url('../images/calIconsv3.png') -177px -295px no-repeat;
+
+   width: 4px;position: absolute;height: 11px;}
+

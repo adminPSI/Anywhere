@@ -1,0 +1,44 @@
+.assessmentNavigation {
+  z-index: 20;
+}
+.generalInfo {
+  z-index: 20;
+}
+.tableOfContents {
+  z-index: 21;
+}
+
+.menu {
+  z-index: 25;
+}
+.nav {
+  z-index: 26;
+}
+.util-menu {
+  z-index: 24;
+  @media screen and (min-width: 560px) {
+    // Raising index of util menu when not on mobile 
+    // with no nav bar at bottom of screen to overlay on top of roster.
+    // can't click util menu when roster is open on mobile anyway.
+    z-index: 29;
+  }
+}
+.floatingActionBtn {
+  z-index: 27;
+}
+.miniRoster {
+  z-index: 28;
+}
+.action__nav {
+  z-index: 29;
+}
+.overlay {
+  z-index: 30;
+}
+.popup,
+.successfulSavePopup {
+  z-index: 31;
+}
+.desktopUtilMenuBtn {
+  z-index: 50;
+}

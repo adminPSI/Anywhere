@@ -1,0 +1,492 @@
+﻿using System;
+using System.Collections.Generic;
+using Anywhere.Data;
+using System.Web.Script.Serialization;
+using System.Text;
+using System.Security.Cryptography;
+
+namespace Anywhere.service.Data
+{
+    public class AnywhereWorker
+    {
+        DataGetter dg = new DataGetter();
+        JavaScriptSerializer js = new JavaScriptSerializer();
+        AnywhereAuthenticator aAuth = new AnywhereAuthenticator();
+        AuthenticationDataGetter aDG = new AuthenticationDataGetter();
+
+        //Below code is for hours worked widget
+        public WorkWeek GetWorkWeeks(String token)
+        {
+            DateTime currentWeekStart = GetCompanyCurrentWorkWeekStart(token);
+            DateTime currentWeekEnd = currentWeekStart.AddDays(6);
+            DateTime previousWeekStart = currentWeekStart.AddDays(-7);
+            DateTime previousWeekEnd = currentWeekStart.AddDays(-1);
+            string currWS = currentWeekStart.ToString("yyyy-MM-dd");
+            string currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+            string prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+            string prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+            WorkWeek workWeek = new WorkWeek();
+            workWeek.curr_start_date = currWS;
+            workWeek.curr_end_date = currWE;
+            workWeek.prev_start_date = prevWS;
+            workWeek.prev_end_date = prevWE;
+
+            return workWeek;
+        }
+        public DaysAndHours[] GetDatesAndHoursWorked(String token)
+        {
+            DateTime currentWeekStart = GetCompanyCurrentWorkWeekStart(token);
+            DateTime currentWeekEnd = currentWeekStart.AddDays(6);
+            DateTime previousWeekStart = currentWeekStart.AddDays(-7);
+            DateTime previousWeekEnd = currentWeekStart.AddDays(-1);
+            string currWS = currentWeekStart.ToString("yyyy-MM-dd");
+            string currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+            string prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+            string prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+            string currentWeekHoursWorkedString = dg.getWeekHoursWorked(token, currWS, currWE, prevWS, prevWE);
+            DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
+            return daysAndHours;
+        }
+        //todaysDate = dateTime.ToString("yyyy/MM/dd");
+        public DateTime GetCompanyCurrentWorkWeekStart(String token)
+        {
+            string companyWorkWeekStart = dg.getCompanyWorkWeekStartFromDB(token);
+            StartDayOfWeek[] startDay = js.Deserialize<StartDayOfWeek[]>(companyWorkWeekStart);
+            string workWeekStart = startDay[0].Day_of_Week.ToString();
+            int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
+            DateTime weekStart = DateTime.Today.AddDays(-ded);
+            return weekStart;
+        }
+
+        public int DayOfWeekDeductionJD(DateTime date, string workWeekShort)
+        {
+            int deduction = 0;
+            Dictionary<string, string> workWeekShortToDay = new Dictionary<string, string>();
+            workWeekShortToDay.Add("S", "Sunday");
+            workWeekShortToDay.Add("M", "Monday");
+            workWeekShortToDay.Add("T", "Tuesday");
+            workWeekShortToDay.Add("W", "Wednesday");
+            workWeekShortToDay.Add("R", "Thursday");
+            workWeekShortToDay.Add("F", "Friday");
+            workWeekShortToDay.Add("A", "Saturday");
+            string workWeekStart = workWeekShortToDay[workWeekShort];
+            while (date.DayOfWeek.ToString() != workWeekStart)
+            {
+                deduction++;
+                date = date.AddDays(-1);
+            }
+            return deduction;
+        }
+
+        public string changeFromPSI(string token, string userID)
+        {
+            string info = "";
+            string stringDetail = "";
+            info = dg.getUserInfo(token, userID);
+            Credential[] detail = js.Deserialize<Credential[]>(info);
+            stringDetail = detail[0].Password.ToString();
+            stringDetail = MD5Hash(detail[0].Password.ToString());
+            return dg.getLogIn(userID, stringDetail);
+        }
+
+        public static string CreateMD5(string input)
+        {
+            // Use input string to calculate MD5 hash
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            {
+                //byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+                //byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                byte[] textToHash = Encoding.Default.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(textToHash);
+
+                return System.BitConverter.ToString(hashBytes);
+
+                //// Convert the byte array to hexadecimal string
+                //StringBuilder sb = new StringBuilder();
+                //for (int i = 0; i < hashBytes.Length; i++)
+                //{
+                //    sb.Append(hashBytes[i].ToString("X2"));
+                //}
+                //return sb.ToString();
+            }
+        }
+
+        public static string MD5Hash(string text)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
+
+            //compute hash from the bytes of text
+            md5.ComputeHash(ASCIIEncoding.ASCII.GetBytes(text));
+
+            //get hash result after compute it
+            byte[] result = md5.Hash;
+
+            StringBuilder strBuilder = new StringBuilder();
+            for (int i = 0; i < result.Length; i++)
+            {
+                //change it into 2 hexadecimal digits
+                //for each byte
+                strBuilder.Append(result[i].ToString("x2"));
+            }
+
+            return strBuilder.ToString();
+        }
+
+        public bool ValidateToken(string token)
+        {
+            return dg.validateToken(token);
+        }
+
+        public class StartDayOfWeek
+        {
+            public string Day_of_Week { get; set; }
+        }
+
+        public class DaysAndHours
+        {
+            public string check_hours { get; set; }
+            public string location { get; set; }
+            public string hours { get; set; }
+            public string workdate { get; set; }
+            public string week { get; set; }
+        }
+
+        public class WorkWeek
+        {
+            public string curr_start_date { get; set; }
+            public string curr_end_date { get; set; }
+            public string prev_start_date { get; set; }
+            public string prev_end_date { get; set; }
+        }
+
+        //Scheduling Widget Code
+        public SchedulingPeriods[] GetSchedulingPeriods(string token)
+        {
+            string schedulingPeriodsString = dg.getSchedulingPeriods(token);
+            SchedulingPeriods[] schedulingPeriods = js.Deserialize<SchedulingPeriods[]>(schedulingPeriodsString);
+            return schedulingPeriods;
+        }
+
+        public SchedulingData[] getSchedulingPeriodsDetails(string token, string startDate, string endDate)
+        {
+            string schedulePerodDataString = dg.getSchedulingPeriodsDetails(token, startDate, endDate);
+            SchedulingData[] SchedulingData = js.Deserialize<SchedulingData[]>(schedulePerodDataString);
+            return SchedulingData;
+        }
+
+        public class SchedulingPeriods
+        {
+            public string start_date { get; set; }
+            public string end_date { get; set; }
+            public string is_curr_date { get; set; }
+        }
+
+        public class SchedulingData
+        {
+            public string start_time { get; set; }
+            public string end_time { get; set; }
+            public string difftime { get; set; }
+            public string location { get; set; }
+            public string initials { get; set; }
+            public string service_date { get; set; }
+        }
+
+        public class Credential
+        {
+            public string Password { get; set; }
+        }
+
+        public Location[] getConsumerScheduleLocation(string token, string consumerId)
+        {
+            string conSchedLocations = dg.getConsumerScheduleLocation(token, consumerId);
+            Location[] locations = js.Deserialize<Location[]>(conSchedLocations);
+            return locations;
+        }
+
+        public class Location
+        {
+            public int id { get; set; }
+            public string name { get; set; }
+        }
+
+        public ConsumerSchedule[] populateConsumerSchedule(string token, string locationId, string consumerId)
+        {
+            string conSchedule = dg.populateConsumerSchedule(token, locationId, consumerId);
+            ConsumerSchedule[] schedule = js.Deserialize<ConsumerSchedule[]>(conSchedule);
+            return schedule;//test
+        }
+
+        public class ConsumerSchedule
+        {
+            public string SunStart { get; set; }
+            public string SunEnd { get; set; }
+            public string MonStart { get; set; }
+            public string MonEnd { get; set; }
+            public string TuesStart { get; set; }
+            public string TuesEnd { get; set; }
+            public string WedStart { get; set; }
+            public string WedEnd { get; set; }
+            public string ThurStart { get; set; }
+            public string ThurEnd { get; set; }
+            public string FriStart { get; set; }
+            public string FriEnd { get; set; }
+            public string SatStart { get; set; }
+            public string SatEnd { get; set; }
+
+            public string SunStart2 { get; set; }
+            public string SunEnd2 { get; set; }
+            public string MonStart2 { get; set; }
+            public string MonEnd2 { get; set; }
+            public string TuesStart2 { get; set; }
+            public string TuesEnd2 { get; set; }
+            public string WedStart2 { get; set; }
+            public string WedEnd2 { get; set; }
+            public string ThurStart2 { get; set; }
+            public string ThurEnd2 { get; set; }
+            public string FriStart2 { get; set; }
+            public string FriEnd2 { get; set; }
+            public string SatStart2 { get; set; }
+            public string SatEnd2 { get; set; }
+        }
+
+        public RemainingServiceWidgetData[] remainingServicesWidgetFilter(string token, string outcomeType, string locationId, string group, string checkDate)
+        {
+            string widgetDataString = dg.remainingServicesWidgetFilter(token, outcomeType, locationId, group, checkDate);
+            RemainingServiceWidgetData[] widgetData = js.Deserialize<RemainingServiceWidgetData[]>(widgetDataString);
+            return widgetData;//test
+        }
+
+        public class RemainingServiceWidgetData
+        {
+            public string ID { get; set; }
+            public string oid { get; set; }
+            public string first_name { get; set; }
+            public string last_name { get; set; }
+        }
+
+        public OutcomeTypesRemainingServiceWidgetData[] populateOutcomeTypesRemainingServicesWidgetFilter(string token)
+        {
+            string outcomeTypeForFilter = dg.populateOutcomeTypesRemainingServicesWidgetFilter(token);
+            OutcomeTypesRemainingServiceWidgetData[] widgetData = js.Deserialize<OutcomeTypesRemainingServiceWidgetData[]>(outcomeTypeForFilter);
+            return widgetData;//test
+        }
+
+        public class OutcomeTypesRemainingServiceWidgetData
+        {
+            public string Description { get; set; }
+            public string Id { get; set; }
+        }
+
+        public LocationsRemainingServiceWidgetData[] populateLocationsRemainingServicesWidgetFilter(string token)
+        {
+            string locationsForFilter = dg.populateLocationsRemainingServicesWidgetFilter(token);
+            LocationsRemainingServiceWidgetData[] widgetData = js.Deserialize<LocationsRemainingServiceWidgetData[]>(locationsForFilter);
+            return widgetData;//test
+        }
+
+        public class LocationsRemainingServiceWidgetData
+        {
+            public string ID { get; set; }
+            public string Name { get; set; }
+            public string Residence { get; set; }
+        }
+
+        public GroupsRemainingServiceWidgetData[] populateGroupsRemainingServicesWidgetFilter(string token, string locationId)
+        {
+            string groupsForFilter = dg.populateGroupsRemainingServicesWidgetFilter(token, locationId);
+            GroupsRemainingServiceWidgetData[] widgetData = js.Deserialize<GroupsRemainingServiceWidgetData[]>(groupsForFilter);
+            return widgetData;//test
+        }
+
+        public class GroupsRemainingServiceWidgetData
+        {
+            public string RetrieveID { get; set; }
+            public string GroupCode { get; set; }
+            public string GroupName { get; set; }
+            public string Members { get; set; }
+        }
+
+        //public ConsumerTableLocation[] getConsumerTableConsumerLocation(string token, string consumerId)
+        //{
+        //    string consumerLocationString = dg.getConsumerTableConsumerLocation(token, consumerId);
+        //    ConsumerTableLocation[] consumerLocation = js.Deserialize<ConsumerTableLocation[]>(consumerLocationString);
+        //    return consumerLocation;//test
+        //}
+        //public class ConsumerTableLocation
+        //{
+        //    public string locationId { get; set; }
+        //    public string description { get; set; }
+        //}
+
+        public ConsumersByGroup[] getConsumersByGroupJSON(string groupCode, string retrieveId, string token, string serviceDate, string daysBackDate)
+        {
+            string consumersByGroupString = dg.getConsumersByGroupJSON(groupCode, retrieveId, token, serviceDate, daysBackDate);
+            js.MaxJsonLength = Int32.MaxValue;
+            ConsumersByGroup[] consumersByGroupObj = js.Deserialize<ConsumersByGroup[]>(consumersByGroupString);
+            return consumersByGroupObj;
+        }
+
+        public class ConsumersByGroup
+        {
+            public string id { get; set; }
+            public string FN { get; set; }
+            public string LN { get; set; }
+            public string LId { get; set; }
+            public string IDa { get; set; }
+            public string SD { get; set; }
+            public string conL { get; set; }
+            public string MN { get; set; }
+        }
+
+        public RosterLocations[] getLocationsJSON(string token)
+        {
+            string locationsString = dg.getLocationsJSON(token);
+            RosterLocations[] locationsObj = js.Deserialize<RosterLocations[]>(locationsString);
+            return locationsObj;
+        }
+
+        public class RosterLocations
+        {
+            public string ID { get; set; }
+            public string Name { get; set; }
+            public string Residence { get; set; }
+        }
+
+        public DefaultSettings[] getDefaultAnywhereSettingsJSON(string token)
+        {
+            string defaultSettingssString = dg.getDefaultAnywhereSettingsJSON(token);
+            DefaultSettings[] defaultSettingsObj = js.Deserialize<DefaultSettings[]>(defaultSettingssString);
+            return defaultSettingsObj;
+        }
+
+        public class DefaultSettings
+        {
+            public string setting_value { get; set; }
+            public string notes_days_back { get; set; }
+            public string checklist_days_back { get; set; }
+            public string minutesToTimeout { get; set; }
+            public string useAbsentFeature { get; set; }
+            public string useProgressNotes { get; set; }
+            public string removeGoalsWidget { get; set; }
+            public string application { get; set; }
+            public string portraitPath { get; set; }
+            public string outcomesPermission { get; set; }
+            public string dayServicesPermission { get; set; }
+            public string caseNotesPermission { get; set; }
+            public string singleEntryPermission { get; set; }
+            public string covidPermission { get; set; }
+            public string transportationPermission { get; set; }
+            public string emarPermission { get; set; }
+            public string formsPermission { get; set; }
+            public string OODPermission { get; set; }
+            public string workshopPermission { get; set; }
+            public string anywhereSchedulingPermission { get; set; }
+            public string anywherePlanPermission { get; set; }
+            public string intellivuePermission { get; set; }
+            public string webPermission { get; set; }
+            public string defaultrosterlocation { get; set; }
+            public string defaultrosterlocationname { get; set; }
+            public string defaultrostergroup { get; set; }
+            public string defaultrostergroupname { get; set; }
+            public string showConsumerSignature { get; set; }
+            public string showConsumerNote { get; set; }
+            public string seShowTransportation { get; set; }
+            public string defaultdayservicelocation { get; set; }
+            public string defaultdayservicelocationname { get; set; }
+            public string defaulttimeclocklocation { get; set; }
+            public string defaulttimeclocklocationName { get; set; }
+            public string defaultworkshoplocation { get; set; }
+            public string defaultworkshoplocationname { get; set; }
+            public string administrator { get; set; }
+            public string incidentTracking_days_back { get; set; }
+            public string removeSEAdminMap { get; set; }
+            public string incidentTrackingPermission { get; set; }
+            public string schedulingPermission { get; set; }
+            public string singleEntryApproveEnabled { get; set; }
+            public string seShowConsumerSignature { get; set; }
+            public string seShowConsumerNote { get; set; }
+            public string isASupervisor { get; set; }
+            public string singleEntryLocationRequired { get; set; }
+            public string allowCallOffRequests { get; set; }
+            public string requestOpenShifts { get; set; }
+            public string stateAbbreviation { get; set; }
+            public string sttEnabled { get; set; }
+            public string azureSttApi { get; set; }
+            public string reportSeconds { get; set; }
+        }
+
+        public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
+        {
+            string consumerGroupsString = dg.getConsumerGroupsJSON(locationId, token);
+            ConsumerGroups[] consumerGroupsObj = js.Deserialize<ConsumerGroups[]>(consumerGroupsString);
+            return consumerGroupsObj;
+        }
+
+        public class ConsumerGroups
+        {
+            public string RetrieveID { get; set; }
+            public string GroupCode { get; set; }
+            public string GroupName { get; set; }
+            public string Members { get; set; }
+        }
+
+        //BRAD add here
+        //Create function that call getPSIUserOptionList
+        //add custom object. user_id, first_name, last_name
+
+        public UserOptionList[] getPSIUserOptionListJSON(string token)
+        {
+            string userOptionListString = dg.getPSIUserOptionListJSON(token);
+            UserOptionList[] userOptionListObj = js.Deserialize<UserOptionList[]>(userOptionListString);
+            return userOptionListObj;
+        }
+
+        public class UserOptionList
+        {
+            public string user_id { get; set; }
+            public string first_name { get; set; }
+            public string last_name { get; set; }
+        }
+
+        public string getLogIn(string userId, string hash, string deviceId)//need to pass in code from device if exists
+        {
+            //Check login type
+            //return dg.getLogIn(userId, hash);
+            string loginType =  dg.checkLoginType();
+            LoginType[] loginTypeObj = js.Deserialize<LoginType[]>(loginType);
+            string type = loginTypeObj[0].setting_value.ToString();
+            if(type.Equals("Y") && userId.ToUpper() != "PSI"){
+                //check code against DB to see if expired
+                if(deviceId.Equals("")){
+                    return aAuth.generateAuthentication(userId, hash);
+                }else{
+                    string expired = aDG.checkDeviceAuthentication(userId, deviceId);
+                    DeviceExpired[]  expiredObj = js.Deserialize<DeviceExpired[]>(expired);
+                    string isExpired = expiredObj[0].deviceGUID.ToString();
+                    if(isExpired.Equals("Y")){
+                        return aAuth.generateAuthentication(userId, hash);
+                    }else if(isExpired.Equals("Invalid username"))
+                    {
+                        return "Invalid Username";
+                    }
+                    else{
+                        return dg.getLogIn(userId, hash);
+                    }
+                }                
+            }else{
+                return dg.getLogIn(userId, hash);
+            }
+        }
+
+        public class LoginType
+        {
+            public string setting_value { get; set; }
+        }
+
+        public class DeviceExpired
+        {
+            public string deviceGUID { get; set; }
+        }
+    }
+}

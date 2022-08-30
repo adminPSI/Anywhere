@@ -1,0 +1,94 @@
+.dayEvent .roundbl,.dayEvent .roundbr{border-width:0 1px 1px 0px; border-style:none;     }
+.dayEvent .roundbl,.dayEvent .roundbr, .dayEvent .roundtr, .dayEvent .roundtl{display: block;}
+div.greenTemplate {background: transparent; border:none;}
+div.greenTemplate .eventBody, .greenTemplate .filterBoxColor, div.greenTemplate .roundbl, .greenTemplate .roundbr, div.greenTemplate .roundtlm, .greenTemplate .roundtrm
+{background-color: #92D5CD;}
+div.greenTemplate .eventBody, div.greenTemplate   .roundbl,div.greenTemplate  .roundbr{border-color:#69B0A7; }
+div.greenTemplate .header, .greenTemplate .roundtr, .greenTemplate .roundtl{background-color: #69B0A7;}
+
+div.blueTemplate {background: transparent; border:none;}
+div.blueTemplate .eventBody, .blueTemplate .filterBoxColor, .blueTemplate .roundbl, .blueTemplate .roundbr, .blueTemplate .roundtlm, .blueTemplate .roundtrm
+{background-color: #668CD9;}
+div.blueTemplate .eventBody, div.blueTemplate   .roundbl,div.blueTemplate  .roundbr{border-color:#2952A3 }
+div.blueTemplate .header, .blueTemplate .roundtr, .blueTemplate .roundtl{background-color: #2952A3;}
+
+div.grayTemplate {background: transparent; border:none;}
+div.grayTemplate .eventBody, .grayTemplate .filterBoxColor, .grayTemplate .roundbl, .grayTemplate .roundbr, .grayTemplate .roundtlm, .grayTemplate .roundtrm
+{background-color: #8997A5;}
+div.grayTemplate .eventBody, div.grayTemplate   .roundbl,div.grayTemplate  .roundbr{border-color:#4E5D6C }
+div.grayTemplate .header, .grayTemplate .roundtr, .grayTemplate .roundtl{background-color: #4E5D6C;}
+
+div.tealTemplate {background: transparent; border:none;}
+div.tealTemplate .eventBody, .tealTemplate .filterBoxColor, .tealTemplate .roundbl, .tealTemplate .roundbr, .tealTemplate .roundtlm, .tealTemplate .roundtrm
+{background-color: #668CB3;}
+div.tealTemplate  .eventBody, div.tealTemplate   .roundbl,div.tealTemplate  .roundbr{border-color:#29527A; }
+div.tealTemplate .header, .tealTemplate .roundtr, .tealTemplate .roundtl{background-color: #29527A;}
+
+div.brownTemplate {background: transparent; border:none;}
+div.brownTemplate .eventBody, .brownTemplate .filterBoxColor, .brownTemplate .roundbl, .brownTemplate .roundbr, .brownTemplate .roundtlm, .brownTemplate .roundtrm
+{background-color: #C4A883;}
+div.brownTemplate .eventBody, div.brownTemplate   .roundbl,div.brownTemplate  .roundbr{border-color:#8D6F47 }
+div.brownTemplate .header, .brownTemplate .roundtr, .brownTemplate .roundtl{background-color: #8D6F47;}
+
+div.lightGreenTemplate {background: transparent; border:none;}
+div.lightGreenTemplate .eventBody, .lightGreenTemplate .filterBoxColor, .lightGreenTemplate .roundbl, .lightGreenTemplate .roundbr, .lightGreenTemplate .roundtlm, .lightGreenTemplate .roundtrm
+{background-color: #85AAA5;}
+div.lightGreenTemplate .eventBody, div.lightGreenTemplate   .roundbl,div.lightGreenTemplate  .roundbr{border-color:#4A716C }
+div.lightGreenTemplate .header, .lightGreenTemplate .roundtr, .lightGreenTemplate .roundtl{background-color: #4A716C;}
+
+div.dirtyPinkTemplate {background: transparent; border:none;}
+div.dirtyPinkTemplate .eventBody, .dirtyPinkTemplate .filterBoxColor, .dirtyPinkTemplate .roundbl, .dirtyPinkTemplate .roundbr, .dirtyPinkTemplate .roundtlm, .dirtyPinkTemplate .roundtrm
+{background-color: #D96666;}
+div.dirtyPinkTemplate .eventBody, div.dirtyPinkTemplate   .roundbl,div.dirtyPinkTemplate  .roundbr{border-color:#A32929 }
+div.dirtyPinkTemplate .header, .dirtyPinkTemplate .roundtr, .dirtyPinkTemplate .roundtl{background-color: #A32929;}
+
+div.purpleTemplate {background: transparent; border:none;}
+div.purpleTemplate .eventBody, .purpleTemplate .filterBoxColor, .purpleTemplate .roundbl, .purpleTemplate .roundbr, .purpleTemplate .roundtlm, .purpleTemplate .roundtrm
+{background-color: #B373B3;}
+div.purpleTemplate .eventBody, div.purpleTemplate   .roundbl,div.purpleTemplate  .roundbr{border-color:#7A367A }
+div.purpleTemplate .header, .purpleTemplate .roundtr, .purpleTemplate .roundtl{background-color: #7A367A;}
+
+div.cyanTemplate {background: transparent; border:none;}
+div.cyanTemplate .eventBody, .cyanTemplate .filterBoxColor, .cyanTemplate .roundbl, .cyanTemplate .roundbr, .cyanTemplate .roundtlm, .cyanTemplate .roundtrm
+{background-color: #59BFB3;}
+div.cyanTemplate .eventBody, div.cyanTemplate   .roundbl,div.cyanTemplate  .roundbr{border-color:#1B887A }
+div.cyanTemplate .header, .cyanTemplate .roundtr, .cyanTemplate .roundtl{background-color: #1B887A;}
+
+div.brickTemplate {background: transparent; border:none;}
+div.brickTemplate .eventBody, .brickTemplate .filterBoxColor, .brickTemplate .roundbl, .brickTemplate .roundbr, .brickTemplate .roundtlm, .brickTemplate .roundtrm
+{background-color: #E6804D;}
+div.brickTemplate .eventBody, div.brickTemplate   .roundbl,div.brickTemplate  .roundbr{border-color:#2952A3 }
+div.brickTemplate .header, .brickTemplate .roundtr, .brickTemplate .roundtl
+{background-color: #B1440E;}
+
+div.lightPurpleTemplate {background: transparent; border:none;}
+div.lightPurpleTemplate .eventBody, .lightPurpleTemplate .filterBoxColor, .lightPurpleTemplate .roundbl, .lightPurpleTemplate .roundbr, .lightPurpleTemplate .roundtlm, .lightPurpleTemplate .roundtrm
+{background-color: #94A2BE;}
+div.lightPurpleTemplate .eventBody, div.lightPurpleTemplate   .roundbl,div.lightPurpleTemplate  .roundbr{border-color:#5A6986 }
+div.lightPurpleTemplate .header, .lightPurpleTemplate .roundtr, .lightPurpleTemplate .roundtl
+{background-color: #5A6986;}
+
+div.brightGreenTemplate {background: transparent; border:none;}
+div.brightGreenTemplate .eventBody, .brightGreenTemplate .filterBoxColor, .brightGreenTemplate .roundbl, .brightGreenTemplate .roundbr, .brightGreenTemplate .roundtlm, .brightGreenTemplate .roundtrm
+{background-color: #8CBF40; }
+div.brightGreenTemplate .eventBody, div.brightGreenTemplate   .roundbl,div.brightGreenTemplate  .roundbr{border-color:#528800 }
+div.brightGreenTemplate .header, .brightGreenTemplate .roundtr, .brightGreenTemplate .roundtl
+{background-color: #528800;}
+
+div.dirtyYellowTemplate {background: transparent; border:none;}
+div.dirtyYellowTemplate .eventBody, .dirtyYellowTemplate .filterBoxColor, .dirtyYellowTemplate .roundbl, .dirtyYellowTemplate .roundbr, .dirtyYellowTemplate .roundtlm, .dirtyYellowTemplate .roundtrm
+{background-color: #E0C240; }
+div.dirtyYellowTemplate .eventBody, div.dirtyYellowTemplate   .roundbl,div.dirtyYellowTemplate  .roundbr{border-color:#AB8B00 }
+div.dirtyYellowTemplate .header, .dirtyYellowTemplate .roundtr, .dirtyYellowTemplate .roundtl{background-color: #AB8B00;}
+
+div.brighBlueTemplate {background: transparent; border:none;}
+div.brighBlueTemplate .eventBody, .brighBlueTemplate .filterBoxColor, .brighBlueTemplate .roundbl, .brighBlueTemplate .roundbr, .brighBlueTemplate .roundtlm, .brighBlueTemplate .roundtrm
+{background-color: #668CD9;}
+div.brighBlueTemplate .eventBody, div.brighBlueTemplate   .roundbl,div.brighBlueTemplate  .roundbr{border-color:#2952A3 }
+div.brighBlueTemplate .header, .brighBlueTemplate .roundtr, .brighBlueTemplate .roundtl{background-color: #2952A3;}
+
+div.pinkTemplate {background: transparent; border:none;}
+div.pinkTemplate .eventBody, .pinkTemplate .filterBoxColor, .pinkTemplate .roundbl, .pinkTemplate .roundbr, .pinkTemplate .roundtlm, .pinkTemplate .roundtrm
+{background-color: #E67399;}
+div.pinkTemplate .eventBody, div.pinkTemplate   .roundbl,div.pinkTemplate  .roundbr{border-color:#B1365F }
+div.pinkTemplate .header, .pinkTemplate .roundtr, .pinkTemplate .roundtl{background-color: #B1365F;}

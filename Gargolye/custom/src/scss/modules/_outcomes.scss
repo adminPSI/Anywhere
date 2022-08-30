@@ -1,0 +1,199 @@
+.outcomes {
+
+
+  &__consumer {
+    border-radius: $r-sm;
+    box-shadow: $shadow-m1;
+    margin: 0 0 20px;
+    overflow: hidden;
+
+    .consumerCard {
+      border-radius: 0;
+      box-shadow: none;
+      flex-flow: row nowrap;
+      .portrait {
+        padding: 0;
+        width: 60px;
+        img {
+          position: relative;
+        }
+      }
+      .details {
+        flex-grow: 1;
+        padding: 10px;
+      }
+    }
+  }
+  .tabs {
+    .tabs__nav--item {
+      font-size: 3vw;
+    }
+    @media screen and (min-width: 560px) {
+      .tabs__nav--item {
+         font-size: inherit;
+      }
+    }
+    background: $primary;
+    &__nav--item {
+      color: $font-light;
+    }
+    &__body--section {
+
+      &.active {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+        grid-gap: 1rem;
+  
+      }
+    }
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .progressCircle__text {
+    font-size: 18px;
+  }
+
+}
+
+.actioncenter[data-active-module="outcomes"] {
+  .filteredByData {
+    margin-top: 25px;
+  }
+  .currConsumerDisp {
+
+    font-weight: 500;
+    span {
+      color: $primary;
+    }
+
+  margin-bottom: 10px;
+}
+}
+
+// .currentFilterDisplayOC {
+//   p {
+//     font-weight: 500;
+//     span {
+//       color: $primary;
+//     }
+//   }
+//   margin-bottom: 10px;
+// }
+
+.popup {
+  .singleBtn {
+    width: 100%;
+  }
+}
+
+.topOutcomeWrap {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 0 10px;
+  button {
+    flex-grow: 1;
+    margin: 0 1% 0 0;
+    max-width: 250px;
+
+  }
+  
+  .input-field {
+    margin: 0;
+  }
+}
+
+
+.dayBackDateSpanWrap {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 0 10px;
+  div {
+    margin: 0 10px 0 0;
+
+    &:last-child {
+      margin: 0;
+    }
+  
+  }
+  p {
+    font-weight: 500;
+    span {
+      color: $primary;
+    }
+  }
+
+}
+
+
+.card {
+
+  &.objectiveOverview {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.45), 0 3px 6px rgba(0, 0, 0, 0.7);
+    // margin: 0 0 20px;
+    padding: 10px 8px;
+
+    > * {
+      margin: 0 0 16px;
+    }
+
+    .row {
+      display: flex;
+
+      &.progressAndNew {
+        align-items: center;
+        justify-content: space-around;
+
+        .btn-icon {
+          flex-flow: column;
+          margin: 0;
+          padding: 16px 32px;
+          box-shadow: $shadow-m1;
+
+          svg {
+            margin: 0;
+            width: 40px;
+          }
+
+          span {
+            font-size: 1.125rem;
+          }
+        }
+
+        .progressCircle .path2{
+          stroke-linecap: round;
+
+        }
+      }
+    }
+
+    .statement {
+      border-radius: $r-sm;
+      border: $w-xs solid $black;
+      margin: 0 0 10px;
+      padding: 10px;
+    }
+
+    .activities {
+      border-radius: $r-sm;
+      border: $w-xs solid $black;
+      display: flex;
+      flex-flow: row wrap;
+      margin: 0 0 10px;
+      padding: 10px;
+
+      .activity {
+        background: $primary;
+        border-radius: $r-xl;
+        color: $font-light;
+        display: block;
+        padding: 5px 8px;
+        text-align: center;
+      }
+    }
+  }
+}
+
+
