@@ -1,0 +1,80 @@
+body {
+    font-family: source-sans-pro, sans-serif;
+    font-size: 15px;
+    /*padding-top: 60px;*/
+    /*padding-bottom: 40px;*/
+}
+
+.dropdown-menu {
+    max-height: 400px;
+    overflow: auto;
+    width: 230px;
+}
+
+.list-item {
+    padding-top: 6px;
+    padding-left: 56px;
+}
+
+.no-reports {
+    display: none;
+}
+
+#leftNavGroupsList .subchild{
+    margin-left:11px;
+}
+
+div.leftnav-on #calendarContent {
+    padding-left:202px;
+}
+
+div.web2cal ul.calnav {
+    background: none;border:none;
+}
+
+.padded-control{
+    padding: 5px 0px;
+    margin:5px 0px;
+}
+.topborder{
+    border-top: 1px solid #ccc;
+
+}
+#repeatInfo{
+    margin-bottom:25px;
+}
+.bottomborder{
+    border-bottom: 1px solid #ccc;
+}
+#repeatEndDate,.subrepeatpattern,.repeatPattern{display:none;}
+.repeatdays .a-day{
+    display:inline-block;
+    padding:4px 8px;
+    margin-right: 10px;
+    color:#efefef;
+    background-color: #444;
+}
+.repeatPattern{
+    margin-left:2px;
+    background: #eee;
+    padding:6px;
+    -moz-box-shadow:    inset 0 0 5px #000000;
+    -webkit-box-shadow: inset 0 0 5px #000000;
+    box-shadow:         inset 0 0 5px #000000;
+}
+.monthoptions{padding: 3px 0px; }
+
+.monthoptions.selected{
+    background: #fff;
+    border: 1px solid inset;
+    padding:3px 35px 3px 3px;
+    -moz-box-shadow:    inset 0 0 2px #000000;
+    -webkit-box-shadow: inset 0 0 2px #000000;
+    box-shadow:         inset 0 0 2px #000000;
+    background: #fff url("lib/web2cal/images/tick.gif") center right no-repeat;
+}
+
+.form-section{
+
+
+}

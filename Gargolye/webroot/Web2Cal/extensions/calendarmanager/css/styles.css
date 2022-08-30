@@ -1,0 +1,23 @@
+.filterBoxColor{
+  background: url('../../../images/calIconsv3.png') -55px -264px ;
+    width:12px;
+    height:12px;
+}
+#calendarClickMenu{
+    position: absolute;
+    width:140px;
+    background: #fff;
+    z-index: 1000;
+    padding:3px;
+    border: 1px solid #555;
+}
+#calendarClickMenu .calendarColor{
+    width:16px; height:16px; margin-right:5px;float:left;border:2px solid #fff;margin-bottom: 5px;;
+}
+#calendarClickMenu .calendarColor.active .eventBody{
+    background: url('../../../images/calIconsv3.png') -90px -168px;
+
+}
+#calendarClickMenu .calendarColor.active{
+    border: 1px solid red;
+}

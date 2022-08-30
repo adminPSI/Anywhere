@@ -1,0 +1,229 @@
+.input-field {
+  @extend %input-wrap;
+  &.textarea {
+    height: 100px;
+  }
+
+  &__input {
+    @extend %input;
+  }
+
+  .notched-outline {
+    @extend %notched-outline;
+  }
+
+  .floating-label {
+    @extend %floating-label;
+  }
+}
+
+.input-field__input:focus {
+    background-color: #E8E8E8;
+}
+
+.input-field--primary {
+  color: $input-blur--light;
+
+  &--focused {
+    color: $input-focus--light;
+  }
+}
+.inputCharCount {
+  color: $black;
+  position: absolute;
+  right: 5px;
+  bottom: -15px;
+  &.overLimit {
+    color: $red;
+  }
+}
+.checkAlign > span::after {
+    left: 138px !important;
+}
+// Speech to text icon
+.sttInputIcon {
+  position: absolute;
+  right: -6px;
+  top: -8px;
+  width: 22px;
+  margin: 0px;
+  background: $white !important;
+  // transition: 0.2s;
+  svg {
+    margin: 0px;
+  }
+  &.stt_listening {
+    fill: $red;
+  }
+}
+.input-field--secondary {
+  color: $input-blur--dark;
+
+  &--focused {
+    color: $input-focus--dark;
+  }
+}
+.input-field.disabled {
+  color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+.input-field.error {
+  color: $font-error !important;
+
+  .notched-outline {
+    color: $font-error !important;
+    border-color: $font-error !important;
+  }
+  .notched-outline__leading,
+  .notched-outline__notch,
+  .notched-outline__trailing {
+    border-color: $font-error !important;
+  }
+  .input-field__input {
+    color: $black !important;
+  }
+}
+.input-field.warning {
+  color: $font-warning;
+}
+.input-field.hidden {
+  display: none;
+}
+
+// Old School Native Checkbox
+.checkbox {
+  &.input-field {
+    margin-right: 8px;
+  }
+  &.disabled {
+    opacity: 0.5;
+  }
+
+  .input-field__input {
+    appearance: auto;
+    width: 20px;
+  }
+}
+
+// Material Design Checkbox
+.checkboxGroup {
+  display: flex;
+  flex-flow: row wrap;
+
+  .checkbox-mtd {
+    margin: 0 20px 0 0;
+  }
+}
+.checkbox-mtd {
+  align-items: center;
+  color: rgba(0, 0, 0, 0.87);
+  display: inline-flex;
+  font-size: 16px;
+  line-height: 1.5;
+  position: relative;
+  z-index: 0;
+}
+
+// Hidden Input
+.checkbox-mtd > input {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    box-shadow: none;
+    display: block;
+    height: 40px;
+    position: absolute;
+    left: -10px;
+    top: -8px;
+    margin: 0;
+    outline: none;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1);
+    transition: opacity 0.3s, transform 0.2s;
+    width: 40px;
+    z-index: -1;
+}
+
+// Text
+.checkbox-mtd > span {
+    cursor: pointer;
+    display: inline-block;
+    font-weight: $normal;
+    width: 100%;
+}
+
+// Box
+.checkbox-mtd::before {
+  content: '';
+  box-sizing: border-box;
+  border: solid 2px;
+  border-color: rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+  display: inline-block;
+  height: 20px;
+  margin: 0 6px 0 0;
+  transition: border-color 0.2s, background-color 0.2s;
+  vertical-align: top;
+  min-width: 20px;
+}
+// Checkmark
+.checkbox-mtd > span::after {
+    content: '';
+    border: solid 2px transparent;
+    border-right: none;
+    border-top: none;
+    display: block;
+    height: 5px;
+    position: absolute;
+    top: 4px;
+    left: 1px;
+    transform: translate(3px, 4px) rotate(-45deg);
+    width: 10px;
+}
+// Checked
+.checkbox-mtd > input:checked {
+    background-color: rgb(33, 150, 243);
+}
+
+.checkbox-mtd > input:checked + span::after {
+    border-color: $primary;
+}
+// Active
+.checkbox-mtd > input:active {
+    opacity: 1;
+    transform: scale(0);
+    transition: transform 0s, opacity 0s;
+}
+
+.checkbox-mtd > input:checked:active + span::before {
+    border-color: transparent;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+// ERROR!!!
+.checkbox-mtd.error::before {
+    border: 2px solid $font-error;
+}
+// Not really errror
+.checkbox-mtd.redButNotError::before {
+    border: 2px solid $font-error;
+}
+
+.checkbox-mtd.redButNotError > span {
+    color: $font-error;
+}
+// Disabled
+.checkbox-mtd.disabled > input {
+    pointer-events: none;
+}
+
+.input-field.textarea {
+    height: auto !important;
+}
+
+textarea.autosize {
+    height: auto;
+    min-height: 100px !important;
+}

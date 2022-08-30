@@ -1,0 +1,632 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+        <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+		<script src="ext/jquery.cookie.js"> </script>
+
+
+        <script src="js/web2cal.support.js">  </script>
+        <script src="js/web2cal.templates.js">  </script>
+
+        <script src="js/web2cal.dummydata.js">  </script>
+        <script src="js/optional/timecontrol.js">  </script>
+
+        <title>Web2Cal | Webmail</title> 
+    </head>
+    <body>	
+		<div class="demoList" ><a href="">&lt;&lt;&lt; &nbsp; Back to list of Examples</a></div>
+        <div id="mailContents">
+            <div class="fleft">
+                <div class="maillogo">
+                		WebMail
+                </div>
+            </div> 
+            <div style="clear:both;">
+            </div> 
+            <div style="clear:both">
+            </div>
+            <div id="calendarContainer">
+            </div>
+        </div>
+        <div id="newCalEvent" class="calendarForm" style="padding: 8px; display:none;">
+            <table width="96%" border="0" cellspacing="2" cellpadding="2">
+                <tr>
+                    <td>
+                        <div class="label">
+                            Event Name
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <input type="text" class="calInput" id="eventName" name="eventName" style="width:26em;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="label">
+                            Calendar
+                        </div>
+                    </td>
+                    <td>
+                        <div class="selectGroup">
+                            <select id="eventGroup" style=" width: 10em" name="eventGroup">
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="label">
+                            Time
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="calInput"  class="calInput"  id="eventStartDate" style=" width: 6em" name="eventStartDate" />
+						<input type="text" class="calInput"  id="eventStartTime" style=" width: 5em" name="eventStartTime" />
+						TO
+						<input type="text" class="calInput"  id="eventEndDate" style=" width: 6em" name="eventEndDate" />
+						<input type="text" class="calInput"  id="eventEndTime" style=" width: 5em" name="eventEndTime" />
+                    </td>
+                    <td>
+                        <div class="label">
+                            All day?<input type="checkbox" id="allDayEvent" class="inputbox" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="label">
+                            Description
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <textarea cols="52" rows="2" name="eventDesc" id="eventDesc">
+                        </textarea>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        <div class="label">
+                            Event Recurrence
+                            <select id="recurrenceDropdown" onchange="showRecurrenceOptions(this)" name="recurrenceDropdown">
+                                <option value="" selected="selected">Does Not Repeat</option>
+                                <option value="day">Daily</option>
+                                <option value="week">Weekly</option>
+                                <option value="month">Monthly</option>
+                            </select>
+                        </div>
+                        <div id="recurrenceContainer" style="display:none;">
+                            <table>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="recurrenceOptions recurrenceOptionsweek" style="display:none;">
+                                            <table>
+                                                <tr>
+                                                    <td valign="top" class="labelContainer">
+                                                        <div class="label">
+                                                            On
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="fleft recurOptionsWeek">
+                                                            <input type="checkbox" id="recurrenceWeeklyDay0" value="0" class="recurrenceWeeklyDay" />
+                                                            <label for="recurrenceWeeklyDay0">
+                                                                Sunday
+                                                            </label>
+                                                        </div>
+                                                        <div class="fleft recurOptionsWeek">
+                                                            <input type="checkbox" id="recurrenceWeeklyDay1" value="1" class="recurrenceWeeklyDay" />
+                                                            <label for="recurrenceWeeklyDay1">
+                                                                Monday
+                                                            </label>
+                                                        </div>
+                                                        <div class="fleft recurOptionsWeek">
+                                                            <input type="checkbox" id="recurrenceWeeklyDay2" value="2" class="recurrenceWeeklyDay" />
+                                                            <label for="recurrenceWeeklyDay2">
+                                                                Tuesday
+                                                            </label>
+                                                        </div>
+                                                        <div class="fleft recurOptionsWeek">
+                                                            <input type="checkbox" id="recurrenceWeeklyDay3" value="3" class="recurrenceWeeklyDay" />
+                                                            <label for="recurrenceWeeklyDay3">
+                                                                Wednesday
+                                                            </label>
+                                                        </div>
+                                                        <div class="fleft recurOptionsWeek">
+                                                            <input type="checkbox" id="recurrenceWeeklyDay4" value="4" class="recurrenceWeeklyDay" />
+                                                            <label for="recurrenceWeeklyDay4">
+                                                                Thursday
+                                                            </label>
+                                                        </div>
+                                                        <div class="fleft recurOptionsWeek">
+                                                            <input type="checkbox" id="recurrenceWeeklyDay5" value="5" class="recurrenceWeeklyDay" />
+                                                            <label for="recurrenceWeeklyDay5">
+                                                                Friday
+                                                            </label>
+                                                        </div>
+                                                        <div class="fleft recurOptionsWeek">
+                                                            <input type="checkbox" id="recurrenceWeeklyDay6" value="6" class="recurrenceWeeklyDay" />
+                                                            <label for="recurrenceWeeklyDay6">
+                                                                Saturday
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="recurrenceOptions recurrenceOptionsday" style="display:none;">
+                                            <table>
+                                                <tr>
+                                                    <td class="labelContainer">
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" qatagid="qa.wlcalendar.eventdetails.recurrencedailyeveryweekday" class="radio" id="recurrenceDailyWeekDay" name="recurrenceDailyWhen" />
+                                                        <label for="recurrenceDailyWeekDay">
+                                                            Only weekdays
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class='recurrenceOptions recurrenceOptionsmonth' style="display:none;">
+                                            <table>
+                                                <tr>
+                                                    <td class="labelContainer">
+                                                        <div class="label">
+                                                            On The
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <input type="radio" class="radio" name="recurrenceMonthlyWhen" id="recurrenceMonthlyWhenNthDay" />
+                                                        <label id="recurrenceMonthRuleOnTheNthDay" for="recurrenceMonthlyWhenNthDay">
+                                                        </label>
+                                                        <input type="hidden" id="recurrenceMonthHdnDate">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="labelContainer">
+                                                    </td>
+                                                    <td>
+                                                        <input type="radio" class="radio" name="recurrenceMonthlyWhen" id="recurrenceMonthlyWhenByPosition" />
+                                                        <select id="recurrenceMonthlyWhenDropdown" onclick="selectRadio('recurrenceMonthlyWhen')" name="recurrenceMonthlyWhenDropdown">
+                                                            <option value="1">First</option>
+                                                            <option value="2">Second</option>
+                                                            <option value="3">Third</option>
+                                                            <option value="4">Fourth</option>
+                                                            <option value="-1">Last</option>
+                                                        </select>
+                                                        <select id="recurrenceMonthlyWhenDropdownDayname" onclick="selectRadio('recurrenceMonthlyWhen')" name="recurrenceMonthlyWhenDropdownDayname">
+                                                            <option value="0">Sunday</option>
+                                                            <option value="1">Monday</option>
+                                                            <option value="2">Tuesday</option>
+                                                            <option value="3">Wednesday</option>
+                                                            <option value="4">Thursday</option>
+                                                            <option value="5">Friday</option>
+                                                            <option value="6">Saturday</option>
+                                                        </select>
+                                                        of the month
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="labelContainer">
+                                        <label for="recurrenceGroup">
+                                            Starts:
+                                        </label>
+                                    </th>
+                                    <td id="recurrenceStartLabel">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="labelContainer">
+                                        <label for="recurrenceGroup">
+                                            Ends:
+                                        </label>
+                                    </th>
+                                    <td>
+                                        <input type="radio" checked class="radio" name="recurrenceRuleEndTimeframe" id="recurrenceRuleEndTimeframeNoEnd" />
+                                        <label for="recurrenceRuleEndTimeframeNoEnd">
+                                            Never ends
+                                        </label>
+										<input type="radio" class="radio" name="recurrenceRuleEndTimeframe" id="recurrenceRuleEndTimeframeDate" />On  &nbsp; <input type="text" size="10" id="recurrenceRuleEndTimeDate" onclick="selectRadio('recurrenceRuleEndTimeframe')" name="recurrenceRuleEndTimeDate" class="LineHeightTight" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div style="position:absolute; width:90%;bottom:0px;border-top:0px solid #ccc;text-align:center;">
+                <table align="center">
+                    <tr>
+                        <td align="center" colspan="2">
+                            <a class="websbutton" name="edit" style="width: 80px;float:left; margin-right:15px;" href="javascript:void(0)" onclick="return createNewEvent();">Create event</a>
+                            <a class="websbutton" role="button" style="width: 80px;float:left; margin-right:15px;" href="#" onclick="jQuery('#newCalEvent').dialog( 'close' );">Close</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
+<script>
+    var ical;
+    
+    function createNewEvent()
+    {
+        var selectedWeekDays = new Array();
+        jQuery(".recurrenceWeeklyDay").each(function()
+        {
+            if (this.checked) 
+            {
+                selectedWeekDays.push(this.value); 
+            }
+        });
+        var repeatEndDate = null;
+        if (jQuery("#recurrenceRuleEndTimeframeDate").get(0).checked) 
+        {
+            repeatEndDate = jQuery("#recurrenceRuleEndTimeDate").val();
+        } 
+        var repeatMode = jQuery("#recurrenceDropdown").val(); 
+        
+        var mRepeatNumber = jQuery("#recurrenceMonthlyWhenDropdown").val();
+        var mRepeatDay = jQuery("#recurrenceMonthlyWhenDropdownDayname").val();
+        var mRepeatDate = jQuery("#recurrenceMonthHdnDate").val();
+        var repeatOnDate = false;
+        if (jQuery("#recurrenceMonthlyWhenNthDay").get(0).checked) 
+        {
+            repeatOnDate = true;
+        }
+        var repeatOnDay = false;
+        if (jQuery("#recurrenceMonthlyWhenByPosition").get(0).checked) 
+        {
+            repeatOnDay = true;
+        } 
+        var repeatObject = {
+            mode: repeatMode,
+            day: { 
+				onlyWeekDays:  jQuery("#recurrenceDailyWeekDay").get(0).checked
+            },
+            week: {
+                days: selectedWeekDays
+            },
+            month: {
+                weekNumber: mRepeatNumber,
+                weekDay: mRepeatDay,
+                repeatDate: mRepeatDate
+            },
+            endDate: repeatEndDate,
+			repeatCount: null
+        }
+        if (repeatMode == "") 
+        {
+            repeatObject = null;
+        }
+        var newEv = getNewEventObj();
+        newEv['repeatEvent'] = repeatObject;
+        jQuery("#newCalEvent").dialog( "close" );
+        ical.addEvent(newEv);
+        return false;
+    }
+    
+    function selectRadio(name)
+    {
+        jQuery("input[name='" + name + "']").attr('checked', true);
+    }
+    
+	function getCookieValue(name, defaultValue)
+	{
+		var val=jQuery.cookie(name);
+		
+		if(!val)
+		{
+			val=defaultValue;
+		} 
+		return val;
+	}
+    /*
+     Create the Calendar.
+     */
+    function drawCalendar()
+    {
+		var lang=getCookieValue( "language", "EN");
+		Web2Cal.LANG=eval("Web2CalLanguage_"+lang);
+		  
+		Web2CalConstants.NEW_EVENT_POPUP_WIDTH=550;
+		Web2CalConstants.NEW_EVENT_POPUP_HEIGHT=240;
+	 
+        ical = new Web2Cal('calendarContainer', {
+            loadEvents: 		loadCalendarEvents,
+            onUpdateEvent: 		updateEvent,            
+            onNewEvent: 		onNewEvent,			
+            showLeftNav: 		true,
+            leftNavTitle: 		"Calendars",
+            newEventInPopUp: 	true,
+            defaultView: 		getCookieValue( "defaultView", "week"), 
+            startTime: 			(+getCookieValue( "startTime", 0)), 
+			endTime: 			(+getCookieValue( "endTime", 24)),
+			customViewSize: 	(+getCookieValue( "customViewSize", 4)),
+			startOfWeek:		(+getCookieValue( "startOfWeek", 1)),
+			timeFormat: 		(+getCookieValue( "timeFormat", 0)),
+            views:	 			getCookieValue( "viewsList", "day,month,week,agenda,custom"),
+			optionsOnClick: 	showOptions,
+			showOptions: 		true,
+			date: 				"10/21/2009",
+            newEventTemplate: 	"newCalEvent",
+            onRecEventUpdate: 	onRecurssiveEventUpdate 
+        }); 
+        
+        ical.build();
+    }
+    
+	function showOptions()
+	{
+		new Web2Cal.popup( {
+				url: "settings.html"	,
+				title: "Change Calendar Settings",
+				width: "500px",
+				height: "350px"
+		});
+	}
+	function onRecurssiveEventUpdate(evt)
+	{
+		ical.updateEvent(evt);
+	}
+    
+    function showRecurrenceOptions(obj)
+    {
+        var val = obj.value;
+        jQuery(".recurrenceOptions").hide(); 
+        if (val != "") 
+        {
+            jQuery("#recurrenceContainer").show();
+            jQuery(".recurrenceOptions" + val).effect("highlight", {}, 900).fadeIn(700);
+			jQuery('#newCalEvent').dialog( "option", "height", 380 ).dialog( "option", "position", 'center' );
+        }
+        else 
+        {
+			jQuery('#newCalEvent').dialog( "option", "height", 260 ).dialog( "option", "position", 'center' );
+            jQuery("#recurrenceContainer").hide();
+        }
+    } 
+    
+    /*
+     Method invoked when event is moved or resized
+     @param event object containing eventID and newly updated Times
+     */
+    function updateEvent(event)
+    { 
+        ical.updateEvent(event);
+    }
+    
+    /*
+     Method invoked when creating a new event, before showing the new event form.
+     @param obj - Object containing (startTime, endTime)
+     @param groups - List of Group objects ({groupId, name})
+     @param allday - boolean to indicate if the event created is allday event.
+     */
+    function onNewEvent(obj, groups, allday)
+    { 
+		showRecurrenceOptions( jQuery("#recurrenceDropdown").val("").get(0) );
+      
+        var newevt = jQuery("#newCalEvent");
+        newevt.find("#recursiveEvent").attr("checked", false).end()
+		.find("#recursionContainer").hide().end()
+		.find("#eventDesc").val("").end()
+		.find("#eventName").val("").focus().end()
+		.find("#startDate").val(st.toJustDateString()).end()
+		.find("#endDate").val(ed.toJustDateString()).end()
+		.find("#recurrenceStartLabel").html(st.toStandardFormat()).end()
+		.find("#recurrenceMonthRuleOnTheNthDay").html(st.getDate() + " of Month").end()
+		.find("#recurrenceMonthHdnDate").val(st.getDate()).end()
+		.find(".recurrenceWeeklyDay").attr("checked", false).end()
+		.find("#recurrenceWeeklyDay" + (st.getDay())).attr("checked", true).end()
+		.find("#eventStartDate").val(st.toStandardFormat()).end()
+		.find("#eventEndDate").val(ed.toStandardFormat());
+        
+        if (allday) 
+        {
+            newevt.find("#allDayEvent").attr("checked", true);
+            newevt.find("#eventStartTime").val("").end().find("#eventEndTime").val("");
+        }
+        else 
+        {
+            newevt.find("#allDayEvent").attr("checked", false);
+            newevt.find("#eventStartTime").val(st.toNiceTime());
+            newevt.find("#eventEndTime").val(ed.toNiceTime());
+            
+        }
+        
+        var groupDD = newevt.find("#eventGroup").get(0);
+        removeAllOptions(groupDD);
+        var self = this;
+        for (var g in groups) 
+        {
+            if (!groups.hasOwnProperty(g)) 
+                continue;
+            var gId = groups[g].groupId;
+            addOption(groupDD, groups[g].groupName, groups[g].groupId, false);
+        } 
+    } 
+	
+    function createExclusion(mainEventId, fTime, tTime, sequence, gId, name, deleted)
+	{
+		return {
+			 eventId: 100
+			,parentEventId: mainEventId
+			,startTime: fTime.getDateObj()
+			,endTime: tTime.getDateObj()
+			,sequence: sequence
+			, eventType:"EXCLUDE"
+			, group: {groupId: gId, name: name}
+			, deleted: deleted
+		};
+	}
+    /**
+     Method to get Events and display it in the calendar.
+     If you need to make an asynchronous call, invoke ical.render in the callback method.
+     @param startTime - Calendar Display Range start
+     @para endTime - Calendar End Range end
+     */
+    function loadCalendarEvents(startTime, endTime)
+    {
+        var calendars = new Array();
+        var events=new Array();  	    
+		events.push(createEvent("Status Meetings", 2, "", "", createDateTime(10, 0,-6), createDateTime(11, 30,-6), "Project Status Meeting", false, getRepeatObject ("day") ));
+		      events.push(createExclusion(2, createDateTime(14, 0,-8), createDateTime(16, 0,-8), 4));
+				events.push(createEvent("Board Meeting", 3, "", "", createDateTime(11, 30,-2), createDateTime(13, 30,-2), "Company Board Meeting", false, getRepeatObject ("week", [5]) ));
+				events.push(createEvent("Off to MIAMI", 5, "", "", createDateTime(4, 30,-2), createDateTime(13, 30,-1), "Miami Meeting", true  ));        	        
+        calendars.push({
+            groupId: 1,
+            name: "Work Calendar", events:events 
+    	    
+        });
+        var events=new Array();       
+		 events.push(createEvent("Dinner with Sue", 1, "", "", createDateTime(19, 0,-2), createDateTime(21, 30,-2), "Dinner with Sue @ Pensi", false, getRepeatObject ("day") ));
+        calendars.push({
+            groupId: 2,
+            name: "Personal Calendar",
+            events:events 
+        });
+        ical.render(calendars);
+    }
+    /*
+     Click on Edit Button in preview window
+     */
+    function rzEditEvent()
+    {
+        alert("editing");
+    }
+    
+    /**
+     Clicking delete in Preview window
+     */
+    function rzDeleteEvent()
+    {
+        alert("Delete Event in DB and invoke ical.deleteEvent({eventId: id})");
+    }
+    
+    /**
+     * Sets up the new event, date control / time control etc...
+     *
+     * @param {Object} newevt
+     */
+    function setupNewEvt(newevt)
+    {
+        newevt.find("#eventStartDate").datepicker( );
+        
+        newevt.find("#eventEndDate").datepicker( );
+        
+        newevt.find("#recurrenceRuleEndTimeDate").datepicker();
+        
+        
+        //setup recurring.. 
+        var recChk = newevt.find("#recursiveEvent").get(0);
+        if (recChk) 
+        {
+            recChk.onclick = function()
+            {
+                if (this.checked) 
+                {
+                    newevt.find("#recursionContainer").slideDown(500);
+                }
+                else 
+                {
+                    newevt.find("#recursionContainer").slideUp(400);
+                }
+                
+            };
+        }
+        var alldaybox = newevt.find("#allDayEvent").get(0);
+        var _sTime;
+        var _eTime;
+        if (alldaybox) 
+        {
+            alldaybox.onclick = function()
+            {
+                if (this.checked) 
+                {
+                    _sTime = newevt.find("#eventStartTime").val();
+                    _eTime = newevt.find("#eventEndTime").val();
+                    newevt.find("#eventStartTime").attr("disabled", true).val("");
+                    newevt.find("#eventEndTime").attr("disabled", true).val("");
+                }
+                else 
+                {
+                    newevt.find("#eventStartTime").attr("disabled", false).val(_sTime);
+                    newevt.find("#eventEndTime").attr("disabled", false).val(_eTime);
+                    
+                };
+             };
+        } 
+        new Web2Cal.TimeControl(newevt.find("#eventStartTime").get(0));
+        new Web2Cal.TimeControl(newevt.find("#eventEndTime").get(0), newevt.find("#eventStartTime").get(0), {
+            onTimeSelect: updateDateForTime,
+            dateField: "eventEndDate"
+        });
+        
+    }
+    
+    /**
+     Click of Add in add event box
+     */
+    function getNewEventObj()
+    {
+    
+        var newEventContainer = jQuery("#newCalEvent");
+        var name = newEventContainer.find("#eventName").val();
+        var grp = newEventContainer.find("#eventGroup").val();
+        var grpName = newEventContainer.find("#eventGroup  option:selected").text();
+        
+        var strtTime = newEventContainer.find("#eventStartTime").val();
+        var endTime = newEventContainer.find("#eventEndTime").val();
+        var startDate = newEventContainer.find("#eventStartDate").val();
+        var endDate = newEventContainer.find("#eventEndDate").val();
+        
+        if (name == "") 
+        {
+            name = "No Title";
+        }
+        
+        var alldaybox = jQuery("#allDayEvent", newEventContainer).get(0);
+        var allday = alldaybox.checked;
+        var start = getDateFromStrings(startDate, strtTime);
+        var end = getDateFromStrings(endDate, endTime);
+        if (allday) 
+        {
+            start.setHours(0, 0, 0);
+            end.setHours(0, 0, 0);
+        }
+        
+        var newev = {
+            name: name,
+            startTime: start,
+            endTime: end,
+            allDay: allday,
+            group: {
+                groupId: grp,
+                name: grpName
+            },
+            eventId: Math.ceil(999 * Math.random())
+        };
+        return newev;
+    }
+    
+	WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+    /*
+     Once page is loaded, invoke the Load Calendar Script
+     */
+    jQuery(document).ready(function()
+    {
+	 
+        drawCalendar();
+        setupNewEvt(jQuery("#newCalEvent"));
+    });
+</script>

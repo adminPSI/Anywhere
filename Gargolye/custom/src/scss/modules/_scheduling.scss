@@ -1,0 +1,240 @@
+// Overrides
+//================================
+#inner-wrap #calendarContent {
+  padding: 0;
+}
+.dayEvent .eventBody {
+  pointer-events: none !important;
+}
+div.fullPreview {
+  display: none !important;
+}
+.calheaderContainer .calHeader a {
+  font-size: 14px;
+}
+div.leftnav-on #calendarContent {
+  padding: 0 !important;
+}
+
+
+//Request Time Off Window
+//================================
+.requestOffCard {
+  .card__body > div {
+    margin: 0 5px 0;
+  }
+  .card__body > div.input-field, .card__body > div.dropdown {
+    margin: 0 10px 20px;
+  }
+
+  .requestOffCard__date, .requestOffCard__time {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+
+    > div:first-child{
+      width: 45%;
+      flex-grow: 1;
+      margin: 0 5px 20px;
+    }
+    
+    > div:last-child {
+      width: 37%;
+      flex-grow: 1;
+      margin: 0 5px 20px;
+    }
+  }
+}
+
+.requestOffBtnWrap{
+  display: flex;
+  
+  .btn-icon {
+    flex-grow: 1;
+    margin: 0 5px 0;
+  }
+
+}
+// Request Approval Page
+// ===============================
+
+.actioncenter[data-active-module="schedule"] {
+  .table__row {
+    &[data-approval-status='approve'] {
+      background: rgba($secondary, 0.3);
+    }
+    &[data-approval-status='deny'] {
+      background: rgba($red, .3)
+    }
+  }
+
+  #daysOffTable, #openShiftTable{
+    margin-bottom: 5px;
+  }
+
+  #daysOffTable{
+  .table__header-row,
+  .table__row {
+    > div {
+      margin: 0 15px 0 0;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+    > div:nth-child(1) {// Employee
+      width: 140px;
+    }
+    > div:nth-child(2) { // Start Data/Time
+      width: 80px;
+    }
+    > div:nth-child(3) { // End Date/Time
+      width: 80px;
+    }
+    > div:nth-child(4) { // Reason
+      display: none;
+      width: 80px;
+    }
+    > div:nth-child(5) { // Approve/Deny
+      display: none;
+      width: 80px;
+    }
+    @media screen and (min-width: 560px) {
+      > div:nth-child(1) {// Employee
+        width: 170px;
+      }
+      > div:nth-child(2) {// Start Data/Time
+        width: 160px;
+      }
+      > div:nth-child(3) {// // End Date/Time
+        width: 160px;
+      }
+      > div:nth-child(4) {// Reason 
+        display: block;
+      }
+      > div:nth-child(5) {// Approve/Deny
+        display: block;
+      }
+    }
+  }
+  }
+
+  .table__header-row,
+  .table__row {
+    > div {
+      margin: 0 15px 0 0;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+    > div:nth-child(1) {// Employee
+      width: 140px;
+    }
+    > div:nth-child(2) { //Data/Time
+      width: 80px;
+    }
+    > div:nth-child(3) { //Location
+      width: 80px;
+    }
+    > div:nth-child(4) { // Reason
+      display: none;
+      width: 80px;
+    }
+    > div:nth-child(5) { // Approve/Deny
+      display: none;
+      width: 80px;
+    }
+    @media screen and (min-width: 560px) {
+      > div:nth-child(1) {// Employee
+        width: 170px;
+      }
+      > div:nth-child(2) {// Date/Time
+        width: 160px;
+      }
+      > div:nth-child(3) {// location
+        width: 160px;
+      }
+      > div:nth-child(4) {// Reason 
+        display: block;
+      }
+      > div:nth-child(5) {// Approve/Deny
+        display: block;
+      }
+    }
+  }
+}
+
+//Calendar MAIN
+//=====================
+
+.scheduleViewWrap {
+  display: flex;
+  .btn {
+    flex-grow: 2;
+    width: 38%;
+    font-size: 0.875rem;
+    padding-right: 7px;
+    padding-left: 7px;
+    box-shadow: $shadow-m1;
+  }
+  .dropdown {
+    flex-grow: 1;
+    width: 60%;
+    margin-left: 10px;
+  }
+
+}
+
+//Calendar Popups
+//================================
+.detailsHeading {
+  margin: 0 0 25px;
+}
+
+hr {
+  border-color: rgba(0,0,0,.14);
+  border-width: 1px 0 0;
+  margin: 0 0 10px 0;
+}
+
+.divider--right-inset {
+  border-color: rgba(0,0,0,.14);
+  border-width: 1px 0 0;
+  margin: 0 30% 10px 0;
+}
+
+.smallDetail{
+  padding: 4px 0 0;
+  font-size: .8em;
+}
+
+.popupDetailsLine:first-child {
+  margin: 15px 0 10px;
+}
+.popupDetailsLine:last-child {
+  margin: 0 0 25px;
+}
+.popupDetailsLine{
+  margin: 0 0 10px;
+}
+
+.label{
+  margin: 0 0 5px
+}
+
+label{
+  margin: 0 0 5px
+}
+
+.popupBtnWrap {
+  display: flex;
+  > button:nth-child(2) {
+    margin-left: 10px;
+  }
+  button {
+    flex-grow: 1;
+  }
+}
+//call off button in popup
+.request-off {
+  margin: 20px 0 15px 0;  
+}

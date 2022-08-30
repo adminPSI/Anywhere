@@ -1,0 +1,169 @@
+.btn,
+.btn-icon {
+  background-image: none;
+  border-width: $w-sm;
+  border-radius: $r-sm;
+  border-style: solid;
+  cursor: pointer;
+  color: inherit;
+  font-size: 0.875rem;
+  font-weight: $light;
+  height: auto;
+  letter-spacing: 0.5px;
+  line-height: normal;
+  //min-width: 60px;
+  margin: 0 0 20px;
+  padding: 10px 16px;
+  text-transform: uppercase;
+  width: auto;
+
+  * {
+    pointer-events: none;
+  }
+  
+  // Button Colors
+  &--primary {// light btn
+    background: $btn-light;
+    border-color: $btn-light;
+
+    &.btn--contained {
+      color: $btn-dark;
+    }
+    &.btn--outlined,
+    &.btn--text {
+      color: $btn-light;
+    }
+  }
+  &--secondary {// dark btn
+    background: $btn-dark;
+    border-color: $btn-dark;
+
+    &.btn--contained {
+      color: $btn-light;
+    }
+    &.btn--outlined,
+    &.btn--text {
+      color: $btn-dark;
+    }
+  }
+  &--danger {// red btn
+    background: red;
+    border-color: red;
+
+    &.btn--contained {
+      color: $btn-light;
+    }
+    &.btn--outlined,
+    &.btn--text {
+      color: red;
+    }
+  }
+
+  // Specific Styles
+  &.btn--contained {
+    border: none;
+    font-weight: $normal;
+  }
+  &.btn--outlined {
+    background: none;
+    font-weight: $normal;
+  }
+  &.btn--text {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: $light;
+    padding: 0;
+  }
+}
+
+.btn {
+  display: block;
+  text-align: center;
+}
+
+.btn-icon {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+
+  svg {
+    min-width: 26px;
+    margin: 0 4px 0 0;
+    width: 26px;
+  }
+  span {
+    color: inherit;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    line-height: 26px;
+    position: relative;
+    top: 2px;
+  }
+  &.icon-right {
+    svg {
+      order: 1;
+    }
+  }
+  &.icon-bottom {
+    flex-flow: column;
+    svg {
+      margin: 0 0 4px;
+    }
+    span {
+      line-height: 1.5;
+    }
+  }
+}
+
+// Button Containers
+.btnWrap {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 0 10px;
+
+  button {
+    flex-grow: 1;
+    margin: 0 1% 0 0;
+
+    &:last-child() {
+      margin: 0;
+    }
+  }
+}
+
+// Disabled
+.btn.disabled,
+.btn-icon.disabled {
+  background: rgba(0, 0, 0, .2);
+  color: rgba(0, 0, 0, .4);
+  pointer-events: none;
+  &.btn--text {
+    background: none;
+  }
+}
+
+// Error
+.btn.error,
+.btn-icon.error {
+  background: $font-error;
+}
+
+// Attention
+.btn.attention,
+.btn-icon.attention {
+  background: $secondary;
+}
+
+// Hidden
+.btn.hidden,
+.btn-icon.hidden {
+  display: none;
+}
+
+// Toggle Button
+.btn[data-toggled="true"],
+.btn-icon[data-toggled="true"] {
+  background: $bg-dark2;
+}

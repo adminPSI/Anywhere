@@ -1,0 +1,833 @@
+// ASSESSMENT
+//====================================
+.tableOfContents {
+  background: $primary;
+  color: $font-light;
+  display: none;
+  height: calc(100vh - 70px);
+  padding: 30px 20px 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: auto;
+
+  &.visible {
+    display: block;
+  }
+
+  // &__main {
+  //   overflow-y: scroll;
+  // }
+
+  &__close {
+    cursor: pointer;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    svg {
+      width: 26px;
+    }
+  }
+
+  a {
+    color: $font-light;
+    cursor: pointer;
+  }
+
+  &__heading {
+    font-weight: $bold;
+    margin: 0 0 16px;
+    text-transform: uppercase;
+    width: 100%;
+  }
+
+  &__sectionGroup {
+    margin: 0 0 10px;
+
+    &.nonApplicable {
+      .numOfQuestionsUnawnseredWrap,
+      .tableOfContents__subSectionGroup {
+        display: none;
+      }
+    }
+  }
+  &__sectionHeading {
+    font-weight: $normal;
+
+    a {
+      margin-right: 4px;
+    }
+
+    .numOfQuestionsUnawnseredWrap {
+      border-radius: $r-circle;
+      background: $font-error;
+      color: $font-light;
+      display: inline-block;
+      position: relative;
+      height: 24px;
+      width: 24px;
+      top: 7px;
+
+      &.hidden {
+        display: none;
+      }
+
+      .numOfQuestionsUnawnsered {
+        font-size: 13px;
+        font-weight: $normal;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .abrvHeading {
+      display: none;
+    }
+  }
+  &__subSectionGroup {
+    p {
+      padding: 16px 0 0 7px;
+    }
+  }
+
+  &__toggle {
+    display: none;
+  }
+}
+.assessmentNavMarkupWrap {
+  padding: 0px;
+
+  &.readOnly {
+    .addRowBtn,
+    .deleteRowBtn,
+    .assessmentSaveBtn,
+    .grid__cell,
+    .question,
+    .dropdown {
+      pointer-events: none !important;
+    }
+    .addRowBtn,
+    .deleteRowBtn,
+    .assessmentSaveBtn {
+      background: rgba(0, 0, 0, 0.2);
+      color: rgba(0, 0, 0, 0.4);
+    }
+    .question,
+    .grid__cell,
+    .input-field,
+    .dropdown {
+      color: rgba(0, 0, 0, 0.3);
+    }
+  }
+  &.hidden {
+    display: none;
+  }
+}
+.assessmentNavigation {
+  background: $bg-light;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  margin: -10px 0 10px;
+  padding: 8px 6px;
+  position: sticky;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  top: 0px;
+  width: 100%;
+
+  .assessmentNavBtn {
+    flex-grow: 1;
+    height: 44px;
+    margin: 0;
+    max-width: 32%;
+    padding: 0;
+  }
+}
+.moreMenuPopup {
+  &.error {
+    background: $bg-warning;
+  }
+
+  .closePopupBtn {
+    top: 12px;
+    right: 12px;
+  }
+  &__innerWrap {
+    display: flex;
+    flex-flow: row nowrap;
+    overflow: hidden;
+  }
+  &__menu {
+    flex-shrink: 0;
+    transform: translateX(-100%) !important;
+    width: 100%;
+    padding: 10px 0 0;
+
+    &.visible {
+      transform: translateX(0%) !important;
+    }
+  }
+
+  .screen {
+    flex-shrink: 0;
+    max-height: 500px;
+    overflow: auto;
+    padding: 10px 0 0 0;
+    width: 100%;
+
+    .successfulSavePopup {
+      &.error {
+        svg {
+          color: $font-error;
+        }
+      }
+    }
+  }
+
+  #editDatesScreen {
+    transform: translateX(10%);
+    &.visible {
+      transform: translateX(-100%);
+    }
+  }
+  #updateStatusScreen {
+    .currentStatus {
+      display: flex;
+      margin: 0 0 20px;
+
+      p:first-child {
+        font-weight: $bold;
+        margin: 0 8px 0 0;
+      }
+    }
+    .btnWrap {
+      justify-content: space-between;
+
+      .btn {
+        flex-grow: 1;
+        width: auto;
+        max-width: 49%;
+        margin: 0;
+      }
+    }
+    &.visible {
+      transform: translateX(-200%);
+    }
+  }
+  #deleteScreen {
+    &.visible {
+      transform: translateX(-300%);
+    }
+
+    .successDiv {
+      text-align: center;
+
+      p {
+        font-weight: $normal;
+      }
+
+      svg {
+        color: $secondary;
+        margin: 0 0 20px;
+        width: 100px;
+      }
+    }
+
+    .warningMessage {
+      color: $font-error;
+      font-weight: $bold;
+      margin: 0 0 20px;
+    }
+  }
+  #reactivateScreen {
+    &.visible {
+      transform: translateX(-400%);
+    }
+
+    .warningMessage {
+      color: $font-error;
+      font-weight: $bold;
+      margin: 0 0 20px;
+    }
+  }
+  #addWorkflowScreen {
+    &.visible {
+      transform: translateX(-500%);
+    }
+
+    h2 {
+      margin: 0 0 10px;
+    }
+
+    .workflowList {
+      margin: 0 0 10px;
+      max-height: 210px;
+      overflow: auto;
+    }
+
+    .workflowListItem {
+      border-bottom: 1px solid $black;
+      cursor: pointer;
+      padding: 8px 4px;
+      overflow: hidden;
+
+      &.selected {
+        background: $green;
+      }
+
+      h4,
+      p {
+        pointer-events: none;
+      }
+
+      p {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  #reportsScreen {
+    &.visible {
+      transform: translateX(-600%);
+    }
+
+    .warningMessage {
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: $normal;
+
+      p:first-child {
+        color: $font-error;
+        margin-bottom: 10px;
+      }
+      p:last-child {
+        color: $font-dark;
+      }
+    }
+    .okBtn {
+      width: 100%;
+    }
+  }
+  #DODDScreen {
+    p {
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin: 30px 0;
+    }
+    &.visible {
+      transform: translateX(-800%);
+    }
+  }
+
+  .btn {
+    width: 100%;
+    margin: 0 0 10px;
+  }
+}
+.assessment {
+  &__section {
+    margin: 0 0 30px;
+
+    &.nonApplicable {
+      margin: 0;
+
+      .assessment__subSection,
+      .sectionFooter,
+      .btnWrap {
+        display: none;
+      }
+
+      .sectionHeading {
+        margin: 0 0 10px;
+      }
+    }
+
+    &.hasUnansweredQuestions {
+      .sectionHeading {
+        color: $font-error;
+      }
+    }
+
+    .sectionHeading {
+      margin: 0 0 20px;
+
+      &__inner {
+        color: white;
+        background: $primary;
+        box-shadow: 0 4px 10px -2px $primary;
+        display: flex;
+        align-items: center;
+        font-size: 1.35rem;
+        padding: 8px 5px 5px;
+      }
+
+      .applicableCheckbox {
+        height: auto;
+        margin: 0 10px 0 0;
+
+        input {
+          display: block;
+          height: 24px;
+          // z-index: 99999999;
+        }
+      }
+
+      &::before {
+        display: block;
+        content: ' ';
+        margin-top: -92px;
+        height: 92px;
+        visibility: hidden;
+        pointer-events: none;
+      }
+    }
+
+    .sectionPrompt {
+      margin: 0 0 15px 10px;
+      font-style: italic;
+    }
+
+    .backToTopBtn {
+      font-weight: $normal;
+      margin: 10px 0 0 0;
+    }
+  }
+
+  &__subSection {
+    .subSectionHeading {
+      margin: 0 0 10px;
+
+      > span {
+        border-bottom: $w-sm solid rgba($black, 0.32);
+        display: block;
+        padding: 8px 5px 5px 12px;
+      }
+
+      &::before {
+        display: block;
+        content: ' ';
+        margin-top: -88px;
+        height: 88px;
+        visibility: hidden;
+        pointer-events: none;
+      }
+    }
+  }
+
+  .sectionFooter {
+    background: $gray;
+
+    .btnWrap {
+      margin: 0;
+
+      .btn {
+        max-width: 260px;
+        margin: 10px;
+      }
+    }
+  }
+}
+.saveWarningPopup {
+  h3 {
+    margin: 0 0 10px;
+  }
+}
+// Question Sets
+//------------------------
+.questionSet {
+  padding: 0 6px;
+  padding: 0 1vw;
+}
+// checkboxes
+.questionSet__checkboxes {
+  .question {
+    display: flex;
+    align-items: center;
+    margin: 0;
+
+    &__text {
+      margin: 0;
+    }
+  }
+}
+// grids
+.questionSet__grid {
+  .grid {
+    border: none;
+    margin: 0 0 20px;
+
+    &.sortableTable {
+      .dragHandle {
+        display: flex;
+        justify-content: center;
+        flex-grow: 0;
+        margin: 0;
+        pointer-events: unset;
+        padding: 0;
+        width: 40px;
+
+        svg {
+          width: 24px;
+        }
+      }
+    }
+
+    &.delteActive {
+      .grid__row {
+        cursor: pointer;
+
+        &.selected {
+          background: $font-error;
+          padding: 5px 0;
+        }
+
+        .grid__cell {
+          pointer-events: none;
+        }
+      }
+      .input-field {
+        color: rgba(0, 0, 0, 0.3);
+        pointer-events: none;
+      }
+    }
+
+    &.awnsered {
+      .grid__row {
+        &.unawnsered {
+          .input-field {
+            color: $font-dark !important;
+            // pointer-events: none;
+          }
+        }
+      }
+    }
+
+    &__rowHeader {
+      margin: 0 0 10px;
+
+      p.text {
+        text-align: center;
+        font-weight: $normal;
+      }
+      p.prompt {
+        text-align: center;
+        font-style: italic;
+      }
+    }
+
+    &__row {
+      display: flex;
+      justify-content: space-around;
+      padding: 5px 0;
+      margin: 0 0 5px;
+
+      &.unawnsered {
+        .input-field {
+          // color: $font-error;
+          // pointer-events: none;
+        }
+      }
+
+      .grid__cell {
+        flex-grow: 1;
+        margin: 0 4px;
+
+        &[data-celltype='date'] {
+          flex-grow: 0;
+          max-width: 168px !important;
+        }
+
+        .input-field {
+          margin: 0;
+
+          &__input[type='date'] {
+            font-size: 14px;
+            font-weight: 500;
+          }
+        }
+        textarea.autosize {
+          max-height: 200px;
+        }
+      }
+    }
+
+    .gridActionRow {
+      display: flex;
+      margin: 15px 0 0 0;
+    }
+    .deleteRowBtn {
+      margin: 0 10px 0 0;
+
+      &.selected {
+        color: $font-light;
+        background: $font-error;
+      }
+    }
+    .addRowBtn {
+      margin: 0 10px 0 0;
+    }
+    .cancelDeleteRowsBtn {
+      margin: 0;
+      &.hidden {
+        display: none;
+      }
+    }
+
+    &.staticText {
+      .grid__row {
+        .grid__cell {
+          flex-grow: 1;
+        }
+        .grid__cell:first-child {
+          max-width: 125px;
+        }
+      }
+    }
+  }
+}
+// Questions
+//------------------------
+.question {
+  margin: 0 0 20px;
+
+  &.unawnsered {
+    .input-field {
+      // color: $font-error;
+    }
+    .input-field__input {
+      color: $font-dark;
+    }
+    .radioWrap {
+      // outline: 2px solid $font-error;
+    }
+  }
+
+  .input-field {
+    margin: 0;
+
+    &.textarea {
+      height: 100px;
+    }
+  }
+
+  .radioWrap {
+    display: inline-block;
+    padding: 5px;
+    margin-left: 10px;
+  }
+
+  &__text {
+    font-size: 18px;
+    margin: 0 0 6px;
+    font-weight: 500;
+  }
+  &__prompt {
+    font-style: italic;
+    margin: 0 0 6px;
+  }
+
+  textarea.autosize {
+    max-height: 200px;
+  }
+
+  .checkbox {
+    align-items: normal;
+  }
+
+  .attachmentBtn {
+    margin: -5px 0 0 15px;
+    &.hasAttachments {
+      background-color: $secondary;
+      pointer-events: all !important;
+    }
+  }
+}
+.radioWrap {
+  .radio {
+    margin: 0 10px 0 0;
+
+    &:last-child {
+      margin: 0;
+    }
+
+    input {
+      margin: 0 6px 0 0;
+    }
+    span {
+      text-transform: capitalize;
+    }
+  }
+}
+
+@media screen and (min-width: '1000px') {
+  [data-active-section='plan-questionsAndAnswers'] {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+  .assessmentContainer {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+  }
+  .assessmentNavigation {
+    padding: 0;
+    margin: 0 0 8px;
+
+    .assessmentNavBtn {
+      max-width: 49%;
+    }
+
+    .tableOfContentsBtn {
+      display: none;
+    }
+  }
+  .assessmentNavMarkupWrap {
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    min-width: 375px;
+    width: 60%;
+    padding: 10px 0px 0px;
+    overflow: hidden;
+    transition: all 500ms;
+
+    &.toggleClosed {
+      width: calc(100% - 148px);
+      flex-grow: 1;
+    }
+  }
+  // .generalInfo,
+  .assessmentNavigation {
+    padding: 0 6px;
+    position: relative;
+    top: 0;
+  }
+  .assessment {
+    overflow-y: scroll;
+  }
+  .question,
+  .grid__cell {
+    textarea.autosize {
+      max-height: 400px;
+    }
+    .input-field.textarea {
+      height: 150px;
+    }
+  }
+  .tableOfContents {
+    background: $bg-light;
+    color: $font-dark;
+    display: block;
+    width: 38%;
+    max-width: 350px;
+    padding: 20px 0 0 0;
+    position: relative;
+    transition: all 500ms;
+    overflow: hidden;
+
+    &.toggleClosed {
+      width: 148px;
+
+      .tableOfContents__sectionHeading {
+        display: flex;
+        justify-content: space-between;
+
+        .fullHeading {
+          display: none;
+        }
+        .abrvHeading {
+          display: block;
+        }
+        .numOfQuestionsUnawnseredWrap {
+          top: -4px;
+        }
+      }
+      .tableOfContents__subSectionHeading {
+        display: none;
+      }
+    }
+
+    &__heading {
+      margin: 0 8px 0 0;
+    }
+
+    a {
+      color: $font-dark;
+    }
+
+    &__main {
+      align-items: flex-start;
+      display: flex;
+      height: 100%;
+      padding: 0px 0px 20px 8px;
+      overflow: hidden;
+    }
+
+    &__inner {
+      align-self: stretch;
+      overflow-y: auto;
+      padding: 8px 8px 0 0;
+      flex-grow: 1;
+    }
+
+    &__close {
+      display: none;
+    }
+
+    &__toggle {
+      align-self: stretch;
+      background: rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      display: flex;
+
+      svg {
+        color: white;
+        width: 20px;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+#planAttachmentPopup {
+  .btnWrap {
+    margin-top: 8px;
+  }
+  .attachmentContainer {
+    display: flex;
+    .attachmentInput {
+      padding: 0 0 19px 5px;
+    }
+  }
+  .newAttachmentList,
+  .reviewAttachmentList {
+    margin-bottom: 10px;
+    .newAttachmentContainer,
+    .reviewAttachmentContainer {
+      display: flex;
+      button {
+        margin-bottom: 10px;
+      }
+      p {
+        padding-top: 5px;
+      }
+      &.deleteAttachment {
+        color: $font-error;
+        text-decoration: line-through;
+      }
+    }
+    .reviewAttachmentContainer {
+      cursor: pointer;
+    }
+  }
+}

@@ -1,0 +1,108 @@
+
+/*NAVIGATION BUTTON STYLE*/
+.calnav , .calnav li{
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+}
+.calnav {margin-right: 2px ;
+  background: rgba(0, 0, 0, .04);
+  padding:0;
+  /*border-bottom: 1px solid rgba(0, 0, 0, .07);*/
+  margin-bottom:10px;
+}
+.calnav  li a{
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+  margin: 0;
+  padding: 5px 8px;
+
+  font-size: 120%;
+  text-decoration: none;
+ /* padding: 1px 5px;*/
+  background-color: @primaryColor;
+  color: @tabfontColor;
+   /*.buttonBackground(@primaryColor,  @secondaryColor, @tabfontColor, #000);*/
+
+  /*background-image: url('../images/eventbg3.png') ;*/
+
+  .transition(background-color .2s ease-out);
+  background-clip: padding-box; /* Fix bleeding */
+  /*.border-radius(3px);*/
+  /*.drop-shadow( );*/
+  .user-select();
+
+}
+
+.navbtn:active, .calnav li.active a{
+/*
+  .buttonBackground(@tabSelectedColor, @tabSelectedColor, #000, @tabSelectedForegroundColor);
+*/
+  background-color: @tabSelectedColor;
+  color: @tabSelectedForegroundColor;
+ /* position: relative;*/
+  /*top: 1px;*/
+  text-shadow: none;
+  /*-moz-box-shadow: 0 1px 1px rgba(0, 0, 0, .3) inset;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .3) inset;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .3) inset;*/
+}
+/*
+
+.navbtn[disabled], .navbtn[disabled]:hover, .navbtn[disabled]:active{
+  border-color: #eaeaea;
+  background: #fafafa;
+  cursor: default;
+  position: static;
+  color: #999;
+*/
+/* Usually, !important should be avoided but here it's really needed :) *//*
+
+  -moz-box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+*/
+
+.calnav{
+
+}
+#calNavData{ float:right; }
+#calNavData .navbtn{ padding: 3px 10px; }
+
+
+.calnav li{
+  margin-right: -1px; /* Overlap each right navbtn border */
+}
+
+.calnav .navbtn{
+  /*.border-radius();*/
+}
+
+.calnav .navbtn:active{
+  /*-moz-box-shadow: 0 0 1px rgba(0, 0, 0, .2) inset, 5px 0 5px -3px rgba(0, 0, 0, .2) inset, -5px 0 5px -3px rgba(0, 0, 0, .2) inset;
+  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, .2) inset, 5px 0 5px -3px rgba(0, 0, 0, .2) inset, -5px 0 5px -3px rgba(0, 0, 0, .2) inset;
+  box-shadow: 0 0 1px rgba(0, 0, 0, .2) inset, 5px 0 5px -3px rgba(0, 0, 0, .2) inset, -5px 0 5px -3px rgba(0, 0, 0, .2) inset;
+*/}
+
+.calnav li:first-child .navbtn{
+  /*.border-radius(0, 0, 3px, 3px);*/
+}
+
+.calnav li:first-child .navbtn:active{
+ /* .drop-shadow(0, 1px, 2px, 0.2);*/
+}
+
+.calnav li:last-child .navbtn{
+/*  .border-radius(3px, 3px, 0px, 0);*/
+}
+
+.calnav li:last-child .navbtn:active{
+  /*-moz-box-shadow: 0 0 1px rgba(0, 0, 0, .2) inset, 5px 0 5px -3px rgba(0, 0, 0, .2) inset;
+  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, .2) inset, 5px 0 5px -3px rgba(0, 0, 0, .2) inset;
+  box-shadow: 0 0 1px rgba(0, 0, 0, .2) inset, 5px 0 5px -3px rgba(0, 0, 0, .2) inset;*/
+}
+
+/*end buttons styles*/

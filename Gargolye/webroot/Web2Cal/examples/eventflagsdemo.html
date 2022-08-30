@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+    <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+    <script src="js/web2cal.support.js">  </script>
+    <script src="js/web2cal.templates.js">  </script>
+
+    <script src="js/web2cal.dummydata.js">  </script>
+    <script src="js/optional/timecontrol.js">  </script>
+
+    <title>Web2Cal | Event Flags Demo</title>
+</head>
+<body>
+<div class="demoList" ><a href="">&lt;&lt;&lt; &nbsp; Back to list of Examples</a></div>
+<div id="calendarContainer">
+</div>
+</body>
+</html>
+<script>
+
+    var WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+    var ical,activeEvent
+            , newEventForm="defaultNewEventTemplate"
+            , mobileNewEventForm="newEventFormMobile"
+            , preview="previewTemplate"
+            , mobilePreview="eventPreviewMobile"
+            ;
+
+    /*
+     Create the Calendar.
+     */
+    function drawCalendar()
+    {
+        ical = new Web2Cal('calendarContainer', {
+            loadEvents: 	loadCalendarEvents,
+            onUpdateEvent: 	updateEvent,
+            onNewEvent: 	onNewEvent
+        });
+        ical.build();
+    }
+    /*
+     Method invoked when event is moved or resized
+     @param event object containing eventID and newly updated Times
+     */
+    function updateEvent(event)
+    {
+        ical.updateEvent(event);
+    }
+
+    /*
+     Method invoked when creating a new event, before showing the new event form.
+     @param obj - Object containing (startTime, endTime)
+     @param groups - List of Group objects ({groupId, name})
+     @param allday - boolean to indicate if the event created is allday event.
+     */
+    function onNewEvent(obj, groups, allday)
+    {
+        if(ical.isMobileMode()){
+            Web2Cal.onNewEvent(jQuery("#"+mobileNewEventForm), obj, groups, allday);
+        } else {
+            Web2Cal.onNewEvent(jQuery("#"+newEventForm), obj, groups, allday);
+        }
+    }
+
+    var date = new Date();
+    var d = date.getDate(), m = date.getMonth(), y = date.getFullYear();
+    function createDateTime(ti, h, numofDays)
+    {
+        return new Date(y,m,d+numofDays, ti, h);
+        return x;
+    }
+
+    /**
+     Method to get Events and display it in the calendar.
+     If you need to make an asynchronous call, invoke ical.render in the callback method.
+     @param startTime - Calendar Display Range start
+     @para endTime - Calendar End Range end
+     */
+    function loadCalendarEvents(startTime, endTime)
+    {
+        var list = new Array();
+
+        var events = new Array();
+        events.push(createCustomEvent("Default - No Flags", 5, createDateTime(9, 0, 0), createDateTime(11, 30, 0)));
+        events.push(createCustomEvent("Movable & resizable Event", 10, createDateTime(15, 0, 3), createDateTime(19, 30, 3), false, true, true));
+        events.push(createCustomEvent("Movable Only", 20, createDateTime(10, 0, 2), createDateTime(14, 30, 2), false, true, false));
+        events.push(createCustomEvent("Resizable Only", 30, createDateTime(11, 0, -1), createDateTime(15, 30, -1), false, false, true));
+
+        var group = {
+            name: "Group 1",
+            groupId: "100",
+            events: events
+        };
+        list.push(group);
+
+        var events = new Array();
+        events.push(createCustomEvent("I Belong to Readonly Group", 10, createDateTime(14, 0, 0), createDateTime(15, 30, 0)));
+
+        var group = {
+            name: "Readonly Group",
+            groupId: "200",
+            events: events,
+            readOnly: true
+        };
+        list.push(group);
+
+        ical.render(list);
+    }
+    function createCustomEvent(name, id,  timestart, timeend, allDay, movable, resizable)
+    {
+        if (allDay == undefined)
+            allDay = false;
+
+        return {
+            name: name,
+            eventId: id,
+            startTime: timestart ,
+            endTime: timeend ,
+            allDay: allDay,
+            movable: movable,
+            resizable: resizable
+        };
+    }
+
+    function cb_loadCalendarEvents(list)
+    {
+        ical.render(list);
+    }
+
+    /*
+     Click on Edit Button in preview window
+     */
+    function rzEditEvent()
+    {
+        alert("editing");
+    }
+
+    /**
+     Clicking delete in Preview window
+     */
+    function rzDeleteEvent()
+    {
+        //alert("Delete Event in DB and invoke ical.deleteEvent({eventId: id})");
+        ical.deleteEvent({eventId: activeEvent.eventId});
+        Web2Cal.hidePreview();
+    }
+
+    /**
+     * Click of Add in add event box.
+     */
+    function rzAddEvent()
+    {
+        var newev = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+        ical.addEvent(newev);
+    }
+
+    /**
+     * Onclick of Close in AddEvent Box.
+     */
+    function rzCloseAddEvent()
+    {
+        ical.closeAddEvent();
+    }
+
+    WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+    /**
+     * Once page is loaded, invoke the Load Calendar Script.
+     */
+    jQuery(document).ready(function()
+    {
+        drawCalendar();
+
+        new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0));
+        new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+            onTimeSelect: updateDateForTime,
+            dateField: "eventEndDate"
+        });
+    });
+</script>

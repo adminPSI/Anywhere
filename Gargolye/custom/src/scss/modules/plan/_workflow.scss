@@ -1,0 +1,349 @@
+$base-padding: 10px;
+
+// Tabs Wrap
+.planWorkflow {
+}
+
+// Josh's Stuff
+#workflow-viewer {
+  position: relative;
+  margin: 20px;
+  padding: 10px;
+  border: 4px solid #ccc;
+  margin-bottom: 80px;
+}
+
+.workflow-viewer-close-btn {
+  width: 40px;
+  height: 40px;
+  display: block;
+  position: absolute;
+  background: #ccc;
+  border-radius: 50%;
+  top: -20px;
+  right: -20px;
+}
+
+.workflow {
+  margin-bottom: 5px;
+}
+
+.workflow-name-container {
+  flex-grow: 1;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.status-container {
+  flex-grow: 1;
+  margin-right: 10px;
+
+  .dropdown {
+    margin-bottom: 0px;
+  }
+}
+
+.process-container {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.responsible-container {
+fill: $white;
+margin-right: 150px;
+}
+
+.wf-column {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  min-width: 50px;
+  padding: 10px 0px;
+}
+
+.wf-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-left: $base-padding;
+  padding-right: $base-padding;
+
+  .dropdown {
+    flex-grow: 1;
+    max-width: 300px;
+    min-width: 170px;
+
+    option {
+      color: black;
+    }
+  }
+}
+
+.wf-expand {
+  svg {
+    transform: rotate(90deg);
+  }
+}
+
+.wf-details {
+  padding: 0px;
+}
+
+.wf-group-container {
+  background-color: #81b941;
+  h3 {
+    padding: $base-padding;
+  }
+}
+
+.wf-group-header {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.fg-0 {
+  flex-grow: 0;
+}
+
+.fg-1 {
+  flex-grow: 1;
+}
+
+.fg-2 {
+  flex-grow: 2;
+}
+
+.fg-3 {
+  flex-grow: 3;
+}
+
+.wf-steps-container {
+  padding: $base-padding;
+  background-color: white;
+  width: 100%;
+}
+
+.wf-documents-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  .wf-document {
+    background: #eee;
+    margin: 5px 10px 5px 0px;
+   // padding: 0px 10px;
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    .wf-document-delete-btn {
+      margin-left: 10px;
+      min-width: 26px;
+      min-height: 26px;
+    }
+    .wf-document-drag-btn {
+     // margin-left: 10px;
+      min-width: 26px;
+      min-height: 26px;
+    }
+  }
+}
+
+.inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.inputfile + label {
+  cursor: pointer; /* "hand" cursor */
+}
+
+.inputfile + label * {
+  pointer-events: none;
+}
+
+.comments {
+  max-height: 90px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.group-grid {
+  display: grid;
+  background-color: #81b941;
+  grid-template-columns: 40px auto;
+  grid-template-rows: minmax(60px, auto);
+}
+
+.group-grid-column-1 {
+  align-self: center;
+  justify-self: end;
+}
+
+.group-grid-column-2 {
+  align-self: center;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.expand-button {
+  width: 30px;
+  height: 30px;
+
+  &.expanded {
+    svg {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.drag-handle {
+  width: 26px;
+  height: 26px;
+  margin-left: 5px;
+  color: #ccc;
+  cursor: grab;
+}
+
+.group-description {
+  flex-grow: 2;
+  font-weight: 500;
+  padding: 10px;
+  align-self: center;
+}
+
+.step-grid {
+  display: grid;
+  background-color: #ffffff;
+  grid-template-columns: 40px auto 40px;
+  grid-template-rows: minmax(40px, auto);
+}
+
+.step-grid-column-1 {
+  padding-top: 15px;
+}
+
+.step-grid-column-2 {
+  padding-top: 5px;
+}
+
+.step-grid-column-3 {
+  padding-top: 15px;
+}
+
+.add-step-button {
+  justify-self: flex-end;
+  flex-grow: 1;
+  margin: 5px;
+}
+
+.step-summary-container {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 56px;
+}
+
+.step-summary-component {
+  width: 100px;
+}
+
+.step-detail-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-action-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  .step-edit-button {
+    margin-bottom: 5px;
+    flex-grow: 1;
+    margin: 5px;
+  }
+
+  .step-delete-button {
+    margin-bottom: 5px;
+    flex-grow: 1;
+    margin: 5px;
+  }
+}
+
+.step-add-document-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+ /* flex-grow: 1; */
+}
+
+.step-add-document-button {
+  flex-grow: 1;
+  margin: 0px;
+}
+
+/* contains checkbox and step description */
+.step-description-container {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-grow: 2;
+  padding: 15px 20px 5px 0px;
+}
+
+.step-checkbox-container {
+  align-items: flex-start;
+}
+
+.workflow {
+  .btn-icon {
+    max-width: 350px;
+  }
+}
+
+.step-checkbox-container {
+  margin: 0px;
+}
+
+.planWorkflow {
+  .addWorkflowBtn {
+    margin-top: 10px;
+    margin-left: 5px;
+  }
+}
+
+#workflow_addWorkflowPopup {
+  h2 {
+    margin: 0 0 10px;
+  }
+
+  .workflowList {
+    margin: 0 0 10px;
+    max-height: 210px;
+    overflow: auto;
+  }
+
+  .workflowListItem {
+    border-bottom: 1px solid $black;
+    cursor: pointer;
+    padding: 8px 4px;
+    overflow: hidden;
+
+    &.selected {
+      background: $green;
+    }
+
+    h4,
+    p {
+      pointer-events: none;
+    }
+
+    p {
+      white-space: nowrap;
+    }
+  }
+}

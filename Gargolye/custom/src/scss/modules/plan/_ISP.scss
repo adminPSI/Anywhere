@@ -1,0 +1,248 @@
+@import './isp/consentAndSign';
+@import './isp/contactInfo';
+@import './isp/informedConsent';
+@import './isp/outcomes';
+@import './isp/servicesSupports';
+@import './isp/summary';
+
+// Global Stuff
+//------------------------------------
+.planISP,
+.assessmentNavMarkupWrap,
+.planWorkflow {
+  height: $planTabsInnerHeightMobile;
+  overflow-y: scroll;
+}
+.planISP,
+.assessmentNavMarkupWrap,
+.planWorkflow,
+.tableOfContents {
+  @media screen and (min-width: '1000px') {
+    height: $planTabsInnerHeight;
+  }
+}
+
+.planISP {
+  padding: 0;
+  overflow-y: scroll;
+
+  &__nav {
+    background: white;
+    border-bottom: 2px solid $black;
+    box-shadow: 0 4px 10px -2px #000;
+    display: flex;
+    flex-flow: row nowrap;
+    overflow-x: auto;
+    padding: 16px 10px 10px;
+    margin: 0 0 14px 0;
+    position: sticky;
+    position: -webkit-sticky;
+    position: -moz-sticky;
+    position: -ms-sticky;
+    position: -o-sticky;
+    top: 0px;
+    z-index: 9;
+  }
+
+  &__navItem {
+    cursor: pointer;
+    margin-right: 30px;
+    padding-right: 10px;
+    text-align: center;
+
+    &.active {
+      font-weight: $bold;
+    }
+  }
+
+  &__section {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+
+  &__body {
+    margin-bottom: 80px;
+    padding: 0 1vw;
+  }
+
+  .sectionHeading {
+    color: $white;
+    background: $primary;
+    box-shadow: 0 4px 10px -2px $primary;
+    display: block;
+    font-size: 1.35rem;
+    padding: 8px 5px 5px;
+    margin: 0 0 20px 0;
+  }
+}
+
+.planISP.readOnly {
+  .importantPopup,
+  .skillsPopup,
+  .risksPopup,
+  .experiencesPopup,
+  .reviewsPopup,
+  .paidSupportPopup,
+  .additionalSupportPopup,
+  .professionalReferralPopup {
+    .dropdown,
+    .input-field {
+      color: rgba(0, 0, 0, 0.5) !important;
+      pointer-events: none !important;
+    }
+  }
+}
+
+.popup.deleteActive {
+  padding: 0;
+  max-width: 400px;
+
+  > *:not(.deleteWarning) {
+    display: none;
+  }
+}
+
+.deleteWarningPopup {
+  background: $bg-warning;
+  display: flex;
+  flex-flow: row wrap;
+  align-content: center;
+  justify-content: space-between;
+
+  .closeWarningBtn {
+    position: fixed;
+    top: 10px;
+    right: 4px;
+    width: 40px;
+  }
+
+  p {
+    font-size: 20px;
+    margin: 0 0 20px;
+    width: 100%;
+  }
+
+  button {
+    width: 49%;
+  }
+}
+
+.deleteWarning {
+  background: $bg-warning;
+  display: flex;
+  flex-flow: row wrap;
+  align-content: center;
+  justify-content: space-between;
+  padding: 38px 10px 10px;
+
+  .closeWarningBtn {
+    position: fixed;
+    top: 10px;
+    right: 4px;
+    width: 40px;
+  }
+
+  p {
+    font-size: 20px;
+    margin: 0 0 20px;
+    width: 100%;
+  }
+
+  button {
+    width: 49%;
+  }
+}
+
+// Popups
+//------------------------------------
+.popup {
+  .skillAbility,
+  .scopeOfService,
+  .whatSupportLooksLike,
+  .reasonForReferral,
+  .outcomeTextInput,
+  .detailsTextInput,
+  .historyTextInput,
+  .carryoverTextInput,
+  .whatHappenedInput,
+  .howHappenedInput,
+  .whatWillHappen,
+  .importantTo,
+  .importantFor,
+  .whatIsRiskTextarea,
+  .howOftenHowMuchValueInput,
+  .howOftenHowMuchTextInput,
+  .whenHowOftenValueInput,
+  .whenHowOftenTextInput,
+  .fundingSourceInput {
+    height: auto !important;
+
+    .autosize {
+      max-height: 260px;
+    }
+  }
+}
+// summary
+.importantPopup,
+.skillsPopup,
+.risksPopup,
+// outcome
+.reviewsPopup,
+// services
+.paidSupportPopup,
+.additionalSupportPopup,
+.professionalReferralPopup {
+  .popup__header {
+    margin: 0 0 16px;
+  }
+
+  .btnWrap {
+    margin-top: 30px;
+
+    button:nth-child(3) {
+      margin-top: 10px;
+    }
+  }
+}
+
+// Introduction
+//------------------------------------
+
+.imageSelectionContainer {
+  margin-top: 10px;
+  margin-bottom: 50px;
+  margin-right: 10px;
+  margin-left: 10px;
+  max-width: 500px;
+}
+
+.photoSelectorContainer {
+  margin-top: 10px;
+  margin-bottom: 50px;
+  margin-right: 50px;
+  margin-left: 20px;
+  padding-right: 120px;
+}
+
+.imageContainer {
+  border: 5px solid rgb(8, 8, 8);
+  border-radius: 4px;
+  padding: 5px;
+  width: 150px;
+  height: 100px;
+ // float: right;
+}
+
+.imageframe {
+
+  float: right;
+
+}
+
+.introTextArea {
+  height: auto !important;
+	max-height: none;
+}

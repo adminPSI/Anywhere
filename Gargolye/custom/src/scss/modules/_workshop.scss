@@ -1,0 +1,220 @@
+//Batch Selection Popup
+//==============================
+
+.batchPicker {
+  .popupHeader {
+    margin-bottom: 30px;
+  }
+  .btn-icon {
+    width: 100%;
+  }
+}
+
+.multiSelectBtn {
+  &.enabled {
+    background: $secondary;
+  }
+}
+
+
+.actioncenter[data-active-module="workshop"] {
+  .popup__header {
+    margin-bottom: 25px;
+  }
+  .filteredByData {
+    margin-top: 25px;
+  }
+
+//Workshop Table
+//=============================
+
+  #filterWorkshopTable {
+    margin-right: 6px;
+    // margin-left: auto;
+  }
+
+  #workshopTable {
+    .selected {
+      background: $yellow;
+    }
+    
+    .table__row.header,
+    .table__headline {
+      pointer-events: none
+    }
+
+    .table__header-row,
+    .table__row {
+      > div {
+        margin: 0 18px 0 0;
+      }
+      > div:last-child {
+        margin: 0;
+      }
+      > div:nth-child(1) {// Consumer
+        width: 150px;
+      }
+      > div:nth-child(2) {// Start Time
+        width: 85px;
+      }
+      > div:nth-child(3) {// End Time
+        display: none;
+        width: 78px;
+        // margin: auto;
+        > svg {
+          max-width: 25px;
+          color: $red;
+          
+        }
+      }
+      > div:nth-child(4) {// Job Code
+        display: none;
+        width: 140px;
+      }
+      > div:nth-child(5) {// Job Step
+        width: 140px;
+      }
+      > div:nth-child(6) {// Hours
+        width: 100px;
+      }
+      > div:nth-child(7) {// Quantity
+        display: none;
+        width: 80px;
+        // margin: auto;
+        > svg {
+          max-width: 25px;
+          color: $red;
+        }
+      }
+      > div:nth-child(8) {// Supervisor
+        display: none;
+        width: 140px;
+      }
+      @media screen and (min-width: 560px) {
+        > div:nth-child(1) {// Consumer
+          flex-basis: 180px;
+          flex-grow: 1
+        }
+        > div:nth-child(2) {// Start Time
+          flex-basis: 100px;
+          flex-grow: 1
+        }
+        > div:nth-child(3) {// End Time
+          display: block;
+          flex-basis: 100px;
+          flex-grow: 1
+        }       
+        > div:nth-child(4) {// Job Code
+          display: block;
+          flex-basis: 155px;
+          flex-grow: 1
+        }
+        > div:nth-child(5) {// Job Step
+          flex-basis: 165px;
+          flex-grow: 1
+        }        
+        > div:nth-child(7) {// Quantity
+          display: block;
+        }
+        > div:nth-child(8) {// Supervisor
+          display: block;
+          flex-basis: 220px;
+          flex-grow: 1
+        }
+      }
+    }
+  }
+
+//Workshop Table - FILTER POPUP
+//==============================
+#filterApply {
+  width: 100%;
+}
+
+//Workshop Table - ROW POPUP
+//==============================
+
+  .workshopTableRowPopup {
+
+    .rowPopupBtnWrap {
+      display: flex;
+      > button:nth-child(1) {
+        margin-right: 15px;
+        flex-grow: 2;
+      }
+      > button:nth-child(2) {
+        flex-grow: 1;
+      }
+    }
+  }
+
+//Workshop Table - OVERLAP ERROR
+//==============================
+  .overlapError {
+    background: rgba($yellow, .3)
+
+  }
+
+}
+
+//Workshop Warning Popup
+//===========================
+.popup.warning {
+  .warningTextArea {
+    padding-bottom: 25px;
+    text-align: center;
+  }
+  #confDeleteBtn {
+    background: $bg-error;
+    border: $bg-error;
+    color: $white;
+  }
+}
+//Workshop ERROR Popup
+//===========================
+.popup.error {
+  .popup__header {
+    margin-bottom: 0px;
+  }
+  .errorTextArea {
+    padding-bottom: 25px;
+    text-align: center;
+  }
+}
+
+//Workshop Clockin/Out Popups
+//==============================
+
+.popup {
+  &#errorPopup {
+    .popup__header{
+      color: $font-error;
+    }
+    > h3 {
+      color: $font-error;
+      padding: 10px 0 20px;
+      text-align: center;
+    }
+  }
+  &#clockInOutChoicePopup{
+    .choiceBtnWrap{
+      > button {
+        width: 100%;
+      }
+    }
+  }
+  &#clockInOutPopup{
+    > h4 {
+      margin-bottom: 20px;
+    }
+  }
+  &#overlapErrorPopup{
+    .closePopupBtn {
+      display: none;
+    }
+    > p:last-child {
+      margin-bottom: 20px;
+    }
+  }
+}
+

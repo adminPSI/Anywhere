@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="css/optionalStyling.css">
+        <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+        <script src="js/web2cal.support.js">  </script>
+        <script src="js/web2cal.templates.js">  </script>
+
+        <script src="js/web2cal.dummydata.js">  </script>
+        <script src="js/optional/timecontrol.js">  </script>
+
+        <title>Web2Cal | Themes Demo</title>
+    </head> 
+    <body>
+		<div class="demoList" ><a href="">&lt;&lt;&lt; &nbsp; Back to list of Examples</a></div>
+    	
+		<b>Select a Theme:</b>
+    	<select onchange="applyTemplate(this)">
+    		<option value="">Select</option>
+    		<option value="web2calvista">Vista</option>
+    		<option value="web2calvistablack">Vista Black</option>
+    		<option value="facebook">Facebook</option> 
+   		</select>
+ 		&nbsp; &nbsp; &nbsp; 
+		<b>Select a View: </b>
+		<select onchange="showAView(this)">
+			<option value="">-Select-</option>
+			<option value="week">Week</option>
+			<option value="month">Month</option>
+			<option value="day">Day</option>
+			<option value="agenda">Agenda</option>
+		</select> 
+		
+		<br/><br/><br/>
+		    	
+		<!-- Calendar Container -->
+        <div id="calendarContainer">
+        </div>     
+    </body> 
+</html>
+<script>
+    var ical;   
+    /*
+     Create the Calendar.
+     */
+    function buildCalendar()
+    {  
+        ical = new Web2Cal('calendarContainer', {
+            loadEvents: function(){ical.render(Web2Cal.sampleData());},
+            onUpdateEvent: updateEvent, 
+            onNewEvent: onNewEvent, 
+			onPreview: onPreview
+        });//Setup options...
+		
+        ical.build(); //build the calendar...
+    }    
+	var activeEvent;
+    function onPreview(evt, dataObj, html)
+	{
+		activeEvent=dataObj;
+		ical.showPreview(evt, html);
+	}
+    /*
+     Method invoked when event is moved or resized
+     @param event object containing eventID and newly updated Times
+     */
+    function updateEvent(event)
+    { 
+        ical.updateEvent(event);
+    }
+    
+    /*
+     Method invoked when creating a new event, before showing the new event form.
+     @param obj - Object containing (startTime, endTime)
+     @param groups - List of Group objects ({groupId, name})
+     @param allday - boolean to indicate if the event created is allday event.
+     */
+    function onNewEvent(obj, groups, allday)
+    {
+        if(ical.isMobileMode()){
+            Web2Cal.onNewEvent(jQuery("#"+mobileNewEventForm), obj, groups, allday);
+        } else {
+            Web2Cal.onNewEvent(jQuery("#"+newEventForm), obj, groups, allday);
+        }
+    }
+    
+      
+    /*
+     Click on Edit Button in preview window
+     */
+    function rzEditEvent()
+    {
+        alert("editing");
+    }
+    
+    /**
+     Clicking delete in Preview window
+     */
+    function rzDeleteEvent()
+    {
+		ical.deleteEvent({eventId: activeEvent.eventId});
+		Web2Cal.hidePreview();
+    }
+    
+    /**
+     * Click of Add in add event box.
+     */
+    function rzAddEvent()
+    {
+        var newev = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+        ical.addEvent(newev);
+    }
+    
+    /**
+     * Onclick of Close in AddEvent Box.
+     */
+    function rzCloseAddEvent()
+    {
+        ical.closeAddEvent();
+    }
+    
+	WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+    /**
+     * Once page is loaded, invoke the Load Calendar Script.
+     */
+    jQuery(document).ready(function()
+    { 
+	 	buildCalendar(); 
+	 	//Setup Time controls...
+		new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0));
+        new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+            onTimeSelect: updateDateForTime,
+            dateField: "eventEndDate"
+        });
+    });
+    function showAView(obj)
+	{
+		if(obj.value=="")
+		{
+			return;
+		}
+		ical.showView(obj.value);
+	}
+	function applyTemplate(ss)
+	{
+		
+		var obj=jQuery("#calendarContainer"); 
+		obj.get(0).className=ss.value;
+	}    
+</script>

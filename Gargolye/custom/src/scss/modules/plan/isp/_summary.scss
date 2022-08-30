@@ -1,0 +1,167 @@
+.importantTablesWrap,
+.skillsTablesWrap,
+.risksTablesWrap {
+  .table:not(:first-of-type) .table__row.header {
+    display: none;
+  }
+  .table {
+    border-bottom: 4px solid gray;
+    border-radius: 0px;
+
+    &:last-of-type {
+      border-bottom: none;
+      margin-bottom: 10px;
+    }
+  }
+}
+.risksWrap {
+  h3 {
+    margin: 0 0 8px 0;
+  }
+}
+// tables
+.importantTablesWrap {
+  .table__row {
+    cursor: pointer;
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+      overflow-wrap: break-word;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+    > div:nth-child(2) {
+      display: block;
+      width: 145px;
+      max-width: 156px;
+    }
+    > div:nth-child(3) {
+      display: block;
+      width: 80px;
+    }
+    > div:nth-child(4) {
+      display: block;
+      width: 80px;
+    }
+  }
+}
+.skillsTablesWrap {
+  .table__row {
+    cursor: pointer;
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+      overflow-wrap: break-word;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+    > div:nth-child(2) {
+      display: block;
+      width: 145px;
+      max-width: 156px;
+    }
+    > div:nth-child(3) {
+      display: block;
+      width: 80px;
+    }
+  }
+}
+.risksTablesWrap {
+  .table__row {
+    cursor: pointer;
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+      overflow-wrap: break-word;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+    > div:nth-child(2) {
+      display: block;
+      width: 145px;
+      max-width: 156px;
+    }
+    > div:nth-child(3) {
+      display: block;
+      width: 80px;
+      flex-grow: 2;
+    }
+    > div:nth-child(4) {
+      display: none;
+      width: 80px;
+      flex-grow: 2;
+    }
+    > div:nth-child(5) {
+      display: none;
+      width: 80px;
+    }
+    > div:nth-child(6) {
+      display: block;
+      width: 80px;
+    }
+    @media screen and (min-width: 560px) {
+      > div:nth-child(4) {
+        display: block;
+      }
+      > div:nth-child(5) {
+        display: block;
+      }
+    }
+  }
+}
+.riskSupervisionDropdownLegend {
+  background: $primary;
+  border-radius: $r-sm;
+  color: $white;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+
+  h4 {
+    margin-bottom: 6px;
+  }
+
+  ul {
+    margin: 0 0 0 8px;
+    padding: 0;
+  }
+
+  li {
+    margin: 0 0 4px 0;
+    span {
+      font-weight: $normal;
+    }
+  }
+}
+// popups
+.communicationDropdown,
+.dailyLifeDropdown {
+  // display: flex;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.planSummary {
+  .additionalQuestionWrap {
+    .textarea {
+      height: auto;
+    }
+    textarea.autosize {
+      height: auto;
+      min-height: 100px;
+    }
+  }
+}

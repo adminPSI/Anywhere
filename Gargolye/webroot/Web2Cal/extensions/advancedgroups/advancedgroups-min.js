@@ -1,0 +1,12 @@
+//////////////////////////////////////////////
+/*
+ * Web2Cal - for creating ajax events calendar
+ * Copyright (c) 2008 web2cal.  All Rights Reserved.
+
+ visit www.web2cal.com for more information
+
+ This file is protected by copyright law and provided  under license.
+ Reverse engineering of this file is strictly  prohibited.
+*/     
+//////////////////////////////////////////////
+eval((function(x){var d="";var p=0;while(p<x.length){if(x.charAt(p)!="`")d+=x.charAt(p++);else{var l=x.charCodeAt(p+3)-28;if(l>4)d+=d.substr(d.length-x.charCodeAt(p+1)*96-x.charCodeAt(p+2)+3104-l,l);else d+="`";p+=4}}return d})("var AdvancedGroups = new Web2Cal.Class(new (function () {this.include =` F%Extension;var c, b = {}, f, g;` N#itialize = ` j&a, b) {g = a;c = g.getObjects();f = WUtil.merge(b, {template:null, nested:true, electric` *!})`!6\"setup`![%(\"`\"M*\", g, f);}` H\"toString`![)) {return ` U%-` Y\"-1.0\"` T$onI`\"13) {b.`!r$JQ = null == ` S\"ptions` 9% ? jQuery(\"<div class=\\\"grp\\\">\\t\\t` *)filterBoxColor  ${color.css}\\\"></div` P\"label` O%checkbox\\\"><input type` ,) id` +!kGrp${groupId}\\\" value=\\\"` ()`!]'ChkBx\\\">${name}</`!6!> `!G\"\").appendTo(\"body\").hide() :`\"S$`\"e1);`#>&`''+T` 0#r(`#_(.get(0), {useMainNode`%X$b.quickF`#;!` X$ = c.container.find(\"#leftNav`%0\"List\"` H3.b` L!click\",`%6+m(a);});c._DISABLE_QUICK_FILTER = true;}`(e!m`%s-if (f.`'^$) {var h =`#+$a.target), d = (h.is(\":`$g$\") ? h : h`\"/#`%0!` 6%:eq(0)\"))`#-#;d && (b.dataCache.get`\"]!ById(d.`%@!).show = d.` e!ed, h.parentsUntil(\".wrap` U!\")` 4#()`!>#.subchild `!A*\").each`+p/`! # = `!C5` C!`!H3;}),` J,N`+B!`$x\"(),`,#\"CurrentView().renderer`'$!Show` I!(a,`$O!));}`*^%DataLoad`$P-` 9%EventsR` m\"` 6.a`-D$`!-2;`!s'` ,:.LC()._dataStore;a = a` &,`\"P.`&\\!h = 0`&%\"`!M.`#b5a.`*k#);if (!a`-s'\";}var e = `,n('`%V%'>\" + `)w&.convert(a` h\"` v#s`'u#e = e +` _*`&($'>\", c;for (c in ` R'if (30 < h++) {break;}e += `!y%s[c])` .#\"`,R\" \";}`\"%#`!1\"`,h\";}, c = \"\", f`!+\"f`!,!) {c` m#[f]);}`/O$`+>. `#K!\").html(c);` 16\"`(S$`(@-attr(`/9\"ed\"`&s#`$g!l`+81`$BC` F$`#6&`\"?!var `#I,l`#/+}false == a`)C\"&&`23%`!qE[`1(\"'\" +`!$$Id + \"']`\"B/`!-!);}}, k`$'\"k`$%$a.hasOwnProperty(k) && l(a[k`!i!;}));"))

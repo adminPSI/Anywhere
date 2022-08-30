@@ -1,0 +1,100 @@
+.dropdown {
+    @extend %input-wrap;
+
+    &__select {
+        @extend %input;
+    }
+
+    .notched-outline {
+        @extend %notched-outline;
+    }
+
+    .floating-label {
+        @extend %floating-label;
+    }
+
+    svg {
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        right: 6px;
+        transform: translateY(-50%);
+        width: 40px;
+    }
+}
+
+.dropdown__select:focus {
+    background-color: #E8E8E8;
+}
+
+.dropdown--primary {
+  color: $input-blur--light;
+  select {
+    background: $bg-dark;
+  }
+}
+.dropdown--secondary {
+  color: $input-blur--dark;
+}
+
+.dropdown.disabled {
+  color: rgba(0, 0, 0, .5);
+  // opacity: 0.6;
+  pointer-events: none;
+  &.dropdown--primary {
+    color: rgba($input-blur--light, .5);
+  }
+}
+
+.dropdown.error {
+  color: $red;
+  .dropdown__select {
+    //TO KEEP DROPDOWN ERROR FONT COLOR BLACK:
+    color: $font-dark;
+  }
+}
+
+.dropdown.hidden {
+  display: none;
+}
+
+
+.inlineDropdown {
+  border-bottom: 2px solid $font-dark;
+  position: relative;
+  background: #fafafa;
+
+  &__select {
+    background: inherit;
+    color: $primary;
+    font-weight: $normal;
+    font-style: italic;
+    option {
+      color: $font-dark;
+      font-style: normal;
+    }
+  }
+  svg {
+    pointer-events: none;
+    width: 14px;
+    height: auto;
+    position: absolute;
+    right: 4px;
+  }
+}
+
+.inlineDropdown.disabled {
+  color: rgba(0, 0, 0, .5);
+  pointer-events: none;
+  select {
+    color: inherit;
+  }
+}
+
+.inlineDropdown.error {
+  color: $red;
+  .inlineDropdown__select {
+    //TO KEEP DROPDOWN ERROR FONT COLOR BLACK:
+    color: $font-dark;
+  }
+}

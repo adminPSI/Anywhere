@@ -1,0 +1,28 @@
+.quick-add-container{
+    background:#f7f7f7;
+    margin:35px 0px 0px;
+}
+.quick-add-container textarea{
+    width:100%;
+    border:1px solid #999;
+}
+.quick-add-container button{
+    padding:8px 10px;
+    border:1px solid #aaa;
+    float:right;
+
+}
+.quickAddBox{
+	width:170px;
+	height:55px;
+}
+
+.quickAddContainer label{
+	color:#111;
+	font-weight:bold;
+    margin:5px 0;
+}
+
+#agendaPrintFrame{position:absolute; top:-3999px;}
+
+.agendaPrint{margin:0 10px;}

@@ -1,0 +1,32 @@
+
+.note .closebtn {
+  float: right;
+  font-size: 16px;
+  color: #000000;
+  text-shadow: 0 1px 0 #ffffff;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+}
+
+.note {
+  padding: 6px 35px 6px 14px;
+  max-width:70%;
+  margin: 2px auto;
+  color: #000000;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+  background-color: @warningBackground;
+  border: 1px solid @warningBorder;
+  .border-radius(@baseBorderRadius);
+}
+
+// Adjust close link position
+.note .closebtn {
+  position: relative;
+  top: -5px;
+  right: -21px;
+  line-height: @baseLineHeight;
+}
+
+div.calStatus					{ background-color: #fff; border: 1px solid #ccc;bottom: 0px;    display: block;position: absolute; right: 18px;width: 260px;z-index: 101;}
+div.calStatus .header	{ background:@primaryColor url(../images/load-square.gif) 4px 0px no-repeat; border-bottom: 1px solid #999; color:@tabfontColor; font-weight: bold;  padding: 6px;}
+div.calStatus .body	{background-color: @tabSelectedColor; height: 60px;width: 100%;color:#000;}

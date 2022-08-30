@@ -1,0 +1,73 @@
+
+
+.vdashedrule{
+    border-left: 1px dashed #ccc;
+    height: 100%; position: absolute;top: 0;
+    z-index: 1; border-color:#ccc;
+}
+.vsolidrule{
+    border-left: 1px solid #ccc;
+    height: 100%; position: absolute;top: 0;
+    z-index: 1; border-color:#ccc;
+}
+.darkBorder
+{
+    border-color:#666 !important;
+
+}
+div.web2CalScheduler .calTimeSlot{z-index: 12;}
+.web2CalScheduler .gridYContainer,.web2CalScheduler .gridYContainerTD, .web2CalScheduler  .calTimeSlot{width:100px !important;}
+/*#gridYContainerTD, div.gridYContainer{width:100px;}*/
+div.web2CalScheduler #calheaderContainer, div.web2CalScheduler #calsubheaderContainer{	margin:0px 15px 0px 100px;}
+div.web2CalScheduler #calheaderContainer div, div.web2CalScheduler #calsubheaderContainer div
+{	position:absolute;}
+       .calTimeSlot{background:#fff; border-right: 1px solid #ccc;  ;}
+/* make it scroll on x-axis. */
+div.web2CalScheduler #calbodyContainer{overflow-x: auto;}
+div.web2CalScheduler .vdottedrule, div.web2CalScheduler .vsolidrule{height:20px;}
+
+div.showcalsub #calsubheaderContainer{
+    display:block;
+}
+
+
+div.web2CalScheduler #viewSpecNav{
+    width:80px;
+    display:block;
+    border: 1px solid #ccc;
+    line-height: 15px;
+    margin:2px;text-align: center;
+    height:15px;
+    position: absolute;
+    background: url("down-arrow.png")  right center no-repeat;
+}
+.dd-cont{
+    position: absolute;
+    top: 100%;
+    left: 0px;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0px;
+    margin: 2px 0px 0px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px 6px 6px 6px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    background-clip: padding-box;
+}
+.dd-cont a{
+    display: block;
+    line-height: 20px;
+    color:#333;
+    padding:5px 20px;
+    text-decoration: none;
+}
+.dd-cont a.selected,
+.dd-cont a:hover{
+    background: #3b5998;
+    color:#fff;
+}
+
+

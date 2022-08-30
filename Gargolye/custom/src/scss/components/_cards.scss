@@ -1,0 +1,22 @@
+.card {
+  background: $bg-light-s;
+  box-shadow: $shadow-m1;
+  border-radius: $r-sm;
+  border-bottom: $w-sm solid rgba($black, 0.12);
+  overflow: hidden;
+
+  &.disabled {
+    pointer-events: none;
+  }
+
+  &__header {
+    background: $bg-dark;
+    color: $font-light;
+    padding: 14px 10px 10px;
+    font-size: 1.125rem;
+  }
+
+  &__body {
+    padding: 20px 5px;
+  }
+}

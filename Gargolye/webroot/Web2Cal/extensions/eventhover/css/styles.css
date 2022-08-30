@@ -1,0 +1,26 @@
+#ttContainer
+{
+	z-index:763;
+	position:absolute;  
+			background-color:#3d7483;
+
+	border:1px solid #fff;
+	padding:10px 15px 21px 15px;;
+	width:200px;
+	display:none;
+	color:#fff;
+	text-align:left;
+	font-size:12px;
+    opacity: 0.7;
+	/* outline radius for mozilla/firefox only */
+	-moz-box-shadow:0 0 20px #000;
+	-webkit-box-shadow:0 0 20px #000;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+#ttContainer label{
+	font-weight:bold;
+}
+#ttContainer .info{
+	position:absolute; bottom:0px; right:7px;  color:#BFBFBF; font-size: 10px; font-style:italic;
+}

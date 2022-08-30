@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="css/optionalStyling.css">
+    <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+    <script src="js/web2cal.support.js">  </script>
+    <script src="js/web2cal.templates.js">  </script>
+
+    <script src="js/web2cal.dummydata.js">  </script>
+    <script src="js/optional/timecontrol.js">  </script>
+
+    <title>Web2Cal | Simple Demo with NO Events</title>
+</head>
+    <body>
+    	<input type="button" onclick="addEventsToCalendar()" value="Add Events to calendar"> <br/><br/>
+        <div id="calendarContainer" >
+        </div>
+    </body>
+ </html>
+<script>
+
+    var ical;
+	
+    /*
+     Create the Calendar.
+     */
+    function drawCalendar()
+    {
+        ical = new Web2Cal('calendarContainer', {
+            loadEvents: function(){
+                ical.render([])
+            },
+            date: "7/3/2012"
+         });
+        ical.build();
+    }
+    function getTime(daysToAdd, hour, minute){
+        var date = new Date(2012,6,3   );
+        date.addDays(daysToAdd);
+        date.setHours(hour, minute);
+        return date;
+    }
+    var eventId=9999;
+    function addEventsToCalendar(){
+        var allEvents=[];
+        var ev1={eventId: ++eventId, "startTime": getTime(-12, 6, 0),"endTime":getTime(-12, 11, 0), name: "event "+eventId, group:{groupId:100, name: "group"}, repeatEvent: { mode: "week", week:{days:[2,3]} } };
+        allEvents.push(ev1);
+        ev1={eventId: ++eventId, "startTime": getTime(-20, 2, 0),"endTime":getTime(-20, 5, 0),  name: "event "+eventId, group:{groupId:100, name: "group"}, repeatEvent: { mode: "week", week:{days:[4,5]} }   };
+        allEvents.push(ev1);
+        ical.addEvent(allEvents);
+    }
+    drawCalendar();
+</script>

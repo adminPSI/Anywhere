@@ -1,0 +1,733 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Anywhere</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <!-- Cache Control END -->
+
+    <!-- <meta http-equiv="Content-Security-Policy" 
+    content="
+      default-src 'self' ; 
+      script-src 'unsafe-inline' 'self' 'unsafe-eval'; 
+      connect-src 'self'; 
+      img-src 'self' https://*.gstatic.com https://*.googleapis.com data:; 
+      style-src 'unsafe-inline' 'self' https://*.googleapis.com;
+      base-uri 'self';
+      font-src https://fonts.googleapis.com https://fonts.gstatic.com 'self';
+      script-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.googleapis.com https://*.gstatic.com;
+      object-src 'none';
+      "> -->
+    <!-- Web2Cal -->
+    <link type="text/css" rel="stylesheet" href="./Web2Cal/css/web2cal.min.css" />
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="dist/lib/css/mobiscroll.custom-2.5.0.min.css" />
+    <link rel="stylesheet" href="dist/css/anywhere.min.css" />
+    <!-- JavaScript -->
+    <script src="session/landing.js"></script>
+    <script>
+      gotoInfalLogin();
+    </script>
+    <!-- <script type="text/javascript" src="https://speechanywhere.nuancehdp.com/mainline/scripts/Nuance.SpeechAnywhere.js"></script> -->
+  </head>
+  <body>
+    <div class="grid-container">
+      <div class="site-header">
+        <div class="loginInfo" id="loginInfo">
+          <p>Welcome,</p>
+          <p class="loginInfo__firstName" id="firstName"></p>
+          <p class="loginInfo__lastName" id="lastName"></p>
+        </div>
+
+        <button class="desktopUtilMenuBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill="none" d="M0 0h24v24H0V0z"></path>
+            <path
+              class="fill-path"
+              d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <div id="actioncenter" class="actioncenter"></div>
+    </div>
+
+    <div class="action__nav"></div>
+
+    <div id="navigation" class="nav nav__mobile">
+      <button class="nav__item" data-menu="module">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="none" d="M0 0h24v24H0V0z" />
+          <path
+            class="fill-path"
+            d="M4 18h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1zm0-5h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1zM3 7c0 .55.45 1 1 1h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1z"
+          />
+        </svg>
+      </button>
+
+      <button class="nav__item" data-menu="util">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="none" d="M0 0h24v24H0V0z" />
+          <path
+            class="fill-path"
+            d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Hide/Show Elements -->
+    <div class="overlay"></div>
+
+    <div class="menu module-menu">
+      <div class="menu__inner">
+        <!-- <div class="loginInfo" id="loginInfo">
+      <p>Welcome,</p>
+      <p class="loginInfo__firstName" id="firstName"></p>
+      <p class="loginInfo__lastName" id="lastName"></p>
+    </div> -->
+        <!-- <div class="modules"> -->
+        <!-- Dashboard -->
+        <div id="singlebuttondiv" class="menu__item">
+          <button id="singlebutton" class="menu__button" data-load-module="home">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M4 13h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm0 8h6c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm10 0h6c.55 0 1-.45 1-1v-8c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zM13 4v4c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1z"
+              />
+            </svg>
+            <span class="menu__text">Dashboard</span>
+          </button>
+        </div>
+        <!-- Roster -->
+        <div id="rostersettingsdiv" class="menu__item">
+          <button id="rostersettingsbutton" class="menu__button" data-load-module="roster">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4z"
+              />
+            </svg>
+            <span class="menu__text">Roster</span>
+          </button>
+        </div>
+        <!-- Day Services -->
+        <div id="dayservicesettingsdiv" class="menu__item">
+          <button id="dayservicesettingsbutton" class="menu__button" data-load-module="dayservices">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M6.05 4.14l-.39-.39c-.39-.39-1.02-.38-1.4 0l-.01.01c-.39.39-.39 1.02 0 1.4l.39.39c.39.39 1.01.39 1.4 0l.01-.01c.39-.38.39-1.02 0-1.4zM3.01 10.5H1.99c-.55 0-.99.44-.99.99v.01c0 .55.44.99.99.99H3c.56.01 1-.43 1-.98v-.01c0-.56-.44-1-.99-1zm9-9.95H12c-.56 0-1 .44-1 .99v.96c0 .55.44.99.99.99H12c.56.01 1-.43 1-.98v-.97c0-.55-.44-.99-.99-.99zm7.74 3.21c-.39-.39-1.02-.39-1.41-.01l-.39.39c-.39.39-.39 1.02 0 1.4l.01.01c.39.39 1.02.39 1.4 0l.39-.39c.39-.39.39-1.01 0-1.4zm-1.81 15.1l.39.39c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-.39-.39c-.39-.39-1.02-.38-1.4 0-.4.4-.4 1.02-.01 1.41zM20 11.49v.01c0 .55.44.99.99.99H22c.55 0 .99-.44.99-.99v-.01c0-.55-.44-.99-.99-.99h-1.01c-.55 0-.99.44-.99.99zM12 5.5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-.01 16.95H12c.55 0 .99-.44.99-.99v-.96c0-.55-.44-.99-.99-.99h-.01c-.55 0-.99.44-.99.99v.96c0 .55.44.99.99.99zm-7.74-3.21c.39.39 1.02.39 1.41 0l.39-.39c.39-.39.38-1.02 0-1.4l-.01-.01c-.39-.39-1.02-.39-1.41 0l-.39.39c-.38.4-.38 1.02.01 1.41z"
+              />
+            </svg>
+            <span class="menu__text">Day Services</span>
+          </button>
+        </div>
+        <!-- Outcomes -->
+        <div id="goalssettingsdiv" class="menu__item">
+          <button id="goalssettingsbutton" class="menu__button" data-load-module="outcomes">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M13.2 7.07L10.25 11l2.25 3c.33.44.24 1.07-.2 1.4-.44.33-1.07.25-1.4-.2-1.05-1.4-2.31-3.07-3.1-4.14-.4-.53-1.2-.53-1.6 0l-4 5.33c-.49.67-.02 1.61.8 1.61h18c.82 0 1.29-.94.8-1.6l-7-9.33c-.4-.54-1.2-.54-1.6 0z"
+              />
+            </svg>
+            <span class="menu__text">Outcomes</span>
+          </button>
+        </div>
+        <!-- Case Notes -->
+        <div id="casenotessettingsdiv" class="menu__item">
+          <button id="casenotesbutton" class="menu__button" data-load-module="casenotes">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm1 14H8c-.55 0-1-.45-1-1s.45-1 1-1h5c.55 0 1 .45 1 1s-.45 1-1 1zm3-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1z"
+              />
+            </svg>
+            <span class="menu__text">Case Notes</span>
+          </button>
+        </div>
+        <!-- Time Entry -->
+        <div id="singleentrysettingsdiv" class="menu__item">
+          <button id="singleentrybutton" class="menu__button" data-load-module="timeEntry">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-.22-13h-.06c-.4 0-.72.32-.72.72v4.72c0 .35.18.68.49.86l4.15 2.49c.34.2.78.1.98-.24.21-.34.1-.79-.25-.99l-3.87-2.3V7.72c0-.4-.32-.72-.72-.72z"
+              />
+            </svg>
+            <span class="menu__text">Time Entry</span>
+          </button>
+        </div>
+        <!-- Workshop -->
+        <div id="workshopsettingsdiv" class="menu__item">
+          <button id="workshopbutton" class="menu__button" data-load-module="workshop">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M12.09 2.91C10.08.9 7.07.49 4.65 1.67L8.28 5.3c.39.39.39 1.02 0 1.41L6.69 8.3c-.39.4-1.02.4-1.41 0L1.65 4.67C.48 7.1.89 10.09 2.9 12.1c1.86 1.86 4.58 2.35 6.89 1.48l7.96 7.96c1.03 1.03 2.69 1.03 3.71 0 1.03-1.03 1.03-2.69 0-3.71L13.54 9.9c.92-2.34.44-5.1-1.45-6.99z"
+              />
+            </svg>
+            <span class="menu__text">Workshop</span>
+          </button>
+        </div>
+        <!-- Incident Tracking -->
+        <div id="incidenttrackingsettingsdiv" class="menu__item">
+          <button
+            id="incidenttrackingbutton"
+            class="menu__button"
+            data-load-module="incidenttracking"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M17.73 12.02l3.98-3.98c.39-.39.39-1.02 0-1.41l-4.34-4.34c-.39-.39-1.02-.39-1.41 0l-3.98 3.98L8 2.29C7.8 2.1 7.55 2 7.29 2c-.25 0-.51.1-.7.29L2.25 6.63c-.39.39-.39 1.02 0 1.41l3.98 3.98L2.25 16c-.39.39-.39 1.02 0 1.41l4.34 4.34c.39.39 1.02.39 1.41 0l3.98-3.98 3.98 3.98c.2.2.45.29.71.29.26 0 .51-.1.71-.29l4.34-4.34c.39-.39.39-1.02 0-1.41l-3.99-3.98zM12 9c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-4.71 1.96L3.66 7.34l3.63-3.63 3.62 3.62-3.62 3.63zM10 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2-4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2.66 9.34l-3.63-3.62 3.63-3.63 3.62 3.62-3.62 3.63z"
+              />
+            </svg>
+            <span class="menu__text">Incident Tracking</span>
+          </button>
+        </div>
+        <!-- Scheduling -->
+        <div id="schedulersettingsdiv" class="menu__item">
+          <button id="scheduleButton" class="menu__button" data-load-module="schedule">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M19 4h-1V3c0-.55-.45-1-1-1s-1 .45-1 1v1H8V3c0-.55-.45-1-1-1s-1 .45-1 1v1H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 15c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1V9h14v10zM7 11h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"
+              />
+            </svg>
+            <span class="menu__text">Scheduling</span>
+          </button>
+        </div>
+        <!-- Plan -->
+        <div id="plansettingsdiv" class="menu__item">
+          <button id="planButton" class="menu__button" data-load-module="plan">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M16.85 6.85l1.44 1.44-4.88 4.88-3.29-3.29c-.39-.39-1.02-.39-1.41 0l-6 6.01c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L9.41 12l3.29 3.29c.39.39 1.02.39 1.41 0l5.59-5.58 1.44 1.44c.31.31.85.09.85-.35V6.5c.01-.28-.21-.5-.49-.5h-4.29c-.45 0-.67.54-.36.85z"
+              />
+            </svg>
+            <span class="menu__text">Plan</span>
+          </button>
+        </div>
+        <!-- Workflow -->
+        <!--<div id="workflowsettingsdiv" class="menu__item">
+        <button id="workflowButton" class="menu__button" data-load-module="workflow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none"/>
+            <path class="fill-path" d="M18 4l-4 4h3v7c0 1.1-.9 2-2 2s-2-.9-2-2V8c0-2.21-1.79-4-4-4S5 5.79 5 8v7H2l4 4 4-4H7V8c0-1.1.9-2 2-2s2 .9 2 2v7c0 2.21 1.79 4 4 4s4-1.79 4-4V8h3l-4-4z"/>
+          </svg>
+          <span class="menu__text">Workflow</span>
+        </button>
+      </div>-->
+        <!-- Report Forms -->
+        <!--<div id="reportFormsdiv" class="menu__item">
+        <button id="reportFormsButton" class="menu__button" data-load-module="reportForms">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill="none" d="M0 0h24v24H0V0z"/>
+            <path class="fill-path" d="M16.85 6.85l1.44 1.44-4.88 4.88-3.29-3.29c-.39-.39-1.02-.39-1.41 0l-6 6.01c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L9.41 12l3.29 3.29c.39.39 1.02.39 1.41 0l5.59-5.58 1.44 1.44c.31.31.85.09.85-.35V6.5c.01-.28-.21-.5-.49-.5h-4.29c-.45 0-.67.54-.36.85z"/>
+          </svg>
+          <span class="menu__text">OOD</span>
+        </button>
+      </div>-->
+        <!-- Covid Checklist -->
+        <div id="covidchecklistsettingsdiv" class="menu__item">
+          <button id="covidButton" class="menu__button" data-load-module="covid">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M20,3H4C2.9,3,2,3.9,2,5v14c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V5 C22,3.9,21.1,3,20,3z M9,17H6c-0.55,0-1-0.45-1-1c0-0.55,0.45-1,1-1h3c0.55,0,1,0.45,1,1C10,16.55,9.55,17,9,17z M9,13H6 c-0.55,0-1-0.45-1-1c0-0.55,0.45-1,1-1h3c0.55,0,1,0.45,1,1C10,12.55,9.55,13,9,13z M9,9H6C5.45,9,5,8.55,5,8c0-0.55,0.45-1,1-1h3 c0.55,0,1,0.45,1,1C10,8.55,9.55,9,9,9z M18.7,11.12l-3.17,3.17c-0.39,0.39-1.03,0.39-1.42,0l-1.41-1.42 c-0.39-0.39-0.39-1.02,0-1.41c0.39-0.39,1.02-0.39,1.41,0l0.71,0.71l2.47-2.47c0.39-0.39,1.02-0.39,1.41,0l0.01,0.01 C19.09,10.1,19.09,10.74,18.7,11.12z"
+              />
+            </svg>
+            <span class="menu__text">COVID Checklist</span>
+          </button>
+        </div>
+        <!--Transportation -->
+        <div id="transportationsettingsdiv" class="menu__item">
+          <button id="transportationButton" class="menu__button" data-load-module="transportation">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01l-1.97 5.67c-.07.21-.11.43-.11.66v7.16c0 .83.67 1.5 1.5 1.5S6 20.33 6 19.5V19h12v.5c0 .82.67 1.5 1.5 1.5.82 0 1.5-.67 1.5-1.5v-7.16c0-.22-.04-.45-.11-.66l-1.97-5.67zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.27-3.82c.14-.4.52-.68.95-.68h9.56c.43 0 .81.28.95.68L19 11H5z"
+              />
+            </svg>
+            <span class="menu__text">Transportation</span>
+          </button>
+        </div>
+        <!--eMAR -->
+        <div id="emarsettingsdiv" class="menu__item">
+          <button id="emarButton" class="menu__button" data-load-module="emar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M17,3H7C6.45,3,6,3.45,6,4v0c0,0.55,0.45,1,1,1h10c0.55,0,1-0.45,1-1v0C18,3.45,17.55,3,17,3z"
+              />
+              <path
+                class="fill-path"
+                d="M17,6H7C5.9,6,5,6.9,5,8v11c0,1.1,0.9,2,2,2h10c1.1,0,2-0.9,2-2V8C19,6.9,18.1,6,17,6z M14.5,15h-1v1 c0,0.83-0.67,1.5-1.5,1.5h0c-0.83,0-1.5-0.67-1.5-1.5v-1h-1C8.67,15,8,14.33,8,13.5v0C8,12.67,8.67,12,9.5,12h1v-1 c0-0.83,0.67-1.5,1.5-1.5h0c0.83,0,1.5,0.67,1.5,1.5v1h1c0.83,0,1.5,0.67,1.5,1.5v0C16,14.33,15.33,15,14.5,15z"
+              />
+            </svg>
+            <span class="menu__text">eMAR</span>
+          </button>
+        </div>
+        <!-- PDF Forms -->
+        <div id="PDFFormssettingsdiv" class="menu__item">
+          <button id="PDFFormsButton" class="menu__button" data-load-module="forms">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v1.25c0 .41-.34.75-.75.75s-.75-.34-.75-.75V8c0-.55.45-1 1-1H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2c-.28 0-.5-.22-.5-.5v-5c0-.28.22-.5.5-.5h2c.83 0 1.5.67 1.5 1.5v3zm4-3.75c0 .41-.34.75-.75.75H19v1h.75c.41 0 .75.34.75.75s-.34.75-.75.75H19v1.25c0 .41-.34.75-.75.75s-.75-.34-.75-.75V8c0-.55.45-1 1-1h1.25c.41 0 .75.34.75.75zM9 9.5h1v-1H9v1zM3 6c-.55 0-1 .45-1 1v13c0 1.1.9 2 2 2h13c.55 0 1-.45 1-1s-.45-1-1-1H5c-.55 0-1-.45-1-1V7c0-.55-.45-1-1-1zm11 5.5h1v-3h-1v3z"
+              />
+            </svg>
+            <span class="menu__text">Forms</span>
+          </button>
+        </div>
+        <!-- OOD -->
+        <div id="OODsettingsdiv" class="menu__item">
+          <button id="OODButton" class="menu__button" data-load-module="OOD">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill="none" d="M0 0h24v24H0V0z" />
+              <path
+                class="fill-path"
+                d="M12,12.75c1.63,0,3.07,0.39,4.24,0.9c1.08,0.48,1.76,1.56,1.76,2.73L18,17c0,0.55-0.45,1-1,1H7c-0.55,0-1-0.45-1-1l0-0.61 c0-1.18,0.68-2.26,1.76-2.73C8.93,13.14,10.37,12.75,12,12.75z M4,13c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2s-2,0.9-2,2 C2,12.1,2.9,13,4,13z M5.13,14.1C4.76,14.04,4.39,14,4,14c-0.99,0-1.93,0.21-2.78,0.58C0.48,14.9,0,15.62,0,16.43L0,17 c0,0.55,0.45,1,1,1l3.5,0v-1.61C4.5,15.56,4.73,14.78,5.13,14.1z M20,13c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2s-2,0.9-2,2 C18,12.1,18.9,13,20,13z M24,16.43c0-0.81-0.48-1.53-1.22-1.85C21.93,14.21,20.99,14,20,14c-0.39,0-0.76,0.04-1.13,0.1 c0.4,0.68,0.63,1.46,0.63,2.29V18l3.5,0c0.55,0,1-0.45,1-1L24,16.43z M12,6c1.66,0,3,1.34,3,3c0,1.66-1.34,3-3,3s-3-1.34-3-3 C9,7.34,10.34,6,12,6z"
+              />
+            </svg>
+            <span class="menu__text">OOD</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Util Menu Btn -->
+      <!-- <div class="menuBttomNav">
+          <div class="menu__item">
+            <button class="desktopUtilMenuBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path fill="none" d="M0 0h24v24H0V0z"></path>
+                <path
+                  class="fill-path"
+                  d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                ></path>
+              </svg>
+              <span class="menu__text">Settings</span>
+            </button>
+          </div>
+        </div> -->
+      <!-- </div> -->
+
+      <div class="menu__toggle" data-toggle="open">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            class="fill-path"
+            d="M14.71 15.88L10.83 12l3.88-3.88c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0L8.71 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .38-.39.39-1.03 0-1.42z"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <div class="menu util-menu">
+      <div class="submenu util-menu__main">
+        <div>
+          <button class="btn btn--primary btn--text" data-menu="defaults">Set Defaults</button>
+        </div>
+        <hr />
+        <div>
+          <button class="btn btn--primary btn--text" data-menu="settings">Settings</button>
+        </div>
+        <hr />
+        <div>
+          <button class="btn btn--primary btn--text" data-menu="help">Help</button>
+        </div>
+        <hr />
+        <button class="btn-icon btn--primary btn--text" onclick="setCookieOnFail('')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="none" d="M0 0h24v24H0V0z" />
+            <path
+              class="fill-path"
+              d="M10.79 16.29c.39.39 1.02.39 1.41 0l3.59-3.59c.39-.39.39-1.02 0-1.41L12.2 7.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L12.67 11H4c-.55 0-1 .45-1 1s.45 1 1 1h8.67l-1.88 1.88c-.39.39-.38 1.03 0 1.41zM19 3H5c-1.11 0-2 .9-2 2v3c0 .55.45 1 1 1s1-.45 1-1V6c0-.55.45-1 1-1h12c.55 0 1 .45 1 1v12c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1v3c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+            />
+          </svg>
+          <span>Logout</span>
+        </button>
+      </div>
+
+      <div class="submenu util-menu__help"></div>
+      <div class="submenu util-menu__defaults"></div>
+      <div class="submenu util-menu__settings"></div>
+      <div class="submenu util-menu__widgetSettings"></div>
+      <!--Sub of Settings-->
+    </div>
+
+    <!-- JavaScript -->
+    <!-- Lib -->
+    <script src="./dist/lib/js/jquery-1.8.3.min.js"></script>
+    <script src="./WebViewer/lib/webviewer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+    <!-- Sortable -->
+    <script src="./dist/lib/js/Sortable.js"></script>
+    <!-- Web2Cal -->
+    <script src="./Web2Cal/js/web2cal-3.0-min.js"></script>
+    <script src="./Web2Cal/js/web2cal.support.js"></script>
+    <script src="./Web2Cal/js/web2cal.templates.js"></script>
+    <!-- end Web2Cal -->
+    <script src="./dist/lib/js/jquery.timer.js"></script>
+    <script src="./dist/lib/js/moment.min.js"></script>
+    <script src="./dist/lib/js/jquery.knob.js"></script>
+    <script src="./dist/lib/js/knob.js"></script>
+    <!-- Azure STT -->
+    <script src="./dist/lib/js/microsoft.cognitiveservices.speech.sdk.bundle-min.js"></script>
+    ;
+    <!-- Bundled JavaScript -->
+    <script src="dist/js/bundle.js"></script>
+    <!-- Leave below paths alone -->
+    <script src="./session/connections.js"></script>
+
+    <script>
+      $.pages = {};
+      $.pages.roster = '';
+      $.pages.rosterdate = '';
+      $.pages.rosterbanner = '';
+      $.pages.rosterconsumerpane = '';
+      $.pages.rosterconsumerlist = '';
+      $.pages.rosterToolBar = '';
+      $.pages.dayservices = '';
+      $.pages.goals = '';
+      $.pages.single = '';
+      $.pages.notes = '';
+      $.pages.singleentry = '';
+      $.pages.documentview = '';
+      $.loadedApp = '';
+      $.loadedAppPage = '';
+      $.banner = false;
+      $.roster = {};
+      $.roster.moveable = true;
+      $.googleMapAPI = 'AIzaSyAtSzvxIiSo6N1-WCNmpAtXQ4C2gyKqtdw';
+      $.orientation = null;
+
+      var isIE;
+      var isMobile;
+      var tid;
+
+      const WorkflowProcess = {
+        ALL: 1,
+        CONSUMER_PLAN_ANNUAL: 2,
+        CONSUMER_PLAN_REVISION: 3,
+      };
+      Object.freeze(WorkflowProcess);
+
+      checkInfalConnectionAjax();
+
+      window.addEventListener('DOMContentLoaded', function (event) {
+        if ($.session.applicationName === 'Advisor') {
+          var menu = document.querySelector('.module-menu .menu__inner');
+          var planBtn = document.querySelector('#plansettingsdiv');
+          menu.removeChild(planBtn);
+        }
+        checkForMobileDevice();
+        isIE = UTIL.detectBrowser();
+        var firstName = document.getElementById('firstName');
+        var lastName = document.getElementById('lastName');
+        //var userName = document.getElementById('userName');
+
+        setUpGoogleMapsApi();
+
+        knob();
+
+        //set up page to run
+        setSession(getDefaultAnywhereSettings);
+        if ($.session.Name === '') {
+          $.session.Name = 'PSI';
+          // firstName.addEventListener("click", function () {
+          //     displayChangeUser();
+          // });
+        }
+        firstName.innerHTML = $.session.Name;
+        lastName.innerHTML = $.session.LName;
+        //userName.innerHTML = $.session.Name;
+
+        //set version number to what is in code
+        checkVersions();
+        // init stuff on load
+        overlay.init();
+        NAVIGATION.init();
+        ACTION_NAV.init();
+        PROGRESS.init();
+        UTIL.getGeoLocation();
+
+        if (readCookie('psiuser') !== null) {
+          $.session.isPSI = true;
+
+          firstName.innerHTML = 'PSI';
+          firstName.addEventListener('click', function () {
+            displayChangeUser();
+          });
+          lastName.innerHTML = '';
+
+          setUpAdminPermissions();
+        }
+      });
+
+      // TODO: figure out below
+      // window.addEventListener('beforeunload', function (e) {
+      //   e.preventDefault();
+      //   e.returnValue = '';
+      // });
+
+      // function loadMiniRosterTest() {
+      //   DOM.clearActionCenter();
+      //   var wrapper = document.createElement("div");
+      //   wrapper.classList.add("minirostertest");
+
+      //   roster.buildRoster(true, function appendMiniRoster(miniRoster) {
+      //     DOM.clearActionCenter();
+      //     DOM.ACTIONCENTER.appendChild(miniRoster);
+      //   });
+      // }
+
+      function backToLogin() {
+        document.location.href = 'login.html';
+      }
+
+      function loadApp(appName, extraData) {
+        if ($.session.Token === '') {
+          backToLogin();
+          return;
+        }
+
+        // unload old module
+        if ($.loadedApp) unloadApp($.loadedApp);
+        // set new module
+        $.loadedApp = appName;
+
+        if (appName !== 'singleentry') {
+          $.session.isCurrentlySingleEntry = false;
+        }
+
+        featureLogging(appName);
+        setActiveModuleAttribute(appName);
+        UTIL.toggleMenuItemHighlight(appName);
+        DOM.scrollToTopOfPage();
+        roster2.removeMiniRosterBtn();
+        // Load the new app
+        switch (appName) {
+          case 'home': {
+            dashboard.load();
+            break;
+          }
+          case 'casenotes': {
+            caseNotes.load();
+            break;
+          }
+          case 'dayservices': {
+            dayServices.init();
+            break;
+          }
+          case 'documentview': {
+            // documentViewLoad(extraData);
+            break;
+          }
+          case 'outcomes': {
+            outcomes.init();
+            break;
+          }
+          case 'incidenttracking': {
+            if ($.session.incidentTrackingInsert) {
+              incidentTracking.loadLandingPage();
+            } else {
+              incidentTracking.getDropdownData(() => {
+                incidentOverview.init();
+              });
+            }
+            break;
+          }
+          case 'infaltimeclock': {
+            $('#infaltimeclockbutton').addClass('buttonhighlight');
+            buildInfal();
+            $(document).trigger('moduleLoad');
+            break;
+          }
+          case 'roster': {
+            // roster.init();
+            roster2.loadRosterInfo();
+            break;
+          }
+          case 'schedule': {
+            scheduling.init();
+            break;
+          }
+          case 'timeEntry': {
+            timeEntry.init();
+            break;
+          }
+          case 'workshop': {
+            workshop.init();
+            break;
+          }
+          case 'reportForms': {
+            tmpReports.init();
+            break;
+          }
+          case 'plan': {
+            plan.init();
+            break;
+          }
+          case 'workflow': {
+            workflow.init();
+            break;
+          }
+          case 'covid': {
+            covidLanding.init();
+            break;
+          }
+          case 'transportation': {
+            TRANS_mainLanding.init();
+            break;
+          }
+          case 'forms': {
+            forms.init();
+            break;
+          }
+          case 'OOD': {
+            OOD.init();
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+
+        if (
+          $.session.UserId !== 'ash' &&
+          $.session.UserId !== 'brad' &&
+          $.session.UserId !== 'mike' &&
+          $.session.UserId !== 'jmeyer'
+        ) {
+          autoLogout();
+        }
+      }
+
+      function unloadApp(appName) {
+        roster2.clearActiveConsumers();
+        roster2.clearSelectedConsumers();
+        roster2.setAllowedConsumers(['%']);
+        // roster.clearHighlightedConsumers();
+        // roster.removeMiniRosterBtn();
+        DOM.toggleNavLayout();
+        DOM.clearActionCenter();
+        setActiveModuleSectionAttribute(null);
+        ACTION_NAV.hide();
+        // move to a functio inside roster at some point
+        var miniroster = document.querySelector('.miniRoster');
+        if (miniroster) document.body.removeChild(miniroster);
+
+        switch (appName) {
+          case 'home': {
+            break;
+          }
+          case 'casenotes': {
+            note.clearAllGlobalVariables();
+            break;
+          }
+          case 'dayservices': {
+            break;
+          }
+          case 'outcomes': {
+            break;
+          }
+          case 'incidenttracking': {
+            break;
+          }
+          case 'roster': {
+            progressNotes.clearAllGlobalVariables();
+            break;
+          }
+          case 'schedule': {
+            break;
+          }
+          case 'timeEntry': {
+            timeEntryCard.clearAllGlobalVariables();
+            timeEntryReview.clearAllGlobalVariables();
+            timeApproval.clearAllGlobalVariables();
+            editTimeEntry.clearAllGlobalVariables();
+            break;
+          }
+          case 'workshop': {
+            break;
+          }
+          case 'reportForms': {
+            break;
+          }
+          case 'plan': {
+            $.loadedAppPage = '';
+            document.body.classList.remove('planActive');
+            plan.clearAllData();
+            break;
+          }
+          case 'workflow': {
+            //console.log("unload workflow area");
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+      }
+
+      function setActiveModuleAttribute(appName) {
+        var actioncenter = document.getElementById('actioncenter');
+        actioncenter.setAttribute('data-active-module', appName);
+      }
+
+      function setActiveModuleSectionAttribute(sectionName) {
+        var actioncenter = document.getElementById('actioncenter');
+        actioncenter.setAttribute('data-active-section', sectionName);
+      }
+
+      function checkForMobileDevice() {
+        // device detection
+        if (
+          /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(
+            navigator.userAgent,
+          ) ||
+          /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
+            navigator.userAgent.substr(0, 4),
+          )
+        ) {
+          isMobile = true;
+          document.body.setAttribute('data-mobile', 'true');
+          document.body.classList.add('mobileActive');
+        }
+      }
+
+      function setUpGoogleMapsApi() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.id = 'mapScript';
+        script.src =
+          'https:' + '//maps.googleapis.com/maps/api/js?libraries=geometry&key=' + $.googleMapAPI;
+        script.async = true;
+        script.defer = true;
+        var target = document.getElementsByTagName('script')[0];
+        target.parentNode.insertBefore(script, target);
+      }
+    </script>
+  </body>
+</html>

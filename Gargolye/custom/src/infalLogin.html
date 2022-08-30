@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Infallible</title>
+    <link rel="stylesheet" type="text/css" href="infaltimeclock/infaltimeclock.css" />
+    <script src="session/landing.js"></script>
+    <script>
+        if (location.hash && location.hash.trim() != "") { }
+        else gotoAnywhereLogin();
+    </script>
+    <script src="scripts/jquery-1.8.3.js"></script>
+    <script src="scripts/jquery.crypt.js"></script>
+    <script src="session/session.js"></script>
+    <script src="session/sessionajax.js"></script>
+    <script src="session/connections.js"></script>
+    <script src="infaltimeclock/infaltimeclock.js"></script>
+    <script src="infaltimeclock/infaltimeclockajax.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#username").focus();
+            $("#username, #password").keypress(function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    anticipo();
+                }
+            });
+        });
+    </script>
+</head>
+
+
+<body>
+    <section class="login">
+        <div class="title">Infallible Time Clock</div>
+        <form id="login" action="#" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="text" maxlength="5" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id=username required title="Numeric required" placeholder="Numeric Id" data-icon="U">
+            <input type="password" id="password" required title="Password required" placeholder="Password" data-icon="x">
+            <div class="forgotregister">
+                <!--<div class="col"><a href="#" title="Ver Carásteres">Register</a></div>-->
+                <div class="col"><a href="#" onclick="resetPasswordClick();" title="Forgot Password">Forgot Password?</a></div>
+            </div>
+            <a onclick="anticipo();" class="submit">Submit</a>
+        </form>
+        <form id="reset" action="#" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="text" maxlength="5" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id=usernumericreset required title="Username required" placeholder="Enter your numeric id" data-icon="U">
+            <a href="#" onclick="submitResetRequest();" class="submit">Submit</a>
+        </form>
+    </section>
+</body>
+</html>
+
+

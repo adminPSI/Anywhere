@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+        <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+        <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+        <script src="js/web2cal.support.js">  </script>
+        <script src="js/web2cal.templates.js">  </script>
+
+
+        <script src="js/web2cal.dummydata.js">  </script>
+        <script src="js/optional/timecontrol.js">  </script>
+        <title>Web2Cal | Person/Resource vs Time Demo</title>
+	</head>
+	<body>  
+		<div class="sample-desc" >Displays events across groups/people</div>
+		<!-- Container holds the calendar. -->
+		<div id="calContainer">
+		</div> 
+		<script language="javascript" type="text/javascript"> 
+		    /** 
+		     * Click of Add in add event box
+		     */ 
+			function rzAddEvent()
+			{   
+		        var newev = Web2Cal.getNewEventObject(jQuery("#defaultNewEventTemplate"));
+		        ical.addEvent(newev);
+			} 
+		    /**
+		     Onclick of Close in AddEvent Box
+		     */ 
+			function rzCloseAddEvent()
+			{
+				ical.closeAddEvent(); 
+			}
+			
+			/**
+			 * Constructs Web2Cal 
+			 */
+		    var ical;
+		    function createCalendar()
+		    { 
+		        ical = new Web2Cal('calContainer', {
+		            loadEvents: 	loadPersonEvents,
+		            onUpdateEvent: 	updateEvent,
+					onNewEvent: 	onNewEvent,            
+		            views: 			"day,month,week,agenda,custom,w2cview",
+					defaultView: 	"w2cview", 
+		            showLeftNav: 	false 
+		        });
+		        
+		        ical.build();
+		    }
+
+
+            var date = new Date();
+            var d = date.getDate(), m = date.getMonth(), y = date.getFullYear();
+            function createDateTime(ti, h, numofDays)
+            {
+
+
+                return new Date(y,m,d+numofDays, ti, h);
+
+                return x;
+            }
+		    
+		    /**
+		     * Sets up the new event, date control / time control etc... 
+		     * 
+		     * @param {Object} newevt
+		     */
+		    function setupNewEvt(newevt)
+		    {
+		        newevt.find("#startDate").datepicker(); 
+		        newevt.find("#endDate").datepicker(); 
+		        var alldaybox = newevt.find("#allDayEvent").get(0);
+		        if (alldaybox) 
+		        {
+		            alldaybox.onclick = function()
+		            {
+		                if (this.checked) 
+		                {
+		                    newevt.find("#startTime").attr("disabled", true).val("");
+		                    newevt.find("#endTime").attr("disabled", true).val("");
+		                }
+		                else 
+		                {
+		                    newevt.find("#startTime").attr("disabled", false).val("12:00 am");
+		                    newevt.find("#endTime").attr("disabled", false).val("12:00 am");
+		                    
+		                };
+		             };
+		        }
+		        new Web2Cal.TimeControl(newevt.find("#startTime").get(0));
+		        new Web2Cal.TimeControl(newevt.find("#endTime").get(0), newevt.find("#startTime").get(0));
+		        
+		    } 
+		     
+		    
+		    /**
+		     * Method invoked on creating a new event. 
+		     * 
+		     * 
+		     * @param {Object} obj - Object containing event time and date
+		     * @param {Object} newevt - New Event jQuery object
+		     * @param {Object} params - Parameters
+		     * @param {Object} groups - Groups
+		     * @param {Object} allday - All day indicator
+		     */
+		    function onNewEvent(obj, groups, allday)
+		    {
+                if(ical.isMobileMode()){
+                    Web2Cal.onNewEvent(jQuery("#"+mobileNewEventForm), obj, groups, allday);
+                } else {
+                    Web2Cal.onNewEvent(jQuery("#"+newEventForm), obj, groups, allday);
+                }
+		    }
+			/**
+			 * Updates event in DB. 
+			 * After updating call ical.updateEvent to reflect the updated info in calendar
+			 * @param {Object} event
+			 */
+		    function updateEvent(event)
+		    {
+				   ical.updateEvent(event);
+		    }
+		     
+			function createPersonTask(name, id, st, ed)
+			{ 
+			    return {
+			        name: name,
+			        eventId: id, 
+			        startTime: st ,
+			        endTime: ed
+			    };
+			} 
+		   
+		    /**
+		     Provide implementation for these methods.
+		     */
+		    /**
+		     Click on Edit Button
+		     */
+		    function rzEditEvent()
+		    {
+		        alert("editing");
+		    }
+		    
+		    /**
+		     Clicking delete in Preview box
+		     */
+		    function rzDeleteEvent()
+		    {
+		        alert("Delete Event in DB and invoke ical.deleteEvent({eventId: id})");
+		    }
+		      
+			WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+			/**
+			 * Create the calendar when document is loaded.
+			 */
+		    jQuery(document).ready(function()
+		    {		
+		        createCalendar();
+				setupNewEvt(jQuery("#gmCalendarNewEvent"));
+				
+		    });
+			
+			
+		    function loadPersonEvents()
+			{
+				var d=new Array();
+				var events=new Array();
+				events.push( createPersonTask("Task 1", 2, createDateTime(23, 0, 0), createDateTime(23, 30, 0)) );
+				events.push( createPersonTask("Task 2", 3, createDateTime(4, 30, 0), createDateTime(8, 30, 0)));
+				events.push( createPersonTask("Task 3", 4, createDateTime(8, 30, 0), createDateTime(9, 45, 0)));
+				events.push( createPersonTask("Task 4", 5, createDateTime(10, 0, 0), createDateTime(16, 30, 0)));
+				events.push( createPersonTask("Task 5", 6, createDateTime(14, 0, 0), createDateTime(17, 30, 0)));
+				events.push( createPersonTask("Task 5", 7, createDateTime(1, 0, 0), createDateTime(6, 30, 0)));
+				
+				var group = {
+			        name: "Dan Smith",
+			        groupId: "200",
+			        events: events
+			    };
+		    	d.push(group);
+				
+				var events=new Array();
+				events.push( createPersonTask("Task 100", 10, createDateTime(20, 0, 0), createDateTime(22, 30, 0)) );
+				events.push( createPersonTask("Task 110", 11, createDateTime(7, 30, 0), createDateTime(9, 30, 0)));
+				events.push( createPersonTask("Task 120", 12, createDateTime(2, 30, 0), createDateTime(5, 45, 0)));
+				events.push( createPersonTask("Task 120", 13, createDateTime(3, 30, 0), createDateTime(7, 0, 0)));
+				events.push( createPersonTask("Task 120", 14, createDateTime(5, 30, 0), createDateTime(7, 45, 0)));
+				events.push( createPersonTask("Task 130", 15, createDateTime(13, 0, 0), createDateTime(16, 30, 0)));
+				events.push( createPersonTask("Task 140", 16, createDateTime(18, 0, 0), createDateTime(20, 30, 0)));
+				
+				var group = {
+			        name: "John Doe",
+			        groupId: "300",
+			        events: events
+			    };
+		    	d.push(group);
+				
+				var events=new Array(); 
+				events.push( createPersonTask("Task 100", 20, createDateTime(4, 0, 0), createDateTime(7, 30, 0)) );
+				events.push( createPersonTask("Task 110", 21, createDateTime(6, 30, 0), createDateTime(9, 30, 0)));
+				events.push( createPersonTask("Task 120", 22, createDateTime(6, 30, 0), createDateTime(11, 45, 0)));
+				events.push( createPersonTask("Task 130", 23, createDateTime(13, 0, 0), createDateTime(16, 30, 0)));
+				events.push( createPersonTask("Task 140", 24, createDateTime(18, 0, 0), createDateTime(20, 30, 0)));
+				
+				var group = {
+			        name: "Paul Harris",
+			        groupId: "400",
+			        events: events
+			    };
+		    	d.push(group);
+				
+				var events=new Array();
+				events.push( createPersonTask("Task 300", 30, createDateTime(3, 0, 0), createDateTime(5, 30, 0)) );
+				events.push( createPersonTask("Task 310", 31, createDateTime(6, 30, 0), createDateTime(8, 30, 0)));
+				events.push( createPersonTask("Task 320", 32, createDateTime(8, 30, 0), createDateTime(9, 45, 0)));
+				events.push( createPersonTask("Task 330", 33, createDateTime(10, 0, 0), createDateTime(11, 30, 0)));
+				events.push( createPersonTask("Task 340", 34, createDateTime(14, 0, 0), createDateTime(17, 30, 0)));
+				events.push( createPersonTask("Task 340", 35, createDateTime(1, 0, 0), createDateTime(7, 30, 0)));
+				
+				var group = {
+			        name: "Kate Smith",
+			        groupId: "500",
+			        events: events
+			    };
+		    	d.push(group);
+				
+				var events=new Array();
+				events.push( createPersonTask("Task 400", 40, createDateTime(2, 0, 0), createDateTime(5, 30, 0)) );
+				events.push( createPersonTask("Task 410", 41, createDateTime(4, 30, 0), createDateTime(6, 30, 0)));
+				events.push( createPersonTask("Task 420", 42, createDateTime(6, 30, 0), createDateTime(9, 45, 0)));
+				events.push( createPersonTask("Task 430", 43, createDateTime(9, 0, 0), createDateTime(11, 30, 0)));
+				events.push( createPersonTask("Task 440", 44, createDateTime(16, 0, 0), createDateTime(17, 30, 0)));
+				events.push( createPersonTask("Task 440", 45, createDateTime(2, 0, 0), createDateTime(7, 30, 0)));
+				
+				var group = {
+			        name: "Sarah Lee",
+			        groupId: "600",
+			        events: events
+			    };
+		    	d.push(group);
+				
+				ical.render(d);
+			}
+			
+		</script>
+
+		
+	</body>
+</html>

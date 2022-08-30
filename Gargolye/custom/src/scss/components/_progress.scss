@@ -1,0 +1,107 @@
+.spinner {
+  position: relative;
+  top: 20px;
+  width: 100%;
+  
+  &__small {
+    position: relative;
+    top: 0;
+    width: 100%;
+  }
+
+  &__message {
+    display: none;
+    line-height: 1.5;
+    margin: 0 auto 22px;
+    max-width: 300px;
+    text-align: center;
+
+    &.small {
+      margin: 0 auto 5px;
+      line-height: 1;
+    }
+
+    &.visible {
+      display: block;
+    }
+  }
+
+  &__bar {
+    border: 16px solid rgba($black, 0.4);
+    border-top: 16px solid $primary;
+    border-radius: $r-circle;
+    height: 140px;
+    width: 140px;
+    margin: 0 auto;
+  
+    animation: spin 1500ms linear infinite;
+
+    &.small {
+      border: 10px solid rgba($black, 0.4);
+      border-top: 10px solid $primary;
+      height: 60px;
+      width: 60px;
+    }
+    &.small_btn {
+      border: 3.5px solid rgba($white, 0.6);
+      border-top: 3px solid $primary;
+      height: 17px;
+      width: 17px;
+    }
+  }
+
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg) }
+  100% { transform: rotate(360deg) }
+}
+
+.spinner__bar {
+  &.fast {
+    animation-duration: 1s;
+  }
+  &.faster {
+    animation-duration: 500ms;
+  }
+  &.fastest {
+    animation-duration: 250ms;
+  }
+  &.fastest2 {
+    animation-duration: 20ms;
+  }
+}
+
+.progressCircle {
+  position: relative;
+  height: 120px;
+  width: 120px;
+
+  &__text {
+    font-weight: $normal;
+    font-size: 1.25rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  svg {
+    overflow: hidden;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  .path1 {
+    stroke: #eee;
+    stroke-width: 1;
+    fill-opacity: 0;
+  }
+  .path2 {
+    stroke-dasharray: 301.635, 301.635;
+    stroke-width: 4;
+    fill-opacity: 0;
+  }
+}

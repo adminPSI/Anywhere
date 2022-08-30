@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="css/web2cal.css">
+        <link type="text/css" rel="stylesheet" href="css/web2cal-responsive.css">
+        <link type="text/css" rel="stylesheet" href="js/optional/css/timecontrol.css">
+
+        <script src="ext/jquery.cookie.js"> </script>
+        <script src="js/web2cal.support.js">  </script>
+
+
+        <script src="js/web2cal.dummydata.js">  </script>
+        <script src="js/optional/timecontrol.js">  </script>
+        <script src="js/web2cal.templates.js">  </script>
+		
+		<!-- Import the specific language files -->		
+        <script src="locale/Locale_FR.js">  </script>
+        <script src="locale/Locale_HU.js">  </script>
+        <script src="locale/Locale_IT.js">  </script>
+        <script src="locale/Locale_SP.js">  </script>
+        <title>Web2Cal | Change Calendar Settings</title>
+
+        <style>
+
+            .overlay{
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
+                z-index: 10;
+                background-color: rgba(0,0,0,0.5);
+            }
+            .frame-container{
+                height:80%;position: absolute;
+                z-index: 10;
+                display:none;
+                color:#f7f7f7;
+                width: 800px ;
+                top:100px;left: 50%;
+                margin-left: -30%;
+             }
+            .frame-container iframe{background: #fff;}
+        </style>
+    </head>
+  
+    <body>    	
+		<div class="sample-desc" >Settings window demo. Click the settings link to customize the behavior of Calendar. 
+            <p>The settings are stored in a cookie in this Demo.</p>
+         </div>
+		<select id="languages">
+				<option value="EN">English</option>
+				<option value="FR">French</option>
+				<option value="IT">Italian</option>
+				<option value="SP">Spanish</option>
+		</select>
+		<input type="button" value="GO" onclick="selectLanguage()"/>
+		<br/>
+        <div id="calendarContainer">
+        </div>    
+    </body> 
+</html>
+<script>
+
+    var WEB2CAL_LICENSE_KEY=["*****EMBED YOUR LICENSE KEY HERE****" ];
+    var ical,activeEvent
+            , newEventForm="defaultNewEventTemplate"
+            , mobileNewEventForm="newEventFormMobile"
+            , preview="previewTemplate"
+            , mobilePreview="eventPreviewMobile"
+            ;
+	//Function to get language stored in cookie  
+	function getCookieValue(name, defaultValue)
+	{
+		var val=jQuery.cookie(name); 
+		if(!val)
+		{
+			val=defaultValue;
+		} 
+		return val;
+	} 
+		
+    /*
+     Create the Calendar.
+     */
+    function drawCalendar()
+    {
+		//getValues from cookie 
+		var lang=getCookieValue( "language", "EN");
+		Web2Cal.LANG=eval("Web2Cal.LANG_"+lang); //Set this value to language you need before initiating Web2Cal.
+
+        ical = new Web2Cal('calendarContainer', {
+            loadEvents:             loadCalendarEvents,
+            detectMobileMode:       true,
+            monthWithEvents:        true,
+            defaultView:            getCookieValue( "defaultView", "month"),
+            detectMobileMode:       true,
+            startTime:		        (+getCookieValue( "startTime", 0)),
+            endTime:		        (+getCookieValue( "endTime", 24)),
+            customViewSize:         (+getCookieValue( "customViewSize", 4)),
+            onOptionsClick:         showOptions,
+            showOptions: 	        true,
+            startOfWeek:	        (+getCookieValue( "startOfWeek", 0)),
+            views: 			        getCookieValue( "viewsList", "day,month,week,agenda,workshift,custom,w2cview"),
+            newEventTemplateMobile: mobileNewEventForm,
+            newEventTemplate:       newEventForm,
+            previewTemplate:        preview,
+            previewTemplateMobile:  mobilePreview,
+            onNewEvent:             onNewEvent 
+        });
+
+        ical.build();
+    }
+     
+	function showOptions()
+	{
+		  
+        if( !document.getElementById("theFrame") ){
+            jQuery("<div id='overlay' class='overlay'></div> <div id='frame-container' class='frame-container'><p>Click on background to close.</p><iframe style='width:100%; height:100%;' id='theFrame'></iframe> </div> ").appendTo("body");
+            jQuery("#overlay").click(function(){
+                jQuery("#overlay").hide();
+                jQuery("#frame-container").hide();
+            });
+        }
+        jQuery("#theFrame").attr("src", "examples/settings.html?bust="+Math.random());
+        jQuery("#frame-container").show();
+        jQuery("#overlay").show();
+
+	}
+
+
+    /**
+     Method to get Events and display it in the calendar.
+     If you need to make an asynchronous call, invoke ical.render in the callback method.
+     @param startTime - Calendar Display Range start
+     @para endTime - Calendar End Range end
+     */
+    function loadCalendarEvents(startTime, endTime)
+    {
+        ical.render(Web2Cal.sampleData());
+    }
+
+    function createDateTime(ti, h, numofDays)
+    {
+        var dd = new Date();
+        dd.setHours(ti);
+        dd.setMinutes(h);
+
+        if (numofDays)
+        {
+            dd.addDays(numofDays);
+        }
+        return dd;
+    }
+    function createCustomEvent(name,headerTitle, id,  timestart, timeend, allDay, movable, resizable)
+    {
+
+        if (allDay == undefined)
+            allDay = false;
+
+        return {
+            name: name,
+            myTitleAttribute: headerTitle,
+            eventId: id,
+            startTime: timestart,
+            endTime: timeend,
+            allDay: allDay,
+            movable: movable,
+            resizable: resizable
+        };
+    }
+
+    /*
+     Method invoked when creating a new event, before showing the new event form.
+     @param obj - Object containing (startTime, endTime)
+     @param groups - List of Group objects ({groupId, name})
+     @param allday - boolean to indicate if the event created is allday event.
+     */
+    function onNewEvent(obj, groups, allday)
+    {
+        if(ical.isMobileMode()){
+            Web2Cal.onNewEvent(jQuery("#"+mobileNewEventForm), obj, groups, allday);
+        } else {
+            Web2Cal.onNewEvent(jQuery("#"+newEventForm), obj, groups, allday);
+        }
+    }
+
+
+    var setupEditEventForm = function($form, evObj ){
+        var groups=ical.getAllGroups();
+        activeEvent = evObj;
+        $form.find("#eventName").val(evObj.eventName).end()
+                .find("#eventGroup").val(evObj.groupId).end()
+                .find("#eventStartTime").val(evObj.startTime.toString("hh:mm tt")).end()
+                .find("#eventEndTime").val(evObj.endTime.toString("hh:mm tt")).end()
+                .find("#eventStartDate").val(evObj.startTime.toString("MM/dd/yyyy")).end()
+                .find("#eventEndDate").val(evObj.endTime.toString("MM/dd/yyyy")).end()
+                .find("#addEventBtn").hide().end()
+                .find("#updateEventBtn").show().end();
+
+        var groupDD = $form.find("#eventGroup").empty();
+        for(var g in groups)
+        {
+            if(!groups.hasOwnProperty(g))
+                continue;
+            addOption(groupDD, groups[g].name,groups[g].groupId,false);
+        }
+
+
+    }
+
+    var editMobileEvent = function(evId, event){
+        setupEditEventForm( jQuery("#"+mobileNewEventForm), event );
+        Web2Cal.PageHandler.showPage(jQuery("#"+mobilePreview), jQuery("#newEventFormMobile") );
+    }
+
+    /*
+     Click on Edit Button in preview window
+     */
+    var rzEditEvent = function(evId, event)
+    {
+        var evObj=ical.getEventById(evId);
+
+        if(ical.isMobileMode()){
+            editMobileEvent(evId, evObj);
+        } else {
+            setupEditEventForm( jQuery("#"+newEventForm), event );
+
+            ical.showEditEventTemplate(jQuery("#"+newEventForm), evObj.eventId, event);
+            Web2Cal.hidePreview();
+        }
+    }
+
+    /**
+     Clicking delete in Preview window
+     */
+    function rzDeleteEvent()
+    {
+        //alert("Delete Event in DB and invoke ical.deleteEvent({eventId: id})");
+        ical.deleteEvent({eventId: activeEvent.eventId});
+        Web2Cal.hidePreview();
+    }
+
+    /**
+     * Click of Add in add event box.
+     */
+    function rzAddEvent()
+    {
+        var newev = Web2Cal.getNewEventObject(jQuery("#"+newEventForm));
+        ical.addEvent(newev);
+    }
+
+    /**
+     * Onclick of Close in AddEvent Box.
+     */
+    function rzCloseAddEvent()
+    {
+        ical.closeAddEvent();
+    }
+
+    /**
+     * Once page is loaded, invoke the Load Calendar Script.
+     */
+    jQuery(document).ready(function()
+    {
+        drawCalendar();
+
+        new Web2Cal.TimeControl(jQuery("#eventStartTime").get(0));
+        new Web2Cal.TimeControl(jQuery("#eventEndTime").get(0), jQuery("#eventStartTime").get(0), {
+            onTimeSelect: updateDateForTime,
+            dateField: "eventEndDate"
+        });
+    });
+</script>

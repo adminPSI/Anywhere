@@ -1,0 +1,319 @@
+﻿using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Script.Serialization;
+
+namespace Anywhere.service.Data.PlanServicesAndSupports
+{
+    public class ServicesAndSupportsWorker
+    {
+        JavaScriptSerializer js = new JavaScriptSerializer();
+        ServicesAndSupportsDataGetter dg = new ServicesAndSupportsDataGetter();
+        public ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId)
+        {
+            //Paid Support
+            string paidSupportString = dg.getPaidSupports(token, anywAssessmentId, 0);
+            PaidSupports[] paidSupportObj = js.Deserialize<PaidSupports[]>(paidSupportString);
+            //Support Modfications
+            string supportModString = dg.getSSModifications(token, anywAssessmentId);
+            SupportModifications[] supportModObj = js.Deserialize<SupportModifications[]>(supportModString);
+            //Additional Supports
+            string additionalSupportString = dg.getAdditionalSupports(token, anywAssessmentId, 0);
+            AdditionalSupports[] additionalSupportObj = js.Deserialize<AdditionalSupports[]>(additionalSupportString);
+            //Professional Referrals
+            string proRefString = dg.getProfessionalReferral(token, anywAssessmentId, 0);
+            ProfessionalReferrals[] proRefObj = js.Deserialize<ProfessionalReferrals[]>(proRefString);
+            //communications Options
+            string communicationOptionsString = dg.getCommunicationOptions(token);
+            CommunicationsOptions[] communicationOptionsObj = js.Deserialize<CommunicationsOptions[]>(communicationOptionsString);
+            //Employment Options
+            string employmentOptionsString = dg.getEmploymentOptions(token);
+            EmploymentOptions[] employmentOptionsObj = js.Deserialize<EmploymentOptions[]>(employmentOptionsString);
+            //Levels Of Supervision
+            string levelsOfSuervisionString = dg.getLevelsOfSupervision(token);
+            LevelsOfSupervision[] levelsOfSupervisionObj = js.Deserialize<LevelsOfSupervision[]>(levelsOfSuervisionString);
+            //Experience Relationships
+            string relationshipString = dg.getExperienceRelationships(consumerId);
+            ConsumerRelationships[] relationshipObj = js.Deserialize<ConsumerRelationships[]>(relationshipString);
+
+            ServicesAndSupports totalServicesAndSupports = new ServicesAndSupports();
+            totalServicesAndSupports.paidSupport = paidSupportObj;
+            totalServicesAndSupports.supportModification = supportModObj;
+            totalServicesAndSupports.additionalSupport = additionalSupportObj;
+            totalServicesAndSupports.professionalReferral = proRefObj;
+            totalServicesAndSupports.communicationsOptions = communicationOptionsObj;
+            totalServicesAndSupports.employmentOptions = employmentOptionsObj;
+            totalServicesAndSupports.levelsOfsupervision = levelsOfSupervisionObj;
+            totalServicesAndSupports.experienceRelationships = relationshipObj;
+
+            return totalServicesAndSupports;
+        }
+
+        public string deleteProfessionalReferral(string token, long professionalReferralId)
+        {
+            return dg.deleteProfessionalReferral(token, professionalReferralId);
+        }
+
+        public string getProfessionalReferral(string token, long professionalReferralId, int targetAssessmentVersionId)
+        {
+            return dg.getProfessionalReferral(token, professionalReferralId, 0);
+        }
+
+        public string updateProfessionalReferral(string token, long professionalReferralId, long anywAssessmentId, int assessmentAreaId, char newOrExisting, string whoSupports, string reasonForReferral)
+        {
+            return dg.updateProfessionalReferral(token, professionalReferralId, anywAssessmentId, assessmentAreaId, newOrExisting, whoSupports, reasonForReferral);
+        }
+
+        public string insertProfessionalReferral(string token, long anywAssessmentId, int assessmentAreaId, char newOrExisting, string whoSupports, string reasonForReferral, int rowOrder)
+        {
+            return dg.insertProfessionalReferral(token, anywAssessmentId, assessmentAreaId, newOrExisting, whoSupports, reasonForReferral, rowOrder);
+        }
+
+        public string deleteAdditionalSupports(string token, long additionalSupportsId)
+        {
+            return dg.deleteAdditionalSupports(token, additionalSupportsId);
+        }
+
+        public string updateAdditionalSupports(string token, long additionalSupportsId, long anywAssessmentId, int assessmentAreaId, string whoSupports, string whatSupportLooksLike, string howOftenValue, int howOftenFrequency, string howOftenText)
+        {
+            return dg.updateAdditionalSupports(token, additionalSupportsId, anywAssessmentId, assessmentAreaId, whoSupports, whatSupportLooksLike, howOftenValue, howOftenFrequency, howOftenText);
+        }
+
+        public string insertAdditionalSupports(string token, long anywAssessmentId, int assessmentAreaId, string whoSupports, string whatSupportLooksLike, string howOftenValue, int howOftenFrequency, string howOftenText, int rowOrder)
+        {
+            return dg.insertAdditionalSupports(token, anywAssessmentId, assessmentAreaId, whoSupports, whatSupportLooksLike, howOftenValue, howOftenFrequency, howOftenText, rowOrder);
+        }
+
+        public string deleteSSModifications(string token, long modificationsId)
+        {
+            return dg.deleteSSModifications(token, modificationsId);
+        }
+
+        public string updateSSModifications(string token, long modificationsId, long anywAssessmentId, char medicalRate, char behaviorRate, char icfRate, char complexRate, char developmentalRate, char childIntensiveRate)
+        {
+            return dg.updateSSModifications(token, modificationsId, anywAssessmentId, medicalRate, behaviorRate, icfRate, complexRate, developmentalRate, childIntensiveRate);
+        }
+
+        public string insertSSModifications(string token, long anywAssessmentId, char medicalRate, char behaviorRate, char icfRate, char complexRate, char developmentalRate, char childIntensiveRate)
+        {
+            return dg.insertSSModifications(token, anywAssessmentId, medicalRate, behaviorRate, icfRate, complexRate, developmentalRate, childIntensiveRate);
+        }
+
+        public string deletePaidSupports(string token, long paidSupportsId)
+        {
+            return dg.deletePaidSupports(token, paidSupportsId);
+        }
+
+        public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, int providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
+        {
+            return dg.updatePaidSupports(token, paidSupportsId, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, serviceNameOther);
+        }
+
+        public string insertPaidSupports(string token, long anywAssessmentId, int providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
+        {
+            return dg.insertPaidSupports(token, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, rowOrder, serviceNameOther);
+        }
+
+        public string updatePaidSupportsRowOrder(string token, long assessmentId, long supportId, int newPos, int oldPos)
+        {
+            return dg.updatePaidSupportsRowOrder(token, assessmentId, supportId, newPos, oldPos);
+        }
+
+        public string updateModificationRowOrder(string token, long assessmentId, long modificationId, int newPos, int oldPos)
+        {
+            return dg.updateModificationRowOrder(token, assessmentId, modificationId, newPos, oldPos);
+        }
+
+        public string updateServiceReferralRowOrder(string token, long assessmentId, long referralId, int newPos, int oldPos)
+        {
+            return dg.updateServiceReferralRowOrder(token, assessmentId, referralId, newPos, oldPos);
+        }
+
+        public string updateAdditionalSupportsRowOrder(string token, long assessmentId, long addSupportId, int newPos, int oldPos)
+        {
+            return dg.updateAdditionalSupportsRowOrder(token, assessmentId, addSupportId, newPos, oldPos);
+        }        
+
+        public void carryOverServicesToNewPlan(string consumerPlanId, string priorConsumerPlanId, string effectiveStart, string effectiveend, string targetAssessmentVersionId, string token)
+        {            
+            long priorPlanId = long.Parse(priorConsumerPlanId);
+            long newPlanId = long.Parse(consumerPlanId);
+            string beginDate = "";
+            string endDateT = "";
+            string endDate = "";
+            //Paid supports
+            string paidSupportString = dg.getPaidSupports(token, priorPlanId, int.Parse(targetAssessmentVersionId));
+            PaidSupports[] paidSupportObj = js.Deserialize<PaidSupports[]>(paidSupportString);
+            string previousPlanEndString = dg.getPreviousPlanEnd(priorConsumerPlanId, token);
+            PreviousPlanEnd[] previousEnd = js.Deserialize<PreviousPlanEnd[]>(previousPlanEndString);
+            for (int i = 0; i < paidSupportObj.Length; i++)
+            {
+                //var bd = DateTime.Parse(paidSupportObj[i].beginDate);
+                var bd = DateTime.Parse(effectiveStart);
+                beginDate = bd.ToString("yyyy-MM-dd");
+                var ed = DateTime.Parse(effectiveend);
+                endDate = ed.ToString("yyyy-MM-dd");
+                var edT = DateTime.Parse(paidSupportObj[i].endDate);
+                endDateT = edT.ToString("yyy-MM-dd");
+                DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
+                DateTime endTestDate = DateTime.Parse(endDateT);
+                int result = DateTime.Compare(endTestDate, previousEndDate);
+                if (result < 0)
+                {
+                    //do nothing
+                }
+                else
+                {
+                    dg.insertPaidSupports(token, newPlanId, int.Parse(paidSupportObj[i].providerId), int.Parse(paidSupportObj[i].assessmentAreaId), int.Parse(paidSupportObj[i].serviceNameId), removeUnsavableNoteText(paidSupportObj[i].scopeOfservice), removeUnsavableNoteText(paidSupportObj[i].howOftenValue), int.Parse(paidSupportObj[i].howOftenFrequency), removeUnsavableNoteText(paidSupportObj[i].howOftenText), beginDate, endDate, int.Parse(paidSupportObj[i].fundingSource), removeUnsavableNoteText(paidSupportObj[i].fundingSourceText), int.Parse(paidSupportObj[i].rowOrder), removeUnsavableNoteText(paidSupportObj[i].serviceNameOther));
+                }
+            }
+            //Support Modfications
+            string supportModString = dg.getSSModifications(token, priorPlanId);
+            SupportModifications[] supportModObj = js.Deserialize<SupportModifications[]>(supportModString);
+            for (int i = 0; i < supportModObj.Length; i++)
+            {
+                dg.insertSSModifications(token, newPlanId, char.Parse(supportModObj[i].medicalRate), char.Parse(supportModObj[i].behaviorRate), char.Parse(supportModObj[i].icfRate), char.Parse(supportModObj[i].complexRate), char.Parse(supportModObj[i].developmentalRate), char.Parse(supportModObj[i].childIntensiveRate));
+            }
+            //Additional Supports
+            string additionalSupportString = dg.getAdditionalSupports(token, priorPlanId, int.Parse(targetAssessmentVersionId));
+            AdditionalSupports[] additionalSupportObj = js.Deserialize<AdditionalSupports[]>(additionalSupportString);
+            for (int i = 0; i < additionalSupportObj.Length; i++)
+            {
+                dg.insertAdditionalSupports(token, newPlanId, int.Parse(additionalSupportObj[i].assessmentAreaId), removeUnsavableNoteText(additionalSupportObj[i].whoSupports), removeUnsavableNoteText(additionalSupportObj[i].whatSupportsLookLike), removeUnsavableNoteText(additionalSupportObj[i].howOftenValue), int.Parse(additionalSupportObj[i].howOftenFrequency), removeUnsavableNoteText(additionalSupportObj[i].howOftenText), int.Parse(additionalSupportObj[i].rowOrder));
+            }
+            //Professional Referrals
+            string proRefString = dg.getProfessionalReferral(token, priorPlanId, int.Parse(targetAssessmentVersionId));
+            ProfessionalReferrals[] proRefObj = js.Deserialize<ProfessionalReferrals[]>(proRefString);
+            for (int i = 0; i < proRefObj.Length; i++)
+            {
+                dg.insertProfessionalReferral(token, newPlanId, int.Parse(proRefObj[i].assessmentAreaId), char.Parse(proRefObj[i].newOrExisting), removeUnsavableNoteText(proRefObj[i].whoSupports), removeUnsavableNoteText(proRefObj[i].reasonForReferral), int.Parse(proRefObj[i].rowOrder));
+            }
+        }
+
+        public string removeUnsavableNoteText(string note)
+        {
+            if (note == "" || note is null)
+            {
+                return note;
+            }
+            if (note.Contains("'"))
+            {
+                note = note.Replace("'", "''");
+            }
+            if (note.Contains("\\"))
+            {
+                note = note.Replace("\\", "");
+            }
+            //if (note.Contains("\""))
+            //{
+            //    note = note.Replace("\"", "\"");
+            //}
+            return note;
+        }
+
+        public class ServicesAndSupports
+        {
+            public PaidSupports[] paidSupport { get; set; }
+            public SupportModifications[] supportModification { get; set; }
+
+            public AdditionalSupports[] additionalSupport { get; set; }
+            public ProfessionalReferrals[] professionalReferral { get; set; }
+            public CommunicationsOptions[] communicationsOptions { get; set; }
+            public EmploymentOptions[] employmentOptions { get; set; }
+            public LevelsOfSupervision[] levelsOfsupervision { get; set; }
+            public ConsumerRelationships[] experienceRelationships { get; set; }
+        }
+
+        public class CommunicationsOptions
+        {
+            public string communicationsId { get; set; }
+            public string communicationType { get; set; }
+        }
+
+        public class EmploymentOptions
+        {
+            public string employmentId { get; set; }
+            public string employmentOption { get; set; }
+        }
+
+        public class PreviousPlanEnd
+        {
+            public string endDate { get; set; }
+        }
+
+        public class LevelsOfSupervision
+        {
+            public string supervisionId { get; set; }
+            public string supervisionLabel { get; set; }
+            public string supervisiondescription { get; set; }
+        }
+
+        public class PaidSupports
+        {
+            public string paidSupportsId { get; set; }
+            public string anywAssessmentId { get; set; }
+            public string providerId { get; set; }
+            public string assessmentAreaId { get; set; }
+            public string serviceNameId { get; set; }
+            public string scopeOfservice { get; set; }
+            public string howOftenValue { get; set; }
+            public string howOftenFrequency { get; set; }
+            public string howOftenText { get; set; }
+            public string beginDate { get; set; }
+            public string endDate { get; set; }
+            public string fundingSource { get; set; }
+            public string fundingSourceText { get; set; }
+            public string rowOrder { get; set; }
+            public string serviceNameOther { get; set; }
+
+        }
+
+        public class SupportModifications
+        {
+            public string modificationsId { get; set; }
+            public string anywAssessmentId { get; set; }
+            public string medicalRate { get; set; }
+            public string behaviorRate { get; set; }
+            public string icfRate { get; set; }
+            public string complexRate { get; set; }
+            public string developmentalRate { get; set; }
+            public string childIntensiveRate { get; set; }            
+        }
+
+        public class AdditionalSupports
+        {
+            public string additionalSupportsId { get; set; }
+            public string anywAssessmentId { get; set; }
+            public string assessmentAreaId { get; set; }
+            public string whoSupports { get; set; }
+            public string whatSupportsLookLike { get; set; }
+            public string howOftenValue { get; set; }
+            public string howOftenFrequency { get; set; }
+            public string howOftenText { get; set; }
+            public string rowOrder { get; set; }
+        }
+
+        public class ProfessionalReferrals
+        {
+            public string professionalReferralId { get; set; }
+            public string anywAssessmentId { get; set; }
+            public string assessmentAreaId { get; set; }
+            public string newOrExisting { get; set; }
+            public string whoSupports { get; set; }
+            public string reasonForReferral { get; set; }
+            public string rowOrder { get; set; }
+        }
+
+        public class ConsumerRelationships
+        {
+            public string firstName { get; set; }
+            public string lastName { get; set; }
+            public string middleName { get; set; }
+            public string ID { get; set; }
+            public string relationship { get; set; }
+
+        }
+    }
+}
