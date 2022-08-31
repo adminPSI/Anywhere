@@ -20,7 +20,7 @@
     "not Baidu > 0",
     "not bb > 0"
   ],
-  "dev-dependencies": {
+  "dependencies": {
     "@babel/preset-env": "^7.18.10",
     "autoprefixer": "^10.4.8",
     "cssnano": "^5.1.13",
