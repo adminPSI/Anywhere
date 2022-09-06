@@ -49,6 +49,8 @@ Gargolye/log.txt
 # Packages
 packages/
 
+#testing git
+
 # Webroot
 /Gargolye/webroot/.idea
 /Gargolye/webroot/dist

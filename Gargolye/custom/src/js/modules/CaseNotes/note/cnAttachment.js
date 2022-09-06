@@ -1,5 +1,5 @@
 const cnAttachment = (function() {
-  // Elements
+  // Elements test
   let attachmentList,
     attachmentInput,
     attachmentContainer,
