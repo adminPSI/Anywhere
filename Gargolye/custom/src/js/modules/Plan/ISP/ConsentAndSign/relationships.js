@@ -76,7 +76,7 @@ const csRelationship = (() => {
   function buildPopupMessage() {
     const message = document.createElement('p');
     message.classList.add('message');
-    message.innerText = 'Select the name below that matches this Signature record.'; //If the person is not in the list, click Add Relationship to add the person to Demographics.';
+    message.innerText = 'Select a name below to import from Relationships.'; //If the person is not in the list, click Add Relationship to add the person to Demographics.';
     return message;
   }
   function buildRelationship(rel) {
