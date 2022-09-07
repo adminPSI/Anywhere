@@ -409,7 +409,7 @@
 				saveBtn.classList.add('disabled');
 			  } else {
 				  completeDateInput.classList.remove('error');
-				  saveBtn.classList.remove('disabled');
+				  if ($.session.formsUpdate) saveBtn.classList.remove('disabled');
 			  }
   
 		  });
