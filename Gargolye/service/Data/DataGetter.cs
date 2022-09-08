@@ -5385,6 +5385,27 @@ namespace Anywhere.Data
             }
         }
 
+        public string removeUnsavableNoteText(string note)
+        {
+            if (note == "" || note is null)
+            {
+                return note;
+            }
+            if (note.Contains("'"))
+            {
+                note = note.Replace("'", "''");
+            }
+            if (note.Contains("\\"))
+            {
+                note = note.Replace("\\", "");
+            }
+            //if (note.Contains("\""))
+            //{
+            //    note = note.Replace("\"", "\"");
+            //}
+            return note;
+        }
+
         public bool tokenValidator(string token)
         {
             if (token.Contains(" "))
