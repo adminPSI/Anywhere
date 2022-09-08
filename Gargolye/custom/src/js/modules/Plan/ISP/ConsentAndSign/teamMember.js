@@ -47,14 +47,13 @@ const csTeamMember = (() => {
 
     return !data.contactId ? true : false;
   }
-  function applySelectedRelationship(relData) {
+  async function applySelectedRelationship(relData) {
     importedFromRelationship = true;
 
     selectedMemberData.salesforceId = !relData.salesforceId ? '' : relData.salesforceId;
     selectedMemberData.contactId = relData.contactId;
     selectedMemberData.peopleId = relData.peopleId;
     selectedMemberData.dateOfBirth = relData.dateOfBirth;
-    //selectedMemberData.relationship = relData.relationship;
     selectedMemberData.buildingNumber = relData.buildingNumber;
     selectedMemberData.name = relData.firstName;
     selectedMemberData.lastName = relData.lastName;
@@ -66,7 +65,9 @@ const csTeamMember = (() => {
     dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
       dates.removeTimestamp(selectedMemberData.dateOfBirth),
     );
-    //relationshipInput.childNodes[0].value = selectedMemberData.relationship;
+
+    // save team member
+    await saveTeamMember();
 
     // remove errors from inputs
     nameInput.classList.remove('error');
@@ -77,7 +78,6 @@ const csTeamMember = (() => {
     // make name and relationship readonly
     nameInput.classList.add('disabled');
     lNameInput.classList.add('disabled');
-    //relationshipInput.classList.add('disabled');
 
     teamMemberPopup.style.removeProperty('display');
 
@@ -107,6 +107,75 @@ const csTeamMember = (() => {
       const failPopup = document.querySelector('.failSavePopup');
       overlay.hide();
       DOM.ACTIONCENTER.removeChild(failPopup);
+    }
+  }
+
+  async function saveTeamMember() {
+    let success;
+
+    // Gather Data
+    if (isNew) {
+      if (importedFromRelationship) {
+        selectedMemberData.relationshipImport = 'T';
+        selectedMemberData.createRelationship = 'F';
+      } else {
+        selectedMemberData.relationshipImport = 'F';
+        selectedMemberData.createRelationship = 'T';
+      }
+      let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
+      rd = rd ? rd[0] : {};
+
+      if (rd.existingPeopleId) {
+
+        csRelationship.showExistingPopup(selectedMemberData, async usePerson => {
+          if (usePerson) {
+            selectedMemberData.peopleId = rd.existingPeopleId;
+            await planConsentAndSign.insertNewTeamMember(selectedMemberData);
+            success = true;
+
+            if (success) {
+              setTimeout(() => {
+                POPUP.hide(teamMemberPopup);
+                planConsentAndSign.refreshTable();
+              }, 700);
+            } else {
+              setTimeout(() => {
+                teamMemberPopup.style.removeProperty('display');
+              }, 2000);
+            }
+          } else {
+            overlay.show();
+          }
+        });
+      } else {
+        success = true;
+
+        if (success) {
+          setTimeout(() => {
+            POPUP.hide(teamMemberPopup);
+            planConsentAndSign.refreshTable();
+          }, 700);
+        } else {
+          setTimeout(() => {
+            teamMemberPopup.style.removeProperty('display');
+          }, 2000);
+        }
+      }
+    } else {
+      await planConsentAndSign.updateTeamMember(selectedMemberData);
+      success = true;
+
+      if (success) {
+        setTimeout(() => {
+          POPUP.hide(teamMemberPopup);
+          planConsentAndSign.refreshTable();
+        }, 700);
+      } else {
+        console.error(res);
+        setTimeout(() => {
+          teamMemberPopup.style.removeProperty('display');
+        }, 2000);
+      }
     }
   }
 
