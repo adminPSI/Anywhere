@@ -1424,6 +1424,7 @@ var note = (function () {
       text: 'yes',
       style: 'secondary',
       type: 'contained',
+      id: 'cnTimerStart',
       callback: function () {
         documentationTimer.startTimer(documentationTime);
         timerRunning = true;
@@ -1434,6 +1435,7 @@ var note = (function () {
       text: 'no',
       style: 'secondary',
       type: 'outlined',
+      id: 'cnTimerStop',
       callback: function () {
         POPUP.hide(docTimePopup);
       },
@@ -1552,7 +1554,7 @@ var note = (function () {
         docTimeMinutesField.parentElement.classList.add('hidden');
         timerButtons.classList.add('hidden');
         docTimeMinutesField.value = '0';
-        documentationTimer.stopTimer();
+         documentationTimer.stopTimer();
         timerRunning = false;
         documentationTime = '';
         break;
@@ -2048,8 +2050,9 @@ var note = (function () {
     if (viewOnly || (cnBatched && cnBatched !== '')) setInputstoReadOnly();
 
     // in GK Anywhere, if case note is NOT batched, then check that user has the Case Notes Update Entered permission
-    if (($.session.applicationName === 'Gatekeeper') && (!cnBatched || cnBatched === '')) {
+    if (($.session.applicationName === 'Gatekeeper') && (!cnBatched && cnBatched === '' && cnBatched != null)) {
       if (!$.session.CaseNotesUpdateEntered) setInputstoReadOnly();
+
     }
 
     if (isReadOnly) setInputstoReadOnly();
