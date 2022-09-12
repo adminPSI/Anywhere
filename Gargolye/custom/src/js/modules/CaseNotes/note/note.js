@@ -2054,7 +2054,7 @@ var note = (function () {
 
     if (isReadOnly) setInputstoReadOnly();
 
-    //Set Permissions is the last thing that gets called. Adding Dashboard New CN Events here
+    //Set Permissions is the last thing that gets called. Adding Dashboard New CN Events here.
     if (fromDashboard) {
       moveConsumerToConsumerSection(dashboardConsumer);
     }
