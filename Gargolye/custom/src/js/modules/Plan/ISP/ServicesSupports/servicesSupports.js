@@ -1,7 +1,7 @@
 const servicesSupports = (() => {
   let isReadOnly;
   let isSortable;
-  let planId; // aka: assessmentId
+  let planID; // aka: assessmentId
   let modificationsId;
   let servicesSupportsData; // data
   let dropdownData;
@@ -547,13 +547,13 @@ const servicesSupports = (() => {
   async function insertPaidSupport(saveData, fromAssessment) {
     const { scopeOfService, fundingSourceText, howOftenText, ...rest } = saveData;
 
-    if (!planId) {
-      planId = plan.getCurrentPlanId();
+    if (!planID) {
+      planID = plan.getCurrentPlanId();
     }
 
     const paidSupportId = await servicesSupportsAjax.insertPaidSupports({
       token: $.session.Token,
-      anywAssessmentId: planId,
+      anywAssessmentId: planID,
       scopeOfService: scopeOfService,
       fundingSourceText: fundingSourceText,
       howOftenText: howOftenText,
@@ -618,7 +618,7 @@ const servicesSupports = (() => {
 
     await servicesSupportsAjax.updatePaidSupports({
       token: $.session.Token,
-      anywAssessmentId: planId,
+      anywAssessmentId: planID,
       scopeOfService: scopeOfService,
       fundingSourceText: fundingSourceText,
       howOftenText: howOftenText,
@@ -1400,7 +1400,7 @@ const servicesSupports = (() => {
         sortData.oldIndex = sortData.oldIndex + 1;
         await servicesSupportsAjax.updatePaidSupportsRowOrder({
           token: $.session.Token,
-          assessmentId: parseInt(planId),
+          assessmentId: parseInt(planID),
           supportId: parseInt(supportId),
           newPos: parseInt(sortData.newIndex),
           oldPos: parseInt(sortData.oldIndex),
@@ -1466,13 +1466,13 @@ const servicesSupports = (() => {
   async function insertAdditionalSupport(saveData, fromAssessment) {
     const { whoSupports, whatSupportLooksLike, howOftenText, ...rest } = saveData;
 
-    if (!planId) {
-      planId = plan.getCurrentPlanId();
+    if (!planID) {
+      planID = plan.getCurrentPlanId();
     }
 
     const additionalSupportId = await servicesSupportsAjax.insertAdditionalSupports({
       token: $.session.Token,
-      anywAssessmentId: planId,
+      anywAssessmentId: planID,
       whoSupports: whoSupports,
       whatSupportLooksLike: whatSupportLooksLike,
       howOftenText: howOftenText,
@@ -1507,7 +1507,7 @@ const servicesSupports = (() => {
 
     await servicesSupportsAjax.updateAdditionalSupports({
       token: $.session.Token,
-      anywAssessmentId: planId,
+      anywAssessmentId: planID,
       whoSupports: whoSupports,
       whatSupportLooksLike: whatSupportLooksLike,
       howOftenText: howOftenText,
@@ -1897,7 +1897,7 @@ const servicesSupports = (() => {
         sortData.oldIndex = sortData.oldIndex + 1;
         await servicesSupportsAjax.updateAdditionalSupportsRowOrder({
           token: $.session.Token,
-          assessmentId: parseInt(planId),
+          assessmentId: parseInt(planID),
           addSupportId: parseInt(supportId),
           newPos: parseInt(sortData.newIndex),
           oldPos: parseInt(sortData.oldIndex),
@@ -1948,13 +1948,13 @@ const servicesSupports = (() => {
   async function insertProfessionalReferral(saveData, fromAssessment) {
     const { whoSupports, reasonForReferral, ...rest } = saveData;
 
-    if (!planId) {
-      planId = plan.getCurrentPlanId();
+    if (!planID) {
+      planID = plan.getCurrentPlanId();
     }
 
     const profRefId = await servicesSupportsAjax.insertProfessionalReferral({
       token: $.session.Token,
-      anywAssessmentId: planId,
+      anywAssessmentId: planID,
       whoSupports: whoSupports,
       reasonForReferral: reasonForReferral,
       ...rest,
@@ -1988,7 +1988,7 @@ const servicesSupports = (() => {
 
     await servicesSupportsAjax.updateProfessionalReferral({
       token: $.session.Token,
-      anywAssessmentId: planId,
+      anywAssessmentId: planID,
       whoSupports: whoSupports,
       reasonForReferral: reasonForReferral,
       ...rest,
@@ -2258,7 +2258,7 @@ const servicesSupports = (() => {
         sortData.oldIndex = sortData.oldIndex + 1;
         await servicesSupportsAjax.updateServiceReferralRowOrder({
           token: $.session.Token,
-          assessmentId: parseInt(planId),
+          assessmentId: parseInt(planID),
           referralId: parseInt(supportId),
           newPos: parseInt(sortData.newIndex),
           oldPos: parseInt(sortData.oldIndex),
@@ -2309,14 +2309,14 @@ const servicesSupports = (() => {
   async function insertSSModification(saveData) {
     modificationsId = await servicesSupportsAjax.insertSSModifications({
       token: $.session.Token,
-      anywAssessmentId: planId,
+      anywAssessmentId: planID,
       ...saveData,
     });
   }
   async function updateSSModification(updateData) {
     await servicesSupportsAjax.updateSSModifications({
       token: $.session.Token,
-      anywAssessmentId: planId,
+      anywAssessmentId: planID,
       modificationsId,
       ...updateData,
     });
@@ -2479,8 +2479,8 @@ const servicesSupports = (() => {
   }
 
   async function init({ planId, readOnly, data }) {
-    planId = planId;
-    isReadOnly = readOnly;
+    planID = planId;
+   isReadOnly = readOnly;
     servicesSupportsData = data;
     dropdownData = planData.getDropdownData();
 
