@@ -2061,11 +2061,9 @@ var note = (function () {
                 isReadOnly = false;  //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
               } else {
                   isReadOnly = true;  //can not edit (with UpdateEntered permission, can't edit other people's case notes)
-                  setInputstoReadOnly();     
               }
       } else {
         isReadOnly = true;  //can not edit (no overall update permission)
-        setInputstoReadOnly();   
       }
          
     }
