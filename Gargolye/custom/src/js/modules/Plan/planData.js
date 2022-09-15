@@ -165,7 +165,7 @@ const planData = (() => {
         { value: '47', text: 'Other (please specify)', showWith: ['5', '6', '8'] },
         { value: '48', text: 'Self Directed Transportation', showWith: ['1', '2', '3'] },
         { value: '49', text: 'Adult Day Support - Both', showWith: ['1', '2', '3', '6', '7', '8'] },
-        { value: '49', text: 'Vocational Habilitation - Both', showWith: ['1', '2', '3', '6', '8'] },
+        { value: '50', text: 'Vocational Habilitation - Both', showWith: ['1', '2', '3', '6', '8'] },
       ],
       newOrExisting: [
         { value: '%', text: '' },
