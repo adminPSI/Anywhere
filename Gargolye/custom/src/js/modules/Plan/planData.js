@@ -292,7 +292,7 @@ const planData = (() => {
     return '';
   }
   function populateRelationshipDropdown(dropdownEle, defaultValue, includeSupports) {
-    $.session.areInSalesForce = true; // temp
+    // $.session.areInSalesForce = true; // temp
     if ($.session.areInSalesForce) {
       // group populate
       const teamMemberGroup = {
