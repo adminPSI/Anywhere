@@ -58,6 +58,12 @@ const csTeamMember = (() => {
     selectedMemberData.name = relData.firstName;
     selectedMemberData.lastName = relData.lastName;
 
+    // save team member
+    if (getPlanStatus() === 'C') {
+      saveTeamMember();
+      return;
+    }
+
     // update inputs with selected data
     nameInput.childNodes[0].value = selectedMemberData.name;
     lNameInput.childNodes[0].value = selectedMemberData.lastName;
@@ -65,9 +71,6 @@ const csTeamMember = (() => {
     dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
       dates.removeTimestamp(selectedMemberData.dateOfBirth),
     );
-
-    // save team member
-    await saveTeamMember();
 
     // remove errors from inputs
     nameInput.classList.remove('error');
@@ -109,8 +112,11 @@ const csTeamMember = (() => {
       DOM.ACTIONCENTER.removeChild(failPopup);
     }
   }
-
   async function saveTeamMember() {
+    teamMemberPopup.style.display = 'none';
+    pendingSave.show('Saving...');
+
+    let res = null;
     let success;
 
     // Gather Data
@@ -126,24 +132,35 @@ const csTeamMember = (() => {
       rd = rd ? rd[0] : {};
 
       if (rd.existingPeopleId) {
+        const pendingSavePopup = document.querySelector('.pendingSavePopup');
+        pendingSavePopup.style.display = 'none';
 
         csRelationship.showExistingPopup(selectedMemberData, async usePerson => {
           if (usePerson) {
+            pendingSavePopup.style.display = 'block';
             selectedMemberData.peopleId = rd.existingPeopleId;
             await planConsentAndSign.insertNewTeamMember(selectedMemberData);
             success = true;
 
             if (success) {
+              pendingSave.fulfill('Saved');
               setTimeout(() => {
+                const savePopup = document.querySelector('.successfulSavePopup');
+                DOM.ACTIONCENTER.removeChild(savePopup);
                 POPUP.hide(teamMemberPopup);
                 planConsentAndSign.refreshTable();
               }, 700);
             } else {
+              pendingSave.reject('Failed to save, please try again.');
+              console.error(res);
               setTimeout(() => {
+                const failPopup = document.querySelector('.failSavePopup');
+                DOM.ACTIONCENTER.removeChild(failPopup);
                 teamMemberPopup.style.removeProperty('display');
               }, 2000);
             }
           } else {
+            pendingSave.hide();
             overlay.show();
           }
         });
@@ -151,12 +168,19 @@ const csTeamMember = (() => {
         success = true;
 
         if (success) {
+          pendingSave.fulfill('Saved');
           setTimeout(() => {
+            const savePopup = document.querySelector('.successfulSavePopup');
+            DOM.ACTIONCENTER.removeChild(savePopup);
             POPUP.hide(teamMemberPopup);
             planConsentAndSign.refreshTable();
           }, 700);
         } else {
+          pendingSave.reject('Failed to save, please try again.');
+          console.error(res);
           setTimeout(() => {
+            const failPopup = document.querySelector('.failSavePopup');
+            DOM.ACTIONCENTER.removeChild(failPopup);
             teamMemberPopup.style.removeProperty('display');
           }, 2000);
         }
@@ -166,13 +190,19 @@ const csTeamMember = (() => {
       success = true;
 
       if (success) {
+        pendingSave.fulfill('Saved');
         setTimeout(() => {
+          const savePopup = document.querySelector('.successfulSavePopup');
+          DOM.ACTIONCENTER.removeChild(savePopup);
           POPUP.hide(teamMemberPopup);
           planConsentAndSign.refreshTable();
         }, 700);
       } else {
+        pendingSave.reject('Failed to save, please try again.');
         console.error(res);
         setTimeout(() => {
+          const failPopup = document.querySelector('.failSavePopup');
+          DOM.ACTIONCENTER.removeChild(failPopup);
           teamMemberPopup.style.removeProperty('display');
         }, 2000);
       }
@@ -245,101 +275,8 @@ const csTeamMember = (() => {
       text: 'save',
       style: 'secondary',
       type: 'contained',
-      callback: async () => {
-        teamMemberPopup.style.display = 'none';
-        pendingSave.show('Saving...');
-
-        let res = null;
-        let success;
-
-        // Gather Data
-        if (isNew) {
-          if (importedFromRelationship) {
-            selectedMemberData.relationshipImport = 'T';
-            selectedMemberData.createRelationship = 'F';
-          } else {
-            selectedMemberData.relationshipImport = 'F';
-            selectedMemberData.createRelationship = 'T';
-          }
-          let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
-          rd = rd ? rd[0] : {};
-
-          if (rd.existingPeopleId) {
-            const pendingSavePopup = document.querySelector('.pendingSavePopup');
-            pendingSavePopup.style.display = 'none';
-
-            csRelationship.showExistingPopup(selectedMemberData, async usePerson => {
-              if (usePerson) {
-                pendingSavePopup.style.display = 'block';
-                selectedMemberData.peopleId = rd.existingPeopleId;
-                await planConsentAndSign.insertNewTeamMember(selectedMemberData);
-                success = true;
-
-                if (success) {
-                  pendingSave.fulfill('Saved');
-                  setTimeout(() => {
-                    const savePopup = document.querySelector('.successfulSavePopup');
-                    DOM.ACTIONCENTER.removeChild(savePopup);
-                    POPUP.hide(teamMemberPopup);
-                    planConsentAndSign.refreshTable();
-                  }, 700);
-                } else {
-                  pendingSave.reject('Failed to save, please try again.');
-                  console.error(res);
-                  setTimeout(() => {
-                    const failPopup = document.querySelector('.failSavePopup');
-                    DOM.ACTIONCENTER.removeChild(failPopup);
-                    teamMemberPopup.style.removeProperty('display');
-                  }, 2000);
-                }
-              } else {
-                pendingSave.hide();
-                overlay.show();
-              }
-            });
-          } else {
-            success = true;
-
-            if (success) {
-              pendingSave.fulfill('Saved');
-              setTimeout(() => {
-                const savePopup = document.querySelector('.successfulSavePopup');
-                DOM.ACTIONCENTER.removeChild(savePopup);
-                POPUP.hide(teamMemberPopup);
-                planConsentAndSign.refreshTable();
-              }, 700);
-            } else {
-              pendingSave.reject('Failed to save, please try again.');
-              console.error(res);
-              setTimeout(() => {
-                const failPopup = document.querySelector('.failSavePopup');
-                DOM.ACTIONCENTER.removeChild(failPopup);
-                teamMemberPopup.style.removeProperty('display');
-              }, 2000);
-            }
-          }
-        } else {
-          await planConsentAndSign.updateTeamMember(selectedMemberData);
-          success = true;
-
-          if (success) {
-            pendingSave.fulfill('Saved');
-            setTimeout(() => {
-              const savePopup = document.querySelector('.successfulSavePopup');
-              DOM.ACTIONCENTER.removeChild(savePopup);
-              POPUP.hide(teamMemberPopup);
-              planConsentAndSign.refreshTable();
-            }, 700);
-          } else {
-            pendingSave.reject('Failed to save, please try again.');
-            console.error(res);
-            setTimeout(() => {
-              const failPopup = document.querySelector('.failSavePopup');
-              DOM.ACTIONCENTER.removeChild(failPopup);
-              teamMemberPopup.style.removeProperty('display');
-            }, 2000);
-          }
-        }
+      callback: () => {
+        saveTeamMember();
       },
     });
     const cancelBtn = button.build({
@@ -710,7 +647,11 @@ const csTeamMember = (() => {
       if (!selectedMemberData.contactId) {
         teamMemberPopup.appendChild(linkToRelationshipBtn);
       }
-      if ($.session.areInSalesForce && !selectedMemberData.salesForceId && !selectedMemberData.contactId) {
+      if (
+        $.session.areInSalesForce &&
+        !selectedMemberData.salesForceId &&
+        !selectedMemberData.contactId
+      ) {
         teamMemberPopup.appendChild(linkToSalesforceBtn);
       }
     }
