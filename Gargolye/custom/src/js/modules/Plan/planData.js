@@ -28,7 +28,7 @@ const planData = (() => {
         { value: '4', text: 'ICF' },
         { value: '5', text: 'State Plan Services' },
         { value: '6', text: 'Local Funds' },
-        { value: '7', text: 'Ohio Dept of Aging' },
+        { value: '7', text: 'Local Funds--Contracted with Ohio Department of Aging' },
         { value: '8', text: 'Other' },
       ],
       /**
@@ -292,6 +292,7 @@ const planData = (() => {
     return '';
   }
   function populateRelationshipDropdown(dropdownEle, defaultValue, includeSupports) {
+    $.session.areInSalesForce = true; // temp
     if ($.session.areInSalesForce) {
       // group populate
       const teamMemberGroup = {

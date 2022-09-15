@@ -125,6 +125,7 @@ const servicesSupports = (() => {
       psData: {
         assessmentAreaId,
         providerId,
+        providerName,
         serviceNameId,
         serviceNameOther,
         scopeOfService,
@@ -252,7 +253,7 @@ const servicesSupports = (() => {
       if (ps.providerId && ps.providerId !== '') {
         acc.push({
           providerId: ps.providerId,
-          providerName: getProviderNameById(ps.providerId),
+          providerName: ps.providerName ? ps.providerName : getProviderNameById(ps.providerId),
           row: ps.rowOrder,
         });
       }
@@ -600,6 +601,7 @@ const servicesSupports = (() => {
 
     selectedVendors.push({
       providerId: psData.providerId,
+      providerName: psData.providerName,
       row: psData.rowOrder,
     });
     selectedFundingSources.push({
