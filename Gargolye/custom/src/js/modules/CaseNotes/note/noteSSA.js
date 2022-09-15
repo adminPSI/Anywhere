@@ -281,13 +281,12 @@ var noteSSA = (function () {
   }
 
   function isCaseNoteReadOnly() {
-
-    if (credit === 'Y' || credit === '1') {
+    if (credit === 'Y' || credit === '-1') {
       isReadOnly = true;
-    } else if (caseManagerId !== $.session.PeopleId) {
-      isReadOnly = true;
+   // } else if (caseManagerId !== $.session.PeopleId) {
+    //  isReadOnly = true;
     } else {
-      isReadOnly =  false;
+      isReadOnly = false;
     }
   }
 
@@ -1490,7 +1489,7 @@ var noteSSA = (function () {
       docTime.classList.remove('hidden');
       var docTimePopup = document.getElementById('docTImeRequiredPopup');
       if (!docTimePopup && !cnBatched) {
-        docTimeRequiredPopup();
+        if (!isReadOnly) docTimeRequiredPopup();
       }
     }
   }
@@ -1616,7 +1615,7 @@ var noteSSA = (function () {
       //popup doctime required popup
       var docTimePopup = document.getElementById('docTImeRequiredPopup');
       if (!docTimePopup && !suppressDocTimePopup) {
-        docTimeRequiredPopup();
+        if (!isReadOnly) docTimeRequiredPopup(); 
       }
     }
 
@@ -2201,9 +2200,26 @@ var noteSSA = (function () {
     if (viewOnly || (cnBatched && cnBatched !== '')) setInputstoReadOnly();
     
     // if case note is NOT batched, then check if the caseNote is readOnly and check that user has the Case Notes Update Entered permission
-    if (!cnBatched || cnBatched === '') {
-      if (isReadOnly || !$.session.CaseNotesUpdateEntered) setInputstoReadOnly();
-    } 
+   // if (!cnBatched && cnBatched !== '' && cnBatched != null) {
+    //  if (isReadOnly || !$.session.CaseNotesUpdateEntered) setInputstoReadOnly();
+   // } 
+
+ // CHECKING IF IT IS NOT BATCHED -- EMPTY STRING IS NOT BATCHED
+ if (!cnBatched || cnBatched === '') {
+  if ($.session.CaseNotesUpdate) {
+          if ((!$.session.CaseNotesUpdateEntered) || ($.session.CaseNotesUpdateEntered && (caseManagerId === $.session.PeopleId)))  {
+            isReadOnly = false;  //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
+          } else {
+              isReadOnly = true;  //can not edit (with UpdateEntered permission, can't edit other people's case notes)
+          }
+  } else {
+    isReadOnly = true;  //can not edit (no overall update permission)
+  }
+     
+}
+
+if (isReadOnly) setInputstoReadOnly();
+
 
     //Set Permissions is the last thing that gets called. Adding Dashboard New CN Events here
     if (fromDashboard) {
