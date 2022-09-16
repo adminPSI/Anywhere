@@ -146,7 +146,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             var j = 0;
             string reviewId = "";
             
-            reviewId = pdg.insertPlanOutcomesReview(outcomeId, whatWillHappen[j], whenToCheckIn[j], whoReview[j], reviewOrder[j], contactId[j]);
+            reviewId = pdg.insertPlanOutcomesReview(outcomeId, whatWillHappen[j], whenToCheckIn[j], whoReview[j], reviewOrder[j], contactId[j].ToString());
             ReviewId[] reviewIdObj = js.Deserialize<ReviewId[]>(reviewId);
            
             return reviewIdObj[0].reviewId.ToString();
@@ -328,7 +328,7 @@ namespace Anywhere.service.Data.PlanOutcomes
                     {
                         if (outcomes.planReviews[k].outcomeId == outcomes.planOutcome[i].outcomeId)
                         {
-                            pdg.insertPlanOutcomesReview(long.Parse(outcomeIdObj[0].outcomeId), outcomes.planReviews[k].whatWillHappen, outcomes.planReviews[k].whenToCheckIn, outcomes.planReviews[k].who, outcomes.planReviews[k].reviewOrder, long.Parse(outcomes.planReviews[k].contactId));
+                            pdg.insertPlanOutcomesReview(long.Parse(outcomeIdObj[0].outcomeId), outcomes.planReviews[k].whatWillHappen, outcomes.planReviews[k].whenToCheckIn, outcomes.planReviews[k].who, outcomes.planReviews[k].reviewOrder, outcomes.planReviews[k].contactId);
                         }
                     }
                 }
