@@ -58,12 +58,6 @@ const csTeamMember = (() => {
     selectedMemberData.name = relData.firstName;
     selectedMemberData.lastName = relData.lastName;
 
-    // save team member
-    if (getPlanStatus() === 'C') {
-      saveTeamMember();
-      return;
-    }
-
     // update inputs with selected data
     nameInput.childNodes[0].value = selectedMemberData.name;
     lNameInput.childNodes[0].value = selectedMemberData.lastName;
@@ -85,6 +79,12 @@ const csTeamMember = (() => {
     teamMemberPopup.style.removeProperty('display');
 
     checkTeamMemberPopupForErrors();
+
+    // save team member
+    if (getPlanStatus() === 'C') {
+      saveTeamMember();
+      return;
+    }
   }
   async function linkToSalesForce(selectedSalesforceId) {
     let success;
