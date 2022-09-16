@@ -647,11 +647,7 @@ const csTeamMember = (() => {
       if (!selectedMemberData.contactId) {
         teamMemberPopup.appendChild(linkToRelationshipBtn);
       }
-      if (
-        $.session.areInSalesForce &&
-        !selectedMemberData.salesForceId &&
-        !selectedMemberData.contactId
-      ) {
+      if ($.session.areInSalesForce && !selectedMemberData.salesForceId) {
         teamMemberPopup.appendChild(linkToSalesforceBtn);
       }
     }
