@@ -642,9 +642,9 @@ const csTeamMember = (() => {
       teamMemberPopup.appendChild(dateSignedDisplay);
     }
     if (isNew) {
-      teamMemberPopup.appendChild(linkToRelationshipBtn);
+      if ($.session.areInSalesForce) teamMemberPopup.appendChild(linkToRelationshipBtn);
     } else {
-      if (!selectedMemberData.contactId) {
+      if (!selectedMemberData.contactId && $.session.areInSalesForce) {
         teamMemberPopup.appendChild(linkToRelationshipBtn);
       }
       if ($.session.areInSalesForce && !selectedMemberData.salesForceId) {
