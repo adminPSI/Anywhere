@@ -178,7 +178,7 @@ const ISP = (function () {
 
     servicesSupports.init({ planId, readOnly, data: ispData.servicesSupports });
 
-    // eventually remove await and place data GET into getDataForISP()
+    // eventually remove await and place data GET into getInitialData()
     await planSummary.init({ planId, readOnly });
     await planOutcomes.init({ planId, readOnly });
     await planConsentAndSign.init({ planId, readOnly });

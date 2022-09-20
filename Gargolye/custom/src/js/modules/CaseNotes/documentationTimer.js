@@ -78,7 +78,7 @@ var documentationTimer = (function() {
     }
     inactivityTime();
     timer = setInterval(function() {
-        const deltaMS = Date.now() - start; // milliseconds elapsed since start
+        const deltaMS = Date.now() - start; // milliseconds elapsed since startm
         const deltaS = Math.floor(deltaMS / 1000);
         runningTime = deltaS;
         // console.log(runningTime)

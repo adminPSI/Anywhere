@@ -1850,6 +1850,7 @@ const planSummary = (function () {
       });
     });
 
+    console.log(tableData);
     table.populate(risksTable, tableData, isSortable);
 
     return risksTable;

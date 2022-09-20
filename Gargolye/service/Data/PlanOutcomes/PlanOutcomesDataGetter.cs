@@ -162,7 +162,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        public string insertPlanOutcomesReview(long outcomeId, string whatWillHappen, string whenToCheckIn, string whoReview, string reviewOrder, long contactId)
+        public string insertPlanOutcomesReview(long outcomeId, string whatWillHappen, string whenToCheckIn, string whoReview, string reviewOrder, string contactId)
         {
 
             logger.debug("insertPlanOutcomesExperiences ");

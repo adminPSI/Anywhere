@@ -28,7 +28,7 @@ const planData = (() => {
         { value: '4', text: 'ICF' },
         { value: '5', text: 'State Plan Services' },
         { value: '6', text: 'Local Funds' },
-        { value: '7', text: 'Ohio Dept of Aging' },
+        { value: '7', text: 'Local Funds--Contracted with Ohio Department of Aging' },
         { value: '8', text: 'Other' },
       ],
       /**
@@ -165,7 +165,11 @@ const planData = (() => {
         { value: '47', text: 'Other (please specify)', showWith: ['5', '6', '8'] },
         { value: '48', text: 'Self Directed Transportation', showWith: ['1', '2', '3'] },
         { value: '49', text: 'Adult Day Support - Both', showWith: ['1', '2', '3', '6', '7', '8'] },
-        { value: '49', text: 'Vocational Habilitation - Both', showWith: ['1', '2', '3', '6', '8'] },
+        {
+          value: '50',
+          text: 'Vocational Habilitation - Both',
+          showWith: ['1', '2', '3', '6', '8'],
+        },
       ],
       newOrExisting: [
         { value: '%', text: '' },
@@ -285,11 +289,21 @@ const planData = (() => {
     contactInformation.refreshDropdownData(dropdowns);
   }
   function getRelationshipNameById(contactId) {
-    const filteredService = dropdowns.relationships.filter(dd => dd.contactId === contactId);
-    if (filteredService.length > 0) {
-      return `${filteredService[0].lastName}, ${filteredService[0].firstName}`;
+    if (!contactId) return '';
+
+    if (contactId.endsWith('V')) {
+      const supportData = servicesSupports.getSelectedVendors();
+      const filteredService = supportData.filter(dd => `${dd.providerId}V` === contactId);
+      if (filteredService.length > 0) {
+        return `${filteredService[0].providerName}`;
+      }
+    } else {
+      const filteredService = dropdowns.relationships.filter(dd => dd.contactId === contactId);
+      if (filteredService.length > 0) {
+        if (!filteredService[0].lastName || !filteredService[0].firstName) return '';
+        return `${filteredService[0].lastName}, ${filteredService[0].firstName}`;
+      }
     }
-    return '';
   }
   function populateRelationshipDropdown(dropdownEle, defaultValue, includeSupports) {
     if ($.session.areInSalesForce) {

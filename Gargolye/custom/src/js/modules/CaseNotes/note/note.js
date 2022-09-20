@@ -274,12 +274,16 @@ var note = (function () {
   function isCaseNoteReadOnly() {
     if (credit === 'Y' || credit === '-1') {
       isReadOnly = true;
-    } else if (caseManagerId !== $.session.PeopleId) {
-      isReadOnly = true;
+   // } else if (caseManagerId !== $.session.PeopleId) {
+    //  isReadOnly = true;
     } else {
       isReadOnly = false;
     }
+
   }
+
+  
+  
 
   async function noteSaveUpdate(saveAndNew) {
     //Remove the selected consumer from active list
@@ -1424,6 +1428,7 @@ var note = (function () {
       text: 'yes',
       style: 'secondary',
       type: 'contained',
+      id: 'cnTimerStart',
       callback: function () {
         documentationTimer.startTimer(documentationTime);
         timerRunning = true;
@@ -1434,6 +1439,7 @@ var note = (function () {
       text: 'no',
       style: 'secondary',
       type: 'outlined',
+      id: 'cnTimerStop',
       callback: function () {
         POPUP.hide(docTimePopup);
       },
@@ -1541,7 +1547,7 @@ var note = (function () {
       (cnBatched === '' || cnBatched === null)
     ) {
       //popup doctime required popup
-      docTimeRequiredPopup();
+      if (!isReadOnly) docTimeRequiredPopup();
     }
     switch (docTimeRequired) {
       case 'Y':
@@ -1552,7 +1558,7 @@ var note = (function () {
         docTimeMinutesField.parentElement.classList.add('hidden');
         timerButtons.classList.add('hidden');
         docTimeMinutesField.value = '0';
-        documentationTimer.stopTimer();
+         documentationTimer.stopTimer();
         timerRunning = false;
         documentationTime = '';
         break;
@@ -2044,17 +2050,27 @@ var note = (function () {
     //Here View Only is the oppsite of update (update = true so viewonly = false)
     viewOnly = !$.session.CaseNotesUpdate;
     // IF view only permisisons OR the note is batched (batched notes are read only). A batched case note has the batched ID in cnBatched
-    //if cnBatched is not "" it IS batched
+    //if cnBatched is not "" it IS batched -- CHECKING IF IT IS BATCHED  -- IF NOT EMPTY, THEN IT IS BATCHED
     if (viewOnly || (cnBatched && cnBatched !== '')) setInputstoReadOnly();
 
     // in GK Anywhere, if case note is NOT batched, then check that user has the Case Notes Update Entered permission
+    // CHECKING IF IT IS NOT BATCHED -- EMPTY STRING IS NOT BATCHED
     if (($.session.applicationName === 'Gatekeeper') && (!cnBatched || cnBatched === '')) {
-      if (!$.session.CaseNotesUpdateEntered) setInputstoReadOnly();
+      if ($.session.CaseNotesUpdate) {
+              if ((!$.session.CaseNotesUpdateEntered) || ($.session.CaseNotesUpdateEntered && (caseManagerId === $.session.PeopleId)))  {
+                isReadOnly = false;  //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
+              } else {
+                  isReadOnly = true;  //can not edit (with UpdateEntered permission, can't edit other people's case notes)
+              }
+      } else {
+        isReadOnly = true;  //can not edit (no overall update permission)
+      }
+         
     }
-
+    
     if (isReadOnly) setInputstoReadOnly();
 
-    //Set Permissions is the last thing that gets called. Adding Dashboard New CN Events here
+    //Set Permissions is the last thing that gets called. Adding Dashboard New CN Events here.
     if (fromDashboard) {
       moveConsumerToConsumerSection(dashboardConsumer);
     }

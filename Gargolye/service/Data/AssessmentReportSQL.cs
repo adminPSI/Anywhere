@@ -111,19 +111,19 @@ namespace Anywhere.service.Data
                     }
                 }
 
-                if (row["question_set_type"].ToString() == "LIST")
-                {
-                    sb.Clear();
-                    sb.Append("SELECT   COUNT(DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id) AS Counter ");
-                    sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
-                    sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Assessment_Questions ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_question_set_id = dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_set_id ");
-                    sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Assessment_Answers ON dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_id = dba.ANYW_ISP_Consumer_Assessment_Answers.isp_assessment_question_id ");
-                    sb.AppendFormat("WHERE   DBA.anyw_isp_consumer_assessment_answers.answer > '0' ");
-                    sb.AppendFormat("AND DBA.anyw_isp_consumer_assessment_answers.isp_consumer_plan_id = {0} ", AssesmentID);
-                    sb.AppendFormat("AND DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id = {0} ", row["isp_assessment_subsection_id"]);
-                    sb.Append("AND DBA.anyw_isp_assessment_question_sets.question_set_type = 'LIST' ");
-                    row["SubSectionCount"] = di.QueryScalar(sb.ToString());
-                }
+                //if (row["question_set_type"].ToString()  == "LIST")
+                //{
+                sb.Clear();
+                sb.Append("SELECT   COUNT(DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id) AS Counter ");
+                sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
+                sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Assessment_Questions ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_question_set_id = dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_set_id ");
+                sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Assessment_Answers ON dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_id = dba.ANYW_ISP_Consumer_Assessment_Answers.isp_assessment_question_id ");
+                sb.AppendFormat("WHERE   DBA.anyw_isp_consumer_assessment_answers.answer > '0' ");
+                sb.AppendFormat("AND DBA.anyw_isp_consumer_assessment_answers.isp_consumer_plan_id = {0} ", AssesmentID);
+                sb.AppendFormat("AND DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id = {0} ", row["isp_assessment_subsection_id"]);
+                //sb.Append("AND DBA.anyw_isp_assessment_question_sets.question_set_type = 'LIST' ");
+                row["SubSectionCount"] = di.QueryScalar(sb.ToString());
+                //}
 
                 if (row["section_order"].ToString() == "5")
                     if (row["subsection_order"].ToString() == "4")
@@ -526,7 +526,7 @@ namespace Anywhere.service.Data
 
                         case "7":
                             {
-                                fs = "Ohio Department of Aging";
+                                fs = "Local Funds--Contracted with Ohio Department of Aging";
                                 break;
                             }
 
@@ -698,13 +698,9 @@ namespace Anywhere.service.Data
                     ms2.Dispose();
                 }
             }
-
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
-
-
-
 
 
 

@@ -2058,15 +2058,23 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             if (consumerIdStringValidator(singleEntryIdString) == false) return null;//will validate and id string if comma or pipe delimited
             if (stringInjectionValidator(rejectionReason) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(singleEntryIdString);
+            list.Add(newStatus);
+            list.Add(userID);
+            list.Add(rejectionReason);
             logger.debug("adminUpdateSingleEntryStatus" + token);
+
+            string text = "CALL DBA.ANYW_AdminSingleEntry_AdminUpdateSingleEntryStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
-                return executeDataBaseCall("CALL DBA.ANYW_AdminSingleEntry_AdminUpdateSingleEntryStatus('" + token + "', '" + singleEntryIdString + "', '" + newStatus + "', '" + userID + "', '" + rejectionReason + "');", "results", "results");
+                return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("595", ex.Message + " ANYW_AdminSingleEntry_AdminUpdateSingleEntryStatus('" + token + "', '" + singleEntryIdString + "', '" + newStatus + "', '" + userID + "', '" + rejectionReason + "')");
-                return "595: Error updating admin single entry status";
+                logger.error("5PSDG", ex.Message + "ANYW_ISP_DeletePlanSignature(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "6APSDG: error ANYW_ISP_DeletePlanSignature";
             }
 
         }
@@ -5375,6 +5383,27 @@ namespace Anywhere.Data
                 return null;
                 //return "640: error ANYW_Roster_GetAttachmentData";
             }
+        }
+
+        public string removeUnsavableNoteText(string note)
+        {
+            if (note == "" || note is null)
+            {
+                return note;
+            }
+            if (note.Contains("'"))
+            {
+                note = note.Replace("'", "''");
+            }
+            if (note.Contains("\\"))
+            {
+                note = note.Replace("\\", "");
+            }
+            //if (note.Contains("\""))
+            //{
+            //    note = note.Replace("\"", "\"");
+            //}
+            return note;
         }
 
         public bool tokenValidator(string token)
