@@ -382,12 +382,21 @@ const planData = (() => {
       });
     } else {
       // normal populate
-      const data = dropdowns.relationships.map(dd => {
+      const data1 = dropdowns.relationships.map(dd => {
         return {
           value: dd.contactId,
           text: `${dd.lastName}, ${dd.firstName}`,
         };
       });
+      const supportData = servicesSupports.getSelectedVendors();
+      const data2 = supportData.map(ps => {
+        return {
+          value: `${ps.providerId}V`,
+          text: ps.providerName,
+        };
+      });
+
+      const data = [...data1, ...data2];
 
       data.sort((a, b) => {
         const textA = a.text.toUpperCase();
