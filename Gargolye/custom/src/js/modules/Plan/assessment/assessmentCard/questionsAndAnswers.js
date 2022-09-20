@@ -189,9 +189,8 @@
         const questionKeys = Object.keys(sectionQuestionCount[sectionKey][questionSetKey]);
 
         questionKeys.forEach(questionKey => {
-          const { answered, required, rowOrder } = sectionQuestionCount[sectionKey][questionSetKey][
-            questionKey
-          ];
+          const { answered, required, rowOrder } =
+            sectionQuestionCount[sectionKey][questionSetKey][questionKey];
           let questionDiv;
 
           if (!rowOrder) {
@@ -641,7 +640,8 @@
         if (!colKey || !dataKey) break;
 
         if (dataKey === 'relationships') {
-          planData.populateRelationshipDropdown(questionInput, answerText);
+          const includeSupports = $.session.areInSalesForce;
+          planData.populateRelationshipDropdown(questionInput, answerText, includeSupports);
           break;
         }
 
@@ -813,9 +813,14 @@
 
       const questionOrderKeys = Object.keys(questions[rok]);
       questionOrderKeys.forEach((qok, questionIndex) => {
-        const { id: questionId, text, answerText, answerId, answerStyle, prompt } = questions[rok][
-          qok
-        ];
+        const {
+          id: questionId,
+          text,
+          answerText,
+          answerId,
+          answerStyle,
+          prompt,
+        } = questions[rok][qok];
         const questionRowId = `${questionId}${rok}`;
 
         if (answerStyle !== 'STATICTEXT') {
@@ -998,7 +1003,8 @@
                 const dataKey = colNameDropdownMap[colKey];
 
                 if (dataKey === 'relationships') {
-                  planData.populateRelationshipDropdown(questionInput, answerText);
+                  const includeSupports = $.session.areInSalesForce;
+                  planData.populateRelationshipDropdown(questionInput, answerText, includeSupports);
                   gridCell.appendChild(questionInput);
                   break;
                 }

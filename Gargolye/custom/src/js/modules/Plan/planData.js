@@ -305,7 +305,7 @@ const planData = (() => {
       }
     }
   }
-  function populateRelationshipDropdown(dropdownEle, defaultValue, includeSupports) {
+  function populateRelationshipDropdown(dropdownEle, defaultValue, includeSupports = false) {
     if ($.session.areInSalesForce) {
       // group populate
       const teamMemberGroup = {
@@ -381,6 +381,7 @@ const planData = (() => {
         defaultVal: defaultValue,
       });
     } else {
+      let data;
       // normal populate
       const data1 = dropdowns.relationships.map(dd => {
         return {
@@ -388,15 +389,20 @@ const planData = (() => {
           text: `${dd.lastName}, ${dd.firstName}`,
         };
       });
-      const supportData = servicesSupports.getSelectedVendors();
-      const data2 = supportData.map(ps => {
-        return {
-          value: `${ps.providerId}V`,
-          text: ps.providerName,
-        };
-      });
 
-      const data = [...data1, ...data2];
+      if (includeSupports) {
+        const supportData = servicesSupports.getSelectedVendors();
+        const data2 = supportData.map(ps => {
+          return {
+            value: `${ps.providerId}V`,
+            text: ps.providerName,
+          };
+        });
+
+        data = [...data1, ...data2];
+      } else {
+        data = data1;
+      }
 
       data.sort((a, b) => {
         const textA = a.text.toUpperCase();

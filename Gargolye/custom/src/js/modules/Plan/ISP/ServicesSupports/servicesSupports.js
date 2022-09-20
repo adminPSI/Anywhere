@@ -431,12 +431,11 @@ const servicesSupports = (() => {
       return;
     }
     // if guard clauses are not used (see above), then repopulate serviceVEndorDropDown
-    const {
-      getPaidSupportsVendorsResult: vendorNumbers,
-    } = await servicesSupportsAjax.getPaidSupportsVendors(
-      fundingSourceDropdownSelectedText,
-      servicesDropdownSelectedText,
-    );
+    const { getPaidSupportsVendorsResult: vendorNumbers } =
+      await servicesSupportsAjax.getPaidSupportsVendors(
+        fundingSourceDropdownSelectedText,
+        servicesDropdownSelectedText,
+      );
 
     let data = vendorNumbers.map(vendorNumber => ({
       value: vendorNumber.vendorId,
@@ -1086,9 +1085,8 @@ const servicesSupports = (() => {
       callback: (e, selectedOption) => {
         saveUpdateData.howOftenFrequency = selectedOption.value;
 
-        const howOftenHowMuchTextInputField = howOftenHowMuchTextInput.querySelector(
-          '.input-field__input',
-        );
+        const howOftenHowMuchTextInputField =
+          howOftenHowMuchTextInput.querySelector('.input-field__input');
 
         if (saveUpdateData.howOftenFrequency === '' || saveUpdateData.howOftenFrequency === '%') {
           howOftenHowMuchFrequencyDropdown.classList.add('error');
@@ -1159,9 +1157,8 @@ const servicesSupports = (() => {
       }
     });
     if (saveUpdateData.howOftenFrequency !== '5') {
-      const howOftenHowMuchTextInputField = howOftenHowMuchTextInput.querySelector(
-        '.input-field__input',
-      );
+      const howOftenHowMuchTextInputField =
+        howOftenHowMuchTextInput.querySelector('.input-field__input');
       howOftenHowMuchTextInput.classList.add('disabled');
       howOftenHowMuchTextInputField.setAttribute('tabindex', '-1');
     }
@@ -1687,9 +1684,8 @@ const servicesSupports = (() => {
       callback: (e, selectedOption) => {
         saveUpdateData.howOftenFrequency = selectedOption.value;
 
-        const whenHowOftenTextInputField = whenHowOftenTextInput.querySelector(
-          '.input-field__input',
-        );
+        const whenHowOftenTextInputField =
+          whenHowOftenTextInput.querySelector('.input-field__input');
 
         if (saveUpdateData.howOftenFrequency === '' || saveUpdateData.howOftenFrequency === '%') {
           whenHowOftenFrequencyDropdown.classList.add('error');
@@ -2482,7 +2478,7 @@ const servicesSupports = (() => {
 
   async function init({ planId, readOnly, data }) {
     planID = planId;
-   isReadOnly = readOnly;
+    isReadOnly = readOnly;
     servicesSupportsData = data;
     dropdownData = planData.getDropdownData();
 

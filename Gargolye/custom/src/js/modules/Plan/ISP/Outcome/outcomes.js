@@ -983,9 +983,8 @@ const planOutcomes = (() => {
         callback: (e, selectedOption) => {
           saveUpdateDataRef.whenHowOftenFrequency = selectedOption.value;
 
-          const whenHowOftenTextInputField = whenHowOftenTextInput.querySelector(
-            '.input-field__input',
-          );
+          const whenHowOftenTextInputField =
+            whenHowOftenTextInput.querySelector('.input-field__input');
 
           if (
             saveUpdateDataRef.whenHowOftenFrequency === '' ||
@@ -1042,9 +1041,8 @@ const planOutcomes = (() => {
         toggleExperiencesPopupDoneBtn();
       });
       if (saveUpdateDataRef.whenHowOftenFrequency !== '3') {
-        const whenHowOftenTextInputField = whenHowOftenTextInput.querySelector(
-          '.input-field__input',
-        );
+        const whenHowOftenTextInputField =
+          whenHowOftenTextInput.querySelector('.input-field__input');
         whenHowOftenTextInput.classList.add('disabled');
         whenHowOftenTextInputField.setAttribute('tabindex', '-1');
       }
