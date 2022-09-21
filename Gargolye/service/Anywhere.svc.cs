@@ -39,6 +39,7 @@ using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.DocumentConversion;
 using PSIOISP;
 using System.Reflection;
+using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 
 namespace Anywhere
 {
@@ -93,7 +94,7 @@ namespace Anywhere
         CaseNoteReportBuilderWorker cnReportWorker = new CaseNoteReportBuilderWorker();
         SignInUser siu = new SignInUser();
         DisplayPlanReportAndAttachments dpra = new DisplayPlanReportAndAttachments();
-
+        
 
         public AnywhereService()
         {
@@ -2673,6 +2674,11 @@ namespace Anywhere
         public CaseNoteReportBuilderWorker.ReportScheduleId[] generateCNTimeAnalysisReport(string token, string userId, string billerId, string consumerId, string billingCode, string serviceStartDate, string serviceEndDate, string applicationName)
         {
             return cnReportWorker.generateCNTimeAnalysisReport(token, userId, billerId, consumerId, billingCode, serviceStartDate, serviceEndDate, applicationName);
+        }
+
+        public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
+        {
+            return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
