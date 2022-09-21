@@ -69,6 +69,17 @@ const csRelationship = (() => {
 
     POPUP.show(existingRelationshipPopup);
   }
+  const removeDups = data => {
+    const flag = {};
+    const unique = [];
+    data.forEach(el => {
+      if (!flag[el.contactId]) {
+        flag[el.contactId] = true;
+        unique.push(el);
+      }
+    });
+    return unique;
+  };
 
   //*------------------------------------------------------
   //* MAIN POPUP
@@ -122,6 +133,7 @@ const csRelationship = (() => {
   }
   function showMainPopup() {
     gkRelationships = planData.getDropdownData().relationships;
+    gkRelationships = removeDups(gkRelationships);
     teamMemberPopup = document.getElementById('sig_mainPopup');
 
     importPopup = POPUP.build({
@@ -136,8 +148,9 @@ const csRelationship = (() => {
     relationshipsWrap = document.createElement('div');
     relationshipsWrap.classList.add('relationshipsWrap');
 
+    //const teamMembers = planConsentAndSign.getTeamMemberData();
+
     gkRelationships.forEach(rel => {
-      if (rel.signatureId || rel.signatureId !== '') return;
       const relationship = buildRelationship(rel);
       relationshipsWrap.appendChild(relationship);
     });

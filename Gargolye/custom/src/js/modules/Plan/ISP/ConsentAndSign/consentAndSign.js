@@ -64,6 +64,9 @@ const planConsentAndSign = (() => {
   function getNames() {
     return names;
   }
+  function getTeamMemberData() {
+    return teamMemberData;
+  }
 
   //*------------------------------------------------------
   //* INSERT/UPDATE/DELETE
@@ -803,5 +806,6 @@ const planConsentAndSign = (() => {
     isTeamMemberConsentable,
     getTeamMembersHowTheyExistOnPlanNowWhileWeWaitOnDamnStateToMakeUpTheirMinds,
     getNames,
+    getTeamMemberData,
   };
 })();
