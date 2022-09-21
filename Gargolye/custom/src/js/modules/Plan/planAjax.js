@@ -75,6 +75,33 @@ const planAjax = (function () {
     }
   }
 
+  async function getPlanAndWorkFlowAttachments(retrieveData){
+      //string token, string assessmentId
+      try {
+          const data = await $.ajax({
+              type: 'POST',
+              url:
+                  $.webServer.protocol +
+                  '://' +
+                  $.webServer.address +
+                  ':' +
+                  $.webServer.port +
+                  '/' +
+                  $.webServer.serviceName +
+                  '/getPlanAndWorkFlowAttachments/',
+              data: JSON.stringify(retrieveData),
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json',
+          });
+
+          return {
+              ...data.getPlanAndWorkFlowAttachmentsResult,
+          };
+      } catch (error) {
+          console.log(error);
+      }
+  }
+
   // INSERT
   //------------------------------------
   async function insertAnnualPlan(retrieveData) {
@@ -152,7 +179,30 @@ const planAjax = (function () {
       console.log(error.responseText);
     }
   }
-
+    async function addSelectedAttachmentsToReport(retrieveData) {
+        // string token, string[] attachmentIds, string userId, string assessmentID, 
+        // string versionID, string extraSpace, bool isp
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/addSelectedAttachmentsToReport/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.addSelectedAttachmentsToReportResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
   // UPDATE
   //------------------------------------
   async function updateConsumerPlanReactivate(retrieveData) {
@@ -496,9 +546,11 @@ const planAjax = (function () {
     getConsumerPlans,
     getConsumerPlanYearInfo,
     getPlanDropdownData,
+    getPlanAndWorkFlowAttachments,
     insertAnnualPlan,
     insertRevisedPlan,
-    insertAutomatedWorkflows,
+      insertAutomatedWorkflows,
+      addSelectedAttachmentsToReport,
     updateConsumerPlanReactivate,
     updateConsumerPlanSetStatus,
     updateConsumerPlanSetAnnualDates,

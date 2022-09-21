@@ -2681,6 +2681,11 @@ namespace Anywhere
             return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
         }
 
+        public void addSelectedAttachmentsToReport(string token, string[] attachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        {
+            dpra.addSelectedAttachmentsToReport(token, attachmentIds, userId, assessmentID, versionID, extraSpace, isp);
+        }
+
         public string checkIfCNReportExists(string token, string reportScheduleId)
         {
             return cnReportWorker.checkIfCNReportExists(token, reportScheduleId); 
