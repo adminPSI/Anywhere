@@ -124,6 +124,7 @@ const OOD = (() => {
 
 
 		selectedConsumerIds = selectedConsumers.map(function (x) {return x.id});
+		//TODO JOE: FORM 8 -- Need to include in OODEntries serviceType: T1 and T2 -- Need to UpdateSP _OODEntries with EM_Service_Names.Template_Num
 		const { getOODEntriesResult: OODEntries } = await OODAjax.getOODEntriesAsync(
 			selectedConsumerIds.join(", "),
 			filterValues.serviceDateStart,
@@ -143,9 +144,13 @@ const OOD = (() => {
 
 			let tableData = OODEntries.map((entry) => ({
 				values : [entry.serviceDate, entry.consumerName, entry.serviceCode, entry.referenceNumber, entry.userUpdated, entry.employerName],
+				//TODO JOE: add key: ServiceType value: entry.serviceType (T1 and T2)
 				attributes: [{ key: 'OODReportType', value: (entry.employerName == 'Monthly Review') ? 'monthlySummary' : 'newEntry'}, {key: 'consumerId', value: entry.consumerId}, {key: 'Id', value: entry.ID}, {key: 'userId', value: entry.userUpdated}],
 				onClick: (e) => {
 			    var rowConsumer = selectedConsumers.filter(function (x) {return x.id == entry.consumerId });
+				//TODO JOE: add to the if clause below (Form4) and add two more ifs to cover the Form 8 ---  
+				//TODO JOE:   if (rowConsumer[0] && e.target.attributes.OODReportType.value === 'newEntry' && e.target.attributes.serviceType.value === 'T1')
+				// TODO JOE: Will also need two new SP to get the Form 8 data
 				if (rowConsumer[0] && e.target.attributes.OODReportType.value === 'newEntry') {
 					OODAjax.getForm4MonthlyPlacementEditData(e.target.attributes.Id.value, function (results) {
 					OODForm4MonthlyPlacement.init(results, rowConsumer[0], undefined, undefined, e.target.attributes.userId.value, undefined);
@@ -240,6 +245,7 @@ const OOD = (() => {
 		//	serviceDate = '2021-03-22';
 		// TODO: the results of this AJAX call should be used in the call to function populateConsumerServiceCodeDropdown()
 		 const {
+			//TODO JOE: Alter SP ANYW_OOD_getConsumerServiceCodes to include T1 (Form4) and T2 (Form8) services AND pass back T1 or T2 to include in the DDL items
 		 	getConsumerServiceCodesResult: consumerServices,
 		 } = await OODAjax.getConsumerServiceCodesAsync(consumerId, serviceDate);
 
@@ -338,6 +344,7 @@ const OOD = (() => {
 						selectedConsumerServiceId = '';
 						selectedConsumerReferenceNumber = '';
 					} else {
+						// TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
 						selectedConsumerServiceId = selectedOption.value;
 						selectedConsumerReferenceNumber = selectedOption.text.split('# ')[1];
 					}
@@ -465,6 +472,7 @@ async function buildSummaryServicePopUp(consumerId, btnType) {
 				if (selectedOption.value == "SELECT") {
 					selectedConsumerServiceId = '';
 				} else {
+					// TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
 					selectedConsumerServiceId = selectedOption.value;
 				}
 				summaryServicesDropDownRequired();
@@ -504,6 +512,9 @@ async function buildSummaryServicePopUp(consumerId, btnType) {
 		  var thisselectedConsumerServiceId = selectedConsumerServiceId
 		  var thisselectedConsumerReferenceNumber = selectedConsumerReferenceNumber;
 		  selectedConsumerServiceId = '';
+		  // TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened 
+		  // TODO JOE: Need to add to the two ifs below to include selectedConsumerServiceType
+		  // TODO JOE: Need to add two more if statements to call init() for the two Form 8 Forms
 		 if (thisConsumer && btnType === 'newEntry') OODForm4MonthlyPlacement.init({}, thisConsumer[0], thisselectedConsumerServiceId, thisselectedConsumerReferenceNumber, $.session.UserId, serviceDate, btnType);
 		if (thisConsumer && btnType === 'monthlySummary') OODForm4MonthlySummary.init({}, thisConsumer[0], thisselectedConsumerServiceId, $.session.UserId, btnType);
       // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);    
@@ -728,8 +739,9 @@ function buildEditEmployersBtn() {
 		} = await OODAjax.getConsumerServiceCodesAsync(consumerId, serviceDate);
 	  // const templates = WorkflowViewerComponent.getTemplates();
 
+	  //TODO JOE: id: should use selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened 
 	  let data = services.map((service) => ({
-		  id: service.serviceId, 
+		  id: service.serviceId,  // replace with selectedConsumerServiceType to get T1 and T2 info
 		  value: service.serviceId, 
 		  text: service.serviceName + ' - Ref # ' + service.referenceNumber,
 	  })); 
@@ -748,8 +760,9 @@ function buildEditEmployersBtn() {
 				getActiveServiceCodesResult: services,
 			} = await OODAjax.getActiveServiceCodesAsync(FORM4MONTHLYSUMMARYSERVICES);
 		// const templates = WorkflowViewerComponent.getTemplates();
+		 //TODO JOE: id: should use selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened 
 		let data = services.map((service) => ({
-			id: service.serviceId, 
+			id: service.serviceId,   // replace with selectedConsumerServiceType to get T1 and T2 info
 			value: service.serviceId, 
 			text: service.serviceName,
 		})); 
