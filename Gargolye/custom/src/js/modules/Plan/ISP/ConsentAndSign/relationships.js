@@ -148,9 +148,11 @@ const csRelationship = (() => {
     relationshipsWrap = document.createElement('div');
     relationshipsWrap.classList.add('relationshipsWrap');
 
-    //const teamMembers = planConsentAndSign.getTeamMemberData();
+    const teamMembers = planConsentAndSign.getTeamMemberData();
 
     gkRelationships.forEach(rel => {
+      const filteredMember = teamMembers.filter(tm => tm.contactId === rel.contactId);
+      if (filteredMember.length >= 1) return;
       const relationship = buildRelationship(rel);
       relationshipsWrap.appendChild(relationship);
     });
