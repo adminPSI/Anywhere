@@ -30,6 +30,7 @@ const plan = (function () {
   // -----------------
   let previousPlansData;
   let dropdownData;
+  let retrieveData;
   // general info
   let selectedConsumer;
   let planId;
@@ -780,7 +781,7 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames: ['reportBtn2'],
-    });
+    });      
     const sendtoPortalBtn = button.build({
       text: 'Send To Portal',
       style: 'secondary',
@@ -857,9 +858,14 @@ const plan = (function () {
           break;
         }
         case reportBtn3: {
-          // Below 'targetScreen' will be fore when we need to select attatchments
-          // targetScreen = 'reportsAttachmentScreen';
-          //* MIKE - call func here
+          // Below 'targetScreen' will be for when we need to select attatchments
+          targetScreen = 'reportsAttachmentScreen';
+          retrieveData = {
+              token: $.session.Token,
+              assessmentId: '19'
+          }
+          const planWFAttachList = await planAjax.getPlanAndWorkFlowAttachments(retrieveData);
+          break;
         }
         case sendtoPortalBtn: {
           assessment.transeferPlanReportToONET(planId, '1');
