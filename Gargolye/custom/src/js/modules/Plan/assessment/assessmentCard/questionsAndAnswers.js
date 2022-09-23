@@ -640,7 +640,7 @@
         if (!colKey || !dataKey) break;
 
         if (dataKey === 'relationships') {
-          const includeSupports = $.session.areInSalesForce;
+          const includeSupports = false;
           planData.populateRelationshipDropdown(questionInput, answerText, includeSupports);
           break;
         }
@@ -1003,7 +1003,7 @@
                 const dataKey = colNameDropdownMap[colKey];
 
                 if (dataKey === 'relationships') {
-                  const includeSupports = $.session.areInSalesForce;
+                  const includeSupports = false;
                   planData.populateRelationshipDropdown(questionInput, answerText, includeSupports);
                   gridCell.appendChild(questionInput);
                   break;

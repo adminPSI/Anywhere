@@ -838,7 +838,7 @@ const plan = (function () {
     //morepopupmenu.appendChild(addWorkflowBtn);
     morepopupmenu.appendChild(reportBtn);
     morepopupmenu.appendChild(reportBtn2);
-    morepopupmenu.appendChild(reportBtn3);
+    //morepopupmenu.appendChild(reportBtn3);
     morepopupmenu.appendChild(sendtoPortalBtn);
     morepopupmenu.appendChild(sendToDODDBtn);
     morepopupmenu.appendChild(editDatesBtn);
