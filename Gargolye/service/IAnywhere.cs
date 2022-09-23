@@ -26,6 +26,7 @@ using System.Data;
 using Newtonsoft.Json.Linq;
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.DocumentConversion;
+using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 
 namespace Anywhere
 {
@@ -3577,6 +3578,20 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/checkIfCNReportExists/")]
         string checkIfCNReportExists(string token, string reportScheduleId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getPlanAndWorkFlowAttachments/")]
+        PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/addSelectedAttachmentsToReport/")]
+        void addSelectedAttachmentsToReport(string token, string[] attachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

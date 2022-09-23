@@ -18,6 +18,22 @@ namespace Anywhere.service.Data.DocumentConversion
         JavaScriptSerializer js = new JavaScriptSerializer();
         DataGetter dg = new DataGetter();
 
+        public string getPlanAndWorkFlowAttachments(string assessmentId)
+        {
+            List<string> list = new List<string>();
+            list.Add(assessmentId);
+            string text = "CALL DBA.ANYW_ISP_GetPlanAndWorkflowAttachmentsForSelection(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("647", ex.Message + "ANYW_ISP_GetPlanAndWorkflowAttachmentsForSelection(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "647: error ANYW_ISP_GetPlanAttachmentsWithOrdering";
+            }
+        }
+
         public string getPlanAttachmentsWithOrdering(string assessmentId)
         {
             List<string> list = new List<string>();
