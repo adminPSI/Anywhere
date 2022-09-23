@@ -693,42 +693,48 @@ const plan = (function () {
     return screen;
   }
   async function runReportScreen(extraSpace) {
-    // build & show spinner
-    const spinner = PROGRESS.SPINNER.get('Building Report...');
-    reportsScreen.appendChild(spinner);
-    // generate report
-    const isSuccess = await assessment.generateReport(planId, '1', extraSpace);
-    // remove spinner
-    reportsScreen.removeChild(spinner);
-    // handle success/error
-    if (isSuccess !== 'success') {
-      morePopup.classList.add('error');
-      // build a show error message
-      const message = document.createElement('div'); //
-      message.classList.add('warningMessage');
-      message.innerHTML = `
+    const showAttachments = false;
+    if (showAttachments) {
+      // build & show spinner
+      const spinner = PROGRESS.SPINNER.get('Building Report...');
+      reportsScreen.appendChild(spinner);
+      // generate report
+      const isSuccess = await assessment.generateReport(planId, '1', extraSpace);
+      // remove spinner
+      reportsScreen.removeChild(spinner);
+      // handle success/error
+      if (isSuccess !== 'success') {
+        morePopup.classList.add('error');
+        // build a show error message
+        const message = document.createElement('div'); //
+        message.classList.add('warningMessage');
+        message.innerHTML = `
         <p>There was an error retrieving your report, please contact Primary Solutions.</p>
       `;
-      const okBtn = button.build({
-        id: 'rptErrOkBtn',
-        text: 'OK',
-        style: 'secondary',
-        type: 'contained',
-        callback: () => {
-          reportsScreen.removeChild(message);
-          reportsScreen.removeChild(okBtn);
-          morePopup.classList.remove('error');
-          reportsScreen.classList.remove('visible');
-          morePopupMenu.classList.add('visible');
-        },
-      });
-      okBtn.classList.add('okBtn');
+        const okBtn = button.build({
+          id: 'rptErrOkBtn',
+          text: 'OK',
+          style: 'secondary',
+          type: 'contained',
+          callback: () => {
+            reportsScreen.removeChild(message);
+            reportsScreen.removeChild(okBtn);
+            morePopup.classList.remove('error');
+            reportsScreen.classList.remove('visible');
+            morePopupMenu.classList.add('visible');
+          },
+        });
+        okBtn.classList.add('okBtn');
 
-      reportsScreen.appendChild(message);
-      reportsScreen.appendChild(okBtn);
+        reportsScreen.appendChild(message);
+        reportsScreen.appendChild(okBtn);
+      } else {
+        reportsScreen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+      }
     } else {
-      reportsScreen.classList.remove('visible');
-      morePopupMenu.classList.add('visible');
+      const attachmentsWrap = document.createElement('div');
+      reportsScreen.appendChild(attachmentsWrap);
     }
   }
   async function runDODDScreen() {
@@ -781,7 +787,7 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames: ['reportBtn2'],
-    });      
+    });
     const sendtoPortalBtn = button.build({
       text: 'Send To Portal',
       style: 'secondary',
@@ -861,9 +867,9 @@ const plan = (function () {
           // Below 'targetScreen' will be for when we need to select attatchments
           targetScreen = 'reportsAttachmentScreen';
           retrieveData = {
-              token: $.session.Token,
-              assessmentId: '19'
-          }
+            token: $.session.Token,
+            assessmentId: '19',
+          };
           const planWFAttachList = await planAjax.getPlanAndWorkFlowAttachments(retrieveData);
           break;
         }
