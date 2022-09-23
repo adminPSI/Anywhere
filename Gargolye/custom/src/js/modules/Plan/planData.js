@@ -296,12 +296,16 @@ const planData = (() => {
       const filteredService = supportData.filter(dd => `${dd.providerId}V` === contactId);
       if (filteredService.length > 0) {
         return `${filteredService[0].providerName}`;
+      } else {
+        return '';
       }
     } else {
       const filteredService = dropdowns.relationships.filter(dd => dd.contactId === contactId);
       if (filteredService.length > 0) {
         if (!filteredService[0].lastName || !filteredService[0].firstName) return '';
         return `${filteredService[0].lastName}, ${filteredService[0].firstName}`;
+      } else {
+        return '';
       }
     }
   }
