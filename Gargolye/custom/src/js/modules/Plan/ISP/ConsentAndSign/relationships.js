@@ -151,7 +151,9 @@ const csRelationship = (() => {
     const teamMembers = planConsentAndSign.getTeamMemberData();
 
     gkRelationships.forEach(rel => {
-      const filteredMember = teamMembers.filter(tm => tm.contactId === rel.contactId);
+      const filteredMember = teamMembers.filter(
+        tm => tm.contactId === rel.contactId || tm.peopleId === rel.peopleId,
+      );
       if (filteredMember.length >= 1) return;
       const relationship = buildRelationship(rel);
       relationshipsWrap.appendChild(relationship);
