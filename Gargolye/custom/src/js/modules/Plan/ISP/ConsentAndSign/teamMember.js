@@ -642,12 +642,16 @@ const csTeamMember = (() => {
       teamMemberPopup.appendChild(dateSignedDisplay);
     }
     if (isNew) {
-      if ($.session.areInSalesForce) teamMemberPopup.appendChild(linkToRelationshipBtn);
+      teamMemberPopup.appendChild(linkToRelationshipBtn);
     } else {
-      if (!selectedMemberData.contactId && $.session.areInSalesForce) {
+      if (!selectedMemberData.contactId) {
         teamMemberPopup.appendChild(linkToRelationshipBtn);
       }
-      if ($.session.areInSalesForce && !selectedMemberData.salesForceId && selectedMemberData.contactId) {
+      if (
+        $.session.areInSalesForce &&
+        !selectedMemberData.salesForceId &&
+        selectedMemberData.contactId
+      ) {
         teamMemberPopup.appendChild(linkToSalesforceBtn);
       }
     }
