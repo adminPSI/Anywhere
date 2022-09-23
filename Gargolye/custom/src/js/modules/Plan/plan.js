@@ -733,8 +733,19 @@ const plan = (function () {
         morePopupMenu.classList.add('visible');
       }
     } else {
+      const attachments = planAjax.getPlanAndWorkFlowAttachments({
+        token: $.session.Token,
+        assessmentId: planId,
+      });
       const attachmentsWrap = document.createElement('div');
       reportsScreen.appendChild(attachmentsWrap);
+
+      if (attachments) {
+        attachments.forEach(a => {
+          const attachment = document.createElement('div');
+          attachmentsWrap.appendChild(attachment);
+        });
+      }
     }
   }
   async function runDODDScreen() {
