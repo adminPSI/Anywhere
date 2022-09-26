@@ -81,7 +81,10 @@ const csTeamMember = (() => {
     checkTeamMemberPopupForErrors();
 
     // save team member
-    if (plan.getPlanStatus() === 'D') {
+    const status = plan.getPlanStatus();
+    const activeStatus = plan.getPlanActiveStatus();
+
+    if (readOnly) {
       saveTeamMember();
       return;
     }
