@@ -733,7 +733,7 @@ const plan = (function () {
         morePopupMenu.classList.add('visible');
       }
     } else {
-      const attachments = planAjax.getPlanAndWorkFlowAttachments({
+      const attachments = await planAjax.getPlanAndWorkFlowAttachments({
         token: $.session.Token,
         assessmentId: planId,
       });
