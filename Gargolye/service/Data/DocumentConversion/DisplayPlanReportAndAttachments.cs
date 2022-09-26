@@ -39,24 +39,18 @@ namespace Anywhere.service.Data.DocumentConversion
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
             {
-                Attachment attachment = new Attachment();
+                //Attachment attachment = new Attachment();
                 List<byte[]> allAttachments = new List<byte[]>();
                 byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
                 allAttachments.Add(planReport);
                 foreach(string attachId in attachmentIds)
                 {
-                    attachment.filename = "";
-                    attachment.data = null;
-                    try
-                    {
-                        attachment.filename = dg.GetAttachmentFileName(attachId);
-                        attachment.data = dg.GetAttachmentData(attachId);//reused
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
-                    allAttachments.Add(StreamExtensions.ToByteArray(attachment.data));
+                    string attachments = aadg.getPlanAndWorkFlowAttachments(attachId);
+                    js.MaxJsonLength = Int32.MaxValue;
+                    POrWFAttachment[] att = js.Deserialize<POrWFAttachment[]>(attachments);
+                    byte[] pwfAttachment = StreamExtensions.ToByteArray(att[0].attachment);
+                    allAttachments.Add(pwfAttachment);
+                    //allAttachments.Add(StreamExtensions.ToByteArray(attachment.data));
                 }
             }
             
@@ -135,6 +129,13 @@ namespace Anywhere.service.Data.DocumentConversion
         }
 
         public class WorkFlowAttachments
+        {
+            public MemoryStream attachment { get; set; }
+            public string description { get; set; }
+            public string attachmentType { get; set; }
+        }
+
+        public class POrWFAttachment
         {
             public MemoryStream attachment { get; set; }
             public string description { get; set; }
