@@ -693,6 +693,23 @@ const plan = (function () {
     return screen;
   }
   async function runReportScreen(extraSpace) {
+    const selectedAttachments = [];
+    // Show Attachements
+    const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+      token: $.session.Token,
+      assessmentId: '19', //planId,
+    });
+    const attachmentsWrap = document.createElement('div');
+    reportsScreen.appendChild(attachmentsWrap);
+
+    if (attachments) {
+      attachments.forEach(a => {
+        const attachment = document.createElement('div');
+        attachmentsWrap.appendChild(attachment);
+      });
+    }
+
+    // Check if the selected any
     const showAttachments = false;
     if (showAttachments) {
       // build & show spinner
@@ -731,20 +748,6 @@ const plan = (function () {
       } else {
         reportsScreen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
-      }
-    } else {
-      const attachments = await planAjax.getPlanAndWorkFlowAttachments({
-        token: $.session.Token,
-        assessmentId: planId,
-      });
-      const attachmentsWrap = document.createElement('div');
-      reportsScreen.appendChild(attachmentsWrap);
-
-      if (attachments) {
-        attachments.forEach(a => {
-          const attachment = document.createElement('div');
-          attachmentsWrap.appendChild(attachment);
-        });
       }
     }
   }
