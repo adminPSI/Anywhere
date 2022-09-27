@@ -270,30 +270,30 @@ const planAjax = (function () {
     } catch (error) {
       console.log(error.responseText);
     }
+  }
+  async function uploadPlanToDODD(retrieveData) {
+    // consumerId(peopleId), planId)
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/uploadPlanToDODD/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.uploadPlanToDODDResult;
+    } catch (error) {
+      console.log(error.responseText);
     }
-    async function uploadPlanToDODD(retrieveData) {
-        // consumerId(peopleId), planId)
-        try {
-            const data = await $.ajax({
-                type: 'POST',
-                url:
-                    $.webServer.protocol +
-                    '://' +
-                    $.webServer.address +
-                    ':' +
-                    $.webServer.port +
-                    '/' +
-                    $.webServer.serviceName +
-                    '/uploadPlanToDODD/',
-                data: JSON.stringify(retrieveData),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-            });
-            return data.uploadPlanToDODDResult;
-        } catch (error) {
-            console.log(error.responseText);
-        }
-    }
+  }
 
   // DELETE
   //------------------------------------
@@ -301,7 +301,7 @@ const planAjax = (function () {
     // token, consumerPlanId
     try {
       const data = await $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -469,28 +469,35 @@ const planAjax = (function () {
     } catch (error) {
       console.log(error.responseText);
     }
-    }
+  }
 
-    function checkForSalesForce() {
-        $.ajax({
-            type: "POST",
-            url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
-                "/" + $.webServer.serviceName + "/checkForSalesForce/",
-            data: '{}',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (response, status, xhr) {
-                if (response.checkForSalesForceResult === 'true') {
-                    $.session.areInSalesForce = true;
-                } else {
-                    $.session.areInSalesForce = false;
-                }
-            },
-            error: function (xhr, status, error) {
-                //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-            }
-        });
-    }
+  function checkForSalesForce() {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/checkForSalesForce/',
+      data: '{}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        if (response.checkForSalesForceResult === 'true') {
+          $.session.areInSalesForce = true;
+        } else {
+          $.session.areInSalesForce = false;
+        }
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
 
   return {
     getConsumerPlans,
@@ -509,8 +516,8 @@ const planAjax = (function () {
     viewPlanAttachment,
     addPlanAttachment,
     deletePlanAttachment,
-      getPlanAttachmentsList,
-      uploadPlanToDODD,
-      checkForSalesForce
+    getPlanAttachmentsList,
+    uploadPlanToDODD,
+    checkForSalesForce,
   };
 })();

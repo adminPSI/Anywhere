@@ -34,25 +34,25 @@ const assessmentAjax = (function () {
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
     });
-    }
-    function getPlanAssessmentReportWithAttachments(retrieveData) {
-        //token, userId, assessmentID, versionID, extraSpace, isp(boolean)
-        return $.ajax({
-            type: 'POST',
-            url:
-                $.webServer.protocol +
-                '://' +
-                $.webServer.address +
-                ':' +
-                $.webServer.port +
-                '/' +
-                $.webServer.serviceName +
-                '/viewISPReportAndAttachments/',
-            data: JSON.stringify(retrieveData),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-        });
-    }
+  }
+  function getPlanAssessmentReportWithAttachments(retrieveData) {
+    //token, userId, assessmentID, versionID, extraSpace, isp(boolean)
+    return $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/viewISPReportAndAttachments/',
+      data: JSON.stringify(retrieveData),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+    });
+  }
   function getConsumerRelationships(retrieveData) {
     //token, consumerId, effectiveStartDate, effectiveEndDate
     return $.ajax({
@@ -131,7 +131,7 @@ const assessmentAjax = (function () {
   function deleteAssessmentGridRowAnswers(retrieveData) {
     // token, consumerPlanId, assessmentQuestionSetId, rowsToDelete[]
     return $.ajax({
-      type: 'DELETE',
+      type: 'POST',
       url:
         $.webServer.protocol +
         '://' +
@@ -235,7 +235,7 @@ const assessmentAjax = (function () {
     getServiceAndSupportsData,
     insertPlanReportToBeTranferredToONET,
     transferPlanReportToONET,
-      updateAssessmentAnswerRowOrder,
-      getPlanAssessmentReportWithAttachments,
+    updateAssessmentAnswerRowOrder,
+    getPlanAssessmentReportWithAttachments,
   };
 })();

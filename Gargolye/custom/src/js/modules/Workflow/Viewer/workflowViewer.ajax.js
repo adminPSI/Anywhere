@@ -2,7 +2,7 @@ const WorkflowViewerAjax = (() => {
   async function deleteDocumentAsync(documentId) {
     try {
       const result = await $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -12,12 +12,7 @@ const WorkflowViewerAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/deleteWorkflowStepDocument/',
-        data:
-          '{"token":"' +
-          $.session.Token +
-          '", "documentId":"' +
-          documentId +
-          '"}',
+        data: '{"token":"' + $.session.Token + '", "documentId":"' + documentId + '"}',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -30,7 +25,7 @@ const WorkflowViewerAjax = (() => {
   async function deleteWorkflowAsync(workflowId) {
     try {
       const result = await $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -40,12 +35,7 @@ const WorkflowViewerAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/deleteWorkflow/',
-        data:
-          '{"token":"' +
-          $.session.Token +
-          '", "workflowId":"' +
-          workflowId +
-          '"}',
+        data: '{"token":"' + $.session.Token + '", "workflowId":"' + workflowId + '"}',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -58,7 +48,7 @@ const WorkflowViewerAjax = (() => {
   async function deleteStepAsync(stepId) {
     try {
       const result = await $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -137,7 +127,7 @@ const WorkflowViewerAjax = (() => {
     }
   }
 
- async function getFormTemplatesAsync() {
+  async function getFormTemplatesAsync() {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -160,7 +150,6 @@ const WorkflowViewerAjax = (() => {
     }
   }
 
-  
   async function getPlanWorkflowWidgetData(peopleId) {
     try {
       const result = await $.ajax({
@@ -230,12 +219,7 @@ const WorkflowViewerAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/isWorkflowAutoCreated/',
-        data:
-          '{"token":"' +
-          $.session.Token +
-          '", "workflowName":"' +
-          workflowName +
-          '"}',
+        data: '{"token":"' + $.session.Token + '", "workflowName":"' + workflowName + '"}',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -317,12 +301,7 @@ const WorkflowViewerAjax = (() => {
     }
   }
 
-  async function updateStepDocumentAsync(
-    documentId,
-    attachmentType,
-    attachment,
-    documentEdited,
-  ) {
+  async function updateStepDocumentAsync(documentId, attachmentType, attachment, documentEdited) {
     try {
       var binary = '';
       var bytes = new Uint8Array(attachment);
@@ -517,7 +496,6 @@ const WorkflowViewerAjax = (() => {
     }
   }
 
-
   async function getManualWorkflowList(retrieveData) {
     try {
       //token, processId
@@ -569,7 +547,7 @@ const WorkflowViewerAjax = (() => {
     }
   }
 
- async function getWFwithMissingResponsibleParties(retrieveData) {
+  async function getWFwithMissingResponsibleParties(retrieveData) {
     try {
       //token, processId
       //processId = 2 for annual and 3 for revision
@@ -584,7 +562,7 @@ const WorkflowViewerAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/getWFwithMissingResponsibleParties/',
-          data: JSON.stringify(retrieveData),
+        data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -609,7 +587,7 @@ const WorkflowViewerAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/getResponsiblePartyIdforThisEditStep/',
-          data: JSON.stringify(retrieveData),
+        data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -619,8 +597,7 @@ const WorkflowViewerAjax = (() => {
     }
   }
 
-
- async function getWFResponsibleParties(retrieveData) {
+  async function getWFResponsibleParties(retrieveData) {
     try {
       //token, processId
       //processId = 2 for annual and 3 for revision
@@ -644,7 +621,7 @@ const WorkflowViewerAjax = (() => {
       throw new Error(error.responseText);
     }
   }
- 
+
   async function updateRelationshipResponsiblePartyID(peopleId, WFID, responsiblePartyType) {
     try {
       const result = await $.ajax({
@@ -672,7 +649,6 @@ const WorkflowViewerAjax = (() => {
       throw new Error(error.responseText);
     }
   }
-
 
   return {
     deleteDocumentAsync,
