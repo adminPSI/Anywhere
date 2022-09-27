@@ -44,6 +44,8 @@ const plan = (function () {
   // more popup
   let selectedWorkflows;
   let addWorkflowDoneBtn;
+  let planAttWrap;
+  let workflowAttWrap;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -671,6 +673,24 @@ const plan = (function () {
     screen.id = 'reportsScreen';
     screen.classList.add('screen');
 
+    const attachmentsWrap = document.createElement('div');
+    attachmentsWrap.classList.add('attachmentsWrap');
+    planAttWrap = document.createElement('div');
+    planAttWrap.classList.add('planAttWrap');
+    workflowAttWrap = document.createElement('div');
+    workflowAttWrap.classList.add('workflowAttWrap');
+    attachmentsWrap.appendChild(planAttWrap);
+    attachmentsWrap.appendChild(workflowAttWrap);
+
+    const planHeading = document.createElement('h1');
+    const workflowHeading = document.createElement('h1');
+    planHeading.innerText = 'Plan Attachments';
+    workflowHeading.innerText = 'Workflow Attachments';
+    planAttWrap.appendChild(planHeading);
+    workflowAttWrap.appendChild(workflowHeading);
+
+    screen.appendChild(attachmentsWrap);
+
     return screen;
   }
   function buildReportsAttachmentsScreen() {
@@ -693,63 +713,93 @@ const plan = (function () {
     return screen;
   }
   async function runReportScreen(extraSpace) {
-    const selectedAttachments = [];
+    const selectedAttachments = {};
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,
       assessmentId: '19', //planId,
     });
-    const attachmentsWrap = document.createElement('div');
-    reportsScreen.appendChild(attachmentsWrap);
 
     if (attachments) {
-      attachments.forEach(a => {
+      for (const prop in attachments) {
+        const a = attachments[prop];
         const attachment = document.createElement('div');
-        attachmentsWrap.appendChild(attachment);
-      });
-    }
+        attachment.classList.add('attachment');
+        const description = document.createElement('p');
+        description.innerText = a.description;
+        attachment.appendChild(description);
 
-    // Check if the selected any
-    const showAttachments = false;
-    if (showAttachments) {
-      // build & show spinner
-      const spinner = PROGRESS.SPINNER.get('Building Report...');
-      reportsScreen.appendChild(spinner);
-      // generate report
-      const isSuccess = await assessment.generateReport(planId, '1', extraSpace);
-      // remove spinner
-      reportsScreen.removeChild(spinner);
-      // handle success/error
-      if (isSuccess !== 'success') {
-        morePopup.classList.add('error');
-        // build a show error message
-        const message = document.createElement('div'); //
-        message.classList.add('warningMessage');
-        message.innerHTML = `
-        <p>There was an error retrieving your report, please contact Primary Solutions.</p>
-      `;
-        const okBtn = button.build({
-          id: 'rptErrOkBtn',
-          text: 'OK',
-          style: 'secondary',
-          type: 'contained',
-          callback: () => {
-            reportsScreen.removeChild(message);
-            reportsScreen.removeChild(okBtn);
-            morePopup.classList.remove('error');
-            reportsScreen.classList.remove('visible');
-            morePopupMenu.classList.add('visible');
-          },
+        attachment.addEventListener('click', () => {
+          if (!attachment.classList.contains('selected')) {
+            attachment.classList.add('selected');
+            selectedAttachments[a.attachmentId] = { ...a };
+          } else {
+            attachment.classList.remove('selected');
+            delete selectedAttachments[a.attachmentId];
+          }
+
+          console.log(selectedAttachments);
         });
-        okBtn.classList.add('okBtn');
 
-        reportsScreen.appendChild(message);
-        reportsScreen.appendChild(okBtn);
-      } else {
-        reportsScreen.classList.remove('visible');
-        morePopupMenu.classList.add('visible');
+        if (a.whereFrom === 'Plan') {
+          planAttWrap.appendChild(attachment);
+        } else {
+          workflowAttWrap.appendChild(attachment);
+        }
       }
     }
+
+    const doneBtn = button.build({
+      text: 'Done',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        let isSuccess;
+        // build & show spinner
+        const spinner = PROGRESS.SPINNER.get('Building Report...');
+        reportsScreen.innerHTML = '';
+        reportsScreen.appendChild(spinner);
+        // generate report
+        if (Object.keys(selectedAttachments).length > 0) {
+          isSuccess = await assessment.generateReportWithAttachments(planId, '1', extraSpace);
+        } else {
+          isSuccess = await assessment.generateReport(planId, '1', extraSpace);
+        }
+
+        // remove spinner
+        reportsScreen.removeChild(spinner);
+        // handle success/error
+        if (isSuccess !== 'success') {
+          morePopup.classList.add('error');
+          // build a show error message
+          const message = document.createElement('div');
+          message.classList.add('warningMessage');
+          message.innerHTML = `<p>There was an error retrieving your report, please contact Primary Solutions.</p>`;
+          const okBtn = button.build({
+            id: 'rptErrOkBtn',
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+              reportsScreen.removeChild(message);
+              reportsScreen.removeChild(okBtn);
+              morePopup.classList.remove('error');
+              reportsScreen.classList.remove('visible');
+              morePopupMenu.classList.add('visible');
+            },
+          });
+          okBtn.classList.add('okBtn');
+
+          reportsScreen.appendChild(message);
+          reportsScreen.appendChild(okBtn);
+        } else {
+          reportsScreen.classList.remove('visible');
+          morePopupMenu.classList.add('visible');
+        }
+      },
+    });
+
+    reportsScreen.appendChild(doneBtn);
   }
   async function runDODDScreen() {
     // build & show spinner

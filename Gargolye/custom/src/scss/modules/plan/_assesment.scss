@@ -294,6 +294,26 @@
       transform: translateX(-600%);
     }
 
+    .attachmentsWrap {
+      margin: 0 0 20px;
+
+      .planAttWrap, .workflowAttWrap {
+        h1 {
+          margin: 0 0 15px;
+        }
+        .attachment {
+          cursor: pointer;
+          padding: 5px;
+          margin: 0 0 5px;
+
+          &.selected {
+            background: $secondary;
+          }
+        }
+      }
+    }
+
+    // success/error message
     .warningMessage {
       margin-bottom: 10px;
       text-align: center;

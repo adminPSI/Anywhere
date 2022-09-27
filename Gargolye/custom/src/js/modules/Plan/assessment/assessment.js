@@ -115,119 +115,113 @@ const assessment = (function () {
     conditionalQuestionData = {};
     applicableSections = {};
 
-    data.forEach(
-      ({ sectionId, subsectionId, questionId, questionSetId, ...otherData }) => {
-        // Sections
-        if (!sectionData[sectionId]) {
-          const isApplicable = otherData.applicable === '' ? 'Y' : otherData.applicable;
-          sectionData[sectionId] = {
-            order: otherData.sectionOrder,
-            title: otherData.sectionName,
-            applicable: isApplicable === 'Y' ? true : false,
-            isAssessment: otherData.assessment,
-          };
+    data.forEach(({ sectionId, subsectionId, questionId, questionSetId, ...otherData }) => {
+      // Sections
+      if (!sectionData[sectionId]) {
+        const isApplicable = otherData.applicable === '' ? 'Y' : otherData.applicable;
+        sectionData[sectionId] = {
+          order: otherData.sectionOrder,
+          title: otherData.sectionName,
+          applicable: isApplicable === 'Y' ? true : false,
+          isAssessment: otherData.assessment,
+        };
 
-          if (!applicableSections[sectionId] && otherData.assessment) {
-            if (otherData.assessment === 'Y') {
-              applicableSections[sectionId] = isApplicable === 'Y' ? true : false;
-            }
+        if (!applicableSections[sectionId] && otherData.assessment) {
+          if (otherData.assessment === 'Y') {
+            applicableSections[sectionId] = isApplicable === 'Y' ? true : false;
           }
         }
-        // SubSections
-        if (subsectionId && !subsectionData[subsectionId]) {
-          subsectionData[subsectionId] = {
-            sectionId,
-            order: otherData.subsectionOrder,
-            title: otherData.subsectionName,
-          };
+      }
+      // SubSections
+      if (subsectionId && !subsectionData[subsectionId]) {
+        subsectionData[subsectionId] = {
+          sectionId,
+          order: otherData.subsectionOrder,
+          title: otherData.subsectionName,
+        };
+      }
+      // Question Sets
+      if (!questionSetData[questionSetId]) {
+        questionSetData[questionSetId] = {
+          id: questionSetId,
+          sectionId,
+          subsectionId,
+          order: otherData.questionSetOrder,
+          setType: otherData.questionSetType,
+          allowRowInsert: otherData.questionSetAllowMultirowInserts,
+          defaultAnswer: otherData.questionDefaultAnswer,
+          questions: {},
+        };
+      }
+      // Questions
+      if (otherData.questionSetType === 'GRID') {
+        if (!questionSetData[questionSetId].questions[otherData.answerRow]) {
+          questionSetData[questionSetId].questions[otherData.answerRow] = {};
         }
-        // Question Sets
-        if (!questionSetData[questionSetId]) {
-          questionSetData[questionSetId] = {
-            id: questionSetId,
-            sectionId,
-            subsectionId,
-            order: otherData.questionSetOrder,
-            setType: otherData.questionSetType,
-            allowRowInsert: otherData.questionSetAllowMultirowInserts,
-            defaultAnswer: otherData.questionDefaultAnswer,
-            questions: {},
-          };
-        }
-        // Questions
-        if (otherData.questionSetType === 'GRID') {
-          if (!questionSetData[questionSetId].questions[otherData.answerRow]) {
-            questionSetData[questionSetId].questions[otherData.answerRow] = {};
-          }
-          if (
-            !questionSetData[questionSetId].questions[otherData.answerRow][
-              otherData.questionOrder
-            ]
-          ) {
-            questionSetData[questionSetId].questions[otherData.answerRow][
-              otherData.questionOrder
-            ] = {
-              answerId: otherData.answerId,
-              answerText: otherData.answerText,
-              answerStyle: otherData.questionAnswerStyle,
-              answerOptions: otherData.questionAnswerOptions,
-              id: questionId,
-              prompt: otherData.questionPrompt,
-              requiredAnswer: otherData.questionRequiresAnswer,
-              tag: otherData.questionTag,
-              text: otherData.questionText,
-            };
-          }
-        } else {
-          if (!questionSetData[questionSetId].questions[otherData.questionOrder]) {
-            questionSetData[questionSetId].questions[otherData.questionOrder] = {
-              answerId: otherData.answerId,
-              answerText: otherData.answerText,
-              answerStyle: otherData.questionAnswerStyle,
-              answerOptions: otherData.questionAnswerOptions,
-              conditionalAnswerText: otherData.questionConditionalAnswerText,
-              conditionalQuestionId: otherData.questionConditionalQuestionId,
-              id: questionId,
-              order: otherData.questionOrder,
-              prompt: otherData.questionPrompt,
-              requiredAnswer: otherData.questionRequiresAnswer,
-              text: otherData.questionText,
-              tag: otherData.questionTag,
-            };
-          }
-          if (!questionData[questionId]) {
-            questionData[questionId] = {
-              answerId: otherData.answerId,
-              answerText: otherData.answerText,
-              answerStyle: otherData.questionAnswerStyle,
-              answerOptions: otherData.questionAnswerOptions,
-              conditionalAnswerText: otherData.questionConditionalAnswerText,
-              conditionalQuestionId: otherData.questionConditionalQuestionId,
-              id: questionId,
-              order: otherData.questionOrder,
-              prompt: otherData.questionPrompt,
-              requiredAnswer: otherData.questionRequiresAnswer,
-              text: otherData.questionText,
-              tag: otherData.questionTag,
-            };
-          }
-
-          if (otherData.questionConditionalQuestionId === '') return;
-
-          if (!conditionalQuestionData[otherData.questionConditionalQuestionId]) {
-            conditionalQuestionData[otherData.questionConditionalQuestionId] = [];
-          }
-
-          conditionalQuestionData[otherData.questionConditionalQuestionId].push({
+        if (
+          !questionSetData[questionSetId].questions[otherData.answerRow][otherData.questionOrder]
+        ) {
+          questionSetData[questionSetId].questions[otherData.answerRow][otherData.questionOrder] = {
             answerId: otherData.answerId,
-            questionId: questionId,
             answerText: otherData.answerText,
-            conditionalQuestionId: otherData.questionConditionalQuestionId,
-            conditionalAnswerText: otherData.questionConditionalAnswerText,
-          });
+            answerStyle: otherData.questionAnswerStyle,
+            answerOptions: otherData.questionAnswerOptions,
+            id: questionId,
+            prompt: otherData.questionPrompt,
+            requiredAnswer: otherData.questionRequiresAnswer,
+            tag: otherData.questionTag,
+            text: otherData.questionText,
+          };
         }
-      },
-    );
+      } else {
+        if (!questionSetData[questionSetId].questions[otherData.questionOrder]) {
+          questionSetData[questionSetId].questions[otherData.questionOrder] = {
+            answerId: otherData.answerId,
+            answerText: otherData.answerText,
+            answerStyle: otherData.questionAnswerStyle,
+            answerOptions: otherData.questionAnswerOptions,
+            conditionalAnswerText: otherData.questionConditionalAnswerText,
+            conditionalQuestionId: otherData.questionConditionalQuestionId,
+            id: questionId,
+            order: otherData.questionOrder,
+            prompt: otherData.questionPrompt,
+            requiredAnswer: otherData.questionRequiresAnswer,
+            text: otherData.questionText,
+            tag: otherData.questionTag,
+          };
+        }
+        if (!questionData[questionId]) {
+          questionData[questionId] = {
+            answerId: otherData.answerId,
+            answerText: otherData.answerText,
+            answerStyle: otherData.questionAnswerStyle,
+            answerOptions: otherData.questionAnswerOptions,
+            conditionalAnswerText: otherData.questionConditionalAnswerText,
+            conditionalQuestionId: otherData.questionConditionalQuestionId,
+            id: questionId,
+            order: otherData.questionOrder,
+            prompt: otherData.questionPrompt,
+            requiredAnswer: otherData.questionRequiresAnswer,
+            text: otherData.questionText,
+            tag: otherData.questionTag,
+          };
+        }
+
+        if (otherData.questionConditionalQuestionId === '') return;
+
+        if (!conditionalQuestionData[otherData.questionConditionalQuestionId]) {
+          conditionalQuestionData[otherData.questionConditionalQuestionId] = [];
+        }
+
+        conditionalQuestionData[otherData.questionConditionalQuestionId].push({
+          answerId: otherData.answerId,
+          questionId: questionId,
+          answerText: otherData.answerText,
+          conditionalQuestionId: otherData.questionConditionalQuestionId,
+          conditionalAnswerText: otherData.questionConditionalAnswerText,
+        });
+      }
+    });
 
     return { sectionData, subsectionData, questionSetData };
   }
@@ -308,11 +302,7 @@ const assessment = (function () {
       console.log(error);
     }
   }
-  async function getConsumerRelationshipsData(
-    consumerId,
-    effectiveStartDate,
-    effectiveEndDate,
-  ) {
+  async function getConsumerRelationshipsData(consumerId, effectiveStartDate, effectiveEndDate) {
     try {
       const data = (
         await assessmentAjax.getConsumerRelationships({
@@ -364,6 +354,33 @@ const assessment = (function () {
           isp: true, //new
         })
       ).getPlanAssessmentReportResult;
+
+      const arr = success._buffer;
+      const byteArray = new Uint8Array(arr);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      if ($.session.browser === 'Explorer' || $.session.browser === 'Mozilla') {
+        window.navigator.msSaveOrOpenBlob(blob, 'report.pdf');
+      } else {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL);
+      }
+
+      reports.handledProcessedReport();
+      return 'success';
+    } catch (error) {
+      return error.statusText;
+    }
+  }
+  async function generateReportWithAttachments(assessmentID, versionID, extraSpace) {
+    try {
+      const success = await assessmentAjax.getPlanAssessmentReportWithAttachments({
+        token: $.session.Token,
+        userId: $.session.PeopleId,
+        assessmentID,
+        versionID,
+        extraSpace: extraSpace,
+        isp: true,
+      });
 
       const arr = success._buffer;
       const byteArray = new Uint8Array(arr);
@@ -488,6 +505,7 @@ const assessment = (function () {
     getConsumerNameInfoData,
     getServiceAndSupportsData,
     generateReport,
+    generateReportWithAttachments,
     insertAssessmentGridRowAnswers,
     updateAnswers,
     deleteGridRows,
