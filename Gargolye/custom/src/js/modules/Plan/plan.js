@@ -717,7 +717,7 @@ const plan = (function () {
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,
-      assessmentId: '19', //planId,
+      assessmentId: '19', //planId, TODO
     });
 
     if (attachments) {
@@ -761,7 +761,13 @@ const plan = (function () {
         reportsScreen.appendChild(spinner);
         // generate report
         if (Object.keys(selectedAttachments).length > 0) {
-          isSuccess = await assessment.generateReportWithAttachments(planId, '1', extraSpace);
+          const attachmentIds = Object.keys(selectedAttachments);
+          isSuccess = await assessment.generateReportWithAttachments(
+            planId,
+            '1',
+            extraSpace,
+            attachmentIds,
+          );
         } else {
           isSuccess = await assessment.generateReport(planId, '1', extraSpace);
         }

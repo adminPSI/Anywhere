@@ -380,6 +380,7 @@ const assessment = (function () {
         versionID,
         extraSpace: extraSpace,
         isp: true,
+        attachmentIds,
       });
 
       const arr = success._buffer;
