@@ -328,14 +328,13 @@ const servicesSupports = (() => {
       };
     });
 
+    if (defaultValue === '') {
+      defaultValue = '4';
+      hcbsSelected = true;
+    }
+
     if (defaultValue && defaultValue != '')
       fundingSourceDropdownSelectedText = data[defaultValue].text;
-    // data.sort((a, b) => {
-    //   const textA = a.text.toUpperCase();
-    //   const textB = b.text.toUpperCase();
-    //   return textA < textB ? -1 : textA > textB ? 1 : 0;
-    // });
-    // data.unshift({ value: '%', text: '' });
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
@@ -357,15 +356,8 @@ const servicesSupports = (() => {
       let servicesDropdownSelected = data.find(e => e.value === defaultValue);
       servicesDropdownSelectedText = servicesDropdownSelected.text;
     } else {
-      defaultValue = '%';
+        defaultValue = '24';
     }
-
-    data.sort((a, b) => {
-      const textA = a.text.toUpperCase();
-      const textB = b.text.toUpperCase();
-      return textA < textB ? -1 : textA > textB ? 1 : 0;
-    });
-    data.unshift({ value: '%', text: '' });
 
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
@@ -1294,7 +1286,7 @@ const servicesSupports = (() => {
     if (saveUpdateData.fundingSource === '' || saveUpdateData.fundingSource === '%') {
       fundingSourceDropdown.classList.add('error');
       hasInitialErros = true;
-    }
+      }
     if (saveUpdateData.fundingSource === '8') {
       fundingSourceInput.classList.remove('disabled');
       if (saveUpdateData.fundingSourceText === '') {
@@ -1354,11 +1346,11 @@ const servicesSupports = (() => {
       saveUpdateData.howOftenFrequency,
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
-    populateServiceNameDropdown(
-      serviceNameDropdown,
-      saveUpdateData.serviceNameId,
-      saveUpdateData.fundingSource,
-    );
+    populateServiceNameDropdown(serviceNameDropdown, '24', '4');
+    populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+
+    fundingSourceDropdown.classList.remove('error');
+    serviceNameDropdown.classList.remove('error');
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
       fundingSourceDropdownSelectedText = '';
