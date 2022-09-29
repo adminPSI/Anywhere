@@ -373,15 +373,17 @@ const assessment = (function () {
   }
   async function generateReportWithAttachments(assessmentID, versionID, extraSpace) {
     try {
-      const success = await assessmentAjax.getPlanAssessmentReportWithAttachments({
-        token: $.session.Token,
-        userId: $.session.PeopleId,
-        assessmentID,
-        versionID,
-        extraSpace: extraSpace,
-        isp: true,
-        attachmentIds,
-      });
+      const success = (
+        await assessmentAjax.getPlanAssessmentReportWithAttachments({
+          token: $.session.Token,
+          userId: $.session.PeopleId,
+          assessmentID,
+          versionID,
+          extraSpace: extraSpace,
+          isp: true,
+          attachmentIds,
+        })
+      ).addSelectedAttachmentsToReportResult;
 
       const arr = success._buffer;
       const byteArray = new Uint8Array(arr);
