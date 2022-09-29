@@ -41,17 +41,17 @@ namespace Anywhere.service.Data.DocumentConversion
             {
                 //Attachment attachment = new Attachment();
                 List<byte[]> allAttachments = new List<byte[]>();
-                byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
-                allAttachments.Add(planReport);
-                foreach(string attachId in attachmentIds)
-                {
-                    string attachments = aadg.getPlanAndWorkFlowAttachments(attachId);
+                //byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
+                //allAttachments.Add(planReport);
+                //foreach(string attachId in attachmentIds)
+                //{
+                    string attachments = aadg.getPlanAndWorkFlowAttachments("b7001bfb4beb4044a76881910609de6d");
                     js.MaxJsonLength = Int32.MaxValue;
                     POrWFAttachment[] att = js.Deserialize<POrWFAttachment[]>(attachments);
                     byte[] pwfAttachment = StreamExtensions.ToByteArray(att[0].attachment);
                     allAttachments.Add(pwfAttachment);
                     //allAttachments.Add(StreamExtensions.ToByteArray(attachment.data));
-                }
+               // }
             }
             
         }
