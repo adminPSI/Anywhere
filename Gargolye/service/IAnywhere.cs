@@ -2456,7 +2456,7 @@ namespace Anywhere
         int updateConsumerPlanSetRevisionEffectiveDates(string token, string consumerPlanId, string newEffectiveStart, string newEffectiveEnd);
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2464,7 +2464,7 @@ namespace Anywhere
         string deleteAssessmentGridRowAnswers(string token, string consumerPlanId, string assessmentQuestionSetId, string[] rowsToDelete);
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2483,7 +2483,7 @@ namespace Anywhere
         #region WORKFLOW MODULE 
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2491,7 +2491,7 @@ namespace Anywhere
         String deleteWorkflowStep(string token, string stepId);
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2499,7 +2499,7 @@ namespace Anywhere
         String deleteWorkflowStepDocument(string token, string documentId);
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
           BodyStyle = WebMessageBodyStyle.Wrapped,
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
@@ -3675,7 +3675,7 @@ namespace Anywhere
         Anywhere.service.Data.FormWorker.consumerForm updateConsumerFormCompletionDate(string token, string formId, string formCompletionDate);
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -3726,7 +3726,7 @@ namespace Anywhere
         OODWorker.ActiveEmployer[] getActiveEmployers(string token);
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -3822,7 +3822,7 @@ namespace Anywhere
         string insertForm4MonthlyPlacementEditData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string employer, string contactType, string jobSeekerPresent, string outcome, string TSCNotified, string bilingualSupplement, string notes,  string caseManagerId, string userId, string serviceId, string referenceNumber, string application, string interview);
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -3854,7 +3854,7 @@ namespace Anywhere
         string insertForm4MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emEmploymentGoal, string emReferralQuestions, string emIndivInputonSearch, string emPotentialIssueswithProgress, string emPlanGoalsNextMonth, string emNumberofConsumerContacts, string emNumberEmployerContactsbyConsumer, string emNumberEmployerContactsbyStaff, string emNumberMonthsJobDevelopment, string userId, string serviceId);
 
         [OperationContract]
-        [WebInvoke(Method = "DELETE",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,

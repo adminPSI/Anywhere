@@ -39,27 +39,71 @@ namespace Anywhere.service.Data.DocumentConversion
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
             {
-                Attachment attachment = new Attachment();
+                //Attachment attachment = new Attachment();
                 List<byte[]> allAttachments = new List<byte[]>();
-                byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
-                allAttachments.Add(planReport);
-                foreach(string attachId in attachmentIds)
-                {
-                    attachment.filename = "";
-                    attachment.data = null;
-                    try
-                    {
-                        attachment.filename = dg.GetAttachmentFileName(attachId);
-                        attachment.data = dg.GetAttachmentData(attachId);//reused
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
-                    allAttachments.Add(StreamExtensions.ToByteArray(attachment.data));
-                }
+                //byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
+                //allAttachments.Add(planReport);
+                //foreach(string attachId in attachmentIds)
+                //{
+                    string attachments = aadg.getPlanAndWorkFlowAttachments("b7001bfb4beb4044a76881910609de6d");
+                    js.MaxJsonLength = Int32.MaxValue;
+                    POrWFAttachment[] att = js.Deserialize<POrWFAttachment[]>(attachments);
+                    byte[] pwfAttachment = StreamExtensions.ToByteArray(att[0].attachment);
+                    allAttachments.Add(pwfAttachment);
+                    //allAttachments.Add(StreamExtensions.ToByteArray(attachment.data));
+               // }
             }
             
+        }
+
+        public void viewPlanAttachment(string attachmentId, string section)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            
+            try
+            {
+                attachment.filename = dg.getPlanAttachmentFileName(attachmentId, section);
+                attachment.data = dg.GetAttachmentData(attachmentId);//reused
+            }
+            catch (Exception ex)
+            {
+
+            }
+             displayAttachment(attachment);
+        }
+
+        public void displayAttachment(Attachment attachment)
+        {
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            try
+            {
+                response.Clear();
+                if (attachment.filename == "")
+                {
+                    response.StatusCode = 404;
+                    response.Status = "404 Not Found";
+                }
+                else
+                {
+                    byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
+                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                    response.ContentType = "application/octet-stream";
+                    response.AddHeader("Transfer-Encoding", "identity");
+                    response.BinaryWrite(bytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Write("Error: " + ex.InnerException.ToString());
+            }
+            finally
+            {
+                //logger2.debug("Done?");
+            }
         }
 
         public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
@@ -135,6 +179,13 @@ namespace Anywhere.service.Data.DocumentConversion
         }
 
         public class WorkFlowAttachments
+        {
+            public MemoryStream attachment { get; set; }
+            public string description { get; set; }
+            public string attachmentType { get; set; }
+        }
+
+        public class POrWFAttachment
         {
             public MemoryStream attachment { get; set; }
             public string description { get; set; }
