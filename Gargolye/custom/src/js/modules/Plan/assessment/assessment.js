@@ -371,7 +371,7 @@ const assessment = (function () {
       return error.statusText;
     }
   }
-  async function generateReportWithAttachments(assessmentID, versionID, extraSpace) {
+  async function generateReportWithAttachments(assessmentID, versionID, extraSpace, attachmentIds) {
     try {
       const success = (
         await assessmentAjax.getPlanAssessmentReportWithAttachments({
