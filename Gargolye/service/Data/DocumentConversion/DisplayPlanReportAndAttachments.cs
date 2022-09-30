@@ -56,6 +56,56 @@ namespace Anywhere.service.Data.DocumentConversion
             
         }
 
+        public void viewPlanAttachment(string attachmentId, string section)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            
+            try
+            {
+                attachment.filename = dg.getPlanAttachmentFileName(attachmentId, section);
+                attachment.data = dg.GetAttachmentData(attachmentId);//reused
+            }
+            catch (Exception ex)
+            {
+
+            }
+             displayAttachment(attachment);
+        }
+
+        public void displayAttachment(Attachment attachment)
+        {
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            try
+            {
+                response.Clear();
+                if (attachment.filename == "")
+                {
+                    response.StatusCode = 404;
+                    response.Status = "404 Not Found";
+                }
+                else
+                {
+                    byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
+                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                    response.ContentType = "application/octet-stream";
+                    response.AddHeader("Transfer-Encoding", "identity");
+                    response.BinaryWrite(bytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Write("Error: " + ex.InnerException.ToString());
+            }
+            finally
+            {
+                //logger2.debug("Done?");
+            }
+        }
+
         public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             bool isTokenValid = aadg.ValidateToken(token);

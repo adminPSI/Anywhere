@@ -605,20 +605,30 @@ var schedulingCalendar = (function () {
       text: 'Request Shift',
       style: 'secondary',
       type: 'contained',
-      callback: function () {
+      callback: async function () {
         var token = $.session.Token;
         var shiftId = details.shiftId;
         var personId = $.session.PeopleId;
         var status = 'P';
         var notifiedEmployeeId = null;
         POPUP.hide(popup);
-        renderSendShiftRequestPopup({
-          token,
-          shiftId,
-          personId,
-          status,
-          notifiedEmployeeId,
-        });
+
+          const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
+					await schedulingAjax.getOverlapStatusforSelectedShiftAjax(shiftId, personId);
+
+         if (overlapWithExistingShift == "True" ) {
+              displayOverlapPopup();
+              return;
+         } else {
+              renderSendShiftRequestPopup({
+                token,
+                shiftId,
+                personId,
+                status,
+                notifiedEmployeeId,
+              });
+         } 
+
       },
     });
 
@@ -636,6 +646,36 @@ var schedulingCalendar = (function () {
     // (!$.session.schedulingUpdate || !$.session.schedulingView) ? null: popup.appendChild(btnWrap)
 
     POPUP.show(popup);
+  }
+
+  function displayOverlapPopup() {
+
+    var overlapPopup = POPUP.build({
+      classNames: 'sendRequestShiftPopup',
+    });
+    overlapWrap = document.createElement('div');
+    overlapWrap.innerHTML = `
+          <div class="detailsHeading">
+            <h2>Request Open Shift Overlap</h2>
+          </div>
+      `;
+      overlapPopup.appendChild(overlapWrap);
+
+    let overlapCancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      icon: 'close',
+      callback: function () {
+        POPUP.hide(overlapPopup);
+      },
+    });
+
+    //overlapPopup.appendChild(wrap2);
+    overlapPopup.appendChild(overlapCancelBtn);
+
+    POPUP.show(overlapPopup);
+
   }
   // UPDATED FOR RESPONSIVE POPUP
   function renderSendShiftRequestPopup(data) {

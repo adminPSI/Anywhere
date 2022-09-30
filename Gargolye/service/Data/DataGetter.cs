@@ -4370,6 +4370,44 @@ namespace Anywhere.Data
             }
         }
 
+        public string getSelectedShiftData(string token, string shiftId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSelectedShiftData ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(shiftId);
+            string text = "CALL DBA.ANYW_Scheduling_getSelectedShiftData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("698", ex.Message + "ANYW_Scheduling_getSelectedShiftData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "698: error ANYW_Scheduling_getSelectedShiftData";
+            }
+        }
+
+        public string getCurrentUserApprovedShifts(string token,string personId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getCurrentUserApprovedShifts ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(personId);
+            string text = "CALL DBA.ANYW_Scheduling_getCurrentUserApprovedShifts(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("698", ex.Message + "ANYW_Scheduling_getCurrentUserApprovedShifts(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "698: error ANYW_Scheduling_getCurrentUserApprovedShifts";
+            }
+        }
+
         //Single Entry Note And Signature
         public string singleEntrySaveSignatureAndNote(string token, string singleEntryId, string consumerId, string note, string signatureImage)
         {
