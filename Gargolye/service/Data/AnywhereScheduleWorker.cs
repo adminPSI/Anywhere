@@ -130,12 +130,12 @@ namespace Anywhere.service.Data
 
                             TimeSpan selectedStartTime = TimeSpan.Parse(selectedShift.startTime);
                             TimeSpan selectedEndTime = TimeSpan.Parse(selectedShift.endTime);
-                            TimeSpan DBStartTime = TimeSpan.Parse(existingShift.startTime);
-                            TimeSpan DBEndTime = TimeSpan.Parse(existingShift.endTime);
+                            TimeSpan existingStartTime = TimeSpan.Parse(existingShift.startTime);
+                            TimeSpan existingEndTime = TimeSpan.Parse(existingShift.endTime);
 
-                            if (DBEndTime > selectedStartTime || selectedEndTime > DBStartTime)
+                            if (existingEndTime > selectedStartTime || selectedEndTime > existingStartTime)
                             {
-                                return "True";
+                                return existingShift.locationName;
                             }
                         }
                     }
@@ -146,7 +146,7 @@ namespace Anywhere.service.Data
 
             }
 
-           return "False";
+           return "NoOverlap";
         }
 
         public string cancelRequestOpenShiftScheduling(string token, string requestShiftId)

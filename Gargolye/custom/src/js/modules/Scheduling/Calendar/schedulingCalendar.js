@@ -616,17 +616,18 @@ var schedulingCalendar = (function () {
           const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
 					await schedulingAjax.getOverlapStatusforSelectedShiftAjax(shiftId, personId);
 
-         if (overlapWithExistingShift == "True" ) {
-              displayOverlapPopup();
-              return;
+         if (overlapWithExistingShift == "NoOverlap" ) {
+          renderSendShiftRequestPopup({
+            token,
+            shiftId,
+            personId,
+            status,
+            notifiedEmployeeId,
+          });
+              
          } else {
-              renderSendShiftRequestPopup({
-                token,
-                shiftId,
-                personId,
-                status,
-                notifiedEmployeeId,
-              });
+          displayOverlapPopup(overlapWithExistingShift);
+          return;
          } 
 
       },
@@ -648,7 +649,7 @@ var schedulingCalendar = (function () {
     POPUP.show(popup);
   }
 
-  function displayOverlapPopup() {
+  function displayOverlapPopup(existingShiftLocationName) {
 
     var overlapPopup = POPUP.build({
       classNames: 'sendRequestShiftPopup',
@@ -656,7 +657,8 @@ var schedulingCalendar = (function () {
     overlapWrap = document.createElement('div');
     overlapWrap.innerHTML = `
           <div class="detailsHeading">
-            <h2>Request Open Shift Overlap</h2>
+            <h2>Requested Shift Overlap</h2>
+            <p>This open shift overlaps with an existing shift you are scheduled to work at ${existingShiftLocationName}. You cannot request this open shift
           </div>
       `;
       overlapPopup.appendChild(overlapWrap);
