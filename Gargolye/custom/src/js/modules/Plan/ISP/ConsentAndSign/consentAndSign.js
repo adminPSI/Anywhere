@@ -323,7 +323,12 @@ const planConsentAndSign = (() => {
         text: ssa.name,
       };
     });
-    data.unshift({ value: '', text: '[SELECT AN SSA]' });
+    if ($.session.applicationName === 'Advisor') {
+      data.unshift({ value: '', text: '[SELECT A QIDP]' });
+    } else {
+      data.unshift({ value: '', text: '[SELECT AN SSA]' });
+    }
+
     return data;
   }
   // populate
