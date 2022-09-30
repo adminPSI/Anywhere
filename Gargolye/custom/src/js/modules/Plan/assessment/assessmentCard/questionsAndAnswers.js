@@ -1102,7 +1102,8 @@
           selectedRow = undefined;
           deleteRowsActive = false;
           const row = grid.querySelector('.grid__row.selected');
-          rows.classList.remove('selected');
+          if (row)
+            row.classList.remove('selected');
           grid.classList.remove('delteActive');
           deleteRowsBtn.innerText = 'Delete Row';
           deleteRowsBtn.classList.remove('selected');
