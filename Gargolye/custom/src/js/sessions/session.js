@@ -1553,7 +1553,7 @@ function disableModules() {
   ) {
     //Leave module on
   } else {
-    $('#plansettingsdiv').css('display', 'none');
+   // $('#plansettingsdiv').css('display', 'none');
   }
 }
 
