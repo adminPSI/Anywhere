@@ -1347,6 +1347,11 @@ namespace Anywhere
             return anywhereScheduleWorker.getOverlapStatusforSelectedShift(token, shiftId, personId);
         }
 
+        public string getOverlapDataforSelectedShift(string token, string shiftId)
+        {
+            return anywhereScheduleWorker.getOverlapDataforSelectedShift(token, shiftId);
+        }
+
         public string cancelRequestOpenShiftScheduling(string token, string requestShiftId)
         {
             return anywhereScheduleWorker.cancelRequestOpenShiftScheduling(token, requestShiftId);

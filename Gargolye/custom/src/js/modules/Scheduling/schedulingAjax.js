@@ -204,6 +204,21 @@ var schedulingAjax = (function () {
     }
 }
 
+async function getOverlapDataforSelectedShiftAjax(shiftId) {
+    try {
+        const result = await $.ajax({
+          type: "POST",
+          url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
+              "/" + $.webServer.serviceName + "/getOverlapDataforSelectedShift/",
+          data: '{"token":"' + $.session.Token + '","shiftId":"' + shiftId +  '"}',
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+        });
+        return result;
+    } catch (error) {
+        throw new Error(error.responseText);
+    }
+}
 
   function cancelRequestOpenShiftSchedulingAjax(requestShiftId) {//token, requestShiftId)
       $.ajax({
@@ -303,6 +318,7 @@ var schedulingAjax = (function () {
       cancelRequestOpenShiftSchedulingAjax: cancelRequestOpenShiftSchedulingAjax,
       saveOpenShiftRequestSchedulingAjax: saveOpenShiftRequestSchedulingAjax,
       getOverlapStatusforSelectedShiftAjax: getOverlapStatusforSelectedShiftAjax,
+      getOverlapDataforSelectedShiftAjax: getOverlapDataforSelectedShiftAjax,
       approveDenyOpenShiftRequestSchedulingAjax: approveDenyOpenShiftRequestSchedulingAjax,
       approveDenyCallOffRequestSchedulingAjax: approveDenyCallOffRequestSchedulingAjax,
       approveDenyDaysOffRequestSchedulingAjax: approveDenyDaysOffRequestSchedulingAjax,

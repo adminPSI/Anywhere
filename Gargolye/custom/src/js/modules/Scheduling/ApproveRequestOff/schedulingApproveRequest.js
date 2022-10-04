@@ -332,7 +332,7 @@ function toInteger(dirtyNumber) {
     
   }
 
-  function submitApproveDenyRequest() {
+  async function submitApproveDenyRequest() {
     
     if (openShiftTable) {
       openShiftTable = openShiftTable.querySelector('.table__body');
@@ -358,14 +358,32 @@ function toInteger(dirtyNumber) {
         decision = decision === 'approve' ? 'A' : decision === 'deny' ? 'D' : '';
         if (decision !== '') {
           //token, requestedShiftId, decision
-          schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
-            token: $.session.Token,
-            requestedShiftId: shiftId,
-            decision: decision
-          });
-        }
-      });
-    }
+
+        //  const { getOverlapDataforSelectedShiftResult: overlapWithExistingShiftData } =
+				//	await schedulingAjax.getOverlapDataforSelectedShiftAjax(shiftId);
+
+           //   if (overlapWithExistingShiftData = "NoOverLap") {    // requestedapprovedshiftId overlaps with existingapprovedshiftId
+                schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
+                  token: $.session.Token,
+                  requestedShiftId: shiftId,
+                  decision: decision
+                });  //ajax
+                  
+            //  } else {
+
+           //     buildthePopUpexplaingtheconflicts();
+
+           //   }  // if requestedapprovedshiftId overlaps with existingapprovedshiftId
+        
+        } // if decision 
+
+      });  // for loop
+
+    } // if openShiftRequests
+
+    // if (true) {   // there are overlaps
+    //   displayPopUpexplaingtheconflict()
+    // }
 
     if (callOffRequests) {
       callOffRequests.forEach(request => {
