@@ -133,7 +133,13 @@ namespace Anywhere.service.Data
                             TimeSpan existingStartTime = TimeSpan.Parse(existingShift.startTime);
                             TimeSpan existingEndTime = TimeSpan.Parse(existingShift.endTime);
 
-                            if (existingEndTime > selectedStartTime || selectedEndTime > existingStartTime)
+                           // if (existingEndTime < selectedStartTime || existingStartTime > selectedEndTime)
+
+                              if  (((selectedStartTime > existingStartTime) && (selectedStartTime < existingEndTime))
+                                  || ((selectedEndTime > existingStartTime) && (selectedEndTime < existingEndTime))
+                                  || (((existingStartTime >= selectedStartTime) && (existingStartTime <= selectedEndTime))
+                                     && ((existingEndTime >= selectedStartTime) && (existingEndTime <= selectedEndTime)))
+                                  || ((existingStartTime == selectedStartTime) && (existingEndTime == selectedEndTime)))
                             {
                                 return existingShift.locationName;
                             }
