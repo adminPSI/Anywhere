@@ -131,7 +131,7 @@ const assessmentAjax = (function () {
   function deleteAssessmentGridRowAnswers(retrieveData) {
     // token, consumerPlanId, assessmentQuestionSetId, rowsToDelete[]
     return $.ajax({
-      type: 'DELETE',
+      type: 'POST',
       url:
         $.webServer.protocol +
         '://' +

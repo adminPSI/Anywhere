@@ -351,7 +351,7 @@ const planAjax = (function () {
     // token, consumerPlanId
     try {
       const data = await $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
