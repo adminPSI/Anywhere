@@ -624,7 +624,7 @@
       async function deleteConsumerFormAsync(formId) {
         try {
           const result = await $.ajax({
-            type: 'DELETE',
+            type: 'POST',
             url:
               $.webServer.protocol +
               '://' +

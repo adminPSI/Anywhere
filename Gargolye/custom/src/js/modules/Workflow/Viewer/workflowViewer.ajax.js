@@ -2,7 +2,7 @@ const WorkflowViewerAjax = (() => {
   async function deleteDocumentAsync(documentId) {
     try {
       const result = await $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -30,7 +30,7 @@ const WorkflowViewerAjax = (() => {
   async function deleteWorkflowAsync(workflowId) {
     try {
       const result = await $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -58,7 +58,7 @@ const WorkflowViewerAjax = (() => {
   async function deleteStepAsync(stepId) {
     try {
       const result = await $.ajax({
-        type: 'DELETE',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +

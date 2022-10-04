@@ -121,7 +121,7 @@ async function getActiveEmployersAsync() {
 async function deleteEmployerAsync(employerId) {
   try {
     const result = await $.ajax({
-      type: 'DELETE',
+      type: 'POST',
       url:
         $.webServer.protocol +
         '://' +
@@ -474,7 +474,7 @@ callback(response.insertForm4MonthlyPlacementEditDataResult);
 async function deleteForm4MonthlyPlacementEditDataAsync(caseNoteId) {
   try {
     const result = await $.ajax({
-      type: 'DELETE',
+      type: 'POST',
       url:
         $.webServer.protocol +
         '://' +
@@ -586,7 +586,7 @@ callback(response.insertForm4MonthlySummaryResult);
 async function deleteForm4MonthlySummaryAsync(emReviewId) {
   try {
     const result = await $.ajax({
-      type: 'DELETE',
+      type: 'POST',
       url:
         $.webServer.protocol +
         '://' +

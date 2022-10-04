@@ -9,6 +9,7 @@ using System.Web.Script.Serialization;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 using static PSIOISP.Deserialize;
+using System.Web.Services.Description;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -17,7 +18,8 @@ namespace Anywhere.service.Data.DocumentConversion
         PlanReport planRep = new PlanReport();
         DataGetter dg = new DataGetter();
         AllAttachmentsDataGetter aadg = new AllAttachmentsDataGetter();
-        JavaScriptSerializer js = new JavaScriptSerializer(); 
+        JavaScriptSerializer js = new JavaScriptSerializer();
+        PDFGenerator.Data obj = new PDFGenerator.Data();
 
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
         {
@@ -43,20 +45,20 @@ namespace Anywhere.service.Data.DocumentConversion
                 List<byte[]> allAttachments = new List<byte[]>();
                 //byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
                 //allAttachments.Add(planReport);
-                //foreach(string attachId in attachmentIds)
-                //{
-                    string attachments = aadg.getPlanAndWorkFlowAttachments("b7001bfb4beb4044a76881910609de6d");
-                    js.MaxJsonLength = Int32.MaxValue;
-                    POrWFAttachment[] att = js.Deserialize<POrWFAttachment[]>(attachments);
-                    byte[] pwfAttachment = StreamExtensions.ToByteArray(att[0].attachment);
-                    allAttachments.Add(pwfAttachment);
+                foreach(string attachId in attachmentIds)
+                {
+                    byte[] attachment = getPlanAttachment(attachId, "");
+                    //js.MaxJsonLength = Int32.MaxValue;
+                    //POrWFAttachment[] att = js.Deserialize<POrWFAttachment[]>(attachments);
+                    //byte[] pwfAttachment = StreamExtensions.ToByteArray(att[0].attachment);
+                    allAttachments.Add(attachment);
                     //allAttachments.Add(StreamExtensions.ToByteArray(attachment.data));
-               // }
+                }
             }
             
         }
 
-        public void viewPlanAttachment(string attachmentId, string section)
+        public byte[] getPlanAttachment(string attachmentId, string section)
         {
             Attachment attachment = new Attachment();
             attachment.filename = "";
@@ -64,17 +66,17 @@ namespace Anywhere.service.Data.DocumentConversion
             
             try
             {
-                attachment.filename = dg.getPlanAttachmentFileName(attachmentId, section);
-                attachment.data = dg.GetAttachmentData(attachmentId);//reused
+                attachment.filename = aadg.getPlanAttachmentFileName(attachmentId, section);
+                attachment.data = aadg.GetAttachmentData(attachmentId);//reused
             }
             catch (Exception ex)
             {
 
             }
-             displayAttachment(attachment);
+            return displayAttachment(attachment);
         }
 
-        public void displayAttachment(Attachment attachment)
+        public byte[] displayAttachment(Attachment attachment)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
@@ -94,11 +96,14 @@ namespace Anywhere.service.Data.DocumentConversion
                     response.ContentType = "application/octet-stream";
                     response.AddHeader("Transfer-Encoding", "identity");
                     response.BinaryWrite(bytes);
+                    return bytes;
                 }
+                return null;
             }
             catch (Exception ex)
             {
                 response.Write("Error: " + ex.InnerException.ToString());
+                return null;
             }
             finally
             {
