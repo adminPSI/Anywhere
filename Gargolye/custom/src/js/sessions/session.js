@@ -1548,12 +1548,11 @@ function disableModules() {
   }
   if (
     $.session.UserId === 'ash' ||
-    ($.session.anywherePlanPermission == 'Anywhere_Plan' &&
-      $.session.applicationName === 'Gatekeeper')
+    ($.session.anywherePlanPermission == 'Anywhere_Plan')
   ) {
     //Leave module on
   } else {
-   // $('#plansettingsdiv').css('display', 'none');
+   $('#plansettingsdiv').css('display', 'none');
   }
 }
 
