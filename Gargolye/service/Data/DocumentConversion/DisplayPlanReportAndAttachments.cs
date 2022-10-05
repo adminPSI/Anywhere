@@ -10,6 +10,7 @@ using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttach
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 using static PSIOISP.Deserialize;
 using System.Web.Services.Description;
+using pdftron.PDF;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -20,6 +21,7 @@ namespace Anywhere.service.Data.DocumentConversion
         AllAttachmentsDataGetter aadg = new AllAttachmentsDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
         PDFGenerator.Data obj = new PDFGenerator.Data();
+        PDFDoc doc = new PDFDoc();
 
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
         {

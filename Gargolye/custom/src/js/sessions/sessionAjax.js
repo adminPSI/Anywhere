@@ -6,7 +6,7 @@ function logIn() {
   const loginBtn = document.getElementById('loginBtn');
   loginBtn.classList.add('disabled');
 	//need to check if code exists on device, pass either it or empty string
-	const userId = $('#username').val().trim();
+	const userId = $('#username').val().trim();	
 	const localDeviceId = UTIL.LS.getStorage('device', userId);
 	const insertData = {
 		userId: userId,
