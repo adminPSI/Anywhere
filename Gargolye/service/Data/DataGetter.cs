@@ -4408,6 +4408,25 @@ namespace Anywhere.Data
             }
         }
 
+        public string getCurrentUserApprovedShiftsbyShiftId(string token, string shiftId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getCurrentUserApprovedShiftsbyShiftId ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(shiftId);
+            string text = "CALL DBA.ANYW_Scheduling_getCurrentUserApprovedShiftsbyShiftId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("698", ex.Message + "ANYW_Scheduling_getCurrentUserApprovedShiftsbyShiftId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "698: error ANYW_Scheduling_getCurrentUserApprovedShiftsbyShiftId";
+            }
+        }
+
         //Single Entry Note And Signature
         public string singleEntrySaveSignatureAndNote(string token, string singleEntryId, string consumerId, string note, string signatureImage)
         {

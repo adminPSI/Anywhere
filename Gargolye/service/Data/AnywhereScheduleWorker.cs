@@ -163,34 +163,35 @@ namespace Anywhere.service.Data
                 string selectedShiftDataString = dg.getSelectedShiftData(token, shiftId);
                 List<AllScheduleData> selectedShiftDataObj = JsonConvert.DeserializeObject<List<AllScheduleData>>(selectedShiftDataString);
 
-               // string currentUserApprovedShiftsString = dg.getCurrentUserApprovedShifts(token, personId);
-                //  AllScheduleData[] currentUserApprovedShiftsObj = js.Deserialize<AllScheduleData[]>(currentUserApprovedShiftsString);
+                string currentUserApprovedShiftsString = dg.getCurrentUserApprovedShiftsbyShiftId(token,shiftId);
+                  AllScheduleData[] currentUserApprovedShiftsObj = js.Deserialize<AllScheduleData[]>(currentUserApprovedShiftsString);
 
                 foreach (var selectedShift in selectedShiftDataObj)
                 {
-                   // foreach (var existingShift in currentUserApprovedShiftsObj)
-                   // {
-                        //if (existingShift.serviceDate == selectedShift.serviceDate)
-                        //{
+                    foreach (var existingShift in currentUserApprovedShiftsObj)
+                    {
+                        if (existingShift.serviceDate == selectedShift.serviceDate)
+                        {
 
-                        //    TimeSpan selectedStartTime = TimeSpan.Parse(selectedShift.startTime);
-                        //    TimeSpan selectedEndTime = TimeSpan.Parse(selectedShift.endTime);
-                        //    TimeSpan existingStartTime = TimeSpan.Parse(existingShift.startTime);
-                        //    TimeSpan existingEndTime = TimeSpan.Parse(existingShift.endTime);
+                             TimeSpan selectedStartTime = TimeSpan.Parse(selectedShift.startTime);
+                            TimeSpan selectedEndTime = TimeSpan.Parse(selectedShift.endTime);
+                           TimeSpan existingStartTime = TimeSpan.Parse(existingShift.startTime);
+                         TimeSpan existingEndTime = TimeSpan.Parse(existingShift.endTime);
 
                         //    // if (existingEndTime < selectedStartTime || existingStartTime > selectedEndTime)
 
-                        //    if (((selectedStartTime > existingStartTime) && (selectedStartTime < existingEndTime))
-                        //        || ((selectedEndTime > existingStartTime) && (selectedEndTime < existingEndTime))
-                        //        || (((existingStartTime >= selectedStartTime) && (existingStartTime <= selectedEndTime))
-                        //           && ((existingEndTime >= selectedStartTime) && (existingEndTime <= selectedEndTime)))
-                        //        || ((existingStartTime == selectedStartTime) && (existingEndTime == selectedEndTime)))
-                        //    {
-                        //        return existingShift.locationName;
-                        //    }
-                        //}
+                           if (((selectedStartTime > existingStartTime) && (selectedStartTime < existingEndTime))
+                               || ((selectedEndTime > existingStartTime) && (selectedEndTime < existingEndTime))
+                                || (((existingStartTime >= selectedStartTime) && (existingStartTime <= selectedEndTime))
+                                  && ((existingEndTime >= selectedStartTime) && (existingEndTime <= selectedEndTime)))
+                                || ((existingStartTime == selectedStartTime) && (existingEndTime == selectedEndTime)))
+                            {
+                                string returnJSON = Newtonsoft.Json.JsonConvert.SerializeObject(existingShift);
+                                return returnJSON;
+                            }
+                        }
                     }
-               // }
+                }
             }
             catch (Exception ex)
             {
