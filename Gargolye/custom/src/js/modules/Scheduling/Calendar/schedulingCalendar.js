@@ -658,7 +658,7 @@ var schedulingCalendar = (function () {
     overlapWrap.innerHTML = `
           <div class="detailsHeading">
             <h2>Requested Shift Overlap</h2>
-            <p>This open shift overlaps with an existing shift you are scheduled to work at ${existingShiftLocationName}. You cannot request this open shift
+            <p>This open shift overlaps with an existing shift you are scheduled to work at ${existingShiftLocationName}. You cannot request this open shift.</p>
           </div>
       `;
       overlapPopup.appendChild(overlapWrap);
