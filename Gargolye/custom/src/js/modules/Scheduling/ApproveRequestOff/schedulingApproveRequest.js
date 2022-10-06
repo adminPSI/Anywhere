@@ -332,7 +332,8 @@ function toInteger(dirtyNumber) {
             shift.reasonName,
             ''
           ],
-          id: shift.shiftId
+          id: shift.shiftId,
+          personId: shift.personId,
         }
       })
       return tableData;
@@ -403,12 +404,13 @@ function toInteger(dirtyNumber) {
                 var overlapShiftData = await JSON.parse(overlapWithExistingShiftData);
                // var test = jsonObject;
 
-                overlapWrap.innerHTML = `<p>this is an example ${overlapShiftData.locationName} -- locationname.<p>`;
-              
+                overlapWrap.innerHTML += `<p>this is an example ${overlapShiftData.locationName} -- locationname.<p>`;
+                overlapWrap.innerHTML += `<p>this is an example ${overlapShiftData.firstName} -- locationname.<p>`;
+
                 // UGLY SOLUTION -- if last item in openShiftRequests.forEach and overlapsExist =true, then displayOverlapPopup
                 // if (idx === requestArray.length - 1 && overlapsExist) {
                 //   displayOverlapPopup(overlapsExist, overlapWrap);
-                // }
+              //  }
                  
 
               }  // if requestedapprovedshiftId overlaps with existingapprovedshiftId
