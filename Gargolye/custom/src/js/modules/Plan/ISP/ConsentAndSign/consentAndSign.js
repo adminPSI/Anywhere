@@ -780,7 +780,7 @@ const planConsentAndSign = (() => {
       assessmentId: planId,
     });
 
-    if (teamMemberData.length !== 0) {
+    if (teamMemberData && teamMemberData.length !== 0) {
       csSSAPeopleIdGlobal = teamMemberData[0].csChangeMindSSAPeopleId;
       csrVendorIdGlobal = teamMemberData[0].csContactProviderVendorId;
       csContactInputGlobal = teamMemberData[0].csContactInput;

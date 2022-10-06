@@ -19,7 +19,6 @@ const servicesSupports = (() => {
   let providerDropdownSelectedText;
 
   let hcbsSelected;
-  let oneProvider = false;
 
   const charLimits = {
     scopeOfService: 1000, // paid supp
@@ -403,7 +402,7 @@ const servicesSupports = (() => {
       if (!defaultValue) {
         if (thisVendorDropDownData.length === 1) {
             defaultValue = thisVendorDropDownData[0].value;
-            oneProvider = true;
+            dropdownEle.classList.remove('error');
         }
       }
 
@@ -430,7 +429,7 @@ const servicesSupports = (() => {
       if (!defaultValue) {
         if (thisVendorDropDownData.length === 1) {
             defaultValue = thisVendorDropDownData[0].value;
-            oneProvider = true;
+            dropdownEle.classList.remove('error');
         }
       }
 
@@ -504,8 +503,8 @@ const servicesSupports = (() => {
     if (!defaultValue) {
       const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
       if (tempData.length === 1) {
-          defaultValue = tempData[0].value;
-          oneProvider = true;
+        defaultValue = tempData[0].value;
+        dropdownEle.classList.remove('error');
       }
     }
 
@@ -1377,12 +1376,6 @@ const servicesSupports = (() => {
 
     fundingSourceDropdown.classList.remove('error');
     serviceNameDropdown.classList.remove('error');
-    // if (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%' || saveUpdateData.providerId === '[SELECT A PROVIDER]') {
-    if (!oneProvider) {
-      providerNameDropdown.classList.add('error');
-    } else {
-      providerNameDropdown.classList.remove('error');
-    }
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
       fundingSourceDropdownSelectedText = '';
