@@ -204,13 +204,13 @@ var schedulingAjax = (function () {
     }
 }
 
-async function getOverlapDataforSelectedShiftAjax(shiftId) {
+async function getOverlapDataforSelectedShiftAjax(shiftId, personId) {
     try {
         const result = await $.ajax({
           type: "POST",
           url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
               "/" + $.webServer.serviceName + "/getOverlapDataforSelectedShift/",
-          data: '{"token":"' + $.session.Token + '","shiftId":"' + shiftId +  '"}',
+              data: '{"token":"' + $.session.Token + '","shiftId":"' + shiftId + '","personId":"' + personId + '"}',
           contentType: "application/json; charset=utf-8",
           dataType: "json",
         });

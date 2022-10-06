@@ -2010,7 +2010,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getOverlapDataforSelectedShift/")]
-        string getOverlapDataforSelectedShift(string token, string shiftId);
+        string getOverlapDataforSelectedShift(string token, string shiftId, string personId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

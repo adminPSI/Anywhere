@@ -333,7 +333,7 @@ function toInteger(dirtyNumber) {
             ''
           ],
           id: shift.shiftId,
-          personId: shift.personId,
+          attributes: [{ key: 'personId', value: shift.personId }],
         }
       })
       return tableData;
@@ -379,12 +379,13 @@ function toInteger(dirtyNumber) {
       openShiftRequests.forEach( async function(request, idx, requestArray) {
         var shiftId = request.id;
         var decision = request.dataset.approvalStatus;
+        var personId = request.attributes.personId.value;
         decision = decision === 'approve' ? 'A' : decision === 'deny' ? 'D' : '';
         if (decision !== '') {
           //token, requestedShiftId, decision
           // AJAX below works correctly but once this line executes, the code jumps back to line 296 (displayPopUp) before the popup is built below
           const { getOverlapDataforSelectedShiftResult: overlapWithExistingShiftData } =
-					 await schedulingAjax.getOverlapDataforSelectedShiftAjax(shiftId);
+					 await schedulingAjax.getOverlapDataforSelectedShiftAjax(shiftId, personId);
 
               if (overlapWithExistingShiftData == "NoOverLap") {    // requestedapprovedshiftId overlaps with existingapprovedshiftId
                 // schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
@@ -408,9 +409,9 @@ function toInteger(dirtyNumber) {
                 overlapWrap.innerHTML += `<p>this is an example ${overlapShiftData.firstName} -- locationname.<p>`;
 
                 // UGLY SOLUTION -- if last item in openShiftRequests.forEach and overlapsExist =true, then displayOverlapPopup
-                // if (idx === requestArray.length - 1 && overlapsExist) {
-                //   displayOverlapPopup(overlapsExist, overlapWrap);
-              //  }
+               //  if (idx === requestArray.length - 1 && overlapsExist) {
+               //  displayOverlapPopup(overlapsExist, overlapWrap);
+              // }
                  
 
               }  // if requestedapprovedshiftId overlaps with existingapprovedshiftId
