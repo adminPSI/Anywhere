@@ -153,7 +153,7 @@ namespace Anywhere.service.Data
 
             }
 
-            return "NoOverlap";
+            return "NoOverLap";
         }
 
         public string getOverlapDataforSelectedShift(string token, string shiftId, string personId)
@@ -199,7 +199,7 @@ namespace Anywhere.service.Data
 
             }
 
-            return "NoOverlap";
+            return "NoOverLap";
         }
 
         public string cancelRequestOpenShiftScheduling(string token, string requestShiftId)

@@ -616,7 +616,7 @@ var schedulingCalendar = (function () {
           const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
 					await schedulingAjax.getOverlapStatusforSelectedShiftAjax(shiftId, personId);
 
-         if (overlapWithExistingShift == "NoOverlap" ) {
+         if (overlapWithExistingShift == "NoOverLap" ) {
           renderSendShiftRequestPopup({
             token,
             shiftId,
