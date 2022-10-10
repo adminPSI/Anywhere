@@ -345,15 +345,22 @@ function toInteger(dirtyNumber) {
   function displayOverlapPopup(overlapsExist, overlapWrap) {
     if (overlapsExist) {  
       var overlapPopup = POPUP.build({
-        classNames: 'sendRequestShiftPopup',
+        classNames: 'overlapRequestShiftPopup',
       });
-
+      overlapIntro = document.createElement('div');
+      overlapIntro.innerHTML = `
+            <div class="detailsHeading">
+              <h2>Overlapping Open Shift Request(s)</h2>
+              <p>The following open shift requests overlap with an existing shift the staff already scheduled to work. These shifts cannot be approved.</p></br>
+            </div>
+        `;
+        overlapPopup.appendChild(overlapIntro);
       // requestApprovalOverlapPopup
 
       let overlapOKBtn = button.build({
         text: 'OK',
         style: 'secondary',
-        type: 'outlined',
+        type: 'contained',
         icon: 'close',
         callback: function () {
           POPUP.hide(overlapPopup);
@@ -392,14 +399,13 @@ function toInteger(dirtyNumber) {
       overlapWrap = document.createElement('div');
       overlapsExist = false
 
-      openShiftRequests.forEach( async function(request, idx, requestArray) {
+        for (const request of openShiftRequests) {
         var shiftId = request.id;
         var decision = request.dataset.approvalStatus;
         var personId = request.attributes.personId.value;
         
         decision = decision === 'approve' ? 'A' : decision === 'deny' ? 'D' : '';
-       // if (decision !== '') {
-          // TODO JOE: AJAX below works correctly but once this line executes, the code jumps back to line 296 (displayPopUp) before the popup is built below
+   
           const { getOverlapDataforSelectedShiftResult: overlapWithExistingShiftData } =
 					 await schedulingAjax.getOverlapDataforSelectedShiftAjax(shiftId, personId);
 
@@ -410,42 +416,24 @@ function toInteger(dirtyNumber) {
                 //   requestedShiftId: shiftId,
                 //   decision: decision
                 // });  //ajax
-
-                // TODO JOE: ensure this is the only way to display Overlay Popup
-                if (idx === requestArray.length - 1 && overlapsExist && overlapWrap.innerHTML !== '') {
-                  displayOverlapPopup(overlapsExist, overlapWrap);
-                }
-                  
+        
               } else if (overlapWithExistingShiftData == undefined) {
-
-                // TODO JOE: ensure this is the only way to display Overlay Popup
-                if (idx === requestArray.length - 1 && overlapsExist && overlapWrap.innerHTML !== '') {
-                  displayOverlapPopup(overlapsExist, overlapWrap);
-                }
 
               } else {
 
-                overlapsExist = true;
-
                   if (overlapWithExistingShiftData != "NoOverLap" && decision === 'A') {
+                        overlapsExist = true;
                         var overlapShiftData = await JSON.parse(overlapWithExistingShiftData);
                         var serviceDate = overlapShiftData.serviceDate.split(' ');
                         var startTime = UTIL.convertFromMilitary(overlapShiftData.startTime.slice(0,-3));
                         var endTime = UTIL.convertFromMilitary(overlapShiftData.endTime.slice(0,-3));
-                        overlapWrap.innerHTML += `<p>${serviceDate[0]} ${overlapShiftData.lastName}, ${overlapShiftData.firstName} ${overlapShiftData.locationName} ${startTime}-${endTime}<p>`;
+                        overlapWrap.innerHTML += `<p><b>${serviceDate[0]}   ${overlapShiftData.lastName}, ${overlapShiftData.firstName}   ${overlapShiftData.locationName}   ${startTime}-${endTime}</b></p></br>`;
 
                     }  // if clause end --  (overlapWithExistingShiftData != "NoOverLap" && decision === 'A')
 
-                        // TODO JOE: ensure this is the only way to display Overlay Popup
-                        if (idx === requestArray.length - 1 && overlapsExist && overlapWrap.innerHTML !== '') {
-                        displayOverlapPopup(overlapsExist, overlapWrap);
-                          }
-
               } // else clause end -- (overlapWithExistingShiftData == "NoOverLap" && decision !== '')
 
-       // } // if decsions
-
-      });  // for loop
+      };  // for loop
 
     } // if openShiftRequests
   
