@@ -498,11 +498,11 @@ function toInteger(dirtyNumber) {
 
 
               if (overlapWithExistingShiftData == "NoOverLap" && decision !== '') {    
-                // schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
-                //   token: $.session.Token,
-                //   requestedShiftId: shiftId,
-                //   decision: decision
-                // });  //ajax
+                 schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
+                   token: $.session.Token,
+                   requestedShiftId: shiftId,
+                   decision: decision
+                 });  //ajax
         
               } else if (overlapWithExistingShiftData == undefined) {
 
