@@ -1,5 +1,6 @@
 const planAttachment = (() => {
   let attachments;
+  let planId;
 
   /** Class for attachments in Plan Module */
   class PlanAttachment {
@@ -243,10 +244,25 @@ const planAttachment = (() => {
             await saveAction();
             await this.cleanAttachmentLists(attachmentsAdded, attachmentsToDelete);
             pendingSave.fulfill('Saved');
-            setTimeout(() => {
+            setTimeout(async () => {
               successfulSave.hide(false);
               // popup.remove();
               POPUP.hide(popup);
+              // refresh attachments
+              attachments = new Map();
+              const res = await planAjax.getPlanAttachmentsList({
+                token: $.session.Token,
+                planId,
+                section: '',
+              });
+              res.forEach(attachment => {
+                let attArray = [];
+                if (attachments.has(attachment.questionId)) {
+                  attArray = attachments.get(attachment.questionId);
+                }
+                attArray.push(attachment);
+                attachments.set(attachment.questionId, attArray);
+              });
             }, 2000);
           } catch (error) {
             pendingSave.reject('Error saving attachment changes');
@@ -346,12 +362,13 @@ const planAttachment = (() => {
     }
   }
 
-  async function getAttachments(planId) {
+  async function getAttachments(planID) {
+    planId = planID;
     attachments = new Map();
 
     const retData = {
       token: $.session.Token,
-      planId: planId,
+      planId,
       section: '',
     };
     const res = await planAjax.getPlanAttachmentsList(retData);
