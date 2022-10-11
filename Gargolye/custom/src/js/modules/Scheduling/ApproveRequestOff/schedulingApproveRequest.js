@@ -6,6 +6,7 @@ var schedulingApproveRequest = (function() {
   var overlapWrap;
   var overlapsExist = false;
   var overlapApprovalData;
+  // var openShiftRequests;
 
 
 //UTIL
@@ -292,6 +293,11 @@ function toInteger(dirtyNumber) {
         callback: async function() {
         // TODO JOE: the function submitApproveDenyRequest() calls await schedulingAjax.getOverlapDataforSelectedShiftAjax and then jumps back here (instead of completing the function)
          await submitApproveDenyRequest();
+        //  if (overlapApprovalData !== 'NoOverlap') {
+        //   displayApprovedOverlapPopup();
+        //   event.preventDefault();
+        //   event.stopPropagation();
+        //  } 
          if (overlapsExist) {
           displayOverlapPopup(overlapsExist,overlapWrap); 
          } else {
@@ -384,7 +390,7 @@ function toInteger(dirtyNumber) {
   }
 
 
-  function displayApprovedOverlapPopup(event) {
+  function displayApprovedOverlapPopup() {
 
     var overlapPopup = POPUP.build({
       classNames: 'overlapRequestShiftPopup',
@@ -406,14 +412,13 @@ function toInteger(dirtyNumber) {
       icon: 'close',
       callback: function () {
         POPUP.hide(overlapPopup);
-        init();
+       // init();
       },
     });
 
    // overlapPopup.appendChild(overlapWrap);
     overlapPopup.appendChild(overlapOKBtn);
     POPUP.show(overlapPopup);
-    event.stopPropagation();
 
   }
 
@@ -439,7 +444,7 @@ function toInteger(dirtyNumber) {
         icon: 'close',
         callback: function () {
           POPUP.hide(overlapPopup);
-          init();
+          // init();
         },
       });
   
@@ -449,11 +454,11 @@ function toInteger(dirtyNumber) {
     }
   }
 
-   async function submitApproveDenyRequest() {
+   async function submitApproveDenyRequest(event) {
     
     if (openShiftTable) {
-      openShiftTable = openShiftTable.querySelector('.table__body');
-      var openShiftRequests = Array.prototype.slice.call(openShiftTable.querySelectorAll('.table__row'));
+      var openShiftTableBody = openShiftTable.querySelector('.table__body');
+      var openShiftRequests = Array.prototype.slice.call(openShiftTableBody.querySelectorAll('.table__row'));
     }
     if (callOffTable) {
       callOffTable = callOffTable.querySelector('.table__body');
@@ -472,6 +477,9 @@ function toInteger(dirtyNumber) {
      overlapApprovalData = overlapApprovedShifts(openShiftRequests);
     if ( overlapApprovalData !== 'NoOverLap') {
       displayApprovedOverlapPopup();
+      event.preventDefault();
+      event.stopPropagation();
+      // return;
     }
 
     // check selected shifts against shifts already assigned to the user
