@@ -4,9 +4,11 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Script.Serialization;
 using Anywhere.Data;
 using Anywhere.Log;
 using CrystalDecisions.CrystalReports.Engine;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere.service.Data
 {
@@ -15,6 +17,7 @@ namespace Anywhere.service.Data
         private static Loger logger = new Loger();
         DataGetter dg = new DataGetter();
         AssessmentReportSQL ars = new AssessmentReportSQL();
+        JavaScriptSerializer js = new JavaScriptSerializer();
         /*temporary*/
         public static void WriteExceptionDetails(Exception exception, System.Text.StringBuilder builderToFill, int level)
         {
@@ -56,6 +59,13 @@ namespace Anywhere.service.Data
 
         public MemoryStream createAssessmentReport(string token,string  userId, string assessmentID, string versionID, string extraSpace, bool isp )
         {
+            bool Advisor = false;
+            string applicationName = dg.GetApplicationName(token);
+            ApplicationName[] appName = js.Deserialize<ApplicationName[]>(applicationName);
+            if (appName[0].setting.ToUpper() == "ADVISOR")
+            {
+                Advisor = true;
+            }
             ReportDocument cr = new ReportDocument();
             bool eS = false;
             long ID = long.Parse(assessmentID);
@@ -96,19 +106,19 @@ namespace Anywhere.service.Data
             //new code here
             if ((true == true))
             {
-                cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(ID, false, "SUMMARY"));
-                cr.OpenSubreport("Skills").SetDataSource(ars.ISPSummary(ID, false, "SKILLS"));
-                cr.OpenSubreport("Supervision").SetDataSource(ars.ISPSummary(ID, false, "SUPERVISION"));
-                cr.OpenSubreport("Outcomes").SetDataSource(ars.ISPOutcomes(ID));
-                cr.OpenSubreport("Services").SetDataSource(ars.ISPServices(ID));
+                cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(ID, false, "SUMMARY", Advisor));
+                cr.OpenSubreport("Skills").SetDataSource(ars.ISPSummary(ID, false, "SKILLS", Advisor));
+                cr.OpenSubreport("Supervision").SetDataSource(ars.ISPSummary(ID, false, "SUPERVISION", Advisor));
+                cr.OpenSubreport("Outcomes").SetDataSource(ars.ISPOutcomes(ID, Advisor));
+                cr.OpenSubreport("Services").SetDataSource(ars.ISPServices(ID, Advisor));
                 cr.OpenSubreport("ISPModifiers").SetDataSource(ars.ISPModifiers(ID));
                 cr.OpenSubreport("AdditionalSupports").SetDataSource(ars.ISPAdditionalSupports(ID));
                 cr.OpenSubreport("Referrals").SetDataSource(ars.ISPReferrals(ID));
-                cr.OpenSubreport("TeamMembers").SetDataSource(ars.ISPTeamMembers(ID));
-                cr.OpenSubreport("TeamMembers2").SetDataSource(ars.ISPTeamMembers2(ID));
+                cr.OpenSubreport("TeamMembers").SetDataSource(ars.ISPTeamMembers(ID, Advisor));
+                cr.OpenSubreport("TeamMembers2").SetDataSource(ars.ISPTeamMembers2(ID, Advisor));
                 cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(ID));
                 cr.OpenSubreport("Dissenting").SetDataSource(ars.ISPSignatures(ID));
-                cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(ID));
+                cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(ID, Advisor));
                 cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(ID));
                 cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(ID));
                 cr.OpenSubreport("Places").SetDataSource(ars.ISPPlaces(ID));
@@ -121,6 +131,11 @@ namespace Anywhere.service.Data
             cr.Dispose();
             return ms;
 
+        }
+
+        public class ApplicationName
+        {
+            public string setting { get; set; }
         }
     }
 }
