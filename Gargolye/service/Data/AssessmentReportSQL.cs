@@ -311,12 +311,12 @@ namespace Anywhere.service.Data
         {
             String Vendor = "Vendor";
             String FundingSource = "Funding_Source_Info";
-            String Description = "Descriptions";
+            String Description = "Description";
             if (Advisor == true)
             {
                 Vendor = "Vendors";
                 FundingSource = "Funding_Sources";
-                Description = "Funding_Source_Name";
+                Description = "Descriptions";
             }
 
             sb.Clear();
