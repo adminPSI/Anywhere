@@ -328,7 +328,7 @@ const servicesSupports = (() => {
       };
     });
 
-    if (defaultValue === '') {
+    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
       defaultValue = '4';
       hcbsSelected = true;
     }
@@ -1371,11 +1371,19 @@ const servicesSupports = (() => {
       saveUpdateData.howOftenFrequency,
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
-    populateServiceNameDropdown(serviceNameDropdown, '24', '4');
-    populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
 
-    fundingSourceDropdown.classList.remove('error');
-    serviceNameDropdown.classList.remove('error');
+    if ($.session.applicationName === 'Advisor') {
+      saveUpdateData.serviceNameId = '24';
+      saveUpdateData.fundingSource = '4';
+      saveUpdateData.fundingSourceText = 'ICF';
+
+      populateServiceNameDropdown(serviceNameDropdown, '24', '4');
+
+      fundingSourceDropdown.classList.remove('error');
+      serviceNameDropdown.classList.remove('error');
+    }
+
+    populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
       fundingSourceDropdownSelectedText = '';
