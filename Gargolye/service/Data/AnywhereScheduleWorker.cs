@@ -187,7 +187,7 @@ namespace Anywhere.service.Data
                                   && ((existingEndTime >= selectedStartTime) && (existingEndTime <= selectedEndTime)))
                                 || ((existingStartTime == selectedStartTime) && (existingEndTime == selectedEndTime)))
                             {
-                                string returnJSON = Newtonsoft.Json.JsonConvert.SerializeObject(existingShift);
+                                string returnJSON = Newtonsoft.Json.JsonConvert.SerializeObject(selectedShift);
                                 return returnJSON;
                             }
                         }

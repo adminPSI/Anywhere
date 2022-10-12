@@ -291,20 +291,21 @@ function toInteger(dirtyNumber) {
         type: 'contained',
         icon: 'send',
         callback: async function() {
-        // TODO JOE: the function submitApproveDenyRequest() calls await schedulingAjax.getOverlapDataforSelectedShiftAjax and then jumps back here (instead of completing the function)
          await submitApproveDenyRequest();
-        //  if (overlapApprovalData !== 'NoOverlap') {
-        //   displayApprovedOverlapPopup();
-        //   event.preventDefault();
-        //   event.stopPropagation();
-        //  } 
-         if (overlapsExist) {
-          displayOverlapPopup(overlapsExist,overlapWrap); 
+         // overlaps exist in approved shifts selected by user
+         if ( overlapApprovalData !== 'NoOverLap') {
+          displayApprovedOverlapPopup();
+
          } else {
-          ACTION_NAV.hide();
-          DOM.clearActionCenter();
-          scheduling.init();
-         } 
+              // overlaps exist between selected shifts and shifts already approved (ie, shifts saved in DB)
+              if (overlapsExist) {
+                displayOverlapPopup(overlapsExist,overlapWrap); 
+              } else {
+                ACTION_NAV.hide();
+                DOM.clearActionCenter();
+                scheduling.init();
+              }
+        }
         
         }
       })
@@ -454,7 +455,7 @@ function toInteger(dirtyNumber) {
     }
   }
 
-   async function submitApproveDenyRequest(event) {
+   async function submitApproveDenyRequest() {
     
     if (openShiftTable) {
       var openShiftTableBody = openShiftTable.querySelector('.table__body');
@@ -476,10 +477,7 @@ function toInteger(dirtyNumber) {
     // check approved shifts to ensure no overlap (before checking for overlaps with assigned shifts)
      overlapApprovalData = overlapApprovedShifts(openShiftRequests);
     if ( overlapApprovalData !== 'NoOverLap') {
-      displayApprovedOverlapPopup();
-      event.preventDefault();
-      event.stopPropagation();
-      // return;
+       return;
     }
 
     // check selected shifts against shifts already assigned to the user
@@ -500,11 +498,11 @@ function toInteger(dirtyNumber) {
 
 
               if (overlapWithExistingShiftData == "NoOverLap" && decision !== '') {    
-                // schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
-                //   token: $.session.Token,
-                //   requestedShiftId: shiftId,
-                //   decision: decision
-                // });  //ajax
+                 schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
+                   token: $.session.Token,
+                   requestedShiftId: shiftId,
+                   decision: decision
+                 });  //ajax
         
               } else if (overlapWithExistingShiftData == undefined) {
 
