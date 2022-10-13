@@ -14,6 +14,7 @@ using pdftron.PDF;
 using pdftron.Filters;
 using pdftron.SDF;
 using pdftron.FDF;
+using System.Collections;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -68,14 +69,15 @@ namespace Anywhere.service.Data.DocumentConversion
                         filterWriter.Flush();
                         pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
                         byte[] new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
-                        view.SetDoc(doc);
+                        //pdftron.
+                        //view.SetDoc(doc);
                         response.AddHeader("content-disposition", "attachment;filename=" + "Name" + ";");
                         response.ContentType = "application/octet-stream";
                         response.AddHeader("Transfer-Encoding", "identity");
                         allAttachments.Add(new_byte_output);
                         response.BinaryWrite(new_byte_output);
                         //System.IO.File.WriteAllBytes("hellod.pdf", planReport);
-                        System.IO.File.ReadAllBytes(new_byte_output.ToString());
+                        //System.IO.File.ReadAllBytes(new_byte_output.ToString());
                     }
                     
                 }

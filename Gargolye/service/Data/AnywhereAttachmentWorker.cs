@@ -7,6 +7,7 @@ using System.Web;
 using Anywhere.Data;
 using Anywhere.Log;
 using System.Web.Script.Serialization;
+using Anywhere.service.Data.DocumentConversion;
 
 namespace Anywhere.service.Data
 {
@@ -16,6 +17,7 @@ namespace Anywhere.service.Data
         DataGetter dg = new DataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
         AnywhereWorker anywhereWorker = new AnywhereWorker();
+        AllAttachmentsDataGetter aadg = new AllAttachmentsDataGetter();
         public Attachments[] GetAllAttachments(String token, String consumerId)
         {
             string attachmentsString = dg.GetAllAttachments(token, consumerId);
@@ -103,8 +105,8 @@ namespace Anywhere.service.Data
             {
                 try
                 {
-                    attachment.filename = dg.getPlanAttachmentFileName(attachmentId, section);
-                    attachment.data = dg.GetAttachmentData(attachmentId);//reused
+                    attachment.filename = aadg.getPlanAttachmentFileName(attachmentId, section);
+                    attachment.data = aadg.GetAttachmentData(attachmentId);//reused
                 }
                 catch (Exception ex)
                 {
