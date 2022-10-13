@@ -19,6 +19,7 @@ const servicesSupports = (() => {
   let providerDropdownSelectedText;
 
   let hcbsSelected;
+  let saveUpdateProvider = '';
 
   const charLimits = {
     scopeOfService: 1000, // paid supp
@@ -402,6 +403,7 @@ const servicesSupports = (() => {
       if (!defaultValue) {
         if (thisVendorDropDownData.length === 1) {
             defaultValue = thisVendorDropDownData[0].value;
+            saveUpdateProvider = defaultValue;
             dropdownEle.classList.remove('error');
         }
       }
@@ -429,6 +431,7 @@ const servicesSupports = (() => {
       if (!defaultValue) {
         if (thisVendorDropDownData.length === 1) {
             defaultValue = thisVendorDropDownData[0].value;
+            saveUpdateProvider = defaultValue;
             dropdownEle.classList.remove('error');
         }
       }
@@ -504,6 +507,7 @@ const servicesSupports = (() => {
       const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
       if (tempData.length === 1) {
         defaultValue = tempData[0].value;
+        saveUpdateProvider = defaultValue;
         dropdownEle.classList.remove('error');
       }
     }
@@ -1384,6 +1388,10 @@ const servicesSupports = (() => {
     }
 
     populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+    if (saveUpdateProvider) {
+        saveUpdateData.providerId = saveUpdateProvider;
+        //saveUpdateProvider = '';
+    }
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
       fundingSourceDropdownSelectedText = '';
