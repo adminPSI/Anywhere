@@ -40,6 +40,8 @@ using Anywhere.service.Data.DocumentConversion;
 using PSIOISP;
 using System.Reflection;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using Org.BouncyCastle.Bcpg.OpenPgp;
+using static Anywhere.service.Data.AnywhereAttachmentWorker;
 
 namespace Anywhere
 {
@@ -2691,9 +2693,26 @@ namespace Anywhere
             return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
         }
 
-        public void addSelectedAttachmentsToReport(string token, string[] attachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public void addSelectedAttachmentsToReport(System.IO.Stream testInput)
         {
-            dpra.addSelectedAttachmentsToReport(token, attachmentIds, userId, assessmentID, versionID, extraSpace, isp);
+            string token;
+            string userId;
+            string[] attachmentIds;
+            string assessmentID;
+            string versionID;
+            string extraSpace;
+            string isp;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            assessmentID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            versionID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[5];
+            attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1] };
+            dpra.addSelectedAttachmentsToReport(token, attachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp));
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)

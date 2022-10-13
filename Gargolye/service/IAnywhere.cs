@@ -3603,11 +3603,9 @@ namespace Anywhere
         PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId);
 
         [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "/addSelectedAttachmentsToReport/")]
-        void addSelectedAttachmentsToReport(string token, string[] attachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp);
+        void addSelectedAttachmentsToReport(System.IO.Stream testInput);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
