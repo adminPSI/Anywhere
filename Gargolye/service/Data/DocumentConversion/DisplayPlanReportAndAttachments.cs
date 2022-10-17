@@ -52,7 +52,7 @@ namespace Anywhere.service.Data.DocumentConversion
             {
                 //Attachment attachment = new Attachment();
                 List<byte[]> allAttachments = new List<byte[]>();
-                //byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
+                byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
                 //allAttachments.Add(planReport);
                 foreach(string attachId in attachmentIds)
                 {                    
@@ -62,6 +62,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
                     }else if(attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX"))
                     {
+                        attachment.filename = attachment.filename.Replace("xlsx", "pdf");
                         byte[] nAttachment = displayAttachment(attachment);
                         var filter = new MemoryFilter(nAttachment.Length, true);
                         var filterWriter = new FilterWriter(filter);
@@ -71,12 +72,13 @@ namespace Anywhere.service.Data.DocumentConversion
                         byte[] new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
                         //pdftron.
                         //view.SetDoc(doc);
-                        response.AddHeader("content-disposition", "attachment;filename=" + "Name" + ";");
-                        response.ContentType = "application/octet-stream";
-                        response.AddHeader("Transfer-Encoding", "identity");
+                        response.Clear();
+                        response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                        response.ContentType = "application/pdf";
+                        //response.AddHeader("Transfer-Encoding", "identity");
                         allAttachments.Add(new_byte_output);
                         response.BinaryWrite(new_byte_output);
-                        //System.IO.File.WriteAllBytes("hellod.pdf", planReport);
+                        //System.IO.File.WriteAllBytes("hellod.pdf", new_byte_output);
                         //System.IO.File.ReadAllBytes(new_byte_output.ToString());
                     }
                     

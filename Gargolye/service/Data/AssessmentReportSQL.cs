@@ -337,6 +337,13 @@ namespace Anywhere.service.Data
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Services_Paid_Support.ISP_Assessment_Id = {0} ", AssesmentID);
             sb.Append("ORDER BY Provider, DBA.ANYW_ISP_Services_Paid_Support.Row_Order ");
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+
+            foreach (DataRow row in dt.Rows)
+                if (row.Field<int>("Funding_Source") == 5)
+                {
+                    row["Provider"] = string.Empty;
+                }
+
             //MessageBox.Show("ISPServices");
             return dt.DataSet;
         }
