@@ -317,12 +317,21 @@ const planConsentAndSign = (() => {
     };
   }
   function getSSADropdownData() {
+    const filteredSSA = ssaDropdownData.filter(ssa => {
+      if ($.session.applicationName === 'Advisor') {
+        // filter ssa.description === 'QIDP'
+      } else {
+        // filter ssa.description !== 'QIDP'
+      }
+    });
+
     const data = ssaDropdownData.map(ssa => {
       return {
         value: ssa.id,
         text: ssa.name,
       };
     });
+
     if ($.session.applicationName === 'Advisor') {
       data.unshift({ value: '', text: '[SELECT A QIDP]' });
     } else {
@@ -412,6 +421,8 @@ const planConsentAndSign = (() => {
     ssaDropdownData = await consentAndSignAjax.getPlanInformedConsentSSAs({
       token: $.session.Token,
     });
+    console.log('Providers', providerDropdownData);
+    console.log('SSAs', ssaDropdownData);
   }
 
   //*------------------------------------------------------
