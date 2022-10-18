@@ -19,6 +19,7 @@ const servicesSupports = (() => {
   let providerDropdownSelectedText;
 
   let hcbsSelected;
+  let saveUpdateProvider = '';
 
   const charLimits = {
     scopeOfService: 1000, // paid supp
@@ -328,7 +329,7 @@ const servicesSupports = (() => {
       };
     });
 
-    if (defaultValue === '') {
+    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
       defaultValue = '4';
       hcbsSelected = true;
     }
@@ -402,6 +403,7 @@ const servicesSupports = (() => {
       if (!defaultValue) {
         if (thisVendorDropDownData.length === 1) {
             defaultValue = thisVendorDropDownData[0].value;
+            saveUpdateProvider = defaultValue;
             dropdownEle.classList.remove('error');
         }
       }
@@ -429,6 +431,7 @@ const servicesSupports = (() => {
       if (!defaultValue) {
         if (thisVendorDropDownData.length === 1) {
             defaultValue = thisVendorDropDownData[0].value;
+            saveUpdateProvider = defaultValue;
             dropdownEle.classList.remove('error');
         }
       }
@@ -504,6 +507,7 @@ const servicesSupports = (() => {
       const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
       if (tempData.length === 1) {
         defaultValue = tempData[0].value;
+        saveUpdateProvider = defaultValue;
         dropdownEle.classList.remove('error');
       }
     }
@@ -1371,11 +1375,23 @@ const servicesSupports = (() => {
       saveUpdateData.howOftenFrequency,
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
-    populateServiceNameDropdown(serviceNameDropdown, '24', '4');
-    populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
 
-    fundingSourceDropdown.classList.remove('error');
-    serviceNameDropdown.classList.remove('error');
+    if ($.session.applicationName === 'Advisor') {
+      saveUpdateData.serviceNameId = '24';
+      saveUpdateData.fundingSource = '4';
+      saveUpdateData.fundingSourceText = 'ICF';
+
+      populateServiceNameDropdown(serviceNameDropdown, '24', '4');
+
+      fundingSourceDropdown.classList.remove('error');
+      serviceNameDropdown.classList.remove('error');
+    }
+
+    populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+    if (saveUpdateProvider) {
+        saveUpdateData.providerId = saveUpdateProvider;
+        //saveUpdateProvider = '';
+    }
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
       fundingSourceDropdownSelectedText = '';

@@ -11,6 +11,10 @@ using static Anywhere.service.Data.SimpleMar.SignInUser;
 using static PSIOISP.Deserialize;
 using System.Web.Services.Description;
 using pdftron.PDF;
+using pdftron.Filters;
+using pdftron.SDF;
+using pdftron.FDF;
+using System.Collections;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -40,27 +44,76 @@ namespace Anywhere.service.Data.DocumentConversion
 
         public void addSelectedAttachmentsToReport(string token, string[] attachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
             {
                 //Attachment attachment = new Attachment();
                 List<byte[]> allAttachments = new List<byte[]>();
-                //byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
+                byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
                 //allAttachments.Add(planReport);
                 foreach(string attachId in attachmentIds)
-                {
-                    byte[] attachment = getPlanAttachment(attachId, "");
-                    //js.MaxJsonLength = Int32.MaxValue;
-                    //POrWFAttachment[] att = js.Deserialize<POrWFAttachment[]>(attachments);
-                    //byte[] pwfAttachment = StreamExtensions.ToByteArray(att[0].attachment);
-                    allAttachments.Add(attachment);
-                    //allAttachments.Add(StreamExtensions.ToByteArray(attachment.data));
+                {                    
+                    PDFViewCtrl view = new PDFViewCtrl();
+                    Attachment attachment = getPlanAttachment(attachmentIds[0], "");
+                    if (attachment.filename.ToUpper().Contains("PDF")){
+
+                    }else if(attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX"))
+                    {
+                        attachment.filename = attachment.filename.Replace("xlsx", "pdf");
+                        byte[] nAttachment = displayAttachment(attachment);
+                        var filter = new MemoryFilter(nAttachment.Length, true);
+                        var filterWriter = new FilterWriter(filter);
+                        filterWriter.WriteBuffer(nAttachment);
+                        filterWriter.Flush();
+                        pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
+                        byte[] new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
+                        //pdftron.
+                        //view.SetDoc(doc);
+                        response.Clear();
+                        response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                        response.ContentType = "application/pdf";
+                        //response.AddHeader("Transfer-Encoding", "identity");
+                        allAttachments.Add(new_byte_output);
+                        response.BinaryWrite(new_byte_output);
+                        //System.IO.File.WriteAllBytes("hellod.pdf", new_byte_output);
+                        //System.IO.File.ReadAllBytes(new_byte_output.ToString());
+                    }
+                    
                 }
             }
             
         }
 
-        public byte[] getPlanAttachment(string attachmentId, string section)
+        //static void SimpleConvert(String input_filename, String output_filename)
+        //{
+        //    // Start with a PDFDoc (the conversion destination)
+        //    using (PDFDoc pdfdoc = new PDFDoc())
+        //    {
+        //        // Loading bytes of the file into an in-memory array
+        //        byte[] byte_array = System.IO.File.ReadAllBytes(input_path + input_filename);
+
+        //        // instantiate filter with byte array
+        //        var filter = new MemoryFilter(byte_array.Length, true);
+        //        var filterWriter = new FilterWriter(filter);
+        //        filterWriter.WriteBuffer(byte_array);
+        //        filterWriter.Flush();
+
+        //        // perform the conversion with no optional parameters
+        //        pdftron.PDF.Convert.OfficeToPDF(pdfdoc, filter, null);
+
+        //        // save the result into an in-memory byte array
+        //        byte[] new_byte_output = pdfdoc.Save(SDFDoc.SaveOptions.e_linearized);
+        //        File.WriteAllBytes(output_path + output_filename, new_byte_output);
+
+        //        // And we're done!
+        //        Console.WriteLine("Saved" + output_filename);
+        //    }
+        //}
+
+        public Attachment getPlanAttachment(string attachmentId, string section)
         {
             Attachment attachment = new Attachment();
             attachment.filename = "";
@@ -75,7 +128,8 @@ namespace Anywhere.service.Data.DocumentConversion
             {
 
             }
-            return displayAttachment(attachment);
+            // return displayAttachment(attachment);
+            return attachment;
         }
 
         public byte[] displayAttachment(Attachment attachment)

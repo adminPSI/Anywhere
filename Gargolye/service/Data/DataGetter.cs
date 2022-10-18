@@ -2890,6 +2890,24 @@ namespace Anywhere.Data
             }
         }
 
+        public string GetApplicationName(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("GetAllAttachments " + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GetApplicationName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("6381", ex.Message + "ANYW_GetApplicationName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "6381: error ANYW_GetApplicationName";
+            }
+        }
+
         public string GetAttachmentFileName(string attachmentId)
         {
             logger.debug("GetIndividualAttachment " + attachmentId);
