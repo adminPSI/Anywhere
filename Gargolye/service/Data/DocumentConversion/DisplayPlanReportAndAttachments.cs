@@ -15,6 +15,8 @@ using pdftron.Filters;
 using pdftron.SDF;
 using pdftron.FDF;
 using System.Collections;
+using iTextSharp.text.pdf;
+using iTextSharp.text;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -48,19 +50,54 @@ namespace Anywhere.service.Data.DocumentConversion
             var response = current.Response;
             response.Buffer = true;
             bool isTokenValid = aadg.ValidateToken(token);
+            PDFDoc new_doc;
             if (isTokenValid)
             {
-                //Attachment attachment = new Attachment();
+                Attachment attachment = new Attachment();
                 List<byte[]> allAttachments = new List<byte[]>();
+                byte[] new_byte_output = null; 
                 byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
-                //allAttachments.Add(planReport);
-                foreach(string attachId in attachmentIds)
+                allAttachments.Add(planReport);
+                foreach (string attachId in attachmentIds)
                 {                    
                     PDFViewCtrl view = new PDFViewCtrl();
-                    Attachment attachment = getPlanAttachment(attachmentIds[0], "");
+                    attachment = getPlanAttachment(attachId, "");
+                    
+                    
                     if (attachment.filename.ToUpper().Contains("PDF")){
-
-                    }else if(attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX"))
+                        
+                        new_byte_output = StreamExtensions.ToByteArray(attachment.data);
+                        
+                        allAttachments.Add(new_byte_output);
+                        new_byte_output = null;
+                    }
+                    else if(attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX"))
+                    {
+                        if (attachment.filename.ToUpper().Contains("XLS"))
+                        {
+                            attachment.filename = attachment.filename.Replace("xlsx", "pdf");
+                        }
+                        if(attachment.filename.ToUpper().Contains("DOCX"))
+                        {
+                            attachment.filename = attachment.filename.Replace("docx", "pdf");
+                        }
+                        if (attachment.filename.ToUpper().Contains("XLS"))
+                        {
+                            attachment.filename = attachment.filename.Replace("xls", "pdf");
+                        }
+                        byte[] nAttachment = displayAttachment(attachment);
+                        var filter = new MemoryFilter(nAttachment.Length, true);
+                        var filterWriter = new FilterWriter(filter);
+                        filterWriter.WriteBuffer(nAttachment);
+                        filterWriter.Flush();
+                        pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
+                        
+                        new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);                        
+                        
+                        allAttachments.Add(new_byte_output);
+                        new_byte_output = null;
+                    }
+                    else
                     {
                         attachment.filename = attachment.filename.Replace("xlsx", "pdf");
                         byte[] nAttachment = displayAttachment(attachment);
@@ -69,22 +106,56 @@ namespace Anywhere.service.Data.DocumentConversion
                         filterWriter.WriteBuffer(nAttachment);
                         filterWriter.Flush();
                         pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
-                        byte[] new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
-                        //pdftron.
-                        //view.SetDoc(doc);
-                        response.Clear();
-                        response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
-                        response.ContentType = "application/pdf";
-                        //response.AddHeader("Transfer-Encoding", "identity");
+                        
+                        new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
+                        
                         allAttachments.Add(new_byte_output);
-                        response.BinaryWrite(new_byte_output);
-                        //System.IO.File.WriteAllBytes("hellod.pdf", new_byte_output);
-                        //System.IO.File.ReadAllBytes(new_byte_output.ToString());
+                        new_byte_output = null;
                     }
                     
                 }
+
+                byte[] finalMergedArray = concatAndAddContent(allAttachments);
+                response.Clear();
+                response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
+                response.ContentType = "application/pdf";                
+                response.BinaryWrite(finalMergedArray);
+
             }
-            
+
+        }
+
+        public static byte[] concatAndAddContent(List<byte[]> pdfByteContent)
+        {
+
+            using (var ms = new MemoryStream())
+            {
+                using (var doc = new Document())
+                {
+                    using (var copy = new PdfSmartCopy(doc, ms))
+                    {
+                        doc.Open();
+
+                        //Loop through each byte array
+                        foreach (var p in pdfByteContent)
+                        {
+
+                            //Create a PdfReader bound to that byte array
+                            using (var reader = new PdfReader(p))
+                            {
+                                PdfReader.unethicalreading = true;
+                                //Add the entire document instead of page-by-page
+                                copy.AddDocument(reader);
+                            }
+                        }
+
+                        doc.Close();
+                    }
+                }
+
+                //Return just before disposing
+                return ms.ToArray();
+            }
         }
 
         //static void SimpleConvert(String input_filename, String output_filename)
@@ -209,9 +280,10 @@ namespace Anywhere.service.Data.DocumentConversion
             MemoryStream ms = null;
             ms = planRep.createAssessmentReport(token, userId, assessmentID, versionID, extraSpace, isp);
             //ms.Flush();
+            byte[] planReport = StreamExtensions.ToByteArray(ms);
             ms.Close();
             ms.Dispose();
-            byte[] planReport = StreamExtensions.ToByteArray(ms);
+            
             return planReport;
         }
 

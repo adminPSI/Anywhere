@@ -2711,7 +2711,13 @@ namespace Anywhere
             versionID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
             extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
-            attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1] };
+            string[] words = fullInput.Split('&');
+            var index = Array.FindIndex(words, row => row.Contains("attachmentIds"));
+            string attId = words[index];
+            attId = attId.Replace("attachmentIds=", "");
+            attId = attId.Replace("%2C", ",");
+            attachmentIds = attId.Split(',');
+            //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
             dpra.addSelectedAttachmentsToReport(token, attachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp));
         }
 
