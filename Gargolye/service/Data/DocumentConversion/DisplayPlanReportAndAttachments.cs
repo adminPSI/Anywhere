@@ -74,7 +74,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     }
                     else if(attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
                     {
-                        if (attachment.filename.ToUpper().Contains("XLXS"))
+                        if (attachment.filename.ToUpper().Contains("XLSX"))
                         {
                             attachment.filename = attachment.filename.Replace("xlsx", "pdf");
                         }
