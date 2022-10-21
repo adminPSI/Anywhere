@@ -317,14 +317,6 @@ const planConsentAndSign = (() => {
     };
   }
   function getSSADropdownData() {
-    const filteredSSA = ssaDropdownData.filter(ssa => {
-      if ($.session.applicationName === 'Advisor') {
-        // filter ssa.description === 'QIDP'
-      } else {
-        // filter ssa.description !== 'QIDP'
-      }
-    });
-
     const data = ssaDropdownData.map(ssa => {
       return {
         value: ssa.id,
@@ -417,6 +409,7 @@ const planConsentAndSign = (() => {
   async function loadDropdownData() {
     providerDropdownData = await consentAndSignAjax.getPlanInformedConsentVendors({
       token: $.session.Token,
+      peopleid: selectedConsumer.id,
     });
     ssaDropdownData = await consentAndSignAjax.getPlanInformedConsentSSAs({
       token: $.session.Token,
