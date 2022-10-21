@@ -717,7 +717,7 @@ const plan = (function () {
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,
-      assessmentId: '19', //planId, TODO
+      assessmentId: planId, //TODO
     });
 
     if (attachments) {

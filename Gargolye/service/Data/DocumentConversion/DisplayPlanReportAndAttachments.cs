@@ -17,6 +17,7 @@ using pdftron.FDF;
 using System.Collections;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
+using pdftron;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -71,9 +72,9 @@ namespace Anywhere.service.Data.DocumentConversion
                         allAttachments.Add(new_byte_output);
                         new_byte_output = null;
                     }
-                    else if(attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX"))
+                    else if(attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
                     {
-                        if (attachment.filename.ToUpper().Contains("XLS"))
+                        if (attachment.filename.ToUpper().Contains("XLXS"))
                         {
                             attachment.filename = attachment.filename.Replace("xlsx", "pdf");
                         }
@@ -84,6 +85,10 @@ namespace Anywhere.service.Data.DocumentConversion
                         if (attachment.filename.ToUpper().Contains("XLS"))
                         {
                             attachment.filename = attachment.filename.Replace("xls", "pdf");
+                        }
+                        if (attachment.filename.ToUpper().Contains("DOC"))
+                        {
+                            attachment.filename = attachment.filename.Replace("doc", "pdf");
                         }
                         byte[] nAttachment = displayAttachment(attachment);
                         var filter = new MemoryFilter(nAttachment.Length, true);
@@ -99,18 +104,29 @@ namespace Anywhere.service.Data.DocumentConversion
                     }
                     else
                     {
-                        attachment.filename = attachment.filename.Replace("xlsx", "pdf");
-                        byte[] nAttachment = displayAttachment(attachment);
-                        var filter = new MemoryFilter(nAttachment.Length, true);
-                        var filterWriter = new FilterWriter(filter);
-                        filterWriter.WriteBuffer(nAttachment);
-                        filterWriter.Flush();
-                        pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
-                        
-                        new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
-                        
-                        allAttachments.Add(new_byte_output);
-                        new_byte_output = null;
+                        string imageExt = "png";
+                        byte[] nAttachment = displayAttachment(attachment); // for demo purpose read from disk
+                        using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
+                        {
+                            pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
+                            writer.WriteBuffer(nAttachment);
+                            writer.Flush();
+                            memoryFilter.SetAsInputFilter(); // switch from sink to source
+
+                            using (PDFDoc newDoc = new PDFDoc())
+                            {
+                                //var options = new ConversionOptions();
+                                //options.SetFileExtension(imageExt);
+                                //DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, memoryFilter, options);
+                                //documentConversion.Convert();
+                                //pdftron.PDF.Convert.FromEmf(documentConversion);
+                                pdftron.PDF.Convert.FromEmf(newDoc, "");
+                                byte[] pdfData = newDoc.Save(SDFDoc.SaveOptions.e_linearized);
+                               
+                                // System.IO.File.WriteAllBytes(outPath, pdfData); // if you want to test/verify the output
+
+                            }
+                        }
                     }
                     
                 }
