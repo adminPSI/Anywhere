@@ -2309,9 +2309,9 @@ namespace Anywhere
             return picw.getPlanInformedConsentSSAs(token);
         }
 
-        public PlanInformedConsentWorker.InformedConsentVendors[] getPlanInformedConsentVendors(string token)
+        public PlanInformedConsentWorker.InformedConsentVendors[] getPlanInformedConsentVendors(string token, string peopleid)
         {
-            return picw.getPlanInformedConsentVendors(token);
+            return picw.getPlanInformedConsentVendors(token, peopleid);
         }
 
         public PlanInformedConsentWorker.InsertInformedConsent[] insertPlanRestrictiveMeasures(string token, string assessmentId)

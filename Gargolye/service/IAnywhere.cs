@@ -3275,7 +3275,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getPlanInformedConsentVendors/")]
-        PlanInformedConsentWorker.InformedConsentVendors[] getPlanInformedConsentVendors(string token);
+        PlanInformedConsentWorker.InformedConsentVendors[] getPlanInformedConsentVendors(string token, string peopleid);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
