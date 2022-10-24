@@ -414,6 +414,7 @@ namespace Anywhere.service.Data
             public string sttEnabled { get; set; }
             public string azureSttApi { get; set; }
             public string reportSeconds { get; set; }
+            public string planPeopleId { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
