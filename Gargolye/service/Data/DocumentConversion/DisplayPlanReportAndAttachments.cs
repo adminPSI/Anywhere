@@ -90,17 +90,21 @@ namespace Anywhere.service.Data.DocumentConversion
                         {
                             attachment.filename = attachment.filename.Replace("doc", "pdf");
                         }
-                        byte[] nAttachment = displayAttachment(attachment);
-                        var filter = new MemoryFilter(nAttachment.Length, true);
-                        var filterWriter = new FilterWriter(filter);
-                        filterWriter.WriteBuffer(nAttachment);
-                        filterWriter.Flush();
-                        pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
-                        
-                        new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);                        
-                        
-                        allAttachments.Add(new_byte_output);
-                        new_byte_output = null;
+                        using (PDFDoc doc = new PDFDoc())
+                        {
+                            byte[] nAttachment = displayAttachment(attachment);
+                            var filter = new MemoryFilter(nAttachment.Length, true);
+                            var filterWriter = new FilterWriter(filter);
+                            filterWriter.WriteBuffer(nAttachment);
+                            filterWriter.Flush();
+                            pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
+                            //filterWriter.Flush();
+
+                            new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
+
+                            allAttachments.Add(new_byte_output);
+                            new_byte_output = null;
+                        }
                     }
                     else
                     {
