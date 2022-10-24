@@ -160,6 +160,7 @@ $.session.intellivuePermission = '';
 $.session.selectedConsumerIdForGoalsDateBack = '';
 $.session.caseNoteEdit = false;
 $.session.consumerIdToEdit = '';
+$.session.planPeopleId = '';
 $.session.showDynamic = true;
 $.session.singleEntryUseServiceLocations = false;
 $.session.editCaseNoteId = '';

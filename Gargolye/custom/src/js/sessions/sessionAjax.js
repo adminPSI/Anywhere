@@ -753,6 +753,8 @@ function getDefaultAnywhereSettings() {
 			//$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
 			//database state - Indiana or Ohio
 			$.session.stateAbbreviation = res.stateAbbreviation;
+			//Set session peopleId for use in ADV Plan
+			$.session.planPeopleId = res.planPeopleId;
 
 			/////////
 			defaultRosterLocationValue = res.defaultrosterlocation;
