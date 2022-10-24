@@ -414,8 +414,8 @@ const planConsentAndSign = (() => {
     ssaDropdownData = await consentAndSignAjax.getPlanInformedConsentSSAs({
       token: $.session.Token,
     });
-    console.log('Providers', providerDropdownData);
-    console.log('SSAs', ssaDropdownData);
+    // console.log('Providers', providerDropdownData);
+    // console.log('SSAs', ssaDropdownData);
   }
 
   //*------------------------------------------------------

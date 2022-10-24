@@ -121,6 +121,7 @@ const plan = (function () {
         DOM.scrollToTopOfPage();
         DOM.clearActionCenter();
         selectedConsumer = roster2.getActiveConsumers()[0];
+        console.log(selectedConsumer);
         loadLandingPage();
         DOM.toggleNavLayout();
         break;

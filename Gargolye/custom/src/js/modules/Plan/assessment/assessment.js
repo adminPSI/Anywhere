@@ -415,7 +415,6 @@ const assessment = (function () {
           isp: true, //
         })
       ).getPlanAssessmentReportResult;
-      console.log(success);
 
       const arr = success._buffer;
       const byteArray = new Uint8Array(arr);
