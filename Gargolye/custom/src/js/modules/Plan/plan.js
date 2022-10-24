@@ -121,7 +121,9 @@ const plan = (function () {
         DOM.scrollToTopOfPage();
         DOM.clearActionCenter();
         selectedConsumer = roster2.getActiveConsumers()[0];
-        console.log(selectedConsumer);
+        if ($.session.applicationName === 'Advisor') {
+          selectedConsumer.id = $.session.planPeopleId;
+        }
         loadLandingPage();
         DOM.toggleNavLayout();
         break;
