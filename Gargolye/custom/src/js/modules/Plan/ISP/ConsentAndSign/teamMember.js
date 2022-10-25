@@ -334,7 +334,7 @@ const csTeamMember = (() => {
     );
 
     // set event
-    changeMindQuestion.addEventListener('change', event => {
+    changeMindQuestion.addEventListener('change', async event => {
       const target = event.target;
       const targetId = target.id;
 
@@ -348,6 +348,15 @@ const csTeamMember = (() => {
         }
 
         planConsentAndSign.updateSSADropdownWidth(teamMemberPopup);
+
+        // set vendor dropdown
+        if ($.session.applicationName === 'Gatekeeper') {
+          const data = await consentAndSignAjax.getConsumerOrganizationId({
+            peopleId: selectedMemberData.csChangeMindSSAPeopleId,
+          });
+
+          const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
+        }
       }
 
       checkTeamMemberPopupForErrors();
