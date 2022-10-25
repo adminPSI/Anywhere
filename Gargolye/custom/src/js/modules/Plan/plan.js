@@ -113,7 +113,7 @@ const plan = (function () {
 
   // Helpers
   //---------------------------------------------
-  async function handleActionNavEvent(target) {
+  function handleActionNavEvent(target) {
     const targetAction = target.dataset.actionNav;
 
     switch (targetAction) {
@@ -122,13 +122,16 @@ const plan = (function () {
         DOM.clearActionCenter();
         selectedConsumer = roster2.getActiveConsumers()[0];
         if ($.session.applicationName === 'Advisor') {
-          await planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
+          planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
             $.session.planPeopleId = results[0].id;
             selectedConsumer.id = $.session.planPeopleId;
+            loadLandingPage();
+            DOM.toggleNavLayout();
           });
+        } else {
+          loadLandingPage();
+          DOM.toggleNavLayout();
         }
-        loadLandingPage();
-        DOM.toggleNavLayout();
         break;
       }
       case 'miniRosterCancel': {
@@ -1678,21 +1681,19 @@ const plan = (function () {
     DOM.ACTIONCENTER.appendChild(landingPage);
 
     const spinner = PROGRESS.SPINNER.get('Gathering Plans...');
-      landingPage.appendChild(spinner);
+    landingPage.appendChild(spinner);
 
-      selectedConsumer = roster2.getActiveConsumers()[0];
-      if ($.session.applicationName === 'Advisor') {
-          planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
-              $.session.planPeopleId = results[0].id;
-              selectedConsumer.id = $.session.planPeopleId;
-          });
-
-
-      }
+    selectedConsumer = roster2.getActiveConsumers()[0];
+    if ($.session.applicationName === 'Advisor') {
+      planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
+        $.session.planPeopleId = results[0].id;
+        selectedConsumer.id = $.session.planPeopleId;
+      });
+    }
 
     previousPlansData = await planAjax.getConsumerPlans({
       token: $.session.Token,
-        consumerId: $.session.planPeopleId,
+      consumerId: $.session.planPeopleId,
     });
     previousPlansData.sort((a, b) => {
       const aDate = a.effectiveStart.split(' ')[0];
