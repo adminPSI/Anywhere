@@ -113,7 +113,7 @@ const plan = (function () {
 
   // Helpers
   //---------------------------------------------
-  function handleActionNavEvent(target) {
+  async function handleActionNavEvent(target) {
     const targetAction = target.dataset.actionNav;
 
     switch (targetAction) {
@@ -121,13 +121,11 @@ const plan = (function () {
         DOM.scrollToTopOfPage();
         DOM.clearActionCenter();
         selectedConsumer = roster2.getActiveConsumers()[0];
-            if ($.session.applicationName === 'Advisor') {
-                planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
-                    $.session.planPeopleId = results[0].id;
-                    selectedConsumer.id = $.session.planPeopleId;
-                });
-          
-          
+        if ($.session.applicationName === 'Advisor') {
+          await planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
+            $.session.planPeopleId = results[0].id;
+            selectedConsumer.id = $.session.planPeopleId;
+          });
         }
         loadLandingPage();
         DOM.toggleNavLayout();
