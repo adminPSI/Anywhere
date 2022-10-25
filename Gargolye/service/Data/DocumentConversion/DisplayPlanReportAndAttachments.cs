@@ -60,38 +60,40 @@ namespace Anywhere.service.Data.DocumentConversion
                 byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
                 allAttachments.Add(planReport);
                 foreach (string attachId in attachmentIds)
-                {                    
-                    PDFViewCtrl view = new PDFViewCtrl();
-                    attachment = getPlanAttachment(attachId, "");
-                    
-                    
-                    if (attachment.filename.ToUpper().Contains("PDF")){
-                        
-                        new_byte_output = StreamExtensions.ToByteArray(attachment.data);
-                        
-                        allAttachments.Add(new_byte_output);
-                        new_byte_output = null;
-                    }
-                    else if(attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
+                {
+                    using (PDFDoc doc = new PDFDoc())
                     {
-                        if (attachment.filename.ToUpper().Contains("XLSX"))
+                        PDFViewCtrl view = new PDFViewCtrl();
+                        attachment = getPlanAttachment(attachId, "");
+
+
+                        if (attachment.filename.ToUpper().Contains("PDF"))
                         {
-                            attachment.filename = attachment.filename.Replace("xlsx", "pdf");
+
+                            new_byte_output = StreamExtensions.ToByteArray(attachment.data);
+
+                            allAttachments.Add(new_byte_output);
+                            new_byte_output = null;
                         }
-                        if(attachment.filename.ToUpper().Contains("DOCX"))
+                        else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
                         {
-                            attachment.filename = attachment.filename.Replace("docx", "pdf");
-                        }
-                        if (attachment.filename.ToUpper().Contains("XLS"))
-                        {
-                            attachment.filename = attachment.filename.Replace("xls", "pdf");
-                        }
-                        if (attachment.filename.ToUpper().Contains("DOC"))
-                        {
-                            attachment.filename = attachment.filename.Replace("doc", "pdf");
-                        }
-                        using (PDFDoc doc = new PDFDoc())
-                        {
+                            if (attachment.filename.ToUpper().Contains("XLSX"))
+                            {
+                                attachment.filename = attachment.filename.Replace("xlsx", "pdf");
+                            }
+                            if (attachment.filename.ToUpper().Contains("DOCX"))
+                            {
+                                attachment.filename = attachment.filename.Replace("docx", "pdf");
+                            }
+                            if (attachment.filename.ToUpper().Contains("XLS"))
+                            {
+                                attachment.filename = attachment.filename.Replace("xls", "pdf");
+                            }
+                            if (attachment.filename.ToUpper().Contains("DOC"))
+                            {
+                                attachment.filename = attachment.filename.Replace("doc", "pdf");
+                            }
+
                             byte[] nAttachment = displayAttachment(attachment);
                             var filter = new MemoryFilter(nAttachment.Length, true);
                             var filterWriter = new FilterWriter(filter);
@@ -99,36 +101,37 @@ namespace Anywhere.service.Data.DocumentConversion
                             filterWriter.Flush();
                             pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
                             //filterWriter.Flush();
-
+                            string pdfversion = doc.GetSDFDoc().GetHeader();
                             new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
-
+                            
                             allAttachments.Add(new_byte_output);
                             new_byte_output = null;
+
                         }
-                    }
-                    else
-                    {
-                        string imageExt = "png";
-                        byte[] nAttachment = displayAttachment(attachment); // for demo purpose read from disk
-                        using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
+                        else
                         {
-                            pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
-                            writer.WriteBuffer(nAttachment);
-                            writer.Flush();
-                            memoryFilter.SetAsInputFilter(); // switch from sink to source
-
-                            using (PDFDoc newDoc = new PDFDoc())
+                            string imageExt = "png";
+                            byte[] nAttachment = displayAttachment(attachment); // for demo purpose read from disk
+                            using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
                             {
-                                //var options = new ConversionOptions();
-                                //options.SetFileExtension(imageExt);
-                                //DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, memoryFilter, options);
-                                //documentConversion.Convert();
-                                //pdftron.PDF.Convert.FromEmf(documentConversion);
-                                pdftron.PDF.Convert.FromEmf(newDoc, "");
-                                byte[] pdfData = newDoc.Save(SDFDoc.SaveOptions.e_linearized);
-                               
-                                // System.IO.File.WriteAllBytes(outPath, pdfData); // if you want to test/verify the output
+                                pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
+                                writer.WriteBuffer(nAttachment);
+                                writer.Flush();
+                                memoryFilter.SetAsInputFilter(); // switch from sink to source
 
+                                using (PDFDoc newDoc = new PDFDoc())
+                                {
+                                    //var options = new ConversionOptions();
+                                    //options.SetFileExtension(imageExt);
+                                    //DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, memoryFilter, options);
+                                    //documentConversion.Convert();
+                                    //pdftron.PDF.Convert.FromEmf(documentConversion);
+                                    pdftron.PDF.Convert.FromEmf(newDoc, "");
+                                    byte[] pdfData = newDoc.Save(SDFDoc.SaveOptions.e_linearized);
+
+                                    // System.IO.File.WriteAllBytes(outPath, pdfData); // if you want to test/verify the output
+
+                                }
                             }
                         }
                     }

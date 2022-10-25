@@ -1680,11 +1680,21 @@ const plan = (function () {
     DOM.ACTIONCENTER.appendChild(landingPage);
 
     const spinner = PROGRESS.SPINNER.get('Gathering Plans...');
-    landingPage.appendChild(spinner);
+      landingPage.appendChild(spinner);
+
+      selectedConsumer = roster2.getActiveConsumers()[0];
+      if ($.session.applicationName === 'Advisor') {
+          planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
+              $.session.planPeopleId = results[0].id;
+              selectedConsumer.id = $.session.planPeopleId;
+          });
+
+
+      }
 
     previousPlansData = await planAjax.getConsumerPlans({
       token: $.session.Token,
-      consumerId: selectedConsumer.id,
+        consumerId: $.session.planPeopleId,
     });
     previousPlansData.sort((a, b) => {
       const aDate = a.effectiveStart.split(' ')[0];
