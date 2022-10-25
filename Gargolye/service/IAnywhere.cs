@@ -459,6 +459,14 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getConsumerOrganizationId/")]
+        AnywhereWorker.PeopleId[] getConsumerOrganizationId(string peopleId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Bare,
              UriTemplate = "/viewCaseNoteAttachment/")]
         //void viewCaseNoteAttachment(string attachmentId);

@@ -445,6 +445,18 @@ namespace Anywhere.service.Data
             public string id { get; set; }
         }
 
+        public PeopleId[] getConsumerOrganizationId(string peopleId)
+        {
+            string oidString = dg.getConsumerOrganizationId(peopleId);
+            PeopleId[] oidObj = js.Deserialize<PeopleId[]>(oidString);
+            return oidObj;
+        }
+
+        public class OrganiztionId
+        {
+            public string orgId { get; set; }
+        }
+
         //BRAD add here
         //Create function that call getPSIUserOptionList
         //add custom object. user_id, first_name, last_name
