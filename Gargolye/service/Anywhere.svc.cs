@@ -395,6 +395,11 @@ namespace Anywhere
             return anywhereWorker.getConsumerPeopleId(consumerId);
         }
 
+        public AnywhereWorker.PeopleId[] getConsumerOrganizationId(string peopleId)
+        {
+            return anywhereWorker.getConsumerOrganizationId(peopleId);
+        }
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             return dg.updateCaseNotesReviewDays(token, updatedReviewDays);

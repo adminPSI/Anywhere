@@ -793,6 +793,22 @@ namespace Anywhere.Data
             }
         }
 
+        public string getConsumerOrganizationId(string peopleId)
+        {
+            List<string> list = new List<string>();
+            list.Add(peopleId);
+            string text = "CALL DBA.ANYW_GetConsumerOrganizationId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("632", ex.Message + "ANYW_GetConsumerOrganizationId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "632: error ANYW_GetConsumerOrganizationId";
+            }
+        }
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             if (tokenValidator(token) == false) return null;
