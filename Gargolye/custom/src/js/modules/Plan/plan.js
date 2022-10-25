@@ -121,8 +121,13 @@ const plan = (function () {
         DOM.scrollToTopOfPage();
         DOM.clearActionCenter();
         selectedConsumer = roster2.getActiveConsumers()[0];
-        if ($.session.applicationName === 'Advisor') {
-          selectedConsumer.id = $.session.planPeopleId;
+            if ($.session.applicationName === 'Advisor') {
+                planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
+                    $.session.planPeopleId = results[0].id;
+                    selectedConsumer.id = $.session.planPeopleId;
+                });
+          
+          
         }
         loadLandingPage();
         DOM.toggleNavLayout();

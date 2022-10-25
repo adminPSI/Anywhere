@@ -42,6 +42,7 @@ using System.Reflection;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere
 {
@@ -387,6 +388,11 @@ namespace Anywhere
         public AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token)
         {
             return anywhereWorker.getDefaultAnywhereSettingsJSON(token);
+        }
+
+        public AnywhereWorker.PeopleId[] getConsumerPeopleId(string consumerId)
+        {
+            return anywhereWorker.getConsumerPeopleId(consumerId);
         }
 
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)

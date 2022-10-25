@@ -27,6 +27,7 @@ using Newtonsoft.Json.Linq;
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.DocumentConversion;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere
 {
@@ -3283,6 +3284,13 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getPlanInformedConsentSSAs/")]
         PlanInformedConsentWorker.InformedConsentSSAs[] getPlanInformedConsentSSAs(string token);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getConsumerPeopleId/")]
+        AnywhereWorker.PeopleId[] getConsumerPeopleId(string consumerId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

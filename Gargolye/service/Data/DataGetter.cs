@@ -13,6 +13,8 @@ using System.IO;
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Text.RegularExpressions;
+using static Anywhere.service.Data.AnywhereWorker;
+using System.Management.Automation.Language;
 
 namespace Anywhere.Data
 {
@@ -774,7 +776,23 @@ namespace Anywhere.Data
                 return "632: error ANYW_GetDefaultAnywhereSettings";
             }
         }
-        
+
+        public string getConsumerPeopleId(string consumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GetConsumerPeopleId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("632", ex.Message + "ANYW_GetPeopleId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "632: error ANYW_GetPeopleId";
+            }
+        }
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             if (tokenValidator(token) == false) return null;
