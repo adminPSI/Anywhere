@@ -390,11 +390,11 @@ const csTeamMember = (() => {
         const contactInput = teamMemberPopup.querySelector('.csContactInput');
         selectedMemberData.csContactInput = event.target.value;
 
-        if (selectedMemberData.csContactInput === '') {
-          contactInput.classList.add('error');
-        } else {
-          contactInput.classList.remove('error');
-        }
+        // if (selectedMemberData.csContactInput === '') {
+        //   contactInput.classList.add('error');
+        // } else {
+        //   contactInput.classList.remove('error');
+        // }
       }
 
       checkTeamMemberPopupForErrors();
@@ -647,7 +647,11 @@ const csTeamMember = (() => {
       if (!selectedMemberData.contactId && $.session.areInSalesForce) {
         teamMemberPopup.appendChild(linkToRelationshipBtn);
       }
-      if ($.session.areInSalesForce && !selectedMemberData.salesForceId && selectedMemberData.contactId) {
+      if (
+        $.session.areInSalesForce &&
+        !selectedMemberData.salesForceId &&
+        selectedMemberData.contactId
+      ) {
         teamMemberPopup.appendChild(linkToSalesforceBtn);
       }
     }

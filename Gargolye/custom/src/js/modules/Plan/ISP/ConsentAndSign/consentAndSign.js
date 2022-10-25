@@ -291,6 +291,10 @@ const planConsentAndSign = (() => {
   //*------------------------------------------------------
   //* DROPDOWNS
   //*------------------------------------------------------
+  function getSSAById(ssaId) {
+    const filteredSSA = ssaDropdownData.filter(ssa => ssa.id === ssaId);
+    return filteredSSA.length > 0 ? filteredSSA[0].name : '';
+  }
   // get/sort data
   function getVendorDropdownData() {
     const nonPaidSupportData = providerDropdownData.filter(
@@ -340,7 +344,6 @@ const planConsentAndSign = (() => {
   }
   function populateDropdownVendor(vendorDropdown, csContactProviderVendorId) {
     //* VENDOR DROPDOWN
-    //*-----------------------
     const contactQuestionDropdownData = getVendorDropdownData();
     const nonGroupedDropdownData = [{ value: '', text: '[SELECT A PROVIDER]' }];
     const paidSupportGroup = {
@@ -414,8 +417,6 @@ const planConsentAndSign = (() => {
     ssaDropdownData = await consentAndSignAjax.getPlanInformedConsentSSAs({
       token: $.session.Token,
     });
-    // console.log('Providers', providerDropdownData);
-    // console.log('SSAs', ssaDropdownData);
   }
 
   //*------------------------------------------------------
@@ -473,6 +474,13 @@ const planConsentAndSign = (() => {
       csChangeMindQuestionDropdown.classList.add('disabled');
     }
     // populate
+    let defaultValue;
+    if (!data.csChangeMindSSAPeopleId) {
+      defaultValue = $.session.applicationName === 'Advisor' ? $.session.UserId : '';
+    } else {
+      defaultValue = data.csChangeMindSSAPeopleId;
+    }
+
     populateDropdownSSA(csChangeMindQuestionDropdown, data.csChangeMindSSAPeopleId);
 
     // Build Out Question with dropdown
@@ -537,7 +545,6 @@ const planConsentAndSign = (() => {
     //Question Container
     const contactQuestion = document.createElement('div');
     contactQuestion.classList.add('contactQuestion');
-    // contactQuestion.classList.add('ic_questionContainer');
 
     // Inner Wrap for just Dropdown and Radios *for safari
     const wrap = document.createElement('div');
@@ -551,6 +558,9 @@ const planConsentAndSign = (() => {
     const csContactQuestionDropdown = dropdown.inlineBuild({
       dropdownId: 'isp_ic_vendorContactDropdown',
     });
+    if ($.session.applicationName === 'Gatekeeper') {
+      csContactQuestionDropdown.classList.add('disabled');
+    }
     // populate
     populateDropdownVendor(csContactQuestionDropdown, data.csContactProviderVendorId);
 
@@ -562,11 +572,12 @@ const planConsentAndSign = (() => {
     contactQuestion.appendChild(wrap);
 
     //Contact Input
+    const contactInputValue = getSSAById(data.ssaId);
     const contactInput = input.build({
       id: 'CS_Contact_Input',
       label: 'Contact',
-      value: data.csContactInput,
-      readonly: readOnly,
+      value: contactInputValue,
+      readonly: true,
       callbackType: 'input',
     });
     contactInput.classList.add('csContactInput');
@@ -576,14 +587,10 @@ const planConsentAndSign = (() => {
     if (readOnly || popup === 'sign' || isSigned) {
       contactQuestion.classList.add('disabled');
       contactQuestionText.classList.add('disabled');
-      contactInput.classList.add('disabled');
     } else {
       // required fields
       if (data.csContactProviderVendorId === '') {
         contactQuestionText.classList.add('error');
-      }
-      if (data.csContactInput === '') {
-        contactInput.classList.add('error');
       }
     }
 

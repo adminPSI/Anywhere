@@ -332,8 +332,9 @@ const csSignature = (() => {
     const contactQuestion = planConsentAndSign.buildContactQuestion(
       {
         csContactProviderVendorId: selectedMemberData.csContactProviderVendorId,
-        csContactInput: selectedMemberData.csContactInput,
+        //csContactInput: selectedMemberData.csContactInput,
         csContact: selectedMemberData.csContact,
+        ssaId: selectedMemberData.csChangeMindSSAPeopleId,
       },
       'sign',
       isSigned,
