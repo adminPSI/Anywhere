@@ -166,7 +166,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             //Create a PdfReader bound to that byte array
                             using (var reader = new PdfReader(p))
                             {
-                                PdfReader.unethicalreading = true;
+                                //PdfReader.unethicalreading = true;
                                 //Add the entire document instead of page-by-page
                                 copy.AddDocument(reader);
                             }
