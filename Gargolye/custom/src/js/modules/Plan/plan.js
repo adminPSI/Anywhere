@@ -1564,8 +1564,12 @@ const plan = (function () {
     });
 
     const message = document.createElement('p');
-    message.innerText = `This consumer does not have a Resident Number in Gatekeeper. Please insert Resident Number in Gatekeeper before inserting a Plan.`;
-
+    if ($.session.applicationName === 'Advisor') {
+      message.innerText = `This consumer does not have a Resident Number in Advisor. Please insert Resident Number in Advisor before inserting a Plan.`;
+    } else {
+      message.innerText = `This consumer does not have a Resident Number in Gatekeeper. Please insert Resident Number in Gatekeeper before inserting a Plan.`;  
+    }
+   
     warningPopup.appendChild(message);
 
     POPUP.show(warningPopup);
