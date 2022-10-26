@@ -352,14 +352,17 @@ const servicesSupports = (() => {
         });
       }
     });
-
-    if (availableServiceTypes.includes(defaultValue)) {
-      let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-      servicesDropdownSelectedText = servicesDropdownSelected.text;
-    } else {
-        defaultValue = '24';
-    }
-
+    //Only check for defaultValue in Advisor
+      if ($.session.applicationName === 'Advisor') {
+          if (availableServiceTypes.includes(defaultValue)) {
+              let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+              servicesDropdownSelectedText = servicesDropdownSelected.text;
+          } else {
+              defaultValue = '24';
+          }
+      } else {
+          defaultValue = '%';
+      }
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
   }
@@ -784,13 +787,11 @@ const servicesSupports = (() => {
       style: 'secondary',
         callback: async (e, selectedOption) => {
           saveUpdateData.fundingSource = selectedOption.value;
-          if ($.session.applicationName === 'Advisor') {
-            saveUpdateData.serviceNameId = populateServiceNameDropdown(
+          saveUpdateData.serviceNameId = populateServiceNameDropdown(
                 serviceNameDropdown,
                 saveUpdateData.serviceNameId,
                 selectedOption.value,
-            );
-          }
+          );
 
         // store currently selected fundingSource (fundingSourceDropdownSelectedText) for use when populating the vendor dropdown
         // store type of fundingSource (hcbsSelected) for use when populating service and vendor dropdowns
