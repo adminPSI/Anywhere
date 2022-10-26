@@ -56,6 +56,7 @@ namespace Anywhere.service.Data.PlanInformedConsent
         {
             public string vendorId { get; set; }
             public string vendorName { get; set; }
+            public string locationId { get; set; }
         }
 
         public InsertInformedConsent[] insertPlanRestrictiveMeasures(string token, string assessmentId)
