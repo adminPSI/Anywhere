@@ -353,16 +353,16 @@ const servicesSupports = (() => {
       }
     });
     //Only check for defaultValue in Advisor
-      if ($.session.applicationName === 'Advisor') {
-          if (availableServiceTypes.includes(defaultValue)) {
-              let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-              servicesDropdownSelectedText = servicesDropdownSelected.text;
-          } else {
-              defaultValue = '24';
-          }
+    if ($.session.applicationName === 'Advisor') {
+      if (availableServiceTypes.includes(defaultValue)) {
+        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
       } else {
-          defaultValue = '%';
+        defaultValue = '24';
       }
+    } else {
+      defaultValue = '%';
+    }
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
   }
@@ -405,9 +405,9 @@ const servicesSupports = (() => {
       //if there's no default value, and only one option, make that option the default
       if (!defaultValue) {
         if (thisVendorDropDownData.length === 1) {
-            defaultValue = thisVendorDropDownData[0].value;
-            saveUpdateProvider = defaultValue;
-            dropdownEle.classList.remove('error');
+          defaultValue = thisVendorDropDownData[0].value;
+          saveUpdateProvider = defaultValue;
+          dropdownEle.classList.remove('error');
         }
       }
 
@@ -433,9 +433,9 @@ const servicesSupports = (() => {
       //if there's no default value, and only one option, make that option the default
       if (!defaultValue) {
         if (thisVendorDropDownData.length === 1) {
-            defaultValue = thisVendorDropDownData[0].value;
-            saveUpdateProvider = defaultValue;
-            dropdownEle.classList.remove('error');
+          defaultValue = thisVendorDropDownData[0].value;
+          saveUpdateProvider = defaultValue;
+          dropdownEle.classList.remove('error');
         }
       }
 
@@ -785,13 +785,13 @@ const servicesSupports = (() => {
       dropdownId: 'fundingSourceDropdownPS',
       label: 'Funding Source',
       style: 'secondary',
-        callback: async (e, selectedOption) => {
-          saveUpdateData.fundingSource = selectedOption.value;
-          saveUpdateData.serviceNameId = populateServiceNameDropdown(
-                serviceNameDropdown,
-                saveUpdateData.serviceNameId,
-                selectedOption.value,
-          );
+      callback: async (e, selectedOption) => {
+        saveUpdateData.fundingSource = selectedOption.value;
+        saveUpdateData.serviceNameId = populateServiceNameDropdown(
+          serviceNameDropdown,
+          saveUpdateData.serviceNameId,
+          selectedOption.value,
+        );
 
         // store currently selected fundingSource (fundingSourceDropdownSelectedText) for use when populating the vendor dropdown
         // store type of fundingSource (hcbsSelected) for use when populating service and vendor dropdowns
@@ -1318,7 +1318,7 @@ const servicesSupports = (() => {
     if (saveUpdateData.fundingSource === '' || saveUpdateData.fundingSource === '%') {
       fundingSourceDropdown.classList.add('error');
       hasInitialErros = true;
-      }
+    }
     if (saveUpdateData.fundingSource === '8') {
       fundingSourceInput.classList.remove('disabled');
       if (saveUpdateData.fundingSourceText === '') {
@@ -1388,12 +1388,18 @@ const servicesSupports = (() => {
 
       fundingSourceDropdown.classList.remove('error');
       serviceNameDropdown.classList.remove('error');
+    } else {
+      populateServiceNameDropdown(
+        serviceNameDropdown,
+        saveUpdateData.serviceNameId,
+        saveUpdateData.fundingSource,
+      );
     }
 
     populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
     if (saveUpdateProvider) {
-        saveUpdateData.providerId = saveUpdateProvider;
-        //saveUpdateProvider = '';
+      saveUpdateData.providerId = saveUpdateProvider;
+      //saveUpdateProvider = '';
     }
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
