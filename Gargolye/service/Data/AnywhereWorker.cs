@@ -448,7 +448,7 @@ namespace Anywhere.service.Data
         public PeopleId[] getConsumerOrganizationId(string peopleId)
         {
             string oidString = dg.getConsumerOrganizationId(peopleId);
-            PeopleId[] oidObj = js.Deserialize<PeopleId[]>(oidString);
+            OrganiztionId[] oidObj = js.Deserialize<OrganiztionId[]>(oidString);
             return oidObj;
         }
 
