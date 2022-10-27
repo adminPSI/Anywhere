@@ -445,7 +445,7 @@ function toInteger(dirtyNumber) {
         icon: 'close',
         callback: function () {
           POPUP.hide(overlapPopup);
-          // init();
+           init();
         },
       });
   
