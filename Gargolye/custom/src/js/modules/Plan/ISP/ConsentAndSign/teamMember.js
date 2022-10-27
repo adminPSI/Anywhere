@@ -356,7 +356,7 @@ const csTeamMember = (() => {
           });
 
           const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
-          vendorDropdown.value = data;
+          vendorDropdown.value = data.id;
         }
 
         // update contact input field
