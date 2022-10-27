@@ -463,7 +463,7 @@ namespace Anywhere
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getConsumerOrganizationId/")]
-        AnywhereWorker.PeopleId[] getConsumerOrganizationId(string peopleId);
+        AnywhereWorker.OrganiztionId[] getConsumerOrganizationId(string peopleId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

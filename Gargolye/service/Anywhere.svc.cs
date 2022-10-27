@@ -395,7 +395,7 @@ namespace Anywhere
             return anywhereWorker.getConsumerPeopleId(consumerId);
         }
 
-        public AnywhereWorker.PeopleId[] getConsumerOrganizationId(string peopleId)
+        public AnywhereWorker.OrganiztionId[] getConsumerOrganizationId(string peopleId)
         {
             return anywhereWorker.getConsumerOrganizationId(peopleId);
         }
