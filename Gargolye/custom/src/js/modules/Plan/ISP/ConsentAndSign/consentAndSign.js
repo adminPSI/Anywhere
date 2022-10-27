@@ -558,9 +558,6 @@ const planConsentAndSign = (() => {
     const csContactQuestionDropdown = dropdown.inlineBuild({
       dropdownId: 'isp_ic_vendorContactDropdown',
     });
-    if ($.session.applicationName === 'Gatekeeper') {
-      csContactQuestionDropdown.classList.add('disabled');
-    }
     // populate
     populateDropdownVendor(csContactQuestionDropdown, data.csContactProviderVendorId);
 
@@ -583,14 +580,18 @@ const planConsentAndSign = (() => {
     contactInput.classList.add('csContactInput');
     contactQuestion.appendChild(contactInput);
 
-    // readyonly / disabled check
+    // readyonly / disabled check / required fields
     if (readOnly || popup === 'sign' || isSigned) {
       contactQuestion.classList.add('disabled');
       contactQuestionText.classList.add('disabled');
+      csContactQuestionDropdown.classList.add('disabled');
     } else {
-      // required fields
-      if (data.csContactProviderVendorId === '') {
-        contactQuestionText.classList.add('error');
+      if ($.session.applicationName === 'Gatekeeper') {
+        csContactQuestionDropdown.classList.add('disabled');
+      } else {
+        if (data.csContactProviderVendorId === '') {
+          contactQuestionText.classList.add('error');
+        }
       }
     }
 

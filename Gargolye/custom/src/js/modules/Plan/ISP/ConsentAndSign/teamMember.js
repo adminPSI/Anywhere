@@ -356,7 +356,12 @@ const csTeamMember = (() => {
           });
 
           const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
+          vendorDropdown.value = data.id;
         }
+
+        // update contact input field
+        const contactInput = document.getElementById('CS_Contact_Input');
+        contactInput.innerText = event.target.selectedOptions[0].innerText;
       }
 
       checkTeamMemberPopupForErrors();
