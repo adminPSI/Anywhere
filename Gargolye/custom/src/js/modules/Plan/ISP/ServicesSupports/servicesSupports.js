@@ -360,9 +360,8 @@ const servicesSupports = (() => {
       } else {
         defaultValue = '24';
       }
-    } else {
-      defaultValue = '%';
     }
+
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
   }
@@ -780,7 +779,7 @@ const servicesSupports = (() => {
     if (fromAssessment) {
       assessmentAreaDropdown.classList.add('disabled');
     }
-    // Begin -- Funding Source Drop Down Handling
+    // Funding Source Drop Down
     const fundingSourceDropdown = dropdown.build({
       dropdownId: 'fundingSourceDropdownPS',
       label: 'Funding Source',
@@ -843,7 +842,7 @@ const servicesSupports = (() => {
 
         togglePaidSupportDoneBtn();
       }, //callback end
-    }); // End -- Funding Source Drop Down Handling
+    });
 
     async function validateServicesDropdown() {
       // Validation of Services DDL after selecting from fundingSource DDL
@@ -966,8 +965,7 @@ const servicesSupports = (() => {
         togglePaidSupportDoneBtn();
       },
     });
-    // Service Name - Static data dependent on funding source - ticket 66872
-    // Begin -- Service Drop Down Handling
+    // Service Name
     const serviceNameDropdown = dropdown.build({
       dropdownId: 'serviceNameDropdownPS',
       label: 'Service Name',
@@ -1020,8 +1018,7 @@ const servicesSupports = (() => {
       },
     }); // End -- Service Drop Down Handling
 
-    // Service Name Other - changed to other in ticket 66872
-    // Enabled and Required if other is selected in Service Name Dropdown: val 47
+    // Service Name Other
     const serviceNameOtherDropdown = dropdown.build({
       dropdownId: 'serviceNameOtherDropdownPS',
       label: 'Service Name Other',
@@ -1371,7 +1368,6 @@ const servicesSupports = (() => {
     paidSupportPopup.appendChild(btnWrap);
 
     populateAssessmentAreaDropdown(assessmentAreaDropdown, saveUpdateData.assessmentAreaId);
-    // populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
     populateOtherServiceTypesDropdown(serviceNameOtherDropdown, saveUpdateData.serviceNameOther);
     populateHowOftenHowMuchFrequencyDropdown(
       howOftenHowMuchFrequencyDropdown,
@@ -1399,7 +1395,6 @@ const servicesSupports = (() => {
     populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
     if (saveUpdateProvider) {
       saveUpdateData.providerId = saveUpdateProvider;
-      //saveUpdateProvider = '';
     }
 
     if (saveUpdateData && saveUpdateData.providerId === '') {

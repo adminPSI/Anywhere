@@ -361,7 +361,7 @@ const csTeamMember = (() => {
 
         // update contact input field
         const contactInput = document.getElementById('CS_Contact_Input');
-        contactInput.innerText = event.target.selectedOptions[0].innerText;
+        contactInput.value = event.target.selectedOptions[0].innerText;
       }
 
       checkTeamMemberPopupForErrors();
