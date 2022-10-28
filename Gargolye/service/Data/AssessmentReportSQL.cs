@@ -316,7 +316,7 @@ namespace Anywhere.service.Data
             {
                 Vendor = "Vendors";
                 FundingSource = "Funding_Sources";
-                Description = "Descriptions";
+                Description = "Funding_Source_Name";
             }
 
             sb.Clear();
@@ -416,28 +416,45 @@ namespace Anywhere.service.Data
 
         public DataSet ISPTeamMembers2(long AssesmentID, Boolean Advisor = false)
         {
-            String Vendor = "Vendor";
             if (Advisor == true)
             {
-                Vendor = "Vendors";
+                sb.Clear();
+                sb.AppendFormat("SELECT   dba.ANYW_ISP_Signatures.ISP_Consumer_Signature_ID, dba.Vendors.Name, dba.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID, ");
+                sb.Append("dba.ANYW_ISP_Signatures.CS_Change_Mind, dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID, dba.ANYW_ISP_Signatures.CS_Contact, ");
+                sb.Append("dba.ANYW_ISP_Signatures.CS_Contact_Provider_Vendor_ID, dba.ANYW_ISP_Signatures.CS_Contact_Input, dba.ANYW_ISP_Signatures.CS_Rights_Reviewed, ");
+                sb.Append("dba.ANYW_ISP_Signatures.CS_Agree_To_Plan, dba.ANYW_ISP_Signatures.CS_FCOP_Explained, dba.ANYW_ISP_Signatures.CS_Due_Process, ");
+                sb.Append("dba.ANYW_ISP_Signatures.CS_Residential_Options, dba.ANYW_ISP_Signatures.CS_Supports_Health_Needs, dba.ANYW_ISP_Signatures.Name AS SupportName, ");
+                sb.Append("SSA.Last_Name, SSA.First_Name, SSA.Middle_Name, dba.ANYW_ISP_Signatures.Signature_Order, dba.ANYW_ISP_Signatures.CS_Technology AS TechSolutionsExplored, ");
+                sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2 ");
+                sb.Append("FROM  dba.ANYW_ISP_Signatures ");
+                sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
+                sb.Append("LEFT OUTER JOIN dba.People SSA ON dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID = SSA.ID ");
+                sb.Append("LEFT OUTER JOIN dba.Vednors ON dba.ANYW_ISP_Signatures.CS_Contact_Provider_Vendor_ID = dba.Vendors.Vendor_ID ");
+                sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
+                sb.Append("AND (DBA.ANYW_ISP_Signatures.Team_Member = 'Parent/Guardian' ");
+                sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Guardian' ");
+                sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Person Supported') ");
             }
 
-            sb.Clear();
-            sb.AppendFormat("SELECT   dba.ANYW_ISP_Signatures.ISP_Consumer_Signature_ID, dba.{0}.Name, dba.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID, ", Vendor);
-            sb.Append("dba.ANYW_ISP_Signatures.CS_Change_Mind, dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID, dba.ANYW_ISP_Signatures.CS_Contact, ");
-            sb.Append("dba.ANYW_ISP_Signatures.CS_Contact_Provider_Vendor_ID, dba.ANYW_ISP_Signatures.CS_Contact_Input, dba.ANYW_ISP_Signatures.CS_Rights_Reviewed, ");
-            sb.Append("dba.ANYW_ISP_Signatures.CS_Agree_To_Plan, dba.ANYW_ISP_Signatures.CS_FCOP_Explained, dba.ANYW_ISP_Signatures.CS_Due_Process, ");
-            sb.Append("dba.ANYW_ISP_Signatures.CS_Residential_Options, dba.ANYW_ISP_Signatures.CS_Supports_Health_Needs, dba.ANYW_ISP_Signatures.Name AS SupportName, ");
-            sb.Append("SSA.Last_Name, SSA.First_Name, SSA.Middle_Name, dba.ANYW_ISP_Signatures.Signature_Order, dba.ANYW_ISP_Signatures.CS_Technology AS TechSolutionsExplored, ");
-            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2 ");
-            sb.Append("FROM  dba.ANYW_ISP_Signatures ");
-            sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
-            sb.Append("LEFT OUTER JOIN dba.People SSA ON dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID = SSA.ID ");
-            sb.AppendFormat("LEFT OUTER JOIN dba.{0} ON dba.ANYW_ISP_Signatures.CS_Contact_Provider_Vendor_ID = dba.{0}.Vendor_ID ", Vendor);
-            sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
-            sb.Append("AND (DBA.ANYW_ISP_Signatures.Team_Member = 'Parent/Guardian' ");
-            sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Guardian' ");
-            sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Person Supported') ");
+            else if (Advisor == false)
+            {
+                sb.Clear();
+                sb.Append("SELECT  dba.ANYW_ISP_Signatures.ISP_Consumer_Signature_ID, dba.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID, dba.ANYW_ISP_Signatures.CS_Change_Mind, ");
+                sb.Append("dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID, dba.ANYW_ISP_Signatures.CS_Contact, dba.ANYW_ISP_Signatures.CS_Contact_Provider_Vendor_ID, ");
+                sb.Append("dba.ANYW_ISP_Signatures.CS_Contact_Input, dba.ANYW_ISP_Signatures.CS_Rights_Reviewed, dba.ANYW_ISP_Signatures.CS_Agree_To_Plan, ");
+                sb.Append("dba.ANYW_ISP_Signatures.CS_FCOP_Explained, dba.ANYW_ISP_Signatures.CS_Due_Process, dba.ANYW_ISP_Signatures.CS_Residential_Options, ");
+                sb.Append("dba.ANYW_ISP_Signatures.CS_Supports_Health_Needs, dba.ANYW_ISP_Signatures.Name AS SupportName, SSA.Last_Name, SSA.First_Name, SSA.Middle_Name, ");
+                sb.Append("dba.ANYW_ISP_Signatures.Signature_Order, dba.ANYW_ISP_Signatures.CS_Technology AS TechSolutionsExplored, ");
+                sb.Append("dba.People.First_Name + ' ' + dba.People.Last_Name AS Name2, dba.Organization.Name ");
+                sb.Append("FROM dba.Organization ");
+                sb.Append("RIGHT OUTER JOIN dba.People SSA ON dba.Organization.Organization_ID = SSA.Organization_ID ");
+                sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Signatures ON dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID = SSA.ID ");
+                sb.Append("RIGHT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
+                sb.AppendFormat("WHERE dba.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
+                sb.Append("AND (DBA.ANYW_ISP_Signatures.Team_Member = 'Parent/Guardian' ");
+                sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Guardian' ");
+                sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Person Supported') ");
+            }
 
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             //dt.WriteXmlSchema(@"C:\Work\OComReports\AssesmentXML\ISPTeamMembers2.xml");
@@ -759,6 +776,7 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
+
 
 
 
