@@ -474,13 +474,6 @@ const planConsentAndSign = (() => {
       csChangeMindQuestionDropdown.classList.add('disabled');
     }
     // populate
-    let defaultValue;
-    if (!data.csChangeMindSSAPeopleId) {
-      defaultValue = $.session.applicationName === 'Advisor' ? $.session.UserId : '';
-    } else {
-      defaultValue = data.csChangeMindSSAPeopleId;
-    }
-
     populateDropdownSSA(csChangeMindQuestionDropdown, data.csChangeMindSSAPeopleId);
 
     // Build Out Question with dropdown
@@ -539,7 +532,7 @@ const planConsentAndSign = (() => {
 
     return radioWrap;
   }
-  async function buildContactQuestion(data, popup, isSigned) {
+  function buildContactQuestion(data, popup, isSigned) {
     // popup === 'member' || 'sign'
 
     //Question Container
@@ -588,6 +581,8 @@ const planConsentAndSign = (() => {
       csContactQuestionDropdown.classList.add('disabled');
     } else {
       if ($.session.applicationName === 'Gatekeeper') {
+        contactQuestion.classList.add('disabled');
+        contactQuestionText.classList.add('disabled');
         csContactQuestionDropdown.classList.add('disabled');
       } else {
         if (data.csContactProviderVendorId === '') {
