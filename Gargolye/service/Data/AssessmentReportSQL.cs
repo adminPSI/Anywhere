@@ -316,7 +316,7 @@ namespace Anywhere.service.Data
             {
                 Vendor = "Vendors";
                 FundingSource = "Funding_Sources";
-                Description = "Descriptions";
+                Description = "Funding_Source_Name";
             }
 
             sb.Clear();

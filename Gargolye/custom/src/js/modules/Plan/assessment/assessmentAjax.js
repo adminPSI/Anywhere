@@ -63,8 +63,8 @@ const assessmentAjax = (function () {
         form.setAttribute('action', action);
         form.setAttribute('method', 'POST');
         form.setAttribute('target', '_blank');
-        form.setAttribute('enctype', 'application/json');
-        form.setAttribute('success', successFunction);
+        form.setAttribute('enctype', 'bare');
+        form.setAttribute('success', successFunction);//
         var tokenInput = document.createElement('input');
         tokenInput.setAttribute('name', 'token');
         tokenInput.setAttribute('value', $.session.Token);
