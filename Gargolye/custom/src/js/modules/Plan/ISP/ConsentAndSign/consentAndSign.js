@@ -539,7 +539,7 @@ const planConsentAndSign = (() => {
 
     return radioWrap;
   }
-  function buildContactQuestion(data, popup, isSigned) {
+  async function buildContactQuestion(data, popup, isSigned) {
     // popup === 'member' || 'sign'
 
     //Question Container
@@ -558,6 +558,7 @@ const planConsentAndSign = (() => {
     const csContactQuestionDropdown = dropdown.inlineBuild({
       dropdownId: 'isp_ic_vendorContactDropdown',
     });
+
     // populate
     populateDropdownVendor(csContactQuestionDropdown, data.csContactProviderVendorId);
 

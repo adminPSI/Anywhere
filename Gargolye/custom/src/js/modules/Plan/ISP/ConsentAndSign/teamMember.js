@@ -373,12 +373,20 @@ const csTeamMember = (() => {
 
     return changeMindQuestion;
   }
-  function getContactMarkup() {
+  async function getContactMarkup() {
+    if ($.session.applicationName === 'Gatekeeper') {
+      const data = await consentAndSignAjax.getConsumerOrganizationId({
+        peopleId: selectedMemberData.csChangeMindSSAPeopleId,
+      });
+
+      data.csContactProviderVendorId = data.orgId;
+    }
     // get markup
     const contactQuestion = planConsentAndSign.buildContactQuestion(
       {
         csContactProviderVendorId: selectedMemberData.csContactProviderVendorId,
         csContactInput: selectedMemberData.csContactInput,
+        ssaId: selectedMemberData.csChangeMindSSAPeopleId,
       },
       'member',
       isSigned,
@@ -400,15 +408,6 @@ const csTeamMember = (() => {
         }
 
         planConsentAndSign.updateVendorDropdownWidth(teamMemberPopup);
-      } else if (targetId === 'CS_Contact_Input') {
-        const contactInput = teamMemberPopup.querySelector('.csContactInput');
-        selectedMemberData.csContactInput = event.target.value;
-
-        // if (selectedMemberData.csContactInput === '') {
-        //   contactInput.classList.add('error');
-        // } else {
-        //   contactInput.classList.remove('error');
-        // }
       }
 
       checkTeamMemberPopupForErrors();

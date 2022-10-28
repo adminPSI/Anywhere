@@ -360,6 +360,13 @@ const servicesSupports = (() => {
       } else {
         defaultValue = '24';
       }
+    } else {
+      if (availableServiceTypes.includes(defaultValue)) {
+        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        defaultValue = '%';
+      }
     }
 
     dropdown.populate(dropdownEle, data, defaultValue);
