@@ -372,34 +372,31 @@ const assessment = (function () {
     }
   }
   async function generateReportWithAttachments(assessmentID, versionID, extraSpace, attachmentIds) {
-    try {
-      const success = (
-        await assessmentAjax.getPlanAssessmentReportWithAttachments({
-          token: $.session.Token,
-          userId: $.session.PeopleId,
-          assessmentID,
-          versionID,
-          extraSpace: extraSpace,
-          isp: true,
-          attachmentIds,
-        })
-      ).addSelectedAttachmentsToReportResult;
+    const success = assessmentAjax.getPlanAssessmentReportWithAttachments(
+      {
+        token: $.session.Token,
+        userId: $.session.PeopleId,
+        assessmentID,
+        versionID,
+        extraSpace: extraSpace,
+        isp: true,
+        attachmentIds,
+      },
+      () => {
+        const arr = success._buffer;
+        const byteArray = new Uint8Array(arr);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        if ($.session.browser === 'Explorer' || $.session.browser === 'Mozilla') {
+          window.navigator.msSaveOrOpenBlob(blob, 'report.pdf');
+        } else {
+          const fileURL = URL.createObjectURL(blob);
+          window.open(fileURL);
+        }
 
-      const arr = success._buffer;
-      const byteArray = new Uint8Array(arr);
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
-      if ($.session.browser === 'Explorer' || $.session.browser === 'Mozilla') {
-        window.navigator.msSaveOrOpenBlob(blob, 'report.pdf');
-      } else {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL);
-      }
-
-      reports.handledProcessedReport();
-      return 'success';
-    } catch (error) {
-      return error.statusText;
-    }
+        reports.handledProcessedReport();
+        return 'success';
+      },
+    );
   }
 
   async function transeferPlanReportToONET(assessmentID, versionID) {
