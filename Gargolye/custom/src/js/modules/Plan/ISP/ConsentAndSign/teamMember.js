@@ -356,8 +356,8 @@ const csTeamMember = (() => {
           });
 
           const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
-          vendorDropdown.value = data.orgId;
-          selectedMemberData.csContactProviderVendorId = data.orgId;
+          vendorDropdown.value = data[0].orgId;
+          selectedMemberData.csContactProviderVendorId = data[0].orgId;
         }
 
         // update contact input field
