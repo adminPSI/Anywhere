@@ -429,7 +429,7 @@ namespace Anywhere.service.Data
                 sb.Append("FROM  dba.ANYW_ISP_Signatures ");
                 sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
                 sb.Append("LEFT OUTER JOIN dba.People SSA ON dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID = SSA.ID ");
-                sb.Append("LEFT OUTER JOIN dba.Vednors ON dba.ANYW_ISP_Signatures.CS_Contact_Provider_Vendor_ID = dba.Vendors.Vendor_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Vendors ON dba.ANYW_ISP_Signatures.CS_Contact_Provider_Vendor_ID = dba.Vendors.Vendor_ID ");
                 sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
                 sb.Append("AND (DBA.ANYW_ISP_Signatures.Team_Member = 'Parent/Guardian' ");
                 sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Guardian' ");
@@ -776,8 +776,6 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
-
-
 
 
 

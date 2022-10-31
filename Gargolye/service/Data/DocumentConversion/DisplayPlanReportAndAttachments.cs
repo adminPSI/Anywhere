@@ -94,13 +94,14 @@ namespace Anywhere.service.Data.DocumentConversion
                                 attachment.filename = attachment.filename.Replace("doc", "pdf");
                             }
 
-                            byte[] nAttachment = displayAttachment(attachment);
+                            byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);//displayAttachment(attachment);
                             var filter = new MemoryFilter(nAttachment.Length, true);
                             var filterWriter = new FilterWriter(filter);
                             filterWriter.WriteBuffer(nAttachment);
                             filterWriter.Flush();
                             pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
                             //filterWriter.Flush();
+                            
                             string pdfversion = doc.GetSDFDoc().GetHeader();
                             new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
                             
