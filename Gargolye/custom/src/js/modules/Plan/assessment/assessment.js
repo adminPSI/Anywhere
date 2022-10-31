@@ -371,8 +371,8 @@ const assessment = (function () {
       return error.statusText;
     }
   }
-  async function generateReportWithAttachments(assessmentID, versionID, extraSpace, attachmentIds) {
-    const success = assessmentAjax.getPlanAssessmentReportWithAttachments(
+  function generateReportWithAttachments(assessmentID, versionID, extraSpace, attachmentIds) {
+    assessmentAjax.getPlanAssessmentReportWithAttachments(
       {
         token: $.session.Token,
         userId: $.session.PeopleId,

@@ -771,46 +771,42 @@ const plan = (function () {
         // generate report
         if (Object.keys(selectedAttachments).length > 0) {
           const attachmentIds = Object.keys(selectedAttachments);
-          isSuccess = await assessment.generateReportWithAttachments(
-            planId,
-            '1',
-            extraSpace,
-            attachmentIds,
-          );
+          assessment.generateReportWithAttachments(planId, '1', extraSpace, attachmentIds);
         } else {
           isSuccess = await assessment.generateReport(planId, '1', extraSpace);
         }
 
         // remove spinner
         reportsScreen.removeChild(spinner);
+        reportsScreen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
         // handle success/error
-        if (isSuccess !== 'success') {
-          morePopup.classList.add('error');
-          // build a show error message
-          const message = document.createElement('div');
-          message.classList.add('warningMessage');
-          message.innerHTML = `<p>There was an error retrieving your report, please contact Primary Solutions.</p>`;
-          const okBtn = button.build({
-            id: 'rptErrOkBtn',
-            text: 'OK',
-            style: 'secondary',
-            type: 'contained',
-            callback: () => {
-              reportsScreen.removeChild(message);
-              reportsScreen.removeChild(okBtn);
-              morePopup.classList.remove('error');
-              reportsScreen.classList.remove('visible');
-              morePopupMenu.classList.add('visible');
-            },
-          });
-          okBtn.classList.add('okBtn');
-
-          reportsScreen.appendChild(message);
-          reportsScreen.appendChild(okBtn);
-        } else {
-          reportsScreen.classList.remove('visible');
-          morePopupMenu.classList.add('visible');
-        }
+        // if (isSuccess !== 'success') {
+        //   // morePopup.classList.add('error');
+        //   // // build a show error message
+        //   // const message = document.createElement('div');
+        //   // message.classList.add('warningMessage');
+        //   // message.innerHTML = `<p>There was an error retrieving your report, please contact Primary Solutions.</p>`;
+        //   // const okBtn = button.build({
+        //   //   id: 'rptErrOkBtn',
+        //   //   text: 'OK',
+        //   //   style: 'secondary',
+        //   //   type: 'contained',
+        //   //   callback: () => {
+        //   //     reportsScreen.removeChild(message);
+        //   //     reportsScreen.removeChild(okBtn);
+        //   //     morePopup.classList.remove('error');
+        //   //     reportsScreen.classList.remove('visible');
+        //   //     morePopupMenu.classList.add('visible');
+        //   //   },
+        //   // });
+        //   // okBtn.classList.add('okBtn');
+        //   // reportsScreen.appendChild(message);
+        //   // reportsScreen.appendChild(okBtn);
+        // } else {
+        //   reportsScreen.classList.remove('visible');
+        //   morePopupMenu.classList.add('visible');
+        // }
       },
     });
 
@@ -1564,8 +1560,8 @@ const plan = (function () {
     });
 
     const message = document.createElement('p');
-      message.innerText = `This consumer does not have a Resident Number or a SalesForce ID. Please insert the Resident Number or confirm that it is a valid number in the Desktop before inserting a Plan.`;  
-  
+    message.innerText = `This consumer does not have a Resident Number or a SalesForce ID. Please insert the Resident Number or confirm that it is a valid number in the Desktop before inserting a Plan.`;
+
     warningPopup.appendChild(message);
 
     POPUP.show(warningPopup);
