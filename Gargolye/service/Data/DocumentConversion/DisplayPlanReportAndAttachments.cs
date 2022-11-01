@@ -214,7 +214,8 @@ namespace Anywhere.service.Data.DocumentConversion
             Attachment attachment = new Attachment();
             attachment.filename = "";
             attachment.data = null;
-            bool guid = attachmentId.Any(x => !char.IsLetter(x));
+            char value = '-';
+            bool guid = attachmentId.Contains(value);
             if (guid)
             {
                 return viewWFAttachment("", attachmentId, section);
