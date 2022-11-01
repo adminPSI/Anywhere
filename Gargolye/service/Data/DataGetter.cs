@@ -2959,6 +2959,23 @@ namespace Anywhere.Data
             }
         }
 
+        public string GetWFAttachmentFileName(string attachmentId)
+        {
+            logger.debug("GetIndividualAttachment " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WF_GetAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallRaw(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("6349", ex.Message + "ANYW_Roster_GetAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "6394: error ANYW_Roster_GetAttachmentFileName";
+            }
+        }
+
         public MemoryStream GetAttachmentData(string attachmentId)
         {
             logger.debug("GetAttachmentData " + attachmentId);
@@ -2975,6 +2992,26 @@ namespace Anywhere.Data
             catch (Exception ex)
             {
                 logger.error("640", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
+            }
+        }
+
+        public MemoryStream GetWfAttachmentData(string attachmentId)
+        {
+            logger.debug("GetAttachmentData " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WF_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                //MemoryStream temp = new MemoryStream();
+                //temp = executeSQLReturnMemoryStream("SELECT Attachment from Attachments where Attachment_ID = " + attachmentId);
+                //temp = executeSQLReturnMemoryStream(text);
+                return executeSQLReturnMemoryStream(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("6404", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return null;
             }
         }

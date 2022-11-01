@@ -18,6 +18,7 @@ using System.Collections;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 using pdftron;
+using System.Management.Automation.Language;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -213,18 +214,49 @@ namespace Anywhere.service.Data.DocumentConversion
             Attachment attachment = new Attachment();
             attachment.filename = "";
             attachment.data = null;
-            
-            try
+            bool guid = attachmentId.Any(x => !char.IsLetter(x));
+            if (guid)
             {
-                attachment.filename = aadg.getPlanAttachmentFileName(attachmentId, section);
-                attachment.data = aadg.GetAttachmentData(attachmentId);//reused
+                return viewWFAttachment("", attachmentId, section);
             }
-            catch (Exception ex)
+            else
             {
+                try
+                {
+                    attachment.filename = aadg.getPlanAttachmentFileName(attachmentId, section);
+                    attachment.data = aadg.GetAttachmentData(attachmentId);//reused
+                }
+                catch (Exception ex)
+                {
 
+                }
+                // return displayAttachment(attachment);
             }
-            // return displayAttachment(attachment);
+
             return attachment;
+        }
+
+        public Attachment viewWFAttachment(String token, String attachmentId, string section)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            bool isTokenValid = true;//anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
+                try
+                {
+                    attachment.filename = dg.GetWFAttachmentFileName(attachmentId);
+                    attachment.data = dg.GetWfAttachmentData(attachmentId);//reused
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            //logger.debug("Made it this far in attachment");
+            return attachment;
+            //displayAttachment(attachment);
         }
 
         public byte[] displayAttachment(Attachment attachment)
