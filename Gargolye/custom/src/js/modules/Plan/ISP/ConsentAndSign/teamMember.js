@@ -432,9 +432,9 @@ const csTeamMember = (() => {
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     selectedMemberData = { ...memberData };
 
-    if (!isNew && $.session.applicationName === 'Advisor') {
-      data.csChangeMindSSAPeopleId = $.session.UserId;
-    }
+    // if (!isNew && $.session.applicationName === 'Advisor') {
+    //   selectedMemberData.csChangeMindSSAPeopleId = $.session.UserId;
+    // }
 
     let changeMindQuestion;
     let complaintQuestion;
