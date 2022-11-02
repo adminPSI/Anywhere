@@ -103,10 +103,41 @@ namespace Anywhere.service.Data
             bool isTokenValid = anywhereWorker.ValidateToken(token);
             if (isTokenValid)
             {
+                char value = '-';
+                bool guid = attachmentId.Contains(value);
+                if (guid)
+                {
+                    viewWFAttachment(token, attachmentId, section);
+                }
+                else
+                {
+                    try
+                    {
+                        attachment.filename = aadg.getPlanAttachmentFileName(attachmentId, section);
+                        attachment.data = aadg.GetAttachmentData(attachmentId);//reused
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+                
+            }
+            displayAttachment(attachment);
+        }
+
+        public void viewWFAttachment(string token, string attachmentId, string section)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
                 try
                 {
-                    attachment.filename = aadg.getPlanAttachmentFileName(attachmentId, section);
-                    attachment.data = aadg.GetAttachmentData(attachmentId);//reused
+                    attachment.filename = dg.GetWFAttachmentFileName(attachmentId);
+                    attachment.data = dg.GetWfAttachmentData(attachmentId);//reused
                 }
                 catch (Exception ex)
                 {

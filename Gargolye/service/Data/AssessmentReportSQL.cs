@@ -540,9 +540,9 @@ namespace Anywhere.service.Data
                 sb.Append("'' AS Other_Health_Insurance_Phone, '' AS Other_Health_Insurance_Policy, ");
                 sb.Append("dba.ANYW_ISP_Consumer_Contact.User_ID, dba.ANYW_ISP_Consumer_Plans.plan_year_start, dba.ANYW_ISP_Consumer_Plans.plan_year_end, '' AS FundingSource, ");
                 sb.Append("dba.ANYW_ISP_Consumer_Plans.Best_Way_To_Connect, dba.ANYW_ISP_Consumer_Plans.More_Detail, dba.People.e_mail, dba.People.Nick_Name ");
-                sb.Append("FROM   dba.People  ");
-                sb.Append("LEFT OUTER JOIN dba.Consumers ON dba.People.Consumer_ID = dba.Consumers.Consumer_ID  ");
-                sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Plans ON dba.People.Consumer_ID = dba.ANYW_ISP_Consumer_Plans.consumer_id ");
+                sb.Append("FROM dba.People ");
+                sb.Append("LEFT OUTER JOIN dba.Consumers ON dba.People.Consumer_ID = dba.Consumers.Consumer_ID ");
+                sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Plans ON dba.People.ID = dba.ANYW_ISP_Consumer_Plans.consumer_id ");
                 sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Consumer_Contact ON dba.ANYW_ISP_Consumer_Plans.isp_consumer_plan_id = dba.ANYW_ISP_Consumer_Contact.ISP_Consumer_Plan_ID ");
                 sb.AppendFormat("WHERE DBA.anyw_isp_consumer_plans.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
             }
@@ -744,7 +744,6 @@ namespace Anywhere.service.Data
 
                     };
                 }
-
 
                 if (ba != null)
 
