@@ -103,7 +103,8 @@ namespace Anywhere.service.Data
             bool isTokenValid = anywhereWorker.ValidateToken(token);
             if (isTokenValid)
             {
-                bool guid = attachmentId.Any(x => !char.IsLetter(x));
+                char value = '-';
+                bool guid = attachmentId.Contains(value);
                 if (guid)
                 {
                     viewWFAttachment(token, attachmentId, section);
