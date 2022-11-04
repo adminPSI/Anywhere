@@ -258,7 +258,7 @@ $.session.OODView = false;
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
-$.session.version = '2022.2';
+$.session.version = '2022.3';
 //State Abbreviation
 $.session.stateAbbreviation = '';
 // temp holder for the device GUID when logging in
@@ -525,7 +525,7 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'View' || $.session.isPSI == true) {
         $.session.planView = true;
-        }
+      }
       if (tmpPerm == 'Send to DODD' || $.session.isPSI == true) {
         $.session.sendToDODD = true;
       }
@@ -561,7 +561,7 @@ function setSessionVariables() {
       }
     }
 
-    // Anywhere Forms 
+    // Anywhere Forms
     if (tmpWindow == 'Anywhere Forms' || $.session.isPSI == true) {
       if (tmpPerm == 'Update' || $.session.isPSI == true) {
         $.session.formsUpdate = true;
@@ -582,11 +582,11 @@ function setSessionVariables() {
         $.session.formsCaseload = false;
       }
 
-      if  (tmpPerm.length > 9) {
-        if (tmpPerm.substring(0,9) == 'Form Type') {
+      if (tmpPerm.length > 9) {
+        if (tmpPerm.substring(0, 9) == 'Form Type') {
           $.session.formsFormtype = true;
         }
-      }  
+      }
       if ($.session.isPSI == true) {
         $.session.formsFormtype = false;
       }
@@ -606,7 +606,6 @@ function setSessionVariables() {
       if (tmpPerm == 'Insert' || $.session.isPSI == true) {
         $.session.OODInsert = true;
       }
-     
     }
 
     if (tmpWindow == 'Anywhere User Home') {
@@ -782,29 +781,31 @@ function setUpPasswordResetMessages(res) {
     success = $('Success', this).text();
   });
   if (error.indexOf('808') != -1) {
-    $('#confirmResetMessage').html('A temporary password has been sent to your email address on file. If you do not receive an email please contact your System Administrator.');
-      $('#confirmResetMessage').css('color', '#f13c6e');
-      $('#resetButton').text('Change Password');
-      $.session.changeEmailSent = true;
-  } else if (error.indexOf('888') != -1) {
     $('#confirmResetMessage').html(
-      'Forgot password functionality is not offered by your company.',
+      'A temporary password has been sent to your email address on file. If you do not receive an email please contact your System Administrator.',
     );
+    $('#confirmResetMessage').css('color', '#f13c6e');
+    $('#resetButton').text('Change Password');
+    $.session.changeEmailSent = true;
+  } else if (error.indexOf('888') != -1) {
+    $('#confirmResetMessage').html('Forgot password functionality is not offered by your company.');
     $('#confirmResetMessage').css('color', '#f13c6e');
   } else {
     //var reset = true;
     //customPasswordChange(reset);
-    $('#confirmResetMessage').html('A temporary password has been sent to your email address on file. If you do not receive an email please contact your System Administrator.');
-      $('#confirmResetMessage').css('color', '#f13c6e');
-      $('#resetButton').text('Change Password');
-      r = document.getElementById('resetButton');
-      r.addEventListener("click", () => customPasswordChange(reset), false);
-      $.session.changeEmailSent = true;
+    $('#confirmResetMessage').html(
+      'A temporary password has been sent to your email address on file. If you do not receive an email please contact your System Administrator.',
+    );
+    $('#confirmResetMessage').css('color', '#f13c6e');
+    $('#resetButton').text('Change Password');
+    r = document.getElementById('resetButton');
+    r.addEventListener('click', () => customPasswordChange(reset), false);
+    $.session.changeEmailSent = true;
   }
 }
 
 function toResetPage() {
-    customPasswordChange(reset);
+  customPasswordChange(reset);
 }
 
 function resetPasswordClick() {
@@ -1125,18 +1126,14 @@ function checkPass() {
       pass2.value.length === 0 &&
       $.session.changePasswordLinkSelected === ''
     ) {
-      message.innerHTML =
-        'Your password has expired, please enter and confirm a new password.';
+      message.innerHTML = 'Your password has expired, please enter and confirm a new password.';
       return 0;
     }
 
     //is password strong?
     if (IsPasswordStrong(pass1.value) !== 1) {
       // specialCharDisplay. Remove the escape from backslash and quote.
-      let specialCharDisplay = $.session.passwordSpecialCharacters.replaceAll(
-        `\\\\`,
-        `\\`,
-      );
+      let specialCharDisplay = $.session.passwordSpecialCharacters.replaceAll(`\\\\`, `\\`);
       specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
       message.innerHTML = `
         Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
@@ -1409,10 +1406,7 @@ function checkModulePermissions() {
     $('#goalssettingsdiv').addClass('disabledModule');
   }
 
-  if (
-    $.session.CaseNotesView == false ||
-    $.session.CaseNotesTablePermissionView == false
-  ) {
+  if ($.session.CaseNotesView == false || $.session.CaseNotesTablePermissionView == false) {
     $('#casenotessettingsdiv').addClass('disabledModule');
   }
 
@@ -1462,7 +1456,7 @@ function disableModules() {
     $('#adminsingleentrysettingsdiv').css('display', 'none');
     $('#transportationsettingsdiv').css('display', 'none');
     $('#OODsettingsdiv').css('display', 'none');
-    
+
     $('#customlinks').css('display', 'none');
   }
 
@@ -1537,23 +1531,20 @@ function disableModules() {
   } else {
     $('#emarsettingsdiv').css('display', 'none');
   }
-   if ($.session.formsPermission == 'Anywhere_Forms') {
-     //Leave module on
-   } else {
-     $('#PDFFormssettingsdiv').css('display', 'none');
-   }
-   if ($.session.OODPermission == 'Anywhere_OOD') {
+  if ($.session.formsPermission == 'Anywhere_Forms') {
+    //Leave module on
+  } else {
+    $('#PDFFormssettingsdiv').css('display', 'none');
+  }
+  if ($.session.OODPermission == 'Anywhere_OOD') {
     //Leave module on
   } else {
     $('#OODsettingsdiv').css('display', 'none');
   }
-  if (
-    $.session.UserId === 'ash' ||
-    ($.session.anywherePlanPermission == 'Anywhere_Plan')
-  ) {
+  if ($.session.UserId === 'ash' || $.session.anywherePlanPermission == 'Anywhere_Plan') {
     //Leave module on
   } else {
-   $('#plansettingsdiv').css('display', 'none');
+    $('#plansettingsdiv').css('display', 'none');
   }
 }
 
