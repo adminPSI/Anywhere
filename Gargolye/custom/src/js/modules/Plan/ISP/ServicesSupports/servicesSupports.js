@@ -410,7 +410,7 @@ const servicesSupports = (() => {
 
       //if there's no default value, and only one option, make that option the default
       if (!defaultValue) {
-        if (thisVendorDropDownData.length === 1 && $.session.applicationName === 'Advisor') {
+        if (thisVendorDropDownData.length === 1) {
           defaultValue = thisVendorDropDownData[0].value;
           saveUpdateProvider = defaultValue;
           dropdownEle.classList.remove('error');
@@ -438,7 +438,7 @@ const servicesSupports = (() => {
 
       //if there's no default value, and only one option, make that option the default
       if (!defaultValue) {
-        if (thisVendorDropDownData.length === 1 && $.session.applicationName === 'Advisor') {
+        if (thisVendorDropDownData.length === 1) {
           defaultValue = thisVendorDropDownData[0].value;
           saveUpdateProvider = defaultValue;
           dropdownEle.classList.remove('error');
@@ -514,7 +514,7 @@ const servicesSupports = (() => {
     //if there's no default value, and only one option, make that option the default
     if (!defaultValue) {
       const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
-      if (tempData.length === 1 && $.session.applicationName === 'Advisor') {
+      if (tempData.length === 1) {
         defaultValue = tempData[0].value;
         saveUpdateProvider = defaultValue;
         dropdownEle.classList.remove('error');
