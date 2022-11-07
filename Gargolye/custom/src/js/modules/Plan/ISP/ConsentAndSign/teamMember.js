@@ -81,7 +81,10 @@ const csTeamMember = (() => {
     checkTeamMemberPopupForErrors();
 
     // save team member
-    if (getPlanStatus() === 'C') {
+    const status = plan.getPlanStatus();
+    const activeStatus = plan.getPlanActiveStatus();
+
+    if (readOnly) {
       saveTeamMember();
       return;
     }
@@ -123,7 +126,7 @@ const csTeamMember = (() => {
     if (isNew) {
       if (importedFromRelationship) {
         selectedMemberData.relationshipImport = 'T';
-        selectedMemberData.createRelationship = 'F';
+        selectedMemberData.createRelationship = 'T';
       } else {
         selectedMemberData.relationshipImport = 'F';
         selectedMemberData.createRelationship = 'T';
@@ -642,12 +645,16 @@ const csTeamMember = (() => {
       teamMemberPopup.appendChild(dateSignedDisplay);
     }
     if (isNew) {
-      if ($.session.areInSalesForce) teamMemberPopup.appendChild(linkToRelationshipBtn);
+      teamMemberPopup.appendChild(linkToRelationshipBtn);
     } else {
-      if (!selectedMemberData.contactId && $.session.areInSalesForce) {
+      if (!selectedMemberData.contactId) {
         teamMemberPopup.appendChild(linkToRelationshipBtn);
       }
-      if ($.session.areInSalesForce && !selectedMemberData.salesForceId && selectedMemberData.contactId) {
+      if (
+        $.session.areInSalesForce &&
+        !selectedMemberData.salesForceId &&
+        selectedMemberData.contactId
+      ) {
         teamMemberPopup.appendChild(linkToSalesforceBtn);
       }
     }
