@@ -96,12 +96,12 @@ const csSignature = (() => {
       sigCanvas.classList.add('evvCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
-      sigCanvas.addEventListener('touchend', () => {
-        console.log('touchend');
-      });
-      sigCanvas.addEventListener('mouseup', () => {
-        console.log('mouseup');
-      });
+      // sigCanvas.addEventListener('touchend', () => {
+      //   console.log('touchend');
+      // });
+      // sigCanvas.addEventListener('mouseup', () => {
+      //   console.log('mouseup');
+      // });
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;
@@ -187,8 +187,7 @@ const csSignature = (() => {
       },
       {
         id: 'csAgreeToPlan',
-        text:
-          'I understand the purpose, benefits, and potential risks. I agree and consent to this entire plan.',
+        text: 'I understand the purpose, benefits, and potential risks. I agree and consent to this entire plan.',
         options: ['Yes', 'No'],
         defaultVal: selectedMemberData.csAgreeToPlan,
       },
@@ -335,6 +334,7 @@ const csSignature = (() => {
         csContactProviderVendorId: selectedMemberData.csContactProviderVendorId,
         csContactInput: selectedMemberData.csContactInput,
         csContact: selectedMemberData.csContact,
+        ssaId: selectedMemberData.csChangeMindSSAPeopleId,
       },
       'sign',
       isSigned,

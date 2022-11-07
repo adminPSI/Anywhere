@@ -51,12 +51,13 @@ namespace Anywhere.service.Data.PlanInformedConsent
             }
         }
 
-        public string getPlanInformedConsentVendors(string token)
+        public string getPlanInformedConsentVendors(string token, string peopleid)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("GetInformedConsentVendors ");
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(peopleid);
             string text = "CALL DBA.ANYW_ISP_GetInformedConsentVendors(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

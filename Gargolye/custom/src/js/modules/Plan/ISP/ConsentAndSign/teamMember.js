@@ -337,7 +337,7 @@ const csTeamMember = (() => {
     );
 
     // set event
-    changeMindQuestion.addEventListener('change', event => {
+    changeMindQuestion.addEventListener('change', async event => {
       const target = event.target;
       const targetId = target.id;
 
@@ -351,6 +351,21 @@ const csTeamMember = (() => {
         }
 
         planConsentAndSign.updateSSADropdownWidth(teamMemberPopup);
+
+        // set vendor dropdown
+        if ($.session.applicationName === 'Gatekeeper') {
+          const data = await consentAndSignAjax.getConsumerOrganizationId({
+            peopleId: selectedMemberData.csChangeMindSSAPeopleId,
+          });
+
+          const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
+          vendorDropdown.value = data[0].orgId;
+          selectedMemberData.csContactProviderVendorId = data[0].orgId;
+        }
+
+        // update contact input field
+        const contactInput = document.getElementById('CS_Contact_Input');
+        contactInput.value = event.target.selectedOptions[0].innerText;
       }
 
       checkTeamMemberPopupForErrors();
@@ -362,12 +377,20 @@ const csTeamMember = (() => {
 
     return changeMindQuestion;
   }
-  function getContactMarkup() {
+  async function getContactMarkup() {
+    if ($.session.applicationName === 'Gatekeeper') {
+      const data = await consentAndSignAjax.getConsumerOrganizationId({
+        peopleId: selectedMemberData.csChangeMindSSAPeopleId,
+      });
+
+      selectedMemberData.csContactProviderVendorId = data[0].orgId;
+    }
     // get markup
     const contactQuestion = planConsentAndSign.buildContactQuestion(
       {
         csContactProviderVendorId: selectedMemberData.csContactProviderVendorId,
         csContactInput: selectedMemberData.csContactInput,
+        ssaId: selectedMemberData.csChangeMindSSAPeopleId,
       },
       'member',
       isSigned,
@@ -389,15 +412,6 @@ const csTeamMember = (() => {
         }
 
         planConsentAndSign.updateVendorDropdownWidth(teamMemberPopup);
-      } else if (targetId === 'CS_Contact_Input') {
-        const contactInput = teamMemberPopup.querySelector('.csContactInput');
-        selectedMemberData.csContactInput = event.target.value;
-
-        if (selectedMemberData.csContactInput === '') {
-          contactInput.classList.add('error');
-        } else {
-          contactInput.classList.remove('error');
-        }
       }
 
       checkTeamMemberPopupForErrors();
@@ -414,12 +428,16 @@ const csTeamMember = (() => {
   //*------------------------------------------------------
   //* MAIN
   //*------------------------------------------------------
-  function showPopup({ isNewMember, isReadOnly, memberData }) {
+  async function showPopup({ isNewMember, isReadOnly, memberData }) {
     isNew = isNewMember;
     isSigned = memberData.dateSigned !== '';
     readOnly = isReadOnly; //setReadOnlyValue(isReadOnly, memberData);
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     selectedMemberData = { ...memberData };
+
+    // if (!isNew && $.session.applicationName === 'Advisor') {
+    //   selectedMemberData.csChangeMindSSAPeopleId = $.session.UserId;
+    // }
 
     let changeMindQuestion;
     let complaintQuestion;
@@ -465,7 +483,7 @@ const csTeamMember = (() => {
       dropdownId: 'sigPopup_teamMember',
       label: 'Team Member',
       readonly: isSigned || readOnly,
-      callback: event => {
+      callback: async event => {
         selectedMemberData.teamMember = event.target.value;
 
         if (event.target.value === '') {
@@ -496,7 +514,7 @@ const csTeamMember = (() => {
               selectedMemberData.csContactInput = globals.CONTACT;
               // rebuild them
               changeMindQuestion = getChangeMindMarkup();
-              complaintQuestion = getContactMarkup();
+              complaintQuestion = await getContactMarkup();
               // show them
               teamMemberPopup.insertBefore(changeMindQuestion, participationRadios);
               teamMemberPopup.insertBefore(complaintQuestion, participationRadios);
@@ -593,7 +611,7 @@ const csTeamMember = (() => {
     //*------------------------------
     if (showConsentStatments) {
       changeMindQuestion = getChangeMindMarkup();
-      complaintQuestion = getContactMarkup();
+      complaintQuestion = await getContactMarkup();
     }
 
     //* BUTTONS

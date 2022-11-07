@@ -188,6 +188,38 @@ var schedulingAjax = (function () {
       });
   }
 
+  async function getOverlapStatusforSelectedShiftAjax(shiftId, personId) {
+    try {
+        const result = await $.ajax({
+          type: "POST",
+          url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
+              "/" + $.webServer.serviceName + "/getOverlapStatusforSelectedShift/",
+          data: '{"token":"' + $.session.Token + '","shiftId":"' + shiftId + '","personId":"' + personId + '"}',
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+        });
+        return result;
+    } catch (error) {
+        throw new Error(error.responseText);
+    }
+}
+
+async function getOverlapDataforSelectedShiftAjax(shiftId, personId) {
+    try {
+        const result = await $.ajax({
+          type: "POST",
+          url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
+              "/" + $.webServer.serviceName + "/getOverlapDataforSelectedShift/",
+              data: '{"token":"' + $.session.Token + '","shiftId":"' + shiftId + '","personId":"' + personId + '"}',
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+        });
+        return result;
+    } catch (error) {
+        throw new Error(error.responseText);
+    }
+}
+
   function cancelRequestOpenShiftSchedulingAjax(requestShiftId) {//token, requestShiftId)
       $.ajax({
           type: "POST",
@@ -285,6 +317,8 @@ var schedulingAjax = (function () {
       getScheduleApptInformationAjax: getScheduleApptInformationAjax,
       cancelRequestOpenShiftSchedulingAjax: cancelRequestOpenShiftSchedulingAjax,
       saveOpenShiftRequestSchedulingAjax: saveOpenShiftRequestSchedulingAjax,
+      getOverlapStatusforSelectedShiftAjax: getOverlapStatusforSelectedShiftAjax,
+      getOverlapDataforSelectedShiftAjax: getOverlapDataforSelectedShiftAjax,
       approveDenyOpenShiftRequestSchedulingAjax: approveDenyOpenShiftRequestSchedulingAjax,
       approveDenyCallOffRequestSchedulingAjax: approveDenyCallOffRequestSchedulingAjax,
       approveDenyDaysOffRequestSchedulingAjax: approveDenyDaysOffRequestSchedulingAjax,

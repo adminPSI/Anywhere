@@ -605,20 +605,31 @@ var schedulingCalendar = (function () {
       text: 'Request Shift',
       style: 'secondary',
       type: 'contained',
-      callback: function () {
+      callback: async function () {
         var token = $.session.Token;
         var shiftId = details.shiftId;
         var personId = $.session.PeopleId;
         var status = 'P';
         var notifiedEmployeeId = null;
         POPUP.hide(popup);
-        renderSendShiftRequestPopup({
-          token,
-          shiftId,
-          personId,
-          status,
-          notifiedEmployeeId,
-        });
+
+          const { getOverlapStatusforSelectedShiftResult: overlapWithExistingShift } =
+					await schedulingAjax.getOverlapStatusforSelectedShiftAjax(shiftId, personId);
+
+         if (overlapWithExistingShift == "NoOverLap" ) {
+          renderSendShiftRequestPopup({
+            token,
+            shiftId,
+            personId,
+            status,
+            notifiedEmployeeId,
+          });
+              
+         } else {
+          displayOverlapPopup(overlapWithExistingShift);
+          return;
+         } 
+
       },
     });
 
@@ -636,6 +647,37 @@ var schedulingCalendar = (function () {
     // (!$.session.schedulingUpdate || !$.session.schedulingView) ? null: popup.appendChild(btnWrap)
 
     POPUP.show(popup);
+  }
+
+  function displayOverlapPopup(existingShiftLocationName) {
+
+    var overlapPopup = POPUP.build({
+      classNames: 'sendRequestShiftPopup',
+    });
+    overlapWrap = document.createElement('div');
+    overlapWrap.innerHTML = `
+          <div class="detailsHeading">
+            <h2>Requested Shift Overlap</h2>
+            <p>This open shift overlaps with an existing shift you are scheduled to work at ${existingShiftLocationName}. You cannot request this open shift.</p>
+          </div>
+      `;
+      overlapPopup.appendChild(overlapWrap);
+
+    let overlapCancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      icon: 'close',
+      callback: function () {
+        POPUP.hide(overlapPopup);
+      },
+    });
+
+    //overlapPopup.appendChild(wrap2);
+    overlapPopup.appendChild(overlapCancelBtn);
+
+    POPUP.show(overlapPopup);
+
   }
   // UPDATED FOR RESPONSIVE POPUP
   function renderSendShiftRequestPopup(data) {

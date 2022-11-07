@@ -40,6 +40,9 @@ using Anywhere.service.Data.DocumentConversion;
 using PSIOISP;
 using System.Reflection;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using Org.BouncyCastle.Bcpg.OpenPgp;
+using static Anywhere.service.Data.AnywhereAttachmentWorker;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere
 {
@@ -385,6 +388,16 @@ namespace Anywhere
         public AnywhereWorker.DefaultSettings[] getDefaultAnywhereSettingsJSON(string token)
         {
             return anywhereWorker.getDefaultAnywhereSettingsJSON(token);
+        }
+
+        public AnywhereWorker.PeopleId[] getConsumerPeopleId(string consumerId)
+        {
+            return anywhereWorker.getConsumerPeopleId(consumerId);
+        }
+
+        public AnywhereWorker.OrganiztionId[] getConsumerOrganizationId(string peopleId)
+        {
+            return anywhereWorker.getConsumerOrganizationId(peopleId);
         }
 
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
@@ -1342,6 +1355,16 @@ namespace Anywhere
             return anywhereScheduleWorker.saveOpenShiftRequestScheduling(token, shiftId, personId, status, notifiedEmployeeId);
         }
 
+        public string getOverlapStatusforSelectedShift(string token, string shiftId, string personId)
+        {
+            return anywhereScheduleWorker.getOverlapStatusforSelectedShift(token, shiftId, personId);
+        }
+
+        public string getOverlapDataforSelectedShift(string token, string shiftId, string personId)
+        {
+            return anywhereScheduleWorker.getOverlapDataforSelectedShift(token, shiftId, personId);
+        }
+
         public string cancelRequestOpenShiftScheduling(string token, string requestShiftId)
         {
             return anywhereScheduleWorker.cancelRequestOpenShiftScheduling(token, requestShiftId);
@@ -2297,9 +2320,9 @@ namespace Anywhere
             return picw.getPlanInformedConsentSSAs(token);
         }
 
-        public PlanInformedConsentWorker.InformedConsentVendors[] getPlanInformedConsentVendors(string token)
+        public PlanInformedConsentWorker.InformedConsentVendors[] getPlanInformedConsentVendors(string token, string peopleid)
         {
-            return picw.getPlanInformedConsentVendors(token);
+            return picw.getPlanInformedConsentVendors(token, peopleid);
         }
 
         public PlanInformedConsentWorker.InsertInformedConsent[] insertPlanRestrictiveMeasures(string token, string assessmentId)
@@ -2679,6 +2702,34 @@ namespace Anywhere
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
         {
             return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
+        }
+
+        public void addSelectedAttachmentsToReport(System.IO.Stream testInput)
+        {
+            string token;
+            string userId;
+            string[] attachmentIds;
+            string assessmentID;
+            string versionID;
+            string extraSpace;
+            string isp;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            assessmentID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            versionID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            string[] words = fullInput.Split('&');
+            var index = Array.FindIndex(words, row => row.Contains("attachmentIds"));
+            string attId = words[index];
+            attId = attId.Replace("attachmentIds=", "");
+            attId = attId.Replace("%2C", ",");
+            attachmentIds = attId.Split(',');
+            //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
+            dpra.addSelectedAttachmentsToReport(token, attachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp));
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)

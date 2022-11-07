@@ -24,7 +24,7 @@
     'WhoSaidIt?': 'relationships',
   };
 
-  let delteRowsActive = false;
+  let deleteRowsActive = false;
   let selectedRow;
   let isSortable;
 
@@ -913,7 +913,7 @@
       grid.addEventListener('click', async e => {
         const target = e.target;
 
-        if (delteRowsActive && target.classList.contains('grid__row')) {
+        if (deleteRowsActive && target.classList.contains('grid__row')) {
           const isSeleted = target.classList.contains('selected');
           const rowId = target.id.replace('roworder', '');
 
@@ -1079,16 +1079,16 @@
           DOM.autosizeTextarea();
         }
         if (target === deleteRowsBtn) {
-          if (delteRowsActive) {
+          if (deleteRowsActive) {
             deleteSelectedRows(grid, gridBody, questionSetId);
           }
 
-          delteRowsActive = !delteRowsActive;
+          deleteRowsActive = !deleteRowsActive;
 
-          if (delteRowsActive) {
+          if (deleteRowsActive) {
             grid.classList.add('delteActive');
             selectedRow = undefined;
-            deleteRowsBtn.innerText = 'Delete Selected Rows';
+            deleteRowsBtn.innerText = 'Delete Selected Row';
             deleteRowsBtn.classList.add('selected');
             cancelDeleteRowsBtn.classList.remove('hidden');
           } else {
@@ -1100,9 +1100,10 @@
         }
         if (target === cancelDeleteRowsBtn) {
           selectedRow = undefined;
-          delteRowsActive = false;
+          deleteRowsActive = false;
           const row = grid.querySelector('.grid__row.selected');
-          rows.classList.remove('selected');
+          if (row)
+            row.classList.remove('selected');
           grid.classList.remove('delteActive');
           deleteRowsBtn.innerText = 'Delete Row';
           deleteRowsBtn.classList.remove('selected');

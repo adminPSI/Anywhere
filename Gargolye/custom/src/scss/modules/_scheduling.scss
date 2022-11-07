@@ -238,3 +238,21 @@ label{
 .request-off {
   margin: 20px 0 15px 0;  
 }
+
+.overlapRequestShiftPopup {
+
+  display: flex;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 10px;
+  box-sizing: border-box;
+  min-width: 600px;
+  display: inline-flex;
+  flex-direction: column;
+  margin: 10px, 10px, 10px, 10px;
+
+  
+ /// flex-grow: 1;
+ // width: 100%;
+
+}

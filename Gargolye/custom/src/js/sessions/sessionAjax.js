@@ -6,7 +6,7 @@ function logIn() {
   const loginBtn = document.getElementById('loginBtn');
   loginBtn.classList.add('disabled');
 	//need to check if code exists on device, pass either it or empty string
-	const userId = $('#username').val().trim();
+	const userId = $('#username').val().trim();	
 	const localDeviceId = UTIL.LS.getStorage('device', userId);
 	const insertData = {
 		userId: userId,
@@ -753,6 +753,8 @@ function getDefaultAnywhereSettings() {
 			//$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
 			//database state - Indiana or Ohio
 			$.session.stateAbbreviation = res.stateAbbreviation;
+			//Set session peopleId for use in ADV Plan
+			$.session.planPeopleId = res.planPeopleId;
 
 			/////////
 			defaultRosterLocationValue = res.defaultrosterlocation;

@@ -298,26 +298,26 @@ const planDates = (function () {
 
     if (priorEffectiveStartTime && effectiveStartTime <= priorEffectiveStartTime) {
       startTimeError = true;
-      console.log('effective start cant be before prior effective start');
+      //console.log('effective start cant be before prior effective start');
     }
     if (effectiveStartTime < planStartTime) {
       startTimeError = true;
     }
     if (effectiveStartTime > planEndTime) {
       startTimeError = true;
-      console.log('effective start cant be after plan end');
+      //console.log('effective start cant be after plan end');
     }
     if (priorStartTime && effectiveStartTime <= priorStartTime) {
       startTimeError = true;
-      console.log('effective start cant be before or same day as prior start year');
+      //console.log('effective start cant be before or same day as prior start year');
     }
     if (effectiveEndTime < effectiveStartTime) {
       endTimeError = true;
-      console.log('effective end cant be before effective start');
+      //console.log('effective end cant be before effective start');
     }
     if (effectiveEndTime > planEndTime) {
       endTimeError = true;
-      console.log('effective end cant be after or on plan end');
+      //console.log('effective end cant be after or on plan end');
     }
 
     if (startTimeError) {

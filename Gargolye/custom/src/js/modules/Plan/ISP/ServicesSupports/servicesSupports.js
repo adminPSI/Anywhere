@@ -19,6 +19,7 @@ const servicesSupports = (() => {
   let providerDropdownSelectedText;
 
   let hcbsSelected;
+  let saveUpdateProvider = '';
 
   const charLimits = {
     scopeOfService: 1000, // paid supp
@@ -328,14 +329,13 @@ const servicesSupports = (() => {
       };
     });
 
+    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
+      defaultValue = '4';
+      hcbsSelected = true;
+    }
+
     if (defaultValue && defaultValue != '')
       fundingSourceDropdownSelectedText = data[defaultValue].text;
-    // data.sort((a, b) => {
-    //   const textA = a.text.toUpperCase();
-    //   const textB = b.text.toUpperCase();
-    //   return textA < textB ? -1 : textA > textB ? 1 : 0;
-    // });
-    // data.unshift({ value: '%', text: '' });
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
@@ -352,20 +352,22 @@ const servicesSupports = (() => {
         });
       }
     });
-
-    if (availableServiceTypes.includes(defaultValue)) {
-      let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-      servicesDropdownSelectedText = servicesDropdownSelected.text;
+    //Only check for defaultValue in Advisor
+    if ($.session.applicationName === 'Advisor') {
+      if (availableServiceTypes.includes(defaultValue)) {
+        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        defaultValue = '24';
+      }
     } else {
-      defaultValue = '%';
+      if (availableServiceTypes.includes(defaultValue)) {
+        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        defaultValue = '%';
+      }
     }
-
-    data.sort((a, b) => {
-      const textA = a.text.toUpperCase();
-      const textB = b.text.toUpperCase();
-      return textA < textB ? -1 : textA > textB ? 1 : 0;
-    });
-    data.unshift({ value: '%', text: '' });
 
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
@@ -406,6 +408,15 @@ const servicesSupports = (() => {
         };
       });
 
+      //if there's no default value, and only one option, make that option the default
+      if (!defaultValue) {
+        if (thisVendorDropDownData.length === 1) {
+          defaultValue = thisVendorDropDownData[0].value;
+          saveUpdateProvider = defaultValue;
+          dropdownEle.classList.remove('error');
+        }
+      }
+
       thisVendorDropDownData.unshift({ value: '%', text: '' });
       dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
 
@@ -424,6 +435,15 @@ const servicesSupports = (() => {
           text: dd.vendorName,
         };
       });
+
+      //if there's no default value, and only one option, make that option the default
+      if (!defaultValue) {
+        if (thisVendorDropDownData.length === 1) {
+          defaultValue = thisVendorDropDownData[0].value;
+          saveUpdateProvider = defaultValue;
+          dropdownEle.classList.remove('error');
+        }
+      }
 
       thisVendorDropDownData.unshift({ value: '%', text: '' });
       dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
@@ -489,6 +509,16 @@ const servicesSupports = (() => {
     const groupDropdownData = [];
     if (paidSupportDropdownData.length > 0) {
       groupDropdownData.push(paidSupportGroup);
+    }
+
+    //if there's no default value, and only one option, make that option the default
+    if (!defaultValue) {
+      const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
+      if (tempData.length === 1) {
+        defaultValue = tempData[0].value;
+        saveUpdateProvider = defaultValue;
+        dropdownEle.classList.remove('error');
+      }
     }
 
     groupDropdownData.push(nonPaidSupportGroup);
@@ -756,7 +786,7 @@ const servicesSupports = (() => {
     if (fromAssessment) {
       assessmentAreaDropdown.classList.add('disabled');
     }
-    // Begin -- Funding Source Drop Down Handling
+    // Funding Source Drop Down
     const fundingSourceDropdown = dropdown.build({
       dropdownId: 'fundingSourceDropdownPS',
       label: 'Funding Source',
@@ -819,7 +849,7 @@ const servicesSupports = (() => {
 
         togglePaidSupportDoneBtn();
       }, //callback end
-    }); // End -- Funding Source Drop Down Handling
+    });
 
     async function validateServicesDropdown() {
       // Validation of Services DDL after selecting from fundingSource DDL
@@ -942,8 +972,7 @@ const servicesSupports = (() => {
         togglePaidSupportDoneBtn();
       },
     });
-    // Service Name - Static data dependent on funding source - ticket 66872
-    // Begin -- Service Drop Down Handling
+    // Service Name
     const serviceNameDropdown = dropdown.build({
       dropdownId: 'serviceNameDropdownPS',
       label: 'Service Name',
@@ -996,8 +1025,7 @@ const servicesSupports = (() => {
       },
     }); // End -- Service Drop Down Handling
 
-    // Service Name Other - changed to other in ticket 66872
-    // Enabled and Required if other is selected in Service Name Dropdown: val 47
+    // Service Name Other
     const serviceNameOtherDropdown = dropdown.build({
       dropdownId: 'serviceNameOtherDropdownPS',
       label: 'Service Name Other',
@@ -1347,25 +1375,40 @@ const servicesSupports = (() => {
     paidSupportPopup.appendChild(btnWrap);
 
     populateAssessmentAreaDropdown(assessmentAreaDropdown, saveUpdateData.assessmentAreaId);
-    // populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
     populateOtherServiceTypesDropdown(serviceNameOtherDropdown, saveUpdateData.serviceNameOther);
     populateHowOftenHowMuchFrequencyDropdown(
       howOftenHowMuchFrequencyDropdown,
       saveUpdateData.howOftenFrequency,
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
-    populateServiceNameDropdown(
-      serviceNameDropdown,
-      saveUpdateData.serviceNameId,
-      saveUpdateData.fundingSource,
-    );
+
+    if ($.session.applicationName === 'Advisor') {
+      saveUpdateData.serviceNameId = '24';
+      saveUpdateData.fundingSource = '4';
+      saveUpdateData.fundingSourceText = 'ICF';
+
+      populateServiceNameDropdown(serviceNameDropdown, '24', '4');
+
+      fundingSourceDropdown.classList.remove('error');
+      serviceNameDropdown.classList.remove('error');
+    } else {
+      populateServiceNameDropdown(
+        serviceNameDropdown,
+        saveUpdateData.serviceNameId,
+        saveUpdateData.fundingSource,
+      );
+    }
+
+    populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+    if (saveUpdateProvider) {
+      saveUpdateData.providerId = saveUpdateProvider;
+    }
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
       fundingSourceDropdownSelectedText = '';
       servicesDropdownSelectedText = '';
       providerDropdownSelectedText = '';
     }
-    populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
 
     POPUP.show(paidSupportPopup);
     DOM.autosizeTextarea();

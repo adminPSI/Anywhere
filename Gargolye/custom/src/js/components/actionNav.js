@@ -45,7 +45,7 @@ var ACTION_NAV = (function () {
   }
 
   // Action Nav Brains
-  function handleNavEvents(event) {
+  async function handleNavEvents(event) {
     var target = event.target;
 
     if (!target.dataset.actionNav) return;
@@ -140,7 +140,7 @@ var ACTION_NAV = (function () {
         break;
       }
       case 'plan': {
-        plan.handleActionNavEvent(target);
+        await plan.handleActionNavEvent(target);
         clear();
         hide();
         break;

@@ -406,6 +406,29 @@
                       xfdfString,
                     });
 
+
+      async function deleteConsumerFormAsync(formId) {
+        try {
+          const result = await $.ajax({
+            type: 'POST',
+            url:
+              $.webServer.protocol +
+              '://' +
+              $.webServer.address +
+              ':' +
+              $.webServer.port +
+              '/' +
+              $.webServer.serviceName +
+              '/deleteConsumerForm/',
+            data:
+              '{"token":"' +
+              $.session.Token +
+              '", "formId":"' +
+              formId +
+              '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+
                     // let documentEdited = "1"; // documentEdited = T
                     //  insertConsumerFormAsync
                     if (documentEdited === '1') {
@@ -502,6 +525,7 @@
                 },
               });
             }
+
           });
 
           // -- Display PDF (from memorystream/string)   --  https://www.pdftron.com/documentation/web/guides/basics/open/base64/

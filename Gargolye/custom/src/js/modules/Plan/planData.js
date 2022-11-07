@@ -19,6 +19,14 @@ const planData = (() => {
     return unique;
   };
   async function setDropdownData() {
+    /**
+     * -- Service Type changes for Ticket 66872 --
+     * Service Types no longer populate from GK, but instead are static,
+     * and are also tied to a specific funding source. Some service types
+     * only show with specific funding sources
+     *  Show with '%' displays with all funding sources
+     * DON'T CHANGE VALUE!
+     */
     const defaultDropdowns = {
       fundingSource: [
         { value: '%', text: '' },
@@ -31,14 +39,6 @@ const planData = (() => {
         { value: '7', text: 'Local Funds--Contracted with Ohio Department of Aging' },
         { value: '8', text: 'Other' },
       ],
-      /**
-       * -- Service Type changes for Ticket 66872 --
-       * Service Types no longer populate from GK, but instead are static,
-       * and are also tied to a specific funding source. Some service types
-       * only show with specific funding sources
-       *  Show with '%' displays with all funding sources
-       * DON'T CHANGE VALUE!
-       */
       serviceTypes: [
         {
           value: '1',
