@@ -13,6 +13,8 @@ using System.IO;
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Text.RegularExpressions;
+using static Anywhere.service.Data.AnywhereWorker;
+using System.Management.Automation.Language;
 
 namespace Anywhere.Data
 {
@@ -774,7 +776,39 @@ namespace Anywhere.Data
                 return "632: error ANYW_GetDefaultAnywhereSettings";
             }
         }
-        
+
+        public string getConsumerPeopleId(string consumerId)
+        {
+            List<string> list = new List<string>();
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GetConsumerPeopleId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("632", ex.Message + "ANYW_GetPeopleId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "632: error ANYW_GetPeopleId";
+            }
+        }
+
+        public string getConsumerOrganizationId(string peopleId)
+        {
+            List<string> list = new List<string>();
+            list.Add(peopleId);
+            string text = "CALL DBA.ANYW_GetConsumerOrganizationId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("632", ex.Message + "ANYW_GetConsumerOrganizationId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "632: error ANYW_GetConsumerOrganizationId";
+            }
+        }
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             if (tokenValidator(token) == false) return null;
@@ -2890,6 +2924,24 @@ namespace Anywhere.Data
             }
         }
 
+        public string GetApplicationName(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("GetAllAttachments " + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GetApplicationName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("6381", ex.Message + "ANYW_GetApplicationName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "6381: error ANYW_GetApplicationName";
+            }
+        }
+
         public string GetAttachmentFileName(string attachmentId)
         {
             logger.debug("GetIndividualAttachment " + attachmentId);
@@ -2904,6 +2956,23 @@ namespace Anywhere.Data
             {
                 logger.error("639", ex.Message + "ANYW_Roster_GetAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "639: error ANYW_Roster_GetAttachmentFileName";
+            }
+        }
+
+        public string GetWFAttachmentFileName(string attachmentId)
+        {
+            logger.debug("GetIndividualAttachment " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WF_GetAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallRaw(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("6349", ex.Message + "ANYW_Roster_GetAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "6394: error ANYW_Roster_GetAttachmentFileName";
             }
         }
 
@@ -2923,6 +2992,26 @@ namespace Anywhere.Data
             catch (Exception ex)
             {
                 logger.error("640", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
+            }
+        }
+
+        public MemoryStream GetWfAttachmentData(string attachmentId)
+        {
+            logger.debug("GetAttachmentData " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WF_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                //MemoryStream temp = new MemoryStream();
+                //temp = executeSQLReturnMemoryStream("SELECT Attachment from Attachments where Attachment_ID = " + attachmentId);
+                //temp = executeSQLReturnMemoryStream(text);
+                return executeSQLReturnMemoryStream(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("6404", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return null;
             }
         }
@@ -4367,6 +4456,44 @@ namespace Anywhere.Data
             {
                 logger.error("698", ex.Message + "ANYW_Scheduling_SaveOpenShiftRequest(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "698: error ANYW_Scheduling_SaveOpenShiftRequest";
+            }
+        }
+
+        public string getSelectedShiftData(string token, string shiftId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSelectedShiftData ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(shiftId);
+            string text = "CALL DBA.ANYW_Scheduling_getSelectedShiftData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("698", ex.Message + "ANYW_Scheduling_getSelectedShiftData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "698: error ANYW_Scheduling_getSelectedShiftData";
+            }
+        }
+
+        public string getCurrentUserApprovedShifts(string token,string personId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getCurrentUserApprovedShifts ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(personId);
+            string text = "CALL DBA.ANYW_Scheduling_getCurrentUserApprovedShifts(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("698", ex.Message + "ANYW_Scheduling_getCurrentUserApprovedShifts(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "698: error ANYW_Scheduling_getCurrentUserApprovedShifts";
             }
         }
 

@@ -3,6 +3,10 @@ var schedulingApproveRequest = (function() {
   var daysOffTable;
   var callOffTable;
   var openShiftTable;
+  var overlapWrap;
+  var overlapsExist = false;
+  var overlapApprovalData;
+  // var openShiftRequests;
 
 
 //UTIL
@@ -286,14 +290,27 @@ function toInteger(dirtyNumber) {
         style: 'secondary',
         type: 'contained',
         icon: 'send',
-        callback: function() {
-          submitApproveDenyRequest()
-          // ADD POPUP? OR TRANSITION?
-          ACTION_NAV.hide();
-          DOM.clearActionCenter();
-          scheduling.init();
+        callback: async function() {
+         await submitApproveDenyRequest();
+         // overlaps exist in approved shifts selected by user
+         if ( overlapApprovalData !== 'NoOverLap') {
+          displayApprovedOverlapPopup();
+
+         } else {
+              // overlaps exist between selected shifts and shifts already approved (ie, shifts saved in DB)
+              if (overlapsExist) {
+                displayOverlapPopup(overlapsExist,overlapWrap); 
+              } else {
+                ACTION_NAV.hide();
+                DOM.clearActionCenter();
+                scheduling.init();
+              }
+        }
+        
         }
       })
+
+
 
       var cancelBtn = button.build({
         text: 'Cancel',
@@ -324,7 +341,8 @@ function toInteger(dirtyNumber) {
             shift.reasonName,
             ''
           ],
-          id: shift.shiftId
+          id: shift.shiftId,
+          attributes: [{ key: 'personId', value: shift.personId }, { key: 'serviceDate', value: shift.day.split(' ')[0] }, { key: 'startTime', value: shift.fromTime }, { key: 'endTime', value: shift.toTime }, { key: 'userName', value: shift.name }],
         }
       })
       return tableData;
@@ -332,11 +350,116 @@ function toInteger(dirtyNumber) {
     
   }
 
-  function submitApproveDenyRequest() {
+  function overlapApprovedShifts(openShiftRequests) {
+
+    var openShiftRequestList = openShiftRequests.map(request => ({ shiftId: request.id, serviceDate: request.attributes.serviceDate.value, personId: request.attributes.personId.value, decision: request.dataset.approvalStatus, startTime: request.attributes.startTime.value, endTime: request.attributes.endTime.value, userName: request.attributes.userName.value }));
+    var selectedShifts = openShiftRequestList.filter(x => x.decision === 'approve');
+
+    for (const approvedShift of selectedShifts) {
+
+      for (const openShiftRequest of openShiftRequestList) {
+
+        // if its not the same record, then chek for an overlap
+        if (approvedShift.shiftId !== openShiftRequest.shiftId) {
+
+          // same person, same date, and openshift = approve, then check for time overlap
+              if ((approvedShift.personId === openShiftRequest.personId) && (approvedShift.serviceDate === openShiftRequest.serviceDate) && (openShiftRequest.decision === 'approve')) {
+
+                var selectedStartTime = approvedShift.startTime;
+                var selectedEndTime = approvedShift.endTime;
+                var existingStartTime = openShiftRequest.startTime;
+                var existingEndTime = openShiftRequest.endTime;
+
+                // is there a time overlap
+                if (((selectedStartTime > existingStartTime) && (selectedStartTime < existingEndTime))
+                || ((selectedEndTime > existingStartTime) && (selectedEndTime < existingEndTime))
+                || (((existingStartTime >= selectedStartTime) && (existingStartTime <= selectedEndTime))
+                  && ((existingEndTime >= selectedStartTime) && (existingEndTime <= selectedEndTime)))
+                || ((existingStartTime == selectedStartTime) && (existingEndTime == selectedEndTime))) {
+                  
+                    return approvedShift.serviceDate + ' ' + approvedShift.userName; 
+
+              } //if compare hours
+
+            } //if compare personId/Date
+        } //if compare personId/Shift
+      } // for openShiftList
+    } // for selectedShifts
+
+    return 'NoOverLap';
+
+  }
+
+
+  function displayApprovedOverlapPopup() {
+
+    var overlapPopup = POPUP.build({
+      classNames: 'overlapRequestShiftPopup',
+    });
+    overlapIntro = document.createElement('div');
+    overlapIntro.innerHTML = `
+          <div class="detailsHeading">
+            <h2>Overlapping Shift Approvals(s)</h2>
+            <p>You selected conflicting overlapping approvals for the following: ${overlapApprovalData}. No approvals were processed. Please review your possible approvals and try again.</p></br>
+          </div>
+      `;
+      overlapPopup.appendChild(overlapIntro);
+    // requestApprovalOverlapPopup
+
+    let overlapOKBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      icon: 'close',
+      callback: function () {
+        POPUP.hide(overlapPopup);
+       // init();
+      },
+    });
+
+   // overlapPopup.appendChild(overlapWrap);
+    overlapPopup.appendChild(overlapOKBtn);
+    POPUP.show(overlapPopup);
+
+  }
+
+  function displayOverlapPopup(overlapsExist, overlapWrap) {
+    if (overlapsExist) {  
+      var overlapPopup = POPUP.build({
+        classNames: 'overlapRequestShiftPopup',
+      });
+      overlapIntro = document.createElement('div');
+      overlapIntro.innerHTML = `
+            <div class="detailsHeading">
+              <h2>Overlapping Open Shift Request(s)</h2>
+              <p>The following open shift requests overlap with an existing shift the staff already scheduled to work. These shifts cannot be approved.</p></br>
+            </div>
+        `;
+        overlapPopup.appendChild(overlapIntro);
+      // requestApprovalOverlapPopup
+
+      let overlapOKBtn = button.build({
+        text: 'OK',
+        style: 'secondary',
+        type: 'contained',
+        icon: 'close',
+        callback: function () {
+          POPUP.hide(overlapPopup);
+           init();
+        },
+      });
+  
+      overlapPopup.appendChild(overlapWrap);
+      overlapPopup.appendChild(overlapOKBtn);
+      POPUP.show(overlapPopup);   
+    }
+  }
+
+   async function submitApproveDenyRequest() {
     
     if (openShiftTable) {
-      openShiftTable = openShiftTable.querySelector('.table__body');
-      var openShiftRequests = Array.prototype.slice.call(openShiftTable.querySelectorAll('.table__row'));
+      var openShiftTableBody = openShiftTable.querySelector('.table__body');
+      var openShiftRequests = Array.prototype.slice.call(openShiftTableBody.querySelectorAll('.table__row'));
     }
     if (callOffTable) {
       callOffTable = callOffTable.querySelector('.table__body');
@@ -351,22 +474,56 @@ function toInteger(dirtyNumber) {
     // var callOffTable = document.getElementById('callOffTable');
     // var daysOffTable = document.getElementById('daysOffTable');
 
-    if (openShiftRequests) {
-      openShiftRequests.forEach(request => {
-        var shiftId = request.id;
-        var decision = request.dataset.approvalStatus;
-        decision = decision === 'approve' ? 'A' : decision === 'deny' ? 'D' : '';
-        if (decision !== '') {
-          //token, requestedShiftId, decision
-          schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
-            token: $.session.Token,
-            requestedShiftId: shiftId,
-            decision: decision
-          });
-        }
-      });
+    // check approved shifts to ensure no overlap (before checking for overlaps with assigned shifts)
+     overlapApprovalData = overlapApprovedShifts(openShiftRequests);
+    if ( overlapApprovalData !== 'NoOverLap') {
+       return;
     }
 
+    // check selected shifts against shifts already assigned to the user
+    if (openShiftRequests) {
+
+      overlapWrap = document.createElement('div');
+      overlapsExist = false
+
+        for (const request of openShiftRequests) {
+        var shiftId = request.id;
+        var decision = request.dataset.approvalStatus;
+        var personId = request.attributes.personId.value;
+        
+        decision = decision === 'approve' ? 'A' : decision === 'deny' ? 'D' : '';
+   
+          const { getOverlapDataforSelectedShiftResult: overlapWithExistingShiftData } =
+					 await schedulingAjax.getOverlapDataforSelectedShiftAjax(shiftId, personId);
+
+
+              if (overlapWithExistingShiftData == "NoOverLap" && decision !== '') {    
+                 schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
+                   token: $.session.Token,
+                   requestedShiftId: shiftId,
+                   decision: decision
+                 });  //ajax
+        
+              } else if (overlapWithExistingShiftData == undefined) {
+
+              } else {
+
+                  if (overlapWithExistingShiftData != "NoOverLap" && decision === 'A') {
+                        overlapsExist = true;
+                        var overlapShiftData = await JSON.parse(overlapWithExistingShiftData);
+                        var serviceDate = overlapShiftData.serviceDate.split(' ');
+                        var startTime = UTIL.convertFromMilitary(overlapShiftData.startTime.slice(0,-3));
+                        var endTime = UTIL.convertFromMilitary(overlapShiftData.endTime.slice(0,-3));
+                        overlapWrap.innerHTML += `<p><b>${serviceDate[0]}   ${overlapShiftData.lastName}, ${overlapShiftData.firstName}   ${overlapShiftData.locationName}   ${startTime}-${endTime}</b></p></br>`;
+
+                    }  // if clause end --  (overlapWithExistingShiftData != "NoOverLap" && decision === 'A')
+
+              } // else clause end -- (overlapWithExistingShiftData == "NoOverLap" && decision !== '')
+
+      };  // for loop
+
+    } // if openShiftRequests
+  
     if (callOffRequests) {
       callOffRequests.forEach(request => {
         var shiftId = request.id;
@@ -400,7 +557,12 @@ function toInteger(dirtyNumber) {
 
 
       });
+
+
+      
+
     }
+
 
     //OLD
     // if (daysOffRequests) {

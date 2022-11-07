@@ -27,6 +27,7 @@ using Newtonsoft.Json.Linq;
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.DocumentConversion;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere
 {
@@ -455,6 +456,14 @@ namespace Anywhere
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getCaseNoteAttachmentsList/")]
         CaseNotesWorker.AttachmentList[] getCaseNoteAttachmentsList(string token, string caseNoteId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getConsumerOrganizationId/")]
+        AnywhereWorker.OrganiztionId[] getConsumerOrganizationId(string peopleId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -1998,6 +2007,22 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getOverlapStatusforSelectedShift/")]
+        string getOverlapStatusforSelectedShift(string token, string shiftId, string personId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getOverlapDataforSelectedShift/")]
+        string getOverlapDataforSelectedShift(string token, string shiftId, string personId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
@@ -3259,7 +3284,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getPlanInformedConsentVendors/")]
-        PlanInformedConsentWorker.InformedConsentVendors[] getPlanInformedConsentVendors(string token);
+        PlanInformedConsentWorker.InformedConsentVendors[] getPlanInformedConsentVendors(string token, string peopleid);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -3267,6 +3292,13 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getPlanInformedConsentSSAs/")]
         PlanInformedConsentWorker.InformedConsentSSAs[] getPlanInformedConsentSSAs(string token);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getConsumerPeopleId/")]
+        AnywhereWorker.PeopleId[] getConsumerPeopleId(string consumerId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -3585,6 +3617,11 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getPlanAndWorkFlowAttachments/")]
         PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "/addSelectedAttachmentsToReport/")]
+        void addSelectedAttachmentsToReport(System.IO.Stream testInput);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

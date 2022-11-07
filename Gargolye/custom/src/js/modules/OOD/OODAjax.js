@@ -121,28 +121,33 @@ var OODAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  // Employers Page
-  async function deleteEmployerAsync(employerId) {
-    try {
-      const result = await $.ajax({
-        type: 'POST',
-        url:
-          $.webServer.protocol +
-          '://' +
-          $.webServer.address +
-          ':' +
-          $.webServer.port +
-          '/' +
-          $.webServer.serviceName +
-          '/deleteEmployer/',
-        data: '{"token":"' + $.session.Token + '", "employerId":"' + employerId + '"}',
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-      });
-      return result;
-    } catch (error) {
-      throw new Error(error.responseText);
-    }
+}
+// Employers Page
+async function deleteEmployerAsync(employerId) {
+  try {
+    const result = await $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/deleteEmployer/',
+      data:
+        '{"token":"' +
+        $.session.Token +
+        '", "employerId":"' +
+        employerId +
+        '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+    });
+    return result;
+  } catch (error) {
+    throw new Error(error.responseText);
   }
   // Employers Page
   async function updateEmployerAsync(
@@ -557,8 +562,60 @@ var OODAjax = (function () {
       emNumberEmployerContactsbyStaff: data.emNumberEmployerContactsbyStaff, //-- REMOVED FROM FORM ON 4/7/22
       emNumberMonthsJobDevelopment: data.emNumberMonthsJobDevelopment, //-- REMOVED FROM FORM ON 4/7/22
       userId: data.userId,
-    };
-    return $.ajax({
+       }
+  return $.ajax({
+  type: 'POST',
+  url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm4MonthlyPlacementEditData/',
+  data: JSON.stringify(data),
+  contentType: 'application/json; charset=utf-8',
+  dataType: 'json',
+  success: function(response, status, xhr) {
+  callback(response.updateForm4MonthlyPlacementEditDataResult);
+  },
+  });
+}
+
+// Form 4 -- Monthly Placement
+function insertForm4MonthlyPlacementEditData(data, callback) {
+  data = {
+    token: $.session.Token, 
+    consumerId: data.consumerId, 
+    caseNoteId: data.caseNoteId,
+    serviceDate: data.serviceDate,
+    startTime: data.startTime,
+    endTime: data.endTime,
+    SAMLevel: data.SAMLevel,
+    employer: data.employer,
+    contactType: data.contactType,
+    jobSeekerPresent: data.jobSeekerPresent,
+    outcome: data.outcome,
+    TSCNotified: data.TSCNotified,
+    bilingualSupplement: data.bilingualSupplement,
+    notes: data.notes,
+    caseManagerId: data.caseManagerId,
+    userId: data.userId,
+    serviceId: data.serviceId,
+    referenceNumber: data.referenceNumber,
+    application: data.application, 
+    interview: data.interview,
+
+     }
+return $.ajax({
+type: 'POST',
+url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm4MonthlyPlacementEditData/',
+data: JSON.stringify(data),
+contentType: 'application/json; charset=utf-8',
+dataType: 'json',
+success: function(response, status, xhr) {
+callback(response.insertForm4MonthlyPlacementEditDataResult);
+},
+});
+}
+
+// Form 4 -- Monthly Placement
+async function deleteForm4MonthlyPlacementEditDataAsync(caseNoteId) {
+  try {
+    const result = await $.ajax({
       type: 'POST',
       url:
         $.webServer.protocol +
@@ -590,33 +647,56 @@ var OODAjax = (function () {
       emReferralQuestions: data.emReferralQuestions, //-- REMOVED FROM FORM ON 4/7/22
       emIndivInputonSearch: data.emIndivInputonSearch,
       emPotentialIssueswithProgress: data.emPotentialIssueswithProgress,
-      emPlanGoalsNextMonth: data.emPlanGoalsNextMonth, //-- REMOVED FROM FORM ON 4/7/22
-      emNumberofConsumerContacts: data.emNumberofConsumerContacts, //-- REMOVED FROM FORM ON 4/7/22
-      emNumberEmployerContactsbyConsumer: data.emNumberEmployerContactsbyConsumer, //-- REMOVED FROM FORM ON 4/7/22
-      emNumberEmployerContactsbyStaff: data.emNumberEmployerContactsbyStaff, //-- REMOVED FROM FORM ON 4/7/22
-      emNumberMonthsJobDevelopment: data.emNumberMonthsJobDevelopment, //-- REMOVED FROM FORM ON 4/7/22
-      userId: data.userId,
-      serviceId: data.serviceId,
-    };
-    return $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/insertForm4MonthlySummary/',
-      data: JSON.stringify(data),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        callback(response.insertForm4MonthlySummaryResult);
-      },
-    });
-  }
+      emPlanGoalsNextMonth: data.emPlanGoalsNextMonth,   //-- REMOVED FROM FORM ON 4/7/22
+      emNumberofConsumerContacts: data.emNumberofConsumerContacts,  //-- REMOVED FROM FORM ON 4/7/22
+      emNumberEmployerContactsbyConsumer: data.emNumberEmployerContactsbyConsumer,  //-- REMOVED FROM FORM ON 4/7/22
+      emNumberEmployerContactsbyStaff: data.emNumberEmployerContactsbyStaff,  //-- REMOVED FROM FORM ON 4/7/22
+      emNumberMonthsJobDevelopment: data.emNumberMonthsJobDevelopment,   //-- REMOVED FROM FORM ON 4/7/22
+      userId: data.userId
+       }
+  return $.ajax({
+  type: 'POST',
+  url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm4MonthlySummary/',
+  data: JSON.stringify(data),
+  contentType: 'application/json; charset=utf-8',
+  dataType: 'json',
+  success: function(response, status, xhr) {
+  callback(response.updateForm4MonthlySummaryResult);
+  },
+  });
+}
+
+// Form 4 -- Monthly Summary
+function insertForm4MonthlySummary(data, callback) {
+  data = {
+    token: $.session.Token, 
+    consumerId: data.consumerId, 
+    emReviewDate: data.emReviewDate,
+    emReferenceNumber: data.emReferenceNumber,
+    emNextScheduledReview: data.emNextScheduledReview,
+    emEmploymentGoal: data.emEmploymentGoal,
+    emReferralQuestions: data.emReferralQuestions,   //-- REMOVED FROM FORM ON 4/7/22
+    emIndivInputonSearch: data.emIndivInputonSearch,
+    emPotentialIssueswithProgress: data.emPotentialIssueswithProgress,
+    emPlanGoalsNextMonth: data.emPlanGoalsNextMonth,   //-- REMOVED FROM FORM ON 4/7/22
+    emNumberofConsumerContacts: data.emNumberofConsumerContacts,  //-- REMOVED FROM FORM ON 4/7/22
+    emNumberEmployerContactsbyConsumer: data.emNumberEmployerContactsbyConsumer,  //-- REMOVED FROM FORM ON 4/7/22
+    emNumberEmployerContactsbyStaff: data.emNumberEmployerContactsbyStaff,  //-- REMOVED FROM FORM ON 4/7/22
+    emNumberMonthsJobDevelopment: data.emNumberMonthsJobDevelopment,  //-- REMOVED FROM FORM ON 4/7/22
+    userId: data.userId,
+    serviceId: data.serviceId
+     }
+return $.ajax({
+type: 'POST',
+url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm4MonthlySummary/',
+data: JSON.stringify(data),
+contentType: 'application/json; charset=utf-8',
+dataType: 'json',
+success: function(response, status, xhr) {
+callback(response.insertForm4MonthlySummaryResult);
+},
+});
+}
 
   // Form 4 -- Monthly Summary
   async function deleteForm4MonthlySummaryAsync(emReviewId) {

@@ -274,7 +274,7 @@ const isp_ci_importantPeople = (() => {
       { text: 'Case Manager', value: 'Case Manager' },
       { text: 'Emergency Contact', value: 'Emergency Contact' },
       { text: 'Primary Doctor', value: 'Primary Doctor' },
-      { text: 'Other', value: 'Other' },
+      //{ text: 'Other', value: 'Other' },
     ];
 
     dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);

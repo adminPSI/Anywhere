@@ -30,6 +30,7 @@ const plan = (function () {
   // -----------------
   let previousPlansData;
   let dropdownData;
+  let retrieveData;
   // general info
   let selectedConsumer;
   let planId;
@@ -43,6 +44,8 @@ const plan = (function () {
   // more popup
   let selectedWorkflows;
   let addWorkflowDoneBtn;
+  let planAttWrap;
+  let workflowAttWrap;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -118,8 +121,17 @@ const plan = (function () {
         DOM.scrollToTopOfPage();
         DOM.clearActionCenter();
         selectedConsumer = roster2.getActiveConsumers()[0];
-        loadLandingPage();
-        DOM.toggleNavLayout();
+        if ($.session.applicationName === 'Advisor') {
+          planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
+            $.session.planPeopleId = results[0].id;
+            selectedConsumer.id = $.session.planPeopleId;
+            loadLandingPage();
+            DOM.toggleNavLayout();
+          });
+        } else {
+          loadLandingPage();
+          DOM.toggleNavLayout();
+        }
         break;
       }
       case 'miniRosterCancel': {
@@ -670,6 +682,24 @@ const plan = (function () {
     screen.id = 'reportsScreen';
     screen.classList.add('screen');
 
+    const attachmentsWrap = document.createElement('div');
+    attachmentsWrap.classList.add('attachmentsWrap');
+    planAttWrap = document.createElement('div');
+    planAttWrap.classList.add('planAttWrap');
+    workflowAttWrap = document.createElement('div');
+    workflowAttWrap.classList.add('workflowAttWrap');
+    attachmentsWrap.appendChild(planAttWrap);
+    attachmentsWrap.appendChild(workflowAttWrap);
+
+    const planHeading = document.createElement('h1');
+    const workflowHeading = document.createElement('h1');
+    planHeading.innerText = 'Plan Attachments';
+    workflowHeading.innerText = 'Workflow Attachments';
+    planAttWrap.appendChild(planHeading);
+    workflowAttWrap.appendChild(workflowHeading);
+
+    screen.appendChild(attachmentsWrap);
+
     return screen;
   }
   function buildReportsAttachmentsScreen() {
@@ -692,43 +722,95 @@ const plan = (function () {
     return screen;
   }
   async function runReportScreen(extraSpace) {
-    // build & show spinner
-    const spinner = PROGRESS.SPINNER.get('Building Report...');
-    reportsScreen.appendChild(spinner);
-    // generate report
-    const isSuccess = await assessment.generateReport(planId, '1', extraSpace);
-    // remove spinner
-    reportsScreen.removeChild(spinner);
-    // handle success/error
-    if (isSuccess !== 'success') {
-      morePopup.classList.add('error');
-      // build a show error message
-      const message = document.createElement('div'); //
-      message.classList.add('warningMessage');
-      message.innerHTML = `
-        <p>There was an error retrieving your report, please contact Primary Solutions.</p>
-      `;
-      const okBtn = button.build({
-        id: 'rptErrOkBtn',
-        text: 'OK',
-        style: 'secondary',
-        type: 'contained',
-        callback: () => {
-          reportsScreen.removeChild(message);
-          reportsScreen.removeChild(okBtn);
-          morePopup.classList.remove('error');
-          reportsScreen.classList.remove('visible');
-          morePopupMenu.classList.add('visible');
-        },
-      });
-      okBtn.classList.add('okBtn');
+    const selectedAttachments = {};
+    // Show Attachements
+    const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+      token: $.session.Token,
+      assessmentId: planId, //TODO
+    });
 
-      reportsScreen.appendChild(message);
-      reportsScreen.appendChild(okBtn);
-    } else {
-      reportsScreen.classList.remove('visible');
-      morePopupMenu.classList.add('visible');
+    if (attachments) {
+      for (const prop in attachments) {
+        const a = attachments[prop];
+        const attachment = document.createElement('div');
+        attachment.classList.add('attachment');
+        const description = document.createElement('p');
+        description.innerText = a.description;
+        attachment.appendChild(description);
+
+        attachment.addEventListener('click', () => {
+          if (!attachment.classList.contains('selected')) {
+            attachment.classList.add('selected');
+            selectedAttachments[a.attachmentId] = { ...a };
+          } else {
+            attachment.classList.remove('selected');
+            delete selectedAttachments[a.attachmentId];
+          }
+
+          console.log(selectedAttachments);
+        });
+
+        if (a.whereFrom === 'Plan') {
+          planAttWrap.appendChild(attachment);
+        } else {
+          workflowAttWrap.appendChild(attachment);
+        }
+      }
     }
+
+    const doneBtn = button.build({
+      text: 'Done',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        let isSuccess;
+        // build & show spinner
+        const spinner = PROGRESS.SPINNER.get('Building Report...');
+        reportsScreen.innerHTML = '';
+        reportsScreen.appendChild(spinner);
+        // generate report
+        if (Object.keys(selectedAttachments).length > 0) {
+          const attachmentIds = Object.keys(selectedAttachments);
+          assessment.generateReportWithAttachments(planId, '1', extraSpace, attachmentIds);
+        } else {
+          isSuccess = await assessment.generateReport(planId, '1', extraSpace);
+        }
+
+        // remove spinner
+        reportsScreen.removeChild(spinner);
+        reportsScreen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+        // handle success/error
+        // if (isSuccess !== 'success') {
+        //   // morePopup.classList.add('error');
+        //   // // build a show error message
+        //   // const message = document.createElement('div');
+        //   // message.classList.add('warningMessage');
+        //   // message.innerHTML = `<p>There was an error retrieving your report, please contact Primary Solutions.</p>`;
+        //   // const okBtn = button.build({
+        //   //   id: 'rptErrOkBtn',
+        //   //   text: 'OK',
+        //   //   style: 'secondary',
+        //   //   type: 'contained',
+        //   //   callback: () => {
+        //   //     reportsScreen.removeChild(message);
+        //   //     reportsScreen.removeChild(okBtn);
+        //   //     morePopup.classList.remove('error');
+        //   //     reportsScreen.classList.remove('visible');
+        //   //     morePopupMenu.classList.add('visible');
+        //   //   },
+        //   // });
+        //   // okBtn.classList.add('okBtn');
+        //   // reportsScreen.appendChild(message);
+        //   // reportsScreen.appendChild(okBtn);
+        // } else {
+        //   reportsScreen.classList.remove('visible');
+        //   morePopupMenu.classList.add('visible');
+        // }
+      },
+    });
+
+    reportsScreen.appendChild(doneBtn);
   }
   async function runDODDScreen() {
     // build & show spinner
@@ -857,9 +939,14 @@ const plan = (function () {
           break;
         }
         case reportBtn3: {
-          // Below 'targetScreen' will be fore when we need to select attatchments
-          // targetScreen = 'reportsAttachmentScreen';
-          //* MIKE - call func here
+          // Below 'targetScreen' will be for when we need to select attatchments
+          targetScreen = 'reportsAttachmentScreen';
+          retrieveData = {
+            token: $.session.Token,
+            assessmentId: '19',
+          };
+          const planWFAttachList = await planAjax.getPlanAndWorkFlowAttachments(retrieveData);
+          break;
         }
         case sendtoPortalBtn: {
           assessment.transeferPlanReportToONET(planId, '1');
@@ -1473,7 +1560,7 @@ const plan = (function () {
     });
 
     const message = document.createElement('p');
-    message.innerText = `This consumer does not have a Resident Number in Gatekeeper. Please insert Resident Number in Gatekeeper before inserting a Plan.`;
+    message.innerText = `This consumer does not have a Resident Number or a SalesForce ID. Please insert the Resident Number or confirm that it is a valid number in the Desktop before inserting a Plan.`;
 
     warningPopup.appendChild(message);
 
@@ -1591,6 +1678,14 @@ const plan = (function () {
 
     const spinner = PROGRESS.SPINNER.get('Gathering Plans...');
     landingPage.appendChild(spinner);
+
+    // selectedConsumer = roster2.getActiveConsumers()[0];
+    // if ($.session.applicationName === 'Advisor') {
+    //   planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
+    //     $.session.planPeopleId = results[0].id;
+    //     selectedConsumer.id = $.session.planPeopleId;
+    //   });
+    // }
 
     previousPlansData = await planAjax.getConsumerPlans({
       token: $.session.Token,

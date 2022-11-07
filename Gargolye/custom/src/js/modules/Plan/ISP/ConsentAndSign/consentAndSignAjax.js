@@ -126,6 +126,30 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
+  async function getConsumerOrganizationId(retrieveData) {
+    //peopleId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerOrganizationId/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getConsumerOrganizationIdResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // INSERT
   //-------------------------------------
@@ -345,6 +369,7 @@ const consentAndSignAjax = (() => {
     getConsentAndSignData,
     getPlanInformedConsentSSAs,
     getPlanInformedConsentVendors,
+    getConsumerOrganizationId,
     updateTeamMember,
     updatePlanConsentStatements,
     updateTableRowOrder,

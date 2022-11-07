@@ -192,8 +192,8 @@ namespace Anywhere.service.Data
             string serviceTypeString = adg.getServiceTypes(token);
             ServiceTypesOther[] serviceTypeObj = js.Deserialize<ServiceTypesOther[]>(serviceTypeString);
             //get funding source
-            string fundingString = adg.getFundingSource(token);
-            FundingSource[] fundingObj = js.Deserialize<FundingSource[]>(fundingString);
+            //string fundingString = adg.getFundingSource(token);
+            //FundingSource[] fundingObj = js.Deserialize<FundingSource[]>(fundingString);
             // get relationships for dropdowns and in contact information section
             string relationshipString = adg.getConsumerRelationships(token, consumerId, effectiveStartDate, effectiveEndDate, areInSalesForce, planId);
             ConsumerRelationships[] relationshipObj = js.Deserialize<ConsumerRelationships[]>(relationshipString);
@@ -201,7 +201,7 @@ namespace Anywhere.service.Data
             sASData.assessmentAreas = assessmentAreasObj;
             sASData.serviceVendors = vendorObj;
             sASData.serviceTypesOther = serviceTypeObj;
-            sASData.fundingSource = fundingObj;
+            //sASData.fundingSource = fundingObj;
             sASData.relationships = relationshipObj;
             return sASData;
         }

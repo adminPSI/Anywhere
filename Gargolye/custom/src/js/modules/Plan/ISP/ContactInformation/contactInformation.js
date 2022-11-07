@@ -312,7 +312,7 @@ const contactInformation = (() => {
   function validatePhone(val) {
     if (val === '') return true;
 
-    const genTelRegEx = new RegExp(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/im);
+    const genTelRegEx = new RegExp(/^\d{3}[- ]?\d{3}[- ]?\d{4}( x\d{4})?|x\d{4}$/im);
     return genTelRegEx.test(val);
   }
 
@@ -323,9 +323,10 @@ const contactInformation = (() => {
     const pos1 = rawNumber.substr(0, 3);
     const pos2 = rawNumber.substr(3, 3);
     const pos3 = rawNumber.substr(6, 4);
+    const pos4 = rawNumber.substr(10, 4);
     return {
       val: rawNumber,
-      disp: `${pos1}-${pos2}-${pos3}`,
+      disp: `${pos1}-${pos2}-${pos3} ${pos4}`,
     };
   }
 

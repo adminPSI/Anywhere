@@ -436,11 +436,11 @@
       checkInfalConnectionAjax();
 
       window.addEventListener('DOMContentLoaded', function (event) {
-        if ($.session.applicationName === 'Advisor') {
-          var menu = document.querySelector('.module-menu .menu__inner');
-          var planBtn = document.querySelector('#plansettingsdiv');
-          menu.removeChild(planBtn);
-        }
+      //  if ($.session.applicationName === 'Advisor') {
+      //    var menu = document.querySelector('.module-menu .menu__inner');
+      //    var planBtn = document.querySelector('#plansettingsdiv');
+      //   // menu.removeChild(planBtn);
+      //  }
         checkForMobileDevice();
         isIE = UTIL.detectBrowser();
         var firstName = document.getElementById('firstName');

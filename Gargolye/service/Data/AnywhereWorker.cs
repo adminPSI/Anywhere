@@ -4,6 +4,7 @@ using Anywhere.Data;
 using System.Web.Script.Serialization;
 using System.Text;
 using System.Security.Cryptography;
+using System.Management.Automation.Language;
 
 namespace Anywhere.service.Data
 {
@@ -414,6 +415,7 @@ namespace Anywhere.service.Data
             public string sttEnabled { get; set; }
             public string azureSttApi { get; set; }
             public string reportSeconds { get; set; }
+            public string planPeopleId { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
@@ -429,6 +431,30 @@ namespace Anywhere.service.Data
             public string GroupCode { get; set; }
             public string GroupName { get; set; }
             public string Members { get; set; }
+        }
+
+        public PeopleId[] getConsumerPeopleId(string consumerId)
+        {
+            string pidString = dg.getConsumerPeopleId(consumerId);
+            PeopleId[] pidObj = js.Deserialize<PeopleId[]>(pidString);
+            return pidObj;
+        }
+
+        public class PeopleId
+        {
+            public string id { get; set; }
+        }
+
+        public OrganiztionId[] getConsumerOrganizationId(string peopleId)
+        {
+            string oidString = dg.getConsumerOrganizationId(peopleId);
+            OrganiztionId[] oidObj = js.Deserialize<OrganiztionId[]>(oidString);
+            return oidObj;
+        }
+
+        public class OrganiztionId
+        {
+            public string orgId { get; set; }
         }
 
         //BRAD add here

@@ -7,6 +7,7 @@ using System.Web;
 using Anywhere.Data;
 using Anywhere.Log;
 using System.Web.Script.Serialization;
+using Anywhere.service.Data.DocumentConversion;
 
 namespace Anywhere.service.Data
 {
@@ -16,6 +17,7 @@ namespace Anywhere.service.Data
         DataGetter dg = new DataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
         AnywhereWorker anywhereWorker = new AnywhereWorker();
+        AllAttachmentsDataGetter aadg = new AllAttachmentsDataGetter();
         public Attachments[] GetAllAttachments(String token, String consumerId)
         {
             string attachmentsString = dg.GetAllAttachments(token, consumerId);
@@ -101,10 +103,41 @@ namespace Anywhere.service.Data
             bool isTokenValid = anywhereWorker.ValidateToken(token);
             if (isTokenValid)
             {
+                char value = '-';
+                bool guid = attachmentId.Contains(value);
+                if (guid)
+                {
+                    viewWFAttachment(token, attachmentId, section);
+                }
+                else
+                {
+                    try
+                    {
+                        attachment.filename = aadg.getPlanAttachmentFileName(attachmentId, section);
+                        attachment.data = aadg.GetAttachmentData(attachmentId);//reused
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+                
+            }
+            displayAttachment(attachment);
+        }
+
+        public void viewWFAttachment(string token, string attachmentId, string section)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
                 try
                 {
-                    attachment.filename = dg.getPlanAttachmentFileName(attachmentId, section);
-                    attachment.data = dg.GetAttachmentData(attachmentId);//reused
+                    attachment.filename = dg.GetWFAttachmentFileName(attachmentId);
+                    attachment.data = dg.GetWfAttachmentData(attachmentId);//reused
                 }
                 catch (Exception ex)
                 {
