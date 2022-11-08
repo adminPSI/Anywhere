@@ -42,10 +42,17 @@ const csTeamMember = (() => {
     ];
     dropdown.populate(teamMemberDropdown, dropdownData, teamMember);
   }
-  function setReadOnlyValue(isReadOnly, data) {
-    if (isReadOnly) return isReadOnly;
-
-    return !data.contactId ? true : false;
+  function populateSignatureTypeDropdown(signatureTypeDropdown, type) {
+    dropdown.populate(
+      signatureTypeDropdown,
+      [
+        { text: '', value: '' },
+        { text: 'Digital', value: '1' },
+        { text: 'In-Person', value: '2' },
+        { text: 'No Signature Required', value: '3' },
+      ],
+      type,
+    );
   }
   async function applySelectedRelationship(relData) {
     importedFromRelationship = true;
@@ -431,13 +438,18 @@ const csTeamMember = (() => {
   async function showPopup({ isNewMember, isReadOnly, memberData }) {
     isNew = isNewMember;
     isSigned = memberData.dateSigned !== '';
-    readOnly = isReadOnly; //setReadOnlyValue(isReadOnly, memberData);
+    readOnly = isReadOnly;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     selectedMemberData = { ...memberData };
 
     // if (!isNew && $.session.applicationName === 'Advisor') {
     //   selectedMemberData.csChangeMindSSAPeopleId = $.session.UserId;
     // }
+
+    // TODO: ticket 92999
+    // $.session.insertNewTeamMember
+    if ($.session.insertNewTeamMember) {
+    }
 
     let changeMindQuestion;
     let complaintQuestion;
@@ -607,6 +619,24 @@ const csTeamMember = (() => {
     // Participate Yes/NO
     const participationRadios = buildParticipationRadios(isSigned, isNew);
 
+    // Signature Type
+    signatureTypeDropdown = dropdown.build({
+      dropdownId: 'sigPopup_teamMember',
+      label: 'Team Member',
+      readonly: isSigned || readOnly,
+      callback: event => {
+        selectedMemberData.signatureType = event.target.value;
+
+        if (event.target.value === '') {
+          signatureTypeDropdown.classList.add('error');
+        } else {
+          signatureTypeDropdown.classList.remove('error');
+        }
+
+        checkTeamMemberPopupForErrors();
+      },
+    });
+
     //* GLOBAL CONSENT QUESTIONS
     //*------------------------------
     if (showConsentStatments) {
@@ -637,6 +667,15 @@ const csTeamMember = (() => {
       if (selectedMemberData.lastName !== '') {
         lNameInput.classList.add('disabled');
       }
+    }
+    // TODO: ticket 92999
+    // $.session.insertNewTeamMember
+    if (readOnly) {
+      teamMemberDropdown.add('disabled');
+      nameInput.classList.add('disabled');
+      lNameInput.classList.add('disabled');
+      dateOfBirthInput.add('disabled');
+      buildingNumberInput.add('disabled');
     }
 
     //* Required Fields
@@ -686,6 +725,7 @@ const csTeamMember = (() => {
     teamMemberPopup.appendChild(dateOfBirthInput);
     teamMemberPopup.appendChild(buildingNumberInput);
     teamMemberPopup.appendChild(participationRadios);
+    teamMemberPopup.appendChild(signatureTypeDropdown);
 
     if (showConsentStatments) {
       teamMemberPopup.appendChild(changeMindQuestion);
@@ -704,6 +744,7 @@ const csTeamMember = (() => {
     teamMemberPopup.appendChild(btns);
 
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
+    populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
 
     POPUP.show(teamMemberPopup);
 
