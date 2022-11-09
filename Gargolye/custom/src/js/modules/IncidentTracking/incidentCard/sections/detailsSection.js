@@ -43,10 +43,10 @@ var itDetailsSection = (function() {
       factorsText = rd.contributingFactor ? rd.contributingFactor : '';
     } else {
       var defaultCategory = categories.filter(c => c.incidentCategory === 'New Incident');
-      incidentDate = UTIL.getTodaysDate();
-      incidentTime = UTIL.getCurrentTime();
-      reportedDate = '';
-      reportedTime = '';
+     ($.session.incidentTrackingPopulateIncidentDate === 'Y') ? incidentDate = UTIL.getTodaysDate() : incidentDate = '';
+     ($.session.incidentTrackingPopulateIncidentTime === 'Y') ? incidentTime = UTIL.getCurrentTime() : incidentTime = '';
+     ($.session.incidentTrackingPopulateReportedDate === 'Y') ? reportedDate = UTIL.getTodaysDate() : reportedDate = '';
+     ($.session.incidentTrackingPopulateReportedTime === 'Y') ? reportedTime = UTIL.getCurrentTime() : reportedTime = '';
       categoryId = defaultCategory[0].subcategoryId;
       locationId = '';
       summaryText = '';

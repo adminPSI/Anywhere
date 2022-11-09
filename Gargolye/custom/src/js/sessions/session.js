@@ -200,6 +200,10 @@ $.session.incidentTrackingInsert = false;
 $.session.incidentTrackingDelete = false;
 $.session.incidentTrackingViewCaseLoad = false;
 $.session.defaultIncidentTrackingReviewDays = '';
+$.session.incidentTrackingPopulateIncidentDate = '';
+$.session.incidentTrackingPopulateIncidentTime = '';
+$.session.incidentTrackingPopulateReportedDate = '';
+$.session.incidentTrackingPopulateReportedTime = '';
 /////////
 $.session.infalHasConnectionString = false;
 $.session.isPSI = false;
@@ -515,6 +519,7 @@ function setSessionVariables() {
       if (tmpPerm == 'View') {
         $.session.incidentTrackingView = true;
       }
+    
     }
 
     //Anywhere Plan

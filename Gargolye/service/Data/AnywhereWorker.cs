@@ -5,6 +5,7 @@ using System.Web.Script.Serialization;
 using System.Text;
 using System.Security.Cryptography;
 using System.Management.Automation.Language;
+using Microsoft.Expression.Interactivity.Media;
 
 namespace Anywhere.service.Data
 {
@@ -403,6 +404,10 @@ namespace Anywhere.service.Data
             public string incidentTracking_days_back { get; set; }
             public string removeSEAdminMap { get; set; }
             public string incidentTrackingPermission { get; set; }
+            public string incidentTrackingPopulateIncidentTime { get; set; }
+            public string incidentTrackingPopulateIncidentDate { get; set; }
+            public string incidentTrackingPopulateReportedTime { get; set; }
+            public string incidentTrackingPopulateReportedDate { get; set; }
             public string schedulingPermission { get; set; }
             public string singleEntryApproveEnabled { get; set; }
             public string seShowConsumerSignature { get; set; }
