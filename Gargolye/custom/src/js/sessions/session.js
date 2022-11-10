@@ -236,6 +236,7 @@ $.session.hideAllScheduleButton = false;
 //Plan
 $.session.planUpdate = false;
 $.session.planView = false;
+$.session.planInsertNewTeamMember = false;
 // Transportation
 $.session.transportationUpdate = false;
 $.session.transportationView = false;
@@ -533,7 +534,10 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Send to DODD' || $.session.isPSI == true) {
         $.session.sendToDODD = true;
-      }
+        }
+        if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
+            $.session.planInsertNewTeamMember = true;
+        }
     }
     //AeMAR
     if (tmpWindow == 'Anywhere eMAR' || $.session.isPSI == true) {
