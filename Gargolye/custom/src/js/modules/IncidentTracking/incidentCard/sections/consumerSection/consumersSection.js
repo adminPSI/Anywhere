@@ -66,7 +66,7 @@ var itConsumerSection = (function() {
   function removeConsumerErrors() {
     var consumerCards = [].slice.call(consumersWrap.querySelectorAll('.consumerCard'));
     consumerCards.forEach(card => card.classList.remove('error'));
-    incidentCard.toggleSave(false);
+    //incidentCard.toggleSave(false);
   }
   function showConsumerError(consumerIdArray) {
     incidentCard.toggleSave(true);
@@ -113,6 +113,17 @@ var itConsumerSection = (function() {
     Promise.all(initPromises).then(() => {
       consumerInvolvement.checkRequiredFields();
     });
+
+    // Event when you add a consumer
+    // 1. Ensure that all required fields are filled in on the  details section
+    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+
+    if (detailSectionHasErrors) {
+      incidentCard.toggleSave(true);
+    } else {
+      incidentCard.toggleSave(false);
+    }
+
   }
   function removeConsumerFromConsumersInvolved(selectedConsumerId) {
     var consumerCard = document.querySelector(`[data-consumer-id="${selectedConsumerId}"]`).parentElement;
@@ -131,6 +142,20 @@ var itConsumerSection = (function() {
     consumerInvolvement.checkRequiredFields();
     displayCount();
     roster2.toggleMiniRosterBtnVisible(true)
+
+    // Event when you remove a consumer
+    // 1. Ensure that at least one consumer is selected
+    // 2. Ensure that all required fields are filled in on the  details section
+    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+    var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
+   // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
+
+    if (detailSectionHasErrors || consumerSectionHasErrors) {
+      incidentCard.toggleSave(true);
+    } else {
+      incidentCard.toggleSave(false);
+    }
+
   }
   
   // Populate

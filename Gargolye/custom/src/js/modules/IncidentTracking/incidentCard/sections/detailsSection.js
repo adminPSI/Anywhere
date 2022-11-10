@@ -22,6 +22,11 @@ var itDetailsSection = (function() {
   var actionText;
   var preventionText;
   var factorsText;
+  // Inputs
+  var incidentDateInput;
+  var incidentTimeInput;
+  var reportedDateInput;
+  var reportedTimeInput;
 
   function getSectionData() {
     categories = incidentTracking.getCategories();
@@ -64,7 +69,7 @@ var itDetailsSection = (function() {
 		incidentDateTimeWrap.classList.add('incidentDateTimeWrap');
 		reportedDateTimeWrap.classList.add('reportedDateTimeWrap');
     
-    var incidentDateInput = input.build({
+   incidentDateInput = input.build({
 			label: 'Incident Date',
 			type: 'date',
 			style: 'secondary',
@@ -72,14 +77,14 @@ var itDetailsSection = (function() {
       attributes: [{ key: 'max', value: '9999-12-31' }],
 			value: incidentDate,
 		});
-		var incidentTimeInput = input.build({
+	 incidentTimeInput = input.build({
 			label: 'Incident Time',
 			type: 'time',
 			style: 'secondary',
 			classNames: ['iTime'],
 			value: incidentTime,
 		});
-		var reportedDateInput = input.build({
+	reportedDateInput = input.build({
 			label: 'Reported Date',
 			type: 'date',
 			style: 'secondary',
@@ -87,7 +92,7 @@ var itDetailsSection = (function() {
       attributes: [{ key: 'max', value: '9999-12-31' }],
 			value: reportedDate,
 		});
-		var reportedTimeInput = input.build({
+	reportedTimeInput = input.build({
 			label: 'Reported Time',
 			type: 'time',
 			style: 'secondary',
@@ -218,10 +223,69 @@ var itDetailsSection = (function() {
     section.appendChild(heading);
     section.appendChild(sectionBody);
 
+    setupEvents();
+    checkEntireIncidentCardforErrors();
+    
+    
     return section;
+
+  }
+
+  function checkEntireIncidentCardforErrors() {
+
+    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+    var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
+   // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
+
+    if (detailSectionHasErrors || consumerSectionHasErrors) {
+      incidentCard.toggleSave(true);
+    } else {
+      incidentCard.toggleSave(false);
+    }
+
   }
   
+  function setupEvents() {
+
+    incidentDateInput.addEventListener('change', event => {
+      incidentDate = event.target.value;
+      checkEntireIncidentCardforErrors();
+    });
+
+    // incidentTimeInput.addEventListener('change', event => {
+    //   incidentTime = event.target.value;
+    //   checkEntireIncidentCardforErrors();
+    // });
+
+  }
+
+  function checkRequiredFields() {
+
+    if (!incidentDate || incidentDate === '') {
+      incidentDateInput.classList.add('error');
+    } else {
+      incidentDateInput.classList.remove('error');
+    }
+
+    // if (!incidentTime || incidentTime === '') {
+    //   incidentTimeInput.classList.add('error');
+    // } else {
+    //   incidentTimeInput.classList.remove('error');
+    // }
+
+    var hasErrors = [].slice.call(section.querySelectorAll('.error'));
+    if (hasErrors.length !== 0) {
+        return true;   
+      } else {
+        return false;    
+      }
+
+  }
+
+
+
   return {
-    build: buildSection
+    build: buildSection,
+    checkRequiredFields
   }
 })();
