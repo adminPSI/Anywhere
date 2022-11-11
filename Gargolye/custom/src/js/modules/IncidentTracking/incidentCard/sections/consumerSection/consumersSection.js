@@ -147,10 +147,10 @@ var itConsumerSection = (function() {
     // 1. Ensure that at least one consumer is selected
     // 2. Ensure that all required fields are filled in on the  details section
     var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
-    var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
+    //var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
    // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
 
-    if (detailSectionHasErrors || consumerSectionHasErrors) {
+    if (detailSectionHasErrors || activeConsumers.length === 0) {
       incidentCard.toggleSave(true);
     } else {
       incidentCard.toggleSave(false);
