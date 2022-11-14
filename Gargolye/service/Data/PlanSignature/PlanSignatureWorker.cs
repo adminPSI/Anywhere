@@ -16,6 +16,7 @@ namespace Anywhere.service.Data.PlanSignature
         JavaScriptSerializer js = new JavaScriptSerializer();
         PlanSignatureDataGetter psdg = new PlanSignatureDataGetter();
         OISPWorker oispW = new OISPWorker();
+        PlanDataGetter pdg = new PlanDataGetter();
 
         public PlanSignatures[] getSignatures(string token, long assessmentId)
         {
@@ -129,7 +130,8 @@ namespace Anywhere.service.Data.PlanSignature
 
         public SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
-               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId)
+               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId)
         {
             string signatureIdString = "";
             string signatureId = "";
@@ -191,6 +193,10 @@ namespace Anywhere.service.Data.PlanSignature
                                     csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
                                 csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, salesforceId);
             SigId[] sigObj = js.Deserialize<SigId[]>(signatureIdString);
+            if (hasWetSignature)
+            {
+                pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId));
+            }
             return sigObj;
         }
 
@@ -285,7 +291,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string Email { get; set; }
         }
 
-        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId)
+        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
+                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId)
         {
             string newSalesForceId = "";
             if (salesForceId == "" || salesForceId == null)
