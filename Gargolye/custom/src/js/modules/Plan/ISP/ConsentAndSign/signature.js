@@ -72,13 +72,29 @@ const csSignature = (() => {
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
-  function buildSignatureSection() {
+  function buildSignatureSection(signatureType) {
     const signatureWrap = document.createElement('div');
     signatureWrap.classList.add('signatureWrap');
     const signatureTitle = document.createElement('h3');
     signatureTitle.classList.add('h3Title');
     signatureTitle.innerText = 'Signature';
     signatureWrap.appendChild(signatureTitle);
+
+    if (signatureType === 'In-Person') {
+      const attachmentButton = button.build({
+        //id: ``,
+        text: `ATTACH SIGNATURE`,
+        style: 'secondary',
+        type: 'contained',
+        callback: () => {
+          // TODO: call attach signature ajax stuff when Mike is ready
+        },
+      });
+
+      signatureWrap.appendChild(attachmentButton);
+
+      return signatureWrap;
+    }
 
     const sigDiv = document.createElement('div');
     sigDiv.classList.add('signature-pad');

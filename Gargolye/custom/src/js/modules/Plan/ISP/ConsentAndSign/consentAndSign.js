@@ -645,7 +645,7 @@ const planConsentAndSign = (() => {
 
     const teamMemberTable = table.build({
       tableId: 'signaturesTable',
-      columnHeadings: ['Team Member', 'Name', 'Participated'],
+      columnHeadings: ['Team Member', 'Name', 'Participated', 'Signature Type'],
       headline: 'Team Members',
       endIcon: true,
       sortable: isSortable,
@@ -668,11 +668,12 @@ const planConsentAndSign = (() => {
           middleName: '',
         });
         const participated = m.participated === '' ? '' : m.participated === 'Y' ? 'Yes' : 'No';
+        const signatureType = csTeamMember.getSignatureTypeByID(m.signatureType);
 
         names.push(name);
 
         return {
-          values: [teamMember, name, participated],
+          values: [teamMember, name, participated, signatureType],
           id: `sig-${m.signatureId}`,
           attributes: [{ key: 'data-signed', value: isSigned }],
           endIcon: icons.edit,
@@ -732,6 +733,7 @@ const planConsentAndSign = (() => {
             participated: '',
             // sign/disent
             signature: '',
+            signatureType: '',
             dissentAreaDisagree: '',
             dissentHowToAddress: '',
             dateSigned: '',

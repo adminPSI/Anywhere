@@ -14,6 +14,7 @@ const csTeamMember = (() => {
   let dateOfBirthInput;
   let buildingNumberInput;
   let relationshipInput;
+  let signatureTypeDropdown;
   let saveTeamMemberBtn;
 
   //*------------------------------------------------------
@@ -215,6 +216,22 @@ const csTeamMember = (() => {
           DOM.ACTIONCENTER.removeChild(failPopup);
           teamMemberPopup.style.removeProperty('display');
         }, 2000);
+      }
+    }
+  }
+  function getSignatureTypeByID(id) {
+    switch (id) {
+      case '1': {
+        return 'Digital';
+      }
+      case '2': {
+        return 'In-Person';
+      }
+      case '3': {
+        return 'No Signature Required';
+      }
+      default: {
+        return '';
       }
     }
   }
@@ -448,7 +465,8 @@ const csTeamMember = (() => {
 
     // TODO: ticket 92999
     // $.session.insertNewTeamMember
-    if ($.session.insertNewTeamMember) {
+    if ($.session.planInsertNewTeamMember) {
+      readOnly = true;
     }
 
     let changeMindQuestion;
@@ -668,15 +686,6 @@ const csTeamMember = (() => {
         lNameInput.classList.add('disabled');
       }
     }
-    // TODO: ticket 92999
-    // $.session.insertNewTeamMember
-    if (readOnly) {
-      teamMemberDropdown.add('disabled');
-      nameInput.classList.add('disabled');
-      lNameInput.classList.add('disabled');
-      dateOfBirthInput.add('disabled');
-      buildingNumberInput.add('disabled');
-    }
 
     //* Required Fields
     //*------------------------------
@@ -755,5 +764,6 @@ const csTeamMember = (() => {
     showPopup,
     applySelectedRelationship,
     linkToSalesForce,
+    getSignatureTypeByID,
   };
 })();
