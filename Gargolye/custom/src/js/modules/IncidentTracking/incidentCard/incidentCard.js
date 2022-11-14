@@ -113,7 +113,7 @@ var incidentCard = (function() {
 			text: isNewIncident ? 'Save' : 'Update',
 			style: 'secondary',
 			type: 'contained',
-			classNames: 'disabled',
+      classNames: ['incidentSave', 'disabled'],
 			callback: function() {
         saveBtn.classList.add('disabled');
         incident.save(isNewIncident)
@@ -187,12 +187,27 @@ var incidentCard = (function() {
     incidentCard.appendChild(cardSections);
     incidentCard.appendChild(cardActionBtns);
 
+    var consumerSectionHasError = checkforRequiredConsumer();
+    toggleSaveBtnStatus(consumerSectionHasError);
+
+
     return incidentCard;
+  }
+
+  function checkforRequiredConsumer() {
+    //var hasNoErrors = [].slice.call(document.querySelectorAll('.consumerCard .consumer-selected'));
+    var hasNoErrors = document.getElementsByClassName("consumerError hidden");
+    if (hasNoErrors.length !== 0 || itConsumerInvolved) {
+      return false;   
+    } else {
+      return true;    
+    }
   }
 
   return {
     build: buildCard,
     toggleSave: toggleSaveBtnStatus,
+    checkforRequiredConsumer,
     toggleActionBtns
   }
 })();

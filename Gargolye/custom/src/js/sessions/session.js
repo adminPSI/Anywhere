@@ -200,6 +200,10 @@ $.session.incidentTrackingInsert = false;
 $.session.incidentTrackingDelete = false;
 $.session.incidentTrackingViewCaseLoad = false;
 $.session.defaultIncidentTrackingReviewDays = '';
+$.session.incidentTrackingPopulateIncidentDate = '';
+$.session.incidentTrackingPopulateIncidentTime = '';
+$.session.incidentTrackingPopulateReportedDate = '';
+$.session.incidentTrackingPopulateReportedTime = '';
 /////////
 $.session.infalHasConnectionString = false;
 $.session.isPSI = false;
@@ -232,6 +236,7 @@ $.session.hideAllScheduleButton = false;
 //Plan
 $.session.planUpdate = false;
 $.session.planView = false;
+$.session.planInsertNewTeamMember = false;
 // Transportation
 $.session.transportationUpdate = false;
 $.session.transportationView = false;
@@ -515,6 +520,7 @@ function setSessionVariables() {
       if (tmpPerm == 'View') {
         $.session.incidentTrackingView = true;
       }
+    
     }
 
     //Anywhere Plan
@@ -528,7 +534,10 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Send to DODD' || $.session.isPSI == true) {
         $.session.sendToDODD = true;
-      }
+        }
+        if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
+            $.session.planInsertNewTeamMember = true;
+        }
     }
     //AeMAR
     if (tmpWindow == 'Anywhere eMAR' || $.session.isPSI == true) {
