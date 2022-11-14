@@ -465,7 +465,7 @@ const csTeamMember = (() => {
 
     // TODO: ticket 92999
     // $.session.insertNewTeamMember
-    if ($.session.planInsertNewTeamMember) {
+    if (!$.session.planInsertNewTeamMember) {
       readOnly = true;
     }
 

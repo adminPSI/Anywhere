@@ -110,6 +110,14 @@ const planConsentAndSign = (() => {
       useExisting: '',
       relationshipImport: selectedMemberData.relationshipImport,
       createRelationship: selectedMemberData.createRelationship,
+      // attachments for signature
+      hasWetSignature: '',
+      description: '',
+      attachment: '',
+      attachmentType: '',
+      // ignore
+      section: '',
+      questionId: '',
     };
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);

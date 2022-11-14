@@ -81,17 +81,26 @@ const csSignature = (() => {
     signatureWrap.appendChild(signatureTitle);
 
     if (signatureType === 'In-Person') {
-      const attachmentButton = button.build({
-        //id: ``,
-        text: `ATTACH SIGNATURE`,
-        style: 'secondary',
-        type: 'contained',
-        callback: () => {
-          // TODO: call attach signature ajax stuff when Mike is ready
-        },
+      const attachmentInput = document.createElement('input');
+      attachmentInput.type = 'file';
+      attachmentInput.classList.add('input-field__input', 'attachmentInput');
+      attachmentInput.addEventListener('change', e => {
+        const target = e.target;
+        const file = target.files.item(0);
+        const fileName = file.name;
+        const fileType = fileName.split('.').pop();
+
+        selectedMemberData.description = fileName;
+        selectedMemberData.attachmentType = fileType;
+        selectedMemberData.hasWetSignature = true;
+
+        new Response(attachmentFile).arrayBuffer().then(res => {
+          selectedMemberData.attachment = res;
+          attachmentArray.push(attachmentObj);
+        });
       });
 
-      signatureWrap.appendChild(attachmentButton);
+      signatureWrap.appendChild(attachmentInput);
 
       return signatureWrap;
     }
