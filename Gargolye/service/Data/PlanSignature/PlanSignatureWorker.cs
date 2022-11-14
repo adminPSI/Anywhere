@@ -291,7 +291,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string Email { get; set; }
         }
 
-        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId)
+        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
+                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId)
         {
             string newSalesForceId = "";
             if (salesForceId == "" || salesForceId == null)
