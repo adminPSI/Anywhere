@@ -96,7 +96,6 @@ const csSignature = (() => {
 
         new Response(attachmentFile).arrayBuffer().then(res => {
           selectedMemberData.attachment = res;
-          attachmentArray.push(attachmentObj);
         });
       });
 

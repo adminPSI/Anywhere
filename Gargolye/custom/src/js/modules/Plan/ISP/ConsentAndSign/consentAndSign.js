@@ -158,6 +158,7 @@ const planConsentAndSign = (() => {
   async function updateTeamMember(selectedMemberData) {
     const data = {
       token: $.session.Token,
+      assessmentId: planId,
       consumerId: selectedConsumer.id,
       // member
       teamMember: selectedMemberData.teamMember,
