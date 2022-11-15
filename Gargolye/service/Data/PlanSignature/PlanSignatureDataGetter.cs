@@ -174,10 +174,11 @@ namespace Anywhere.service.Data.PlanSignature
             }
         }
 
-        public string newPersonToPeopleTable(string name, string lastName, string buildingNumber, string dateOfBirth)
+        public string newPersonToPeopleTable(string token, string name, string lastName, string buildingNumber, string dateOfBirth)
         {
             logger.debug("checkPeopleExist ");
             List<string> list = new List<string>();
+            list.Add(token);
             list.Add(name.ToString());
             list.Add(lastName.ToString());
             list.Add(buildingNumber.ToString());

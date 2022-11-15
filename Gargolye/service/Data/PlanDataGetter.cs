@@ -616,7 +616,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string addPlanAttachment(string token, long assessmentId, string description, string attachmentType, string attachment, string section, long questionId)
+        public string addPlanAttachment(string token, long assessmentId, string description, string attachmentType, string attachment, string section, long questionId, string signatureId)
         {
             if (tokenValidator(token) == false) return null;
             //if (tokenValidator(attachment) == false) return null;//ensuring attachment has no spaces so it can't be bad sql
@@ -629,6 +629,7 @@ namespace Anywhere.service.Data
             list.Add(attachment);
             list.Add(section);
             list.Add(questionId.ToString());
+            list.Add(signatureId);
             string text = "CALL DBA.ANYW_ISP_AddPlanAttachment(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

@@ -2399,10 +2399,10 @@ namespace Anywhere
                                 hasWetSignature, description, attachmentType, attachment, section, questionId);
         }
         public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
-                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId)
+                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId)
         {
             return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, consumerId,
-                                         hasWetSignature,  description,  attachmentType,  attachment,  section,  questionId);
+                                         hasWetSignature,  description,  attachmentType,  attachment,  section,  questionId, assessmentId);
         }
         public string updatePlanSignatureOrder(long assessmentId, long signatureId, int newPos)
         {
