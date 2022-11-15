@@ -111,10 +111,10 @@ const planConsentAndSign = (() => {
       relationshipImport: selectedMemberData.relationshipImport,
       createRelationship: selectedMemberData.createRelationship,
       // attachments for signature
-      hasWetSignature: '',
-      description: '',
-      attachment: '',
-      attachmentType: '',
+      hasWetSignature: selectedMemberData.hasWetSignature,
+      description: selectedMemberData.description ? selectedMemberData.description : '',
+      attachment: selectedMemberData.attachment ? selectedMemberData.attachment : '',
+      attachmentType: selectedMemberData.attachmentType ? selectedMemberData.attachmentType : '',
       // ignore
       section: '',
       questionId: '',
@@ -181,6 +181,14 @@ const planConsentAndSign = (() => {
       useExisting: '',
       relationshipImport: selectedMemberData.relationshipImport,
       createRelationship: selectedMemberData.createRelationship,
+      // attachments for signature
+      hasWetSignature: selectedMemberData.hasWetSignature,
+      description: selectedMemberData.description ? selectedMemberData.description : '',
+      attachment: selectedMemberData.attachment ? selectedMemberData.attachment : '',
+      attachmentType: selectedMemberData.attachmentType ? selectedMemberData.attachmentType : '',
+      // ignore
+      section: '',
+      questionId: '',
     };
     const data2 = {
       token: $.session.Token,
@@ -681,18 +689,10 @@ const planConsentAndSign = (() => {
 
         names.push(name);
 
-        return {
+        const tableOBJ = {
           values: [teamMember, name, participated, signatureType],
           id: `sig-${m.signatureId}`,
           attributes: [{ key: 'data-signed', value: isSigned }],
-          endIcon: icons.edit,
-          endIconCallback: e => {
-            csSignature.showPopup({
-              isNewMember: false,
-              isReadOnly: readOnly,
-              memberData: m,
-            });
-          },
           onClick: e => {
             csTeamMember.showPopup({
               isNewMember: false,
@@ -701,6 +701,21 @@ const planConsentAndSign = (() => {
             });
           },
         };
+
+        if (signatureType !== 'No Signature Required') {
+          // show icon
+          tableOBJ.endIcon = icons.edit;
+          // set icon callback
+          tableOBJ.endIconCallback = e => {
+            csSignature.showPopup({
+              isNewMember: false,
+              isReadOnly: readOnly,
+              memberData: m,
+            });
+          };
+        }
+
+        return tableOBJ;
       });
 
       table.populate(teamMemberTable, tableData, isSortable);

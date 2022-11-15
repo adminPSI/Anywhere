@@ -102,6 +102,11 @@ const csSignature = (() => {
       signatureWrap.appendChild(attachmentInput);
 
       return signatureWrap;
+    } else {
+      selectedMemberData.description = '';
+      selectedMemberData.attachmentType = '';
+      selectedMemberData.hasWetSignature = false;
+      selectedMemberData.attachment = '';
     }
 
     const sigDiv = document.createElement('div');

@@ -463,8 +463,6 @@ const csTeamMember = (() => {
     //   selectedMemberData.csChangeMindSSAPeopleId = $.session.UserId;
     // }
 
-    // TODO: ticket 92999
-    // $.session.insertNewTeamMember
     if (!$.session.planInsertNewTeamMember) {
       readOnly = true;
     }
