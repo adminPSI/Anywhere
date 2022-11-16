@@ -1,5 +1,5 @@
 body {
-  -webkit-overflow-scrolling : touch !important;
+  -webkit-overflow-scrolling: touch !important;
   background: $bg-light;
   color: $font-dark;
   overflow: auto;
@@ -17,8 +17,8 @@ button.floatingActionBtn {
   min-width: auto;
   padding: 2px;
   position: fixed;
-    bottom: 20px;
-    right: 24px;
+  bottom: 20px;
+  right: 24px;
   height: 64px;
   width: 64px;
 
@@ -79,49 +79,54 @@ svg {
   margin-top: 20px;
 }
 
-.disabledModule{
-    /*display:none;*/
-    opacity:.5;
-    pointer-events:none;
+.disabledModule {
+  /*display:none;*/
+  opacity: 0.5;
+  pointer-events: none;
 }
 
-input[type="time"]::-webkit-clear-button {
+input[type='time']::-webkit-clear-button {
   display: none;
 }
-input[type="time"]::-ms-clear {
+input[type='time']::-ms-clear {
   display: none;
 }
-input[type="radio" i]:focus {
-    outline: 1px solid #0075FF;
+input[type='radio' i]:focus {
+  outline: 1px solid #0075ff;
 }
 
-    .bold {
-        font-weight: $normal;
-    }
+.bold {
+  font-weight: $normal;
+}
 
-    .filteredByData {
-        border-bottom: 2px solid $secondary;
-        display: flex;
-        flex-flow: row wrap;
-        padding: 0 0 5px 0;
-        position: relative;
-        margin: 10px 0;
+.filteredByData {
+  border-bottom: 2px solid $secondary;
+  display: flex;
+  flex-flow: row wrap;
+  padding: 0 0 5px 0;
+  position: relative;
+  margin: 10px 0;
 
-        &::before {
-            content: 'Filtered By:';
-            font-size: 12px;
-            font-weight: $normal;
-            position: absolute;
-            top: -15px;
-        }
+  &::before {
+    content: 'Filtered By:';
+    font-size: 12px;
+    font-weight: $normal;
+    position: absolute;
+    top: -15px;
+  }
 
-        p {
-            color: $primary;
-            font-weight: $normal;
-            padding: 0 6px 0 0;
-        }
+  p {
+    color: $primary;
+    font-weight: $normal;
+    padding: 0 6px 0 0;
+  }
 
-        span {
-            color: black;
-        }
-    }
+  span {
+    color: black;
+  }
+}
+
+.disabled {
+  color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}

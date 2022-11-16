@@ -3,6 +3,7 @@ const csTeamMember = (() => {
   let isNew;
   let isSigned;
   let readOnly;
+  let insertAllowed;
   let importedFromRelationship;
   // DOM
   let teamMemberPopup; // main popup
@@ -15,6 +16,8 @@ const csTeamMember = (() => {
   let buildingNumberInput;
   let relationshipInput;
   let signatureTypeDropdown;
+  let participatedYesRadio;
+  let participatedNoRadio;
   let saveTeamMemberBtn;
 
   //*------------------------------------------------------
@@ -88,10 +91,17 @@ const csTeamMember = (() => {
 
     checkTeamMemberPopupForErrors();
 
-    // save team member
-    const status = plan.getPlanStatus();
-    const activeStatus = plan.getPlanActiveStatus();
+    if (!$.session.planInsertNewTeamMember) {
+      // if above is false we know popup was temp disabled
+      teamMemberDropdown.classList.remove('disabled');
+      dateOfBirthInput.classList.remove('disabled');
+      buildingNumberInput.classList.remove('disabled');
+      participatedYesRadio.classList.remove('disabled');
+      participatedNoRadio.classList.remove('disabled');
+      saveTeamMemberBtn.classList.remove('disabled');
+    }
 
+    // save team member if readOnly
     if (readOnly) {
       saveTeamMember();
       return;
@@ -246,7 +256,7 @@ const csTeamMember = (() => {
     const radioContainerTitle = document.createElement('p');
     radioContainerTitle.innerText = 'Participated in Planning?';
 
-    const participatedYesRadio = input.buildRadio({
+    participatedYesRadio = input.buildRadio({
       text: 'Yes',
       name: 'pipRadioSet',
       isChecked: selectedMemberData.participated === 'Y',
@@ -257,7 +267,7 @@ const csTeamMember = (() => {
         checkTeamMemberPopupForErrors();
       },
     });
-    const participatedNoRadio = input.buildRadio({
+    participatedNoRadio = input.buildRadio({
       text: 'No',
       name: 'pipRadioSet',
       isChecked: selectedMemberData.participated === 'N',
@@ -463,10 +473,6 @@ const csTeamMember = (() => {
     //   selectedMemberData.csChangeMindSSAPeopleId = $.session.UserId;
     // }
 
-    if (!$.session.planInsertNewTeamMember) {
-      readOnly = true;
-    }
-
     let changeMindQuestion;
     let complaintQuestion;
 
@@ -633,7 +639,7 @@ const csTeamMember = (() => {
       },
     });
     // Participate Yes/NO
-    const participationRadios = buildParticipationRadios(isSigned, isNew);
+    const participationRadios = buildParticipationRadios();
 
     // Signature Type
     signatureTypeDropdown = dropdown.build({
@@ -662,11 +668,11 @@ const csTeamMember = (() => {
 
     //* BUTTONS
     //*------------------------------
-    const btns = buildActionBtns(isSigned, isNew);
+    const btns = buildActionBtns();
 
     //* Date Signed Display
     //*------------------------------
-    const dateSignedDisplay = buildDateSignedDisplay(isSigned);
+    const dateSignedDisplay = buildDateSignedDisplay();
 
     //* Disabled Fields
     //*------------------------------
@@ -683,6 +689,16 @@ const csTeamMember = (() => {
       if (selectedMemberData.lastName !== '') {
         lNameInput.classList.add('disabled');
       }
+    }
+    if (!$.session.planInsertNewTeamMember) {
+      teamMemberDropdown.classList.add('disabled');
+      nameInput.classList.add('disabled');
+      lNameInput.classList.add('disabled');
+      dateOfBirthInput.classList.add('disabled');
+      buildingNumberInput.classList.add('disabled');
+      participatedYesRadio.classList.add('disabled');
+      participatedNoRadio.classList.add('disabled');
+      saveTeamMemberBtn.classList.add('disabled');
     }
 
     //* Required Fields
