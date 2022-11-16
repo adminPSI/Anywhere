@@ -127,6 +127,6 @@ input[type='radio' i]:focus {
 }
 
 .disabled {
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.5) !important;
   pointer-events: none;
 }

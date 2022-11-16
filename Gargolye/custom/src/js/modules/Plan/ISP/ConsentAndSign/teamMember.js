@@ -98,6 +98,7 @@ const csTeamMember = (() => {
       buildingNumberInput.classList.remove('disabled');
       participatedYesRadio.classList.remove('disabled');
       participatedNoRadio.classList.remove('disabled');
+      signatureTypeDropdown.classList.remove('disabled');
       saveTeamMemberBtn.classList.remove('disabled');
     }
 
@@ -698,6 +699,7 @@ const csTeamMember = (() => {
       buildingNumberInput.classList.add('disabled');
       participatedYesRadio.classList.add('disabled');
       participatedNoRadio.classList.add('disabled');
+      signatureTypeDropdown.classList.add('disabled');
       saveTeamMemberBtn.classList.add('disabled');
     }
 
