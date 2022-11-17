@@ -97,7 +97,7 @@ const csSignature = (() => {
         selectedMemberData.attachmentType = fileType;
         selectedMemberData.hasWetSignature = true;
 
-        new Response(attachmentFile).arrayBuffer().then(res => {
+        new Response(file).arrayBuffer().then(res => {
           selectedMemberData.attachment = res;
         });
       });

@@ -63,10 +63,6 @@
     color: $input-focus--dark;
   }
 }
-.input-field.disabled {
-  color: rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-}
 .input-field.error {
   color: $font-error !important;
 
@@ -88,6 +84,10 @@
 }
 .input-field.hidden {
   display: none;
+}
+.input-field.disabled {
+  color: rgba(0, 0, 0, 0.5) !important;
+  pointer-events: none;
 }
 
 // Old School Native Checkbox

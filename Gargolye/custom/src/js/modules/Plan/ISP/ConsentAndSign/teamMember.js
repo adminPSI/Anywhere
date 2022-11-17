@@ -644,8 +644,8 @@ const csTeamMember = (() => {
 
     // Signature Type
     signatureTypeDropdown = dropdown.build({
-      dropdownId: 'sigPopup_teamMember',
-      label: 'Team Member',
+      dropdownId: 'sigPopup_signType',
+      label: 'Signature Type',
       readonly: isSigned || readOnly,
       callback: event => {
         selectedMemberData.signatureType = event.target.value;
@@ -714,6 +714,11 @@ const csTeamMember = (() => {
       nameInput.classList.add('error');
     } else {
       nameInput.classList.remove('error');
+    }
+    if (selectedMemberData.signatureType === '') {
+      signatureTypeDropdown.classList.add('error');
+    } else {
+      signatureTypeDropdown.classList.remove('error');
     }
     if (isNew) {
       if (selectedMemberData.lastName === '') {
