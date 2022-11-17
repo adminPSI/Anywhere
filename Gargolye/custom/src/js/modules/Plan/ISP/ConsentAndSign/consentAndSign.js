@@ -595,7 +595,7 @@ const planConsentAndSign = (() => {
 
     // readyonly / disabled check / required fields
     if (readOnly || popup === 'sign' || isSigned) {
-      contactQuestion.classList.add('disabled');
+      //contactQuestion.classList.add('disabled');
       contactQuestionText.classList.add('disabled');
       csContactQuestionDropdown.classList.add('disabled');
     } else {
