@@ -85,7 +85,7 @@ const csSignature = (() => {
 
     if (selectedMemberData.description) {
       const attachmentDesc = document.createElement('p');
-      p.innerText = selectedMemberData.description;
+      attachmentDesc.innerText = selectedMemberData.description;
 
       attachmentDesc.addEventListener('click', () => {
         var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/viewPlanAttachment/`;
