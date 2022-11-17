@@ -83,7 +83,49 @@ const csSignature = (() => {
     signatureTitle.innerText = 'Signature';
     signatureWrap.appendChild(signatureTitle);
 
-    if (
+    if (selectedMemberData.description) {
+      const attachmentDesc = document.createElement('p');
+      p.innerText = selectedMemberData.description;
+
+      attachmentDesc.addEventListener('click', () => {
+        var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/viewPlanAttachment/`;
+        var successFunction = function (resp) {
+          var res = JSON.stringify(response);
+        };
+
+        var form = document.createElement('form');
+        form.setAttribute('action', action);
+        form.setAttribute('method', 'POST');
+        form.setAttribute('target', '_blank');
+        form.setAttribute('enctype', 'application/json');
+        form.setAttribute('success', successFunction);
+        var tokenInput = document.createElement('input');
+        tokenInput.setAttribute('name', 'token');
+        tokenInput.setAttribute('value', $.session.Token);
+        tokenInput.id = 'token';
+        var attachmentInput = document.createElement('input');
+        //attachmentInput.setAttribute('name', 'attachmentId');
+        //attachmentInput.setAttribute('value', attachmentId);
+        //attachmentInput.id = 'attachmentId';
+        // var sectionInput = document.createElement('input');
+        // sectionInput.setAttribute('name', 'section');
+        // sectionInput.setAttribute('value', section);
+        // sectionInput.id = 'section';
+
+        form.appendChild(tokenInput);
+        form.appendChild(attachmentInput);
+        // form.appendChild(sectionInput);
+        form.style.position = 'absolute';
+        form.style.opacity = '0';
+        document.body.appendChild(form);
+
+        form.submit();
+        form.remove();
+      });
+
+      signatureWrap.appendChild(attachmentDesc);
+      return signatureWrap;
+    } else if (
       selectedMemberData.signatureType === 'In-Person' ||
       selectedMemberData.signatureType === '2'
     ) {
