@@ -107,14 +107,14 @@ const csSignature = (() => {
         attachmentInput.setAttribute('name', 'attachmentId');
         attachmentInput.setAttribute('value', selectedMemberData.attachmentId);
         attachmentInput.id = 'attachmentId';
-        // var sectionInput = document.createElement('input');
-        // sectionInput.setAttribute('name', 'section');
-        // sectionInput.setAttribute('value', section);
-        // sectionInput.id = 'section';
+        var sectionInput = document.createElement('input');
+        sectionInput.setAttribute('name', 'section');
+        sectionInput.setAttribute('value', 'junk');
+        sectionInput.id = 'section';
 
         form.appendChild(tokenInput);
         form.appendChild(attachmentInput);
-        // form.appendChild(sectionInput);
+        form.appendChild(sectionInput);
         form.style.position = 'absolute';
         form.style.opacity = '0';
         document.body.appendChild(form);
