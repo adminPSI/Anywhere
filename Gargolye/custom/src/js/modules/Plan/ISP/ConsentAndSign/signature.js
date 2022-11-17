@@ -104,9 +104,9 @@ const csSignature = (() => {
         tokenInput.setAttribute('value', $.session.Token);
         tokenInput.id = 'token';
         var attachmentInput = document.createElement('input');
-        //attachmentInput.setAttribute('name', 'attachmentId');
-        //attachmentInput.setAttribute('value', attachmentId);
-        //attachmentInput.id = 'attachmentId';
+        attachmentInput.setAttribute('name', 'attachmentId');
+        attachmentInput.setAttribute('value', selectedMemberData.attachmentId);
+        attachmentInput.id = 'attachmentId';
         // var sectionInput = document.createElement('input');
         // sectionInput.setAttribute('name', 'section');
         // sectionInput.setAttribute('value', section);
