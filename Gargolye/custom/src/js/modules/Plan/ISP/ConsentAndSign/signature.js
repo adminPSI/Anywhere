@@ -27,7 +27,9 @@ const csSignature = (() => {
     }
   }
   function parseSignatureData() {
-      if (sigPad === undefined) { return "" } 
+    if (sigPad === undefined) {
+      return '';
+    }
     const dataUrl = sigPad.toDataURL();
     const signatureDataUrl = dataUrl.replace('data:image/png;base64,', '');
     if (sigPad.isEmpty()) return '';
@@ -88,19 +90,24 @@ const csSignature = (() => {
       const attachmentInput = document.createElement('input');
       attachmentInput.type = 'file';
       attachmentInput.classList.add('input-field__input', 'attachmentInput');
-      attachmentInput.addEventListener('change', e => {
-        const target = e.target;
-        const file = target.files.item(0);
-        const fileName = file.name;
-        const fileType = fileName.split('.').pop();
+      attachmentInput.addEventListener('change', async e => {
+        const attPromise = new Promise(resolve => {
+          const target = e.target;
+          const file = target.files.item(0);
+          const fileName = file.name;
+          const fileType = fileName.split('.').pop();
 
-        selectedMemberData.description = fileName;
-        selectedMemberData.attachmentType = fileType;
-        selectedMemberData.hasWetSignature = true;
+          selectedMemberData.description = fileName;
+          selectedMemberData.attachmentType = fileType;
+          selectedMemberData.hasWetSignature = true;
 
-        new Response(file).arrayBuffer().then(res => {
-          selectedMemberData.attachment = res;
+          new Response(file).arrayBuffer().then(res => {
+            selectedMemberData.attachment = res;
+            resolve();
+          });
         });
+
+        await Promise.all([attPromise]);
       });
 
       signatureWrap.appendChild(attachmentInput);
