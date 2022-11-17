@@ -73,6 +73,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string csSupportsHealthNeeds { get; set; }
             public string csTechnology { get; set; }
             public string signatureType { get; set; }
+            public string attachmentId { get; set; }
+            public string atDescription { get; set; }
         }
 
         public class SigId
