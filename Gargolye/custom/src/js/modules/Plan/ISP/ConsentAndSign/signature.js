@@ -72,7 +72,7 @@ const csSignature = (() => {
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
-  function buildSignatureSection(signatureType) {
+  function buildSignatureSection() {
     const signatureWrap = document.createElement('div');
     signatureWrap.classList.add('signatureWrap');
     const signatureTitle = document.createElement('h3');
@@ -80,7 +80,10 @@ const csSignature = (() => {
     signatureTitle.innerText = 'Signature';
     signatureWrap.appendChild(signatureTitle);
 
-    if (signatureType === 'In-Person') {
+    if (
+      selectedMemberData.signatureType === 'In-Person' ||
+      selectedMemberData.signatureType === '2'
+    ) {
       const attachmentInput = document.createElement('input');
       attachmentInput.type = 'file';
       attachmentInput.classList.add('input-field__input', 'attachmentInput');
