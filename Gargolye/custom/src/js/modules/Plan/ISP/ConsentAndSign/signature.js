@@ -27,6 +27,7 @@ const csSignature = (() => {
     }
   }
   function parseSignatureData() {
+      if (sigPad === undefined) { return "" } 
     const dataUrl = sigPad.toDataURL();
     const signatureDataUrl = dataUrl.replace('data:image/png;base64,', '');
     if (sigPad.isEmpty()) return '';
