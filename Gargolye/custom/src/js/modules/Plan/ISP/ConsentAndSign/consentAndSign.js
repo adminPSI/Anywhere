@@ -118,7 +118,7 @@ const planConsentAndSign = (() => {
       attachmentType: selectedMemberData.attachmentType ? selectedMemberData.attachmentType : '',
       // ignore
       section: '',
-      questionId: '',
+      questionId: '0',
     };
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
@@ -190,7 +190,7 @@ const planConsentAndSign = (() => {
       attachmentType: selectedMemberData.attachmentType ? selectedMemberData.attachmentType : '',
       // ignore
       section: '',
-      questionId: '',
+      questionId: '0',
     };
     const data2 = {
       token: $.session.Token,
