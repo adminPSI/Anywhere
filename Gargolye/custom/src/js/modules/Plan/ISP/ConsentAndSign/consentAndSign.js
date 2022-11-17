@@ -600,7 +600,7 @@ const planConsentAndSign = (() => {
       csContactQuestionDropdown.classList.add('disabled');
     } else {
       if ($.session.applicationName === 'Gatekeeper') {
-        contactQuestion.classList.add('disabled');
+        //contactQuestion.classList.add('disabled');
         contactQuestionText.classList.add('disabled');
         csContactQuestionDropdown.classList.add('disabled');
       } else {
