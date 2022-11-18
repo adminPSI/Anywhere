@@ -811,12 +811,10 @@ const servicesSupports = (() => {
         if (hcbsSelected) {
           providerNameDropdown.classList.remove('disabled');
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
-
         } else if (selectedOption.innerText.includes('State Plan Services')) {
           // if 'State Plan Services' is selected, disable Provider Name Dropdown
           providerNameDropdown.classList.remove('error');
           providerNameDropdown.classList.add('disabled');
-
         } else {
           // re-enable provider dropdown if it was disabled
           providerNameDropdown.classList.remove('disabled');
@@ -864,16 +862,16 @@ const servicesSupports = (() => {
 
     async function validateServicesDropdown() {
       // Validation of Services DDL after selecting from fundingSource DDL
-      const servicesDropdown = document.querySelector('#serviceNameDropdownPS');
-      const servicesOtherDropdown = document.querySelector('#serviceNameOtherDropdownPS');
+      const servicesDropdownSelect = document.querySelector('#serviceNameDropdownPS');
+      const servicesOtherDropdownSelect = document.querySelector('#serviceNameOtherDropdownPS');
 
       if (hcbsSelected) {
         if (
-          servicesDropdown.options[servicesDropdown.selectedIndex] &&
-          servicesDropdown.options[servicesDropdown.selectedIndex].text !== ''
+          servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex] &&
+          servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text !== ''
         ) {
           servicesDropdownSelectedText =
-            servicesDropdown.options[servicesDropdown.selectedIndex].text;
+            servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text;
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
         } else {
           servicesDropdownSelectedText = '';
@@ -882,12 +880,12 @@ const servicesSupports = (() => {
         }
       }
 
-      if (servicesDropdown.options[servicesDropdown.selectedIndex]) {
+      if (servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex]) {
         servicesDropdownSelectedText =
-          servicesDropdown.options[servicesDropdown.selectedIndex].text;
+          servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text;
       } else {
         servicesDropdownSelectedText = '';
-        servicesOtherDropdown.classList.add('disabled');
+        serviceNameOtherDropdown.classList.add('disabled');
         saveUpdateData.serviceNameOther = '';
       }
 
@@ -913,8 +911,8 @@ const servicesSupports = (() => {
       // if (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%' || saveUpdateData.providerId === '[SELECT A PROVIDER]') {
       if (
         (providerDropdownSelectedText === '' ||
-         providerDropdownSelectedText === '[SELECT A PROVIDER]') &&
-         !providerNameDropdown.classList.contains('disabled')
+          providerDropdownSelectedText === '[SELECT A PROVIDER]') &&
+        !providerNameDropdown.classList.contains('disabled')
       ) {
         providerNameDropdown.classList.add('error');
       } else {
@@ -975,7 +973,10 @@ const servicesSupports = (() => {
       style: 'secondary',
       callback: (e, selectedOption) => {
         saveUpdateData.providerId = selectedOption.value;
-        if ((saveUpdateData.providerId === '' || saveUpdateData.providerId === '%') && !providerNameDropdown.classList.contains('disabled')) {
+        if (
+          (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%') &&
+          !providerNameDropdown.classList.contains('disabled')
+        ) {
           providerNameDropdown.classList.add('error');
         } else {
           providerNameDropdown.classList.remove('error');
@@ -1293,7 +1294,10 @@ const servicesSupports = (() => {
       assessmentAreaDropdown.classList.add('error');
       hasInitialErros = true;
     }
-    if ((saveUpdateData.providerId === '' || saveUpdateData.providerId === '%') && !providerNameDropdown.classList.contains('disabled')) {
+    if (
+      (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%') &&
+      !providerNameDropdown.classList.contains('disabled')
+    ) {
       providerNameDropdown.classList.add('error');
       hasInitialErros = true;
     }
@@ -1420,7 +1424,7 @@ const servicesSupports = (() => {
     if (saveUpdateData.fundingSourceText === 'State Plan Services') {
       providerNameDropdown.classList.remove('error');
       providerNameDropdown.classList.add('disabled');
-    } 
+    }
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
       fundingSourceDropdownSelectedText = '';
