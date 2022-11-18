@@ -145,7 +145,7 @@ const csTeamMember = (() => {
     if (isNew) {
       if (importedFromRelationship) {
         selectedMemberData.relationshipImport = 'T';
-        selectedMemberData.createRelationship = 'T';
+        selectedMemberData.createRelationship = 'F';
       } else {
         selectedMemberData.relationshipImport = 'F';
         selectedMemberData.createRelationship = 'T';
