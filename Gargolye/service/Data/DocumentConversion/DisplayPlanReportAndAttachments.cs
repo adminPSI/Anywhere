@@ -115,22 +115,27 @@ namespace Anywhere.service.Data.DocumentConversion
                             string imageExt = "pdf";
                             //byte[] nAttachment = displayAttachment(attachment.data); // for demo purpose read from disk
                             byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);
-                            if (attachment.filename.ToUpper().Contains("PNG"))
-                            {
-                                attachment.filename = attachment.filename.Replace("png", "pdf");
-                            }
-                            if (attachment.filename.ToUpper().Contains("JPG"))
-                            {
-                                attachment.filename = attachment.filename.Replace("jpg", "pdf");
-                            }
-                            if (attachment.filename.ToUpper().Contains("SVG"))
-                            {
-                                attachment.filename = attachment.filename.Replace("svg", "pdf");
-                            }
-                            if (attachment.filename.ToUpper().Contains("BMP"))
-                            {
-                                attachment.filename = attachment.filename.Replace("bmp", "pdf");
-                            }
+                            //if (attachment.filename.ToUpper().Contains("PNG"))
+                            //{
+                            //    attachment.filename = attachment.filename.Replace("png", "pdf");
+                            //}
+                            //if (attachment.filename.ToUpper().Contains("JPG"))
+                            //{
+                            //    attachment.filename = attachment.filename.Replace("jpg", "pdf");
+                            //}
+                            //if (attachment.filename.ToUpper().Contains("SVG"))
+                            //{
+                            //    attachment.filename = attachment.filename.Replace("svg", "pdf");
+                            //}
+                            //if (attachment.filename.ToUpper().Contains("BMP"))
+                            //{
+                            //    attachment.filename = attachment.filename.Replace("bmp", "pdf");
+                            //}
+                            int index = attachment.filename.LastIndexOf(".");
+                            if (index >= 0)
+                                attachment.filename = attachment.filename.Substring(0, index + 1);
+                            ;
+                            attachment.filename = attachment.filename + imageExt;
                             using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
                             {
                                 pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
@@ -176,6 +181,9 @@ namespace Anywhere.service.Data.DocumentConversion
             }
 
         }
+
+
+       
 
         public static byte[] concatAndAddContent(List<byte[]> pdfByteContent)
         {
