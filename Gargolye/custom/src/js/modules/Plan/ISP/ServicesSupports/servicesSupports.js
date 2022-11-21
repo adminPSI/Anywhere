@@ -1401,9 +1401,9 @@ const servicesSupports = (() => {
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
 
     if ($.session.applicationName === 'Advisor') {
-      saveUpdateData.serviceNameId = '24';
-      saveUpdateData.fundingSource = '4';
-      saveUpdateData.fundingSourceText = 'ICF';
+      //saveUpdateData.serviceNameId = '24';
+      //saveUpdateData.fundingSource = '4';
+      //saveUpdateData.fundingSourceText = 'ICF';
 
       populateServiceNameDropdown(serviceNameDropdown, '24', '4');
 

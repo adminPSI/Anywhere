@@ -106,12 +106,12 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             return dg.deletePaidSupports(token, paidSupportsId);
         }
 
-        public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, int providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
+        public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
         {
             return dg.updatePaidSupports(token, paidSupportsId, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, serviceNameOther);
         }
 
-        public string insertPaidSupports(string token, long anywAssessmentId, int providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
+        public string insertPaidSupports(string token, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
         {
             return dg.insertPaidSupports(token, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, rowOrder, serviceNameOther);
         }
@@ -166,7 +166,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
                 }
                 else
                 {
-                    dg.insertPaidSupports(token, newPlanId, int.Parse(paidSupportObj[i].providerId), int.Parse(paidSupportObj[i].assessmentAreaId), int.Parse(paidSupportObj[i].serviceNameId), removeUnsavableNoteText(paidSupportObj[i].scopeOfservice), removeUnsavableNoteText(paidSupportObj[i].howOftenValue), int.Parse(paidSupportObj[i].howOftenFrequency), removeUnsavableNoteText(paidSupportObj[i].howOftenText), beginDate, endDate, int.Parse(paidSupportObj[i].fundingSource), removeUnsavableNoteText(paidSupportObj[i].fundingSourceText), int.Parse(paidSupportObj[i].rowOrder), removeUnsavableNoteText(paidSupportObj[i].serviceNameOther));
+                    dg.insertPaidSupports(token, newPlanId, paidSupportObj[i].providerId, int.Parse(paidSupportObj[i].assessmentAreaId), int.Parse(paidSupportObj[i].serviceNameId), removeUnsavableNoteText(paidSupportObj[i].scopeOfservice), removeUnsavableNoteText(paidSupportObj[i].howOftenValue), int.Parse(paidSupportObj[i].howOftenFrequency), removeUnsavableNoteText(paidSupportObj[i].howOftenText), beginDate, endDate, int.Parse(paidSupportObj[i].fundingSource), removeUnsavableNoteText(paidSupportObj[i].fundingSourceText), int.Parse(paidSupportObj[i].rowOrder), removeUnsavableNoteText(paidSupportObj[i].serviceNameOther));
                 }
             }
             //Support Modfications

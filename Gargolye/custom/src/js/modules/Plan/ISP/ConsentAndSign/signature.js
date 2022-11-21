@@ -540,6 +540,14 @@ const csSignature = (() => {
       callback: () => {
         selectedMemberData.dissentAreaDisagree.value = '';
         selectedMemberData.dissentHowToAddress.value = '';
+
+        if (!isSigned) {
+          selectedMemberData.description = '';
+          selectedMemberData.attachmentType = '';
+          selectedMemberData.hasWetSignature = false;
+          selectedMemberData.attachment = '';
+        }
+
         POPUP.hide(signaturePopup);
       },
     });
