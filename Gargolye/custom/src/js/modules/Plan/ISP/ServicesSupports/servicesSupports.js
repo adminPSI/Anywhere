@@ -353,7 +353,7 @@ const servicesSupports = (() => {
       }
     });
     //Only check for defaultValue in Advisor
-    if ($.session.applicationName === 'Advisor') {
+    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
       if (availableServiceTypes.includes(defaultValue)) {
         let servicesDropdownSelected = data.find(e => e.value === defaultValue);
         servicesDropdownSelectedText = servicesDropdownSelected.text;
@@ -1405,11 +1405,7 @@ const servicesSupports = (() => {
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
 
-    if ($.session.applicationName === 'Advisor') {
-      //saveUpdateData.serviceNameId = '24';
-      //saveUpdateData.fundingSource = '4';
-      //saveUpdateData.fundingSourceText = 'ICF';
-
+    if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
       populateServiceNameDropdown(serviceNameDropdown, '24', '4');
 
       fundingSourceDropdown.classList.remove('error');
