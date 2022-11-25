@@ -684,6 +684,11 @@ const plan = (function () {
 
     const attachmentsWrap = document.createElement('div');
     attachmentsWrap.classList.add('attachmentsWrap');
+    const attachHeading = document.createElement('p');
+    attachHeading.classList.add('attachmentsHeading');
+    attachHeading.innerText = `Please select the attachment(s) that should be included with the report.`;
+    attachmentsWrap.appendChild(attachHeading);
+
     planAttWrap = document.createElement('div');
     planAttWrap.classList.add('planAttWrap');
     workflowAttWrap = document.createElement('div');
@@ -691,8 +696,8 @@ const plan = (function () {
     attachmentsWrap.appendChild(planAttWrap);
     attachmentsWrap.appendChild(workflowAttWrap);
 
-    const planHeading = document.createElement('h1');
-    const workflowHeading = document.createElement('h1');
+    const planHeading = document.createElement('h2');
+    const workflowHeading = document.createElement('h2');
     planHeading.innerText = 'Plan Attachments';
     workflowHeading.innerText = 'Workflow Attachments';
     planAttWrap.appendChild(planHeading);
