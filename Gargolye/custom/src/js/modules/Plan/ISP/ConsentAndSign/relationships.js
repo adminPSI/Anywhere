@@ -148,11 +148,15 @@ const csRelationship = (() => {
     relationshipsWrap = document.createElement('div');
     relationshipsWrap.classList.add('relationshipsWrap');
 
-    const teamMembers = planConsentAndSign.getTeamMemberData(); //
+    let teamMembers = planConsentAndSign.getTeamMemberData();
+    if (!teamMembers) teamMembers = [];
 
     gkRelationships.forEach(rel => {
-      const filteredMember = teamMembers.filter(tm => tm.peopleId === rel.peopleId);
-      if (filteredMember.length >= 1) return;
+      if (teamMembers.length !== 0) {
+        const filteredMember = teamMembers.filter(tm => tm.peopleId === rel.peopleId);
+        if (filteredMember.length >= 1) return;
+      }
+
       const relationship = buildRelationship(rel);
       relationshipsWrap.appendChild(relationship);
     });
