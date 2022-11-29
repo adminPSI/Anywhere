@@ -153,6 +153,11 @@ const csTeamMember = (() => {
       let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
       rd = rd ? rd[0] : {};
 
+      // TODO:
+      if (rd.hasSomeGuardians) {
+        showGuardiansPopup(rd.guardiansData);
+      }
+
       if (rd.existingPeopleId) {
         const pendingSavePopup = document.querySelector('.pendingSavePopup');
         pendingSavePopup.style.display = 'none';
@@ -250,6 +255,88 @@ const csTeamMember = (() => {
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
+  function showGuardiansPopup(guardiansData) {
+    if (!guardiansData) {
+      guardianPopup = POPUP.build({
+        id: 'guardianPopup',
+        hideX: true,
+        header: `There is no guardian listed in Salesforce for this individual`,
+      });
+
+      const doneBtn = button.build({
+        id: 'guardianPopup_cancel',
+        text: 'ok',
+        style: 'secondary',
+        type: 'outlined',
+        callback: () => {
+          POPUP.hide(guardianPopup);
+          teamMemberPopup.display.block;
+        },
+      });
+
+      guardianPopup.appendChild(doneBtn);
+
+      teamMemberPopup.display.none;
+      POPUP.show(guardianPopup);
+      return;
+    }
+
+    let selectedGuardian;
+
+    guardianPopup = POPUP.build({
+      id: 'guardianPopup',
+      hideX: true,
+      header: `This is the valid Guardian(S) listed in Salesforce. Please select a guardian from the list that matches the Team Member`,
+    });
+
+    const guardiansWrap = document.createElement('div');
+
+    guardiansData.forEach(g => {
+      const guardianDiv = document.createElement('div');
+      guardianDiv.classList.add('guardianDiv');
+
+      guardianDiv.addEventListener('click', e => {
+        const selectedG = guardiansWrap.querySelector('.guardianDiv.selected');
+        if (selectedG) selectedG.classList.remove('selected');
+        e.target.classList.add('selected');
+
+        selectedGuardian = g;
+      });
+
+      guardiansWrap.appendChild(guardianDiv);
+    });
+
+    const doneBtn = button.build({
+      id: 'guardianPopup_cancel',
+      text: 'ok',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        // do stuff
+        // saveGuardianOrsomething(selectedGuardian);
+      },
+    });
+    const cancelBtn = button.build({
+      id: 'guardianPopup_cancel',
+      text: 'cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        POPUP.hide(guardianPopup);
+        teamMemberPopup.display.block;
+      },
+    });
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(doneBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    guardianPopup.appendChild(guardiansWrap);
+    guardianPopup.appendChild(btnWrap);
+
+    teamMemberPopup.display.none;
+    POPUP.show(guardianPopup);
+  }
   function buildParticipationRadios() {
     const radioContainer = document.createElement('div');
     radioContainer.classList.add('sig_radioContainer');
@@ -285,7 +372,7 @@ const csTeamMember = (() => {
     radioDiv.appendChild(participatedYesRadio);
     radioDiv.appendChild(participatedNoRadio);
 
-    if (isNew) {
+    if (isNew && $.session.planInsertNewTeamMember) {
       radioDiv.classList.add('error');
     }
 
@@ -708,24 +795,26 @@ const csTeamMember = (() => {
 
     //* Required Fields
     //*------------------------------
-    if (selectedMemberData.teamMember === '') {
-      teamMemberDropdown.classList.add('error');
-    } else {
-      teamMemberDropdown.classList.remove('error');
-    }
-    if (selectedMemberData.name === '') {
-      nameInput.classList.add('error');
-    } else {
-      nameInput.classList.remove('error');
-    }
-    if (selectedMemberData.signatureType === '') {
-      signatureTypeDropdown.classList.add('error');
-    } else {
-      signatureTypeDropdown.classList.remove('error');
-    }
-    if (isNew) {
-      if (selectedMemberData.lastName === '') {
-        lNameInput.classList.add('error');
+    if ($.session.planInsertNewTeamMember) {
+      if (selectedMemberData.teamMember === '') {
+        teamMemberDropdown.classList.add('error');
+      } else {
+        teamMemberDropdown.classList.remove('error');
+      }
+      if (selectedMemberData.name === '') {
+        nameInput.classList.add('error');
+      } else {
+        nameInput.classList.remove('error');
+      }
+      if (selectedMemberData.signatureType === '') {
+        signatureTypeDropdown.classList.add('error');
+      } else {
+        signatureTypeDropdown.classList.remove('error');
+      }
+      if (isNew) {
+        if (selectedMemberData.lastName === '') {
+          lNameInput.classList.add('error');
+        }
       }
     }
 

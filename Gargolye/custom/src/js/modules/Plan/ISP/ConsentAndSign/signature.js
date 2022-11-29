@@ -68,6 +68,24 @@ const csSignature = (() => {
       }, 2000);
     }
   }
+  function showWarningPopup(sigPadData) {
+    UTIL.warningPopup({
+      message:
+        'Once the ISP signature is submitted you will not be able to change it.  Do you want to proceed?',
+      hideX: true,
+      accept: {
+        text: 'Yes',
+        callback: () => saveFromSignature(sigPadData),
+      },
+      reject: {
+        text: 'No',
+        callback: () => {
+          overlay.show();
+          signaturePopup.style.removeProperty('display');
+        },
+      },
+    });
+  }
 
   //*------------------------------------------------------
   //* MARKUP
@@ -127,6 +145,7 @@ const csSignature = (() => {
       selectedMemberData.signatureType === 'In-Person' ||
       selectedMemberData.signatureType === '2'
     ) {
+      selectedMemberData.hasWetSignature = false;
       const attachmentInput = document.createElement('input');
       attachmentInput.type = 'file';
       attachmentInput.classList.add('input-field__input', 'attachmentInput');
@@ -471,7 +490,7 @@ const csSignature = (() => {
     readOnly = isReadOnly;
     selectedMemberData = memberData;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
-    charLimits = planData.getISPCharacterLimits('consentAndSign');
+    characterLimits = planData.getISPCharacterLimits('consentAndSign');
 
     //*--------------------------------------
     //* POPUP
@@ -506,28 +525,24 @@ const csSignature = (() => {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        const sigPadData = parseSignatureData();
+        let sigPadData = parseSignatureData();
         signaturePopup.style.display = 'none';
 
-        if (sigPadData === emptySignatureDataURL || sigPadData === '') {
-          saveFromSignature();
+        if (
+          selectedMemberData.signatureType === 'In-Person' ||
+          selectedMemberData.signatureType === '2'
+        ) {
+          if (!selectedMemberData.description || selectedMemberData.description === '') {
+            saveFromSignature();
+          } else {
+            showWarningPopup(sigPadData);
+          }
         } else {
-          UTIL.warningPopup({
-            message:
-              'Once the ISP signature is submitted you will not be able to change it.  Do you want to proceed?',
-            hideX: true,
-            accept: {
-              text: 'Yes',
-              callback: () => saveFromSignature(sigPadData),
-            },
-            reject: {
-              text: 'No',
-              callback: () => {
-                overlay.show();
-                signaturePopup.style.removeProperty('display');
-              },
-            },
-          });
+          if (sigPadData === emptySignatureDataURL || sigPadData === '') {
+            saveFromSignature();
+          } else {
+            showWarningPopup(sigPadData);
+          }
         }
       },
     });
