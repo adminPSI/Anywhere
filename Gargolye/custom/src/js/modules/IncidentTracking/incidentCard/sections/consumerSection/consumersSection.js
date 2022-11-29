@@ -44,9 +44,6 @@ var itConsumerSection = (function() {
   function showConsumersWrap() {
     consumersWrap.classList.add('visible');
     consumerSections.classList.remove('visible');
-
-    var selectedErroredConsumers = document.getElementsByClassName("consumerCard consumer-selected error");
-    var test = selectedErroredConsumers.length;
   }
   function displayCount() {
     var count = activeConsumers.length;
@@ -70,18 +67,13 @@ var itConsumerSection = (function() {
     var consumerCards = [].slice.call(consumersWrap.querySelectorAll('.consumerCard'));
     consumerCards.forEach(card => card.classList.remove('error'));
 
-    var selectedErroredConsumers = document.getElementsByClassName("consumerCard consumer-selected error");
-    var test = selectedErroredConsumers.length;
+    var cardHasErrors = itDetailsSection.checkRequiredFields();
     
-   // incidentCard.toggleSave(false);
-    // var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
-    
-    // if (consumerSectionHasErrors) {
-    //   incidentCard.toggleSave(true);
-    // } else {
-    //   incidentCard.toggleSave(false);
-    // }
-    // test 
+    if (cardHasErrors) {
+      incidentCard.toggleSave(true);
+    } else {
+      incidentCard.toggleSave(false);
+    }
    
   }
   function showConsumerError(consumerIdArray) {
