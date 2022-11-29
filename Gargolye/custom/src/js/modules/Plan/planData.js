@@ -3,6 +3,20 @@ const planData = (() => {
   let ispData;
   let dropdowns;
 
+  // CHARACTER LIMITS
+  //-----------------------------------------
+  const characterLimits = {
+    assessment: {},
+    isp: {
+      consentAndSign: {
+        input1: '10,000',
+      },
+    },
+  };
+  function getCharacterLimits(planOrAss, section) {
+    return characterLimits[planOrAss][section];
+  }
+
   // DROPDOWN DATA
   //-----------------------------------------
   const removeDups = data => {

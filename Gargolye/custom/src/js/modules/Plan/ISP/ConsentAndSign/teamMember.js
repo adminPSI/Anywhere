@@ -677,10 +677,13 @@ const csTeamMember = (() => {
 
     //* Disabled Fields
     //*------------------------------
-    if (selectedMemberData.dateOfBirth) {
+    // TODO: delete below sessions once set by TJ
+    // $.session.planUpdateDOB = true;
+    // $.session.planUpdateAddress = true;
+    if (selectedMemberData.dateOfBirth /*|| $.session.planUpdateDOB*/) {
       dateOfBirthInput.classList.add('disabled');
     }
-    if (selectedMemberData.buildingNumber) {
+    if (selectedMemberData.buildingNumber /*|| $.session.planUpdateAddress*/) {
       buildingNumberInput.classList.add('disabled');
     }
     if (!isNew) {
