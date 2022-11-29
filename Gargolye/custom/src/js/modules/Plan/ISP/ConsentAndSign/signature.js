@@ -9,10 +9,7 @@ const csSignature = (() => {
   let sigPad;
   let saveBtn;
   // other
-  const characterLimits = {
-    dissentAreaDisagree: 1000,
-    dissentHowToAddress: 1000,
-  };
+  let characterLimits;
 
   //*------------------------------------------------------
   //* UTIL
@@ -474,6 +471,7 @@ const csSignature = (() => {
     readOnly = isReadOnly;
     selectedMemberData = memberData;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
+    charLimits = planData.getISPCharacterLimits('consentAndSign');
 
     //*--------------------------------------
     //* POPUP

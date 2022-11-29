@@ -9,12 +9,62 @@ const planData = (() => {
     assessment: {},
     isp: {
       consentAndSign: {
-        input1: '10,000',
+        dissentAreaDisagree: 1000,
+        dissentHowToAddress: 1000,
+      },
+      contactInfo: {
+        moreDetail: 1000,
+      },
+      restrictiveMeasures: {
+        rmKeepSelfSafe: 1000,
+        rmFadeRestriction: 1000,
+        rmWhatCouldHappenGood: 1000,
+        rmWhatCouldHappenBad: 1000,
+        rmOtherWayHelpGood: 1000,
+        rmOtherWayHelpBad: 1000,
+      },
+      introduction: {
+        likeAdmire: 2000,
+        thingsImportantTo: 2000,
+        thingsImportantFor: 2000,
+        howToSupport: 2000,
+      },
+      outcomes: {
+        description: 1000,
+        details: 1000,
+        history: 1000,
+        carryOverReason: 255,
+        whatNeedsToHappen: 255, // exp
+        howItShouldHappen: 255, // exp
+        whenHowOften: 255, // exp
+        whenHowOftenOther: 255, // exp
+        whatWillHappen: 1000, // rev
+        whenToCheckIn: 255, // rev
+      },
+      servicesSupports: {
+        scopeOfService: 1000, // paid supp
+        fundingSourceOther: 1000, // paid supp
+        howOftenHowMuch: 255, // paid supp
+        howOftenOther: 1000, // paid supp
+        whatSupportLooksLike: 1000, // add supp
+        whenHowOften: 255, // add supp
+        whenHowOftenOther: 1000, // add supp
+        reasonForReferral: 1000, // prof ref
+      },
+      summary: {
+        importantTo: 1000,
+        importantFor: 1000,
+        skillsAndAbilities: 1000,
+        whatIsRisk: 1000,
+        whatSupportLooksLike: 1000,
       },
     },
   };
-  function getCharacterLimits(planOrAss, section) {
-    return characterLimits[planOrAss][section];
+  function getISPCharacterLimits(section) {
+    return characterLimits.isp[section];
+  }
+  function getAssessmentCharacterLimits(section) {
+    return characterLimits.assessment[section];
   }
 
   // DROPDOWN DATA
@@ -441,6 +491,8 @@ const planData = (() => {
     init,
     getDropdownData,
     getRelationshipNameById,
+    getISPCharacterLimits,
+    getAssessmentCharacterLimits,
     populateRelationshipDropdown,
     refreshDropdownData,
   };

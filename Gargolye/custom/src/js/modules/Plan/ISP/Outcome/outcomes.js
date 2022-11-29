@@ -12,18 +12,7 @@ const planOutcomes = (() => {
   let addExpTableBtn;
   let teamMembers;
   let hasPreviousPlan;
-  let charLimits = {
-    description: 1000,
-    details: 1000,
-    history: 1000,
-    carryOverReason: 255,
-    whatNeedsToHappen: 255, // exp
-    howItShouldHappen: 255, // exp
-    whenHowOften: 255, // exp
-    whenHowOftenOther: 255, // exp
-    whatWillHappen: 1000, // rev
-    whenToCheckIn: 255, // rev
-  };
+  let charLimits;
 
   //*------------------------------------------------------
   //* UTILS
@@ -2141,9 +2130,10 @@ const planOutcomes = (() => {
   }
 
   async function init(data) {
-    // data = { planId, readOnly, charLimits }
+    // data = { planId, readOnly }
     planId = data.planId;
     isReadOnly = data.readOnly;
+    charLimits = planData.getISPCharacterLimits('outcomes');
 
     if (!$.session.planUpdate) {
       isSortable = false;

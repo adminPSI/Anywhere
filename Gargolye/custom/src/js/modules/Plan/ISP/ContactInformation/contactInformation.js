@@ -21,6 +21,7 @@ const contactInformation = (() => {
   let phoneInput;
   let sexInput;
   let maritalStatusInput;
+  let charLimits;
 
   function refreshDropdownData(newDropdownData) {
     dropdownData = newDropdownData;
@@ -168,7 +169,7 @@ const contactInformation = (() => {
       readonly: readOnly,
       classNames: 'autosize',
       value: bestWayToConnectData.moreDetail,
-      charLimit: '1000',
+      charLimit: charLimits.moreDetail,
       forceCharLimit: true,
       callback: async e => {
         bestWayToConnectData.moreDetail = e.target.value;
@@ -417,6 +418,7 @@ const contactInformation = (() => {
     const peopleId = consumer.id;
     gkRelationships = planData.getDropdownData().relationships;
     communicationType = planData.getDropdownData().communicationType;
+    charLimits = planData.getISPCharacterLimits('contactInfo');
 
     if (planActiveStatus && planStatus === 'D' && $.session.planUpdate) {
       readOnly = false;

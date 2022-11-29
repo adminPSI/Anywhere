@@ -9,12 +9,7 @@ const planIntroduction = (() => {
   let selectedConsumerId;
   let consumerImage;
   let consumerImageURL;
-  let charLimits = {
-    likeAdmire: 2000,
-    thingsImportantTo: 2000,
-    thingsImportantFor: 2000,
-    howToSupport: 2000,
-  };
+  let charLimits;
 
   async function updateIntroduction() {
     await planIntroductionAjax.updatePlanIntroduction(
@@ -43,10 +38,11 @@ const planIntroduction = (() => {
       id: `noPhotoRadio`,
       text: 'No Photo',
       name: 'chkUseImage',
-      isChecked: (usePlanImage === '' || usePlanImage === null || usePlanImage === '2') ? true : false,
-     // isDisabled: isReadOnly,
+      isChecked:
+        usePlanImage === '' || usePlanImage === null || usePlanImage === '2' ? true : false,
+      // isDisabled: isReadOnly,
       callback: () => {
-      // if (!isReadOnly) photoInput.classList.add('disabled');
+        // if (!isReadOnly) photoInput.classList.add('disabled');
         // Retrieve the demographics DEFAULT Picture from images folder and place it in img
         // var fullpath = `./images/portraits/default.png`;
         var fullpath = `./images/new-icons/default.jpg`;
@@ -161,8 +157,8 @@ const planIntroduction = (() => {
     imageContainer.appendChild(imageTitle);
     imageContainer.appendChild(radioDiv1);
     imageContainer.appendChild(radioDiv2);
-   imageContainer.appendChild(imageframe);
-   imageContainer.appendChild(radioDiv3);
+    imageContainer.appendChild(imageframe);
+    imageContainer.appendChild(radioDiv3);
     imageContainer.appendChild(photoSelectDiv);
     imageContainer.classList.add('imageSelectionContainer');
 
@@ -311,11 +307,10 @@ const planIntroduction = (() => {
   }
 
   function displayNoPhoto() {
-    
-   var fullpath = `./images/new-icons/default.jpg`;
+    var fullpath = `./images/new-icons/default.jpg`;
     var myImage = new Image();
     myImage.src = fullpath;
-   myImage.onload = function () {
+    myImage.onload = function () {
       let noPhotoRadio1 = document.getElementById('noPhotoRadio');
       // display default photo silhouette
       if (noPhotoRadio1.checked == true) {
@@ -385,6 +380,7 @@ const planIntroduction = (() => {
   async function init(data) {
     isReadOnly = data.readOnly;
     planId = data.planId;
+    charLimits = planData.getISPCharacterLimits('introduction');
 
     var activeConsumers = roster2.getActiveConsumers();
     selectedConsumerId = activeConsumers[activeConsumers.length - 1].id;

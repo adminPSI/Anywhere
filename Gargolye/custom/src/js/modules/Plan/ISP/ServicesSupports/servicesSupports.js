@@ -21,16 +21,7 @@ const servicesSupports = (() => {
   let hcbsSelected;
   let saveUpdateProvider = '';
 
-  const charLimits = {
-    scopeOfService: 1000, // paid supp
-    fundingSourceOther: 1000, // paid supp
-    howOftenHowMuch: 255, // paid supp
-    howOftenOther: 1000, // paid supp
-    whatSupportLooksLike: 1000, // add supp
-    whenHowOften: 255, // add supp
-    whenHowOftenOther: 1000, // add supp
-    reasonForReferral: 1000, // prof ref
-  };
+  let charLimits;
 
   // UTILS
   //------------------------------------------------------
@@ -2550,6 +2541,7 @@ const servicesSupports = (() => {
     isReadOnly = readOnly;
     servicesSupportsData = data;
     dropdownData = planData.getDropdownData();
+    charLimits = planData.getISPCharacterLimits('servicesSupports');
 
     if (!$.session.planUpdate) {
       isSortable = false;
