@@ -195,12 +195,19 @@ var incidentCard = (function() {
   }
 
   function checkforRequiredConsumer() {
-    //var hasNoErrors = [].slice.call(document.querySelectorAll('.consumerCard .consumer-selected'));
+
+    // number of selected Consumers with an error ; length = 0 on initial display
+    var selectedErroredConsumers = document.getElementsByClassName("consumerCard consumer-selected error");
+
+    // hasNoErrors = 0 means the "Select a Consumer" message is displayed
     var hasNoErrors = document.getElementsByClassName("consumerError hidden");
-    if (hasNoErrors.length !== 0 || itConsumerInvolved) {
-      return false;   
+
+    if (hasNoErrors.length === 0) return true;
+    
+    if (selectedErroredConsumers.length === 0 || itConsumerInvolved) {
+      return false;   // false means don't disable the Save BTN
     } else {
-      return true;    
+      return true;    // true means do disable the Save BTN
     }
   }
 

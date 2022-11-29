@@ -266,18 +266,21 @@ var itDetailsSection = (function() {
     } else {
       incidentDateInput.classList.remove('error');
     }
+	
+  // number of selected Consumers with an error ; length = 0 on initial display
+    var selectedErroredConsumers = document.getElementsByClassName("consumerCard consumer-selected error");
 
-    // if (!incidentTime || incidentTime === '') {
-    //   incidentTimeInput.classList.add('error');
-    // } else {
-    //   incidentTimeInput.classList.remove('error');
-    // }
+    // hasNoErrors = 0 means the "Select a Consumer" message is displayed
+    var hasNoErrors = document.getElementsByClassName("consumerError hidden");
 
-    var hasErrors = [].slice.call(section.querySelectorAll('.error'));
-    if (hasErrors.length !== 0) {
-        return true;   
+    if (hasNoErrors.length === 0) return true;
+    
+	var detailshasErrors = [].slice.call(section.querySelectorAll('.error'));
+	
+	 if (detailshasErrors.length !== 0 || selectedErroredConsumers.length !== 0) {
+        return true;   // true means do disable the Save BTN
       } else {
-        return false;    
+        return false;    // false means don't disable the Save BTN
       }
 
   }
