@@ -197,8 +197,7 @@ var incidentCard = (function() {
   function checkforRequiredConsumer() {
 
     // number of selected Consumers with an error ; length = 0 on initial display
-    var selectedErroredConsumers = document.getElementsByClassName("consumerCard consumer-selected error");
-
+   var selectedErroredConsumers = [].slice.call(document.querySelectorAll('.consumersWrap .consumerCard.error'));
     // hasNoErrors = 0 means the "Select a Consumer" message is displayed
     var hasNoErrors = document.getElementsByClassName("consumerError hidden");
 
