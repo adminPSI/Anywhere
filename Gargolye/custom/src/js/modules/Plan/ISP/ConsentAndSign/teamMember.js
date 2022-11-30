@@ -90,8 +90,6 @@ const csTeamMember = (() => {
 
     teamMemberPopup.style.removeProperty('display');
 
-    checkTeamMemberPopupForErrors();
-
     if (!$.session.planInsertNewTeamMember) {
       // if above is false we know popup was temp disabled
       teamMemberDropdown.classList.remove('disabled');
@@ -109,6 +107,8 @@ const csTeamMember = (() => {
       }
       radioDiv.classList.add('error');
     }
+
+    checkTeamMemberPopupForErrors();
 
     // save team member if readOnly
     if (readOnly) {
@@ -879,7 +879,9 @@ const csTeamMember = (() => {
 
     POPUP.show(teamMemberPopup);
 
-    checkTeamMemberPopupForErrors();
+    if ($.session.planInsertNewTeamMember) {
+      checkTeamMemberPopupForErrors();
+    }
   }
 
   return {
