@@ -16,6 +16,7 @@ const csTeamMember = (() => {
   let buildingNumberInput;
   let relationshipInput;
   let signatureTypeDropdown;
+  let radioDiv;
   let participatedYesRadio;
   let participatedNoRadio;
   let saveTeamMemberBtn;
@@ -99,7 +100,14 @@ const csTeamMember = (() => {
       participatedYesRadio.classList.remove('disabled');
       participatedNoRadio.classList.remove('disabled');
       signatureTypeDropdown.classList.remove('disabled');
-      //saveTeamMemberBtn.classList.remove('disabled');
+      // set errors
+      if (selectedMemberData.teamMember === '') {
+        teamMemberDropdown.classList.add('error');
+      }
+      if (selectedMemberData.signatureType === '') {
+        signatureTypeDropdown.classList.add('error');
+      }
+      radioDiv.classList.add('error');
     }
 
     // save team member if readOnly
@@ -368,7 +376,7 @@ const csTeamMember = (() => {
       },
     });
 
-    const radioDiv = document.createElement('div');
+    radioDiv = document.createElement('div');
     radioDiv.classList.add('signatures_radioDiv');
     radioDiv.appendChild(participatedYesRadio);
     radioDiv.appendChild(participatedNoRadio);
