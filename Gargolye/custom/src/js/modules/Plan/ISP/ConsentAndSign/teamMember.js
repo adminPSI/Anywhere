@@ -99,7 +99,7 @@ const csTeamMember = (() => {
       participatedYesRadio.classList.remove('disabled');
       participatedNoRadio.classList.remove('disabled');
       signatureTypeDropdown.classList.remove('disabled');
-      saveTeamMemberBtn.classList.remove('disabled');
+      //saveTeamMemberBtn.classList.remove('disabled');
     }
 
     // save team member if readOnly
