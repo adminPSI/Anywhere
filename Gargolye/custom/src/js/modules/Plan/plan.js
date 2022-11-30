@@ -818,6 +818,35 @@ const plan = (function () {
     reportsScreen.appendChild(doneBtn);
   }
   async function runDODDScreen() {
+    // build & show spinner
+    const spinner = PROGRESS.SPINNER.get('Sending Plan to DODD...');
+    sendToDODDScreen.appendChild(spinner);
+    // send report
+    const success = await planAjax.uploadPlanToDODD({
+      consumerId: selectedConsumer.id,
+      planId,
+    });
+    // remove spinner
+    sendToDODDScreen.removeChild(spinner);
+    // display message & btn
+    const okBtn = button.build({
+      id: 'sendToDODDbtn',
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        message.innerText = '';
+        sendToDODDScreen.removeChild(okBtn);
+        morePopup.classList.remove('error');
+        sendToDODDScreen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+      },
+    });
+    message.innerText = success;
+    sendToDODDScreen.appendChild(okBtn);
+    return;
+
+    // TODO: 2022.5
     const title = document.createElement('p');
     title.innerText = 'Select An SSA';
 
