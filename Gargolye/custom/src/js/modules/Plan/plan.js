@@ -829,6 +829,7 @@ const plan = (function () {
     // remove spinner
     sendToDODDScreen.removeChild(spinner);
     // display message & btn
+    const message = document.querySelector('#DODDScreen p');
     const okBtn = button.build({
       id: 'sendToDODDbtn',
       text: 'OK',
