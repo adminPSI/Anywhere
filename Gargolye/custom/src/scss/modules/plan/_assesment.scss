@@ -290,16 +290,24 @@
   }
 
   #reportsScreen {
+    overflow: hidden;
+
     &.visible {
       transform: translateX(-600%);
     }
 
     .attachmentsWrap {
-      margin: 0 0 20px;
+      margin: 0 0 15px;
+      max-height: 400px;
+      overflow-y: scroll;
+
+      .attachmentsHeading {
+        margin: 0 0 10px;
+      }
 
       .planAttWrap, .workflowAttWrap {
-        h1 {
-          margin: 0 0 15px;
+        h2 {
+          margin: 0 0 10px;
         }
         .attachment {
           cursor: pointer;

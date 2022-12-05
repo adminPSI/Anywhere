@@ -73,8 +73,8 @@ const csRelationship = (() => {
     const flag = {};
     const unique = [];
     data.forEach(el => {
-      if (!flag[el.contactId]) {
-        flag[el.contactId] = true;
+      if (!flag[el.peopleId]) {
+        flag[el.peopleId] = true;
         unique.push(el);
       }
     });
@@ -148,13 +148,15 @@ const csRelationship = (() => {
     relationshipsWrap = document.createElement('div');
     relationshipsWrap.classList.add('relationshipsWrap');
 
-    const teamMembers = planConsentAndSign.getTeamMemberData();
+    let teamMembers = planConsentAndSign.getTeamMemberData();
+    if (!teamMembers) teamMembers = [];
 
     gkRelationships.forEach(rel => {
-      const filteredMember = teamMembers.filter(
-        tm => tm.contactId === rel.contactId || tm.peopleId === rel.peopleId,
-      );
-      if (filteredMember.length >= 1) return;
+      if (teamMembers.length !== 0) {
+        const filteredMember = teamMembers.filter(tm => tm.peopleId === rel.peopleId);
+        if (filteredMember.length >= 1) return;
+      }
+
       const relationship = buildRelationship(rel);
       relationshipsWrap.appendChild(relationship);
     });

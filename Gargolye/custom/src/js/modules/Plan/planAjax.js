@@ -75,31 +75,31 @@ const planAjax = (function () {
     }
   }
 
-  async function getPlanAndWorkFlowAttachments(retrieveData){
-      //string token, string assessmentId
-      try {
-          const data = await $.ajax({
-              type: 'POST',
-              url:
-                  $.webServer.protocol +
-                  '://' +
-                  $.webServer.address +
-                  ':' +
-                  $.webServer.port +
-                  '/' +
-                  $.webServer.serviceName +
-                  '/getPlanAndWorkFlowAttachments/',
-              data: JSON.stringify(retrieveData),
-              contentType: 'application/json; charset=utf-8',
-              dataType: 'json',
-          });
+  async function getPlanAndWorkFlowAttachments(retrieveData) {
+    //string token, string assessmentId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getPlanAndWorkFlowAttachments/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
 
-          return {
-              ...data.getPlanAndWorkFlowAttachmentsResult,
-          };
-      } catch (error) {
-          console.log(error);
-      }
+      return {
+        ...data.getPlanAndWorkFlowAttachmentsResult,
+      };
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   // INSERT
@@ -179,30 +179,30 @@ const planAjax = (function () {
       console.log(error.responseText);
     }
   }
-    async function addSelectedAttachmentsToReport(retrieveData) {
-        // string token, string[] attachmentIds, string userId, string assessmentID, 
-        // string versionID, string extraSpace, bool isp
-        try {
-            const data = await $.ajax({
-                type: 'POST',
-                url:
-                    $.webServer.protocol +
-                    '://' +
-                    $.webServer.address +
-                    ':' +
-                    $.webServer.port +
-                    '/' +
-                    $.webServer.serviceName +
-                    '/addSelectedAttachmentsToReport/',
-                data: JSON.stringify(retrieveData),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-            });
-            return data.addSelectedAttachmentsToReportResult;
-        } catch (error) {
-            console.log(error.responseText);
-        }
+  async function addSelectedAttachmentsToReport(retrieveData) {
+    // string token, string[] attachmentIds, string userId, string assessmentID,
+    // string versionID, string extraSpace, bool isp
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/addSelectedAttachmentsToReport/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.addSelectedAttachmentsToReportResult;
+    } catch (error) {
+      console.log(error.responseText);
     }
+  }
   // UPDATE
   //------------------------------------
   async function updateConsumerPlanReactivate(retrieveData) {
@@ -472,27 +472,27 @@ const planAjax = (function () {
       error: function (xhr, status, error) {},
     });
   }
-    function getConsumerPeopleId(consumerId, callback) {
-        $.ajax({
-            type: 'POST',
-            url:
-                $.webServer.protocol +
-                '://' +
-                $.webServer.address +
-                ':' +
-                $.webServer.port +
-                '/' +
-                $.webServer.serviceName +
-                '/getConsumerPeopleId/',
-            data: '{"consumerId":"' + consumerId + '"}',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            success: function (response, status, xhr) {
-                var res = response.getConsumerPeopleIdResult;
-                return callback(res);
-            },
-        });
-    }
+  function getConsumerPeopleId(consumerId, callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getConsumerPeopleId/',
+      data: '{"consumerId":"' + consumerId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getConsumerPeopleIdResult;
+        return callback(res);
+      },
+    });
+  }
   async function getPlanAttachmentsList(retrieveData) {
     try {
       const data = await $.ajax({
@@ -576,8 +576,8 @@ const planAjax = (function () {
     getPlanAndWorkFlowAttachments,
     insertAnnualPlan,
     insertRevisedPlan,
-      insertAutomatedWorkflows,
-      addSelectedAttachmentsToReport,
+    insertAutomatedWorkflows,
+    addSelectedAttachmentsToReport,
     updateConsumerPlanReactivate,
     updateConsumerPlanSetStatus,
     updateConsumerPlanSetAnnualDates,
@@ -591,6 +591,6 @@ const planAjax = (function () {
     getPlanAttachmentsList,
     uploadPlanToDODD,
     checkForSalesForce,
-    getConsumerPeopleId
+    getConsumerPeopleId,
   };
 })();

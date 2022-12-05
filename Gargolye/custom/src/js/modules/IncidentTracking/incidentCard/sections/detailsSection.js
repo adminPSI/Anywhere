@@ -22,6 +22,11 @@ var itDetailsSection = (function() {
   var actionText;
   var preventionText;
   var factorsText;
+  // Inputs
+  var incidentDateInput;
+  var incidentTimeInput;
+  var reportedDateInput;
+  var reportedTimeInput;
 
   function getSectionData() {
     categories = incidentTracking.getCategories();
@@ -43,10 +48,10 @@ var itDetailsSection = (function() {
       factorsText = rd.contributingFactor ? rd.contributingFactor : '';
     } else {
       var defaultCategory = categories.filter(c => c.incidentCategory === 'New Incident');
-      incidentDate = UTIL.getTodaysDate();
-      incidentTime = UTIL.getCurrentTime();
-      reportedDate = '';
-      reportedTime = '';
+     ($.session.incidentTrackingPopulateIncidentDate === 'Y') ? incidentDate = UTIL.getTodaysDate() : incidentDate = '';
+     ($.session.incidentTrackingPopulateIncidentTime === 'Y') ? incidentTime = UTIL.getCurrentTime() : incidentTime = '';
+     ($.session.incidentTrackingPopulateReportedDate === 'Y') ? reportedDate = UTIL.getTodaysDate() : reportedDate = '';
+     ($.session.incidentTrackingPopulateReportedTime === 'Y') ? reportedTime = UTIL.getCurrentTime() : reportedTime = '';
       categoryId = defaultCategory[0].subcategoryId;
       locationId = '';
       summaryText = '';
@@ -64,7 +69,7 @@ var itDetailsSection = (function() {
 		incidentDateTimeWrap.classList.add('incidentDateTimeWrap');
 		reportedDateTimeWrap.classList.add('reportedDateTimeWrap');
     
-    var incidentDateInput = input.build({
+   incidentDateInput = input.build({
 			label: 'Incident Date',
 			type: 'date',
 			style: 'secondary',
@@ -72,14 +77,14 @@ var itDetailsSection = (function() {
       attributes: [{ key: 'max', value: '9999-12-31' }],
 			value: incidentDate,
 		});
-		var incidentTimeInput = input.build({
+	 incidentTimeInput = input.build({
 			label: 'Incident Time',
 			type: 'time',
 			style: 'secondary',
 			classNames: ['iTime'],
 			value: incidentTime,
 		});
-		var reportedDateInput = input.build({
+	reportedDateInput = input.build({
 			label: 'Reported Date',
 			type: 'date',
 			style: 'secondary',
@@ -87,7 +92,7 @@ var itDetailsSection = (function() {
       attributes: [{ key: 'max', value: '9999-12-31' }],
 			value: reportedDate,
 		});
-		var reportedTimeInput = input.build({
+	reportedTimeInput = input.build({
 			label: 'Reported Time',
 			type: 'time',
 			style: 'secondary',
@@ -218,10 +223,72 @@ var itDetailsSection = (function() {
     section.appendChild(heading);
     section.appendChild(sectionBody);
 
+    setupEvents();
+    checkEntireIncidentCardforErrors();
+    
+    
     return section;
+
+  }
+
+  function checkEntireIncidentCardforErrors() {
+
+    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+    var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
+   // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
+
+    if (detailSectionHasErrors || consumerSectionHasErrors) {
+      incidentCard.toggleSave(true);
+    } else {
+      incidentCard.toggleSave(false);
+    }
+
   }
   
+  function setupEvents() {
+
+    incidentDateInput.addEventListener('change', event => {
+      incidentDate = event.target.value;
+      checkEntireIncidentCardforErrors();
+    });
+
+    // incidentTimeInput.addEventListener('change', event => {
+    //   incidentTime = event.target.value;
+    //   checkEntireIncidentCardforErrors();
+    // });
+
+  }
+
+  function checkRequiredFields() {
+
+    if (!incidentDate || incidentDate === '') {
+      incidentDateInput.classList.add('error');
+    } else {
+      incidentDateInput.classList.remove('error');
+    }
+	
+  // number of selected Consumers with an error ; length = 0 on initial display
+    var selectedErroredConsumers = [].slice.call(document.querySelectorAll('.consumersWrap .consumerCard.error'));
+
+    // hasNoErrors = 0 means the "Select a Consumer" message is displayed
+    var hasNoErrors = document.getElementsByClassName("consumerError hidden");
+
+    if (hasNoErrors.length === 0) return true;
+    
+	var detailshasErrors = [].slice.call(section.querySelectorAll('.error'));
+	
+	 if (detailshasErrors.length !== 0 || selectedErroredConsumers.length !== 0) {
+        return true;   // true means do disable the Save BTN
+      } else {
+        return false;    // false means don't disable the Save BTN
+      }
+
+  }
+
+
+
   return {
-    build: buildSection
+    build: buildSection,
+    checkRequiredFields
   }
 })();

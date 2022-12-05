@@ -2,13 +2,7 @@ const planSummary = (function () {
   let isReadOnly;
   let isSortable;
   let planId; // aka: assessmentId
-  let charLimits = {
-    importantTo: 1000,
-    importantFor: 1000,
-    skillsAndAbilities: 1000,
-    whatIsRisk: 1000,
-    whatSupportLooksLike: 1000,
-  };
+  let charLimits;
   // data
   let summaryData;
   let dropdownData;
@@ -2054,9 +2048,10 @@ const planSummary = (function () {
   }
 
   async function init(data) {
-    // data = { planId, readOnly, charLimits }
+    // data = { planId, readOnly }
     planId = data.planId;
     isReadOnly = data.readOnly;
+    charLimits = planData.getISPCharacterLimits('summary');
 
     if (!$.session.planUpdate) {
       isSortable = false;

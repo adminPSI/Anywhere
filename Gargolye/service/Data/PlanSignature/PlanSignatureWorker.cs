@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
 using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -16,7 +17,8 @@ namespace Anywhere.service.Data.PlanSignature
         JavaScriptSerializer js = new JavaScriptSerializer();
         PlanSignatureDataGetter psdg = new PlanSignatureDataGetter();
         OISPWorker oispW = new OISPWorker();
-        
+        PlanDataGetter pdg = new PlanDataGetter();
+
         public PlanSignatures[] getSignatures(string token, long assessmentId)
         {
             string signatureString = psdg.getSignatures(token, assessmentId);
@@ -70,6 +72,9 @@ namespace Anywhere.service.Data.PlanSignature
             public string csResidentialOptions { get; set; }
             public string csSupportsHealthNeeds { get; set; }
             public string csTechnology { get; set; }
+            public string signatureType { get; set; }
+            public string attachmentId { get; set; }
+            public string description { get; set; }
         }
 
         public class SigId
@@ -86,22 +91,23 @@ namespace Anywhere.service.Data.PlanSignature
         }
 
         public string GetSalesForceId(long consumerId, long peopleId)
-        {           
+        {
 
             try
             {
                 ISPDTData isp = new ISPDTData();
                 string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId);
                 //long sFId = oispW.AddFamilyMemberToIndividal(consumerId, peopleId);
-                AddTeamMember[] sfObj = js.Deserialize<AddTeamMember[]>(sFS);
-                return sfObj[0].id;
-                
+                //AddTeamMember[] sfObj = js.Deserialize<AddTeamMember[]>(sFS);
+                //return sfObj[0].id;
+                return sFS;
+
             }
             catch (Exception ex)
             {
 
             }
-            
+
             return "";
         }
 
@@ -128,7 +134,8 @@ namespace Anywhere.service.Data.PlanSignature
 
         public SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
-               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId)
+               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType)
         {
             string signatureIdString = "";
             string signatureId = "";
@@ -143,12 +150,12 @@ namespace Anywhere.service.Data.PlanSignature
                 //string checkNumber = buildingNumber.Split(' ').First();
                 //checkExistReturn = psdg.checkPeopleExist(name, lastName, checkNumber, dateOfBirth);
                 checkExistReturn = psdg.checkPeopleExist(name, lastName);
-            }            
-            if(checkExistReturn.IndexOf("Does not exist") != -1 && checkExistReturn != "")
+            }
+            if (checkExistReturn.IndexOf("Does not exist") != -1 && checkExistReturn != "")
             {
                 if (buildingNumber == null) buildingNumber = "";
                 if (dateOfBirth == null) dateOfBirth = "";
-                peopleIdReturn = psdg.newPersonToPeopleTable(name, lastName, buildingNumber, dateOfBirth);
+                peopleIdReturn = psdg.newPersonToPeopleTable(token, name, lastName, buildingNumber, dateOfBirth);
                 NewPeopleId[] peoObj = js.Deserialize<NewPeopleId[]>(peopleIdReturn);
                 peopleId = peoObj[0].newPeopleId;
                 //newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopId));
@@ -166,30 +173,34 @@ namespace Anywhere.service.Data.PlanSignature
             //{
             //    newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
             //}
-            if(salesforceId == "")
+            if (salesforceId == "")
             {
                 newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
-                
-                if(newSalesForceId != null)
+
+                if (newSalesForceId != null)
                 {
                     salesforceId = newSalesForceId.ToString();
                 }
-                if(salesforceId == "0" || salesforceId ==null)
+                if (salesforceId == "0" || salesforceId == null)
                 {
                     salesforceId = "";
                 }
             }
             if (createRelationship == "T")
             {
-                
+
                 psdg.createRelationship(token, planYearStart, planYearEnd, consumerId, peopleId, newSalesForceId);
             }
             if (buildingNumber == null) buildingNumber = "";
             if (dateOfBirth == null) dateOfBirth = "";
             signatureIdString = psdg.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact,
                                     csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
-                                csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber,dateOfBirth, peopleId, useExisting, relationshipImport, salesforceId);
+                                csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, salesforceId, signatureType);
             SigId[] sigObj = js.Deserialize<SigId[]>(signatureIdString);
+            if (hasWetSignature)
+            {
+                pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), sigObj[0].signatureId);
+            }
             return sigObj;
         }
 
@@ -224,25 +235,27 @@ namespace Anywhere.service.Data.PlanSignature
             bool valid = false;
             string validateString = psdg.validateConsumerForSalesForceId(consumerId);
             ValidateReturnObject[] validateObj = js.Deserialize<ValidateReturnObject[]>(validateString);
-            if(validateObj[0].salesForceId != "" && validateObj[0].residentNumber != "")
+            if (validateObj[0].salesForceId != "" && validateObj[0].residentNumber != "")
             {
                 valid = true;
-            }else if(validateObj[0].salesForceId == "" && validateObj[0].residentNumber != "")
+            }
+            else if (validateObj[0].salesForceId == "" && validateObj[0].residentNumber != "")
             {
                 //do work to get salesforceid and update record then return true
                 string cSFID = GetConsumersSalesForceId(consumerId);
-                if(cSFID == "")
+                if (cSFID == "")
                 {
                     valid = true;
                 }
-                else if(cSFID.ToUpper().IndexOf("NO SALES") == -1)
+                else if (cSFID.ToUpper().IndexOf("NO SALES") == -1)
                 {
                     valid = true;
-                }else
+                }
+                else
                 {
                     valid = false;
                 }
-                
+
             }
             else
             {
@@ -282,26 +295,31 @@ namespace Anywhere.service.Data.PlanSignature
             public string Email { get; set; }
         }
 
-        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId)
+        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
+                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType)
         {
             string newSalesForceId = "";
             if (salesForceId == "" || salesForceId == null)
             {
                 newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(contactId));
-                if(newSalesForceId != null)
+                if (newSalesForceId != null)
                 {
                     salesForceId = newSalesForceId.ToString();
-                }                
+                }
             }
             if (buildingNumber == null) buildingNumber = "";
             if (dateOfBirth == null || dateOfBirth == "") dateOfBirth = "";
-            return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId);
+            if (hasWetSignature)
+            {
+                pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), signatureId);
+            }
+            return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType);
         }
         public string deletePlanSignature(string token, string signatureId)
         {
             return psdg.deletePlanSignature(token, signatureId);
         }
-        public string updatePlanSignatureOrder(long assessmentId,  long signatureId, int newPos)
+        public string updatePlanSignatureOrder(long assessmentId, long signatureId, int newPos)
         {
             return psdg.updatePlanSignatureOrder(assessmentId, signatureId, newPos);
         }
@@ -336,13 +354,13 @@ namespace Anywhere.service.Data.PlanSignature
             {
                 var idTest = signatureObj[i].peopleId;
                 if (idTest != null && idTest != "")
-                {                    
+                {
                     psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", signatureObj[i].csChangeMind, signatureObj[i].csChangeMindSSAPeopleId,
                                             signatureObj[i].csContact, signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, signatureObj[i].csRightsReviewed, signatureObj[i].csAgreeToPlan, signatureObj[i].csFCOPExplained,
                                             signatureObj[i].csDueProcess, signatureObj[i].csResidentialOptions, signatureObj[i].csSupportsHealthNeeds, signatureObj[i].csTechnology, signatureObj[i].buildingNumber,
-                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId);
+                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType);
                 }
-                
+
             }
 
         }

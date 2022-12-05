@@ -301,7 +301,7 @@ namespace Anywhere.service.Data
 
             public AddAttachment[] addPlanAttachment(string token, long assessmentId, string description, string attachmentType, string attachment, string section, long questionId)
             {
-                string attachmentsString = adg.addPlanAttachment(token, assessmentId, description, attachmentType, attachment, section, questionId);
+                string attachmentsString = adg.addPlanAttachment(token, assessmentId, description, attachmentType, attachment, section, questionId, "");
                 AddAttachment[] attachmentsObj = js.Deserialize<AddAttachment[]>(attachmentsString);
                 return attachmentsObj;
             }

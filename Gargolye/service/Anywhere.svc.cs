@@ -2274,12 +2274,12 @@ namespace Anywhere
             return ssw.deletePaidSupports(token, paidSupportsId);
         }
 
-        public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, int providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
+        public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
         {
             return ssw.updatePaidSupports(token, paidSupportsId, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, serviceNameOther);
         }
 
-        public string insertPaidSupports(string token, long anywAssessmentId, int providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
+        public string insertPaidSupports(string token, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
         {
             return ssw.insertPaidSupports(token, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, rowOrder, serviceNameOther);
         }
@@ -2390,15 +2390,19 @@ namespace Anywhere
 
         public PlanSignatureWorker.SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
-               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId)
+               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType)
         {
             return psw.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact, 
                                 csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
-                                csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, consumerId, createRelationship, salesforceId);
+                                csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, consumerId, createRelationship, salesforceId,
+                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType);
         }
-        public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId)
+        public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
+                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType)
         {
-            return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, consumerId);
+            return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, consumerId,
+                                         hasWetSignature,  description,  attachmentType,  attachment,  section,  questionId, assessmentId,signatureType);
         }
         public string updatePlanSignatureOrder(long assessmentId, long signatureId, int newPos)
         {

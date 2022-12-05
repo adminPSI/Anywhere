@@ -212,7 +212,16 @@ const consentAndSignAjax = (() => {
     //  );
     //}
 
-    try {
+      try {
+          var binary = '';
+          var bytes = new Uint8Array(retrieveData.attachment);
+          var len = bytes.byteLength;
+          for (var i = 0; i < len; i++) {
+              binary += String.fromCharCode(bytes[i]);
+          }
+          let abString = window.btoa(binary);
+          retrieveData.attachment = abString;
+
       const data = await $.ajax({
         type: 'POST',
         url:

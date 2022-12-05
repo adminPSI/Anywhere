@@ -340,7 +340,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             }
         }
 
-        public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, int providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
+        public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertPaidSupports ");
@@ -348,7 +348,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(token);
             list.Add(paidSupportsId.ToString());
             list.Add(anywAssessmentId.ToString());
-            list.Add(providerId.ToString());
+            list.Add(providerId);
             list.Add(assessmentAreaId.ToString());
             list.Add(serviceNameId.ToString());
             list.Add(scopeOfService);
@@ -372,14 +372,14 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             }
         }
 
-        public string insertPaidSupports(string token, long anywAssessmentId, int providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
+        public string insertPaidSupports(string token, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertPaidSupports ");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(anywAssessmentId.ToString());
-            list.Add(providerId.ToString());
+            list.Add(providerId);
             list.Add(assessmentAreaId.ToString());
             list.Add(serviceNameId.ToString());
             list.Add(scopeOfService);

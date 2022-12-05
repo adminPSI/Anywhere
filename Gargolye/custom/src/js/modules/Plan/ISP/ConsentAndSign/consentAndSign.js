@@ -84,6 +84,7 @@ const planConsentAndSign = (() => {
       participated: selectedMemberData.participated,
       // sign/disent
       signature: selectedMemberData.signature,
+      signatureType: selectedMemberData.signatureType,
       dissentAreaDisagree: selectedMemberData.dissentAreaDisagree,
       dissentHowToAddress: selectedMemberData.dissentHowToAddress,
       // consent
@@ -110,6 +111,14 @@ const planConsentAndSign = (() => {
       useExisting: '',
       relationshipImport: selectedMemberData.relationshipImport,
       createRelationship: selectedMemberData.createRelationship,
+      // attachments for signature
+      hasWetSignature: selectedMemberData.hasWetSignature,
+      description: selectedMemberData.description ? selectedMemberData.description : '',
+      attachment: selectedMemberData.attachment ? selectedMemberData.attachment : '',
+      attachmentType: selectedMemberData.attachmentType ? selectedMemberData.attachmentType : '',
+      // ignore
+      section: '',
+      questionId: '0',
     };
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
@@ -150,6 +159,7 @@ const planConsentAndSign = (() => {
   async function updateTeamMember(selectedMemberData) {
     const data = {
       token: $.session.Token,
+      assessmentId: planId,
       consumerId: selectedConsumer.id,
       // member
       teamMember: selectedMemberData.teamMember,
@@ -159,6 +169,7 @@ const planConsentAndSign = (() => {
       // sign/disent
       signatureId: selectedMemberData.signatureId,
       signature: selectedMemberData.signature,
+      signatureType: selectedMemberData.signatureType,
       dissentAreaDisagree: selectedMemberData.dissentAreaDisagree,
       dissentHowToAddress: selectedMemberData.dissentHowToAddress,
       // new
@@ -172,6 +183,14 @@ const planConsentAndSign = (() => {
       useExisting: '',
       relationshipImport: selectedMemberData.relationshipImport,
       createRelationship: selectedMemberData.createRelationship,
+      // attachments for signature
+      hasWetSignature: selectedMemberData.hasWetSignature,
+      description: selectedMemberData.description ? selectedMemberData.description : '',
+      attachment: selectedMemberData.attachment ? selectedMemberData.attachment : '',
+      attachmentType: selectedMemberData.attachmentType ? selectedMemberData.attachmentType : '',
+      // ignore
+      section: '',
+      questionId: '0',
     };
     const data2 = {
       token: $.session.Token,
@@ -576,12 +595,12 @@ const planConsentAndSign = (() => {
 
     // readyonly / disabled check / required fields
     if (readOnly || popup === 'sign' || isSigned) {
-      contactQuestion.classList.add('disabled');
+      //contactQuestion.classList.add('disabled');
       contactQuestionText.classList.add('disabled');
       csContactQuestionDropdown.classList.add('disabled');
     } else {
       if ($.session.applicationName === 'Gatekeeper') {
-        contactQuestion.classList.add('disabled');
+        //contactQuestion.classList.add('disabled');
         contactQuestionText.classList.add('disabled');
         csContactQuestionDropdown.classList.add('disabled');
       } else {
@@ -645,7 +664,7 @@ const planConsentAndSign = (() => {
 
     const teamMemberTable = table.build({
       tableId: 'signaturesTable',
-      columnHeadings: ['Team Member', 'Name', 'Participated'],
+      columnHeadings: ['Team Member', 'Name', 'Participated', 'Signature Type'],
       headline: 'Team Members',
       endIcon: true,
       sortable: isSortable,
@@ -668,21 +687,14 @@ const planConsentAndSign = (() => {
           middleName: '',
         });
         const participated = m.participated === '' ? '' : m.participated === 'Y' ? 'Yes' : 'No';
+        const signatureType = csTeamMember.getSignatureTypeByID(m.signatureType);
 
         names.push(name);
 
-        return {
-          values: [teamMember, name, participated],
+        const tableOBJ = {
+          values: [teamMember, name, participated, signatureType],
           id: `sig-${m.signatureId}`,
           attributes: [{ key: 'data-signed', value: isSigned }],
-          endIcon: icons.edit,
-          endIconCallback: e => {
-            csSignature.showPopup({
-              isNewMember: false,
-              isReadOnly: readOnly,
-              memberData: m,
-            });
-          },
           onClick: e => {
             csTeamMember.showPopup({
               isNewMember: false,
@@ -691,6 +703,21 @@ const planConsentAndSign = (() => {
             });
           },
         };
+
+        if (signatureType !== 'No Signature Required') {
+          // show icon
+          tableOBJ.endIcon = icons.edit;
+          // set icon callback
+          tableOBJ.endIconCallback = e => {
+            csSignature.showPopup({
+              isNewMember: false,
+              isReadOnly: readOnly,
+              memberData: m,
+            });
+          };
+        }
+
+        return tableOBJ;
       });
 
       table.populate(teamMemberTable, tableData, isSortable);
@@ -732,6 +759,7 @@ const planConsentAndSign = (() => {
             participated: '',
             // sign/disent
             signature: '',
+            signatureType: '',
             dissentAreaDisagree: '',
             dissentHowToAddress: '',
             dateSigned: '',

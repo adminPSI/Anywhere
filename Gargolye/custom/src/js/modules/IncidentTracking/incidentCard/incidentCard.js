@@ -113,7 +113,7 @@ var incidentCard = (function() {
 			text: isNewIncident ? 'Save' : 'Update',
 			style: 'secondary',
 			type: 'contained',
-			classNames: 'disabled',
+      classNames: ['incidentSave', 'disabled'],
 			callback: function() {
         saveBtn.classList.add('disabled');
         incident.save(isNewIncident)
@@ -187,12 +187,33 @@ var incidentCard = (function() {
     incidentCard.appendChild(cardSections);
     incidentCard.appendChild(cardActionBtns);
 
+    var consumerSectionHasError = checkforRequiredConsumer();
+    toggleSaveBtnStatus(consumerSectionHasError);
+
+
     return incidentCard;
+  }
+
+  function checkforRequiredConsumer() {
+
+    // number of selected Consumers with an error ; length = 0 on initial display
+   var selectedErroredConsumers = [].slice.call(document.querySelectorAll('.consumersWrap .consumerCard.error'));
+    // hasNoErrors = 0 means the "Select a Consumer" message is displayed
+    var hasNoErrors = document.getElementsByClassName("consumerError hidden");
+
+    if (hasNoErrors.length === 0) return true;
+    
+    if (selectedErroredConsumers.length === 0 || itConsumerInvolved) {
+      return false;   // false means don't disable the Save BTN
+    } else {
+      return true;    // true means do disable the Save BTN
+    }
   }
 
   return {
     build: buildCard,
     toggleSave: toggleSaveBtnStatus,
+    checkforRequiredConsumer,
     toggleActionBtns
   }
 })();

@@ -21,16 +21,7 @@ const servicesSupports = (() => {
   let hcbsSelected;
   let saveUpdateProvider = '';
 
-  const charLimits = {
-    scopeOfService: 1000, // paid supp
-    fundingSourceOther: 1000, // paid supp
-    howOftenHowMuch: 255, // paid supp
-    howOftenOther: 1000, // paid supp
-    whatSupportLooksLike: 1000, // add supp
-    whenHowOften: 255, // add supp
-    whenHowOftenOther: 1000, // add supp
-    reasonForReferral: 1000, // prof ref
-  };
+  let charLimits;
 
   // UTILS
   //------------------------------------------------------
@@ -353,7 +344,7 @@ const servicesSupports = (() => {
       }
     });
     //Only check for defaultValue in Advisor
-    if ($.session.applicationName === 'Advisor') {
+    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
       if (availableServiceTypes.includes(defaultValue)) {
         let servicesDropdownSelected = data.find(e => e.value === defaultValue);
         servicesDropdownSelectedText = servicesDropdownSelected.text;
@@ -809,11 +800,24 @@ const servicesSupports = (() => {
         }
 
         if (hcbsSelected) {
+          providerNameDropdown.classList.remove('disabled');
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
         } else {
+          // re-enable provider dropdown if it was disabled
+          providerNameDropdown.classList.remove('disabled');
+          providerNameDropdown.classList.add('error');
+
           // non-waver -- get all Active Providers
           servicesDropdownSelectedText = '%';
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+        }
+
+        if (saveUpdateData.fundingSource === '5') {
+          // if 'State Plan Services' is selected, disable Provider Name Dropdown
+          providerNameDropdown.querySelector('select').selectedIndex = -1;
+          saveUpdateData.providerId = '';
+          providerNameDropdown.classList.remove('error');
+          providerNameDropdown.classList.add('disabled');
         }
 
         // validation of fundingSource DDL
@@ -853,16 +857,16 @@ const servicesSupports = (() => {
 
     async function validateServicesDropdown() {
       // Validation of Services DDL after selecting from fundingSource DDL
-      const servicesDropdown = document.querySelector('#serviceNameDropdownPS');
-      const servicesOtherDropdown = document.querySelector('#serviceNameOtherDropdownPS');
+      const servicesDropdownSelect = document.querySelector('#serviceNameDropdownPS');
+      const servicesOtherDropdownSelect = document.querySelector('#serviceNameOtherDropdownPS');
 
       if (hcbsSelected) {
         if (
-          servicesDropdown.options[servicesDropdown.selectedIndex] &&
-          servicesDropdown.options[servicesDropdown.selectedIndex].text !== ''
+          servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex] &&
+          servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text !== ''
         ) {
           servicesDropdownSelectedText =
-            servicesDropdown.options[servicesDropdown.selectedIndex].text;
+            servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text;
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
         } else {
           servicesDropdownSelectedText = '';
@@ -871,12 +875,12 @@ const servicesSupports = (() => {
         }
       }
 
-      if (servicesDropdown.options[servicesDropdown.selectedIndex]) {
+      if (servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex]) {
         servicesDropdownSelectedText =
-          servicesDropdown.options[servicesDropdown.selectedIndex].text;
+          servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text;
       } else {
         servicesDropdownSelectedText = '';
-        servicesOtherDropdown.classList.add('disabled');
+        serviceNameOtherDropdown.classList.add('disabled');
         saveUpdateData.serviceNameOther = '';
       }
 
@@ -892,7 +896,10 @@ const servicesSupports = (() => {
       // Validation of Provider DDL after selecting from fundingSource DDL
       const providerDropdown = document.querySelector('#providerNameDropdownPS');
 
-      if (providerDropdown.options[providerDropdown.selectedIndex]) {
+      if (
+        providerDropdown.options[providerDropdown.selectedIndex] &&
+        !providerNameDropdown.classList.contains('disabled')
+      ) {
         providerDropdownSelectedText =
           providerDropdown.options[providerDropdown.selectedIndex].text;
       } else {
@@ -901,8 +908,9 @@ const servicesSupports = (() => {
 
       // if (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%' || saveUpdateData.providerId === '[SELECT A PROVIDER]') {
       if (
-        providerDropdownSelectedText === '' ||
-        providerDropdownSelectedText === '[SELECT A PROVIDER]'
+        (providerDropdownSelectedText === '' ||
+          providerDropdownSelectedText === '[SELECT A PROVIDER]') &&
+        !providerNameDropdown.classList.contains('disabled')
       ) {
         providerNameDropdown.classList.add('error');
       } else {
@@ -963,7 +971,10 @@ const servicesSupports = (() => {
       style: 'secondary',
       callback: (e, selectedOption) => {
         saveUpdateData.providerId = selectedOption.value;
-        if (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%') {
+        if (
+          (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%') &&
+          !providerNameDropdown.classList.contains('disabled')
+        ) {
           providerNameDropdown.classList.add('error');
         } else {
           providerNameDropdown.classList.remove('error');
@@ -1281,7 +1292,10 @@ const servicesSupports = (() => {
       assessmentAreaDropdown.classList.add('error');
       hasInitialErros = true;
     }
-    if (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%') {
+    if (
+      (saveUpdateData.providerId === '' || saveUpdateData.providerId === '%') &&
+      !providerNameDropdown.classList.contains('disabled')
+    ) {
       providerNameDropdown.classList.add('error');
       hasInitialErros = true;
     }
@@ -1382,11 +1396,7 @@ const servicesSupports = (() => {
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
 
-    if ($.session.applicationName === 'Advisor') {
-      saveUpdateData.serviceNameId = '24';
-      saveUpdateData.fundingSource = '4';
-      saveUpdateData.fundingSourceText = 'ICF';
-
+    if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
       populateServiceNameDropdown(serviceNameDropdown, '24', '4');
 
       fundingSourceDropdown.classList.remove('error');
@@ -1402,6 +1412,13 @@ const servicesSupports = (() => {
     populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
     if (saveUpdateProvider) {
       saveUpdateData.providerId = saveUpdateProvider;
+    }
+
+    // if fundingSourceDropdown is set to State Plan Services, then disable providerNameDropdown
+    if (saveUpdateData.fundingSource === '5') {
+      providerNameDropdown.querySelector('select').selectedIndex = -1;
+      providerNameDropdown.classList.remove('error');
+      providerNameDropdown.classList.add('disabled');
     }
 
     if (saveUpdateData && saveUpdateData.providerId === '') {
@@ -2524,6 +2541,7 @@ const servicesSupports = (() => {
     isReadOnly = readOnly;
     servicesSupportsData = data;
     dropdownData = planData.getDropdownData();
+    charLimits = planData.getISPCharacterLimits('servicesSupports');
 
     if (!$.session.planUpdate) {
       isSortable = false;

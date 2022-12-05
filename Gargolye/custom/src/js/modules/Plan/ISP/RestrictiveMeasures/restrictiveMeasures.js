@@ -5,14 +5,7 @@ const planRestrictiveMeasures = (() => {
   // DOM
   let rmMainWrap;
   // OTHER
-  const characterLimits = {
-    rmKeepSelfSafe: 1000, //RM
-    rmFadeRestriction: 1000, //RM
-    rmWhatCouldHappenGood: 1000, //RM
-    rmWhatCouldHappenBad: 1000, //RM
-    rmOtherWayHelpGood: 1000, //RM
-    rmOtherWayHelpBad: 1000, //RM
-  };
+  let charLimits;
 
   //*------------------------------------------------------
   //* UTIL
@@ -69,7 +62,7 @@ const planRestrictiveMeasures = (() => {
       type: 'textarea',
       value: rmData.rmKeepSelfSafe,
       readonly: readOnly,
-      charLimit: characterLimits.rmKeepSelfSafe,
+      charLimit: charLimits.rmKeepSelfSafe,
       forceCharLimit: true,
       classNames: 'autosize',
     });
@@ -86,7 +79,7 @@ const planRestrictiveMeasures = (() => {
       type: 'textarea',
       value: rmData.rmFadeRestriction,
       readonly: readOnly,
-      charLimit: characterLimits.rmFadeRestriction,
+      charLimit: charLimits.rmFadeRestriction,
       forceCharLimit: true,
       classNames: 'autosize',
     });
@@ -105,7 +98,7 @@ const planRestrictiveMeasures = (() => {
       label: 'Good',
       value: rmData.rmWhatCouldHappenGood,
       readonly: readOnly,
-      charLimit: characterLimits.rmWhatCouldHappenGood,
+      charLimit: charLimits.rmWhatCouldHappenGood,
       forceCharLimit: true,
       classNames: 'autosize',
     });
@@ -114,7 +107,7 @@ const planRestrictiveMeasures = (() => {
       label: 'Bad',
       value: rmData.rmWhatCouldHappenBad,
       readonly: readOnly,
-      charLimit: characterLimits.rmWhatCouldHappenBad,
+      charLimit: charLimits.rmWhatCouldHappenBad,
       forceCharLimit: true,
       classNames: 'autosize',
     });
@@ -135,7 +128,7 @@ const planRestrictiveMeasures = (() => {
       label: 'Good things about these other options',
       value: rmData.rmOtherWayHelpGood,
       readonly: readOnly,
-      charLimit: characterLimits.rmOtherWayHelpGood,
+      charLimit: charLimits.rmOtherWayHelpGood,
       forceCharLimit: true,
       classNames: 'autosize',
     });
@@ -144,7 +137,7 @@ const planRestrictiveMeasures = (() => {
       label: 'Bad things about these other options',
       value: rmData.rmOtherWayHelpBad,
       readonly: readOnly,
-      charLimit: characterLimits.rmOtherWayHelpBad,
+      charLimit: charLimits.rmOtherWayHelpBad,
       forceCharLimit: true,
       classNames: 'autosize',
     });
@@ -392,6 +385,7 @@ const planRestrictiveMeasures = (() => {
   async function init(data) {
     planId = data.planId;
     readOnly = data.readOnly;
+    charLimits = planData.getISPCharacterLimits('restrictiveMeasures');
 
     rmData = await restrictiveMeasuresAjax.getPlanRestrictiveMeasures({
       token: $.session.Token,

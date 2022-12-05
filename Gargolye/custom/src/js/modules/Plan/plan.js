@@ -684,6 +684,11 @@ const plan = (function () {
 
     const attachmentsWrap = document.createElement('div');
     attachmentsWrap.classList.add('attachmentsWrap');
+    const attachHeading = document.createElement('p');
+    attachHeading.classList.add('attachmentsHeading');
+    attachHeading.innerText = `Please select the attachment(s) that should be included with the report.`;
+    attachmentsWrap.appendChild(attachHeading);
+
     planAttWrap = document.createElement('div');
     planAttWrap.classList.add('planAttWrap');
     workflowAttWrap = document.createElement('div');
@@ -691,8 +696,8 @@ const plan = (function () {
     attachmentsWrap.appendChild(planAttWrap);
     attachmentsWrap.appendChild(workflowAttWrap);
 
-    const planHeading = document.createElement('h1');
-    const workflowHeading = document.createElement('h1');
+    const planHeading = document.createElement('h2');
+    const workflowHeading = document.createElement('h2');
     planHeading.innerText = 'Plan Attachments';
     workflowHeading.innerText = 'Workflow Attachments';
     planAttWrap.appendChild(planHeading);
@@ -840,6 +845,49 @@ const plan = (function () {
     });
     message.innerText = success;
     sendToDODDScreen.appendChild(okBtn);
+    return;
+
+    // TODO: 2022.5
+    const title = document.createElement('p');
+    title.innerText = 'Select An SSA';
+
+    const ssaDropdown = dropdown.build({
+      label: 'Case Manager',
+      style: 'secondary',
+      className: 'ssaDropdownDOOD',
+      callback: async e => {
+        // TODO: Project Ticket #92768
+        // build & show spinner
+        const spinner = PROGRESS.SPINNER.get('Sending Plan to DODD...');
+        sendToDODDScreen.appendChild(spinner);
+        // send report
+        const success = await planAjax.uploadPlanToDODD({
+          consumerId: selectedConsumer.id,
+          planId,
+        });
+        // remove spinner
+        sendToDODDScreen.removeChild(spinner);
+        // display message & btn
+        const okBtn = button.build({
+          id: 'sendToDODDbtn',
+          text: 'OK',
+          style: 'secondary',
+          type: 'contained',
+          callback: () => {
+            message.innerText = '';
+            sendToDODDScreen.removeChild(okBtn);
+            morePopup.classList.remove('error');
+            sendToDODDScreen.classList.remove('visible');
+            morePopupMenu.classList.add('visible');
+          },
+        });
+        message.innerText = success;
+        sendToDODDScreen.appendChild(okBtn);
+      },
+    });
+
+    sendToDODDScreen.appendChild(title);
+    sendToDODDScreen.appendChild(ssaDropdown);
   }
   function buildMorePopupMenu() {
     const morepopupmenu = document.createElement('div');

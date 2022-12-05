@@ -548,6 +548,31 @@ namespace Anywhere.service.Data
             }
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
 
+            if (Advisor == true)
+            {
+                sb.Clear();
+                sb.Append("SELECT  dba.Code_Table.Caption, dba.ANYW_ISP_Consumer_Plans.isp_consumer_plan_id ");
+                sb.Append("FROM dba.ANYW_ISP_Consumer_Plans ");
+                sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Consumer_Plans.consumer_id = dba.People.ID ");
+                sb.Append("LEFT OUTER JOIN dba.Consumers ON dba.People.Consumer_ID = dba.Consumers.Consumer_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Locations ON dba.Consumers.Location_ID = dba.Locations.Location_ID ");
+                sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.Locations.Service_Location_Default = dba.Code_Table.Code ");
+                sb.Append("WHERE  dba.Code_Table.Table_ID = 'Locations' ");
+                sb.Append("AND dba.Code_Table.Field_ID = 'Service_Location' ");
+                sb.AppendFormat("AND dba.ANYW_ISP_Consumer_Plans.isp_consumer_plan_id = {0} ", AssesmentID);
+                DataTable cdt = di.SelectRowsDS(sb.ToString()).Tables[0];
+
+                string County = String.Empty;
+                if (cdt.Rows.Count > 0)
+                {
+                    County = cdt.Rows[0]["Caption"].ToString();
+                    dt.Rows[0]["County"] = County;
+
+                }
+
+
+            }
+
             sb.Clear();
             sb.Append("SELECT DISTINCT Funding_Source, Funding_Source_Text ");
             sb.Append("FROM DBA.ANYW_ISP_Services_Paid_Support ");
@@ -745,6 +770,7 @@ namespace Anywhere.service.Data
                     };
                 }
 
+
                 if (ba != null)
 
                 {
@@ -775,6 +801,7 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
+
 
 
 

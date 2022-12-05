@@ -9,10 +9,7 @@ const csSignature = (() => {
   let sigPad;
   let saveBtn;
   // other
-  const characterLimits = {
-    dissentAreaDisagree: 1000,
-    dissentHowToAddress: 1000,
-  };
+  let characterLimits;
 
   //*------------------------------------------------------
   //* UTIL
@@ -27,6 +24,9 @@ const csSignature = (() => {
     }
   }
   function parseSignatureData() {
+    if (sigPad === undefined) {
+      return '';
+    }
     const dataUrl = sigPad.toDataURL();
     const signatureDataUrl = dataUrl.replace('data:image/png;base64,', '');
     if (sigPad.isEmpty()) return '';
@@ -68,6 +68,24 @@ const csSignature = (() => {
       }, 2000);
     }
   }
+  function showWarningPopup(sigPadData) {
+    UTIL.warningPopup({
+      message:
+        'Once the ISP signature is submitted you will not be able to change it.  Do you want to proceed?',
+      hideX: true,
+      accept: {
+        text: 'Yes',
+        callback: () => saveFromSignature(sigPadData),
+      },
+      reject: {
+        text: 'No',
+        callback: () => {
+          overlay.show();
+          signaturePopup.style.removeProperty('display');
+        },
+      },
+    });
+  }
 
   //*------------------------------------------------------
   //* MARKUP
@@ -79,6 +97,87 @@ const csSignature = (() => {
     signatureTitle.classList.add('h3Title');
     signatureTitle.innerText = 'Signature';
     signatureWrap.appendChild(signatureTitle);
+
+    if (selectedMemberData.description) {
+      const attachmentDesc = document.createElement('p');
+      attachmentDesc.innerText = selectedMemberData.description;
+      attachmentDesc.classList.add('signAttachmentDesc');
+
+      attachmentDesc.addEventListener('click', () => {
+        var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/viewPlanAttachment/`;
+        var successFunction = function (resp) {
+          var res = JSON.stringify(response);
+        };
+
+        var form = document.createElement('form');
+        form.setAttribute('action', action);
+        form.setAttribute('method', 'POST');
+        form.setAttribute('target', '_blank');
+        form.setAttribute('enctype', 'application/json');
+        form.setAttribute('success', successFunction);
+        var tokenInput = document.createElement('input');
+        tokenInput.setAttribute('name', 'token');
+        tokenInput.setAttribute('value', $.session.Token);
+        tokenInput.id = 'token';
+        var attachmentInput = document.createElement('input');
+        attachmentInput.setAttribute('name', 'attachmentId');
+        attachmentInput.setAttribute('value', selectedMemberData.attachmentId);
+        attachmentInput.id = 'attachmentId';
+        var sectionInput = document.createElement('input');
+        sectionInput.setAttribute('name', 'section');
+        sectionInput.setAttribute('value', 'junk');
+        sectionInput.id = 'section';
+
+        form.appendChild(tokenInput);
+        form.appendChild(attachmentInput);
+        form.appendChild(sectionInput);
+        form.style.position = 'absolute';
+        form.style.opacity = '0';
+        document.body.appendChild(form);
+
+        form.submit();
+        form.remove();
+      });
+
+      signatureWrap.appendChild(attachmentDesc);
+      return signatureWrap;
+    } else if (
+      selectedMemberData.signatureType === 'In-Person' ||
+      selectedMemberData.signatureType === '2'
+    ) {
+      selectedMemberData.hasWetSignature = false;
+      const attachmentInput = document.createElement('input');
+      attachmentInput.type = 'file';
+      attachmentInput.classList.add('input-field__input', 'attachmentInput');
+      attachmentInput.addEventListener('change', async e => {
+        const attPromise = new Promise(resolve => {
+          const target = e.target;
+          const file = target.files.item(0);
+          const fileName = file.name;
+          const fileType = fileName.split('.').pop();
+
+          selectedMemberData.description = fileName;
+          selectedMemberData.attachmentType = fileType;
+          selectedMemberData.hasWetSignature = true;
+
+          new Response(file).arrayBuffer().then(res => {
+            selectedMemberData.attachment = res;
+            resolve();
+          });
+        });
+
+        await Promise.all([attPromise]);
+      });
+
+      signatureWrap.appendChild(attachmentInput);
+
+      return signatureWrap;
+    } else {
+      selectedMemberData.description = '';
+      selectedMemberData.attachmentType = '';
+      selectedMemberData.hasWetSignature = false;
+      selectedMemberData.attachment = '';
+    }
 
     const sigDiv = document.createElement('div');
     sigDiv.classList.add('signature-pad');
@@ -391,6 +490,7 @@ const csSignature = (() => {
     readOnly = isReadOnly;
     selectedMemberData = memberData;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
+    characterLimits = planData.getISPCharacterLimits('consentAndSign');
 
     //*--------------------------------------
     //* POPUP
@@ -425,28 +525,24 @@ const csSignature = (() => {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        const sigPadData = parseSignatureData();
+        let sigPadData = parseSignatureData();
         signaturePopup.style.display = 'none';
 
-        if (sigPadData === emptySignatureDataURL || sigPadData === '') {
-          saveFromSignature();
+        if (
+          selectedMemberData.signatureType === 'In-Person' ||
+          selectedMemberData.signatureType === '2'
+        ) {
+          if (!selectedMemberData.description || selectedMemberData.description === '') {
+            saveFromSignature();
+          } else {
+            showWarningPopup(sigPadData);
+          }
         } else {
-          UTIL.warningPopup({
-            message:
-              'Once the ISP signature is submitted you will not be able to change it.  Do you want to proceed?',
-            hideX: true,
-            accept: {
-              text: 'Yes',
-              callback: () => saveFromSignature(sigPadData),
-            },
-            reject: {
-              text: 'No',
-              callback: () => {
-                overlay.show();
-                signaturePopup.style.removeProperty('display');
-              },
-            },
-          });
+          if (sigPadData === emptySignatureDataURL || sigPadData === '') {
+            saveFromSignature();
+          } else {
+            showWarningPopup(sigPadData);
+          }
         }
       },
     });
@@ -457,6 +553,14 @@ const csSignature = (() => {
       callback: () => {
         selectedMemberData.dissentAreaDisagree.value = '';
         selectedMemberData.dissentHowToAddress.value = '';
+
+        if (!isSigned) {
+          selectedMemberData.description = '';
+          selectedMemberData.attachmentType = '';
+          selectedMemberData.hasWetSignature = false;
+          selectedMemberData.attachment = '';
+        }
+
         POPUP.hide(signaturePopup);
       },
     });

@@ -112,8 +112,30 @@ namespace Anywhere.service.Data.DocumentConversion
                         }
                         else
                         {
-                            string imageExt = "png";
-                            byte[] nAttachment = displayAttachment(attachment); // for demo purpose read from disk
+                            string imageExt = "pdf";
+                            //byte[] nAttachment = displayAttachment(attachment.data); // for demo purpose read from disk
+                            byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);
+                            //if (attachment.filename.ToUpper().Contains("PNG"))
+                            //{
+                            //    attachment.filename = attachment.filename.Replace("png", "pdf");
+                            //}
+                            //if (attachment.filename.ToUpper().Contains("JPG"))
+                            //{
+                            //    attachment.filename = attachment.filename.Replace("jpg", "pdf");
+                            //}
+                            //if (attachment.filename.ToUpper().Contains("SVG"))
+                            //{
+                            //    attachment.filename = attachment.filename.Replace("svg", "pdf");
+                            //}
+                            //if (attachment.filename.ToUpper().Contains("BMP"))
+                            //{
+                            //    attachment.filename = attachment.filename.Replace("bmp", "pdf");
+                            //}
+                            int index = attachment.filename.LastIndexOf(".");
+                            if (index >= 0)
+                                attachment.filename = attachment.filename.Substring(0, index + 1);
+                            ;
+                            attachment.filename = attachment.filename + imageExt;
                             using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
                             {
                                 pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
@@ -123,15 +145,25 @@ namespace Anywhere.service.Data.DocumentConversion
 
                                 using (PDFDoc newDoc = new PDFDoc())
                                 {
-                                    //var options = new ConversionOptions();
-                                    //options.SetFileExtension(imageExt);
-                                    //DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, memoryFilter, options);
-                                    //documentConversion.Convert();
-                                    //pdftron.PDF.Convert.FromEmf(documentConversion);
-                                    pdftron.PDF.Convert.FromEmf(newDoc, "");
+                                    var filter = new MemoryFilter(nAttachment.Length, true);
+                                    var filterWriter = new FilterWriter(filter);
+                                    filterWriter.WriteBuffer(nAttachment);
+                                    filterWriter.Flush();
+                                    var options = new ConversionOptions();
+                                    //options.
+                                    pdftron.PDF.DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, filter, null);
+                                    documentConversion.Convert();
+
+                                    // Set a new password required to open a document
+                                    //string base64String = System.Convert.ToBase64String(nAttachment);
+                                    //pdftron.PDF.Convert.FromXps(newDoc, nAttachment, (int)nAttachment.Length);
+                                    //pdftron.PDF.Convert.FromXps(newDoc, base64String);
+                                    
+
                                     byte[] pdfData = newDoc.Save(SDFDoc.SaveOptions.e_linearized);
 
-                                    // System.IO.File.WriteAllBytes(outPath, pdfData); // if you want to test/verify the output
+                                    allAttachments.Add(pdfData);
+                                    new_byte_output = null;
 
                                 }
                             }
@@ -149,6 +181,9 @@ namespace Anywhere.service.Data.DocumentConversion
             }
 
         }
+
+
+       
 
         public static byte[] concatAndAddContent(List<byte[]> pdfByteContent)
         {

@@ -3,6 +3,7 @@ const csTeamMember = (() => {
   let isNew;
   let isSigned;
   let readOnly;
+  let insertAllowed;
   let importedFromRelationship;
   // DOM
   let teamMemberPopup; // main popup
@@ -14,6 +15,10 @@ const csTeamMember = (() => {
   let dateOfBirthInput;
   let buildingNumberInput;
   let relationshipInput;
+  let signatureTypeDropdown;
+  let radioDiv;
+  let participatedYesRadio;
+  let participatedNoRadio;
   let saveTeamMemberBtn;
 
   //*------------------------------------------------------
@@ -42,10 +47,17 @@ const csTeamMember = (() => {
     ];
     dropdown.populate(teamMemberDropdown, dropdownData, teamMember);
   }
-  function setReadOnlyValue(isReadOnly, data) {
-    if (isReadOnly) return isReadOnly;
-
-    return !data.contactId ? true : false;
+  function populateSignatureTypeDropdown(signatureTypeDropdown, type) {
+    dropdown.populate(
+      signatureTypeDropdown,
+      [
+        { text: '', value: '' },
+        { text: 'Digital', value: '1' },
+        { text: 'In-Person', value: '2' },
+        { text: 'No Signature Required', value: '3' },
+      ],
+      type,
+    );
   }
   async function applySelectedRelationship(relData) {
     importedFromRelationship = true;
@@ -78,12 +90,27 @@ const csTeamMember = (() => {
 
     teamMemberPopup.style.removeProperty('display');
 
+    if (!$.session.planInsertNewTeamMember) {
+      // if above is false we know popup was temp disabled
+      teamMemberDropdown.classList.remove('disabled');
+      dateOfBirthInput.classList.remove('disabled');
+      buildingNumberInput.classList.remove('disabled');
+      participatedYesRadio.classList.remove('disabled');
+      participatedNoRadio.classList.remove('disabled');
+      signatureTypeDropdown.classList.remove('disabled');
+      // set errors
+      if (selectedMemberData.teamMember === '') {
+        teamMemberDropdown.classList.add('error');
+      }
+      if (selectedMemberData.signatureType === '') {
+        signatureTypeDropdown.classList.add('error');
+      }
+      radioDiv.classList.add('error');
+    }
+
     checkTeamMemberPopupForErrors();
 
-    // save team member
-    const status = plan.getPlanStatus();
-    const activeStatus = plan.getPlanActiveStatus();
-
+    // save team member if readOnly
     if (readOnly) {
       saveTeamMember();
       return;
@@ -126,13 +153,18 @@ const csTeamMember = (() => {
     if (isNew) {
       if (importedFromRelationship) {
         selectedMemberData.relationshipImport = 'T';
-        selectedMemberData.createRelationship = 'T';
+        selectedMemberData.createRelationship = 'F';
       } else {
         selectedMemberData.relationshipImport = 'F';
         selectedMemberData.createRelationship = 'T';
       }
       let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
       rd = rd ? rd[0] : {};
+
+      // TODO: 2022.5
+      // if (rd.hasSomeGuardians) {
+      //   showGuardiansPopup(rd.guardiansData);
+      // }
 
       if (rd.existingPeopleId) {
         const pendingSavePopup = document.querySelector('.pendingSavePopup');
@@ -211,10 +243,109 @@ const csTeamMember = (() => {
       }
     }
   }
+  function getSignatureTypeByID(id) {
+    switch (id) {
+      case '1': {
+        return 'Digital';
+      }
+      case '2': {
+        return 'In-Person';
+      }
+      case '3': {
+        return 'No Signature Required';
+      }
+      default: {
+        return '';
+      }
+    }
+  }
 
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
+  // TODO: 2022.5
+  // function showGuardiansPopup(guardiansData) {
+  //   if (!guardiansData) {
+  //     guardianPopup = POPUP.build({
+  //       id: 'guardianPopup',
+  //       hideX: true,
+  //       header: `There is no guardian listed in Salesforce for this individual`,
+  //     });
+
+  //     const doneBtn = button.build({
+  //       id: 'guardianPopup_cancel',
+  //       text: 'ok',
+  //       style: 'secondary',
+  //       type: 'outlined',
+  //       callback: () => {
+  //         POPUP.hide(guardianPopup);
+  //         teamMemberPopup.display.block;
+  //       },
+  //     });
+
+  //     guardianPopup.appendChild(doneBtn);
+
+  //     teamMemberPopup.display.none;
+  //     POPUP.show(guardianPopup);
+  //     return;
+  //   }
+
+  //   let selectedGuardian;
+
+  //   guardianPopup = POPUP.build({
+  //     id: 'guardianPopup',
+  //     hideX: true,
+  //     header: `This is the valid Guardian(S) listed in Salesforce. Please select a guardian from the list that matches the Team Member`,
+  //   });
+
+  //   const guardiansWrap = document.createElement('div');
+
+  //   guardiansData.forEach(g => {
+  //     const guardianDiv = document.createElement('div');
+  //     guardianDiv.classList.add('guardianDiv');
+
+  //     guardianDiv.addEventListener('click', e => {
+  //       const selectedG = guardiansWrap.querySelector('.guardianDiv.selected');
+  //       if (selectedG) selectedG.classList.remove('selected');
+  //       e.target.classList.add('selected');
+
+  //       selectedGuardian = g;
+  //     });
+
+  //     guardiansWrap.appendChild(guardianDiv);
+  //   });
+
+  //   const doneBtn = button.build({
+  //     id: 'guardianPopup_cancel',
+  //     text: 'ok',
+  //     style: 'secondary',
+  //     type: 'outlined',
+  //     callback: () => {
+  //       // do stuff
+  //       // saveGuardianOrsomething(selectedGuardian);
+  //     },
+  //   });
+  //   const cancelBtn = button.build({
+  //     id: 'guardianPopup_cancel',
+  //     text: 'cancel',
+  //     style: 'secondary',
+  //     type: 'outlined',
+  //     callback: () => {
+  //       POPUP.hide(guardianPopup);
+  //       teamMemberPopup.display.block;
+  //     },
+  //   });
+  //   const btnWrap = document.createElement('div');
+  //   btnWrap.classList.add('btnWrap');
+  //   btnWrap.appendChild(doneBtn);
+  //   btnWrap.appendChild(cancelBtn);
+
+  //   guardianPopup.appendChild(guardiansWrap);
+  //   guardianPopup.appendChild(btnWrap);
+
+  //   teamMemberPopup.display.none;
+  //   POPUP.show(guardianPopup);
+  // }
   function buildParticipationRadios() {
     const radioContainer = document.createElement('div');
     radioContainer.classList.add('sig_radioContainer');
@@ -222,7 +353,7 @@ const csTeamMember = (() => {
     const radioContainerTitle = document.createElement('p');
     radioContainerTitle.innerText = 'Participated in Planning?';
 
-    const participatedYesRadio = input.buildRadio({
+    participatedYesRadio = input.buildRadio({
       text: 'Yes',
       name: 'pipRadioSet',
       isChecked: selectedMemberData.participated === 'Y',
@@ -233,7 +364,7 @@ const csTeamMember = (() => {
         checkTeamMemberPopupForErrors();
       },
     });
-    const participatedNoRadio = input.buildRadio({
+    participatedNoRadio = input.buildRadio({
       text: 'No',
       name: 'pipRadioSet',
       isChecked: selectedMemberData.participated === 'N',
@@ -245,12 +376,12 @@ const csTeamMember = (() => {
       },
     });
 
-    const radioDiv = document.createElement('div');
+    radioDiv = document.createElement('div');
     radioDiv.classList.add('signatures_radioDiv');
     radioDiv.appendChild(participatedYesRadio);
     radioDiv.appendChild(participatedNoRadio);
 
-    if (isNew) {
+    if (isNew && $.session.planInsertNewTeamMember) {
       radioDiv.classList.add('error');
     }
 
@@ -431,7 +562,7 @@ const csTeamMember = (() => {
   async function showPopup({ isNewMember, isReadOnly, memberData }) {
     isNew = isNewMember;
     isSigned = memberData.dateSigned !== '';
-    readOnly = isReadOnly; //setReadOnlyValue(isReadOnly, memberData);
+    readOnly = isReadOnly;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     selectedMemberData = { ...memberData };
 
@@ -605,7 +736,25 @@ const csTeamMember = (() => {
       },
     });
     // Participate Yes/NO
-    const participationRadios = buildParticipationRadios(isSigned, isNew);
+    const participationRadios = buildParticipationRadios();
+
+    // Signature Type
+    signatureTypeDropdown = dropdown.build({
+      dropdownId: 'sigPopup_signType',
+      label: 'Signature Type',
+      readonly: isSigned || readOnly,
+      callback: event => {
+        selectedMemberData.signatureType = event.target.value;
+
+        if (event.target.value === '') {
+          signatureTypeDropdown.classList.add('error');
+        } else {
+          signatureTypeDropdown.classList.remove('error');
+        }
+
+        checkTeamMemberPopupForErrors();
+      },
+    });
 
     //* GLOBAL CONSENT QUESTIONS
     //*------------------------------
@@ -616,18 +765,21 @@ const csTeamMember = (() => {
 
     //* BUTTONS
     //*------------------------------
-    const btns = buildActionBtns(isSigned, isNew);
+    const btns = buildActionBtns();
 
     //* Date Signed Display
     //*------------------------------
-    const dateSignedDisplay = buildDateSignedDisplay(isSigned);
+    const dateSignedDisplay = buildDateSignedDisplay();
 
     //* Disabled Fields
     //*------------------------------
-    if (selectedMemberData.dateOfBirth) {
+    // TODO: delete below sessions once set by TJ
+    // $.session.planUpdateDOB = true;
+    // $.session.planUpdateAddress = true;
+    if (selectedMemberData.dateOfBirth /*|| $.session.planUpdateDOB*/) {
       dateOfBirthInput.classList.add('disabled');
     }
-    if (selectedMemberData.buildingNumber) {
+    if (selectedMemberData.buildingNumber /*|| $.session.planUpdateAddress*/) {
       buildingNumberInput.classList.add('disabled');
     }
     if (!isNew) {
@@ -638,22 +790,40 @@ const csTeamMember = (() => {
         lNameInput.classList.add('disabled');
       }
     }
+    if (!$.session.planInsertNewTeamMember) {
+      teamMemberDropdown.classList.add('disabled');
+      nameInput.classList.add('disabled');
+      lNameInput.classList.add('disabled');
+      dateOfBirthInput.classList.add('disabled');
+      buildingNumberInput.classList.add('disabled');
+      participatedYesRadio.classList.add('disabled');
+      participatedNoRadio.classList.add('disabled');
+      signatureTypeDropdown.classList.add('disabled');
+      saveTeamMemberBtn.classList.add('disabled');
+    }
 
     //* Required Fields
     //*------------------------------
-    if (selectedMemberData.teamMember === '') {
-      teamMemberDropdown.classList.add('error');
-    } else {
-      teamMemberDropdown.classList.remove('error');
-    }
-    if (selectedMemberData.name === '') {
-      nameInput.classList.add('error');
-    } else {
-      nameInput.classList.remove('error');
-    }
-    if (isNew) {
-      if (selectedMemberData.lastName === '') {
-        lNameInput.classList.add('error');
+    if ($.session.planInsertNewTeamMember) {
+      if (selectedMemberData.teamMember === '') {
+        teamMemberDropdown.classList.add('error');
+      } else {
+        teamMemberDropdown.classList.remove('error');
+      }
+      if (selectedMemberData.name === '') {
+        nameInput.classList.add('error');
+      } else {
+        nameInput.classList.remove('error');
+      }
+      if (selectedMemberData.signatureType === '') {
+        signatureTypeDropdown.classList.add('error');
+      } else {
+        signatureTypeDropdown.classList.remove('error');
+      }
+      if (isNew) {
+        if (selectedMemberData.lastName === '') {
+          lNameInput.classList.add('error');
+        }
       }
     }
 
@@ -686,6 +856,7 @@ const csTeamMember = (() => {
     teamMemberPopup.appendChild(dateOfBirthInput);
     teamMemberPopup.appendChild(buildingNumberInput);
     teamMemberPopup.appendChild(participationRadios);
+    teamMemberPopup.appendChild(signatureTypeDropdown);
 
     if (showConsentStatments) {
       teamMemberPopup.appendChild(changeMindQuestion);
@@ -704,15 +875,19 @@ const csTeamMember = (() => {
     teamMemberPopup.appendChild(btns);
 
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
+    populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
 
     POPUP.show(teamMemberPopup);
 
-    checkTeamMemberPopupForErrors();
+    if ($.session.planInsertNewTeamMember) {
+      checkTeamMemberPopupForErrors();
+    }
   }
 
   return {
     showPopup,
     applySelectedRelationship,
     linkToSalesForce,
+    getSignatureTypeByID,
   };
 })();

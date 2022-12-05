@@ -708,6 +708,10 @@ function getDefaultAnywhereSettings() {
 			$.session.sttEnabled = res.sttEnabled === 'Y' ? true : false;
             $.session.azureSTTApi = res.azureSttApi;
             $.session.reportSeconds = res.reportSeconds;
+			$.session.incidentTrackingPopulateIncidentDate = res.incidentTrackingPopulateIncidentDate;
+			$.session.incidentTrackingPopulateIncidentTime = res.incidentTrackingPopulateIncidentTime;
+			$.session.incidentTrackingPopulateReportedDate = res.incidentTrackingPopulateReportedDate;
+			$.session.incidentTrackingPopulateReportedTime = res.incidentTrackingPopulateReportedTime;
 
 			//Hide stuff
 			$.session.useAbsentFeature = res.useAbsentFeature;
