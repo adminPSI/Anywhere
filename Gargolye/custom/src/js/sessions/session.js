@@ -520,7 +520,6 @@ function setSessionVariables() {
       if (tmpPerm == 'View') {
         $.session.incidentTrackingView = true;
       }
-    
     }
 
     //Anywhere Plan
@@ -534,10 +533,16 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Send to DODD' || $.session.isPSI == true) {
         $.session.sendToDODD = true;
-        }
-        if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
-            $.session.planInsertNewTeamMember = true;
-        }
+      }
+      if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
+        $.session.planInsertNewTeamMember = true;
+      }
+      if (tmpPerm == 'Update DOB' || $.session.isPSI == true) {
+        $.session.planSignatureUpdateDOB = true;
+      }
+      if (tmpPerm == 'Update Building Number' || $.session.isPSI == true) {
+        $.session.planSignatureUpdateBuildingNumber = true;
+      }
     }
     //AeMAR
     if (tmpWindow == 'Anywhere eMAR' || $.session.isPSI == true) {

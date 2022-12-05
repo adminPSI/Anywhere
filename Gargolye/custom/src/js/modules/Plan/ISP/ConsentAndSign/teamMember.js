@@ -776,10 +776,10 @@ const csTeamMember = (() => {
     // TODO: delete below sessions once set by TJ
     // $.session.planUpdateDOB = true;
     // $.session.planUpdateAddress = true;
-    if (selectedMemberData.dateOfBirth /*|| $.session.planUpdateDOB*/) {
+    if (selectedMemberData.dateOfBirth || $.session.planSignatureUpdateDOB) {
       dateOfBirthInput.classList.add('disabled');
     }
-    if (selectedMemberData.buildingNumber /*|| $.session.planUpdateAddress*/) {
+    if (selectedMemberData.buildingNumber || $.session.planSignatureUpdateBuildingNumber) {
       buildingNumberInput.classList.add('disabled');
     }
     if (!isNew) {
