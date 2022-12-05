@@ -1936,6 +1936,7 @@ const planSummary = (function () {
       id: 'amountOfTime',
       value: additionalSummaryData.aloneTimeAmount,
       type: 'textarea',
+      charLimit: charLimits.aloneTime,
       classNames: 'autosize',
       onBlurCallback: event => {
         additionalSummaryData.aloneTimeAmount = event.target.value;
