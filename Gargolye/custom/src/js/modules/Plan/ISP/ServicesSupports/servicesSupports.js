@@ -1053,7 +1053,7 @@ const servicesSupports = (() => {
     });
     // Scope Of Service
     const scopeOfserviceInput = input.build({
-      label: 'Scope of Service/ What support looks like',
+      label: 'Scope of Service / What support looks like',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
