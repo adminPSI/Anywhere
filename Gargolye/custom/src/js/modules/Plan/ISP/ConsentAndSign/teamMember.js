@@ -60,11 +60,6 @@ const csTeamMember = (() => {
     );
   }
   async function applySelectedRelationship(relData) {
-    // temp
-    $.session.planSignatureUpdateDOB = true;
-    $.session.planSignatureUpdateBuildingNumber = true;
-    // end temp
-
     importedFromRelationship = true;
 
     selectedMemberData.salesforceId = !relData.salesforceId ? '' : relData.salesforceId;
