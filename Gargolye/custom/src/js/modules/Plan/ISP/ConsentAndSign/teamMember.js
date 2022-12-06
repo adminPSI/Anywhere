@@ -60,6 +60,11 @@ const csTeamMember = (() => {
     );
   }
   async function applySelectedRelationship(relData) {
+    // temp
+    $.session.planSignatureUpdateDOB = true;
+    $.session.planSignatureUpdateBuildingNumber = true;
+    // end temp
+
     importedFromRelationship = true;
 
     selectedMemberData.salesforceId = !relData.salesforceId ? '' : relData.salesforceId;
@@ -98,15 +103,13 @@ const csTeamMember = (() => {
 
     if (!$.session.planInsertNewTeamMember) {
       // if above is false we know popup was temp disabled
-      teamMemberDropdown.classList.remove('disabled');
-      // dateOfBirthInput.classList.remove('disabled');
-      // buildingNumberInput.classList.remove('disabled');
       if ($.session.planSignatureUpdateDOB) {
         dateOfBirthInput.classList.remove('disabled');
       }
       if ($.session.planSignatureUpdateBuildingNumber) {
         buildingNumberInput.classList.remove('disabled');
       }
+      teamMemberDropdown.classList.remove('disabled');
       participatedYesRadio.classList.remove('disabled');
       participatedNoRadio.classList.remove('disabled');
       signatureTypeDropdown.classList.remove('disabled');
@@ -785,10 +788,10 @@ const csTeamMember = (() => {
 
     //* Disabled Fields
     //*------------------------------
-    if (selectedMemberData.dateOfBirth || $.session.planSignatureUpdateDOB) {
+    if (selectedMemberData.dateOfBirth || !$.session.planSignatureUpdateDOB) {
       dateOfBirthInput.classList.add('disabled');
     }
-    if (selectedMemberData.buildingNumber || $.session.planSignatureUpdateBuildingNumber) {
+    if (selectedMemberData.buildingNumber || !$.session.planSignatureUpdateBuildingNumber) {
       buildingNumberInput.classList.add('disabled');
     }
     if (!isNew) {

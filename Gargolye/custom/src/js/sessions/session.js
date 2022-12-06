@@ -237,6 +237,8 @@ $.session.hideAllScheduleButton = false;
 $.session.planUpdate = false;
 $.session.planView = false;
 $.session.planInsertNewTeamMember = false;
+$.session.planSignatureUpdateDOB = false;
+$.session.planSignatureUpdateBuildingNumber = false;
 // Transportation
 $.session.transportationUpdate = false;
 $.session.transportationView = false;
