@@ -2353,6 +2353,11 @@ namespace Anywhere
             return psw.getTeamMemberListFromState(peopleId);
         }
 
+        public PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
+        {
+            return psw.getStateGuardiansforConsumer(peopleId);
+        }
+
         public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
         {
             return psw.setSalesForceIdForTeamMemberUpdate(peopleId, salesForceId);
@@ -2362,6 +2367,7 @@ namespace Anywhere
         {
             return psw.validateConsumerForSalesForceId(consumerId);
         }
+       
 
         public string checkForSalesForce()
         {
