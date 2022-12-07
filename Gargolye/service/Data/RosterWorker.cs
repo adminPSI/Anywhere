@@ -116,6 +116,10 @@ namespace Anywhere.service.Data
             public string secondaryphone { get; set; }
             public string cellularphone { get; set; }
             public string description { get; set; }
+            public string companyName { get; set; }
+            public string title { get; set; }
+            public string addressOne { get; set; }
+            public string addressTwo { get; set; }
         }
 
     }
