@@ -273,8 +273,6 @@ const isp_ci_importantPeople = (() => {
       { text: 'Medical Provider', value: 'Medical Provider' },
       { text: 'Case Manager', value: 'Case Manager' },
       { text: 'Emergency Contact', value: 'Emergency Contact' },
-      // TODO: 2022.5 - remove below
-      { text: 'Primary Doctor', value: 'Primary Doctor' },
     ];
 
     dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);

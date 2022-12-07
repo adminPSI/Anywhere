@@ -138,8 +138,6 @@ const isp_ci_importantPlaces = (() => {
       { text: 'School', value: 'School' },
       { text: 'Day Provider', value: 'Day Provider' },
       { text: 'Primary Hospital', value: 'Primary Hospital' },
-      // TODO: 2022.5 - remove below
-      { text: 'Other', value: 'Other' },
     ];
 
     dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);

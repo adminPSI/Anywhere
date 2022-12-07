@@ -9,28 +9,28 @@ const planData = (() => {
     assessment: {},
     isp: {
       consentAndSign: {
-        dissentAreaDisagree: 1000,
-        dissentHowToAddress: 1000,
+        dissentAreaDisagree: 2500,
+        dissentHowToAddress: 2500,
       },
       contactInfo: {
         moreDetail: 1000,
       },
       restrictiveMeasures: {
-        rmKeepSelfSafe: 1000,
-        rmFadeRestriction: 1000,
-        rmWhatCouldHappenGood: 1000,
-        rmWhatCouldHappenBad: 1000,
-        rmOtherWayHelpGood: 1000,
-        rmOtherWayHelpBad: 1000,
+        rmKeepSelfSafe: 10000,
+        rmFadeRestriction: 10000,
+        rmWhatCouldHappenGood: 10000,
+        rmWhatCouldHappenBad: 10000,
+        rmOtherWayHelpGood: 10000,
+        rmOtherWayHelpBad: 10000,
       },
       introduction: {
-        likeAdmire: 2000,
-        thingsImportantTo: 2000,
-        thingsImportantFor: 2000,
-        howToSupport: 2000,
+        likeAdmire: 2464,
+        thingsImportantTo: 2464,
+        thingsImportantFor: 2464,
+        howToSupport: 2464,
       },
       outcomes: {
-        description: 1000,
+        description: 2500,
         details: 1000,
         history: 1000,
         carryOverReason: 255,
@@ -42,20 +42,21 @@ const planData = (() => {
         whenToCheckIn: 255, // rev
       },
       servicesSupports: {
-        scopeOfService: 1000, // paid supp
+        scopeOfService: 2500, // paid supp
         fundingSourceOther: 1000, // paid supp
         howOftenHowMuch: 255, // paid supp
         howOftenOther: 1000, // paid supp
-        whatSupportLooksLike: 1000, // add supp
+        whatSupportLooksLike: 2500, // add supp
         whenHowOften: 255, // add supp
         whenHowOftenOther: 1000, // add supp
         reasonForReferral: 1000, // prof ref
       },
       summary: {
+        aloneTime: 32768,
         importantTo: 1000,
         importantFor: 1000,
         skillsAndAbilities: 1000,
-        whatIsRisk: 1000,
+        whatIsRisk: 10000,
         whatSupportLooksLike: 1000,
       },
     },
