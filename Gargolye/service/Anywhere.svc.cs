@@ -2353,10 +2353,10 @@ namespace Anywhere
             return psw.getTeamMemberListFromState(peopleId);
         }
 
-        public PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
-        {
-            return psw.getStateGuardiansforConsumer(peopleId);
-        }
+        //public PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
+        //{
+        //    return psw.getStateGuardiansforConsumer(peopleId);
+        //}
 
         public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
         {

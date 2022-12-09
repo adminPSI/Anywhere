@@ -3337,12 +3337,12 @@ namespace Anywhere
         PlanSignatureWorker.TeamMemberFromState[] getTeamMemberListFromState(long peopleId);
 
 
-        [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/getStateGuardiansforConsumer/")]
-        PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId);
+        //[WebInvoke(Method = "POST",
+        //    BodyStyle = WebMessageBodyStyle.Wrapped,
+        //    ResponseFormat = WebMessageFormat.Json,
+        //    RequestFormat = WebMessageFormat.Json,
+        //    UriTemplate = "/getStateGuardiansforConsumer/")]
+        //PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

@@ -219,18 +219,18 @@ namespace Anywhere.service.Data.PlanSignature
             return stateTeamMemberObject;
         }
 
-        public TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
-        {
-            ISPDTData ispDT = new ISPDTData();
+        //public TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
+        //{
+        //    ISPDTData ispDT = new ISPDTData();
 
-            string theGuardians = ispDT.IndividualGuardians(peopleId);
-            // OISP FRANKLINONE -- 17080
-            //string teamMembers = oispW.GetIndividualContactsJSON(peopleId.ToString());
-            TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
+        //    string theGuardians = ispDT.IndividualGuardians(peopleId);
+        //    // OISP FRANKLINONE -- 17080
+        //    //string teamMembers = oispW.GetIndividualContactsJSON(peopleId.ToString());
+        //    TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
 
-            return stateGuardianObject;
+        //    return stateGuardianObject;
 
-        }
+        //}
 
             public void setVendorSalesForceId()
         {
