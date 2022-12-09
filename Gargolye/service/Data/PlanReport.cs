@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
+using System.Web.UI.WebControls;
 using Anywhere.Data;
 using Anywhere.Log;
 using CrystalDecisions.CrystalReports.Engine;
@@ -57,85 +58,209 @@ namespace Anywhere.service.Data
             }
         }
 
-        //public MemoryStream createAssessmentReportNew(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
-        //{
-        //    var obj = new ReportData();
-        //    var cr = new ReportDocument();
-        //    Boolean Advisor = false;
-        //    var dt = DataTable();
-        //    var crName = "";
+        public MemoryStream createOISPIntro(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        {
+            bool Advisor = false;
+            string applicationName = dg.GetApplicationName(token);
+            ApplicationName[] appName = js.Deserialize<ApplicationName[]>(applicationName);
+            if (appName[0].setting.ToUpper() == "ADVISOR")
+            {
+                Advisor = true;
+            }
+            ReportDocument cr = new ReportDocument();
+            bool eS = false;
+            long ID = long.Parse(assessmentID);
+            if (extraSpace.ToLower() == "false")
+            {//change to boolean TODO
+                extraSpace = "'false'";
+                eS = false;
+            }
+            else
+            {
+                extraSpace = "'true'";
+                eS = true;
+            }
+            Boolean ISP = true;
+            string crName = string.Empty;
+            string crPath = string.Empty;
+            string crFinal = string.Empty;
+            SQL obj = new SQL();
+            crPath = dg.getAssessmentReportPath(token);
+            var startPath = crPath.IndexOf("<path>");
+            var endPath = crPath.IndexOf("</path>");
+            crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
+            crName = "AssesmentVersion1.rpt";
 
-        //    case "OISPIntro": 
-        //    crName = @"C:\Work\AssesmentReports\OISPIntro.rpt";
-        //    cr.Load(crName);
-        //    dt = obj.AssesmentHeader(ID).Tables[0];
-        //    cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
-        //    cr.OpenSubreport("Header").SetDataSource(dt);
-        //    cr.OpenSubreport("ISPIntroduction").SetDataSource(obj.ISPIntroduction(assessmentID));
+            try
+            {
+                cr.Load(string.Format(crPath, crName));
+            }
+            catch (Exception ex)
+            {
+                var builder = new System.Text.StringBuilder();
+                WriteExceptionDetails(ex, builder, 0);
+                logger.debug(builder.ToString());
+            }
 
-        //    break;
-
-        //        case "OISPAssesment":
-        //            crName = @"C:\Work\AssesmentReports\OISPAssesment.rpt";
-        //    cr.Load(crName);
-        //    cr.SetDataSource(obj.AssesmentAnswers(assessmentID, Advisor));
-
-        //    dt = obj.AssesmentHeader(assessmentID).Tables[0];
-        //    cr.OpenSubreport("Header").SetDataSource(dt);
-        //    cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
-        //    cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
-
-
-        //    break;
-
-        //        case "OISPPlan":
-        //            crName = @"C:\Work\AssesmentReports\OISPPlan.rpt";
-        //    cr.Load(crName);
-        //    //cr.SetDataSource(obj.AssesmentAnswers(ID, Advisor));
-
-        //    dt = obj.AssesmentHeader(ID).Tables[0];
-        //    cr.OpenSubreport("Header").SetDataSource(dt);
-        //    cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
-        //    //cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
-
-        //    cr.OpenSubreport("AssesmentSummary").SetDataSource(obj.ISPSummary(assessmentID, false, "SUMMARY", Advisor));
-        //    cr.OpenSubreport("Skills").SetDataSource(obj.ISPSummary(assessmentID, false, "SKILLS", Advisor));
-        //    cr.OpenSubreport("Supervision").SetDataSource(obj.ISPSummary(assessmentID, false, "SUPERVISION", Advisor));
-        //    cr.OpenSubreport("Outcomes").SetDataSource(obj.ISPOutcomes(assessmentID, Advisor));
-        //    cr.OpenSubreport("Services").SetDataSource(obj.ISPServices(assessmentID, Advisor));
-        //    cr.OpenSubreport("ISPModifiers").SetDataSource(obj.ISPModifiers(assessmentID));
-        //    cr.OpenSubreport("AdditionalSupports").SetDataSource(obj.ISPAdditionalSupports(assessmentID));
-        //    cr.OpenSubreport("Referrals").SetDataSource(obj.ISPReferrals(assessmentID));
-        //    cr.OpenSubreport("TeamMembers").SetDataSource(obj.ISPTeamMembers(assessmentID, Advisor));
-        //    cr.OpenSubreport("TeamMembers2").SetDataSource(obj.ISPTeamMembers2(assessmentID, Advisor));
-        //    cr.OpenSubreport("Signatures").SetDataSource(obj.ISPSignatures(assessmentID));
-        //    cr.OpenSubreport("Dissenting").SetDataSource(obj.ISPSignatures(assessmentID));
-        //    cr.OpenSubreport("ContactInfo").SetDataSource(obj.ISPContacts(assessmentID, Advisor));
-        //    cr.OpenSubreport("ImportantPeople").SetDataSource(obj.ISPImportantPeople(assessmentID));
-        //    cr.OpenSubreport("Clubs").SetDataSource(obj.ISPClubs(assessmentID));
-        //    cr.OpenSubreport("Places").SetDataSource(obj.ISPPlaces(assessmentID));
-
-        //    break;
+            crName = @"C:\Work\AssesmentReports\OISPIntro.rpt";
+            cr.Load(crName);
+            DataTable dt = ars.AssesmentHeader(ID).Tables[0];
+            cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
+            cr.OpenSubreport("Header").SetDataSource(dt);
+            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(long.Parse(assessmentID)));              
+            
 
 
+            MemoryStream ms = new MemoryStream();
+            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            cr.Close();
+            cr.Dispose();
+            return ms;
+        }
 
-        //    //Common to all three reports
+        public MemoryStream createOISAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        {
+            bool Advisor = false;
+            string applicationName = dg.GetApplicationName(token);
+            ApplicationName[] appName = js.Deserialize<ApplicationName[]>(applicationName);
+            if (appName[0].setting.ToUpper() == "ADVISOR")
+            {
+                Advisor = true;
+            }
+            ReportDocument cr = new ReportDocument();
+            bool eS = false;
+            long ID = long.Parse(assessmentID);
+            if (extraSpace.ToLower() == "false")
+            {//change to boolean TODO
+                extraSpace = "'false'";
+                eS = false;
+            }
+            else
+            {
+                extraSpace = "'true'";
+                eS = true;
+            }
+            Boolean ISP = true;
+            string crName = string.Empty;
+            string crPath = string.Empty;
+            string crFinal = string.Empty;
+            SQL obj = new SQL();
+            crPath = dg.getAssessmentReportPath(token);
+            var startPath = crPath.IndexOf("<path>");
+            var endPath = crPath.IndexOf("</path>");
+            crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
+            crName = "AssesmentVersion1.rpt";
 
-        //    var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-        //    var ms = new MemoryStream();
-        //    ios.CopyTo(ms);
-        //    File.WriteAllBytes(rFileName, ms.ToArray());
-        //    var ba = ms.ToArray();
-        //    //string s = ms.PSIResponseToSTring();
-        //    System.Diagnostics.Process.Start(rFileName);
-        //    ba = null;
-        //    ms.Close();
-        //    ios.Close();
-        //    ms.Dispose();
-        //    ios.Dispose();
-        //    cr.Dispose();
+            try
+            {
+                cr.Load(string.Format(crPath, crName));
+            }
+            catch (Exception ex)
+            {
+                var builder = new System.Text.StringBuilder();
+                WriteExceptionDetails(ex, builder, 0);
+                logger.debug(builder.ToString());
+            }
 
-        //}
+            crName = @"C:\Work\AssesmentReports\OISPAssesment.rpt";
+            cr.Load(crName);
+            cr.SetDataSource(ars.AssesmentAnswers(long.Parse(assessmentID), Advisor));
+
+            DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID)).Tables[0];
+            cr.OpenSubreport("Header").SetDataSource(dt);
+            cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
+            cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
+
+
+
+            MemoryStream ms = new MemoryStream();
+            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            cr.Close();
+            cr.Dispose();
+            return ms;
+        }
+
+        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        {
+            bool Advisor = false;
+            string applicationName = dg.GetApplicationName(token);
+            ApplicationName[] appName = js.Deserialize<ApplicationName[]>(applicationName);
+            if (appName[0].setting.ToUpper() == "ADVISOR")
+            {
+                Advisor = true;
+            }
+            ReportDocument cr = new ReportDocument();
+            bool eS = false;
+            long ID = long.Parse(assessmentID);
+            if (extraSpace.ToLower() == "false")
+            {//change to boolean TODO
+                extraSpace = "'false'";
+                eS = false;
+            }
+            else
+            {
+                extraSpace = "'true'";
+                eS = true;
+            }
+            Boolean ISP = true;
+            string crName = string.Empty;
+            string crPath = string.Empty;
+            string crFinal = string.Empty;
+            SQL obj = new SQL();
+            crPath = dg.getAssessmentReportPath(token);
+            var startPath = crPath.IndexOf("<path>");
+            var endPath = crPath.IndexOf("</path>");
+            crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
+            crName = "AssesmentVersion1.rpt";
+
+            try
+            {
+                cr.Load(string.Format(crPath, crName));
+            }
+            catch (Exception ex)
+            {
+                var builder = new System.Text.StringBuilder();
+                WriteExceptionDetails(ex, builder, 0);
+                logger.debug(builder.ToString());
+            }
+
+
+            crName = @"C:\Work\AssesmentReports\OISPPlan.rpt";
+            cr.Load(crName);
+            //cr.SetDataSource(obj.AssesmentAnswers(ID, Advisor));
+
+            DataTable dt = ars.AssesmentHeader(ID).Tables[0];
+            cr.OpenSubreport("Header").SetDataSource(dt);
+            cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
+            //cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
+
+            cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUMMARY", Advisor));
+            cr.OpenSubreport("Skills").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SKILLS", Advisor));
+            cr.OpenSubreport("Supervision").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUPERVISION", Advisor));
+            cr.OpenSubreport("Outcomes").SetDataSource(ars.ISPOutcomes(long.Parse(assessmentID), Advisor));
+            cr.OpenSubreport("Services").SetDataSource(ars.ISPServices(long.Parse(assessmentID), Advisor));
+            cr.OpenSubreport("ISPModifiers").SetDataSource(ars.ISPModifiers(long.Parse(assessmentID)));
+            cr.OpenSubreport("AdditionalSupports").SetDataSource(ars.ISPAdditionalSupports(long.Parse(assessmentID)));
+            cr.OpenSubreport("Referrals").SetDataSource(ars.ISPReferrals(long.Parse(assessmentID)));
+            cr.OpenSubreport("TeamMembers").SetDataSource(ars.ISPTeamMembers(long.Parse(assessmentID), Advisor));
+            cr.OpenSubreport("TeamMembers2").SetDataSource(ars.ISPTeamMembers2(long.Parse(assessmentID), Advisor));
+            cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
+            cr.OpenSubreport("Dissenting").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
+            cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(long.Parse(assessmentID), Advisor));
+            cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));
+            cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(long.Parse(assessmentID)));
+            cr.OpenSubreport("Places").SetDataSource(ars.ISPPlaces(long.Parse(assessmentID)));
+
+
+            MemoryStream ms = new MemoryStream();
+            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            cr.Close();
+            cr.Dispose();
+            return ms;
+        }
+
+
+        
 
         public MemoryStream createAssessmentReport(string token,string  userId, string assessmentID, string versionID, string extraSpace, bool isp )
         {
