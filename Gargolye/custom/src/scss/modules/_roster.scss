@@ -449,10 +449,9 @@
 .relationshipDetailWrap {
   div {
     margin: 0 0 10px;
-
-    > p {
-      font-weight: bold;
-    }
+  }
+  p:first-child {
+    font-weight: bold;
   }
 }
 .notesSection {
