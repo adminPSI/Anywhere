@@ -120,6 +120,9 @@ namespace Anywhere.service.Data
             public string title { get; set; }
             public string addressOne { get; set; }
             public string addressTwo { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zipcode { get; set; }
         }
 
     }
