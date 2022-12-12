@@ -28,6 +28,7 @@ using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.DocumentConversion;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.AnywhereWorker;
+using static Anywhere.service.Data.DayServicesWorker;
 
 namespace Anywhere
 {
@@ -163,6 +164,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getConsumerDayServiceActivityJSON/")]
         DayServicesWorker.DSConsumerActivityObject[] getConsumerDayServiceActivityJSON(string token, string peopleList, string serviceDate, string locationId, string groupCode, string retrieveId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getDayServiceClockedInConsumers/")]
+        DayServicesWorker.ClockedInConsumers[] getDayServiceClockedInConsumers(string token, string consumerIdString, string serviceDate, string locationId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3337,12 +3346,12 @@ namespace Anywhere
         PlanSignatureWorker.TeamMemberFromState[] getTeamMemberListFromState(long peopleId);
 
 
-        //[WebInvoke(Method = "POST",
-        //    BodyStyle = WebMessageBodyStyle.Wrapped,
-        //    ResponseFormat = WebMessageFormat.Json,
-        //    RequestFormat = WebMessageFormat.Json,
-        //    UriTemplate = "/getStateGuardiansforConsumer/")]
-        //PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId);
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getStateGuardiansforConsumer/")]
+        PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
