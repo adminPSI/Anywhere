@@ -803,6 +803,17 @@ const planConsentAndSign = (() => {
     return section;
   }
 
+  function invalidContactProviderVendorIdCheck() {
+    const dropdownData = getVendorDropdownData();
+
+    teamMemberData.forEach(member => {
+      const filteredValue = dropdownData.filter(d => d.value === member.csContactProviderVendorId);
+      if (filteredValue.length === 0) {
+        teamMemberData[member].csContactProviderVendorId = '';
+      }
+    });
+  }
+
   async function init(data) {
     planId = data.planId;
     readOnly = data.readOnly;
@@ -827,6 +838,8 @@ const planConsentAndSign = (() => {
     }
 
     await loadDropdownData();
+
+    invalidContactProviderVendorIdCheck();
   }
 
   return {

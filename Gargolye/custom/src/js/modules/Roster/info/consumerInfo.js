@@ -515,7 +515,7 @@ var consumerInfo = (function () {
     const addressTwo = data.addressTwo ? data.addressTwo : '';
     const city = data.city ? data.city : '';
     const state = data.state ? data.state : '';
-    const zip = data.zip ? data.zip : '';
+    const zipcode = data.zipcode ? data.zipcode : '';
     // show data
     const detailWrap = document.createElement('div');
     detailWrap.classList.add('relationshipDetailWrap');
@@ -532,7 +532,7 @@ var consumerInfo = (function () {
         <p>Address</p>
         <p>${addressOne}</p>
         <p>${addressTwo}</p>
-        <p>${city}, ${state} ${zip}</p>
+        <p>${city}, ${state} ${zipcode}</p>
       </div>
     `;
     const donebtn = button.build({
