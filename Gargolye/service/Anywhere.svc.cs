@@ -2723,7 +2723,9 @@ namespace Anywhere
         {
             string token;
             string userId;
-            string[] attachmentIds;
+            string[] planAttachmentIds;
+            string[] wfAttachmentIds;
+            string[] sigAttachmentIds;
             string assessmentID;
             string versionID;
             string extraSpace;
@@ -2738,13 +2740,25 @@ namespace Anywhere
             extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             string[] words = fullInput.Split('&');
-            var index = Array.FindIndex(words, row => row.Contains("attachmentIds"));
+            var index = Array.FindIndex(words, row => row.Contains("planAttachmentIds"));
             string attId = words[index];
-            attId = attId.Replace("attachmentIds=", "");
+            attId = attId.Replace("planAttachmentIds=", "");
             attId = attId.Replace("%2C", ",");
-            attachmentIds = attId.Split(',');
+            planAttachmentIds = attId.Split(',');
+            string[] wordsTwo = fullInput.Split('&');
+            var indexTwo = Array.FindIndex(wordsTwo, row => row.Contains("wfAttachmentIds"));
+            string attIdTwo = wordsTwo[indexTwo];
+            attIdTwo = attIdTwo.Replace("wfAttachmentIds=", "");
+            attIdTwo = attIdTwo.Replace("%2C", ",");
+            wfAttachmentIds = attIdTwo.Split(',');
+            string[] wordsThree = fullInput.Split('&');
+            var indexThree = Array.FindIndex(wordsThree, row => row.Contains("wfAttachmentIds"));
+            string attIdThree = wordsThree[indexThree];
+            attIdThree = attIdThree.Replace("wfAttachmentIds=", "");
+            attIdThree = attIdThree.Replace("%2C", ",");
+            sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            dpra.addSelectedAttachmentsToReport(token, attachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp));
+            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp));
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
