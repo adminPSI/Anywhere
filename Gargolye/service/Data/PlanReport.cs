@@ -89,7 +89,7 @@ namespace Anywhere.service.Data
             var startPath = crPath.IndexOf("<path>");
             var endPath = crPath.IndexOf("</path>");
             crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
-            crName = "AssesmentVersion1.rpt";
+            crName = "OISPIntro.rpt";
 
             try
             {
@@ -118,7 +118,7 @@ namespace Anywhere.service.Data
             return ms;
         }
 
-        public MemoryStream createOISAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -149,7 +149,7 @@ namespace Anywhere.service.Data
             var startPath = crPath.IndexOf("<path>");
             var endPath = crPath.IndexOf("</path>");
             crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
-            crName = "AssesmentVersion1.rpt";
+            crName = "OISPAssessment.rpt";
 
             try
             {
@@ -211,7 +211,7 @@ namespace Anywhere.service.Data
             var startPath = crPath.IndexOf("<path>");
             var endPath = crPath.IndexOf("</path>");
             crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
-            crName = "AssesmentVersion1.rpt";
+            crName = "OISPPlan.rpt";
 
             try
             {
@@ -259,8 +259,11 @@ namespace Anywhere.service.Data
             return ms;
         }
 
-
-        
+        //public MemoryStream createAssessmentReport(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        //{
+        //    createOISPIntro
+        //    createOISPAssessment
+        //}
 
         public MemoryStream createAssessmentReport(string token,string  userId, string assessmentID, string versionID, string extraSpace, bool isp )
         {
