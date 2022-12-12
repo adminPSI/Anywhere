@@ -6,6 +6,7 @@ const csTeamMember = (() => {
   let insertAllowed;
   let importedFromRelationship;
   let stateGuardiansObj;
+  let selectedGuardian;
   // DOM
   let teamMemberPopup; // main popup
   let linkToRelationshipBtn;
@@ -137,9 +138,14 @@ const csTeamMember = (() => {
       peopleId: selectedConsumer.id,
     });
   
+  if (stateGuardiansObj) {
     var test = stateGuardiansObj;
-  // alert("Import this!");
+   //  showGuardiansPopup();
+    // alert("Import this!");
 
+
+  }
+    
   }
   async function linkToSalesForce(selectedSalesforceId) {
     let success;
@@ -289,63 +295,72 @@ const csTeamMember = (() => {
   //* MARKUP
   //*------------------------------------------------------
   // TODO: 2022.5
-  // function showGuardiansPopup(guardiansData) {
-  //   if (!guardiansData) {
-  //     guardianPopup = POPUP.build({
-  //       id: 'guardianPopup',
-  //       hideX: true,
-  //       header: `There is no guardian listed in Salesforce for this individual`,
-  //     });
+  function showGuardiansPopup() {
+    if (!stateGuardiansObj) {
+      guardianPopup = POPUP.build({
+        id: 'guardianPopup',
+        hideX: true,
+        header: `There is no guardian listed in Salesforce for this individual`,
+      });
 
-  //     const doneBtn = button.build({
-  //       id: 'guardianPopup_cancel',
-  //       text: 'ok',
-  //       style: 'secondary',
-  //       type: 'outlined',
-  //       callback: () => {
-  //         POPUP.hide(guardianPopup);
-  //         teamMemberPopup.display.block;
-  //       },
-  //     });
+      const doneBtn = button.build({
+        id: 'guardianPopup_cancel',
+        text: 'ok',
+        style: 'secondary',
+        type: 'outlined',
+        callback: () => {
+          POPUP.hide(guardianPopup);
+         // teamMemberPopup.display.block;
+        },
+      });
 
-  //     guardianPopup.appendChild(doneBtn);
+      guardianPopup.appendChild(doneBtn);
 
-  //     teamMemberPopup.display.none;
-  //     POPUP.show(guardianPopup);
-  //     return;
-  //   }
+     // teamMemberPopup.display.none;
+      POPUP.show(guardianPopup);
+      return;
+    }
 
-  //   let selectedGuardian;
+    
 
-  //   guardianPopup = POPUP.build({
-  //     id: 'guardianPopup',
-  //     hideX: true,
-  //     header: `This is the valid Guardian(S) listed in Salesforce. Please select a guardian from the list that matches the Team Member`,
-  //   });
+    guardianPopup = POPUP.build({
+      id: 'guardianPopup',
+      hideX: true,
+      header: `This is the valid Guardian(S) listed in Salesforce. Please select a guardian from the list that matches the Team Member`,
+    });
 
-  //   const guardiansWrap = document.createElement('div');
+    const guardiansWrap = document.createElement('div');
+    guardiansWrap.classList.add('relationshipsWrap');
 
-  //   guardiansData.forEach(g => {
-  //     const guardianDiv = document.createElement('div');
-  //     guardianDiv.classList.add('guardianDiv');
+    stateGuardiansObj.forEach(g => {
+      const guardianDiv = document.createElement('div');
+      guardianDiv.classList.add('relationship');
+      //guardianDiv.innerHTML = `<div class="xxx"><span>${g.Id}</span>: ${g.LastName} - ${g.FirstName}</div>`;
+      // guardianDiv.classList.add('guardianDiv');
+      const name = document.createElement('p');
+      name.classList.add('name')
+      name.innerText = `Name: ${g.FirstName} ${g.LastName}`;
 
-  //     guardianDiv.addEventListener('click', e => {
-  //       const selectedG = guardiansWrap.querySelector('.guardianDiv.selected');
-  //       if (selectedG) selectedG.classList.remove('selected');
-  //       e.target.classList.add('selected');
+      guardianDiv.appendChild(name);
 
-  //       selectedGuardian = g;
-  //     });
+      guardianDiv.addEventListener('click', e => {
+        const selectedG = guardiansWrap.querySelector('.relationship.selected');
+        if (selectedG) selectedG.classList.remove('selected');
+        guardianDiv.classList.add('selected');
+        // e.target.classList.add('selected');
 
-  //     guardiansWrap.appendChild(guardianDiv);
-  //   });
+        selectedGuardian = g;
+      });
 
-  //   const doneBtn = button.build({
-  //     id: 'guardianPopup_cancel',
-  //     text: 'ok',  // YES -- ARE THESE THE SAME PEOPLE? 
-  //     style: 'secondary',
-  //     type: 'outlined',
-  //     callback: () => {
+      guardiansWrap.appendChild(guardianDiv);
+    });
+
+    const doneBtn = button.build({
+      id: 'guardianPopup_cancel',
+      text: 'ok',  // YES -- ARE THESE THE SAME PEOPLE? 
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
             // call new function validateGuardianSalesForceID(localSalesForceId (selected Guardian in popup), stateSalesForceId (there is usually one from the state))
             //   if localSalesForceId == stateSalesForceID --> do nothing   (DO WE THEN INSERT THE TEAMMEMBER ???)
             //   else if localSalesForceId == NULL --> SQL -- Update people.SalesForce_ID with stateSalesForceId (DO WE THEN INSERT THE TEAMMEMBER ???)
@@ -356,33 +371,34 @@ const csTeamMember = (() => {
             //                         --- this happens on insertTeamMember (save) -- 2. Assign stateSalesForceId to People.SalesForce_ID to added record -- adding new People to table with stateSaleForceID
             //                         --- this happens on insertTeamMember (save) ---3. Assign to Relationship table (Classification of Team Member (GK only)).
             //                  NO -- Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
-  //       // do stuff
-  //       // saveGuardianOrsomething(selectedGuardian);
-  //     },
-  //   });
+        // do stuff
+        // saveGuardianOrsomething(selectedGuardian);
+      },
+    });
 
-  //   const cancelBtn = button.build({
-  //     id: 'guardianPopup_cancel',
-  //     text: 'cancel',  // NO -- ARE THESE THE SAME PEOPLE? 
-  //     style: 'secondary',
-  //     type: 'outlined',
-  //     callback: () => {
-  //       POPUP.hide(guardianPopup);
-  //       Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
-  //       teamMemberPopup.display.block;
-  //     },
-  //   });
-  //   const btnWrap = document.createElement('div');
-  //   btnWrap.classList.add('btnWrap');
-  //   btnWrap.appendChild(doneBtn);
-  //   btnWrap.appendChild(cancelBtn);
+    const cancelBtn = button.build({
+      id: 'guardianPopup_cancel',
+      text: 'cancel',  // NO -- ARE THESE THE SAME PEOPLE? 
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        POPUP.hide(guardianPopup);
+       // Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
+       // teamMemberPopup.display.block;
+      },
+    });
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(doneBtn);
+    btnWrap.appendChild(cancelBtn);
 
-  //   guardianPopup.appendChild(guardiansWrap);
-  //   guardianPopup.appendChild(btnWrap);
+    guardianPopup.appendChild(guardiansWrap);
+    guardianPopup.appendChild(btnWrap);
 
-  //   teamMemberPopup.display.none;
-  //   POPUP.show(guardianPopup);
-  // }
+   // teamMemberPopup.display.none;
+    POPUP.show(guardianPopup);
+  }
+
   function buildParticipationRadios() {
     const radioContainer = document.createElement('div');
     radioContainer.classList.add('sig_radioContainer');
