@@ -1082,6 +1082,7 @@ const dayServices = (function () {
     inTime += ':00';
     let clockInConsumerString = formatConsumersForClockIn(selectedConsumers);
     let selectedConsumerCount = selectedConsumers.length;
+    //get consuemrs with existing clockins TODO. call new ajax. $.session.Token
     dayServiceAjax.dayServiceClockIn(
       clockInConsumerString,
       serviceDate,
