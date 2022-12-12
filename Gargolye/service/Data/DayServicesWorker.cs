@@ -58,6 +58,24 @@ namespace Anywhere.service.Data
             return groupObj;
         }
 
+        public ClockedInConsumers[] getDayServiceClockedInConsumers(string token, string consumerIdString, string serviceDate, string locationId)
+        {
+            consumerIdString = consumerIdString.Replace("|", ",");
+            string idString = dg.getDayServiceClockedInConsumers(token, consumerIdString, serviceDate, locationId);
+            ClockedInConsumers[] idObj = js.Deserialize<ClockedInConsumers[]>(idString);
+
+            return idObj;
+        }
+
+
+        public class ClockedInConsumers
+        {
+            public string name { get; set; }
+            public string location { get; set; }
+            public string startTime { get; set; }
+            public string endTime { get; set; }
+        }
+
         public class DayServiceGroups
         {
             public string groupId { get; set; }

@@ -105,6 +105,27 @@ namespace Anywhere.Data
             }
         }
 
+        public string getDayServiceClockedInConsumers(string token, string consumerIdString, string serviceDate, string locationId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getDayServiceClockedInConsumers " + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerIdString);
+            list.Add(serviceDate);
+            list.Add(locationId);
+            string text = "CALL DBA.ANYW_DayService_GetDayServiceClockedInConsumers(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("502", ex.Message + "getDayServiceClockedInConsumers(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "502: error getDayServiceClockedInConsumers";
+            }
+        }
+
         /// <summary>
         ///  Get a list of people
         /// </summary>

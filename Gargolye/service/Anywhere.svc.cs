@@ -137,6 +137,11 @@ namespace Anywhere
             return dsWorker.getDayServiceLocationsJSON(token, serviceDate);
         }
 
+        public DayServicesWorker.ClockedInConsumers[] getDayServiceClockedInConsumers(string token, string consumerIdString, string serviceDate, string locationId)
+        {
+            return dsWorker.getDayServiceClockedInConsumers(token, consumerIdString, serviceDate, locationId);
+        }
+
         public DayServicesWorker.DayServiceGroups[] getDayServiceGroups(string token, string locationId)
         {
             return dsWorker.getDayServiceGroups(token, locationId);
