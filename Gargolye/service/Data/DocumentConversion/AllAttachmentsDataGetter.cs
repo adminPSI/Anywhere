@@ -104,6 +104,19 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
+        public string getReportSectionOrder()
+        {
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_ISP_GetReportSectionOrder();");
+            }
+            catch (Exception ex)
+            {
+                logger.error("551", ex.Message + " ANYW_ISP_GetReportSectionOrder()");
+                return "551: Error getting case load restriction";
+            }
+        }
+
         public bool ValidateToken(string token)
         {
             return dg.validateToken(token);

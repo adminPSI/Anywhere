@@ -19,6 +19,8 @@ namespace Anywhere.service.Data
         DataGetter dg = new DataGetter();
         AssessmentReportSQL ars = new AssessmentReportSQL();
         JavaScriptSerializer js = new JavaScriptSerializer();
+        List<byte[]> allAttachments = new List<byte[]>();
+        private int TotalPage = 0;
         /*temporary*/
         public static void WriteExceptionDetails(Exception exception, System.Text.StringBuilder builderToFill, int level)
         {
@@ -58,7 +60,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public MemoryStream createOISPIntro(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public List<byte[]> createOISPIntro(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -102,20 +104,35 @@ namespace Anywhere.service.Data
                 logger.debug(builder.ToString());
             }
 
-            crName = @"C:\Work\AssesmentReports\OISPIntro.rpt";
-            cr.Load(crName);
+            //crName = @"C:\Work\AssesmentReports\OISPIntro.rpt";
+            //cr.Load(crName);
+            var crViewer = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
             DataTable dt = ars.AssesmentHeader(ID).Tables[0];
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
+            cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
             cr.OpenSubreport("Header").SetDataSource(dt);
-            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(long.Parse(assessmentID)));              
-            
+            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(long.Parse(assessmentID)));
 
+            crViewer.ReportSource = cr;
+            crViewer.ShowLastPage();
+            TotalPage += crViewer.GetCurrentPageNumber();
+
+            byte[] msa = null;
 
             MemoryStream ms = new MemoryStream();
             ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
             cr.Close();
             cr.Dispose();
-            return ms;
+            msa = StreamExtensions.ToByteArray(ms);
+            allAttachments.Add(msa);
+            MemoryStream ms2 = createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+            byte[] msa2 = StreamExtensions.ToByteArray(ms2);
+            allAttachments.Add(msa2);
+            MemoryStream ms3 = createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+            createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+            byte[] msa3 = StreamExtensions.ToByteArray(ms3);
+            allAttachments.Add(msa3);
+            return allAttachments;
         }
 
         public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
@@ -149,7 +166,7 @@ namespace Anywhere.service.Data
             var startPath = crPath.IndexOf("<path>");
             var endPath = crPath.IndexOf("</path>");
             crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
-            crName = "OISPAssessment.rpt";
+            crName = "OISPAssesment.rpt";
 
             try
             {
@@ -162,8 +179,9 @@ namespace Anywhere.service.Data
                 logger.debug(builder.ToString());
             }
 
-            crName = @"C:\Work\AssesmentReports\OISPAssesment.rpt";
-            cr.Load(crName);
+            //crName = @"C:\Work\AssesmentReports\OISPAssesment.rpt";
+            //cr.Load(crName);
+            var crViewer = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
             cr.SetDataSource(ars.AssesmentAnswers(long.Parse(assessmentID), Advisor));
 
             DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID)).Tables[0];
@@ -171,6 +189,9 @@ namespace Anywhere.service.Data
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
 
+            crViewer.ReportSource = cr;
+            crViewer.ShowLastPage();
+            TotalPage += crViewer.GetCurrentPageNumber();
 
 
             MemoryStream ms = new MemoryStream();
@@ -224,14 +245,15 @@ namespace Anywhere.service.Data
                 logger.debug(builder.ToString());
             }
 
-
-            crName = @"C:\Work\AssesmentReports\OISPPlan.rpt";
-            cr.Load(crName);
-            //cr.SetDataSource(obj.AssesmentAnswers(ID, Advisor));
+            var crViewer = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
+            //crName = @"C:\Work\AssesmentReports\OISPPlan.rpt";
+            //cr.Load(crName);
+            cr.SetDataSource(ars.AssesmentAnswers(ID, Advisor));
 
             DataTable dt = ars.AssesmentHeader(ID).Tables[0];
             cr.OpenSubreport("Header").SetDataSource(dt);
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
+            cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
             //cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
 
             cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUMMARY", Advisor));
@@ -250,6 +272,10 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));
             cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(long.Parse(assessmentID)));
             cr.OpenSubreport("Places").SetDataSource(ars.ISPPlaces(long.Parse(assessmentID)));
+
+            crViewer.ReportSource = cr;
+            crViewer.ShowLastPage();
+            TotalPage += crViewer.GetCurrentPageNumber();
 
 
             MemoryStream ms = new MemoryStream();

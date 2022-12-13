@@ -46,7 +46,7 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        public void addSelectedAttachmentsToReport(string token, string[] attachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
@@ -57,10 +57,16 @@ namespace Anywhere.service.Data.DocumentConversion
             {
                 Attachment attachment = new Attachment();
                 List<byte[]> allAttachments = new List<byte[]>();
-                byte[] new_byte_output = null; 
-                byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
-                allAttachments.Add(planReport);
-                foreach (string attachId in attachmentIds)
+               // List<byte[]> planReportSections = new List<byte[]>();
+                byte[] new_byte_output = null;
+                // byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
+                List<byte[]>  planReportSections = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                foreach (byte[] section in planReportSections)
+                {
+                    allAttachments.Add(section);
+                }
+                //allAttachments.Add(planReport);
+                foreach (string attachId in planAttachmentIds)
                 {
                     using (PDFDoc doc = new PDFDoc())
                     {
@@ -393,6 +399,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string sectionOrGroup { get; set; }
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
+            public string sigAttachmentId { get; set; }
 
         }
 
