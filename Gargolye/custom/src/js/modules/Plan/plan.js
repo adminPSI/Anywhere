@@ -757,7 +757,6 @@ const plan = (function () {
         attachment.addEventListener('click', () => {
           if (!attachment.classList.contains('selected')) {
             attachment.classList.add('selected');
-            selectedAttachmentsPlan[a.attachmentId] = { ...a };
             if (a.sigAttachmentId) {
               selectedAttachmentsSignature[a.attachmentId] = { ...a };
             } else if (a.whereFrom === 'Plan') {
