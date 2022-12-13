@@ -728,6 +728,7 @@ const dayServiceAjax = (function () {
     });
     }
 
+    // comment
     async function getDayServiceClockedInConsumers(retrieveData) {
         //string token, string consumerIdString, string serviceDate, string locationId
         try {
