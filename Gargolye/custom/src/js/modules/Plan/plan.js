@@ -733,6 +733,15 @@ const plan = (function () {
 
     return screen;
   }
+  function getAttachmentIds(attachments) {
+    const idArray = [];
+
+    for (const prop in attachments) {
+      idArray.push(attachments[prop].attachmentId);
+    }
+
+    return idArray;
+  }
   async function runReportScreen(extraSpace) {
     const selectedAttachmentsPlan = {};
     const selectedAttachmentsWorkflow = {};
@@ -747,6 +756,7 @@ const plan = (function () {
 
     if (attachments) {
       for (const prop in attachments) {
+        attachments[prop].order = index;
         const a = attachments[prop];
         const attachment = document.createElement('div');
         attachment.classList.add('attachment');
@@ -758,20 +768,20 @@ const plan = (function () {
           if (!attachment.classList.contains('selected')) {
             attachment.classList.add('selected');
             if (a.sigAttachmentId) {
-              selectedAttachmentsSignature[a.attachmentId] = { ...a };
+              selectedAttachmentsSignature[a.order] = { ...a };
             } else if (a.whereFrom === 'Plan') {
-              selectedAttachmentsPlan[a.attachmentId] = { ...a };
+              selectedAttachmentsPlan[a.order] = { ...a };
             } else {
-              selectedAttachmentsWorkflow[a.attachmentId] = { ...a };
+              selectedAttachmentsWorkflow[a.order] = { ...a };
             }
           } else {
             attachment.classList.remove('selected');
             if (a.sigAttachmentId) {
-              delete selectedAttachmentsSignature[a.attachmentId];
+              delete selectedAttachmentsSignature[a.order];
             } else if (a.whereFrom === 'Plan') {
-              delete selectedAttachmentsPlan[a.attachmentId];
+              delete selectedAttachmentsPlan[a.order];
             } else {
-              delete selectedAttachmentsWorkflow[a.attachmentId];
+              delete selectedAttachmentsWorkflow[a.order];
             }
           }
         });
@@ -783,6 +793,8 @@ const plan = (function () {
         } else {
           workflowAttWrap.appendChild(attachment);
         }
+
+        index++;
       }
     }
 
@@ -802,9 +814,9 @@ const plan = (function () {
           Object.keys(selectedAttachmentsWorkflow).length > 0 ||
           Object.keys(selectedAttachmentsSignature).length > 0
         ) {
-          const planAttachmentIds = Object.keys(selectedAttachmentsPlan);
-          const wfAttachmentIds = Object.keys(selectedAttachmentsWorkflow);
-          const sigAttachmentIds = Object.keys(selectedAttachmentsSignature);
+          const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+          const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+          const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
           assessment.generateReportWithAttachments(
             planId,
             '1',
