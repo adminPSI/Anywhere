@@ -46,6 +46,7 @@ const plan = (function () {
   let addWorkflowDoneBtn;
   let planAttWrap;
   let workflowAttWrap;
+  let signatureAttWrap;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -693,15 +694,21 @@ const plan = (function () {
     planAttWrap.classList.add('planAttWrap');
     workflowAttWrap = document.createElement('div');
     workflowAttWrap.classList.add('workflowAttWrap');
+    signatureAttWrap = document.createElement('div');
+    signatureAttWrap.classList.add('signatureAttWrap');
     attachmentsWrap.appendChild(planAttWrap);
     attachmentsWrap.appendChild(workflowAttWrap);
+    attachmentsWrap.appendChild(signatureAttWrap);
 
     const planHeading = document.createElement('h2');
     const workflowHeading = document.createElement('h2');
+    const signHeading = document.createElement('h2');
     planHeading.innerText = 'Plan Attachments';
     workflowHeading.innerText = 'Workflow Attachments';
+    signHeading.innerText = 'Signature Attachments';
     planAttWrap.appendChild(planHeading);
     workflowAttWrap.appendChild(workflowHeading);
+    signatureAttWrap.appendChild(signHeading);
 
     screen.appendChild(attachmentsWrap);
 
@@ -727,7 +734,9 @@ const plan = (function () {
     return screen;
   }
   async function runReportScreen(extraSpace) {
-    const selectedAttachments = {};
+    const selectedAttachmentsPlan = {};
+    const selectedAttachmentsWorkflow = {};
+    const selectedAttachmentsSignature = {};
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,
@@ -746,16 +755,29 @@ const plan = (function () {
         attachment.addEventListener('click', () => {
           if (!attachment.classList.contains('selected')) {
             attachment.classList.add('selected');
-            selectedAttachments[a.attachmentId] = { ...a };
+            selectedAttachmentsPlan[a.attachmentId] = { ...a };
+            if (a.sigAttachmentId) {
+              selectedAttachmentsSignature[a.attachmentId] = { ...a };
+            } else if (a.whereFrom === 'Plan') {
+              selectedAttachmentsPlan[a.attachmentId] = { ...a };
+            } else {
+              selectedAttachmentsWorkflow[a.attachmentId] = { ...a };
+            }
           } else {
             attachment.classList.remove('selected');
-            delete selectedAttachments[a.attachmentId];
+            if (a.sigAttachmentId) {
+              delete selectedAttachmentsSignature[a.attachmentId];
+            } else if (a.whereFrom === 'Plan') {
+              delete selectedAttachmentsPlan[a.attachmentId];
+            } else {
+              delete selectedAttachmentsWorkflow[a.attachmentId];
+            }
           }
-
-          console.log(selectedAttachments);
         });
 
-        if (a.whereFrom === 'Plan') {
+        if (a.sigAttachmentId) {
+          signatureAttWrap.appendChild(attachment);
+        } else if (a.whereFrom === 'Plan') {
           planAttWrap.appendChild(attachment);
         } else {
           workflowAttWrap.appendChild(attachment);
@@ -775,8 +797,17 @@ const plan = (function () {
         reportsScreen.appendChild(spinner);
         // generate report
         if (Object.keys(selectedAttachments).length > 0) {
-          const attachmentIds = Object.keys(selectedAttachments);
-          assessment.generateReportWithAttachments(planId, '1', extraSpace, attachmentIds);
+          const planAttachmentIds = Object.keys(selectedAttachmentsPlan);
+          const wfAttachmentIds = Object.keys(selectedAttachmentsWorkflow);
+          const sigAttachmentIds = Object.keys(selectedAttachmentsSignature);
+          assessment.generateReportWithAttachments(
+            planId,
+            '1',
+            extraSpace,
+            planAttachmentIds,
+            wfAttachmentIds,
+            sigAttachmentIds,
+          );
         } else {
           isSuccess = await assessment.generateReport(planId, '1', extraSpace);
         }
