@@ -816,33 +816,6 @@ const plan = (function () {
         reportsScreen.removeChild(spinner);
         reportsScreen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
-        // handle success/error
-        // if (isSuccess !== 'success') {
-        //   // morePopup.classList.add('error');
-        //   // // build a show error message
-        //   // const message = document.createElement('div');
-        //   // message.classList.add('warningMessage');
-        //   // message.innerHTML = `<p>There was an error retrieving your report, please contact Primary Solutions.</p>`;
-        //   // const okBtn = button.build({
-        //   //   id: 'rptErrOkBtn',
-        //   //   text: 'OK',
-        //   //   style: 'secondary',
-        //   //   type: 'contained',
-        //   //   callback: () => {
-        //   //     reportsScreen.removeChild(message);
-        //   //     reportsScreen.removeChild(okBtn);
-        //   //     morePopup.classList.remove('error');
-        //   //     reportsScreen.classList.remove('visible');
-        //   //     morePopupMenu.classList.add('visible');
-        //   //   },
-        //   // });
-        //   // okBtn.classList.add('okBtn');
-        //   // reportsScreen.appendChild(message);
-        //   // reportsScreen.appendChild(okBtn);
-        // } else {
-        //   reportsScreen.classList.remove('visible');
-        //   morePopupMenu.classList.add('visible');
-        // }
       },
     });
 
