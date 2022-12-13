@@ -743,6 +743,8 @@ const plan = (function () {
       assessmentId: planId, //TODO
     });
 
+    let index = 0;
+
     if (attachments) {
       for (const prop in attachments) {
         const a = attachments[prop];
@@ -796,7 +798,11 @@ const plan = (function () {
         reportsScreen.innerHTML = '';
         reportsScreen.appendChild(spinner);
         // generate report
-        if (Object.keys(selectedAttachments).length > 0) {
+        if (
+          Object.keys(selectedAttachmentsPlan).length > 0 ||
+          Object.keys(selectedAttachmentsWorkflow).length > 0 ||
+          Object.keys(selectedAttachmentsSignature).length > 0
+        ) {
           const planAttachmentIds = Object.keys(selectedAttachmentsPlan);
           const wfAttachmentIds = Object.keys(selectedAttachmentsWorkflow);
           const sigAttachmentIds = Object.keys(selectedAttachmentsSignature);

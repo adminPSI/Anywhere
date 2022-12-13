@@ -403,6 +403,7 @@ const planConsentAndSign = (() => {
   function setVendorDropdownInitialWidth(popup, csContactProviderVendorId) {
     const vendorContactDropdown = popup.querySelector('#isp_ic_vendorContactDropdown');
     vendorContactDropdown.value = csContactProviderVendorId;
+    vendorContactDropdown.selectedIndex = 0;
     const vendorWidth =
       (vendorContactDropdown.options[vendorContactDropdown.selectedIndex].text.length + 3) * 10;
 
