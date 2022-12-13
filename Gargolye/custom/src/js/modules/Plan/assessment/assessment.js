@@ -371,7 +371,14 @@ const assessment = (function () {
       return error.statusText;
     }
   }
-  function generateReportWithAttachments(assessmentID, versionID, extraSpace, attachmentIds) {
+  function generateReportWithAttachments(
+    assessmentID,
+    versionID,
+    extraSpace,
+    planAttachmentIds,
+    wfAttachmentIds,
+    sigAttachmentIds,
+  ) {
     assessmentAjax.getPlanAssessmentReportWithAttachments(
       {
         token: $.session.Token,
@@ -380,7 +387,9 @@ const assessment = (function () {
         versionID,
         extraSpace: extraSpace,
         isp: true,
-        attachmentIds,
+        planAttachmentIds,
+        wfAttachmentIds,
+        sigAttachmentIds,
       },
       () => {
         const arr = success._buffer;

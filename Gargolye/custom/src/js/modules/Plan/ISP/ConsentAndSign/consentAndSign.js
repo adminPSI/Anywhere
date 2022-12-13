@@ -403,6 +403,7 @@ const planConsentAndSign = (() => {
   function setVendorDropdownInitialWidth(popup, csContactProviderVendorId) {
     const vendorContactDropdown = popup.querySelector('#isp_ic_vendorContactDropdown');
     vendorContactDropdown.value = csContactProviderVendorId;
+    vendorContactDropdown.selectedIndex = 0;
     const vendorWidth =
       (vendorContactDropdown.options[vendorContactDropdown.selectedIndex].text.length + 3) * 10;
 
@@ -805,11 +806,12 @@ const planConsentAndSign = (() => {
 
   function invalidContactProviderVendorIdCheck() {
     const dropdownData = getVendorDropdownData();
+    let mergedData = [...dropdownData.nonPaidSupport, ...dropdownData.paidSupport];
 
-    teamMemberData.forEach(member => {
-      const filteredValue = dropdownData.filter(d => d.value === member.csContactProviderVendorId);
+    teamMemberData.forEach((member, index) => {
+      const filteredValue = mergedData.filter(d => d.value === member.csContactProviderVendorId);
       if (filteredValue.length === 0) {
-        teamMemberData[member].csContactProviderVendorId = '';
+        teamMemberData[index].csContactProviderVendorId = '';
       }
     });
   }
