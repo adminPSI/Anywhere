@@ -807,6 +807,8 @@ const planConsentAndSign = (() => {
   function invalidContactProviderVendorIdCheck() {
     const dropdownData = getVendorDropdownData();
     let mergedData = [...dropdownData.nonPaidSupport, ...dropdownData.paidSupport];
+    console.log('Dropdown Data Below:');
+    console.table(mergedData);
 
     teamMemberData.forEach((member, index) => {
       const filteredValue = mergedData.filter(d => d.value === member.csContactProviderVendorId);
