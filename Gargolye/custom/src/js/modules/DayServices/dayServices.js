@@ -923,6 +923,53 @@ const dayServices = (function () {
     dropdown.populate(groupDropdown, groupDropdownData, groupID);
   }
 
+  //====== POPUP WARNING WHEN CONSUMER HAS EXISTING DAY SERVICE ACTIVITY ===========
+  function consumerExistingDayServicePopup(consumerList) {
+    var popup = POPUP.build({
+        header: 'At least one consumer has existing day service activity at another location.',
+        id: 'clockInOutPopup',
+    });
+
+    var continueBtn = button.build({
+        text: 'Continue',
+        style: 'secondary',
+        type: 'contained',
+        callback: function () {
+            POPUP.hide(popup);
+            clockInOutActionPopup('in');
+        },
+    });
+
+    var cancelBtn = button.build({
+        text: 'Cancel',
+        style: 'secondary',
+        type: 'outlined',
+        callback: function () {
+            POPUP.hide(popup);
+            roster2.clearActiveConsumers();
+        },
+    });
+
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(continueBtn);
+    btnWrap.appendChild(cancelBtn);
+
+      var textArea = document.createElement('p');
+      consumerList.forEach(consumer => {
+        textArea.innerHTML = `
+          <div>Name: ${consumer.name}</div>
+          <div>Location: ${consumer.location}</div> 
+          <div>Start Time: ${consumer.startTime}</div> 
+          <div>End Time: ${consumer.endTime}</div> 
+        `;
+      });
+
+    popup.appendChild(textArea);
+    popup.appendChild(btnWrap);
+    POPUP.show(popup);
+  }
+
   //====== POPUP DISPLAYING OPTION TO CLOCKIN OR CLOCK OUT =========================
   function clockInOutChoicePopup() {
     let popup = POPUP.build({
@@ -934,9 +981,27 @@ const dayServices = (function () {
       text: 'Clock In',
       style: 'secondary',
       type: 'contained',
-      callback: function () {
+      callback: async function () {
         POPUP.hide(popup);
-        clockInOutActionPopup('in');
+
+          const idString = selectedConsumers.map(function (sc) {
+              return sc.id
+          }).join(",");
+
+        //Get a list of any existing day service activity for this consumer, on today's date, on other locations
+          const clockedInConsumers = await dayServiceAjax.getDayServiceClockedInConsumers({
+              token: $.session.Token,
+              consumerIdString: idString,
+              serviceDate: serviceDate,
+              locationId: locationID,
+          });
+
+        //If the consumer has no existing day service activity, behave normally...
+        if (clockedInConsumers.length === 0) {
+          clockInOutActionPopup('in');
+        } else {
+          consumerExistingDayServicePopup(clockedInConsumers);
+        }
       },
     });
     let clockOutBtn = button.build({
