@@ -29,7 +29,11 @@ const csTeamMember = (() => {
   function checkTeamMemberPopupForErrors() {
     const errors = teamMemberPopup.querySelectorAll('.error');
 
-    if (errors.length > 0) {
+    if (
+      errors.length > 0 ||
+      ($.session.applicationName === 'Gatekeeper' &&
+        selectedMemberData.csContactProviderVendorId === '')
+    ) {
       saveTeamMemberBtn.classList.add('disabled');
     } else {
       saveTeamMemberBtn.classList.remove('disabled');
@@ -62,10 +66,9 @@ const csTeamMember = (() => {
     );
   }
   async function applySelectedRelationship(relData) {
-    
-    // import team member button was clicked 
-    // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values 
-    // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian' 
+    // import team member button was clicked
+    // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values
+    // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian'
     // then call getStateGuardiansforConsumer(peopleId)
     // then call function showGuardiansPopup(guardiansData)
     importedFromRelationship = true;
@@ -137,15 +140,12 @@ const csTeamMember = (() => {
     stateGuardiansObj = await consentAndSignAjax.getStateGuardiansforConsumer({
       peopleId: selectedConsumer.id,
     });
-  
-  if (stateGuardiansObj) {
-    var test = stateGuardiansObj;
-   //  showGuardiansPopup();
-    // alert("Import this!");
 
-
-  }
-    
+    if (stateGuardiansObj) {
+      var test = stateGuardiansObj;
+      //  showGuardiansPopup();
+      // alert("Import this!");
+    }
   }
   async function linkToSalesForce(selectedSalesforceId) {
     let success;
@@ -310,18 +310,16 @@ const csTeamMember = (() => {
         type: 'outlined',
         callback: () => {
           POPUP.hide(guardianPopup);
-         // teamMemberPopup.display.block;
+          // teamMemberPopup.display.block;
         },
       });
 
       guardianPopup.appendChild(doneBtn);
 
-     // teamMemberPopup.display.none;
+      // teamMemberPopup.display.none;
       POPUP.show(guardianPopup);
       return;
     }
-
-    
 
     guardianPopup = POPUP.build({
       id: 'guardianPopup',
@@ -338,7 +336,7 @@ const csTeamMember = (() => {
       //guardianDiv.innerHTML = `<div class="xxx"><span>${g.Id}</span>: ${g.LastName} - ${g.FirstName}</div>`;
       // guardianDiv.classList.add('guardianDiv');
       const name = document.createElement('p');
-      name.classList.add('name')
+      name.classList.add('name');
       name.innerText = `Name: ${g.FirstName} ${g.LastName}`;
 
       guardianDiv.appendChild(name);
@@ -357,20 +355,20 @@ const csTeamMember = (() => {
 
     const doneBtn = button.build({
       id: 'guardianPopup_cancel',
-      text: 'ok',  // YES -- ARE THESE THE SAME PEOPLE? 
+      text: 'ok', // YES -- ARE THESE THE SAME PEOPLE?
       style: 'secondary',
       type: 'outlined',
       callback: () => {
-            // call new function validateGuardianSalesForceID(localSalesForceId (selected Guardian in popup), stateSalesForceId (there is usually one from the state))
-            //   if localSalesForceId == stateSalesForceID --> do nothing   (DO WE THEN INSERT THE TEAMMEMBER ???)
-            //   else if localSalesForceId == NULL --> SQL -- Update people.SalesForce_ID with stateSalesForceId (DO WE THEN INSERT THE TEAMMEMBER ???)
-            //   else if localSalesForceId <> stateSalesForceID --> DISPlAY ANOTHER POPUP -- DO YOU WANT TO ADD THIS STATE GUARDIAN TO THE LOCAL DATABASE
-            //      function  ShowAddStateGuardianPopup() 
-            //           “These are NOT the same people Do you want to add this Guardian to the Database” (Yes or No) 
-            //                  YES -- 1. Update the ADD TEAM MEMBER screen -- fill in lastname. firstname, and saleForceID (behind the scenes) (people record will get made upon insertTeamMember)
-            //                         --- this happens on insertTeamMember (save) -- 2. Assign stateSalesForceId to People.SalesForce_ID to added record -- adding new People to table with stateSaleForceID
-            //                         --- this happens on insertTeamMember (save) ---3. Assign to Relationship table (Classification of Team Member (GK only)).
-            //                  NO -- Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
+        // call new function validateGuardianSalesForceID(localSalesForceId (selected Guardian in popup), stateSalesForceId (there is usually one from the state))
+        //   if localSalesForceId == stateSalesForceID --> do nothing   (DO WE THEN INSERT THE TEAMMEMBER ???)
+        //   else if localSalesForceId == NULL --> SQL -- Update people.SalesForce_ID with stateSalesForceId (DO WE THEN INSERT THE TEAMMEMBER ???)
+        //   else if localSalesForceId <> stateSalesForceID --> DISPlAY ANOTHER POPUP -- DO YOU WANT TO ADD THIS STATE GUARDIAN TO THE LOCAL DATABASE
+        //      function  ShowAddStateGuardianPopup()
+        //           “These are NOT the same people Do you want to add this Guardian to the Database” (Yes or No)
+        //                  YES -- 1. Update the ADD TEAM MEMBER screen -- fill in lastname. firstname, and saleForceID (behind the scenes) (people record will get made upon insertTeamMember)
+        //                         --- this happens on insertTeamMember (save) -- 2. Assign stateSalesForceId to People.SalesForce_ID to added record -- adding new People to table with stateSaleForceID
+        //                         --- this happens on insertTeamMember (save) ---3. Assign to Relationship table (Classification of Team Member (GK only)).
+        //                  NO -- Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
         // do stuff
         // saveGuardianOrsomething(selectedGuardian);
       },
@@ -378,13 +376,13 @@ const csTeamMember = (() => {
 
     const cancelBtn = button.build({
       id: 'guardianPopup_cancel',
-      text: 'cancel',  // NO -- ARE THESE THE SAME PEOPLE? 
+      text: 'cancel', // NO -- ARE THESE THE SAME PEOPLE?
       style: 'secondary',
       type: 'outlined',
       callback: () => {
         POPUP.hide(guardianPopup);
-       // Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
-       // teamMemberPopup.display.block;
+        // Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
+        // teamMemberPopup.display.block;
       },
     });
     const btnWrap = document.createElement('div');
@@ -395,7 +393,7 @@ const csTeamMember = (() => {
     guardianPopup.appendChild(guardiansWrap);
     guardianPopup.appendChild(btnWrap);
 
-   // teamMemberPopup.display.none;
+    // teamMemberPopup.display.none;
     POPUP.show(guardianPopup);
   }
 
@@ -542,9 +540,15 @@ const csTeamMember = (() => {
             peopleId: selectedMemberData.csChangeMindSSAPeopleId,
           });
 
-          const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
-          vendorDropdown.value = data[0].orgId;
-          selectedMemberData.csContactProviderVendorId = data[0].orgId;
+          // ID check for vendors/providers
+          const doesIdExistInVendors = planConsentAndSign.doesIdExistInVendors(data[0].orgId);
+          if (doesIdExistInVendors) {
+            const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
+            vendorDropdown.value = data[0].orgId;
+            selectedMemberData.csContactProviderVendorId = data[0].orgId;
+          } else {
+            selectedMemberData.csContactProviderVendorId = '';
+          }
         }
 
         // update contact input field
@@ -567,7 +571,13 @@ const csTeamMember = (() => {
         peopleId: selectedMemberData.csChangeMindSSAPeopleId,
       });
 
-      selectedMemberData.csContactProviderVendorId = data[0].orgId;
+      // ID check for vendors/providers
+      const doesIdExistInVendors = planConsentAndSign.doesIdExistInVendors(data[0].orgId);
+      if (doesIdExistInVendors) {
+        selectedMemberData.csContactProviderVendorId = data[0].orgId;
+      } else {
+        selectedMemberData.csContactProviderVendorId = '';
+      }
     }
     // get markup
     const contactQuestion = planConsentAndSign.buildContactQuestion(
@@ -670,8 +680,8 @@ const csTeamMember = (() => {
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
         // teamMember DDL EVENT
-        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values 
-        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian' 
+        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values
+        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian'
         // then call getStateGuardiansforConsumer(peopleId)
         // then call function showGuardiansPopup(guardiansData)
         if (event.target.value === '') {
@@ -741,9 +751,9 @@ const csTeamMember = (() => {
       callback: event => {
         selectedMemberData.name = event.target.value;
         // First Name Event
-         // teamMember DDL EVENT
-        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values 
-        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian' 
+        // teamMember DDL EVENT
+        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values
+        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian'
         // then call getStateGuardiansforConsumer(peopleId)
         // then call function showGuardiansPopup(guardiansData)
         if (event.target.value === '') {
@@ -763,9 +773,9 @@ const csTeamMember = (() => {
       callback: event => {
         selectedMemberData.lastName = event.target.value;
         // Last Name Event
-         // teamMember DDL EVENT
-        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values 
-        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian' 
+        // teamMember DDL EVENT
+        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values
+        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian'
         // then call getStateGuardiansforConsumer(peopleId)
         // then call function showGuardiansPopup(guardiansData)
         if (event.target.value === '') {
