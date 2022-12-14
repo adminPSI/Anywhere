@@ -604,14 +604,20 @@
     let questionInput;
     let hasStaticText;
 
+    let textAreaCharLimit = 1000;
+
     switch (answerStyle) {
       case 'TEXTAREA': {
+        if (data.colName === 'What is the risk, what it looks like, where it occurs:') {
+          textAreaCharLimit = 10000;
+        }
+
         questionInput = input.build({
           type: 'textarea',
           style: 'secondary',
           id: answerId,
           value: answerText ? answerText : '',
-          charLimit: 1000,
+          charLimit: textAreaCharLimit,
           forceCharLimit: true,
           classNames: 'autosize',
         });
