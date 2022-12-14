@@ -2752,9 +2752,9 @@ namespace Anywhere
             attIdTwo = attIdTwo.Replace("%2C", ",");
             wfAttachmentIds = attIdTwo.Split(',');
             string[] wordsThree = fullInput.Split('&');
-            var indexThree = Array.FindIndex(wordsThree, row => row.Contains("wfAttachmentIds"));
+            var indexThree = Array.FindIndex(wordsThree, row => row.Contains("sigAttachmentIds"));
             string attIdThree = wordsThree[indexThree];
-            attIdThree = attIdThree.Replace("wfAttachmentIds=", "");
+            attIdThree = attIdThree.Replace("sigAttachmentIds=", "");
             attIdThree = attIdThree.Replace("%2C", ",");
             sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
