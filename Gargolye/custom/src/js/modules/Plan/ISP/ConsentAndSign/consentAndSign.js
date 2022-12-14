@@ -804,11 +804,15 @@ const planConsentAndSign = (() => {
     return section;
   }
 
+  function doesIdExistInVendors(vendorID) {
+    const dropdownData = getVendorDropdownData();
+    let mergedData = [...dropdownData.nonPaidSupport, ...dropdownData.paidSupport];
+    const filteredValue = mergedData.filter(d => d.value === vendorID);
+    return filteredValue.length === 0 ? false : true;
+  }
   function invalidContactProviderVendorIdCheck() {
     const dropdownData = getVendorDropdownData();
     let mergedData = [...dropdownData.nonPaidSupport, ...dropdownData.paidSupport];
-    console.log('Dropdown Data Below:');
-    console.table(mergedData);
 
     teamMemberData.forEach((member, index) => {
       const filteredValue = mergedData.filter(d => d.value === member.csContactProviderVendorId);
@@ -865,5 +869,6 @@ const planConsentAndSign = (() => {
     getTeamMembersHowTheyExistOnPlanNowWhileWeWaitOnDamnStateToMakeUpTheirMinds,
     getNames,
     getTeamMemberData,
+    doesIdExistInVendors,
   };
 })();
