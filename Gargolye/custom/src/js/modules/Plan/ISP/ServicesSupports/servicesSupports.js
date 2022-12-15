@@ -739,18 +739,18 @@ const servicesSupports = (() => {
       hcbsSelected = true;
       saveUpdateData.fundingSource = '4';
     }
+    const availableServiceTypes = [];
+    const data = [];
+    dropdownData.serviceTypes.forEach(dd => {
+      if (dd.showWith.includes(saveUpdateData.fundingSource)) {
+        availableServiceTypes.push(dd.value);
+        data.push({
+          value: dd.value,
+          text: dd.text,
+        });
+      }
+    });
     if ($.session.applicationName === 'Advisor') {
-      const availableServiceTypes = [];
-      const data = [];
-      dropdownData.serviceTypes.forEach(dd => {
-        if (dd.showWith.includes(saveUpdateData.fundingSource)) {
-          availableServiceTypes.push(dd.value);
-          data.push({
-            value: dd.value,
-            text: dd.text,
-          });
-        }
-      });
       if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
         let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
         servicesDropdownSelectedText = servicesDropdownSelected.text;
