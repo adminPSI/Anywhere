@@ -20,6 +20,7 @@ using iTextSharp.text;
 using pdftron;
 using System.Management.Automation.Language;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
+using iTextSharp.text.pdf.qrcode;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -37,8 +38,47 @@ namespace Anywhere.service.Data.DocumentConversion
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
             {
+
+                List<byte[]> allAttachments = new List<byte[]>();
+
+                string planAttachments = aadg.getPlanAttachmentsWithOrdering(assessmentId);
+                js.MaxJsonLength = Int32.MaxValue;
+                PlanAttachments[] planAttachmentsObj = js.Deserialize<PlanAttachments[]>(planAttachments);
+                
+                string workflowAttachments = aadg.getWorkFlowAttachmentswithOrdering(assessmentId);
+                js.MaxJsonLength = Int32.MaxValue;
+                WorkFlowAttachments[] workflowAttachmentsObj = js.Deserialize<WorkFlowAttachments[]>(workflowAttachments);
+                
+                int wfL = workflowAttachmentsObj.Length;
+                int planL = planAttachmentsObj.Length;
+                int total = wfL + planL;
                 string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
                 PlanAndWorkflowAttachments[] pAWAttachObj = js.Deserialize<PlanAndWorkflowAttachments[]>(pAWAttach);
+                int i = 0;
+                foreach(WorkFlowAttachments wfa in workflowAttachmentsObj)
+                {
+                    pAWAttachObj[i].attachmentId = wfa.attachmentId;
+                    pAWAttachObj[i].description = wfa.description;
+                    pAWAttachObj[i].attachmentType = wfa.attachmentType;
+                    pAWAttachObj[i].sectionOrGroup = wfa.sectionOrGroup;
+                    pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
+                    pAWAttachObj[i].whereFrom = wfa.whereFrom;
+                    pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                    i++;
+                }
+                foreach (PlanAttachments wfa in planAttachmentsObj)
+                {
+                    pAWAttachObj[i].attachmentId = wfa.attachmentId;
+                    pAWAttachObj[i].description = wfa.description;
+                    pAWAttachObj[i].attachmentType = wfa.attachmentType;
+                    pAWAttachObj[i].sectionOrGroup = wfa.sectionOrGroup;
+                    pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
+                    pAWAttachObj[i].whereFrom = wfa.whereFrom;
+                    pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                    i++;
+                }
+                //string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
+                //PlanAndWorkflowAttachments[] pAWAttachObj = js.Deserialize<PlanAndWorkflowAttachments[]>(pAWAttach);
                 return pAWAttachObj;
             }
             else
@@ -63,19 +103,158 @@ namespace Anywhere.service.Data.DocumentConversion
                 List<byte[]> planAttRep = new List<byte[]>();
                 //List<byte[]> planReportSections = new List<byte[]>();
                 ReportSectionOrder[] order = getReportSectionOrder();
-                byte[] introReport = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);//1. Intro - 2. Assessment - 3. Plan
-                byte[] assessmentReport = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-                byte[] planReport = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                MemoryStream assessment = new MemoryStream();
+                MemoryStream intro = new MemoryStream();
+                MemoryStream plan = new MemoryStream();
+                foreach (ReportSectionOrder ord in order)
+                {
+                    if (true == true)
+                    {
+                        if (ord.setting_value == "1")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
+                            }
+                        }
+                        if (ord.setting_value == "2")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
+                            }
+                        }
+                        if (ord.setting_value == "3")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
+                            }
+                        }
+                        if (ord.setting_value == "4")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
+                            }
+                        }
+                        if (ord.setting_value == "5")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
+                            }
+                        }
+                        if (ord.setting_value == "6")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
+                            }
+                        }
+                    }
 
-                if(wfAttachmentIds.Length > 0)
+
+                }
+
+                
+                byte[] introReport = StreamExtensions.ToByteArray(intro);
+                byte[] assessmentReport = StreamExtensions.ToByteArray(assessment);
+                byte[] planReport = StreamExtensions.ToByteArray(plan);
+
+                if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     wfAttRep = wfAttReport(wfAttachmentIds);
                 }
-                if(sigAttachmentIds.Length > 0)
+                if(sigAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     sigAttRep = sigAttReport(wfAttachmentIds);
                 }
-                if(planAttachmentIds.Length != 0)
+                if(planAttachmentIds.Length != 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     planAttRep = planAttReport(wfAttachmentIds);
                 }
@@ -831,42 +1010,7 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
-        {
-            bool isTokenValid = aadg.ValidateToken(token);
-            if (isTokenValid)
-            {
-                List<byte[]> allAttachments = new List<byte[]>();
-                byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
-                allAttachments.Add(planReport);
-                string planAttachments = aadg.getPlanAttachmentsWithOrdering(assessmentID);
-                js.MaxJsonLength = Int32.MaxValue;
-                PlanAttachments[] planAttachmentsObj = js.Deserialize<PlanAttachments[]>(planAttachments);
-                foreach(PlanAttachments planAttach in planAttachmentsObj)
-                {
-                    if (planAttach.attachmentType.ToString().ToUpper() == "PDF")
-                    {
-                        byte[] planAttachment = StreamExtensions.ToByteArray(planAttach.attachment);
-                        allAttachments.Add(planAttachment);
-                    }
-                    else {
-                        //Nothing yet
-                    }
-                }
-                string workflowAttachments = aadg.getWorkFlowAttachmentswithOrdering(assessmentID);
-                js.MaxJsonLength = Int32.MaxValue;
-                WorkFlowAttachments[] workflowAttachmentsObj = js.Deserialize<WorkFlowAttachments[]>(planAttachments);
-                foreach(WorkFlowAttachments wfAttach in workflowAttachmentsObj)
-                {
-                    if(wfAttach.attachmentType.ToString().ToUpper() == "PDF")
-                    {
-                        byte[] wfAttachment = StreamExtensions.ToByteArray(wfAttach.attachment);
-                        allAttachments.Add(wfAttachment);
-                    }
-                }
-            }
-
-        }
+        
 
         public byte[] getISPReportStream(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
@@ -915,16 +1059,24 @@ namespace Anywhere.service.Data.DocumentConversion
 
         public class PlanAttachments
         {
-            public MemoryStream attachment { get; set; }
+            public string attachmentId { get; set; }
             public string description { get; set; }
             public string attachmentType { get; set; }
+            public string sectionOrGroup { get; set; }
+            public string orderOrStep { get; set; }
+            public string whereFrom { get; set; }
+            public string sigAttachmentId { get; set; }
         }
 
         public class WorkFlowAttachments
         {
-            public MemoryStream attachment { get; set; }
+            public string attachmentId { get; set; }
             public string description { get; set; }
             public string attachmentType { get; set; }
+            public string sectionOrGroup { get; set; }
+            public string orderOrStep { get; set; }
+            public string whereFrom { get; set; }
+            public string sigAttachmentId { get; set; }
         }
 
         public class POrWFAttachment
