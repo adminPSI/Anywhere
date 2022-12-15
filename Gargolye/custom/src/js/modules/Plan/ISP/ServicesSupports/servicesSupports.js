@@ -320,12 +320,12 @@ const servicesSupports = (() => {
       };
     });
 
-    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
-      defaultValue = '4';
-      hcbsSelected = true;
-    }
+    // if ($.session.applicationName === 'Advisor' && defaultValue === '') {
+    //   defaultValue = '4';
+    //   hcbsSelected = true;
+    // }
 
-    if (defaultValue && defaultValue != '')
+    if (defaultValue && defaultValue !== '')
       fundingSourceDropdownSelectedText = data[defaultValue].text;
 
     dropdown.populate(dropdownEle, data, defaultValue);
@@ -749,6 +749,11 @@ const servicesSupports = (() => {
         saveUpdateData.beginDate = UTIL.formatDateFromDateObj(planDates.getEffectiveStartDate());
         saveUpdateData.endDate = UTIL.formatDateFromDateObj(planDates.getEffectiveEndDate());
       }
+    }
+
+    if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
+      hcbsSelected = true;
+      saveUpdateData.fundingSource = '4';
     }
 
     // Popup
