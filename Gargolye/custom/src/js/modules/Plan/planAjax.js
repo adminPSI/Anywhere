@@ -180,7 +180,7 @@ const planAjax = (function () {
     }
   }
   async function addSelectedAttachmentsToReport(retrieveData) {
-    // string token, string[] attachmentIds, string userId, string assessmentID,
+    // string token, string[] attachmentIds, string userId, string assessmentID,,
     // string versionID, string extraSpace, bool isp
     try {
       const data = await $.ajax({

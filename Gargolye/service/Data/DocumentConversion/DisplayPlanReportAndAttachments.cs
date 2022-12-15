@@ -115,14 +115,20 @@ namespace Anywhere.service.Data.DocumentConversion
                             if (ord.setting_key == "Assessment")
                             {
                                 assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
                             }
                             if (ord.setting_key == "All About Me")
                             {
                                 intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
                             }
                             if (ord.setting_key == "Plan")
                             {
                                 plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
                             }
                         }
                         if (ord.setting_value == "2")
@@ -130,14 +136,20 @@ namespace Anywhere.service.Data.DocumentConversion
                             if (ord.setting_key == "Assessment")
                             {
                                 assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
                             }
                             if (ord.setting_key == "All About Me")
                             {
                                 intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
                             }
                             if (ord.setting_key == "Plan")
                             {
                                 plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
                             }
                         }
                         if (ord.setting_value == "3")
@@ -145,14 +157,20 @@ namespace Anywhere.service.Data.DocumentConversion
                             if (ord.setting_key == "Assessment")
                             {
                                 assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
                             }
                             if (ord.setting_key == "All About Me")
                             {
                                 intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
                             }
                             if (ord.setting_key == "Plan")
                             {
                                 plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
                             }
                         }
                         if (ord.setting_value == "4")
@@ -160,14 +178,20 @@ namespace Anywhere.service.Data.DocumentConversion
                             if (ord.setting_key == "Assessment")
                             {
                                 assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
                             }
                             if (ord.setting_key == "All About Me")
                             {
                                 intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
                             }
                             if (ord.setting_key == "Plan")
                             {
                                 plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
                             }
                         }
                         if (ord.setting_value == "5")
@@ -175,14 +199,20 @@ namespace Anywhere.service.Data.DocumentConversion
                             if (ord.setting_key == "Assessment")
                             {
                                 assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
                             }
                             if (ord.setting_key == "All About Me")
                             {
                                 intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
                             }
                             if (ord.setting_key == "Plan")
                             {
                                 plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
                             }
                         }
                         if (ord.setting_value == "6")
@@ -190,14 +220,20 @@ namespace Anywhere.service.Data.DocumentConversion
                             if (ord.setting_key == "Assessment")
                             {
                                 assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment.Close();
+                                assessment.Dispose();
                             }
                             if (ord.setting_key == "All About Me")
                             {
                                 intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro.Close();
+                                intro.Dispose();
                             }
                             if (ord.setting_key == "Plan")
                             {
                                 plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan.Close();
+                                plan.Dispose();
                             }
                         }
                     }
