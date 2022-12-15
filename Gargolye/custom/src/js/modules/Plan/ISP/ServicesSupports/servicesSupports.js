@@ -1401,7 +1401,7 @@ const servicesSupports = (() => {
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
 
-    if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
+    if ($.session.applicationName === 'Advisor') {
       populateServiceNameDropdown(serviceNameDropdown, '24', '4');
 
       fundingSourceDropdown.classList.remove('error');
