@@ -927,7 +927,6 @@ const dayServices = (function () {
   function consumerExistingDayServicePopup(consumerList) {
     var popup = POPUP.build({
         header: 'At least one consumer has existing day service activity at another location.',
-        id: 'clockInOutPopup',
     });
 
     var continueBtn = button.build({
@@ -955,17 +954,19 @@ const dayServices = (function () {
     btnWrap.appendChild(continueBtn);
     btnWrap.appendChild(cancelBtn);
 
-      var textArea = document.createElement('p');
+      var textArea;
       consumerList.forEach(consumer => {
-        textArea.innerHTML = `
+          textArea = document.createElement('p');
+          textArea.innerHTML = `
           <div>Name: ${consumer.name}</div>
           <div>Location: ${consumer.location}</div> 
           <div>Start Time: ${consumer.startTime}</div> 
           <div>End Time: ${consumer.endTime}</div> 
+          <div><br></div>
         `;
+        popup.appendChild(textArea);
       });
 
-    popup.appendChild(textArea);
     popup.appendChild(btnWrap);
     POPUP.show(popup);
   }

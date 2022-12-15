@@ -320,12 +320,12 @@ const servicesSupports = (() => {
       };
     });
 
-    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
-      defaultValue = '4';
-      hcbsSelected = true;
-    }
+    // if ($.session.applicationName === 'Advisor' && defaultValue === '') {
+    //   defaultValue = '4';
+    //   hcbsSelected = true;
+    // }
 
-    if (defaultValue && defaultValue != '')
+    if (defaultValue && defaultValue !== '')
       fundingSourceDropdownSelectedText = data[defaultValue].text;
 
     dropdown.populate(dropdownEle, data, defaultValue);
@@ -344,21 +344,21 @@ const servicesSupports = (() => {
       }
     });
     //Only check for defaultValue in Advisor
-    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
-      if (availableServiceTypes.includes(defaultValue)) {
-        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-        servicesDropdownSelectedText = servicesDropdownSelected.text;
-      } else {
-        defaultValue = '24';
-      }
-    } else {
-      if (availableServiceTypes.includes(defaultValue)) {
-        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-        servicesDropdownSelectedText = servicesDropdownSelected.text;
-      } else {
-        defaultValue = '%';
-      }
-    }
+    // if ($.session.applicationName === 'Advisor' && defaultValue === '') {
+    //   if (availableServiceTypes.includes(defaultValue)) {
+    //     let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+    //     servicesDropdownSelectedText = servicesDropdownSelected.text;
+    //   } else {
+    //     defaultValue = '24';
+    //   }
+    // } else {
+    //   if (availableServiceTypes.includes(defaultValue)) {
+    //     let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+    //     servicesDropdownSelectedText = servicesDropdownSelected.text;
+    //   } else {
+    //     defaultValue = '%';
+    //   }
+    // }
 
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
@@ -748,6 +748,32 @@ const servicesSupports = (() => {
       if (!isCopy) {
         saveUpdateData.beginDate = UTIL.formatDateFromDateObj(planDates.getEffectiveStartDate());
         saveUpdateData.endDate = UTIL.formatDateFromDateObj(planDates.getEffectiveEndDate());
+      }
+    }
+
+    if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
+      hcbsSelected = true;
+      saveUpdateData.fundingSource = '4';
+    }
+    if ($.session.applicationName === 'Advisor') {
+      const availableServiceTypes = [];
+      dropdownData.serviceTypes.forEach(dd => {
+        if (dd.showWith.includes(saveUpdateData.fundingSource)) {
+          availableServiceTypes.push(dd.value);
+        }
+      });
+      if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
+        let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        saveUpdateData.serviceNameId = '24';
+      }
+    } else {
+      if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
+        let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        saveUpdateData.serviceNameId = '%';
       }
     }
 
@@ -1396,7 +1422,7 @@ const servicesSupports = (() => {
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
 
-    if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
+    if ($.session.applicationName === 'Advisor') {
       populateServiceNameDropdown(serviceNameDropdown, '24', '4');
 
       fundingSourceDropdown.classList.remove('error');
