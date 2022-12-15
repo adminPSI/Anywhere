@@ -91,17 +91,17 @@ const assessmentAjax = (function () {
     ispInput.setAttribute('value', retrieveData.isp);
     ispInput.id = 'isp';
     var planAttachmentIdsInput = document.createElement('input');
-    attachmentIdsInput.setAttribute('name', 'planAttachmentIds');
-    attachmentIdsInput.setAttribute('value', retrieveData.planAttachmentIds);
-    attachmentIdsInput.id = 'planAttachmentIds';
+      planAttachmentIdsInput.setAttribute('name', 'planAttachmentIds');
+      planAttachmentIdsInput.setAttribute('value', retrieveData.planAttachmentIds);
+      planAttachmentIdsInput.id = 'planAttachmentIds';
     var wfAttachmentIdsInput = document.createElement('input');
-    attachmentIdsInput.setAttribute('name', 'wfAttachmentIds');
-    attachmentIdsInput.setAttribute('value', retrieveData.wfAttachmentIds);
-    attachmentIdsInput.id = 'wfAttachmentIds';
+      wfAttachmentIdsInput.setAttribute('name', 'wfAttachmentIds');
+      wfAttachmentIdsInput.setAttribute('value', retrieveData.wfAttachmentIds);
+      wfAttachmentIdsInput.id = 'wfAttachmentIds';
     var sigAttachmentIdsInput = document.createElement('input');
-    attachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
-    attachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
-    attachmentIdsInput.id = 'sigAttachmentIds';
+      sigAttachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
+      sigAttachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
+      sigAttachmentIdsInput.id = 'sigAttachmentIds';
 
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);

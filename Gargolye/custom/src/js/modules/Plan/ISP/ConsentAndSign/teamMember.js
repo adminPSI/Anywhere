@@ -542,11 +542,12 @@ const csTeamMember = (() => {
 
           // ID check for vendors/providers
           const doesIdExistInVendors = planConsentAndSign.doesIdExistInVendors(data[0].orgId);
+          const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
           if (doesIdExistInVendors) {
-            const vendorDropdown = document.getElementById('isp_ic_vendorContactDropdown');
             vendorDropdown.value = data[0].orgId;
             selectedMemberData.csContactProviderVendorId = data[0].orgId;
           } else {
+            vendorDropdown.value = '';
             selectedMemberData.csContactProviderVendorId = '';
           }
         }

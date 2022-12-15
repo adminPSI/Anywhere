@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using System.Windows.Interop;
 using Anywhere.Data;
 using Anywhere.Log;
 using CrystalDecisions.CrystalReports.Engine;
@@ -60,7 +61,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public List<byte[]> createOISPIntro(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public byte[] createOISPIntro(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -124,18 +125,19 @@ namespace Anywhere.service.Data
             cr.Close();
             cr.Dispose();
             msa = StreamExtensions.ToByteArray(ms);
-            allAttachments.Add(msa);
-            MemoryStream ms2 = createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-            byte[] msa2 = StreamExtensions.ToByteArray(ms2);
-            allAttachments.Add(msa2);
-            MemoryStream ms3 = createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-            createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-            byte[] msa3 = StreamExtensions.ToByteArray(ms3);
-            allAttachments.Add(msa3);
-            return allAttachments;
+            return msa;
+            //allAttachments.Add(msa);
+            //MemoryStream ms2 = createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+            //byte[] msa2 = StreamExtensions.ToByteArray(ms2);
+            //allAttachments.Add(msa2);
+            //MemoryStream ms3 = createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+            //createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+            //byte[] msa3 = StreamExtensions.ToByteArray(ms3);
+            //allAttachments.Add(msa3);
+            //return allAttachments;
         }
 
-        public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public byte[] createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -198,10 +200,11 @@ namespace Anywhere.service.Data
             ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
             cr.Close();
             cr.Dispose();
-            return ms;
+            byte[] msa2 = StreamExtensions.ToByteArray(ms);
+            return msa2;
         }
 
-        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public byte[] createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -282,7 +285,8 @@ namespace Anywhere.service.Data
             ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
             cr.Close();
             cr.Dispose();
-            return ms;
+            byte[] msa3 = StreamExtensions.ToByteArray(ms);
+            return msa3;
         }
 
         //public MemoryStream createAssessmentReport(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
