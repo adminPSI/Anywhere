@@ -1937,6 +1937,7 @@ const planSummary = (function () {
       value: additionalSummaryData.aloneTimeAmount,
       type: 'textarea',
       charLimit: charLimits.aloneTime,
+      forceCharLimit: true,
       classNames: 'autosize',
       onBlurCallback: event => {
         additionalSummaryData.aloneTimeAmount = event.target.value;

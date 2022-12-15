@@ -24,6 +24,7 @@
     'WhoSaidIt?': 'relationships',
   };
 
+  let charLimits = {};
   let deleteRowsActive = false;
   let selectedRow;
   let isSortable;
@@ -480,7 +481,7 @@
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        planOutcomes.showAddNewOutcomePopup(id);
+        planOutcomes.showAddNewOutcomePopup(id, charLimits.outcomes);
       },
     });
     const paidSupportBtn = button.build({
@@ -492,6 +493,7 @@
           popupData: { assessmentAreaId: id },
           isNew: true,
           fromAssessment: true,
+          charLimits: charLimits.servicesSupports
         });
       },
     });
@@ -500,7 +502,7 @@
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        servicesSupports.showAddAdditionalSupportPopup({ assessmentAreaId: id }, true, true);
+        servicesSupports.showAddAdditionalSupportPopup({ assessmentAreaId: id }, true, true, charLimits.servicesSupports);
       },
     });
     const profRefBtn = button.build({
@@ -508,7 +510,7 @@
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        servicesSupports.showAddProfessionalReferralPopup({ assessmentAreaId: id }, true, true);
+        servicesSupports.showAddProfessionalReferralPopup({ assessmentAreaId: id }, true, true, charLimits.servicesSupports);
       },
     });
 
@@ -968,15 +970,21 @@
             const gridCell = document.createElement('div');
             gridCell.classList.add('grid__cell');
 
+            let textAreaCharLimit = 1000;
+
             switch (answerStyle) {
               case 'TEXTAREA': {
+                if (colName === 'What is the risk, what it looks like, where it occurs:') {
+                  textAreaCharLimit = 10000;
+                }
+
                 const questionInput = input.build({
                   type: 'textarea',
                   style: 'secondary',
                   classNames: isAnswered ? 'autosize' : ['autosize', 'unawnsered'],
                   id: answerId,
                   value: answerText ? answerText : '',
-                  charLimit: 1000,
+                  charLimit: textAreaCharLimit,
                   forceCharLimit: true,
                   attributes: [{ key: 'data-answer-row', value: answerRow }],
                 });
@@ -1596,6 +1604,7 @@
     sectionQuestionCount = {};
     answerObj = {};
     subSectionsWithAttachments = [];
+    charLimits = planData.getAllISPcharacterLimts();
 
     if (!$.session.planUpdate) {
       isSortable = false;

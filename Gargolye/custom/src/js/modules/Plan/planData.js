@@ -64,6 +64,9 @@ const planData = (() => {
   function getISPCharacterLimits(section) {
     return characterLimits.isp[section];
   }
+  function getAllISPcharacterLimts() {
+    return characterLimits.isp;
+  }
   function getAssessmentCharacterLimits(section) {
     return characterLimits.assessment[section];
   }
@@ -493,6 +496,7 @@ const planData = (() => {
     getDropdownData,
     getRelationshipNameById,
     getISPCharacterLimits,
+    getAllISPcharacterLimts,
     getAssessmentCharacterLimits,
     populateRelationshipDropdown,
     refreshDropdownData,
