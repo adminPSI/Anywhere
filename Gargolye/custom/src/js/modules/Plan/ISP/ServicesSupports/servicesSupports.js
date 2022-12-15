@@ -344,21 +344,21 @@ const servicesSupports = (() => {
       }
     });
     //Only check for defaultValue in Advisor
-    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
-      if (availableServiceTypes.includes(defaultValue)) {
-        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-        servicesDropdownSelectedText = servicesDropdownSelected.text;
-      } else {
-        defaultValue = '24';
-      }
-    } else {
-      if (availableServiceTypes.includes(defaultValue)) {
-        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-        servicesDropdownSelectedText = servicesDropdownSelected.text;
-      } else {
-        defaultValue = '%';
-      }
-    }
+    // if ($.session.applicationName === 'Advisor' && defaultValue === '') {
+    //   if (availableServiceTypes.includes(defaultValue)) {
+    //     let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+    //     servicesDropdownSelectedText = servicesDropdownSelected.text;
+    //   } else {
+    //     defaultValue = '24';
+    //   }
+    // } else {
+    //   if (availableServiceTypes.includes(defaultValue)) {
+    //     let servicesDropdownSelected = data.find(e => e.value === defaultValue);
+    //     servicesDropdownSelectedText = servicesDropdownSelected.text;
+    //   } else {
+    //     defaultValue = '%';
+    //   }
+    // }
 
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
@@ -754,6 +754,21 @@ const servicesSupports = (() => {
     if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
       hcbsSelected = true;
       saveUpdateData.fundingSource = '4';
+    }
+    if ($.session.applicationName === 'Advisor') {
+      if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
+        let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        saveUpdateData.serviceNameId = '24';
+      }
+    } else {
+      if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
+        let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        saveUpdateData.serviceNameId = '%';
+      }
     }
 
     // Popup
