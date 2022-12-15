@@ -1908,10 +1908,10 @@ namespace Anywhere
             anywhereAttachmentWorker.viewCaseNoteAttachment(token,attachmentId);
         }
 
-        public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
-        {
-            dpra.viewISPReportAndAttachments(token, userId, assessmentID, versionID, extraSpace, isp);
-        }
+        //public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        //{
+        //    dpra.viewISPReportAndAttachments(token, userId, assessmentID, versionID, extraSpace, isp);
+        //}
 
         public void viewPlanAttachment(System.IO.Stream testInput)
         {

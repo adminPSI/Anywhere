@@ -481,14 +481,14 @@ namespace Anywhere
         //void viewCaseNoteAttachment(string attachmentId);
         void viewCaseNoteAttachment(System.IO.Stream testInput);
 
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-             BodyStyle = WebMessageBodyStyle.Wrapped,
-             ResponseFormat = WebMessageFormat.Json,
-             RequestFormat = WebMessageFormat.Json,
-             UriTemplate = "/viewISPReportAndAttachmenst/")]
-        //void viewCaseNoteAttachment(string attachmentId);
-        void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp);
+        //[OperationContract]
+        //[WebInvoke(Method = "POST",
+        //     BodyStyle = WebMessageBodyStyle.Wrapped,
+        //     ResponseFormat = WebMessageFormat.Json,
+        //     RequestFormat = WebMessageFormat.Json,
+        //     UriTemplate = "/viewISPReportAndAttachmenst/")]
+        ////void viewCaseNoteAttachment(string attachmentId);
+        //void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

@@ -817,7 +817,7 @@ const plan = (function () {
           const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
           const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
           const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-          assessment.generateReportWithAttachments(
+            isSuccess = assessment.generateReportWithAttachments(
             planId,
             '1',
             extraSpace,
@@ -826,7 +826,18 @@ const plan = (function () {
             sigAttachmentIds,
           );
         } else {
-          isSuccess = await assessment.generateReport(planId, '1', extraSpace);
+          //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
+            const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+            const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+            const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+            isSuccess = assessment.generateReportWithAttachments(
+                planId,
+                '1',
+                extraSpace,
+                planAttachmentIds,
+                wfAttachmentIds,
+                sigAttachmentIds,
+            );
         }
 
         // remove spinner
