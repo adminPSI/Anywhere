@@ -756,6 +756,12 @@ const servicesSupports = (() => {
       saveUpdateData.fundingSource = '4';
     }
     if ($.session.applicationName === 'Advisor') {
+      const availableServiceTypes = [];
+      dropdownData.serviceTypes.forEach(dd => {
+        if (dd.showWith.includes(saveUpdateData.fundingSource)) {
+          availableServiceTypes.push(dd.value);
+        }
+      });
       if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
         let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
         servicesDropdownSelectedText = servicesDropdownSelected.text;
