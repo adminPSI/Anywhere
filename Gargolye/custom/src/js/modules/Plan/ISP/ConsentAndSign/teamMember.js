@@ -616,6 +616,9 @@ const csTeamMember = (() => {
     const select = contactQuestion.querySelector('select');
     select.value = selectedMemberData.csContactProviderVendorId;
 
+    // const vendorDropdown = contactQuestion.querySelector('#isp_ic_vendorContactDropdown');
+    // vendorDropdown.value = selectedMemberData.csContactProviderVendorId;
+
     return contactQuestion;
   }
   //* link btn popups

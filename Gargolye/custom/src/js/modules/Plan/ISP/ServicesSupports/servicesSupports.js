@@ -343,22 +343,6 @@ const servicesSupports = (() => {
         });
       }
     });
-    //Only check for defaultValue in Advisor
-    // if ($.session.applicationName === 'Advisor' && defaultValue === '') {
-    //   if (availableServiceTypes.includes(defaultValue)) {
-    //     let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-    //     servicesDropdownSelectedText = servicesDropdownSelected.text;
-    //   } else {
-    //     defaultValue = '24';
-    //   }
-    // } else {
-    //   if (availableServiceTypes.includes(defaultValue)) {
-    //     let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-    //     servicesDropdownSelectedText = servicesDropdownSelected.text;
-    //   } else {
-    //     defaultValue = '%';
-    //   }
-    // }
 
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
@@ -757,9 +741,14 @@ const servicesSupports = (() => {
     }
     if ($.session.applicationName === 'Advisor') {
       const availableServiceTypes = [];
+      const data = [];
       dropdownData.serviceTypes.forEach(dd => {
         if (dd.showWith.includes(saveUpdateData.fundingSource)) {
           availableServiceTypes.push(dd.value);
+          data.push({
+            value: dd.value,
+            text: dd.text,
+          });
         }
       });
       if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
