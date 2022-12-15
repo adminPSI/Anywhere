@@ -115,136 +115,124 @@ namespace Anywhere.service.Data.DocumentConversion
                             if (ord.setting_key == "Assessment")
                             {
                                 assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-                                assessment.Close();
-                                assessment.Dispose();
                             }
                             if (ord.setting_key == "All About Me")
                             {
-                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-                                intro.Close();
-                                intro.Dispose();
+                               intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-                                plan.Close();
-                                plan.Dispose();
+                                 plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
                             }
                         }
-                        if (ord.setting_value == "2")
-                        {
-                            if (ord.setting_key == "Assessment")
+                            if (ord.setting_value == "2")
                             {
-                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-                                assessment.Close();
-                                assessment.Dispose();
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
                             }
-                            if (ord.setting_key == "All About Me")
+                            if (ord.setting_value == "3")
                             {
-                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-                                intro.Close();
-                                intro.Dispose();
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
                             }
-                            if (ord.setting_key == "Plan")
+                            if (ord.setting_value == "4")
                             {
-                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-                                plan.Close();
-                                plan.Dispose();
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+
+                                }
                             }
-                        }
-                        if (ord.setting_value == "3")
-                        {
-                            if (ord.setting_key == "Assessment")
+                            if (ord.setting_value == "5")
                             {
-                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-                                assessment.Close();
-                                assessment.Dispose();
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
                             }
-                            if (ord.setting_key == "All About Me")
+                            if (ord.setting_value == "6")
                             {
-                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-                                intro.Close();
-                                intro.Dispose();
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
                             }
-                            if (ord.setting_key == "Plan")
-                            {
-                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-                                plan.Close();
-                                plan.Dispose();
-                            }
-                        }
-                        if (ord.setting_value == "4")
-                        {
-                            if (ord.setting_key == "Assessment")
-                            {
-                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-                                assessment.Close();
-                                assessment.Dispose();
-                            }
-                            if (ord.setting_key == "All About Me")
-                            {
-                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-                                intro.Close();
-                                intro.Dispose();
-                            }
-                            if (ord.setting_key == "Plan")
-                            {
-                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-                                plan.Close();
-                                plan.Dispose();
-                            }
-                        }
-                        if (ord.setting_value == "5")
-                        {
-                            if (ord.setting_key == "Assessment")
-                            {
-                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-                                assessment.Close();
-                                assessment.Dispose();
-                            }
-                            if (ord.setting_key == "All About Me")
-                            {
-                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-                                intro.Close();
-                                intro.Dispose();
-                            }
-                            if (ord.setting_key == "Plan")
-                            {
-                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-                                plan.Close();
-                                plan.Dispose();
-                            }
-                        }
-                        if (ord.setting_value == "6")
-                        {
-                            if (ord.setting_key == "Assessment")
-                            {
-                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-                                assessment.Close();
-                                assessment.Dispose();
-                            }
-                            if (ord.setting_key == "All About Me")
-                            {
-                                intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-                                intro.Close();
-                                intro.Dispose();
-                            }
-                            if (ord.setting_key == "Plan")
-                            {
-                                plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-                                plan.Close();
-                                plan.Dispose();
-                            }
-                        }
+                        
+
                     }
-
-
                 }
 
                 
                 byte[] introReport = StreamExtensions.ToByteArray(intro);
                 byte[] assessmentReport = StreamExtensions.ToByteArray(assessment);
                 byte[] planReport = StreamExtensions.ToByteArray(plan);
+                assessment.Close();
+                assessment.Dispose();
+                plan.Close();
+                plan.Dispose();
+                intro.Close();
+                intro.Dispose();
 
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
@@ -568,7 +556,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 using (PDFDoc doc = new PDFDoc())
                 {
                     PDFViewCtrl view = new PDFViewCtrl();
-                    attachment = getPlanAttachment(attachId, "");
+                    attachment = viewWFAttachment("", attachId, "");
 
 
                     if (attachment.filename.ToUpper().Contains("PDF"))
