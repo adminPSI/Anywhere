@@ -30,7 +30,7 @@ namespace Anywhere.service.Data.DocumentConversion
         AllAttachmentsDataGetter aadg = new AllAttachmentsDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
         PDFGenerator.Data obj = new PDFGenerator.Data();
-        PDFDoc doc = new PDFDoc();
+      //  PDFDoc doc = new PDFDoc();
 
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
         {
