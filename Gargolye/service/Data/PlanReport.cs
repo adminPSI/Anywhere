@@ -192,7 +192,7 @@ namespace Anywhere.service.Data
             DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID)).Tables[0];
             cr.OpenSubreport("Header").SetDataSource(dt);
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
-            cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
+            cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = eS.ToString(); // Option for expanded text for editing
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
             crViewer.ReportSource = cr;
             crViewer.ShowLastPage();

@@ -238,13 +238,13 @@ namespace Anywhere.service.Data.DocumentConversion
                 {
                     wfAttRep = wfAttReport(wfAttachmentIds);
                 }
-                if(sigAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                if(sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
                 {
-                    sigAttRep = sigAttReport(wfAttachmentIds);
+                    sigAttRep = sigAttReport(sigAttachmentIds);
                 }
-                if(planAttachmentIds.Length != 0 && !wfAttachmentIds[0].Equals(""))
+                if(planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
                 {
-                    planAttRep = planAttReport(wfAttachmentIds);
+                    planAttRep = planAttReport(planAttachmentIds);
                 }
                 
                 
