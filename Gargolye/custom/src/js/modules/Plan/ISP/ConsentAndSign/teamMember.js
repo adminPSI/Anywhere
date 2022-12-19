@@ -854,10 +854,10 @@ const csTeamMember = (() => {
 
     //* Disabled Fields
     //*------------------------------
-    if (selectedMemberData.dateOfBirth || !$.session.planSignatureUpdateDOB) {
+    if (selectedMemberData.dateOfBirth) {
       dateOfBirthInput.classList.add('disabled');
     }
-    if (selectedMemberData.buildingNumber || !$.session.planSignatureUpdateBuildingNumber) {
+    if (selectedMemberData.buildingNumber) {
       buildingNumberInput.classList.add('disabled');
     }
     if (!isNew) {
