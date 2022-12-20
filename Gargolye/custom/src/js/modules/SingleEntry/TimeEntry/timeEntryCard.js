@@ -176,8 +176,7 @@ var timeEntryCard = (function () {
     var consumer_Ids = consumerIds ? consumerIds.join(',') : '';
     var data;
     if (!evvReasonCode || evvReasonCode === '%') evvReasonCode = '';
-    if (keyStartStop === 'Y' && !startTime)
-      startTime = startTimeInput.querySelector('input').value;
+    if (keyStartStop === 'Y' && !startTime) startTime = startTimeInput.querySelector('input').value;
     let deviceOS = checkDeviceType();
     if (evvReasonCode !== '') deviceOS = 'Manual';
 
@@ -198,9 +197,7 @@ var timeEntryCard = (function () {
           : '',
         consumerId: consumer_Ids,
         dateOfService: entryDate,
-        defaultStartTimeChanged: defaultStartTimeChanged
-          ? defaultStartTimeChanged
-          : false, // for crossmidnight evv entries
+        defaultStartTimeChanged: defaultStartTimeChanged ? defaultStartTimeChanged : false, // for crossmidnight evv entries
         defaultEndTimeChanged: defaultEndTimeChanged ? defaultEndTimeChanged : false, // for crossmidnight evv entries
         endTime: endTime ? endTime : '',
         endLatitude: endLatitude ? endLatitude : 0,
@@ -233,9 +230,7 @@ var timeEntryCard = (function () {
           ? null
           : odometerStart,
         reason: reason ? UTIL.removeUnsavableNoteText(reason) : '',
-        transportationReimbursable: transportationReimbursable
-          ? transportationReimbursable
-          : '',
+        transportationReimbursable: transportationReimbursable ? transportationReimbursable : '',
         transportationUnits: transportationUnits ? transportationUnits : '',
         // EVV
         deviceType: deviceOS,
@@ -259,9 +254,7 @@ var timeEntryCard = (function () {
           : '',
         consumerId: consumer_Ids,
         dateOfService: entryDate,
-        defaultStartTimeChanged: defaultStartTimeChanged
-          ? defaultStartTimeChanged
-          : false, // for crossmidnight evv entries
+        defaultStartTimeChanged: defaultStartTimeChanged ? defaultStartTimeChanged : false, // for crossmidnight evv entries
         defaultEndTimeChanged: defaultEndTimeChanged ? defaultEndTimeChanged : false, // for crossmidnight evv entries
         endTime: endTime ? endTime : '',
         endLatitude: endLatitude ? endLatitude : 0,
@@ -291,9 +284,7 @@ var timeEntryCard = (function () {
           ? null
           : odometerStart,
         reason: reason ? UTIL.removeUnsavableNoteText(reason) : '',
-        transportationReimbursable: transportationReimbursable
-          ? transportationReimbursable
-          : '',
+        transportationReimbursable: transportationReimbursable ? transportationReimbursable : '',
         transportationUnits: transportationUnits ? transportationUnits : '',
 
         deviceType: deviceOS,
@@ -301,9 +292,7 @@ var timeEntryCard = (function () {
         attest: attestCheckbox.getElementsByTagName('input')[0].checked ? 'Y' : 'N',
         community: communityCheckbox.getElementsByTagName('input')[0].checked ? 'Y' : 'N',
         updateEVVReason:
-          $.session.singleEntrycrossMidnight && !defaultStartTimeChanged
-            ? 'false'
-            : 'true',
+          $.session.singleEntrycrossMidnight && !defaultStartTimeChanged ? 'false' : 'true',
       };
     }
 
@@ -410,11 +399,11 @@ var timeEntryCard = (function () {
     totalHours = ed.Check_Hours;
     noteText = ed.Comments;
 
-      //get the rejection reason
-      singleEntryAjax.getSingleEntryById(singleEntryId, results => {
-          entryData = results;
-      });
-      rejectionReason = entryData.rejectionReason;
+    //get the rejection reason
+    singleEntryAjax.getSingleEntryById(singleEntryId, results => {
+      entryData = results;
+    });
+    rejectionReason = entryData.rejectionReason;
 
     saveUserId = ed.User_ID; // userID used for cross midnight entries
     personId = ed.Person_ID;
@@ -597,9 +586,8 @@ var timeEntryCard = (function () {
         switch (isAdminEdit) {
           case true:
             if ($.session.SingleEntryEditTimeEntry) {
-              results = (
-                await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate)
-              ).getSingleEntryUsersByLocationJSONResult;
+              results = (await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate))
+                .getSingleEntryUsersByLocationJSONResult;
               roster2.setAllowedConsumers(results);
               if (callback) callback();
             } else {
@@ -608,9 +596,8 @@ var timeEntryCard = (function () {
             }
             break;
           default:
-            results = (
-              await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate)
-            ).getSingleEntryUsersByLocationJSONResult;
+            results = (await singleEntryAjax.getSingleEntryUsersByLocation(locationId, entryDate))
+              .getSingleEntryUsersByLocationJSONResult;
             roster2.setAllowedConsumers(results);
             if (callback) callback();
             break;
@@ -661,8 +648,7 @@ var timeEntryCard = (function () {
     ) {
       var hasNote = consumerData.hasNote === 'True' ? true : false;
       var hasSignature = consumerData.hasSignature === 'True' ? true : false;
-      var classes =
-        hasSignature || hasNote ? ['evv-highlight', 'extrasBtn'] : ['extrasBtn'];
+      var classes = hasSignature || hasNote ? ['evv-highlight', 'extrasBtn'] : ['extrasBtn'];
       var extrasBtn = button.build({
         text: 'Action',
         type: 'contained',
@@ -706,8 +692,7 @@ var timeEntryCard = (function () {
       });
 
       var warningMessage = document.createElement('p');
-      warningMessage.innerHTML =
-        'You are not allowed to remove consumers from this entry.';
+      warningMessage.innerHTML = 'You are not allowed to remove consumers from this entry.';
 
       consumerWarningPopup.appendChild(warningMessage);
 
@@ -972,16 +957,13 @@ var timeEntryCard = (function () {
     });
     deleteTransBtn.addEventListener('click', deleteTransportation);
     cancelTransBtn.addEventListener('click', () => {
-      transportationType = oldTransportationType
-        ? oldTransportationType
-        : transportationType;
+      transportationType = oldTransportationType ? oldTransportationType : transportationType;
       transportationReimbursable = oldTransportationReimbursable
         ? oldTransportationReimbursable
         : transportationReimbursable;
       odometerStart =
         oldOdometerStart || oldOdometerStart === '' ? oldOdometerStart : odometerStart;
-      odometerEnd =
-        oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
+      odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
       // transportationUnits = oldTransportationUnits ? oldTransportationUnits : transportationUnits;
       destination = oldDestination ? oldDestination : destination;
       reason = oldReason ? oldReason : reason;
@@ -1105,9 +1087,7 @@ var timeEntryCard = (function () {
     POPUP.show(transportationPopup);
   }
   function buildTransportationBtn() {
-    var classes = isTransportationValid
-      ? ['transportationBtn', 'success']
-      : ['transportationBtn'];
+    var classes = isTransportationValid ? ['transportationBtn', 'success'] : ['transportationBtn'];
     return (btn = button.build({
       text: 'Add Transportation',
       icon: 'car',
@@ -1148,8 +1128,7 @@ var timeEntryCard = (function () {
       // for non-billable work codes, selected date can be beyond today
       // Added isDateAfter, and isDateBefore check. Can't blanket remove the error for non-billable
       // because the date still has to be within the pay period
-      if (isBillable === 'N' && isDateAfter && isDateBefore)
-        dateInput.classList.remove('error');
+      if (isBillable === 'N' && isDateAfter && isDateBefore) dateInput.classList.remove('error');
       if (isBillable === 'Y' && isDateAfter && isDateBefore && isDateAfterToday)
         dateInput.classList.add('error');
     }
@@ -1218,8 +1197,7 @@ var timeEntryCard = (function () {
             )
               endTimeInput.classList.add('error');
           } else if (isEdit && evvReasonCode === '') {
-            if (isBillable === 'Y' && entryDate > todaysDate)
-              endTimeInput.classList.add('error');
+            if (isBillable === 'Y' && entryDate > todaysDate) endTimeInput.classList.add('error');
           } else {
             if (
               isBillable === 'Y' &&
@@ -1249,11 +1227,7 @@ var timeEntryCard = (function () {
     }
     function checkStartTimeInputsForAfterNow() {
       const tempNow = new Date();
-      const convertedToday = new Date(
-        tempNow.getFullYear(),
-        tempNow.getMonth(),
-        tempNow.getDate(),
-      );
+      const convertedToday = new Date(tempNow.getFullYear(), tempNow.getMonth(), tempNow.getDate());
       const splitServiceDate = entryDate.split('-');
       const entryDateObj = new Date(
         splitServiceDate[0],
@@ -1321,11 +1295,7 @@ var timeEntryCard = (function () {
       }
     }
     function checkEvv() {
-      if (
-        reasonRequired &&
-        (!evvReasonCode || evvReasonCode === '%') &&
-        defaultTimesChanged
-      ) {
+      if (reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged) {
         reasonDropdown.classList.add('error');
       } else {
         reasonDropdown.classList.remove('error');
@@ -1432,11 +1402,7 @@ var timeEntryCard = (function () {
         var startDateIso = UTIL.formatDateToIso(dateRange[0]);
         var endDateIso = UTIL.formatDateToIso(dateRange[1]);
         sendEvvData = selectedOption.dataset.sendevv;
-        payPeriod = timeEntry.setSelectedPayPeriod(
-          startDateIso,
-          endDateIso,
-          event.target.value,
-        );
+        payPeriod = timeEntry.setSelectedPayPeriod(startDateIso, endDateIso, event.target.value);
         updateDateValMinMax();
       });
     } else {
@@ -1482,15 +1448,11 @@ var timeEntryCard = (function () {
       }
 
       const origStartTime = startTime;
-      startTime = `${event.target.value.split(':')[0]}:${
-        event.target.value.split(':')[1]
-      }`;
+      startTime = `${event.target.value.split(':')[0]}:${event.target.value.split(':')[1]}`;
       if ($.session.singleEntry15minDoc === 'Y' && origStartTime !== startTime) {
         var min = parseInt(startTime.split(':')[1]);
         if (min % 15 !== 0) {
-          errorPopup(
-            'This is not a valid time, you must document to the nearest quarter hour.',
-          );
+          errorPopup('This is not a valid time, you must document to the nearest quarter hour.');
           event.target.value = '';
           startTime = '0';
         }
@@ -1544,9 +1506,7 @@ var timeEntryCard = (function () {
         // and endTime !== event.target.value
         var min = parseInt(endTime.split(':')[1]);
         if (min % 15 !== 0) {
-          errorPopup(
-            'This is not a valid time, you must document to the nearest quarter hour.',
-          );
+          errorPopup('This is not a valid time, you must document to the nearest quarter hour.');
           event.target.value = '';
           endTime = '0';
         }
@@ -1554,6 +1514,8 @@ var timeEntryCard = (function () {
       if (origEndTime !== endTime) defaultTimesChanged = true;
 
       if (origEndTime !== endTime) {
+        console.log('Orig Time:', origEndTime);
+        console.log('New End Time:', endTime);
         defaultEndTimeChanged = true;
         reasonRequired = true; // for evv
       } else {
@@ -1562,98 +1524,97 @@ var timeEntryCard = (function () {
       }
 
       evvCheck();
-			setTotalHours();
-			checkPermissions();
-			UTIL.getGeoLocation(setEndTimeLocation);
-		});
-		// TOTALHOURSINPUT - changed from keyup to input because using the arrow keys
-		// (not on the keyboard but in the input itself) didn't trigger the event listener
-		totalHoursInput.addEventListener('input', event => {
-			totalHours = event.target.value;
-			checkPermissions();
-		});
-		noteInput.addEventListener('keyup', event => {
-			noteText = event.target.value;
-			checkPermissions();
-		});
-		transportationBtn.addEventListener('click', () => {
-			buildTransportationPopup();
-		});
-		saveBtn.addEventListener('click', event => {
-			event.target.classList.add('disabled');
-			saveOrUpdate = event.target.dataset.insertType;
+      setTotalHours();
+      checkPermissions();
+      UTIL.getGeoLocation(setEndTimeLocation);
+    });
+    // TOTALHOURSINPUT - changed from keyup to input because using the arrow keys
+    // (not on the keyboard but in the input itself) didn't trigger the event listener
+    totalHoursInput.addEventListener('input', event => {
+      totalHours = event.target.value;
+      checkPermissions();
+    });
+    noteInput.addEventListener('keyup', event => {
+      noteText = event.target.value;
+      checkPermissions();
+    });
+    transportationBtn.addEventListener('click', () => {
+      buildTransportationPopup();
+    });
+    saveBtn.addEventListener('click', event => {
+      event.target.classList.add('disabled');
+      saveOrUpdate = event.target.dataset.insertType;
 
-			if (saveOrUpdate === 'Save') timeEntry.getEntryData(keyStartStop);
-			if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
-		});
-		cancelBtn.addEventListener('click', () => {
-			if (isAdminEdit) {
-				timeApproval.refreshPage(payPeriod);
-			} else {
-				timeEntryReview.refreshPage(payPeriod);
-			}
-			clearAllGlobalVariables();
-		});
-	}
+      if (saveOrUpdate === 'Save') timeEntry.getEntryData(keyStartStop);
+      if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
+    });
+    cancelBtn.addEventListener('click', () => {
+      if (isAdminEdit) {
+        timeApproval.refreshPage(payPeriod);
+      } else {
+        timeEntryReview.refreshPage(payPeriod);
+      }
+      clearAllGlobalVariables();
+    });
+  }
 
-	async function customRosterApplyFilterEvent() {
-		if (isBillable === 'Y' && !$.session.singleEntryUseServiceLocations) {
-			// check if residence === 'N'
-			var allowedConsumers = await getAllowedConsumersBasedOffResidence();
-			roster2.setAllowedConsumers(allowedConsumers);
-		} else {
-			// roster.setAllowedConsumers([]);
-			// var allowedConsumers = await getAllowedConsumersBasedOffServiceLocations();
-			// roster2.setAllowedConsumers(allowedConsumers);
-			await setAllowedConsumers()
-		}
-	}
-	
-	async function workCodeDropdownEvent(event) {
-		var selectedOption = event.target.options[event.target.selectedIndex];
-		workCode = selectedOption.value;
-		isBillable = selectedOption.dataset.billable;
-		keyStartStop = selectedOption.dataset.keytimes;
-		wcServiceType = selectedOption.dataset.servicetype
+  async function customRosterApplyFilterEvent() {
+    if (isBillable === 'Y' && !$.session.singleEntryUseServiceLocations) {
+      // check if residence === 'N'
+      var allowedConsumers = await getAllowedConsumersBasedOffResidence();
+      roster2.setAllowedConsumers(allowedConsumers);
+    } else {
+      // roster.setAllowedConsumers([]);
+      // var allowedConsumers = await getAllowedConsumersBasedOffServiceLocations();
+      // roster2.setAllowedConsumers(allowedConsumers);
+      await setAllowedConsumers();
+    }
+  }
 
-		updateDateValMinMax(false)
+  async function workCodeDropdownEvent(event) {
+    var selectedOption = event.target.options[event.target.selectedIndex];
+    workCode = selectedOption.value;
+    isBillable = selectedOption.dataset.billable;
+    keyStartStop = selectedOption.dataset.keytimes;
+    wcServiceType = selectedOption.dataset.servicetype;
 
-		if (isBillable === 'Y' && !$.session.singleEntryUseServiceLocations) {
-			// check if residence === 'N'
-			var allowedConsumers = await getAllowedConsumersBasedOffResidence();
-			roster2.setAllowedConsumers(allowedConsumers);
-		} else {
-			// roster.setAllowedConsumers([]);
-			var allowedConsumers = await getAllowedConsumersBasedOffServiceLocations();
-			roster2.setAllowedConsumers(allowedConsumers);
-		}
-		
-		var miniRosterBtn = document.querySelector('.consumerListBtn');
-		if (miniRosterBtn) {
-			if (isBillable === 'Y') {
-				miniRosterBtn.classList.remove('disabled');
-			} else {
-				miniRosterBtn.classList.add('disabled');
-			}
-		}
-		
-	clearCard();
-		// Set start time after card gets cleared
-		if (keyStartStop === "Y") {
-			startTimeInput.getElementsByTagName("input")[0].value = `${nowHour}:${nowMinutes}`;
-			startTime = `${nowHour}:${nowMinutes}`;
-			UTIL.getGeoLocation(setStartTimeLocation);
-		}
+    updateDateValMinMax(false);
 
-		checkPermissions();
-	}
-  
+    if (isBillable === 'Y' && !$.session.singleEntryUseServiceLocations) {
+      // check if residence === 'N'
+      var allowedConsumers = await getAllowedConsumersBasedOffResidence();
+      roster2.setAllowedConsumers(allowedConsumers);
+    } else {
+      // roster.setAllowedConsumers([]);
+      var allowedConsumers = await getAllowedConsumersBasedOffServiceLocations();
+      roster2.setAllowedConsumers(allowedConsumers);
+    }
+
+    var miniRosterBtn = document.querySelector('.consumerListBtn');
+    if (miniRosterBtn) {
+      if (isBillable === 'Y') {
+        miniRosterBtn.classList.remove('disabled');
+      } else {
+        miniRosterBtn.classList.add('disabled');
+      }
+    }
+
+    clearCard();
+    // Set start time after card gets cleared
+    if (keyStartStop === 'Y') {
+      startTimeInput.getElementsByTagName('input')[0].value = `${nowHour}:${nowMinutes}`;
+      startTime = `${nowHour}:${nowMinutes}`;
+      UTIL.getGeoLocation(setStartTimeLocation);
+    }
+
+    checkPermissions();
+  }
+
   function setEndTimeOnClick(event) {
     if (endTimeClicks !== 0 || event.target.value !== '') return;
     endTimeClicks = 1;
     let tempEndTime = new Date();
-    let endTimeHour =
-      tempEndTime.getHours() < '10' ? `0${now.getHours()}` : tempEndTime.getHours();
+    let endTimeHour = tempEndTime.getHours() < '10' ? `0${now.getHours()}` : tempEndTime.getHours();
     let endTimeMinute =
       tempEndTime.getMinutes() < '10' ? `0${now.getMinutes()}` : tempEndTime.getMinutes();
     event.target.value = `${endTimeHour}:${endTimeMinute}`;
@@ -1814,11 +1775,9 @@ var timeEntryCard = (function () {
   function checkTimeForAfterNow(enteredTime) {
     let tempNow = new Date();
     let nowHour = tempNow.getHours() < '10' ? `0${now.getHours()}` : tempNow.getHours();
-    let nowMinuet =
-      tempNow.getMinutes() < '10' ? `0${now.getMinutes()}` : tempNow.getMinutes();
+    let nowMinuet = tempNow.getMinutes() < '10' ? `0${now.getMinutes()}` : tempNow.getMinutes();
     return (
-      Date.parse(`01/01/2020 ${enteredTime}`) >
-      Date.parse(`01/01/2020 ${nowHour}:${nowMinuet}`)
+      Date.parse(`01/01/2020 ${enteredTime}`) > Date.parse(`01/01/2020 ${nowHour}:${nowMinuet}`)
     );
   }
 
@@ -1911,10 +1870,7 @@ var timeEntryCard = (function () {
   }
 
   function checkAttestStatus() {
-    if (
-      reasonRequired &&
-      attestCheckbox.getElementsByTagName('input')[0].checked === false
-    ) {
+    if (reasonRequired && attestCheckbox.getElementsByTagName('input')[0].checked === false) {
       attestCheckbox.classList.add('redButNotError');
     } else {
       attestCheckbox.classList.remove('redButNotError');
@@ -2004,9 +1960,7 @@ var timeEntryCard = (function () {
       label: 'Start Time',
       type: 'time',
       style: 'secondary',
-      attributes: [
-        { key: 'step', value: $.session.singleEntry15minDoc === 'Y' ? '900' : '60' },
-      ],
+      attributes: [{ key: 'step', value: $.session.singleEntry15minDoc === 'Y' ? '900' : '60' }],
       value: startTime,
     }));
   }
@@ -2015,9 +1969,7 @@ var timeEntryCard = (function () {
       label: 'End Time',
       type: 'time',
       style: 'secondary',
-      attributes: [
-        { key: 'step', value: $.session.singleEntry15minDoc === 'Y' ? '900' : '60' },
-      ],
+      attributes: [{ key: 'step', value: $.session.singleEntry15minDoc === 'Y' ? '900' : '60' }],
       value: endTime,
     }));
   }
@@ -2035,17 +1987,17 @@ var timeEntryCard = (function () {
       label: 'Note',
       style: 'secondary',
       type: 'textarea',
-      value: noteText
+      value: noteText,
     }));
   }
   function buildRejectionReasonInput() {
-      return (rejectionReasonInput = input.build({
-          id: 'rejectionReason',
-          label: 'Rejection Reason',
-          style: 'secondary',
-          type: 'textarea',
-          value: rejectionReason
-      }));
+    return (rejectionReasonInput = input.build({
+      id: 'rejectionReason',
+      label: 'Rejection Reason',
+      style: 'secondary',
+      type: 'textarea',
+      value: rejectionReason,
+    }));
   }
   function buildAttestCheckbox() {
     return (attestCheckbox = input.buildCheckbox({
@@ -2125,11 +2077,9 @@ var timeEntryCard = (function () {
     section.appendChild(noteInput);
     if (status === 'R') {
       section.appendChild(rejectionReasonInput);
-    };
+    }
 
-    $.session.singleEntryShowTransportation === 'Y'
-      ? section.appendChild(transportationBtn)
-      : ''; //Show Transportation system preference
+    $.session.singleEntryShowTransportation === 'Y' ? section.appendChild(transportationBtn) : ''; //Show Transportation system preference
 
     return section;
   }
