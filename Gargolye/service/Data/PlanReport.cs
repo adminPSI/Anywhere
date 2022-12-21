@@ -119,11 +119,12 @@ namespace Anywhere.service.Data
             crViewer.ReportSource = cr;
             crViewer.ShowLastPage();
             TotalPage += crViewer.GetCurrentPageNumber();
+            crViewer.Dispose();
 
-            
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);           
+            
             cr.Close();
             cr.Dispose();
             return ms;
@@ -197,12 +198,14 @@ namespace Anywhere.service.Data
             crViewer.ReportSource = cr;
             crViewer.ShowLastPage();
             TotalPage += crViewer.GetCurrentPageNumber();
-
+            crViewer.Dispose();
 
             MemoryStream ms = new MemoryStream();
             ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            
             cr.Close();
             cr.Dispose();
+            
             return ms;
             //byte[] msa2 = StreamExtensions.ToByteArray(ms);
             //return msa2;
@@ -284,13 +287,16 @@ namespace Anywhere.service.Data
             crViewer.ReportSource = cr;
             crViewer.ShowLastPage();
             TotalPage += crViewer.GetCurrentPageNumber();
-
+            crViewer.Dispose();
 
             MemoryStream ms = new MemoryStream();
             ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            
             cr.Close();
             cr.Dispose();
+
             return ms;
+
             //byte[] msa3 = StreamExtensions.ToByteArray(ms);
             //return msa3;
         }

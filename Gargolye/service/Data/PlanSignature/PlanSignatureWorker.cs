@@ -95,12 +95,20 @@ namespace Anywhere.service.Data.PlanSignature
 
             try
             {
-                ISPDTData isp = new ISPDTData();
-                string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId);
-                //long sFId = oispW.AddFamilyMemberToIndividal(consumerId, peopleId);
-                //AddTeamMember[] sfObj = js.Deserialize<AddTeamMember[]>(sFS);
-                //return sfObj[0].id;
-                return sFS;
+                if(consumerId != peopleId)
+                {
+                    ISPDTData isp = new ISPDTData();
+                    string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId);
+                    //long sFId = oispW.AddFamilyMemberToIndividal(consumerId, peopleId);
+                    //AddTeamMember[] sfObj = js.Deserialize<AddTeamMember[]>(sFS);
+                    //return sfObj[0].id;
+                    return sFS;
+                }
+                else
+                {
+                    return "";
+                }
+                
 
             }
             catch (Exception ex)
