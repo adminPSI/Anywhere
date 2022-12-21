@@ -1511,11 +1511,13 @@ var timeEntryCard = (function () {
           endTime = '0';
         }
       }
+      origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
+
       if (origEndTime !== endTime) defaultTimesChanged = true;
 
-      origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
+      // 9:30:00 !== 9:30
       if (origEndTime !== endTime) {
-        window.alert('Prev End Time: ' + origEndTime + ' New End Time:' + endTime);
+        console.log('Prev End Time: ' + origEndTime + ' New End Time:' + endTime);
         defaultEndTimeChanged = true;
         reasonRequired = true; // for evv
       } else {
