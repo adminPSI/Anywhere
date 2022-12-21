@@ -1513,9 +1513,9 @@ var timeEntryCard = (function () {
       }
       if (origEndTime !== endTime) defaultTimesChanged = true;
 
+      origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
       if (origEndTime !== endTime) {
-        console.log('Orig Time:', origEndTime);
-        console.log('New End Time:', endTime);
+        window.alert('Prev End Time: ' + origEndTime + ' New End Time:' + endTime);
         defaultEndTimeChanged = true;
         reasonRequired = true; // for evv
       } else {
