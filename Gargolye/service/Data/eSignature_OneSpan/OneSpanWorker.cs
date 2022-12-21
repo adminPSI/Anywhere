@@ -4,6 +4,7 @@ using OneSpanSign.Sdk.Builder;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -15,14 +16,19 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         private static String apiUrl = "https://sandbox.esignlive.com/api";
         // USE https://apps.e-signlive.com/api FOR PRODUCTION
         private static String apiKey = "MEhOb1ptNkhXd1FaOnhqSTdUYXZlaFowSQ==";
-        //OssClient ossClient = new OssClient(apiKey, apiUrl);
+        OssClient ossClient = new OssClient(apiKey, apiUrl);
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
+        PackageId packageIdexist = new PackageId("7McATLNHcvM_ty_K‑JKsO_mH2Xo="); 
 
-        
+
+
 
         public string oneSpanBuildSigners(string packageName, string documentName, string filePath, string[] emails, string[] names, MemoryStream ms)
         {
+            string applicationVersion = ossClient.SystemService.GetApplicationVersion();
+            DocumentPackage sentPackage = ossClient.GetPackage(packageIdexist);
+            //byte[] sentPackage = ossClient.DownloadZippedDocuments(packageIdexist);
             //Will need to pass the assessmentId so that the names and emails can be queried from the database
             //if (tokenValidator(token) == false) return null;
             //if (!osdg.validateToken(token))
@@ -55,7 +61,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
         public string createDocument(string documentName, string filePath, string[] emails, string[] names, PackageBuilder package, MemoryStream ms)
         {
-            FileStream fs = File.OpenRead(@"C:\Users\mike.taft\OneSpanDemo.pdf");
+            FileStream fs = File.OpenRead(@"C:\Windows\Temp\OneSpanDemo.pdf");
             //FileStream fs = File.OpenRead(filePath);
 
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Franklin County One Span Demo")
@@ -97,8 +103,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         {
             package.WithDocument(document);
             DocumentPackage pack = package.Build();
-            //PackageId packageId = ossClient.CreatePackage(pack);
-            //ossClient.SendPackage(packageId);
+            PackageId packageId = ossClient.CreatePackage(pack);
+            ossClient.SendPackage(packageId);
 
             return "success";
         }
