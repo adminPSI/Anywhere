@@ -30,6 +30,7 @@ namespace Anywhere.service.Data.DocumentConversion
         DataGetter dg = new DataGetter();
         AllAttachmentsDataGetter aadg = new AllAttachmentsDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
+        GetReportsStreams grs = new GetReportsStreams();
         PDFGenerator.Data obj = new PDFGenerator.Data();
       //  PDFDoc doc = new PDFDoc();
 
@@ -114,16 +115,16 @@ namespace Anywhere.service.Data.DocumentConversion
                         {
                             if (ord.setting_key == "Assessment")
                             {
-                                assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
                             }
                             if (ord.setting_key == "All About Me")
                             {
-                               intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                               intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                 plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                 plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
 
                             }
                         }
@@ -131,17 +132,17 @@ namespace Anywhere.service.Data.DocumentConversion
                             {
                                 if (ord.setting_key == "Assessment")
                                 {
-                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "All About Me")
                                 {
-                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "Plan")
                                 {
-                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                             }
@@ -149,17 +150,17 @@ namespace Anywhere.service.Data.DocumentConversion
                             {
                                 if (ord.setting_key == "Assessment")
                                 {
-                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "All About Me")
                                 {
-                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "Plan")
                                 {
-                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                             }
@@ -167,17 +168,17 @@ namespace Anywhere.service.Data.DocumentConversion
                             {
                                 if (ord.setting_key == "Assessment")
                                 {
-                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "All About Me")
                                 {
-                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "Plan")
                                 {
-                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
 
 
                                 }
@@ -186,17 +187,17 @@ namespace Anywhere.service.Data.DocumentConversion
                             {
                                 if (ord.setting_key == "Assessment")
                                 {
-                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "All About Me")
                                 {
-                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "Plan")
                                 {
-                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                             }
@@ -204,17 +205,17 @@ namespace Anywhere.service.Data.DocumentConversion
                             {
                                 if (ord.setting_key == "Assessment")
                                 {
-                                    assessment = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "All About Me")
                                 {
-                                    intro = planRep.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                                 if (ord.setting_key == "Plan")
                                 {
-                                    plan = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
 
                                 }
                             }
@@ -225,14 +226,17 @@ namespace Anywhere.service.Data.DocumentConversion
 
                 
                 byte[] introReport = StreamExtensions.ToByteArray(intro);
-                byte[] assessmentReport = StreamExtensions.ToByteArray(assessment);
-                byte[] planReport = StreamExtensions.ToByteArray(plan);
-                assessment.Close();
-                assessment.Dispose();
-                plan.Close();
-                plan.Dispose();
                 intro.Close();
+                intro.Flush();
                 intro.Dispose();
+                byte[] assessmentReport = StreamExtensions.ToByteArray(assessment);
+                assessment.Close();
+                intro.Flush();
+                assessment.Dispose();
+                byte[] planReport = StreamExtensions.ToByteArray(plan);                
+                plan.Close();
+                intro.Flush();
+                plan.Dispose();
 
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
@@ -645,6 +649,9 @@ namespace Anywhere.service.Data.DocumentConversion
             return allAttachments;
 
         }
+
+       
+
 
         public List<byte[]> sigAttReport(string[] wfAttachmentIds)
         {
