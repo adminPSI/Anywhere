@@ -1631,7 +1631,7 @@ const servicesSupports = (() => {
       doneBtn.classList.remove('disabled');
     }
   }
-  function showAddAdditionalSupportPopup(popupData, isNew, charLimits, fromAssessment) {
+  function showAddAdditionalSupportPopup(popupData, isNew, fromAssessment, charLimits) {
     if (!dropdownData) {
       dropdownData = planData.getDropdownData();
     }
@@ -2110,7 +2110,7 @@ const servicesSupports = (() => {
       doneBtn.classList.remove('disabled');
     }
   }
-  function showAddProfessionalReferralPopup(popupData, isNew, charLimits, fromAssessment) {
+  function showAddProfessionalReferralPopup(popupData, isNew, fromAssessment, charLimits) {
     if (!dropdownData) {
       dropdownData = planData.getDropdownData();
     }
