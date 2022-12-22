@@ -1793,8 +1793,8 @@ var timeEntryCard = (function () {
           isBillable === 'Y' &&
           defaultTimesChanged &&
           wcServiceType === 'A' &&
-            sendEvvData === 'Y' &&
-            reasonRequired === true
+          sendEvvData === 'Y' &&
+          reasonRequired === true
         ) {
           showEvv();
           evvCheckConsumerEligibilityExistingConsumers();
@@ -1809,11 +1809,12 @@ var timeEntryCard = (function () {
       let ppObj = payPeriodData.filter(pp => pp.dateString === payPeriod.dateString);
       sendEvvData = ppObj[0].sendEvvData;
 
-      if (
-        isBillable === 'Y' &&
-        defaultTimesChanged &&
-        wcServiceType === 'A' &&
-        sendEvvData === 'Y'
+        if (
+            isBillable === 'Y' &&
+            defaultTimesChanged &&
+            wcServiceType === 'A' &&
+            sendEvvData === 'Y' &&
+          reasonRequired === true
       ) {
         if (defaultEndTimeChanged || defaultTimesChanged) {
           showEvv();
