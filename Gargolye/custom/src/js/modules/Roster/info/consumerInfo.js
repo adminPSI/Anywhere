@@ -569,28 +569,28 @@ var consumerInfo = (function () {
       const relationship = document.createElement('div');
       relationship.classList.add('relationship');
       relationship.innerHTML = `
-        <div class="relationship__name">${d.lastname}, ${d.firstname}</div>
+        <div class="relationship__name">${d.lastName}, ${d.firstName}</div>
         <div class="relationship__type">${d.description}</div>
         <div class="relationship__phone">		
         ${
-          d.primaryphone && d.primaryphone.trim().length != 0
+          d.primaryPhone && d.primaryPhone.trim().length != 0
             ? `P1: <a href=tel:+1-${UTIL.formatPhoneNumber(
-                d.primaryphone.trim(),
-              )}>${UTIL.formatPhoneNumber(d.primaryphone.trim())}</a><br>`
+                d.primaryPhone.trim(),
+              )}>${UTIL.formatPhoneNumber(d.primaryPhone.trim())}</a><br>`
             : ``
         }
         ${
-          d.secondaryphone && d.secondaryphone.trim().length != 0
+          d.secondaryPhone && d.secondaryPhone.trim().length != 0
             ? `P2: <a href=tel:+1-${UTIL.formatPhoneNumber(
-                d.secondaryphone.trim(),
-              )}>${UTIL.formatPhoneNumber(d.secondaryphone.trim())}</a><br>`
+                d.secondaryPhone.trim(),
+              )}>${UTIL.formatPhoneNumber(d.secondaryPhone.trim())}</a><br>`
             : ``
         }
         ${
-          d.cellularphone && d.cellularphone.trim().length != 0
+          d.cellularPhone && d.cellularPhone.trim().length != 0
             ? `C: <a href=tel:+1-${UTIL.formatPhoneNumber(
-                d.cellularphone.trim(),
-              )}>${UTIL.formatPhoneNumber(d.cellularphone.trim())}</a>`
+                d.cellularPhone.trim(),
+              )}>${UTIL.formatPhoneNumber(d.cellularPhone.trim())}</a>`
             : ``
         }
         </div>
