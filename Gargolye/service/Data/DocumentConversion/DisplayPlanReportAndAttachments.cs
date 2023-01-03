@@ -26,6 +26,9 @@ namespace Anywhere.service.Data.DocumentConversion
 {
     public class DisplayPlanReportAndAttachments
     {
+        //PDFNet.Initialize("Gatekeeper/Anywhere, Advisor/Anywhere::W:AMS(20230512):4E77CBD11FD71AD02373727860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+        //pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W:AMS(20230512):4E77CBD11FD71AD02373727860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+
         PlanReport planRep = new PlanReport();
         DataGetter dg = new DataGetter();
         AllAttachmentsDataGetter aadg = new AllAttachmentsDataGetter();
@@ -94,6 +97,7 @@ namespace Anywhere.service.Data.DocumentConversion
             var response = current.Response;
             response.Buffer = true;
             bool isTokenValid = aadg.ValidateToken(token);
+            pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20230512):99A5675D0437C60AF320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
             PDFDoc new_doc;
             if (isTokenValid)
             {
@@ -780,40 +784,41 @@ namespace Anywhere.service.Data.DocumentConversion
                         allAttachments.Add(new_byte_output);
                         new_byte_output = null;
                     }
-                    else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
-                    {
-                        if (attachment.filename.ToUpper().Contains("XLSX"))
-                        {
-                            attachment.filename = attachment.filename.Replace("xlsx", "pdf");
-                        }
-                        if (attachment.filename.ToUpper().Contains("DOCX"))
-                        {
-                            attachment.filename = attachment.filename.Replace("docx", "pdf");
-                        }
-                        if (attachment.filename.ToUpper().Contains("XLS"))
-                        {
-                            attachment.filename = attachment.filename.Replace("xls", "pdf");
-                        }
-                        if (attachment.filename.ToUpper().Contains("DOC"))
-                        {
-                            attachment.filename = attachment.filename.Replace("doc", "pdf");
-                        }
+                    //else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
+                    //{
+                    //    if (attachment.filename.ToUpper().Contains("XLSX"))
+                    //    {
+                    //        attachment.filename = attachment.filename.Replace("xlsx", "pdf");
+                    //    }
+                    //    if (attachment.filename.ToUpper().Contains("DOCX"))
+                    //    {
+                    //        attachment.filename = attachment.filename.Replace("docx", "pdf");
+                    //    }
+                    //    if (attachment.filename.ToUpper().Contains("XLS"))
+                    //    {
+                    //        attachment.filename = attachment.filename.Replace("xls", "pdf");
+                    //    }
+                    //    if (attachment.filename.ToUpper().Contains("DOC"))
+                    //    {
+                    //        attachment.filename = attachment.filename.Replace("doc", "pdf");
+                    //    }
+                    //    OfficeToPDFOptions options = new OfficeToPDFOptions();
+                    //    options.GetSmartSubstitutionPluginPath();
+                    //    byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);//displayAttachment(attachment);
+                    //    var filter = new MemoryFilter(nAttachment.Length, true);
+                    //    var filterWriter = new FilterWriter(filter);
+                    //    filterWriter.WriteBuffer(nAttachment);
+                    //    filterWriter.Flush();
+                    //    pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
+                    //    //filterWriter.Flush();
 
-                        byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);//displayAttachment(attachment);
-                        var filter = new MemoryFilter(nAttachment.Length, true);
-                        var filterWriter = new FilterWriter(filter);
-                        filterWriter.WriteBuffer(nAttachment);
-                        filterWriter.Flush();
-                        pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
-                        //filterWriter.Flush();
+                    //    string pdfversion = doc.GetSDFDoc().GetHeader();
+                    //    new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
 
-                        string pdfversion = doc.GetSDFDoc().GetHeader();
-                        new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
+                    //    allAttachments.Add(new_byte_output);
+                    //    new_byte_output = null;
 
-                        allAttachments.Add(new_byte_output);
-                        new_byte_output = null;
-
-                    }
+                    //}
                     else
                     {
                         string imageExt = "pdf";
@@ -837,8 +842,11 @@ namespace Anywhere.service.Data.DocumentConversion
                                 var filterWriter = new FilterWriter(filter);
                                 filterWriter.WriteBuffer(nAttachment);
                                 filterWriter.Flush();
-                                var options = new ConversionOptions();
-                                //options.
+                                //var options = new ConversionOptions();
+                                //OfficeToPDFOptions options = new OfficeToPDFOptions();
+                                //var test = options.GetSmartSubstitutionPluginPath();
+                                //options.SetSmartSubstitutionPluginPath(test);
+
                                 pdftron.PDF.DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, filter, null);
                                 documentConversion.Convert();
 
@@ -847,7 +855,6 @@ namespace Anywhere.service.Data.DocumentConversion
 
                                 allAttachments.Add(pdfData);
                                 new_byte_output = null;
-
                             }
                         }
                     }
