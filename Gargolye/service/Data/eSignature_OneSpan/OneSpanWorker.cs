@@ -3,6 +3,7 @@ using OneSpanSign.Sdk;
 using OneSpanSign.Sdk.Builder;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
@@ -19,15 +20,12 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         OssClient ossClient = new OssClient(apiKey, apiUrl);
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
-        PackageId packageIdexist = new PackageId("7McATLNHcvM_ty_K‑JKsO_mH2Xo="); 
-
-
-
+        PackageId packageIdexist = new PackageId("B5GKRtTjhBMm07xtzM-nh2KLjvA=");
+        
 
         public string oneSpanBuildSigners(string packageName, string documentName, string filePath, string[] emails, string[] names, MemoryStream ms)
         {
             string applicationVersion = ossClient.SystemService.GetApplicationVersion();
-            DocumentPackage sentPackage = ossClient.GetPackage(packageIdexist);
             //byte[] sentPackage = ossClient.DownloadZippedDocuments(packageIdexist);
             //Will need to pass the assessmentId so that the names and emails can be queried from the database
             //if (tokenValidator(token) == false) return null;
@@ -107,6 +105,31 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             ossClient.SendPackage(packageId);
 
             return "success";
+        }
+
+        public string oneSpanGetSignedDocuments(string packageId)
+        {
+            PackageId currentPackageId = new PackageId(packageId);
+            DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
+            DocumentPackageStatus packageStatus = sentPackage.Status;
+            SigningStatus signingStatus = ossClient.GetSigningStatus(currentPackageId, null, null);
+
+            if (signingStatus.ToString().Equals("COMPLETE"))
+            {
+                byte[] zipContent = ossClient.DownloadZippedDocuments(currentPackageId);
+                File.WriteAllBytes(@"C:\Users\erick.bey\Downloads"
+                                    + "/package-documents.zip", zipContent);
+
+                byte[] evidenceContent = ossClient.DownloadEvidenceSummary(currentPackageId);
+                File.WriteAllBytes(@"C:\Users\erick.bey\Downloads"
+                                    + "/evidence-summary.pdf", evidenceContent);
+            }
+            else
+            {
+                return "Documents have not been signed";
+            }
+
+            return "Successfully downloaded the signed documents";
         }
 
         public bool tokenValidator(string token)

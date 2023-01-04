@@ -2785,6 +2785,12 @@ namespace Anywhere
             return osw.oneSpanBuildSigners(packageName, documentName, filePath, emails, names, null);
         }
 
+        public string oneSpanGetSignedDocuments(string token, string packageId)
+        {
+            //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "", "686614946776981", "1", "false", true);
+            return osw.oneSpanGetSignedDocuments(packageId);
+        }
+
         //public string oneSpanBuildSigners(string token, string userId, string assessmentID, string versionID, bool isp)
         //{
         //    MemoryStream ms = getPlanAssessmentReport(token, userId, assessmentID, versionID, "false", isp);

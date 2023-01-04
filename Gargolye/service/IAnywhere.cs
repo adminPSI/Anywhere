@@ -3909,6 +3909,13 @@ namespace Anywhere
            UriTemplate = "/oneSpanBuildSigners/")]
         string oneSpanBuildSigners(string token, string packageName, string documentName, string filePath, string[] emails, string[] names);
 
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/oneSpanGetSignedDocuments/")]
+        string oneSpanGetSignedDocuments(string token, string packageId);
+
 
     }
 
