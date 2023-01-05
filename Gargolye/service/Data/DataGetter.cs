@@ -15,6 +15,7 @@ using System.Web.Script.Serialization;
 using System.Text.RegularExpressions;
 using static Anywhere.service.Data.AnywhereWorker;
 using System.Management.Automation.Language;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.Data
 {
@@ -3644,6 +3645,7 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             logger.debug("getUserByTokenJSON");
             List<string> list = new List<string>();
+            list.Add(token);
             string text = "CALL DBA.ANYW_EMAR_GetEmarURL(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
