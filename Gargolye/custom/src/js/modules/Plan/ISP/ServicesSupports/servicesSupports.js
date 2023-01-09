@@ -320,12 +320,12 @@ const servicesSupports = (() => {
       };
     });
 
-    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
-      defaultValue = '4';
-      hcbsSelected = true;
-    }
+    // if ($.session.applicationName === 'Advisor' && defaultValue === '') {
+    //   defaultValue = '4';
+    //   hcbsSelected = true;
+    // }
 
-    if (defaultValue && defaultValue != '')
+    if (defaultValue && defaultValue !== '')
       fundingSourceDropdownSelectedText = data[defaultValue].text;
 
     dropdown.populate(dropdownEle, data, defaultValue);
@@ -343,22 +343,6 @@ const servicesSupports = (() => {
         });
       }
     });
-    //Only check for defaultValue in Advisor
-    if ($.session.applicationName === 'Advisor' && defaultValue === '') {
-      if (availableServiceTypes.includes(defaultValue)) {
-        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-        servicesDropdownSelectedText = servicesDropdownSelected.text;
-      } else {
-        defaultValue = '24';
-      }
-    } else {
-      if (availableServiceTypes.includes(defaultValue)) {
-        let servicesDropdownSelected = data.find(e => e.value === defaultValue);
-        servicesDropdownSelectedText = servicesDropdownSelected.text;
-      } else {
-        defaultValue = '%';
-      }
-    }
 
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
@@ -602,6 +586,7 @@ const servicesSupports = (() => {
               isNew: false,
               fromAssessment: false,
               isCopy: false,
+              charLimits,
             });
           },
           onCopyClick: () => {
@@ -612,6 +597,7 @@ const servicesSupports = (() => {
               isNew: true,
               fromAssessment: false,
               isCopy: true,
+              charLimits,
             });
           },
         },
@@ -664,6 +650,7 @@ const servicesSupports = (() => {
               isNew: false,
               fromAssessment: false,
               isCopy: false,
+              charLimits,
             });
           },
           onCopyClick: () => {
@@ -674,6 +661,7 @@ const servicesSupports = (() => {
               isNew: true,
               fromAssessment: false,
               isCopy: true,
+              charLimits,
             });
           },
         },
@@ -719,7 +707,7 @@ const servicesSupports = (() => {
       doneBtn.classList.remove('disabled');
     }
   }
-  function showAddPaidSupportPopup({ popupData, isNew, fromAssessment, isCopy }) {
+  function showAddPaidSupportPopup({ popupData, isNew, fromAssessment, isCopy, charLimits }) {
     if (!dropdownData) {
       dropdownData = planData.getDropdownData();
     }
@@ -748,6 +736,37 @@ const servicesSupports = (() => {
       if (!isCopy) {
         saveUpdateData.beginDate = UTIL.formatDateFromDateObj(planDates.getEffectiveStartDate());
         saveUpdateData.endDate = UTIL.formatDateFromDateObj(planDates.getEffectiveEndDate());
+      }
+    }
+
+    if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
+      hcbsSelected = true;
+      saveUpdateData.fundingSource = '4';
+    }
+    const availableServiceTypes = [];
+    const data = [];
+    dropdownData.serviceTypes.forEach(dd => {
+      if (dd.showWith.includes(saveUpdateData.fundingSource)) {
+        availableServiceTypes.push(dd.value);
+        data.push({
+          value: dd.value,
+          text: dd.text,
+        });
+      }
+    });
+    if ($.session.applicationName === 'Advisor') {
+      if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
+        let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        saveUpdateData.serviceNameId = '24';
+      }
+    } else {
+      if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
+        let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
+        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      } else {
+        saveUpdateData.serviceNameId = '%';
       }
     }
 
@@ -1053,7 +1072,7 @@ const servicesSupports = (() => {
     });
     // Scope Of Service
     const scopeOfserviceInput = input.build({
-      label: 'Scope of Service/ What support looks like',
+      label: 'Scope of Service / What support looks like',
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -1396,7 +1415,7 @@ const servicesSupports = (() => {
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
 
-    if ($.session.applicationName === 'Advisor' && saveUpdateData.fundingSource === '') {
+    if ($.session.applicationName === 'Advisor') {
       populateServiceNameDropdown(serviceNameDropdown, '24', '4');
 
       fundingSourceDropdown.classList.remove('error');
@@ -1431,7 +1450,7 @@ const servicesSupports = (() => {
     DOM.autosizeTextarea();
   }
   function addPaidSupportRow() {
-    showAddPaidSupportPopup({ popupData: {}, isNew: true });
+    showAddPaidSupportPopup({ popupData: {}, isNew: true, charLimits });
   }
   function getPaidSupportsMarkup() {
     const paidSupportsDiv = document.createElement('div');
@@ -1496,6 +1515,7 @@ const servicesSupports = (() => {
                 isNew: false,
                 fromAssessment: false,
                 isCopy: false,
+                charLimits,
               });
             },
             onCopyClick: () => {
@@ -1506,6 +1526,7 @@ const servicesSupports = (() => {
                 isNew: true,
                 fromAssessment: false,
                 isCopy: true,
+                charLimits,
               });
             },
           };
@@ -1554,7 +1575,7 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddAdditionalSupportPopup(asData, false);
+            showAddAdditionalSupportPopup(asData, false, charLimits);
           },
         },
       ],
@@ -1585,7 +1606,7 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddAdditionalSupportPopup(asData, false);
+            showAddAdditionalSupportPopup(asData, false, charLimits);
           },
         },
       ],
@@ -1610,7 +1631,7 @@ const servicesSupports = (() => {
       doneBtn.classList.remove('disabled');
     }
   }
-  function showAddAdditionalSupportPopup(popupData, isNew, fromAssessment) {
+  function showAddAdditionalSupportPopup(popupData, isNew, fromAssessment, charLimits) {
     if (!dropdownData) {
       dropdownData = planData.getDropdownData();
     }
@@ -1932,7 +1953,7 @@ const servicesSupports = (() => {
     DOM.autosizeTextarea();
   }
   function addAdditionalSupportRow() {
-    showAddAdditionalSupportPopup({}, true);
+    showAddAdditionalSupportPopup({}, true, false, charLimits);
   }
   function getAdditionalSupportsMarkup() {
     const additionalSupportsDiv = document.createElement('div');
@@ -1987,7 +2008,7 @@ const servicesSupports = (() => {
             values: tableValues,
             attributes: [{ key: 'sectionId', value: asData.assessmentAreaId }],
             onClick: () => {
-              showAddAdditionalSupportPopup(asData, false);
+              showAddAdditionalSupportPopup(asData, false, charLimits);
             },
           };
         });
@@ -2034,7 +2055,7 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddProfessionalReferralPopup(prData, false);
+            showAddProfessionalReferralPopup(prData, false, charLimits);
           },
         },
       ],
@@ -2064,7 +2085,7 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddProfessionalReferralPopup(prData, false);
+            showAddProfessionalReferralPopup(prData, false, charLimits);
           },
         },
       ],
@@ -2089,7 +2110,7 @@ const servicesSupports = (() => {
       doneBtn.classList.remove('disabled');
     }
   }
-  function showAddProfessionalReferralPopup(popupData, isNew, fromAssessment) {
+  function showAddProfessionalReferralPopup(popupData, isNew, fromAssessment, charLimits) {
     if (!dropdownData) {
       dropdownData = planData.getDropdownData();
     }
@@ -2292,7 +2313,7 @@ const servicesSupports = (() => {
     DOM.autosizeTextarea();
   }
   function addProfessionalReferralRow() {
-    showAddProfessionalReferralPopup({}, true);
+    showAddProfessionalReferralPopup({}, true, false, charLimits);
   }
   function getProfessionalReferralsMarkup() {
     const professionalReferralsDiv = document.createElement('div');
@@ -2348,7 +2369,7 @@ const servicesSupports = (() => {
             values: tableValues,
             attributes: [{ key: 'sectionId', value: prData.assessmentAreaId }],
             onClick: () => {
-              showAddProfessionalReferralPopup(prData, false);
+              showAddProfessionalReferralPopup(prData, false, charLimits);
             },
           };
         });

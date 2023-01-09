@@ -46,6 +46,7 @@ const plan = (function () {
   let addWorkflowDoneBtn;
   let planAttWrap;
   let workflowAttWrap;
+  let signatureAttWrap;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -693,15 +694,21 @@ const plan = (function () {
     planAttWrap.classList.add('planAttWrap');
     workflowAttWrap = document.createElement('div');
     workflowAttWrap.classList.add('workflowAttWrap');
+    signatureAttWrap = document.createElement('div');
+    signatureAttWrap.classList.add('signatureAttWrap');
     attachmentsWrap.appendChild(planAttWrap);
     attachmentsWrap.appendChild(workflowAttWrap);
+    attachmentsWrap.appendChild(signatureAttWrap);
 
     const planHeading = document.createElement('h2');
     const workflowHeading = document.createElement('h2');
+    const signHeading = document.createElement('h2');
     planHeading.innerText = 'Plan Attachments';
     workflowHeading.innerText = 'Workflow Attachments';
+    signHeading.innerText = 'Signature Attachments';
     planAttWrap.appendChild(planHeading);
     workflowAttWrap.appendChild(workflowHeading);
+    signatureAttWrap.appendChild(signHeading);
 
     screen.appendChild(attachmentsWrap);
 
@@ -726,16 +733,30 @@ const plan = (function () {
 
     return screen;
   }
+  function getAttachmentIds(attachments) {
+    const idArray = [];
+
+    for (const prop in attachments) {
+      idArray.push(attachments[prop].attachmentId);
+    }
+
+    return idArray;
+  }
   async function runReportScreen(extraSpace) {
-    const selectedAttachments = {};
+    const selectedAttachmentsPlan = {};
+    const selectedAttachmentsWorkflow = {};
+    const selectedAttachmentsSignature = {};
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,
       assessmentId: planId, //TODO
     });
 
+    let index = 0;
+
     if (attachments) {
       for (const prop in attachments) {
+        attachments[prop].order = index;
         const a = attachments[prop];
         const attachment = document.createElement('div');
         attachment.classList.add('attachment');
@@ -746,20 +767,34 @@ const plan = (function () {
         attachment.addEventListener('click', () => {
           if (!attachment.classList.contains('selected')) {
             attachment.classList.add('selected');
-            selectedAttachments[a.attachmentId] = { ...a };
+            if (a.sigAttachmentId) {
+              selectedAttachmentsSignature[a.order] = { ...a };
+            } else if (a.whereFrom === 'Plan') {
+              selectedAttachmentsPlan[a.order] = { ...a };
+            } else {
+              selectedAttachmentsWorkflow[a.order] = { ...a };
+            }
           } else {
             attachment.classList.remove('selected');
-            delete selectedAttachments[a.attachmentId];
+            if (a.sigAttachmentId) {
+              delete selectedAttachmentsSignature[a.order];
+            } else if (a.whereFrom === 'Plan') {
+              delete selectedAttachmentsPlan[a.order];
+            } else {
+              delete selectedAttachmentsWorkflow[a.order];
+            }
           }
-
-          console.log(selectedAttachments);
         });
 
-        if (a.whereFrom === 'Plan') {
+        if (a.sigAttachmentId) {
+          signatureAttWrap.appendChild(attachment);
+        } else if (a.whereFrom === 'Plan') {
           planAttWrap.appendChild(attachment);
         } else {
           workflowAttWrap.appendChild(attachment);
         }
+
+        index++;
       }
     }
 
@@ -774,44 +809,41 @@ const plan = (function () {
         reportsScreen.innerHTML = '';
         reportsScreen.appendChild(spinner);
         // generate report
-        if (Object.keys(selectedAttachments).length > 0) {
-          const attachmentIds = Object.keys(selectedAttachments);
-          assessment.generateReportWithAttachments(planId, '1', extraSpace, attachmentIds);
+        if (
+          Object.keys(selectedAttachmentsPlan).length > 0 ||
+          Object.keys(selectedAttachmentsWorkflow).length > 0 ||
+          Object.keys(selectedAttachmentsSignature).length > 0
+        ) {
+          const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+          const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+          const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+            isSuccess = assessment.generateReportWithAttachments(
+            planId,
+            '1',
+            extraSpace,
+            planAttachmentIds,
+            wfAttachmentIds,
+            sigAttachmentIds,
+          );
         } else {
-          isSuccess = await assessment.generateReport(planId, '1', extraSpace);
+          //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
+            const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+            const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+            const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+            isSuccess = assessment.generateReportWithAttachments(
+                planId,
+                '1',
+                extraSpace,
+                planAttachmentIds,
+                wfAttachmentIds,
+                sigAttachmentIds,
+            );
         }
 
         // remove spinner
         reportsScreen.removeChild(spinner);
         reportsScreen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
-        // handle success/error
-        // if (isSuccess !== 'success') {
-        //   // morePopup.classList.add('error');
-        //   // // build a show error message
-        //   // const message = document.createElement('div');
-        //   // message.classList.add('warningMessage');
-        //   // message.innerHTML = `<p>There was an error retrieving your report, please contact Primary Solutions.</p>`;
-        //   // const okBtn = button.build({
-        //   //   id: 'rptErrOkBtn',
-        //   //   text: 'OK',
-        //   //   style: 'secondary',
-        //   //   type: 'contained',
-        //   //   callback: () => {
-        //   //     reportsScreen.removeChild(message);
-        //   //     reportsScreen.removeChild(okBtn);
-        //   //     morePopup.classList.remove('error');
-        //   //     reportsScreen.classList.remove('visible');
-        //   //     morePopupMenu.classList.add('visible');
-        //   //   },
-        //   // });
-        //   // okBtn.classList.add('okBtn');
-        //   // reportsScreen.appendChild(message);
-        //   // reportsScreen.appendChild(okBtn);
-        // } else {
-        //   reportsScreen.classList.remove('visible');
-        //   morePopupMenu.classList.add('visible');
-        // }
       },
     });
 

@@ -303,7 +303,7 @@ const planOutcomes = (() => {
       doneBtn.classList.remove('disabled');
     }
   }
-  function showAddNewOutcomePopup(sectionId) {
+  function showAddNewOutcomePopup(sectionId, charLimits) {
     if (!dropdownData) {
       dropdownData = planData.getDropdownData();
     }

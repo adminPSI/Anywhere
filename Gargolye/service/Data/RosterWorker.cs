@@ -110,12 +110,19 @@ namespace Anywhere.service.Data
         }
         public class ConsumerRelationships
         {
-            public string firstname { get; set; }
-            public string lastname { get; set; }
-            public string primaryphone { get; set; }
-            public string secondaryphone { get; set; }
-            public string cellularphone { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
+            public string primaryPhone { get; set; }
+            public string secondaryPhone { get; set; }
+            public string cellularPhone { get; set; }
             public string description { get; set; }
+            public string companyName { get; set; }
+            public string title { get; set; }
+            public string addressOne { get; set; }
+            public string addressTwo { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zipcode { get; set; }
         }
 
     }

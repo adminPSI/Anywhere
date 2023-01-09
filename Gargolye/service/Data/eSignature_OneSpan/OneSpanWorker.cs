@@ -3,7 +3,9 @@ using OneSpanSign.Sdk;
 using OneSpanSign.Sdk.Builder;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -15,14 +17,16 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         private static String apiUrl = "https://sandbox.esignlive.com/api";
         // USE https://apps.e-signlive.com/api FOR PRODUCTION
         private static String apiKey = "MEhOb1ptNkhXd1FaOnhqSTdUYXZlaFowSQ==";
-        //OssClient ossClient = new OssClient(apiKey, apiUrl);
+        OssClient ossClient = new OssClient(apiKey, apiUrl);
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
-
+        PackageId packageIdexist = new PackageId("Zy3UhNsvmOLCHaY0-vn56CT7h8w=");
         
 
         public string oneSpanBuildSigners(string packageName, string documentName, string filePath, string[] emails, string[] names, MemoryStream ms)
         {
+            string applicationVersion = ossClient.SystemService.GetApplicationVersion();
+            //byte[] sentPackage = ossClient.DownloadZippedDocuments(packageIdexist);
             //Will need to pass the assessmentId so that the names and emails can be queried from the database
             //if (tokenValidator(token) == false) return null;
             //if (!osdg.validateToken(token))
@@ -55,7 +59,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
         public string createDocument(string documentName, string filePath, string[] emails, string[] names, PackageBuilder package, MemoryStream ms)
         {
-            FileStream fs = File.OpenRead(@"C:\Users\mike.taft\OneSpanDemo.pdf");
+            FileStream fs = File.OpenRead(@"C:\Windows\Temp\OneSpanDemo.pdf");
             //FileStream fs = File.OpenRead(filePath);
 
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Franklin County One Span Demo")
@@ -97,10 +101,35 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         {
             package.WithDocument(document);
             DocumentPackage pack = package.Build();
-            //PackageId packageId = ossClient.CreatePackage(pack);
-            //ossClient.SendPackage(packageId);
+            PackageId packageId = ossClient.CreatePackage(pack);
+            ossClient.SendPackage(packageId);
 
             return "success";
+        }
+
+        public string oneSpanGetSignedDocuments(string packageId)
+        {
+            PackageId currentPackageId = new PackageId(packageId);
+            DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
+            DocumentPackageStatus packageStatus = sentPackage.Status;
+            SigningStatus signingStatus = ossClient.GetSigningStatus(currentPackageId, null, null);
+
+            if (signingStatus.ToString().Equals("COMPLETE"))
+            {
+                byte[] zipContent = ossClient.DownloadZippedDocuments(currentPackageId);
+                File.WriteAllBytes(@"C:\Users\mike.taft\Downloads"
+                                    + "/package-documents.zip", zipContent);
+
+                byte[] evidenceContent = ossClient.DownloadEvidenceSummary(currentPackageId);
+                File.WriteAllBytes(@"C:\Users\mike.taft\Downloads"
+                                    + "/evidence-summary.pdf", evidenceContent);
+            }
+            else
+            {
+                return "Documents have not been signed";
+            }
+
+            return "Successfully downloaded the signed documents";
         }
 
         public bool tokenValidator(string token)

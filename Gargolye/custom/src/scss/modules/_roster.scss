@@ -419,6 +419,7 @@
   .relationship {
     align-items: center;
     border-bottom: $w-sm solid rgba($black, 0.12);
+    cursor: pointer;
     display: flex;
     flex-flow: row nowrap;
     min-height: 50px;
@@ -443,6 +444,14 @@
     &__phone {
       width: 135px;
     }
+  }
+}
+.relationshipDetailWrap {
+  div {
+    margin: 0 0 10px;
+  }
+  p:first-child {
+    font-weight: bold;
   }
 }
 .notesSection {

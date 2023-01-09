@@ -12,7 +12,7 @@ class EditResponsibleRelationshipsComponent {
         let {cache, workflowId, callback} = this;
         POPUP.hide(wfStepPopup);                     
         return callback(workflowId, cache);   
-        // update this call to pass the values that changed          
+        // update this call to pass the values that changed          //
     }
 
     editResponsibleRelationshipsCancelled(){

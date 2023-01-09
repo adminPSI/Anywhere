@@ -803,6 +803,24 @@ const planConsentAndSign = (() => {
     return section;
   }
 
+  function doesIdExistInVendors(vendorID) {
+    const dropdownData = getVendorDropdownData();
+    let mergedData = [...dropdownData.nonPaidSupport, ...dropdownData.paidSupport];
+    const filteredValue = mergedData.filter(d => d.value === vendorID);
+    return filteredValue.length === 0 ? false : true;
+  }
+  function invalidContactProviderVendorIdCheck() {
+    const dropdownData = getVendorDropdownData();
+    let mergedData = [...dropdownData.nonPaidSupport, ...dropdownData.paidSupport];
+
+    teamMemberData.forEach((member, index) => {
+      const filteredValue = mergedData.filter(d => d.value === member.csContactProviderVendorId);
+      if (filteredValue.length === 0) {
+        teamMemberData[index].csContactProviderVendorId = '';
+      }
+    });
+  }
+
   async function init(data) {
     planId = data.planId;
     readOnly = data.readOnly;
@@ -827,6 +845,8 @@ const planConsentAndSign = (() => {
     }
 
     await loadDropdownData();
+
+    invalidContactProviderVendorIdCheck();
   }
 
   return {
@@ -848,5 +868,6 @@ const planConsentAndSign = (() => {
     getTeamMembersHowTheyExistOnPlanNowWhileWeWaitOnDamnStateToMakeUpTheirMinds,
     getNames,
     getTeamMemberData,
+    doesIdExistInVendors,
   };
 })();

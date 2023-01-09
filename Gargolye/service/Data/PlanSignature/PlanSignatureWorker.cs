@@ -95,12 +95,20 @@ namespace Anywhere.service.Data.PlanSignature
 
             try
             {
-                ISPDTData isp = new ISPDTData();
-                string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId);
-                //long sFId = oispW.AddFamilyMemberToIndividal(consumerId, peopleId);
-                //AddTeamMember[] sfObj = js.Deserialize<AddTeamMember[]>(sFS);
-                //return sfObj[0].id;
-                return sFS;
+                if(consumerId != peopleId)
+                {
+                    ISPDTData isp = new ISPDTData();
+                    string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId);
+                    //long sFId = oispW.AddFamilyMemberToIndividal(consumerId, peopleId);
+                    //AddTeamMember[] sfObj = js.Deserialize<AddTeamMember[]>(sFS);
+                    //return sfObj[0].id;
+                    return sFS;
+                }
+                else
+                {
+                    return "";
+                }
+                
 
             }
             catch (Exception ex)
@@ -217,6 +225,19 @@ namespace Anywhere.service.Data.PlanSignature
             TeamMemberFromState[] stateTeamMemberObject = js.Deserialize<TeamMemberFromState[]>(teamMembers);
 
             return stateTeamMemberObject;
+        }
+
+        public TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
+        {
+            ISPDTData ispDT = new ISPDTData();
+
+            string theGuardians = ispDT.IndividualGuardians(peopleId);
+            // OISP FRANKLINONE -- 17080
+            //string teamMembers = oispW.GetIndividualContactsJSON(peopleId.ToString());
+            TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
+
+            return stateGuardianObject;
+
         }
 
         public void setVendorSalesForceId()

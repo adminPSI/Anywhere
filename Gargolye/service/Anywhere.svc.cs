@@ -137,6 +137,11 @@ namespace Anywhere
             return dsWorker.getDayServiceLocationsJSON(token, serviceDate);
         }
 
+        public DayServicesWorker.ClockedInConsumers[] getDayServiceClockedInConsumers(string token, string consumerIdString, string serviceDate, string locationId)
+        {
+            return dsWorker.getDayServiceClockedInConsumers(token, consumerIdString, serviceDate, locationId);
+        }
+
         public DayServicesWorker.DayServiceGroups[] getDayServiceGroups(string token, string locationId)
         {
             return dsWorker.getDayServiceGroups(token, locationId);
@@ -1903,10 +1908,10 @@ namespace Anywhere
             anywhereAttachmentWorker.viewCaseNoteAttachment(token,attachmentId);
         }
 
-        public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
-        {
-            dpra.viewISPReportAndAttachments(token, userId, assessmentID, versionID, extraSpace, isp);
-        }
+        //public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        //{
+        //    dpra.viewISPReportAndAttachments(token, userId, assessmentID, versionID, extraSpace, isp);
+        //}
 
         public void viewPlanAttachment(System.IO.Stream testInput)
         {
@@ -2353,6 +2358,11 @@ namespace Anywhere
             return psw.getTeamMemberListFromState(peopleId);
         }
 
+        public PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
+        {
+            return psw.getStateGuardiansforConsumer(peopleId);
+        }
+
         public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
         {
             return psw.setSalesForceIdForTeamMemberUpdate(peopleId, salesForceId);
@@ -2362,6 +2372,7 @@ namespace Anywhere
         {
             return psw.validateConsumerForSalesForceId(consumerId);
         }
+       
 
         public string checkForSalesForce()
         {
@@ -2712,7 +2723,9 @@ namespace Anywhere
         {
             string token;
             string userId;
-            string[] attachmentIds;
+            string[] planAttachmentIds;
+            string[] wfAttachmentIds;
+            string[] sigAttachmentIds;
             string assessmentID;
             string versionID;
             string extraSpace;
@@ -2727,13 +2740,25 @@ namespace Anywhere
             extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             string[] words = fullInput.Split('&');
-            var index = Array.FindIndex(words, row => row.Contains("attachmentIds"));
+            var index = Array.FindIndex(words, row => row.Contains("planAttachmentIds"));
             string attId = words[index];
-            attId = attId.Replace("attachmentIds=", "");
+            attId = attId.Replace("planAttachmentIds=", "");
             attId = attId.Replace("%2C", ",");
-            attachmentIds = attId.Split(',');
+            planAttachmentIds = attId.Split(',');
+            string[] wordsTwo = fullInput.Split('&');
+            var indexTwo = Array.FindIndex(wordsTwo, row => row.Contains("wfAttachmentIds"));
+            string attIdTwo = wordsTwo[indexTwo];
+            attIdTwo = attIdTwo.Replace("wfAttachmentIds=", "");
+            attIdTwo = attIdTwo.Replace("%2C", ",");
+            wfAttachmentIds = attIdTwo.Split(',');
+            string[] wordsThree = fullInput.Split('&');
+            var indexThree = Array.FindIndex(wordsThree, row => row.Contains("sigAttachmentIds"));
+            string attIdThree = wordsThree[indexThree];
+            attIdThree = attIdThree.Replace("sigAttachmentIds=", "");
+            attIdThree = attIdThree.Replace("%2C", ",");
+            sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            dpra.addSelectedAttachmentsToReport(token, attachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp));
+            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp));
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
@@ -2758,6 +2783,12 @@ namespace Anywhere
         {
             //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "", "686614946776981", "1", "false", true);
             return osw.oneSpanBuildSigners(packageName, documentName, filePath, emails, names, null);
+        }
+
+        public string oneSpanGetSignedDocuments(string token, string packageId)
+        {
+            //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "", "686614946776981", "1", "false", true);
+            return osw.oneSpanGetSignedDocuments(packageId);
         }
 
         //public string oneSpanBuildSigners(string token, string userId, string assessmentID, string versionID, bool isp)

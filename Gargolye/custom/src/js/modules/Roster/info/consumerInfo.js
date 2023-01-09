@@ -56,49 +56,48 @@ var consumerInfo = (function () {
     return newPath;
   }
   async function updateConsumerPhoto(event) {
-      event.preventDefault();
-      var targetConsumerId = consumerInfoCard.dataset.consumerid;
-      var consumerCardFromRosterList = document.querySelector(
-          `[data-consumer-id="${targetConsumerId}"]`,
-      );
+    event.preventDefault();
+    var targetConsumerId = consumerInfoCard.dataset.consumerid;
+    var consumerCardFromRosterList = document.querySelector(
+      `[data-consumer-id="${targetConsumerId}"]`,
+    );
 
-      var pic2 = consumerCardFromRosterList.querySelector('img');
-      pic2.setAttribute('src', URL.createObjectURL(event.target.files[0]));
-      var pic1 = consumerInfoCard.querySelector('img');
-      pic1.setAttribute('src', URL.createObjectURL(event.target.files[0]));
+    var pic2 = consumerCardFromRosterList.querySelector('img');
+    pic2.setAttribute('src', URL.createObjectURL(event.target.files[0]));
+    var pic1 = consumerInfoCard.querySelector('img');
+    pic1.setAttribute('src', URL.createObjectURL(event.target.files[0]));
 
-      var id = `${targetConsumerId}`;
-      id = parseInt(id);
-      var portraitPath = $.session.portraitPath;
-      portraitPath = formatPortraitPath(portraitPath);
+    var id = `${targetConsumerId}`;
+    id = parseInt(id);
+    var portraitPath = $.session.portraitPath;
+    portraitPath = formatPortraitPath(portraitPath);
 
-      var canvas = document.createElement('canvas');
-      canvas.height = 127;
-      canvas.width = 150;
+    var canvas = document.createElement('canvas');
+    canvas.height = 127;
+    canvas.width = 150;
 
-      var ctx = canvas.getContext('2d');
+    var ctx = canvas.getContext('2d');
 
-      var imageObj = new Image(152, 127);
+    var imageObj = new Image(152, 127);
 
-      pic2.onload = function () {
-          ctx.drawImage(pic2, 0, 0, 152, 127);
+    pic2.onload = function () {
+      ctx.drawImage(pic2, 0, 0, 152, 127);
 
-          var srcData = canvas.toDataURL('image/jpeg');
-          srcData = srcData.replace('data:image/jpeg;base64,', '');
+      var srcData = canvas.toDataURL('image/jpeg');
+      srcData = srcData.replace('data:image/jpeg;base64,', '');
 
-          rosterAjax.updatePortrait(srcData, id, portraitPath);
+      rosterAjax.updatePortrait(srcData, id, portraitPath);
 
-          getImageOrientation(event.target.files[0], function (orientation) { });
-      };
-      //ctx.drawImage(imageObj, 0, 0, 152, 127);
-      var imageObjSrcVal = `#${id}`;
-      imageObj.setAttribute('src', imageObjSrcVal);
-      ctx.drawImage(imageObj, 0, 0, 152, 127);
+      getImageOrientation(event.target.files[0], function (orientation) {});
+    };
+    //ctx.drawImage(imageObj, 0, 0, 152, 127);
+    var imageObjSrcVal = `#${id}`;
+    imageObj.setAttribute('src', imageObjSrcVal);
+    ctx.drawImage(imageObj, 0, 0, 152, 127);
 
     //var srcData = canvas.toDataURL('image/jpeg');
     //srcData = srcData.replace("data:image/jpeg;base64,", "");
     //rosterAjax.updatePortrait(srcData, id, portraitPath);
-
   }
   function orderScheduleData(data) {
     var tableData = [
@@ -506,6 +505,48 @@ var consumerInfo = (function () {
       }
     });
   }
+  function showRelationshipDetails(section, sectionInner, data) {
+    // set sectionInner to display none
+    sectionInner.style.display = 'none';
+    // check for nulls
+    const companyName = data.companyName ? data.companyName : '';
+    const title = data.title ? data.title : '';
+    const addressOne = data.addressOne ? data.addressOne : '';
+    const addressTwo = data.addressTwo ? data.addressTwo : '';
+    const city = data.city ? data.city : '';
+    const state = data.state ? data.state : '';
+    const zipcode = data.zipcode ? data.zipcode : '';
+    // show data
+    const detailWrap = document.createElement('div');
+    detailWrap.classList.add('relationshipDetailWrap');
+    detailWrap.innerHTML = `
+      <div>
+        <p>Company Name</p>
+        <p>${companyName}</p>
+      </div>
+      <div>
+        <p>Title</p>
+        <p>${title}</p>
+      </div>
+      <div>
+        <p>Address</p>
+        <p>${addressOne}</p>
+        <p>${addressTwo}</p>
+        <p>${city}, ${state} ${zipcode}</p>
+      </div>
+    `;
+    const donebtn = button.build({
+      text: 'Done',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        section.removeChild(detailWrap);
+        sectionInner.style.display = 'block';
+      },
+    });
+    detailWrap.appendChild(donebtn);
+    section.appendChild(detailWrap);
+  }
   function populateRelationshipsSection(section, data) {
     var sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
@@ -515,46 +556,54 @@ var consumerInfo = (function () {
       return;
     }
 
-    sectionInner.innerHTML = `
-      <div class="relationship relationship__header">
-        <div class="relationship__name">Name</div>
-        <div class="relationship__type">Relationship</div>
-        <div class="relationship__phone">Phone</div>
-      </div>
-      ${data
-        .map(d => {
-          return `
-          	<div class="relationship">
-            <div class="relationship__name">${d.lastname}, ${d.firstname}</div>
-			<div class="relationship__type">${d.description}</div>
-			<div class="relationship__phone">		
-			${
-        d.primaryphone && d.primaryphone.trim().length != 0
-          ? `P1: <a href=tel:+1-${UTIL.formatPhoneNumber(
-              d.primaryphone.trim(),
-            )}>${UTIL.formatPhoneNumber(d.primaryphone.trim())}</a><br>`
-          : ``
-      }
-			${
-        d.secondaryphone && d.secondaryphone.trim().length != 0
-          ? `P2: <a href=tel:+1-${UTIL.formatPhoneNumber(
-              d.secondaryphone.trim(),
-            )}>${UTIL.formatPhoneNumber(d.secondaryphone.trim())}</a><br>`
-          : ``
-      }
-			${
-        d.cellularphone && d.cellularphone.trim().length != 0
-          ? `C: <a href=tel:+1-${UTIL.formatPhoneNumber(
-              d.cellularphone.trim(),
-            )}>${UTIL.formatPhoneNumber(d.cellularphone.trim())}</a>`
-          : ``
-      }
-			</div>
-          </div>
-        `;
-        })
-        .join('')}
+    const relationshipHeader = document.createElement('div');
+    relationshipHeader.classList.add('relationship', 'relationship__header');
+    relationshipHeader.innerHTML = `
+      <div class="relationship__name">Name</div>
+      <div class="relationship__type">Relationship</div>
+      <div class="relationship__phone">Phone</div>
     `;
+    sectionInner.appendChild(relationshipHeader);
+
+    data.forEach(d => {
+      const relationship = document.createElement('div');
+      relationship.classList.add('relationship');
+      relationship.innerHTML = `
+        <div class="relationship__name">${d.lastName}, ${d.firstName}</div>
+        <div class="relationship__type">${d.description}</div>
+        <div class="relationship__phone">		
+        ${
+          d.primaryPhone && d.primaryPhone.trim().length != 0
+            ? `P1: <a href=tel:+1-${UTIL.formatPhoneNumber(
+                d.primaryPhone.trim(),
+              )}>${UTIL.formatPhoneNumber(d.primaryPhone.trim())}</a><br>`
+            : ``
+        }
+        ${
+          d.secondaryPhone && d.secondaryPhone.trim().length != 0
+            ? `P2: <a href=tel:+1-${UTIL.formatPhoneNumber(
+                d.secondaryPhone.trim(),
+              )}>${UTIL.formatPhoneNumber(d.secondaryPhone.trim())}</a><br>`
+            : ``
+        }
+        ${
+          d.cellularPhone && d.cellularPhone.trim().length != 0
+            ? `C: <a href=tel:+1-${UTIL.formatPhoneNumber(
+                d.cellularPhone.trim(),
+              )}>${UTIL.formatPhoneNumber(d.cellularPhone.trim())}</a>`
+            : ``
+        }
+        </div>
+      `;
+
+      if ($.session.applicationName === 'Advisor') {
+        relationship.addEventListener('click', e =>
+          showRelationshipDetails(section, sectionInner, d),
+        );
+      }
+
+      sectionInner.appendChild(relationship);
+    });
   }
   // *schedule
   function populateScheduleTable(sectionInner, locationId) {

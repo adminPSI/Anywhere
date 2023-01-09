@@ -19,25 +19,70 @@ using iTextSharp.text.pdf;
 using iTextSharp.text;
 using pdftron;
 using System.Management.Automation.Language;
+using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
+using iTextSharp.text.pdf.qrcode;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
     public class DisplayPlanReportAndAttachments
     {
+        //PDFNet.Initialize("Gatekeeper/Anywhere, Advisor/Anywhere::W:AMS(20230512):4E77CBD11FD71AD02373727860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+        //pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W:AMS(20230512):4E77CBD11FD71AD02373727860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+
         PlanReport planRep = new PlanReport();
         DataGetter dg = new DataGetter();
         AllAttachmentsDataGetter aadg = new AllAttachmentsDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
+        GetReportsStreams grs = new GetReportsStreams();
         PDFGenerator.Data obj = new PDFGenerator.Data();
-        PDFDoc doc = new PDFDoc();
+      //  PDFDoc doc = new PDFDoc();
 
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
         {
             bool isTokenValid = aadg.ValidateToken(token);
             if (isTokenValid)
             {
+
+                List<byte[]> allAttachments = new List<byte[]>();
+
+                string planAttachments = aadg.getPlanAttachmentsWithOrdering(assessmentId);
+                js.MaxJsonLength = Int32.MaxValue;
+                PlanAttachments[] planAttachmentsObj = js.Deserialize<PlanAttachments[]>(planAttachments);
+                
+                string workflowAttachments = aadg.getWorkFlowAttachmentswithOrdering(assessmentId);
+                js.MaxJsonLength = Int32.MaxValue;
+                WorkFlowAttachments[] workflowAttachmentsObj = js.Deserialize<WorkFlowAttachments[]>(workflowAttachments);
+                
+                int wfL = workflowAttachmentsObj.Length;
+                int planL = planAttachmentsObj.Length;
+                int total = wfL + planL;
                 string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
                 PlanAndWorkflowAttachments[] pAWAttachObj = js.Deserialize<PlanAndWorkflowAttachments[]>(pAWAttach);
+                int i = 0;
+                foreach(WorkFlowAttachments wfa in workflowAttachmentsObj)
+                {
+                    pAWAttachObj[i].attachmentId = wfa.attachmentId;
+                    pAWAttachObj[i].description = wfa.description;
+                    pAWAttachObj[i].attachmentType = wfa.attachmentType;
+                    pAWAttachObj[i].sectionOrGroup = wfa.sectionOrGroup;
+                    pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
+                    pAWAttachObj[i].whereFrom = wfa.whereFrom;
+                    pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                    i++;
+                }
+                foreach (PlanAttachments wfa in planAttachmentsObj)
+                {
+                    pAWAttachObj[i].attachmentId = wfa.attachmentId;
+                    pAWAttachObj[i].description = wfa.description;
+                    pAWAttachObj[i].attachmentType = wfa.attachmentType;
+                    pAWAttachObj[i].sectionOrGroup = wfa.sectionOrGroup;
+                    pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
+                    pAWAttachObj[i].whereFrom = wfa.whereFrom;
+                    pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                    i++;
+                }
+                //string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
+                //PlanAndWorkflowAttachments[] pAWAttachObj = js.Deserialize<PlanAndWorkflowAttachments[]>(pAWAttach);
                 return pAWAttachObj;
             }
             else
@@ -46,132 +91,454 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        public void addSelectedAttachmentsToReport(string token, string[] attachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
             bool isTokenValid = aadg.ValidateToken(token);
+            pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20230512):99A5675D0437C60AF320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
             PDFDoc new_doc;
-            if (isTokenValid)
+            if (isTokenValid)//
             {
                 Attachment attachment = new Attachment();
                 List<byte[]> allAttachments = new List<byte[]>();
-                byte[] new_byte_output = null; 
-                byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
-                allAttachments.Add(planReport);
-                foreach (string attachId in attachmentIds)
+                List<byte[]> wfAttRep = new List<byte[]>();
+                List<byte[]> sigAttRep = new List<byte[]>();
+                List<byte[]> planAttRep = new List<byte[]>();
+                //List<byte[]> planReportSections = new List<byte[]>();
+                ReportSectionOrder[] order = getReportSectionOrder();
+                MemoryStream assessment = new MemoryStream();
+                MemoryStream intro = new MemoryStream();
+                MemoryStream plan = new MemoryStream();
+                foreach (ReportSectionOrder ord in order)
                 {
-                    using (PDFDoc doc = new PDFDoc())
+                    if (true == true)
                     {
-                        PDFViewCtrl view = new PDFViewCtrl();
-                        attachment = getPlanAttachment(attachId, "");
-
-
-                        if (attachment.filename.ToUpper().Contains("PDF"))
+                        if (ord.setting_value == "1")
                         {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                               intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                            new_byte_output = StreamExtensions.ToByteArray(attachment.data);
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                 plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                            allAttachments.Add(new_byte_output);
-                            new_byte_output = null;
+                            }
                         }
-                        else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
-                        {
-                            if (attachment.filename.ToUpper().Contains("XLSX"))
+                            if (ord.setting_value == "2")
                             {
-                                attachment.filename = attachment.filename.Replace("xlsx", "pdf");
-                            }
-                            if (attachment.filename.ToUpper().Contains("DOCX"))
-                            {
-                                attachment.filename = attachment.filename.Replace("docx", "pdf");
-                            }
-                            if (attachment.filename.ToUpper().Contains("XLS"))
-                            {
-                                attachment.filename = attachment.filename.Replace("xls", "pdf");
-                            }
-                            if (attachment.filename.ToUpper().Contains("DOC"))
-                            {
-                                attachment.filename = attachment.filename.Replace("doc", "pdf");
-                            }
-
-                            byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);//displayAttachment(attachment);
-                            var filter = new MemoryFilter(nAttachment.Length, true);
-                            var filterWriter = new FilterWriter(filter);
-                            filterWriter.WriteBuffer(nAttachment);
-                            filterWriter.Flush();
-                            pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
-                            //filterWriter.Flush();
-                            
-                            string pdfversion = doc.GetSDFDoc().GetHeader();
-                            new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
-                            
-                            allAttachments.Add(new_byte_output);
-                            new_byte_output = null;
-
-                        }
-                        else
-                        {
-                            string imageExt = "pdf";
-                            //byte[] nAttachment = displayAttachment(attachment.data); // for demo purpose read from disk
-                            byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);
-                            //if (attachment.filename.ToUpper().Contains("PNG"))
-                            //{
-                            //    attachment.filename = attachment.filename.Replace("png", "pdf");
-                            //}
-                            //if (attachment.filename.ToUpper().Contains("JPG"))
-                            //{
-                            //    attachment.filename = attachment.filename.Replace("jpg", "pdf");
-                            //}
-                            //if (attachment.filename.ToUpper().Contains("SVG"))
-                            //{
-                            //    attachment.filename = attachment.filename.Replace("svg", "pdf");
-                            //}
-                            //if (attachment.filename.ToUpper().Contains("BMP"))
-                            //{
-                            //    attachment.filename = attachment.filename.Replace("bmp", "pdf");
-                            //}
-                            int index = attachment.filename.LastIndexOf(".");
-                            if (index >= 0)
-                                attachment.filename = attachment.filename.Substring(0, index + 1);
-                            ;
-                            attachment.filename = attachment.filename + imageExt;
-                            using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
-                            {
-                                pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
-                                writer.WriteBuffer(nAttachment);
-                                writer.Flush();
-                                memoryFilter.SetAsInputFilter(); // switch from sink to source
-
-                                using (PDFDoc newDoc = new PDFDoc())
+                                if (ord.setting_key == "Assessment")
                                 {
-                                    var filter = new MemoryFilter(nAttachment.Length, true);
-                                    var filterWriter = new FilterWriter(filter);
-                                    filterWriter.WriteBuffer(nAttachment);
-                                    filterWriter.Flush();
-                                    var options = new ConversionOptions();
-                                    //options.
-                                    pdftron.PDF.DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, filter, null);
-                                    documentConversion.Convert();
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                    // Set a new password required to open a document
-                                    //string base64String = System.Convert.ToBase64String(nAttachment);
-                                    //pdftron.PDF.Convert.FromXps(newDoc, nAttachment, (int)nAttachment.Length);
-                                    //pdftron.PDF.Convert.FromXps(newDoc, base64String);
-                                    
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                    byte[] pdfData = newDoc.Save(SDFDoc.SaveOptions.e_linearized);
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                    allAttachments.Add(pdfData);
-                                    new_byte_output = null;
+                                }
+                            }
+                            if (ord.setting_value == "3")
+                            {
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                            }
+                            if (ord.setting_value == "4")
+                            {
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+
+                                }
+                            }
+                            if (ord.setting_value == "5")
+                            {
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                            }
+                            if (ord.setting_value == "6")
+                            {
+                                if (ord.setting_key == "Assessment")
+                                {
+                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "All About Me")
+                                {
+                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                                if (ord.setting_key == "Plan")
+                                {
+                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                                }
+                            }
+                        
+
+                    }
+                }
+
+                
+                byte[] introReport = StreamExtensions.ToByteArray(intro);
+                intro.Close();
+                intro.Flush();
+                intro.Dispose();
+                byte[] assessmentReport = StreamExtensions.ToByteArray(assessment);
+                assessment.Close();
+                intro.Flush();
+                assessment.Dispose();
+                byte[] planReport = StreamExtensions.ToByteArray(plan);                
+                plan.Close();
+                intro.Flush();
+                plan.Dispose();
+
+                if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                {
+                    wfAttRep = wfAttReport(wfAttachmentIds);
+                }
+                if(sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
+                {
+                    sigAttRep = sigAttReport(sigAttachmentIds);
+                }
+                if(planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
+                {
+                    planAttRep = planAttReport(planAttachmentIds);
+                }
+                
+                
+
+                foreach (ReportSectionOrder ord in order)
+                {
+                    if(ord.setting_value == "1")
+                    {
+                        if (ord.setting_key == "Assessment")
+                        {
+                            allAttachments.Add(assessmentReport);
+                        }
+                        if (ord.setting_key == "All About Me")
+                        {
+                            allAttachments.Add(introReport);
+                        }
+                        if (ord.setting_key == "Plan")
+                        {
+                            allAttachments.Add(planReport);
+                        }
+                        if (ord.setting_key == "Assessment Attachments")
+                        {
+                            if(planAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in planAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                                                       
+                        }
+                        if (ord.setting_key == "Signature Attachments")
+                        {
+                            if(sigAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in sigAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }                            
+                        }
+                        if (ord.setting_key == "Workflow Attachments")
+                        {
+                            if(wfAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in wfAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }                            
+                        }
+                    }
+                    if (ord.setting_value == "2")
+                    {
+                        if (ord.setting_key == "Assessment")
+                        {
+                            allAttachments.Add(assessmentReport);
+                        }
+                        if (ord.setting_key == "All About Me")
+                        {
+                            allAttachments.Add(introReport);
+                        }
+                        if (ord.setting_key == "Plan")
+                        {
+                            allAttachments.Add(planReport);
+                        }
+                        if (ord.setting_key == "Assessment Attachments")
+                        {
+                            if (planAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in planAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+
+                        }
+                        if (ord.setting_key == "Signature Attachments")
+                        {
+                            if (sigAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in sigAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                        if (ord.setting_key == "Workflow Attachments")
+                        {
+                            if (wfAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in wfAttRep)
+                                {
+                                    allAttachments.Add(att);
                                 }
                             }
                         }
                     }
-                    
+                    if (ord.setting_value == "3")
+                    {
+                        if (ord.setting_key == "Assessment")
+                        {
+                            allAttachments.Add(assessmentReport);
+                        }
+                        if (ord.setting_key == "All About Me")
+                        {
+                            allAttachments.Add(introReport);
+                        }
+                        if (ord.setting_key == "Plan")
+                        {
+                            allAttachments.Add(planReport);
+                        }
+                        if (ord.setting_key == "Assessment Attachments")
+                        {
+                            if (planAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in planAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+
+                        }
+                        if (ord.setting_key == "Signature Attachments")
+                        {
+                            if (sigAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in sigAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                        if (ord.setting_key == "Workflow Attachments")
+                        {
+                            if (wfAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in wfAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                    }
+                    if (ord.setting_value == "4")
+                    {
+                        if (ord.setting_key == "Assessment")
+                        {
+                            allAttachments.Add(assessmentReport);
+                        }
+                        if (ord.setting_key == "All About Me")
+                        {
+                            allAttachments.Add(introReport);
+                        }
+                        if (ord.setting_key == "Plan")
+                        {
+                            allAttachments.Add(planReport);
+                        }
+                        if (ord.setting_key == "Assessment Attachments")
+                        {
+                            if (planAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in planAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+
+                        }
+                        if (ord.setting_key == "Signature Attachments")
+                        {
+                            if (sigAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in sigAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                        if (ord.setting_key == "Workflow Attachments")
+                        {
+                            if (wfAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in wfAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                    }
+                    if (ord.setting_value == "5")
+                    {
+                        if (ord.setting_key == "Assessment")
+                        {
+                            allAttachments.Add(assessmentReport);
+                        }
+                        if (ord.setting_key == "All About Me")
+                        {
+                            allAttachments.Add(introReport);
+                        }
+                        if (ord.setting_key == "Plan")
+                        {
+                            allAttachments.Add(planReport);
+                        }
+                        if (ord.setting_key == "Assessment Attachments")
+                        {
+                            if (planAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in planAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+
+                        }
+                        if (ord.setting_key == "Signature Attachments")
+                        {
+                            if (sigAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in sigAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                        if (ord.setting_key == "Workflow Attachments")
+                        {
+                            if (wfAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in wfAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                    }
+                    if (ord.setting_value == "6")
+                    {
+                        if (ord.setting_key == "Assessment")
+                        {
+                            allAttachments.Add(assessmentReport);
+                        }
+                        if (ord.setting_key == "All About Me")
+                        {
+                            allAttachments.Add(introReport);
+                        }
+                        if (ord.setting_key == "Plan")
+                        {
+                            allAttachments.Add(planReport);
+                        }
+                        if (ord.setting_key == "Assessment Attachments")
+                        {
+                            if (planAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in planAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+
+                        }
+                        if (ord.setting_key == "Signature Attachments")
+                        {
+                            if (sigAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in sigAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                        if (ord.setting_key == "Workflow Attachments")
+                        {
+                            if (wfAttRep.Count != 0)
+                            {
+                                foreach (byte[] att in wfAttRep)
+                                {
+                                    allAttachments.Add(att);
+                                }
+                            }
+                        }
+                    }
+
                 }
 
+                
                 byte[] finalMergedArray = concatAndAddContent(allAttachments);
                 response.Clear();
                 response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
@@ -182,7 +549,322 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
+        
 
+        public List<byte[]> wfAttReport(string[] wfAttachmentIds)
+        {
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            Attachment attachment = new Attachment();
+            List<byte[]> allAttachments = new List<byte[]>();
+            byte[] new_byte_output = null;
+            foreach (string attachId in wfAttachmentIds)
+            {
+                using (PDFDoc doc = new PDFDoc())
+                {
+                    PDFViewCtrl view = new PDFViewCtrl();
+                    attachment = viewWFAttachment("", attachId, "");
+
+
+                    if (attachment.filename.ToUpper().Contains("PDF"))
+                    {
+
+                        new_byte_output = StreamExtensions.ToByteArray(attachment.data);
+
+                        allAttachments.Add(new_byte_output);
+                        new_byte_output = null;
+                    }
+                    else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
+                    {
+                        if (attachment.filename.ToUpper().Contains("XLSX"))
+                        {
+                            attachment.filename = attachment.filename.Replace("xlsx", "pdf");
+                        }
+                        if (attachment.filename.ToUpper().Contains("DOCX"))
+                        {
+                            attachment.filename = attachment.filename.Replace("docx", "pdf");
+                        }
+                        if (attachment.filename.ToUpper().Contains("XLS"))
+                        {
+                            attachment.filename = attachment.filename.Replace("xls", "pdf");
+                        }
+                        if (attachment.filename.ToUpper().Contains("DOC"))
+                        {
+                            attachment.filename = attachment.filename.Replace("doc", "pdf");
+                        }
+
+                        byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);//displayAttachment(attachment);
+                        var filter = new MemoryFilter(nAttachment.Length, true);
+                        var filterWriter = new FilterWriter(filter);
+                        filterWriter.WriteBuffer(nAttachment);
+                        filterWriter.Flush();
+                        pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
+                        //filterWriter.Flush();
+
+                        string pdfversion = doc.GetSDFDoc().GetHeader();
+                        new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
+
+                        allAttachments.Add(new_byte_output);
+                        new_byte_output = null;
+
+                    }
+                    else
+                    {
+                        string imageExt = "pdf";
+                        //byte[] nAttachment = displayAttachment(attachment.data); // for demo purpose read from disk
+                        byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);
+                        int index = attachment.filename.LastIndexOf(".");
+                        if (index >= 0)
+                            attachment.filename = attachment.filename.Substring(0, index + 1);
+                        ;
+                        attachment.filename = attachment.filename + imageExt;
+                        using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
+                        {
+                            pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
+                            writer.WriteBuffer(nAttachment);
+                            writer.Flush();
+                            memoryFilter.SetAsInputFilter(); // switch from sink to source
+
+                            using (PDFDoc newDoc = new PDFDoc())
+                            {
+                                var filter = new MemoryFilter(nAttachment.Length, true);
+                                var filterWriter = new FilterWriter(filter);
+                                filterWriter.WriteBuffer(nAttachment);
+                                filterWriter.Flush();
+                                var options = new ConversionOptions();
+                                //options.
+                                pdftron.PDF.DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, filter, null);
+                                documentConversion.Convert();
+
+
+                                byte[] pdfData = newDoc.Save(SDFDoc.SaveOptions.e_linearized);
+
+                                allAttachments.Add(pdfData);
+                                new_byte_output = null;
+
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            return allAttachments;
+
+        }
+
+       
+
+
+        public List<byte[]> sigAttReport(string[] wfAttachmentIds)
+        {
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            Attachment attachment = new Attachment();
+            List<byte[]> allAttachments = new List<byte[]>();
+            byte[] new_byte_output = null;
+            foreach (string attachId in wfAttachmentIds)
+            {
+                using (PDFDoc doc = new PDFDoc())
+                {
+                    PDFViewCtrl view = new PDFViewCtrl();
+                    attachment = getPlanAttachment(attachId, "");
+
+
+                    if (attachment.filename.ToUpper().Contains("PDF"))
+                    {
+
+                        new_byte_output = StreamExtensions.ToByteArray(attachment.data);
+
+                        allAttachments.Add(new_byte_output);
+                        new_byte_output = null;
+                    }
+                    else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
+                    {
+                        if (attachment.filename.ToUpper().Contains("XLSX"))
+                        {
+                            attachment.filename = attachment.filename.Replace("xlsx", "pdf");
+                        }
+                        if (attachment.filename.ToUpper().Contains("DOCX"))
+                        {
+                            attachment.filename = attachment.filename.Replace("docx", "pdf");
+                        }
+                        if (attachment.filename.ToUpper().Contains("XLS"))
+                        {
+                            attachment.filename = attachment.filename.Replace("xls", "pdf");
+                        }
+                        if (attachment.filename.ToUpper().Contains("DOC"))
+                        {
+                            attachment.filename = attachment.filename.Replace("doc", "pdf");
+                        }
+
+                        byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);//displayAttachment(attachment);
+                        var filter = new MemoryFilter(nAttachment.Length, true);
+                        var filterWriter = new FilterWriter(filter);
+                        filterWriter.WriteBuffer(nAttachment);
+                        filterWriter.Flush();
+                        pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
+                        //filterWriter.Flush();
+
+                        string pdfversion = doc.GetSDFDoc().GetHeader();
+                        new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
+
+                        allAttachments.Add(new_byte_output);
+                        new_byte_output = null;
+
+                    }
+                    else
+                    {
+                        string imageExt = "pdf";
+                        //byte[] nAttachment = displayAttachment(attachment.data); // for demo purpose read from disk
+                        byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);
+                        int index = attachment.filename.LastIndexOf(".");
+                        if (index >= 0)
+                            attachment.filename = attachment.filename.Substring(0, index + 1);
+                        ;
+                        attachment.filename = attachment.filename + imageExt;
+                        using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
+                        {
+                            pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
+                            writer.WriteBuffer(nAttachment);
+                            writer.Flush();
+                            memoryFilter.SetAsInputFilter(); // switch from sink to source
+
+                            using (PDFDoc newDoc = new PDFDoc())
+                            {
+                                var filter = new MemoryFilter(nAttachment.Length, true);
+                                var filterWriter = new FilterWriter(filter);
+                                filterWriter.WriteBuffer(nAttachment);
+                                filterWriter.Flush();
+                                var options = new ConversionOptions();
+                                //options.
+                                pdftron.PDF.DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, filter, null);
+                                documentConversion.Convert();
+
+
+                                byte[] pdfData = newDoc.Save(SDFDoc.SaveOptions.e_linearized);
+
+                                allAttachments.Add(pdfData);
+                                new_byte_output = null;
+
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            return allAttachments;
+
+        }
+
+       public List<byte[]> planAttReport(string[] planAttachmentIds)
+       {
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            Attachment attachment = new Attachment();
+            List<byte[]> allAttachments = new List<byte[]>();
+            byte[] new_byte_output = null;
+            foreach (string attachId in planAttachmentIds)
+            {
+                using (PDFDoc doc = new PDFDoc())
+                {
+                    PDFViewCtrl view = new PDFViewCtrl();
+                    attachment = getPlanAttachment(attachId, "");
+
+
+                    if (attachment.filename.ToUpper().Contains("PDF"))
+                    {
+
+                        new_byte_output = StreamExtensions.ToByteArray(attachment.data);
+
+                        allAttachments.Add(new_byte_output);
+                        new_byte_output = null;
+                    }
+                    //else if (attachment.filename.ToUpper().Contains("DOCX") || attachment.filename.ToUpper().Contains("XLS") || attachment.filename.ToUpper().Contains("XLSX") || attachment.filename.ToUpper().Contains("DOC"))
+                    //{
+                    //    if (attachment.filename.ToUpper().Contains("XLSX"))
+                    //    {
+                    //        attachment.filename = attachment.filename.Replace("xlsx", "pdf");
+                    //    }
+                    //    if (attachment.filename.ToUpper().Contains("DOCX"))
+                    //    {
+                    //        attachment.filename = attachment.filename.Replace("docx", "pdf");
+                    //    }
+                    //    if (attachment.filename.ToUpper().Contains("XLS"))
+                    //    {
+                    //        attachment.filename = attachment.filename.Replace("xls", "pdf");
+                    //    }
+                    //    if (attachment.filename.ToUpper().Contains("DOC"))
+                    //    {
+                    //        attachment.filename = attachment.filename.Replace("doc", "pdf");
+                    //    }
+                    //    OfficeToPDFOptions options = new OfficeToPDFOptions();
+                    //    options.GetSmartSubstitutionPluginPath();
+                    //    byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);//displayAttachment(attachment);
+                    //    var filter = new MemoryFilter(nAttachment.Length, true);
+                    //    var filterWriter = new FilterWriter(filter);
+                    //    filterWriter.WriteBuffer(nAttachment);
+                    //    filterWriter.Flush();
+                    //    pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
+                    //    //filterWriter.Flush();
+
+                    //    string pdfversion = doc.GetSDFDoc().GetHeader();
+                    //    new_byte_output = doc.Save(SDFDoc.SaveOptions.e_linearized);
+
+                    //    allAttachments.Add(new_byte_output);
+                    //    new_byte_output = null;
+
+                    //}
+                    else
+                    {
+                        string imageExt = "pdf";
+                        //byte[] nAttachment = displayAttachment(attachment.data); // for demo purpose read from disk
+                        byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);
+                        int index = attachment.filename.LastIndexOf(".");
+                        if (index >= 0)
+                            attachment.filename = attachment.filename.Substring(0, index + 1);
+                        ;
+                        attachment.filename = attachment.filename + imageExt;
+                        using (pdftron.Filters.MemoryFilter memoryFilter = new pdftron.Filters.MemoryFilter((int)nAttachment.Length, false)) // false = sink
+                        {
+                            pdftron.Filters.FilterWriter writer = new pdftron.Filters.FilterWriter(memoryFilter); // helper filter to allow us to write to buffer
+                            writer.WriteBuffer(nAttachment);
+                            writer.Flush();
+                            memoryFilter.SetAsInputFilter(); // switch from sink to source
+
+                            using (PDFDoc newDoc = new PDFDoc())
+                            {
+                                var filter = new MemoryFilter(nAttachment.Length, true);
+                                var filterWriter = new FilterWriter(filter);
+                                filterWriter.WriteBuffer(nAttachment);
+                                filterWriter.Flush();
+                                //var options = new ConversionOptions();
+                                //OfficeToPDFOptions options = new OfficeToPDFOptions();
+                                //var test = options.GetSmartSubstitutionPluginPath();
+                                //options.SetSmartSubstitutionPluginPath(test);
+
+                                pdftron.PDF.DocumentConversion documentConversion = pdftron.PDF.Convert.StreamingPDFConversion(newDoc, filter, null);
+                                documentConversion.Convert();
+
+
+                                byte[] pdfData = newDoc.Save(SDFDoc.SaveOptions.e_linearized);
+
+                                allAttachments.Add(pdfData);
+                                new_byte_output = null;
+                            }
+                        }
+                    }
+                    
+                }
+
+            }
+            return allAttachments;
+
+        }
        
 
         public static byte[] concatAndAddContent(List<byte[]> pdfByteContent)
@@ -330,42 +1012,7 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        public void viewISPReportAndAttachments(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
-        {
-            bool isTokenValid = aadg.ValidateToken(token);
-            if (isTokenValid)
-            {
-                List<byte[]> allAttachments = new List<byte[]>();
-                byte[] planReport = getISPReportStream(token, userId, assessmentID, versionID, extraSpace, isp);
-                allAttachments.Add(planReport);
-                string planAttachments = aadg.getPlanAttachmentsWithOrdering(assessmentID);
-                js.MaxJsonLength = Int32.MaxValue;
-                PlanAttachments[] planAttachmentsObj = js.Deserialize<PlanAttachments[]>(planAttachments);
-                foreach(PlanAttachments planAttach in planAttachmentsObj)
-                {
-                    if (planAttach.attachmentType.ToString().ToUpper() == "PDF")
-                    {
-                        byte[] planAttachment = StreamExtensions.ToByteArray(planAttach.attachment);
-                        allAttachments.Add(planAttachment);
-                    }
-                    else {
-                        //Nothing yet
-                    }
-                }
-                string workflowAttachments = aadg.getWorkFlowAttachmentswithOrdering(assessmentID);
-                js.MaxJsonLength = Int32.MaxValue;
-                WorkFlowAttachments[] workflowAttachmentsObj = js.Deserialize<WorkFlowAttachments[]>(planAttachments);
-                foreach(WorkFlowAttachments wfAttach in workflowAttachmentsObj)
-                {
-                    if(wfAttach.attachmentType.ToString().ToUpper() == "PDF")
-                    {
-                        byte[] wfAttachment = StreamExtensions.ToByteArray(wfAttach.attachment);
-                        allAttachments.Add(wfAttachment);
-                    }
-                }
-            }
-
-        }
+        
 
         public byte[] getISPReportStream(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
@@ -377,6 +1024,21 @@ namespace Anywhere.service.Data.DocumentConversion
             ms.Dispose();
             
             return planReport;
+        }
+
+        public ReportSectionOrder[] getReportSectionOrder()
+        {
+            string reportOrderString = "";
+            reportOrderString = aadg.getReportSectionOrder();
+            ReportSectionOrder[] reportOrderObj = js.Deserialize<ReportSectionOrder[]>(reportOrderString);
+
+            return reportOrderObj;
+        }
+
+        public class ReportSectionOrder
+        {
+            public string setting_key { get; set; }
+            public string setting_value { get; set; }
         }
 
         public class Attachment
@@ -393,21 +1055,30 @@ namespace Anywhere.service.Data.DocumentConversion
             public string sectionOrGroup { get; set; }
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
+            public string sigAttachmentId { get; set; }
 
         }
 
         public class PlanAttachments
         {
-            public MemoryStream attachment { get; set; }
+            public string attachmentId { get; set; }
             public string description { get; set; }
             public string attachmentType { get; set; }
+            public string sectionOrGroup { get; set; }
+            public string orderOrStep { get; set; }
+            public string whereFrom { get; set; }
+            public string sigAttachmentId { get; set; }
         }
 
         public class WorkFlowAttachments
         {
-            public MemoryStream attachment { get; set; }
+            public string attachmentId { get; set; }
             public string description { get; set; }
             public string attachmentType { get; set; }
+            public string sectionOrGroup { get; set; }
+            public string orderOrStep { get; set; }
+            public string whereFrom { get; set; }
+            public string sigAttachmentId { get; set; }
         }
 
         public class POrWFAttachment
@@ -416,6 +1087,13 @@ namespace Anywhere.service.Data.DocumentConversion
             public string description { get; set; }
             public string attachmentType { get; set; }
         }
+
+        //public class POrWFAttachment
+        //{
+        //    public MemoryStream attachment { get; set; }
+        //    public string description { get; set; }
+        //    public string attachmentType { get; set; }
+        //}
 
     }
 }

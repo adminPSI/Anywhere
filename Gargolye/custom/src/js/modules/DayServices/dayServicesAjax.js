@@ -726,7 +726,32 @@ const dayServiceAjax = (function () {
         callback(res);
       },
     });
-  }
+    }
+
+    // comment
+    async function getDayServiceClockedInConsumers(retrieveData) {
+        //string token, string consumerIdString, string serviceDate, string locationId
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getDayServiceClockedInConsumers/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.getDayServiceClockedInConsumersResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
 
   return {
     checkConsumersForDate,
@@ -744,5 +769,6 @@ const dayServiceAjax = (function () {
     updateDayServiceActivity,
     getDSIsLocationBatched,
     getDayServiceGroups,
+    getDayServiceClockedInConsumers
   };
 })();

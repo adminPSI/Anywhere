@@ -90,10 +90,18 @@ const assessmentAjax = (function () {
     ispInput.setAttribute('name', 'isp');
     ispInput.setAttribute('value', retrieveData.isp);
     ispInput.id = 'isp';
-    var attachmentIdsInput = document.createElement('input');
-    attachmentIdsInput.setAttribute('name', 'attachmentIds');
-    attachmentIdsInput.setAttribute('value', retrieveData.attachmentIds);
-    attachmentIdsInput.id = 'attachmentIds';
+    var planAttachmentIdsInput = document.createElement('input');
+      planAttachmentIdsInput.setAttribute('name', 'planAttachmentIds');
+      planAttachmentIdsInput.setAttribute('value', retrieveData.planAttachmentIds);
+      planAttachmentIdsInput.id = 'planAttachmentIds';
+    var wfAttachmentIdsInput = document.createElement('input');
+      wfAttachmentIdsInput.setAttribute('name', 'wfAttachmentIds');
+      wfAttachmentIdsInput.setAttribute('value', retrieveData.wfAttachmentIds);
+      wfAttachmentIdsInput.id = 'wfAttachmentIds';
+    var sigAttachmentIdsInput = document.createElement('input');
+      sigAttachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
+      sigAttachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
+      sigAttachmentIdsInput.id = 'sigAttachmentIds';
 
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);
@@ -101,7 +109,9 @@ const assessmentAjax = (function () {
     form.appendChild(versionIDInput);
     form.appendChild(extraSpaceInput);
     form.appendChild(ispInput);
-    form.appendChild(attachmentIdsInput);
+    form.appendChild(planAttachmentIdsInput);
+    form.appendChild(wfAttachmentIdsInput);
+    form.appendChild(sigAttachmentIdsInput);
 
     form.style.position = 'absolute';
     form.style.opacity = '0';

@@ -126,6 +126,33 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
+
+  async function getStateGuardiansforConsumer(peopleIdData) {
+    //cosumerId as a string in retrieveData
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getStateGuardiansforConsumer/',
+       data: JSON.stringify(peopleIdData),
+       //data: '{"peopleId":"' + peopleId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getStateGuardiansforConsumerResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
   async function getConsumerOrganizationId(retrieveData) {
     //peopleId
     try {
@@ -374,6 +401,8 @@ const consentAndSignAjax = (() => {
     }
   }
 
+
+
   return {
     getConsentAndSignData,
     getPlanInformedConsentSSAs,
@@ -388,5 +417,6 @@ const consentAndSignAjax = (() => {
     getTeamMemberListFromState,
     setSalesForceIdForTeamMemberUpdate,
     validateConsumerForSalesForceId,
+    getStateGuardiansforConsumer,
   };
 })();
