@@ -6,12 +6,18 @@ const csTeamMember = (() => {
   let insertAllowed;
   let importedFromRelationship;
   let stateGuardiansObj;
-  let selectedGuardian;
+  let selectedStateGuardian = '';
+  let selectedStateGuardianSalesForceId = '';
+  let stateChangeMindObj;
+  let selectedStateChangeMind = '';
+  let selectedStateChangeMindSalesForceId = '';
   // DOM
   let teamMemberPopup; // main popup
   let linkToRelationshipBtn;
   let linkToSalesforceBtn;
   let teamMemberDropdown;
+  let stateGuardianDropdown;
+  let stateChangeMindDropdown;
   let nameInput;
   let lNameInput;
   let dateOfBirthInput;
@@ -28,7 +34,7 @@ const csTeamMember = (() => {
   //*------------------------------------------------------
   function checkTeamMemberPopupForErrors() {
     const errors = teamMemberPopup.querySelectorAll('.error');
-    const isConsentable = planConsentAndSign.isTeamMemberConsentable(selectedMemberData.teamMember);
+	const isConsentable = planConsentAndSign.isTeamMemberConsentable(selectedMemberData.teamMember);
 
     if (
       errors.length > 0 ||
@@ -67,12 +73,56 @@ const csTeamMember = (() => {
       type,
     );
   }
+
+  async function populateGuardiansDropDown() {
+
+    var selectedConsumer = plan.getSelectedConsumer();
+    stateGuardiansObj = await consentAndSignAjax.getStateGuardiansforConsumer({
+      peopleId: selectedConsumer.id,
+    });
+
+    let guarddata;
+    if (stateGuardiansObj) {
+      guarddata = stateGuardiansObj.map(dd => {
+        return {
+          value: dd.Id,
+          text: dd.FirstName + ' ' + dd.LastName,
+        };
+      });
+      guarddata.unshift({ value: '', text: 'SELECT MATCHING STATE GUARDIAN' });
+    } else {
+      guarddata = [{ value: '', text: 'No Guardians' }];
+    }
+
+    dropdown.populate(stateGuardianDropdown, guarddata);
+  }
+
+  async function populateStateChangeMindDropDown() {
+
+    var selectedConsumer = plan.getSelectedConsumer();
+    //TODO JOE: CALL different OISP function to get the change mind contacts
+    stateChangeMindObj = await consentAndSignAjax.getStateGuardiansforConsumer({
+      peopleId: selectedConsumer.id,
+    });
+
+    let data;
+    if (stateChangeMindObj) {
+      data = stateChangeMindObj.map(dd => {
+        return {
+          value: dd.Id,
+          text: dd.FirstName + ' ' + dd.LastName,
+        };
+      });
+      data.unshift({ value: '', text: 'SELECT MATCHING STATE CONTACT' });
+    } else {
+      data = [{ value: '', text: 'No Contacts' }];
+    }
+
+    dropdown.populate(stateChangeMindDropdown, data);
+  }
+
   async function applySelectedRelationship(relData) {
-    // import team member button was clicked
-    // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values
-    // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian'
-    // then call getStateGuardiansforConsumer(peopleId)
-    // then call function showGuardiansPopup(guardiansData)
+
     importedFromRelationship = true;
 
     selectedMemberData.salesforceId = !relData.salesforceId ? '' : relData.salesforceId;
@@ -138,16 +188,7 @@ const csTeamMember = (() => {
       saveTeamMember();
       return;
     }
-    var selectedConsumer = plan.getSelectedConsumer();
-    stateGuardiansObj = await consentAndSignAjax.getStateGuardiansforConsumer({
-      peopleId: selectedConsumer.id,
-    });
-
-    if (stateGuardiansObj) {
-      var test = stateGuardiansObj;
-      //  showGuardiansPopup();
-      // alert("Import this!");
-    }
+   
   }
   async function linkToSalesForce(selectedSalesforceId) {
     let success;
@@ -175,7 +216,21 @@ const csTeamMember = (() => {
       DOM.ACTIONCENTER.removeChild(failPopup);
     }
   }
-  async function saveTeamMember() {
+
+async function saveTeamMember() {
+// TODO JOE: TICKET 94246 -- from consentandSign.js -- function isTeamMemberGuardian(teamMember)
+if (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMember === 'Parent/Guardian' ) {
+    var continueGuardianSave = await continueSaveofGuardianTeamMember();
+    if (!continueGuardianSave) return;
+ }  
+  
+ // TODO JOE: TICKET 92768 -- from consentandSign.js -- function isTeamMemberConsentable(teamMember)
+ if (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMember === 'Parent/Guardian' || selectedMemberData.teamMember === 'Person Supported') {
+     var continueConsentableSave = await continueSaveofConsentableTeamMember();
+      if (!continueConsentableSave) return;
+}
+
+
     teamMemberPopup.style.display = 'none';
     pendingSave.show('Saving...');
 
@@ -191,13 +246,8 @@ const csTeamMember = (() => {
         selectedMemberData.relationshipImport = 'F';
         selectedMemberData.createRelationship = 'T';
       }
-      let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
+       let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
       rd = rd ? rd[0] : {};
-
-      // TODO: 2022.5
-      // if (rd.hasSomeGuardians) {
-      //   showGuardiansPopup(rd.guardiansData);
-      // }
 
       if (rd.existingPeopleId) {
         const pendingSavePopup = document.querySelector('.pendingSavePopup');
@@ -276,6 +326,129 @@ const csTeamMember = (() => {
       }
     }
   }
+
+// Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian 
+// TODO JOE: All these alerts/consfirms -- do we need to make them into Anywhere style
+  async function continueSaveofGuardianTeamMember() {
+
+    let updatesuccess;
+
+        if (confirm('Is the selected State Guardian the same person as the entered Guardian in the form?')) {
+            // YES -- Continue
+        } else {
+          alert(`Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
+          return false;
+        };
+        // selected imported/manually entered SalesForceID has a value, AND selectedStateGuardianSalesForceId has a value -- AND -- they are equal
+        if (selectedStateGuardianSalesForceId && selectedMemberData.salesforceId === selectedStateGuardianSalesForceId) { 
+
+          alert('Its a match. Continue saving new team member.');
+          return true;
+          
+        // selected imported/manually entered SalesForceID has NO value, AND selectedStateGuardianSalesForceId has a value
+        } else if (!selectedMemberData.salesforceId && selectedStateGuardianSalesForceId) {  
+
+          alert(`Update the GK people.SalesForce_ID for  ${selectedMemberData.lastName} with the StateSalesForceId from the State`);
+          // update the imported/manually entered member with the State SaleforceID
+              try {
+                await consentAndSignAjax.setSalesForceIdForTeamMemberUpdate({
+                  peopleId: selectedMemberData.contactId,
+                  salesForceId: selectedStateGuardianSalesForceId,
+                });
+                updatesuccess = true;
+              } catch (error) {
+                updatesuccess = false;
+              }
+          
+              if (updatesuccess) { 
+                selectedMemberData.salesforceId = selectedStateGuardianSalesForceId;
+                return true;
+              } else {
+                alert('Update of GK people.SalesForceID failed; therefore, inserting this Guardian will not be attempted.');
+                return false;
+              }
+          // selected imported/manually entered SalesForceID has a value, AND selectedStateGuardianSalesForceId has a value --BUT-- they are NOT equal
+        } else if ((selectedMemberData.salesforceId && selectedStateGuardianSalesForceId) && (selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId )) {  
+
+          if (confirm(`These salesForceIds do not match. Do you want to Insert the selected State Guardian ${selectedStateGuardian} into the GK Database and save the selected State Guardian as a new Team Member?`)) {
+              //TODO JOE: modify newSAlesForceId in PlanSignatureWorker.cs (line 192) -- psdg.createRelationship(token, planYearStart, planYearEnd, consumerId, peopleId, newSalesForceId);
+              var fullName = selectedStateGuardian.split(' ');
+              selectedMemberData.firstName = fullName[0];
+              selectedMemberData.lastName = fullName[fullName.length - 1];
+              selectedMemberData.buildingNumber = '';
+              selectedMemberData.dateOfBirth = '';
+              selectedMemberData.salesforceId = selectedStateGuardianSalesForceId; 
+              return true;    
+          } else {
+            alert(`Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
+            return false;
+          };
+        // selectedStateGuardianSalesForceId has NO value
+        } else {  
+
+          alert(`Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`); 
+          return false;
+
+        } // end if processing salesforceID 
+  }
+
+  // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian or teamMember == Person Supported
+// TODO JOE: All these alerts/consfirms -- do we need to make them into Anywhere style  
+// TODO JOE: Need to check if the selectedMemberData.csChangeMindSSAPeopleId in the People table has a saleForceId
+async function continueSaveofConsentableTeamMember() {
+
+  // csChangeMind: selectedMemberData.csChangeMind,
+  // csChangeMindSSAPeopleId: selectedMemberData.csChangeMindSSAPeopleId,
+
+  // TODO JOE: Get the GK SalesForceID for the local SSA selected -- selectedLocalSSASalesForceId -- this will probably need to be global
+  var selectedLocalSSASalesForceId = '';
+
+    if (confirm('Is the selected State Contact the same person as the selected local Contact in the form?')) {
+        // YES -- Continue
+    } else {
+      alert(`Contact not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
+      return false;
+    };
+
+    // selected local contact/SSA SalesForceID has a value, AND selectedStateChangeMindSalesForceId has a value -- AND -- they are equal
+    if (selectedStateChangeMindSalesForceId && selectedLocalSSASalesForceId === selectedStateChangeMindSalesForceId) { 
+ 
+      alert('Its a match. Continue saving new team member.');
+      return true;
+
+     // THIS SCENARIO NOT POSSIBLE -- selected local contact/SSA SalesForceID has a NO value, AND selectedStateChangeMindSalesForceId has a value
+    } else if (!selectedLocalSSASalesForceId && selectedStateChangeMindSalesForceId) {
+
+      alert(`Update the GK people.SalesForce_ID for the selectedLocalSSAPeopleID with the StateSalesForceId from the State`);
+    
+    // selected local contact/SSA SalesForceID has a value, AND selectedStateChangeMindSalesForceId has a value --BUT-- they are NOT equal
+    // TODO JOE: ???? unassign the current SSA/consumer relationship at salesforce and assign a new SSA/consumer relationship at salesforce for the given SSA/QIDP and consumer.
+    // MY BEST GUESS -- assign the SalesForceID from the STATE (in stateChangeMindDropdown ) to the selected SSA in changeMindQuestion
+    } else if ((selectedLocalSSASalesForceId && selectedStateChangeMindSalesForceId) && (selectedLocalSSASalesForceId !== selectedStateChangeMindSalesForceId)) { 
+
+      if (confirm(`These salesForceIds do not match. Do you want to Update the GK people.SalesForce_ID for the selectedLocalSSAPeopleID with the StateSalesForceId from the State and save the selected State Guardian as a new Team Member?`)) {
+        // TODO JOE: REVIEW THIS 
+        //TODO JOE: modify newSAlesForceId in PlanSignatureWorker.cs (line 192) -- psdg.createRelationship(token, planYearStart, planYearEnd, consumerId, peopleId, newSalesForceId);
+        // TODO JOE: NOT SURE WHAT THE FOLLOWING MEANS TO THE DATA BEING SAVED
+        // POSSIBILITY A SECOND UPDATE TO THE PEOPLE TABLE FOR THE SELECTED LOCAL SSA -- Update the salesforce_id in the people table in GK for the SSA to match the value found in the STATE SSA DDL (stateChangeMindDropdown).
+        // IF this update is successful then return true; otherwise return the messsage below saying the contact couldn't be saved and therefore the entire record can't be saved
+        selectedLocalSSASalesForceId = selectedStateChangeMindSalesForceId;
+        return true;
+      } else {
+        alert(`Contact not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
+        return false;
+
+      }
+    // selectedStateChangeMindSalesForceId has NO value
+    } else {
+   
+      alert(`Contact not listed in Salesforce for this individual and must be entered on SalesForce Portal.`); 
+      return false;
+
+    }
+
+}
+
   function getSignatureTypeByID(id) {
     switch (id) {
       case '1': {
@@ -291,112 +464,6 @@ const csTeamMember = (() => {
         return '';
       }
     }
-  }
-
-  //*------------------------------------------------------
-  //* MARKUP
-  //*------------------------------------------------------
-  // TODO: 2022.5
-  function showGuardiansPopup() {
-    if (!stateGuardiansObj) {
-      guardianPopup = POPUP.build({
-        id: 'guardianPopup',
-        hideX: true,
-        header: `There is no guardian listed in Salesforce for this individual`,
-      });
-
-      const doneBtn = button.build({
-        id: 'guardianPopup_cancel',
-        text: 'ok',
-        style: 'secondary',
-        type: 'outlined',
-        callback: () => {
-          POPUP.hide(guardianPopup);
-          // teamMemberPopup.display.block;
-        },
-      });
-
-      guardianPopup.appendChild(doneBtn);
-
-      // teamMemberPopup.display.none;
-      POPUP.show(guardianPopup);
-      return;
-    }
-
-    guardianPopup = POPUP.build({
-      id: 'guardianPopup',
-      hideX: true,
-      header: `This is the valid Guardian(S) listed in Salesforce. Please select a guardian from the list that matches the Team Member`,
-    });
-
-    const guardiansWrap = document.createElement('div');
-    guardiansWrap.classList.add('relationshipsWrap');
-
-    stateGuardiansObj.forEach(g => {
-      const guardianDiv = document.createElement('div');
-      guardianDiv.classList.add('relationship');
-      //guardianDiv.innerHTML = `<div class="xxx"><span>${g.Id}</span>: ${g.LastName} - ${g.FirstName}</div>`;
-      // guardianDiv.classList.add('guardianDiv');
-      const name = document.createElement('p');
-      name.classList.add('name');
-      name.innerText = `Name: ${g.FirstName} ${g.LastName}`;
-
-      guardianDiv.appendChild(name);
-
-      guardianDiv.addEventListener('click', e => {
-        const selectedG = guardiansWrap.querySelector('.relationship.selected');
-        if (selectedG) selectedG.classList.remove('selected');
-        guardianDiv.classList.add('selected');
-        // e.target.classList.add('selected');
-
-        selectedGuardian = g;
-      });
-
-      guardiansWrap.appendChild(guardianDiv);
-    });
-
-    const doneBtn = button.build({
-      id: 'guardianPopup_cancel',
-      text: 'ok', // YES -- ARE THESE THE SAME PEOPLE?
-      style: 'secondary',
-      type: 'outlined',
-      callback: () => {
-        // call new function validateGuardianSalesForceID(localSalesForceId (selected Guardian in popup), stateSalesForceId (there is usually one from the state))
-        //   if localSalesForceId == stateSalesForceID --> do nothing   (DO WE THEN INSERT THE TEAMMEMBER ???)
-        //   else if localSalesForceId == NULL --> SQL -- Update people.SalesForce_ID with stateSalesForceId (DO WE THEN INSERT THE TEAMMEMBER ???)
-        //   else if localSalesForceId <> stateSalesForceID --> DISPlAY ANOTHER POPUP -- DO YOU WANT TO ADD THIS STATE GUARDIAN TO THE LOCAL DATABASE
-        //      function  ShowAddStateGuardianPopup()
-        //           “These are NOT the same people Do you want to add this Guardian to the Database” (Yes or No)
-        //                  YES -- 1. Update the ADD TEAM MEMBER screen -- fill in lastname. firstname, and saleForceID (behind the scenes) (people record will get made upon insertTeamMember)
-        //                         --- this happens on insertTeamMember (save) -- 2. Assign stateSalesForceId to People.SalesForce_ID to added record -- adding new People to table with stateSaleForceID
-        //                         --- this happens on insertTeamMember (save) ---3. Assign to Relationship table (Classification of Team Member (GK only)).
-        //                  NO -- Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
-        // do stuff
-        // saveGuardianOrsomething(selectedGuardian);
-      },
-    });
-
-    const cancelBtn = button.build({
-      id: 'guardianPopup_cancel',
-      text: 'cancel', // NO -- ARE THESE THE SAME PEOPLE?
-      style: 'secondary',
-      type: 'outlined',
-      callback: () => {
-        POPUP.hide(guardianPopup);
-        // Message -- “Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal."
-        // teamMemberPopup.display.block;
-      },
-    });
-    const btnWrap = document.createElement('div');
-    btnWrap.classList.add('btnWrap');
-    btnWrap.appendChild(doneBtn);
-    btnWrap.appendChild(cancelBtn);
-
-    guardianPopup.appendChild(guardiansWrap);
-    guardianPopup.appendChild(btnWrap);
-
-    // teamMemberPopup.display.none;
-    POPUP.show(guardianPopup);
   }
 
   function buildParticipationRadios() {
@@ -443,6 +510,7 @@ const csTeamMember = (() => {
 
     return radioContainer;
   }
+
   function buildDateSignedDisplay() {
     const dateSignedDisplay = document.createElement('p');
     dateSignedDisplay.classList.add('ispSignature_DateSigned');
@@ -464,6 +532,7 @@ const csTeamMember = (() => {
       type: 'contained',
       callback: () => {
         saveTeamMember();
+        selectedStateGuardian = '';
       },
     });
     const cancelBtn = button.build({
@@ -473,6 +542,7 @@ const csTeamMember = (() => {
       type: 'outlined',
       callback: () => {
         POPUP.hide(teamMemberPopup);
+        selectedStateGuardian = '';
       },
     });
     // Delete only visable if isNew = false
@@ -508,9 +578,18 @@ const csTeamMember = (() => {
 
     return mainWrap;
   }
+
   //* global consent
   function getChangeMindMarkup() {
     // get markup
+    
+    //TODO JOE: SELECT the SalesForceID for csChangeMindSSAPeopleId -- ASSUMPTION IF THERE IS A SALESForCEID FOR THIS PEOPLEID, THEN WE CAN CONTINE WITH function continueSaveofConsentableTeamMember()
+    // If SalesForceID for selectedMemberData.csChangeMindSSAPeopleId is NULL
+    //    THEN  -->  selectedMemberData.csChangeMindSSAPeopleId = ''; -- this will make the DDL RED and NO Value selected
+    //  ELSE --> continue
+
+    selectedMemberData.csChangeMindSSAPeopleId = '';
+
     const changeMindQuestion = planConsentAndSign.buildChangeMindQuestion(
       {
         csChangeMindSSAPeopleId: selectedMemberData.csChangeMindSSAPeopleId,
@@ -533,6 +612,20 @@ const csTeamMember = (() => {
         } else {
           changeMindQuestion.classList.remove('error');
         }
+
+        // TODO JOE: WE ARE HERE BECAUSE -- Either the user is changing SSA OR No default SSA was selected becuase the default didn't have a SalesForceID
+        // Upon a new Selection of SSA, the following happens with the NEW selectedMemberData.csChangeMindSSAPeopleId
+        // GO TO DB AND SELECT the SalesForceID for selectedMemberData.csChangeMindSSAPeopleId
+        // If SalesForceID for csChangeMindSSAPeopleId is MULL
+        //    THEN  --> show a POPUP LIST of values from the anyw_isp_case_manager_options table in a pop up  
+        //               a.  Only show records that have a salesforce_id NOT in the people table
+        //               b.  Values should show as "LastName, FirstName" and sort by last name then first name
+        //               c.  User selects SSA/QIDP from the list and clicks OK to the pop up, then...
+        //               d.  Update the salesforce_id in the people table in GK for the SSA to match the value found in the anyw_isp_case_manager table for the selected SSA.
+        //               NOW -- THE NEW SELECTION (FROM changeMindQuestion) HAS NOW BEEN UPDATED WITH THE SALESFORCEID FROM THE POPUP LIST (anyw_isp_case_manager_options)
+	 
+        //  ELSE --> continue -- ASSUMPTION IF THERE IS A SALESForCEID FOR THIS PEOPLEID, THEN WE CAN CONTINE WITH function continueSaveofConsentableTeamMember()
+
 
         planConsentAndSign.updateSSADropdownWidth(teamMemberPopup);
 
@@ -568,10 +661,15 @@ const csTeamMember = (() => {
 
     return changeMindQuestion;
   }
+
   async function getContactMarkup() {
     if ($.session.applicationName === 'Gatekeeper') {
+
+      var selectedConsumer = plan.getSelectedConsumer();
+
       const data = await consentAndSignAjax.getConsumerOrganizationId({
-        peopleId: selectedMemberData.csChangeMindSSAPeopleId,
+       // peopleId: selectedMemberData.csChangeMindSSAPeopleId,  -- this was changed to below with the idea that selectedMemberData.csChangeMindSSAPeopleId could be set to ''
+       peopleId: selectedConsumer.id,
       });
 
       // ID check for vendors/providers
@@ -623,17 +721,20 @@ const csTeamMember = (() => {
 
     return contactQuestion;
   }
+
   //* link btn popups
 
   //*------------------------------------------------------
   //* MAIN
   //*------------------------------------------------------
-  async function showPopup({ isNewMember, isReadOnly, memberData }) {
+  async function showPopup({ isNewMember, isReadOnly, memberData, currentTeamMemberData }) {
     isNew = isNewMember;
     isSigned = memberData.dateSigned !== '';
     readOnly = isReadOnly;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
+    showStateGuardians = planConsentAndSign.isTeamMemberGuardian(memberData.teamMember);
     selectedMemberData = { ...memberData };
+    var test = currentTeamMemberData;
 
     // if (!isNew && $.session.applicationName === 'Advisor') {
     //   selectedMemberData.csChangeMindSSAPeopleId = $.session.UserId;
@@ -685,31 +786,111 @@ const csTeamMember = (() => {
       readonly: isSigned || readOnly,
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
-        // teamMember DDL EVENT
-        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values
-        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian'
-        // then call getStateGuardiansforConsumer(peopleId)
-        // then call function showGuardiansPopup(guardiansData)
-        if (event.target.value === '') {
-          teamMemberDropdown.classList.add('error');
-          // remove consent statements from DOM
-          if (showConsentStatments) {
-            changeMindQuestion.parentNode.removeChild(changeMindQuestion);
-            complaintQuestion.parentNode.removeChild(complaintQuestion);
-            showConsentStatments = false;
-          }
-          // reset consent statement radios to default
-          // selectedMemberData.csChangeMind = '';
-          // selectedMemberData.csContact = '';
-        } else {
+       
+        // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
+        setStateofPopupFields();
+
+        // inserting/removing the conditional fields based on teamMemberDropdown selection
+        insertingConditionalFieldsintoPopup();
+   
+        checkTeamMemberPopupForErrors();
+      },  // end callback
+     
+    });  // end DROP DOWN BUILD
+
+    // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
+    function setStateofPopupFields() {
+
+    if ($.session.planInsertNewTeamMember) {
+      linkToRelationshipBtn.classList.remove('disabled');
+      nameInput.classList.remove('disabled');
+      lNameInput.classList.remove('disabled');
+      dateOfBirthInput.classList.remove('disabled');
+      buildingNumberInput.classList.remove('disabled');
+      participatedYesRadio.classList.remove('disabled');
+      participatedNoRadio.classList.remove('disabled');
+      radioDiv.classList.add('error');
+      signatureTypeDropdown.classList.remove('disabled');
+      
+    }
+
+    //* Required Fields
+    //*------------------------------
+    if ($.session.planInsertNewTeamMember) {
+      if (selectedMemberData.teamMember === '') {
+        teamMemberDropdown.classList.add('error');
+      } else {
+        teamMemberDropdown.classList.remove('error');
+      }
+      if (selectedMemberData.name === '') {
+        nameInput.classList.add('error');
+      } else {
+        nameInput.classList.remove('error');
+      }
+      if (selectedMemberData.signatureType === '') {
+        signatureTypeDropdown.classList.add('error');
+      } else {
+        signatureTypeDropdown.classList.remove('error');
+      }
+      if (isNew) {
+        if (selectedMemberData.lastName === '') {
+          lNameInput.classList.add('error');
+        }
+      }
+    }
+
+
+    }
+
+  // inserting/removing the conditional fields based on teamMemberDropdown selection
+    function insertingConditionalFieldsintoPopup() {
+
+            if (selectedMemberData.teamMember === '') {   // team member has NOT been selected
+
+              teamMemberDropdown.classList.add('error');
+              // remove consent statements from DOM
+              if (showConsentStatments) {
+                changeMindQuestion.parentNode.removeChild(changeMindQuestion);
+                stateChangeMindDropdown.parentNode.removeChild(stateChangeMindDropdown);
+                complaintQuestion.parentNode.removeChild(complaintQuestion);
+                showConsentStatments = false;
+              }
+              // remove guardians DDL from DOM
+              if (showStateGuardians) {
+                stateGuardianDropdown.parentNode.removeChild(stateGuardianDropdown);
+                showStateGuardians = false;
+              }
+
+              // reset consent statement radios to default
+              // selectedMemberData.csChangeMind = '';
+              // selectedMemberData.csContact = '';
+
+        } else {  // team member has been selected
+
           teamMemberDropdown.classList.remove('error');
 
           const isSelectedTeamMemberConsentable = planConsentAndSign.isTeamMemberConsentable(
-            event.target.value,
+            selectedMemberData.teamMember,
           );
-          if (isSelectedTeamMemberConsentable) {
-            // show consent statments only if they are not there
-            if (!showConsentStatments) {
+
+          insertingFieldsBasedonConsentable(isSelectedTeamMemberConsentable);
+
+          const isSelectedTeamMemberGuardian = planConsentAndSign.isTeamMemberGuardian(
+            selectedMemberData.teamMember,
+          );
+
+          insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian);
+        
+        }  //end if -- team member has been selected
+
+    }  // end if -- function insertingConditionalFieldsintoPopup()
+
+   async function insertingFieldsBasedonConsentable(isSelectedTeamMemberConsentable) {
+
+      if (isSelectedTeamMemberConsentable) {
+        // show consent statments only if they are not there
+        if (!showConsentStatments) {
+
               showConsentStatments = true;
               // reset default values
               const globals = planConsentAndSign.getConsentGlobalValues();
@@ -721,7 +902,10 @@ const csTeamMember = (() => {
               complaintQuestion = await getContactMarkup();
               // show them
               teamMemberPopup.insertBefore(changeMindQuestion, participationRadios);
+             teamMemberPopup.insertBefore(stateChangeMindDropdown, participationRadios);
               teamMemberPopup.insertBefore(complaintQuestion, participationRadios);
+              if (selectedStateChangeMind === '') stateChangeMindDropdown.classList.add('error');
+            //  
               // width them
               planConsentAndSign.setSSADropdownInitialWidth(
                 teamMemberPopup,
@@ -731,23 +915,88 @@ const csTeamMember = (() => {
                 teamMemberPopup,
                 selectedMemberData.csContactProviderVendorId,
               );
-            }
-          } else {
+        }
+
+      } else {  // if NOT isSelectedTeamMemberConsentable
+
             if (showConsentStatments) {
               changeMindQuestion.parentNode.removeChild(changeMindQuestion);
+              stateChangeMindDropdown.parentNode.removeChild(stateChangeMindDropdown);
               complaintQuestion.parentNode.removeChild(complaintQuestion);
+            // if (showStateGuardians) stateGuardianDropdown.parentNode.removeChild(stateGuardianDropdown);
               showConsentStatments = false;
               // selectedMemberData.csChangeMindSSAPeopleId = '';
               // selectedMemberData.csContactProviderVendorId = '';
               // selectedMemberData.csContactInput = '';
             }
-          }
+      } // end if -- isSelectedTeamMemberConsentable
+
+    }
+
+    function insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian) {
+
+      if (isSelectedTeamMemberGuardian) {
+        // show guardan DDL only if it's not there
+        if (!showStateGuardians) {
+
+            showStateGuardians = true;      
+            teamMemberPopup.insertBefore(stateGuardianDropdown, nameInput);
+            if (selectedStateGuardian === '') stateGuardianDropdown.classList.add('error');
+        
+        }
+
+      } else {  // if NOT isSelectedTeamMemberGuardian
+
+            if (showStateGuardians) {
+      
+              stateGuardianDropdown.parentNode.removeChild(stateGuardianDropdown);
+              showStateGuardians = false;
+              
+            }
+      } // end if -- isSelectedTeamMemberGuardian
+
+    }
+
+    teamMemberDropdown.classList.add('teamMemberDropdown');
+
+    // State Guradian
+    stateGuardianDropdown = dropdown.build({
+      dropdownId: 'sigPopup_stateGuardian',
+      label: 'State Guardian',
+      readonly: isSigned || readOnly,
+      callback: event => {
+        selectedStateGuardian = event.target.options[event.target.selectedIndex].innerHTML;
+        selectedStateGuardianSalesForceId = event.target.value;
+
+        if (event.target.value === '') {
+          stateGuardianDropdown.classList.add('error');
+        } else {
+          stateGuardianDropdown.classList.remove('error');
         }
 
         checkTeamMemberPopupForErrors();
       },
     });
-    teamMemberDropdown.classList.add('teamMemberDropdown');
+
+    // State Change Mind
+    stateChangeMindDropdown = dropdown.build({
+      dropdownId: 'sigPopup_stateChangeMind',
+      label: 'State Change Mind',
+      readonly: isSigned || readOnly,
+      callback: event => {
+        selectedStateChangeMind = event.target.options[event.target.selectedIndex].innerHTML;
+        selectedStateChangeMindSalesForceId = event.target.value;
+
+        if (event.target.value === '') {
+          stateChangeMindDropdown.classList.add('error');
+        } else {
+          stateChangeMindDropdown.classList.remove('error');
+        }
+
+        checkTeamMemberPopupForErrors();
+      },
+    });
+
     // Name ()
     nameInput = input.build({
       label: 'First Name',
@@ -756,12 +1005,7 @@ const csTeamMember = (() => {
       callbackType: 'input',
       callback: event => {
         selectedMemberData.name = event.target.value;
-        // First Name Event
-        // teamMember DDL EVENT
-        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values
-        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian'
-        // then call getStateGuardiansforConsumer(peopleId)
-        // then call function showGuardiansPopup(guardiansData)
+
         if (event.target.value === '') {
           nameInput.classList.add('error');
         } else {
@@ -778,12 +1022,7 @@ const csTeamMember = (() => {
       callbackType: 'input',
       callback: event => {
         selectedMemberData.lastName = event.target.value;
-        // Last Name Event
-        // teamMember DDL EVENT
-        // checkTeamMemberPopupForErrors() -- if teamMemberDropdown and nameInput and lNameInput have values
-        // AND teamMemberDropDown = 'Guardian' or 'Parent/Guardian'
-        // then call getStateGuardiansforConsumer(peopleId)
-        // then call function showGuardiansPopup(guardiansData)
+        
         if (event.target.value === '') {
           lNameInput.classList.add('error');
         } else {
@@ -793,6 +1032,7 @@ const csTeamMember = (() => {
         checkTeamMemberPopupForErrors();
       },
     });
+
     // Date of Birth
     dateOfBirthInput = input.build({
       type: 'date',
@@ -870,41 +1110,23 @@ const csTeamMember = (() => {
         lNameInput.classList.add('disabled');
       }
     }
-    if (!$.session.planInsertNewTeamMember) {
-      teamMemberDropdown.classList.add('disabled');
+
+    // initial display of Form/popup before a teamMember designations is selected
+
+    if ($.session.planInsertNewTeamMember) {
+      teamMemberDropdown.classList.add('error');
+      linkToRelationshipBtn.classList.add('disabled');
       nameInput.classList.add('disabled');
       lNameInput.classList.add('disabled');
+      nameInput.classList.remove('error');
+      lNameInput.classList.remove('error');
       dateOfBirthInput.classList.add('disabled');
       buildingNumberInput.classList.add('disabled');
       participatedYesRadio.classList.add('disabled');
       participatedNoRadio.classList.add('disabled');
+      radioDiv.classList.remove('error');
       signatureTypeDropdown.classList.add('disabled');
       saveTeamMemberBtn.classList.add('disabled');
-    }
-
-    //* Required Fields
-    //*------------------------------
-    if ($.session.planInsertNewTeamMember) {
-      if (selectedMemberData.teamMember === '') {
-        teamMemberDropdown.classList.add('error');
-      } else {
-        teamMemberDropdown.classList.remove('error');
-      }
-      if (selectedMemberData.name === '') {
-        nameInput.classList.add('error');
-      } else {
-        nameInput.classList.remove('error');
-      }
-      if (selectedMemberData.signatureType === '') {
-        signatureTypeDropdown.classList.add('error');
-      } else {
-        signatureTypeDropdown.classList.remove('error');
-      }
-      if (isNew) {
-        if (selectedMemberData.lastName === '') {
-          lNameInput.classList.add('error');
-        }
-      }
     }
 
     //* Add elements to popup
@@ -956,12 +1178,16 @@ const csTeamMember = (() => {
 
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
+    await populateGuardiansDropDown();
+    await populateStateChangeMindDropDown();
 
     POPUP.show(teamMemberPopup);
 
     if ($.session.planInsertNewTeamMember) {
       checkTeamMemberPopupForErrors();
     }
+
+
   }
 
   return {

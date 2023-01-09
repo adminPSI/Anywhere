@@ -61,6 +61,12 @@ const planConsentAndSign = (() => {
       ? true
       : false;
   }
+  function isTeamMemberGuardian(teamMember) {
+    return teamMember === 'Parent/Guardian' ||
+      teamMember === 'Guardian'
+      ? true
+      : false;
+  }
   function getNames() {
     return names;
   }
@@ -357,10 +363,12 @@ const planConsentAndSign = (() => {
   }
   // populate
   function populateDropdownSSA(ssaDropdown, csChangeMindSSAPeopleId) {
+
     const csChangeMindQuestionDropdownData = getSSADropdownData();
 
     dropdown.populate(ssaDropdown, csChangeMindQuestionDropdownData, csChangeMindSSAPeopleId);
   }
+  
   function populateDropdownVendor(vendorDropdown, csContactProviderVendorId) {
     //* VENDOR DROPDOWN
     const contactQuestionDropdownData = getVendorDropdownData();
@@ -433,6 +441,7 @@ const planConsentAndSign = (() => {
       token: $.session.Token,
       peopleid: selectedConsumer.id,
     });
+    // this is where the DDL gets its data -- people, user permissions, etc tables
     ssaDropdownData = await consentAndSignAjax.getPlanInformedConsentSSAs({
       token: $.session.Token,
     });
@@ -785,6 +794,7 @@ const planConsentAndSign = (() => {
             planYearStart: '',
             planYearEnd: '',
           },
+          currentTeamMemberData: teamMemberData,
         });
       },
     });
@@ -865,6 +875,7 @@ const planConsentAndSign = (() => {
     getConsentGlobalValues,
     planStatusChange,
     isTeamMemberConsentable,
+    isTeamMemberGuardian,
     getTeamMembersHowTheyExistOnPlanNowWhileWeWaitOnDamnStateToMakeUpTheirMinds,
     getNames,
     getTeamMemberData,
