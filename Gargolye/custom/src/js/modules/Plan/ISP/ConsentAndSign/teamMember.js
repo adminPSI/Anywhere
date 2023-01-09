@@ -28,11 +28,13 @@ const csTeamMember = (() => {
   //*------------------------------------------------------
   function checkTeamMemberPopupForErrors() {
     const errors = teamMemberPopup.querySelectorAll('.error');
+    const isConsentable = planConsentAndSign.isTeamMemberConsentable(selectedMemberData.teamMember);
 
     if (
       errors.length > 0 ||
       ($.session.applicationName === 'Gatekeeper' &&
-        selectedMemberData.csContactProviderVendorId === '')
+        selectedMemberData.csContactProviderVendorId === '' &&
+        isConsentable)
     ) {
       saveTeamMemberBtn.classList.add('disabled');
     } else {

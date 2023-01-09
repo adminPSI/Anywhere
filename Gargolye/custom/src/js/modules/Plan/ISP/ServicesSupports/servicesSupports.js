@@ -586,7 +586,7 @@ const servicesSupports = (() => {
               isNew: false,
               fromAssessment: false,
               isCopy: false,
-              charLimits
+              charLimits,
             });
           },
           onCopyClick: () => {
@@ -597,7 +597,7 @@ const servicesSupports = (() => {
               isNew: true,
               fromAssessment: false,
               isCopy: true,
-              charLimits
+              charLimits,
             });
           },
         },
@@ -650,7 +650,7 @@ const servicesSupports = (() => {
               isNew: false,
               fromAssessment: false,
               isCopy: false,
-              charLimits
+              charLimits,
             });
           },
           onCopyClick: () => {
@@ -661,7 +661,7 @@ const servicesSupports = (() => {
               isNew: true,
               fromAssessment: false,
               isCopy: true,
-              charLimits
+              charLimits,
             });
           },
         },
@@ -1515,7 +1515,7 @@ const servicesSupports = (() => {
                 isNew: false,
                 fromAssessment: false,
                 isCopy: false,
-                charLimits
+                charLimits,
               });
             },
             onCopyClick: () => {
@@ -1526,7 +1526,7 @@ const servicesSupports = (() => {
                 isNew: true,
                 fromAssessment: false,
                 isCopy: true,
-                charLimits
+                charLimits,
               });
             },
           };
@@ -1953,7 +1953,7 @@ const servicesSupports = (() => {
     DOM.autosizeTextarea();
   }
   function addAdditionalSupportRow() {
-    showAddAdditionalSupportPopup({}, true, charLimits);
+    showAddAdditionalSupportPopup({}, true, false, charLimits);
   }
   function getAdditionalSupportsMarkup() {
     const additionalSupportsDiv = document.createElement('div');
@@ -2313,7 +2313,7 @@ const servicesSupports = (() => {
     DOM.autosizeTextarea();
   }
   function addProfessionalReferralRow() {
-    showAddProfessionalReferralPopup({}, true, charLimits);
+    showAddProfessionalReferralPopup({}, true, false, charLimits);
   }
   function getProfessionalReferralsMarkup() {
     const professionalReferralsDiv = document.createElement('div');
