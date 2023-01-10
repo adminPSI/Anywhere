@@ -964,7 +964,7 @@ async function continueSaveofConsentableTeamMember() {
       dropdownId: 'sigPopup_stateGuardian',
       label: 'State Guardian',
       readonly: isSigned || readOnly,
-      callback: event => {
+      callback: async event => {
         selectedStateGuardian = event.target.options[event.target.selectedIndex].innerHTML;
         selectedStateGuardianSalesForceId = event.target.value;
 
@@ -973,6 +973,16 @@ async function continueSaveofConsentableTeamMember() {
         } else {
           stateGuardianDropdown.classList.remove('error');
         }
+
+        // const teamMemberData = await consentAndSignAjax.getTeamMemberBySalesForceId({
+        //   salesForceId: selectedStateGuardianSalesForceId,
+        // });
+    
+        // let test = teamMemberData;
+
+        // if (teamMemberData && teamMemberData.length !== 0) {
+        // }
+
 
         checkTeamMemberPopupForErrors();
       },

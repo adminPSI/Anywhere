@@ -36,6 +36,14 @@ namespace Anywhere.service.Data.PlanSignature
             return signatureObj;
         }
 
+        public PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId)
+        {
+            string teamMemberString = psdg.getTeamMemberBySalesForceId(salesForceId);
+            PlanSignatures[] teamMemberObj = js.Deserialize<PlanSignatures[]>(teamMemberString);
+            
+            return teamMemberObj;
+        }
+
         public class PlanSignatures
         {
             public string planId { get; set; }
