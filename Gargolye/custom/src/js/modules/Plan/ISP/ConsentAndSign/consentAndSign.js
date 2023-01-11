@@ -715,6 +715,10 @@ const planConsentAndSign = (() => {
               memberData: m,
             });
           };
+          // set isSigned to true
+          tableOBJ.attributes = [{ key: 'data-signed', value: true }];
+        } else {
+          tableOBJ.attributes = [{ key: 'data-signed', value: isSigned }];
         }
 
         return tableOBJ;
