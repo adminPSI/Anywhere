@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Management.Automation.Language;
 using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -33,6 +34,14 @@ namespace Anywhere.service.Data.PlanSignature
                 count++;
             }
             return signatureObj;
+        }
+
+        public PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId)
+        {
+            string teamMemberString = psdg.getTeamMemberBySalesForceId(salesForceId);
+            PlanSignatures[] teamMemberObj = js.Deserialize<PlanSignatures[]>(teamMemberString);
+            
+            return teamMemberObj;
         }
 
         public class PlanSignatures
@@ -181,6 +190,7 @@ namespace Anywhere.service.Data.PlanSignature
             //{
             //    newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
             //}
+
             if (salesforceId == "")
             {
                 newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
@@ -229,6 +239,19 @@ namespace Anywhere.service.Data.PlanSignature
 
         public TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
         {
+            // TODO 94246: STATE GUARDIANS THAT AREADY HAVE THEIR SALEFORCEID BEING USED IN THIS PLAN  
+            //string signatureString = psdg.getSignatures(token, assessmentId);
+            //PlanSignatures[] signatureObj = js.Deserialize<PlanSignatures[]>(signatureString);
+            //int count = 0;
+            //for (int i = 0; i < signatureObj.Length; i++)
+            //{
+            //    if (signatureObj[i].signature != "")
+            //    {
+            //        signatureObj[i].signature = "data:image/png;base64," + signatureObj[i].signature;
+            //    }
+            //    count++;
+            //}
+
             ISPDTData ispDT = new ISPDTData();
 
             string theGuardians = ispDT.IndividualGuardians(peopleId);

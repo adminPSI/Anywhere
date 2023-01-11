@@ -153,6 +153,31 @@ const consentAndSignAjax = (() => {
     }
   }
   
+  async function getTeamMemberBySalesForceId(retrieveData) {
+    // string salesForceId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getTeamMemberBySalesForceId/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getTeamMemberBySalesForceIdResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async function getConsumerOrganizationId(retrieveData) {
     //peopleId
     try {
@@ -407,6 +432,7 @@ const consentAndSignAjax = (() => {
     getConsentAndSignData,
     getPlanInformedConsentSSAs,
     getPlanInformedConsentVendors,
+    getTeamMemberBySalesForceId,
     getConsumerOrganizationId,
     updateTeamMember,
     updatePlanConsentStatements,

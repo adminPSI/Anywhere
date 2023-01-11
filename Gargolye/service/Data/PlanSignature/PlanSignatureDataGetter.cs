@@ -36,6 +36,24 @@ namespace Anywhere.service.Data.PlanSignature
             }
         }
 
+        public string getTeamMemberBySalesForceId(string salesForceId)
+        {
+            
+            List<string> list = new List<string>();
+            list.Add(salesForceId);
+            string text = "CALL DBA.ANYW_ISP_GetTeamMemberBySalesForceId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1APSDG", ex.Message + "ANYW_ISP_GetTeamMemberBySalesForceId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1APSDG: error ANYW_ISP_GetTeamMemberBySalesForceId";
+            }
+        }
+
+
         public string insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, 
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType)

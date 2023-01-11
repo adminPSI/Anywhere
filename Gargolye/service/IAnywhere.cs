@@ -3342,6 +3342,13 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getTeamMemberBySalesForceId/")]
+        PlanSignatureWorker.PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getTeamMemberListFromState/")]
         PlanSignatureWorker.TeamMemberFromState[] getTeamMemberListFromState(long peopleId);
 

@@ -2353,6 +2353,11 @@ namespace Anywhere
             return psw.getSignatures(token, assessmentId);
         }
 
+        public PlanSignatureWorker.PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId)
+        {
+            return psw.getTeamMemberBySalesForceId(salesForceId);
+        }
+
         public PlanSignatureWorker.TeamMemberFromState[] getTeamMemberListFromState(long peopleId)
         {
             return psw.getTeamMemberListFromState(peopleId);
