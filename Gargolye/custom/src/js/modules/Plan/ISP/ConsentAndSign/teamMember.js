@@ -346,6 +346,7 @@ if (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMembe
           return true;
           
         // selected imported/manually entered SalesForceID has NO value, AND selectedStateGuardianSalesForceId has a value
+        // TODO 94246: Ensure that the Update (of existing PEOPLE RECORD) below isn't inserting a DUPLICATE SalesForceID assignment -- -- SALESFORCEID SHOULD ONLY SHOW UP ONCE IN PEOPLE TABLE
         } else if (!selectedMemberData.salesforceId && selectedStateGuardianSalesForceId) {  
 
           alert(`Update the GK people.SalesForce_ID for  ${selectedMemberData.lastName} with the StateSalesForceId from the State`);
@@ -368,6 +369,7 @@ if (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMembe
                 return false;
               }
           // selected imported/manually entered SalesForceID has a value, AND selectedStateGuardianSalesForceId has a value --BUT-- they are NOT equal
+          // TODO 94246: Ensure that the newly inserted PEOPLE REcord below isn't inserting a DUPLICATE SalesForceID assignment -- SALESFORCEID SHOULD ONLY SHOW UP ONCE IN PEOPLE TABLE
         } else if ((selectedMemberData.salesforceId && selectedStateGuardianSalesForceId) && (selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId )) {  
 
           if (confirm(`These salesForceIds do not match. Do you want to Insert the selected State Guardian ${selectedStateGuardian} into the GK Database and save the selected State Guardian as a new Team Member?`)) {
@@ -974,14 +976,14 @@ async function continueSaveofConsentableTeamMember() {
           stateGuardianDropdown.classList.remove('error');
         }
 
-        // const teamMemberData = await consentAndSignAjax.getTeamMemberBySalesForceId({
-        //   salesForceId: selectedStateGuardianSalesForceId,
-        // });
+        const teamMemberData = await consentAndSignAjax.getTeamMemberBySalesForceId({
+          salesForceId: selectedStateGuardianSalesForceId,
+        });
     
-        // let test = teamMemberData;
+        let test = teamMemberData;
 
-        // if (teamMemberData && teamMemberData.length !== 0) {
-        // }
+        if (teamMemberData && teamMemberData.length !== 0) {
+        }
 
 
         checkTeamMemberPopupForErrors();
