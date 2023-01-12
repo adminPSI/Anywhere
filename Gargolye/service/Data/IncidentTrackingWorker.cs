@@ -449,6 +449,19 @@ namespace Anywhere.service.Data
             }
             return "success";
         }
+        
+        // NEW - Incident Tracking Update Incident View By User
+        public string updateIncidentViewByUser(string token, string incidentId, string userId)
+        {
+            dg.updateIncidentViewByUser(token, incidentId, userId);
+            return "success";
+        }
+
+        public class IncidentViewbyUser
+        {
+            public string incidentId { get; set; }
+            public string userId { get; set; }
+        }
 
         public class ReportingCategories
         {
