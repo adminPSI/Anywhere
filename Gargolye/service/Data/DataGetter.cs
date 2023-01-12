@@ -5368,6 +5368,22 @@ namespace Anywhere.Data
                 return "738: error ANYW_IncidentTracking_SaveUpdateITConsumerInjuries";
             }
         }
+        
+        // NEW - Incident Tracking Update Incident View By User
+        public string updateIncidentViewByUser(string token, string incidentId, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateIncidentViewByUser ");
+            try
+            {
+                return "";// TODO
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_IncidentTracking_UpdateIncidentViewByUser");
+                return "734: error ANYW_IncidentTracking_UpdateIncidentViewByUser";
+            }
+        }
 
         public string getConsumerPlanYearInfo(string token, string consumerId)
         {

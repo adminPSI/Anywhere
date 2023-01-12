@@ -2276,6 +2276,15 @@ namespace Anywhere
             UriTemplate = "/saveUpdateITConsumerReviews/")]
         string saveUpdateITConsumerReviews(string token, List<String> itConsumerReviewIdArray, string consumerInvolvedId, List<String> reviewedByArray, List<String> reviewedDateArray, List<String> noteArray);
 
+        // NEW - Incident Tracking Update Incident View By User
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/updateIncidentViewByUser/")]
+        string updateIncidentViewByUser(string token, string incidentId, string userId);
+
         //Incident Tracking Consumer Injuries specific alters
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3337,13 +3346,6 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getPlanSignatures/")]
         PlanSignatureWorker.PlanSignatures[] getSignatures(string token, long assessmentId);
-
-        [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/getTeamMemberBySalesForceId/")]
-        PlanSignatureWorker.PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,

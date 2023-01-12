@@ -1553,6 +1553,12 @@ namespace Anywhere
             return iTW.saveUpdateITConsumerReviews(token, itConsumerReviewIdArray, consumerInvolvedId, reviewedByArray, reviewedDateArray, noteArray);
         }
 
+        // NEW - Incident Tracking Update Incident View By User
+        public string updateIncidentViewByUser(string token, string incidentId, string userId)
+        {
+            return iTW.updateIncidentViewByUser(token, incidentId, userId);
+        }
+
         //Incident Tracking Consumer Injuries specific alters
         public string itDeleteConsumerInjuries(string token, string itConsumerInjuryId)
         {
@@ -2351,11 +2357,6 @@ namespace Anywhere
         public PlanSignatureWorker.PlanSignatures[] getSignatures(string token, long assessmentId)
         {
             return psw.getSignatures(token, assessmentId);
-        }
-
-        public PlanSignatureWorker.PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId)
-        {
-            return psw.getTeamMemberBySalesForceId(salesForceId);
         }
 
         public PlanSignatureWorker.TeamMemberFromState[] getTeamMemberListFromState(long peopleId)
