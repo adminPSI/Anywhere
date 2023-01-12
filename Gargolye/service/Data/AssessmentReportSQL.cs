@@ -111,6 +111,7 @@ namespace Anywhere.service.Data
                     }
                 }
 
+
                 //if (row["question_set_type"].ToString()  == "LIST")
                 //{
                 sb.Clear();
@@ -131,8 +132,55 @@ namespace Anywhere.service.Data
                         {
                             row["question_set_order"] = Convert.ToInt16(row["question_set_order"]) + 1;
                         }
-            }
 
+                string fs = string.Empty;
+                if (row["question_text"].ToString() == "Does this risk require supervision?")
+                {
+                    if (row["answer"].ToString() != string.Empty)
+                    {
+                        switch (row["answer"].ToString())
+                        {
+                            case "1":
+                                {
+                                    fs = "No paid supports";
+                                    break;
+                                }
+
+                            case "2":
+                                {
+                                    fs = "General";
+                                    break;
+                                }
+
+                            case "3":
+                                {
+                                    fs = "Auditory";
+                                    break;
+                                }
+
+                            case "4":
+                                {
+                                    fs = "Visual";
+                                    break;
+                                }
+
+                            case "5":
+                                {
+                                    fs = "Close and Constant";
+                                    break;
+                                }
+
+                            case "6":
+                                {
+                                    fs = "Technology";
+                                    break;
+                                }
+                        }
+
+                        row["answer"] = fs;
+                    }
+                }
+            }
             DataRow rowNew = dt.NewRow();
             rowNew["section_order"] = "5";
             rowNew["subsection_order"] = "4";
@@ -148,6 +196,7 @@ namespace Anywhere.service.Data
             //MessageBox.Show(string.Format("AssesmentAnswers dt row count {0}", dt.Rows.Count));
             return dt.DataSet;
         }
+
 
         public DataSet ISPSummary(long AssesmentID, bool Assessment, string WhichISPArea, Boolean Advisor = false)
         {
