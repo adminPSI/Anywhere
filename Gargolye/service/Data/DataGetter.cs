@@ -5376,7 +5376,7 @@ namespace Anywhere.Data
             logger.debug("updateIncidentViewByUser ");
             try
             {
-                return // TODO
+                return "";// TODO
             }
             catch (Exception ex)
             {
