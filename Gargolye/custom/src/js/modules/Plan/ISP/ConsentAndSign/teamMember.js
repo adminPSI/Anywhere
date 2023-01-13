@@ -345,7 +345,8 @@ const csTeamMember = (() => {
    }
 
    // 1 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
-   if (selectedMemberData.salesforceId !== '' && selectedStateGuardianSalesForceId !== '' && selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
+   if ((selectedMemberData.salesforceId  && selectedMemberData.salesforceId !== '')  && selectedStateGuardianSalesForceId !== '' && 
+   selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
     (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)
     ) {
 
@@ -362,7 +363,7 @@ const csTeamMember = (() => {
 									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
-									selectedMemberData.salesforceId = DBteamMemberswithStateSalesForceId[0].salesforceId;
+									selectedMemberData.salesforceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
 									return true;
       } else {
         alert(
@@ -373,8 +374,9 @@ const csTeamMember = (() => {
     }
 
      // 2 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
-   if (selectedMemberData.salesforceId !== '' && selectedStateGuardianSalesForceId !== '' && selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
-    (!DBteamMemberswithStateSalesForceId)
+   if ((selectedMemberData.salesforceId  && selectedMemberData.salesforceId !== '') && selectedStateGuardianSalesForceId !== '' && 
+   selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
+    (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)
     ) {
 
       let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 						  
@@ -400,7 +402,9 @@ const csTeamMember = (() => {
 
 
      // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
-   if (selectedMemberData.salesforceId === '' && selectedStateGuardianSalesForceId !== '' && (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)) {
+   if ((selectedMemberData.salesforceId === '' || !selectedMemberData.salesforceId) && 
+   selectedStateGuardianSalesForceId !== '' && 
+   (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)) {
 
     let Scenario3ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
     However, the following Guardian was found in the GK DB that matches the SalesforceID 
@@ -415,7 +419,7 @@ const csTeamMember = (() => {
 									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
-									selectedMemberData.salesforceId = DBteamMemberswithStateSalesForceId[0].salesforceId;
+									selectedMemberData.salesforceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
 									return true;
       } else {
         alert(
@@ -426,7 +430,9 @@ const csTeamMember = (() => {
     }
   
       // 4 --Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
-   if (selectedMemberData.salesforceId === '' && selectedStateGuardianSalesForceId !== '' && (!DBteamMemberswithStateSalesForceId)) {
+   if ((selectedMemberData.salesforceId === '' || !selectedMemberData.salesforceId) && 
+   selectedStateGuardianSalesForceId !== '' && 
+   (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)) {
 
     if (
       confirm('Is the selected State Guardian the same person as the entered Guardian in the form?')
@@ -480,7 +486,7 @@ const csTeamMember = (() => {
   // Final Guard Clause and Message for a failed attempt to Save New team Member
   if (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length > 1) {
     alert(
-      `Unable to save Team Member. There were multiple people in the GateKeeper Database with the SalesForceID: ${DBteamMemberswithStateSalesForceId[0].salesforceId}. Correct this issue before continuing.`,
+      `Unable to save Team Member. There were multiple people in the GateKeeper Database with the SalesForceID: ${DBteamMemberswithStateSalesForceId[0].salesForceId}. Correct this issue before continuing.`,
     );
     return false;
   } else {
