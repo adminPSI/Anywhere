@@ -3348,6 +3348,14 @@ namespace Anywhere
         PlanSignatureWorker.PlanSignatures[] getSignatures(string token, long assessmentId);
 
         [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getTeamMemberBySalesForceId/")]
+        PlanSignatureWorker.PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId);
+
+
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,

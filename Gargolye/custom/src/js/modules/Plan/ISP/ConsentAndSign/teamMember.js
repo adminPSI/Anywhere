@@ -345,8 +345,8 @@ const csTeamMember = (() => {
    }
 
    // 1 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
-   if (selectedMemberData.salesforceId && selectedStateGuardianSalesForceId && selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
-    DBteamMemberswithStateSalesForceId.length === 1
+   if (selectedMemberData.salesforceId !== '' && selectedStateGuardianSalesForceId !== '' && selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
+    (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)
     ) {
 
       let Scenario1ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 
@@ -358,7 +358,7 @@ const csTeamMember = (() => {
       if (
         confirm(Scenario1ConfirmText)
       ) {
-                  selectedMemberData.firstName = DBteamMemberswithStateSalesForceId[0].name;
+                  selectedMemberData.name = DBteamMemberswithStateSalesForceId[0].name;
 									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
@@ -373,8 +373,8 @@ const csTeamMember = (() => {
     }
 
      // 2 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
-   if (selectedMemberData.salesforceId && selectedStateGuardianSalesForceId && selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
-    DBteamMemberswithStateSalesForceId.length !== 1
+   if (selectedMemberData.salesforceId !== '' && selectedStateGuardianSalesForceId !== '' && selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
+    (!DBteamMemberswithStateSalesForceId)
     ) {
 
       let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 						  
@@ -384,7 +384,7 @@ const csTeamMember = (() => {
         confirm(Scenario2ConfirmText)
       ) {
         var fullName = selectedStateGuardian.split(' ');
-        selectedMemberData.firstName = fullName[0];
+        selectedMemberData.name = fullName[0];
         selectedMemberData.lastName = fullName[fullName.length - 1];
         selectedMemberData.buildingNumber = '';
         selectedMemberData.dateOfBirth = '';
@@ -400,7 +400,7 @@ const csTeamMember = (() => {
 
 
      // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
-   if (!selectedMemberData.salesforceId && selectedStateGuardianSalesForceId && DBteamMemberswithStateSalesForceId.length === 1) {
+   if (selectedMemberData.salesforceId === '' && selectedStateGuardianSalesForceId !== '' && (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)) {
 
     let Scenario3ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
     However, the following Guardian was found in the GK DB that matches the SalesforceID 
@@ -411,7 +411,7 @@ const csTeamMember = (() => {
       if (
         confirm(Scenario3ConfirmText)
       ) {
-                  selectedMemberData.firstName = DBteamMemberswithStateSalesForceId[0].name;
+                  selectedMemberData.name = DBteamMemberswithStateSalesForceId[0].name;
 									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
@@ -426,7 +426,7 @@ const csTeamMember = (() => {
     }
   
       // 4 --Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
-   if (!selectedMemberData.salesforceId && selectedStateGuardianSalesForceId && DBteamMemberswithStateSalesForceId.length !== 1) {
+   if (selectedMemberData.salesforceId === '' && selectedStateGuardianSalesForceId !== '' && (!DBteamMemberswithStateSalesForceId)) {
 
     if (
       confirm('Is the selected State Guardian the same person as the entered Guardian in the form?')
@@ -440,8 +440,8 @@ const csTeamMember = (() => {
     }
 
     let Scenario4ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
-    Do you wish to assign the selected State SalesforceID to the Imported Guardian (${selectedMemberData.firstName} ${selectedMemberData.lastName}) and then save
-    ${selectedMemberData.firstName} ${selectedMemberData.lastName} as the Guardian for this particular Added Team Member? `
+    Do you wish to assign the selected State SalesforceID to the Imported Guardian (${selectedMemberData.name} ${selectedMemberData.lastName}) and then save
+    ${selectedMemberData.name} ${selectedMemberData.lastName} as the Guardian for this particular Added Team Member? `
 
     let updatesuccess;
 
@@ -474,8 +474,22 @@ const csTeamMember = (() => {
       );
       return false;
     }
-  }
 
+  }
+  
+  // Final Guard Clause and Message for a failed attempt to Save New team Member
+  if (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length > 1) {
+    alert(
+      `Unable to save Team Member. There were multiple people in the GateKeeper Database with the SalesForceID: ${DBteamMemberswithStateSalesForceId[0].salesforceId}. Correct this issue before continuing.`,
+    );
+    return false;
+  } else {
+    alert(
+      `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+    );
+    return false;
+  }
+  
   }
 
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian or teamMember == Person Supported
@@ -1286,7 +1300,7 @@ const csTeamMember = (() => {
 
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
-    await populateGuardiansDropDown();
+     populateGuardiansDropDown();
     // await populateStateChangeMindDropDown();
 
     POPUP.show(teamMemberPopup);
