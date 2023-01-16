@@ -11,8 +11,10 @@ const csTeamMember = (() => {
   let stateChangeMindObj;
   let selectedStateChangeMind = '';
   let selectedStateChangeMindSalesForceId = '';
+  let DBteamMemberswithStateSalesForceId;
   // DOM
   let teamMemberPopup; // main popup
+  let currentTeamMemberList;
   let linkToRelationshipBtn;
   let linkToSalesforceBtn;
   let teamMemberDropdown;
@@ -96,6 +98,7 @@ const csTeamMember = (() => {
     dropdown.populate(stateGuardianDropdown, guarddata);
   }
 
+  //TODO 92768: this function populateStateChangeMindDropDown() may not be needed if not using this form to update SSA SalesforceId
   async function populateStateChangeMindDropDown() {
     var selectedConsumer = plan.getSelectedConsumer();
     //TODO 92768: CALL different OISP function to get the change mind contacts
@@ -331,66 +334,74 @@ const csTeamMember = (() => {
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian
   // TODO 94246: All these alerts/consfirms -- do we need to make them into Anywhere style
   async function continueSaveofGuardianTeamMember() {
-    let updatesuccess;
 
-    if (
-      confirm('Is the selected State Guardian the same person as the entered Guardian in the form?')
-    ) {
-      // YES -- Continue
-    } else {
-      alert(
-        `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
-      );
+    // Ensure that the same saleForceId is not added twice as a TeamMeber for a Plan
+    let isSaleForceIdUsed = false;
+
+    if (currentTeamMemberList && currentTeamMemberList.length > 0) {
+      currentTeamMemberList.forEach(p => {
+        if (selectedStateGuardianSalesForceId === p.salesForceId) isSaleForceIdUsed = true;
+      });
+    }
+   if (isSaleForceIdUsed) {
+    alert(`This team Member will not be saved. This salesForceId has been used for a team Member in this Plan.`);
+    return false;
+   } 
+
+    // A -- No State Guardian in Dropdown (stateGuardianDropdown) -- you can't save
+    if (!selectedStateGuardianSalesForceId) {
+      alert(`A Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
       return false;
     }
-    // selected imported/manually entered SalesForceID has a value, AND selectedStateGuardianSalesForceId has a value -- AND -- they are equal
-    if (
-      selectedStateGuardianSalesForceId &&
-      selectedMemberData.salesforceId === selectedStateGuardianSalesForceId
-    ) {
-      alert('Its a match. Continue saving new team member.');
+
+    // B -- Imported Guardian and Selected State Guardian have matching SaleForceIDs
+    if (selectedStateGuardianSalesForceId && selectedMemberData.salesforceId === selectedStateGuardianSalesForceId) {
       return true;
+   }
 
-      // selected imported/manually entered SalesForceID has NO value, AND selectedStateGuardianSalesForceId has a value
-      // TODO 94246: Ensure that the Update (of existing PEOPLE RECORD) below isn't inserting a DUPLICATE SalesForceID assignment -- -- SALESFORCEID SHOULD ONLY SHOW UP ONCE IN PEOPLE TABLE
-    } else if (!selectedMemberData.salesforceId && selectedStateGuardianSalesForceId) {
-      alert(
-        `Update the GK people.SalesForce_ID for  ${selectedMemberData.lastName} with the StateSalesForceId from the State`,
-      );
-      // update the imported/manually entered member with the State SaleforceID
-      try {
-        await consentAndSignAjax.setSalesForceIdForTeamMemberUpdate({
-          peopleId: selectedMemberData.contactId,
-          salesForceId: selectedStateGuardianSalesForceId,
-        });
-        updatesuccess = true;
-      } catch (error) {
-        updatesuccess = false;
-      }
+   // 1 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
+   if ((selectedMemberData.salesforceId  && selectedMemberData.salesforceId !== '')  && selectedStateGuardianSalesForceId !== '' && 
+   selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
+    (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)
+    ) {
 
-      if (updatesuccess) {
-        selectedMemberData.salesforceId = selectedStateGuardianSalesForceId;
-        return true;
+      let Scenario1ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 
+      However, the following Guardian was found in the GK DB that matches the SalesforceID 
+      of the selected State Guardian: ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName}.
+      Do you wish to save ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName} 
+      as the Guardian for this particular Added Team Member?`
+
+      if (
+        confirm(Scenario1ConfirmText)
+      ) {
+                  selectedMemberData.name = DBteamMemberswithStateSalesForceId[0].name;
+									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
+									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
+									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
+									selectedMemberData.salesforceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+									return true;
       } else {
         alert(
-          'Update of GK people.SalesForceID failed; therefore, inserting this Guardian will not be attempted.',
+          `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
         );
         return false;
       }
-      // selected imported/manually entered SalesForceID has a value, AND selectedStateGuardianSalesForceId has a value --BUT-- they are NOT equal
-      // TODO 94246: Ensure that the newly inserted PEOPLE REcord below isn't inserting a DUPLICATE SalesForceID assignment -- SALESFORCEID SHOULD ONLY SHOW UP ONCE IN PEOPLE TABLE
-    } else if (
-      selectedMemberData.salesforceId &&
-      selectedStateGuardianSalesForceId &&
-      selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId
+    }
+
+     // 2 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
+   if ((selectedMemberData.salesforceId  && selectedMemberData.salesforceId !== '') && selectedStateGuardianSalesForceId !== '' && 
+   selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
+    (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)
     ) {
+
+      let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 						  
+      Do you wish to save the selected State Guardian as the Guardian for this particular Added Team Member?`
+
       if (
-        confirm(
-          `These salesForceIds do not match. Do you want to Insert the selected State Guardian ${selectedStateGuardian} into the GK Database and save the selected State Guardian as a new Team Member?`,
-        )
+        confirm(Scenario2ConfirmText)
       ) {
         var fullName = selectedStateGuardian.split(' ');
-        selectedMemberData.firstName = fullName[0];
+        selectedMemberData.name = fullName[0];
         selectedMemberData.lastName = fullName[fullName.length - 1];
         selectedMemberData.buildingNumber = '';
         selectedMemberData.dateOfBirth = '';
@@ -402,18 +413,110 @@ const csTeamMember = (() => {
         );
         return false;
       }
-      // selectedStateGuardianSalesForceId has NO value
+    }
+
+
+     // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
+   if ((selectedMemberData.salesforceId === '' || !selectedMemberData.salesforceId) && 
+   selectedStateGuardianSalesForceId !== '' && 
+   (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)) {
+
+    let Scenario3ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
+    However, the following Guardian was found in the GK DB that matches the SalesforceID 
+    of the selected State Guardian: ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName}.
+    Do you wish to save ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName} 
+    as the Guardian for this particular Added Team Member?`
+
+      if (
+        confirm(Scenario3ConfirmText)
+      ) {
+                  selectedMemberData.name = DBteamMemberswithStateSalesForceId[0].name;
+									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
+									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
+									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
+									selectedMemberData.salesforceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+									return true;
+      } else {
+        alert(
+          `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+        );
+        return false;
+      }
+    }
+  
+      // 4 --Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
+   if ((selectedMemberData.salesforceId === '' || !selectedMemberData.salesforceId) && 
+   selectedStateGuardianSalesForceId !== '' && 
+   (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)) {
+
+    if (
+      confirm('Is the selected State Guardian the same person as the entered Guardian in the form?')
+    ) {
+      // YES -- Continue
     } else {
       alert(
         `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
       );
       return false;
-    } // end if processing salesforceID
+    }
+
+    let Scenario4ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
+    Do you wish to assign the selected State SalesforceID to the Imported Guardian (${selectedMemberData.name} ${selectedMemberData.lastName}) and then save
+    ${selectedMemberData.name} ${selectedMemberData.lastName} as the Guardian for this particular Added Team Member? `
+
+    let updatesuccess;
+
+    if (
+      confirm(Scenario4ConfirmText)
+    ) {
+      // update the imported/manually entered member with the State SaleforceID
+      try {
+        await consentAndSignAjax.setSalesForceIdForTeamMemberUpdate({
+          peopleId: selectedMemberData.contactId,
+          salesForceId: selectedStateGuardianSalesForceId,
+        });
+        updatesuccess = true;
+        } catch (error) {
+        updatesuccess = false;
+        }
+
+        if (updatesuccess) {
+        selectedMemberData.salesforceId = selectedStateGuardianSalesForceId;
+        return true;
+        } else {
+        alert(
+          'Update of GK people.SalesForceID failed; therefore, inserting this Guardian will not be attempted.',
+        );
+        return false;
+        }
+    } else {
+      alert(
+        `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+      );
+      return false;
+    }
+
+  }
+  
+  // Final Guard Clause and Message for a failed attempt to Save New team Member
+  if (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length > 1) {
+    alert(
+      `Unable to save Team Member. There were multiple people in the GateKeeper Database with the SalesForceID: ${DBteamMemberswithStateSalesForceId[0].salesForceId}. Correct this issue before continuing.`,
+    );
+    return false;
+  } else {
+    alert(
+      `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+    );
+    return false;
+  }
+  
   }
 
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian or teamMember == Person Supported
   // TODO 92768: All these alerts/consfirms -- do we need to make them into Anywhere style
   // TODO 92768: Need to check if the selectedMemberData.csChangeMindSSAPeopleId in the People table has a saleForceId
+  //TODO 92768: this function continueSaveofConsentableTeamMember() may not be needed if not using this form to update SSA SalesforceId
   async function continueSaveofConsentableTeamMember() {
     // csChangeMind: selectedMemberData.csChangeMind,
     // csChangeMindSSAPeopleId: selectedMemberData.csChangeMindSSAPeopleId,
@@ -624,7 +727,7 @@ const csTeamMember = (() => {
     //    THEN  -->  selectedMemberData.csChangeMindSSAPeopleId = ''; -- this will make the DDL RED and NO Value selected
     //  ELSE --> continue
 
-    // selectedMemberData.csChangeMindSSAPeopleId = '';
+    // 92768 selectedMemberData.csChangeMindSSAPeopleId = '';
 
     const changeMindQuestion = planConsentAndSign.buildChangeMindQuestion(
       {
@@ -769,7 +872,7 @@ const csTeamMember = (() => {
     showStateGuardians = planConsentAndSign.isTeamMemberGuardian(memberData.teamMember);
     selectedMemberData = { ...memberData };
     // TOOD 94246: IF the LIMITED NUMBER OF GUARDIANS or Parent Guardians have been reached, then REMOVE 'Guardians' from the teamMember DDL
-    var test = currentTeamMemberData;
+    currentTeamMemberList = currentTeamMemberData;
 
     // if (!isNew && $.session.applicationName === 'Advisor') {
     //   selectedMemberData.csChangeMindSSAPeopleId = $.session.UserId;
@@ -928,7 +1031,7 @@ const csTeamMember = (() => {
           complaintQuestion = await getContactMarkup();
           // show them
           teamMemberPopup.insertBefore(changeMindQuestion, participationRadios);
-          // teamMemberPopup.insertBefore(stateChangeMindDropdown, participationRadios);
+          // 92768 teamMemberPopup.insertBefore(stateChangeMindDropdown, participationRadios);
           teamMemberPopup.insertBefore(complaintQuestion, participationRadios);
           if (selectedStateChangeMind === '') stateChangeMindDropdown.classList.add('error');
           //
@@ -947,7 +1050,7 @@ const csTeamMember = (() => {
 
         if (showConsentStatments) {
           changeMindQuestion.parentNode.removeChild(changeMindQuestion);
-          //   stateChangeMindDropdown.parentNode.removeChild(stateChangeMindDropdown);
+          // 92768  stateChangeMindDropdown.parentNode.removeChild(stateChangeMindDropdown);
           complaintQuestion.parentNode.removeChild(complaintQuestion);
           // if (showStateGuardians) stateGuardianDropdown.parentNode.removeChild(stateGuardianDropdown);
           showConsentStatments = false;
@@ -993,14 +1096,27 @@ const csTeamMember = (() => {
           stateGuardianDropdown.classList.remove('error');
         }
 
-        const teamMemberData = await consentAndSignAjax.getTeamMemberBySalesForceId({
+        DBteamMemberswithStateSalesForceId = await consentAndSignAjax.getTeamMemberBySalesForceId({
           salesForceId: selectedStateGuardianSalesForceId,
         });
 
-        let test = teamMemberData;
+        if (DBteamMemberswithStateSalesForceId) {
 
-        if (teamMemberData && teamMemberData.length !== 0) {
+          if (DBteamMemberswithStateSalesForceId.length === 1) {
+
+            // gather the People data for this person, because we're going to use it save this Team Member
+
+          } else {
+
+            // there is more than one People record with this State SalesforceID -- the user needs to clean up the DB
+          }
+
+        } else {
+
+          // this State SaleforceID does not currently exist in the GK DB
+
         }
+      
 
         checkTeamMemberPopupForErrors();
       },
@@ -1206,8 +1322,8 @@ const csTeamMember = (() => {
 
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
-    await populateGuardiansDropDown();
-    // await populateStateChangeMindDropDown();
+     populateGuardiansDropDown();
+    // 92768 await populateStateChangeMindDropDown();
 
     POPUP.show(teamMemberPopup);
 
