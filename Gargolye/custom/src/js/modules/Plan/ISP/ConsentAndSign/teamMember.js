@@ -14,6 +14,7 @@ const csTeamMember = (() => {
   let DBteamMemberswithStateSalesForceId;
   // DOM
   let teamMemberPopup; // main popup
+  let currentTeamMemberList;
   let linkToRelationshipBtn;
   let linkToSalesforceBtn;
   let teamMemberDropdown;
@@ -97,6 +98,7 @@ const csTeamMember = (() => {
     dropdown.populate(stateGuardianDropdown, guarddata);
   }
 
+  //TODO 92768: this function populateStateChangeMindDropDown() may not be needed if not using this form to update SSA SalesforceId
   async function populateStateChangeMindDropDown() {
     var selectedConsumer = plan.getSelectedConsumer();
     //TODO 92768: CALL different OISP function to get the change mind contacts
@@ -333,6 +335,19 @@ const csTeamMember = (() => {
   // TODO 94246: All these alerts/consfirms -- do we need to make them into Anywhere style
   async function continueSaveofGuardianTeamMember() {
 
+    // Ensure that the same saleForceId is not added twice as a TeamMeber for a Plan
+    let isSaleForceIdUsed = false;
+
+    if (currentTeamMemberList && currentTeamMemberList.length > 0) {
+      currentTeamMemberList.forEach(p => {
+        if (selectedStateGuardianSalesForceId === p.salesForceId) isSaleForceIdUsed = true;
+      });
+    }
+   if (isSaleForceIdUsed) {
+    alert(`This team Member will not be saved. This salesForceId has been used for a team Member in this Plan.`);
+    return false;
+   } 
+
     // A -- No State Guardian in Dropdown (stateGuardianDropdown) -- you can't save
     if (!selectedStateGuardianSalesForceId) {
       alert(`A Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
@@ -501,6 +516,7 @@ const csTeamMember = (() => {
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian or teamMember == Person Supported
   // TODO 92768: All these alerts/consfirms -- do we need to make them into Anywhere style
   // TODO 92768: Need to check if the selectedMemberData.csChangeMindSSAPeopleId in the People table has a saleForceId
+  //TODO 92768: this function continueSaveofConsentableTeamMember() may not be needed if not using this form to update SSA SalesforceId
   async function continueSaveofConsentableTeamMember() {
     // csChangeMind: selectedMemberData.csChangeMind,
     // csChangeMindSSAPeopleId: selectedMemberData.csChangeMindSSAPeopleId,
@@ -711,7 +727,7 @@ const csTeamMember = (() => {
     //    THEN  -->  selectedMemberData.csChangeMindSSAPeopleId = ''; -- this will make the DDL RED and NO Value selected
     //  ELSE --> continue
 
-    // selectedMemberData.csChangeMindSSAPeopleId = '';
+    // 92768 selectedMemberData.csChangeMindSSAPeopleId = '';
 
     const changeMindQuestion = planConsentAndSign.buildChangeMindQuestion(
       {
@@ -856,7 +872,7 @@ const csTeamMember = (() => {
     showStateGuardians = planConsentAndSign.isTeamMemberGuardian(memberData.teamMember);
     selectedMemberData = { ...memberData };
     // TOOD 94246: IF the LIMITED NUMBER OF GUARDIANS or Parent Guardians have been reached, then REMOVE 'Guardians' from the teamMember DDL
-    var test = currentTeamMemberData;
+    currentTeamMemberList = currentTeamMemberData;
 
     // if (!isNew && $.session.applicationName === 'Advisor') {
     //   selectedMemberData.csChangeMindSSAPeopleId = $.session.UserId;
@@ -1015,7 +1031,7 @@ const csTeamMember = (() => {
           complaintQuestion = await getContactMarkup();
           // show them
           teamMemberPopup.insertBefore(changeMindQuestion, participationRadios);
-          // teamMemberPopup.insertBefore(stateChangeMindDropdown, participationRadios);
+          // 92768 teamMemberPopup.insertBefore(stateChangeMindDropdown, participationRadios);
           teamMemberPopup.insertBefore(complaintQuestion, participationRadios);
           if (selectedStateChangeMind === '') stateChangeMindDropdown.classList.add('error');
           //
@@ -1034,7 +1050,7 @@ const csTeamMember = (() => {
 
         if (showConsentStatments) {
           changeMindQuestion.parentNode.removeChild(changeMindQuestion);
-          //   stateChangeMindDropdown.parentNode.removeChild(stateChangeMindDropdown);
+          // 92768  stateChangeMindDropdown.parentNode.removeChild(stateChangeMindDropdown);
           complaintQuestion.parentNode.removeChild(complaintQuestion);
           // if (showStateGuardians) stateGuardianDropdown.parentNode.removeChild(stateGuardianDropdown);
           showConsentStatments = false;
@@ -1307,7 +1323,7 @@ const csTeamMember = (() => {
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
      populateGuardiansDropDown();
-    // await populateStateChangeMindDropDown();
+    // 92768 await populateStateChangeMindDropDown();
 
     POPUP.show(teamMemberPopup);
 
