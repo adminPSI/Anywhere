@@ -5374,9 +5374,14 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updateIncidentViewByUser ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(incidentId);
+            list.Add(userId);
+            string text = "CALL DBA.ANYW_IncidentTracking_UpdateIncidentViewByUser(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
-                return // TODO
+                return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {

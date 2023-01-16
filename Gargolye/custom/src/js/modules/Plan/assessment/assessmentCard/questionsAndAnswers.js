@@ -132,7 +132,8 @@
       if (conditionalQuestions[0].conditionalAnswerText !== answer) {
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
-        inputWrap.classList.add('disabled');
+        //inputWrap.classList.add('disabled');
+        input.disableInputField(inputWrap);
         if (type !== 'checkbox') {
           inputEle.value = '';
         } else {
@@ -161,7 +162,8 @@
         if (conditionalAnswerText !== answer) {
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = false;
-          inputWrap.classList.add('disabled');
+          //inputWrap.classList.add('disabled');
+          input.disableInputField(inputWrap);
           if (type !== 'checkbox') {
             inputEle.value = '';
           } else {
@@ -493,7 +495,7 @@
           popupData: { assessmentAreaId: id },
           isNew: true,
           fromAssessment: true,
-          charLimits: charLimits.servicesSupports
+          charLimits: charLimits.servicesSupports,
         });
       },
     });
@@ -502,7 +504,12 @@
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        servicesSupports.showAddAdditionalSupportPopup({ assessmentAreaId: id }, true, true, charLimits.servicesSupports);
+        servicesSupports.showAddAdditionalSupportPopup(
+          { assessmentAreaId: id },
+          true,
+          true,
+          charLimits.servicesSupports,
+        );
       },
     });
     const profRefBtn = button.build({
@@ -510,7 +517,12 @@
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        servicesSupports.showAddProfessionalReferralPopup({ assessmentAreaId: id }, true, true, charLimits.servicesSupports);
+        servicesSupports.showAddProfessionalReferralPopup(
+          { assessmentAreaId: id },
+          true,
+          true,
+          charLimits.servicesSupports,
+        );
       },
     });
 
@@ -1116,8 +1128,7 @@
           selectedRow = undefined;
           deleteRowsActive = false;
           const row = grid.querySelector('.grid__row.selected');
-          if (row)
-            row.classList.remove('selected');
+          if (row) row.classList.remove('selected');
           grid.classList.remove('delteActive');
           deleteRowsBtn.innerText = 'Delete Row';
           deleteRowsBtn.classList.remove('selected');
@@ -1157,7 +1168,8 @@
       const parentAnswerText = parentQuestion && parentQuestion.answerText;
 
       if (parentAnswerText !== conditionalAnswerText) {
-        questionInputMarkup.classList.add('disabled');
+        //questionInputMarkup.classList.add('disabled');
+        input.disableInputField(questionInputMarkup);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {
@@ -1204,7 +1216,8 @@
       const parentAnswerText = parentQuestion && parentQuestion.answerText;
 
       if (parentAnswerText !== conditionalAnswerText) {
-        questionInputMarkup.classList.add('disabled');
+        //questionInputMarkup.classList.add('disabled');
+        input.disableInputField(questionInputMarkup);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {
@@ -1245,7 +1258,8 @@
       const parentAnswerText = parentQuestion && parentQuestion.answerText;
 
       if (parentAnswerText !== conditionalAnswerText) {
-        questionInputMarkup.classList.add('disabled');
+        //questionInputMarkup.classList.add('disabled');
+        input.disableInputField(questionInputMarkup);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {

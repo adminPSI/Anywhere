@@ -10,7 +10,7 @@ var reviewIncident = (function () {
 
     DOM.autosizeTextarea();
 
-    // TODO: insert record if incident has not been viewed yet by user
+    // TODO ASH: insert record if incident has not been viewed yet by user
     incidentTrackingAjax.updateIncidentViewByUser({
       token: $.session.Token,
       incidentId,

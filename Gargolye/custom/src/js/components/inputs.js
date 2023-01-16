@@ -343,10 +343,20 @@ const input = (function () {
     return radio;
   }
 
+  function disableInputField(element) {
+    const inputEle = element.nodeName !== 'INPUT' ? element.querySelector('input') : element;
+
+    inputEle.classList.add('disabled');
+    inputEle.setAttribute('tab-index', '-1');
+  }
+  function enableInputField(inputEle) {}
+
   return {
     build,
     buildCheckbox,
     buildNativeCheckbox,
     buildRadio,
+    disableInputField,
+    enableInputField,
   };
 })();

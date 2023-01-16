@@ -457,12 +457,6 @@ namespace Anywhere.service.Data
             return "success";
         }
 
-        public class IncidentViewbyUser
-        {
-            public string incidentId { get; set; }
-            public string userId { get; set; }
-        }
-
         public class ReportingCategories
         {
             public string itReportingCategoryId { get; set; }
