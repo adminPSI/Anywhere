@@ -62,10 +62,7 @@ const planConsentAndSign = (() => {
       : false;
   }
   function isTeamMemberGuardian(teamMember) {
-    return teamMember === 'Parent/Guardian' ||
-      teamMember === 'Guardian'
-      ? true
-      : false;
+    return teamMember === 'Parent/Guardian' || teamMember === 'Guardian' ? true : false;
   }
   function getNames() {
     return names;
@@ -363,12 +360,11 @@ const planConsentAndSign = (() => {
   }
   // populate
   function populateDropdownSSA(ssaDropdown, csChangeMindSSAPeopleId) {
-
     const csChangeMindQuestionDropdownData = getSSADropdownData();
 
     dropdown.populate(ssaDropdown, csChangeMindQuestionDropdownData, csChangeMindSSAPeopleId);
   }
-  
+
   function populateDropdownVendor(vendorDropdown, csContactProviderVendorId) {
     //* VENDOR DROPDOWN
     const contactQuestionDropdownData = getVendorDropdownData();
@@ -725,9 +721,9 @@ const planConsentAndSign = (() => {
             });
           };
           // set isSigned to true
-          tableOBJ.attributes = [{ key: 'data-signed', value: true }];
-        } else {
           tableOBJ.attributes = [{ key: 'data-signed', value: isSigned }];
+        } else {
+          tableOBJ.attributes = [{ key: 'data-signed', value: true }];
         }
 
         return tableOBJ;

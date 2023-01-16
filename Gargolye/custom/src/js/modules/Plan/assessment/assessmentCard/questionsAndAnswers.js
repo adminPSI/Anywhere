@@ -28,6 +28,7 @@
   let deleteRowsActive = false;
   let selectedRow;
   let isSortable;
+  let readonly;
 
   //* TEMP FUNCTION FOR RE-ORDERING ROWS ON DELETE
   function updateRowOrderAfterDelete(grid, questionSetId) {
@@ -441,6 +442,9 @@
         // });
       },
     });
+    if (readonly || !$.session.planUpdate) {
+      input.disableInputField(applicableCheckbox);
+    }
     const sectionTitle = document.createElement('h2');
     sectionTitle.innerText = title;
 
@@ -712,6 +716,9 @@
     }
 
     if (questionInput) gridCell.appendChild(questionInput);
+    if (readonly || !$.session.planUpdate) {
+      if (questionInput) input.disableInputField(questionInput);
+    }
 
     return { markup: gridCell, hasStaticText };
   }
@@ -1002,6 +1009,9 @@
                   forceCharLimit: true,
                   attributes: [{ key: 'data-answer-row', value: answerRow }],
                 });
+                if (readonly || !$.session.planUpdate) {
+                  input.disableInputField(questionInput);
+                }
 
                 gridCell.appendChild(questionInput);
                 break;
@@ -1017,6 +1027,9 @@
                   forceCharLimit: true,
                   attributes: [{ key: 'data-answer-row', value: answerRow }],
                 });
+                if (readonly || !$.session.planUpdate) {
+                  input.disableInputField(questionInput);
+                }
 
                 gridCell.appendChild(questionInput);
                 break;
@@ -1026,6 +1039,9 @@
                   dropdownId: answerId,
                   style: 'secondary',
                 });
+                if (readonly || !$.session.planUpdate) {
+                  input.disableInputField(questionInput);
+                }
 
                 const colKey = UTIL.camelize(colName);
                 const dataKey = colNameDropdownMap[colKey];
@@ -1183,6 +1199,9 @@
       sectionQuestionCount[sectionId][setId][questionId].answered =
         answerText === '' ? false : true;
       sectionQuestionCount[sectionId][setId][questionId].required = true;
+      if (readonly || !$.session.planUpdate) {
+        input.disableInputField(questionInputMarkup);
+      }
     }
 
     return questionInputMarkup;
@@ -1231,6 +1250,9 @@
       sectionQuestionCount[sectionId][setId][questionId].answered =
         answerText === '' ? false : true;
       sectionQuestionCount[sectionId][setId][questionId].required = true;
+      if (readonly || !$.session.planUpdate) {
+        input.disableInputField(questionInputMarkup);
+      }
     }
 
     return questionInputMarkup;
@@ -1271,6 +1293,9 @@
     } else {
       sectionQuestionCount[sectionId][setId][questionId].answered = isChecked;
       sectionQuestionCount[sectionId][setId][questionId].required = false;
+      if (readonly || !$.session.planUpdate) {
+        input.disableInputField(questionInputMarkup);
+      }
     }
 
     return questionInputMarkup;
@@ -1621,11 +1646,12 @@
     answerObj = {};
     subSectionsWithAttachments = [];
     charLimits = planData.getAllISPcharacterLimts();
+    readonly = readOnly;
 
     if (!$.session.planUpdate) {
       isSortable = false;
     } else {
-      isSortable = readOnly ? false : true;
+      isSortable = readonly ? false : true;
     }
 
     assessmentDropdownData = {};

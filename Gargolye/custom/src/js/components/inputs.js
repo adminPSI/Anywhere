@@ -344,16 +344,40 @@ const input = (function () {
   }
 
   function disableInputField(element) {
-    const inputEle = element.nodeName !== 'INPUT' ? element.querySelector('input') : element;
+    let inputEle;
 
-    inputEle.classList.add('disabled');
-    inputEle.setAttribute('tab-index', '-1');
+    if (
+      element.nodeName !== 'INPUT' ||
+      element.nodeName !== 'TEXTAREA' ||
+      element.nodeName !== 'SELECT'
+    ) {
+      inputEle = element.querySelector('.input-field__input');
+      if (!inputEle) inputEle = element.querySelector('.dropdown__select');
+    } else {
+      inputEle = element;
+    }
+
+    element.classList.add('disabled');
+    inputEle.setAttribute('tabindex', '-1');
+
+    //console.log(element.nodeName, inputEle.id, inputEle.attributes);
   }
-  function enableInputField(inputEle) {
-    const inputEle = element.nodeName !== 'INPUT' ? element.querySelector('input') : element;
+  function enableInputField(element) {
+    let inputEle;
+
+    if (
+      element.nodeName !== 'INPUT' ||
+      element.nodeName !== 'TEXTAREA' ||
+      element.nodeName !== 'SELECT'
+    ) {
+      inputEle = element.querySelector('.input-field__input');
+      if (!inputEle) inputEle = element.querySelector('.dropdown__select');
+    } else {
+      inputEle = element;
+    }
 
     inputEle.classList.remove('disabled');
-    inputEle.removeAttribute('tab-index', '-1');
+    inputEle.removeAttribute('tabindex', '-1');
   }
 
   return {
