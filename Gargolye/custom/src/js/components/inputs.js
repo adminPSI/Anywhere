@@ -349,7 +349,12 @@ const input = (function () {
     inputEle.classList.add('disabled');
     inputEle.setAttribute('tab-index', '-1');
   }
-  function enableInputField(inputEle) {}
+  function enableInputField(inputEle) {
+    const inputEle = element.nodeName !== 'INPUT' ? element.querySelector('input') : element;
+
+    inputEle.classList.remove('disabled');
+    inputEle.removeAttribute('tab-index', '-1');
+  }
 
   return {
     build,

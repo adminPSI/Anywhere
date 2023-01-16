@@ -141,7 +141,8 @@
         }
         addAnswer(answerId);
       } else {
-        inputWrap.classList.remove('disabled');
+        //inputWrap.classList.remove('disabled');
+        input.enableInputField(inputWrap);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
       }
@@ -171,7 +172,8 @@
           }
           addAnswer(answerId);
         } else {
-          inputWrap.classList.remove('disabled');
+          //inputWrap.classList.remove('disabled');
+          input.enableInputField(inputWrap);
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = true;
         }
