@@ -335,15 +335,8 @@ const csTeamMember = (() => {
   // TODO 94246: All these alerts/consfirms -- do we need to make them into Anywhere style
   async function continueSaveofGuardianTeamMember() {
 
-    // Ensure that the same saleForceId is not added twice as a TeamMeber for a Plan
-    let isSaleForceIdUsed = false;
-
-    if (currentTeamMemberList && currentTeamMemberList.length > 0) {
-      currentTeamMemberList.forEach(p => {
-        if (selectedStateGuardianSalesForceId === p.salesForceId) isSaleForceIdUsed = true;
-      });
-    }
-   if (isSaleForceIdUsed) {
+    // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
+   if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId)) {
     alert(`This team Member will not be saved. This salesForceId has been used for a team Member in this Plan.`);
     return false;
    } 
@@ -364,6 +357,12 @@ const csTeamMember = (() => {
    selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
     (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)
     ) {
+
+       // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
+      if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
+        alert(`This team Member will not be saved. No salesForceIds are available to be used for this team Member in this Plan.`);
+        return false;
+      } 
 
       let Scenario1ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 
       However, the following Guardian was found in the GK DB that matches the SalesforceID 
@@ -420,6 +419,12 @@ const csTeamMember = (() => {
    if ((selectedMemberData.salesforceId === '' || !selectedMemberData.salesforceId) && 
    selectedStateGuardianSalesForceId !== '' && 
    (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)) {
+
+      // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
+      if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
+        alert(`This team Member will not be saved. No salesForceIds are available to be used for this team Member in this Plan.`);
+        return false;
+      } 
 
     let Scenario3ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
     However, the following Guardian was found in the GK DB that matches the SalesforceID 
@@ -511,6 +516,18 @@ const csTeamMember = (() => {
     return false;
   }
   
+  function hasSalesForceIdBeenUsed(selectedSalesForceID) {
+
+    let isSaleForceIdUsed = false;
+
+    if (currentTeamMemberList && currentTeamMemberList.length > 0) {
+      currentTeamMemberList.forEach(p => {
+        if (selectedSalesForceID === p.salesForceId) isSaleForceIdUsed = true;
+      });
+    }
+    return isSaleForceIdUsed;
+  }
+
   }
 
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian or teamMember == Person Supported
