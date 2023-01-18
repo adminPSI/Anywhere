@@ -11,11 +11,11 @@ var reviewIncident = (function () {
     DOM.autosizeTextarea();
 
     // TODO ASH: insert record if incident has not been viewed yet by user
-    incidentTrackingAjax.updateIncidentViewByUser({
-      token: $.session.Token,
-      incidentId,
-      userId: $.session.UserId,
-    });
+    // incidentTrackingAjax.updateIncidentViewByUser({
+    //   token: $.session.Token,
+    //   incidentId,
+    //   userId: $.session.UserId,
+    // });
   }
 
   function init(incidentId) {

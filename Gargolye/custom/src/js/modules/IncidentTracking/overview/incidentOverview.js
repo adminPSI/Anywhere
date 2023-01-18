@@ -493,6 +493,20 @@ var incidentOverview = (function () {
         id: rowId,
         values: [location, enteredBy, date, time, category, consumersInvolved],
         attributes: [{ key: 'viewed', value: viewedOn }],
+        onClick: async event => {
+          // if (
+          //   event.target.classList.contains('table__row') &&
+          //   !event.target.classList.contains('header')
+          // ) {
+          await incidentTrackingAjax.updateIncidentViewByUser({
+            token: $.session.Token,
+            incidentId: rowId,
+            userId: $.session.UserId,
+          });
+          DOM.scrollToTopOfPage();
+          reviewIncident.init(event.target.id);
+          //}
+        },
       };
     });
 
@@ -521,15 +535,15 @@ var incidentOverview = (function () {
     table.populate(overviewTable, data);
   }
   function setTableEvents() {
-    overviewTable.addEventListener('click', event => {
-      if (
-        event.target.classList.contains('table__row') &&
-        !event.target.classList.contains('header')
-      ) {
-        DOM.scrollToTopOfPage();
-        reviewIncident.init(event.target.id);
-      }
-    });
+    // overviewTable.addEventListener('click', event => {
+    //   if (
+    //     event.target.classList.contains('table__row') &&
+    //     !event.target.classList.contains('header')
+    //   ) {
+    //     DOM.scrollToTopOfPage();
+    //     reviewIncident.init(event.target.id);
+    //   }
+    // });
   }
 
   function init() {
