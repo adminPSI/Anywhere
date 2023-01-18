@@ -602,6 +602,7 @@ namespace Anywhere.service.Data
             public string supervisorId { get; set; }
             public string includeInCount { get; set; }
             public string incidentTime { get; set; }            
+            public string viewedOn { get; set; }
         }
         
         public class IncidentTrackingReviewLocations

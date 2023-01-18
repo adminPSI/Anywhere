@@ -1191,6 +1191,9 @@
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {
+        if (readonly || !$.session.planUpdate) {
+          input.disableInputField(questionInputMarkup);
+        }
         sectionQuestionCount[sectionId][setId][questionId].answered =
           answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
@@ -1242,6 +1245,9 @@
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {
+        if (readonly || !$.session.planUpdate) {
+          input.disableInputField(questionInputMarkup);
+        }
         sectionQuestionCount[sectionId][setId][questionId].answered =
           answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
@@ -1287,6 +1293,9 @@
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {
+        if (readonly || !$.session.planUpdate) {
+          input.disableInputField(questionInputMarkup);
+        }
         sectionQuestionCount[sectionId][setId][questionId].answered = isChecked;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       }

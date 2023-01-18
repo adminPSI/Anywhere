@@ -487,13 +487,12 @@ var incidentOverview = (function () {
       var time = UTIL.convertFromMilitary(obj.incidentTime);
       var category = obj.incidentCategory;
       var consumersInvolved = obj.consumerName;
-
-      // TODO ASH: make bold if ? incident not viewed by user and user didn't create incident
+      var viewedOn = obj.viewedOn ? true : false;
 
       return {
         id: rowId,
         values: [location, enteredBy, date, time, category, consumersInvolved],
-        attributes: [{ key: '', value: '' }],
+        attributes: [{ key: 'viewed', value: viewedOn }],
       };
     });
 
