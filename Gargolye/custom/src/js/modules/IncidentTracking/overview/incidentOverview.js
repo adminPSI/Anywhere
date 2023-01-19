@@ -492,7 +492,7 @@ var incidentOverview = (function () {
       return {
         id: rowId,
         values: [location, enteredBy, date, time, category, consumersInvolved],
-        attributes: [{ key: 'viewed', value: viewedOn }],
+        attributes: [{ key: 'data-viewed', value: viewedOn }],
         onClick: async event => {
           // if (
           //   event.target.classList.contains('table__row') &&
