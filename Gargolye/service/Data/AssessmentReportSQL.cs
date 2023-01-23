@@ -197,7 +197,6 @@ namespace Anywhere.service.Data
             return dt.DataSet;
         }
 
-
         public DataSet ISPSummary(long AssesmentID, bool Assessment, string WhichISPArea, Boolean Advisor = false)
         {
             String Vendor = "Vendor";
@@ -519,7 +518,7 @@ namespace Anywhere.service.Data
             sb.Append("SELECT ISP_Consumer_Signature_ID, ISP_Consumer_Plan_ID, Team_Member, Name, Relationship, Participated, ");
             sb.Append("Signature, Date_Signed, Dissent_Area_Disagree, Dissent_How_To_Address, Dissent_Date, dba.ANYW_ISP_Signatures.User_ID, ");
             sb.Append("dba.ANYW_ISP_Signatures.Last_Update, Signature_Order, ");
-            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2 ");
+            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type ");
             sb.Append("FROM dba.ANYW_ISP_Signatures ");
             sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
@@ -777,7 +776,6 @@ namespace Anywhere.service.Data
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             if (dt.Rows.Count > 0)
             {
-
                 DataRow row = dt.Rows[0];
                 if (row["Use_Consumer_Plan_Image"].ToString() == "1")
                 {
@@ -849,6 +847,7 @@ namespace Anywhere.service.Data
             }
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
+
         }
 
 
