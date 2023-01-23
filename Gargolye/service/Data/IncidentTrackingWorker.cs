@@ -587,6 +587,7 @@ namespace Anywhere.service.Data
             public string consumerName { get; set; }
             public string incidentCategory { get; set; }
             public string incidentDate { get; set; }
+            public string viewedOn { get; set; }
         }
         
         public class IncidentTrackingReviewTableData
