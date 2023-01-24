@@ -494,18 +494,15 @@ var incidentOverview = (function () {
         values: [location, enteredBy, date, time, category, consumersInvolved],
         attributes: [{ key: 'data-viewed', value: viewedOn }],
         onClick: async event => {
-          // if (
-          //   event.target.classList.contains('table__row') &&
-          //   !event.target.classList.contains('header')
-          // ) {
-          await incidentTrackingAjax.updateIncidentViewByUser({
-            token: $.session.Token,
-            incidentId: rowId,
-            userId: $.session.UserId,
-          });
+          if (!viewedOn) {
+            await incidentTrackingAjax.updateIncidentViewByUser({
+              token: $.session.Token,
+              incidentId: rowId,
+              userId: $.session.UserId,
+            });
+          }
           DOM.scrollToTopOfPage();
           reviewIncident.init(event.target.id);
-          //}
         },
       };
     });
@@ -534,17 +531,6 @@ var incidentOverview = (function () {
 
     table.populate(overviewTable, data);
   }
-  function setTableEvents() {
-    // overviewTable.addEventListener('click', event => {
-    //   if (
-    //     event.target.classList.contains('table__row') &&
-    //     !event.target.classList.contains('header')
-    //   ) {
-    //     DOM.scrollToTopOfPage();
-    //     reviewIncident.init(event.target.id);
-    //   }
-    // });
-  }
 
   function init() {
     setActiveModuleSectionAttribute('incidentTracking-overview');
@@ -564,7 +550,6 @@ var incidentOverview = (function () {
     incidentTrackingAjax.getITReviewTableData(retrieveData, function (results) {
       buildOverviewTable();
       populateOverviewTable(results);
-      setTableEvents();
     });
   }
 

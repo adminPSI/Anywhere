@@ -1294,7 +1294,7 @@ const csTeamMember = (() => {
       participatedNoRadio.classList.add('disabled');
       radioDiv.classList.remove('error');
       signatureTypeDropdown.classList.add('disabled');
-      saveTeamMemberBtn.classList.add('disabled');
+      saveTeamMemberBtn.classList.add('disabled');//
     }
 
     //* Add elements to popup
