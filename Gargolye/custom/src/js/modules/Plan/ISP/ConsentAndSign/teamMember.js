@@ -125,7 +125,7 @@ const csTeamMember = (() => {
   async function applySelectedRelationship(relData) {
     importedFromRelationship = true;
 
-    selectedMemberData.salesforceId = !relData.salesforceId ? '' : relData.salesforceId;
+    selectedMemberData.salesForceId = !relData.salesForceId ? '' : relData.salesForceId;
     selectedMemberData.contactId = relData.contactId;
     selectedMemberData.peopleId = relData.peopleId;
     selectedMemberData.dateOfBirth = relData.dateOfBirth;
@@ -348,13 +348,13 @@ const csTeamMember = (() => {
     }
 
     // B -- Imported Guardian and Selected State Guardian have matching SaleForceIDs
-    if (selectedStateGuardianSalesForceId && selectedMemberData.salesforceId === selectedStateGuardianSalesForceId) {
+    if (selectedStateGuardianSalesForceId && selectedMemberData.salesForceId === selectedStateGuardianSalesForceId) {
       return true;
    }
 
    // 1 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
-   if ((selectedMemberData.salesforceId  && selectedMemberData.salesforceId !== '')  && selectedStateGuardianSalesForceId !== '' && 
-   selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
+   if ((selectedMemberData.salesForceId  && selectedMemberData.salesForceId !== '')  && selectedStateGuardianSalesForceId !== '' && 
+   selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId && 
     (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)
     ) {
 
@@ -377,7 +377,7 @@ const csTeamMember = (() => {
 									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
-									selectedMemberData.salesforceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+									selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
 									return true;
       } else {
         alert(
@@ -388,8 +388,8 @@ const csTeamMember = (() => {
     }
 
      // 2 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
-   if ((selectedMemberData.salesforceId  && selectedMemberData.salesforceId !== '') && selectedStateGuardianSalesForceId !== '' && 
-   selectedMemberData.salesforceId !== selectedStateGuardianSalesForceId && 
+   if ((selectedMemberData.salesForceId  && selectedMemberData.salesForceId !== '') && selectedStateGuardianSalesForceId !== '' && 
+   selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId && 
     (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)
     ) {
 
@@ -404,7 +404,7 @@ const csTeamMember = (() => {
         selectedMemberData.lastName = fullName[fullName.length - 1];
         selectedMemberData.buildingNumber = '';
         selectedMemberData.dateOfBirth = '';
-        selectedMemberData.salesforceId = selectedStateGuardianSalesForceId;
+        selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
         return true;
       } else {
         alert(
@@ -416,7 +416,7 @@ const csTeamMember = (() => {
 
 
      // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
-   if ((selectedMemberData.salesforceId === '' || !selectedMemberData.salesforceId) && 
+   if ((selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId) && 
    selectedStateGuardianSalesForceId !== '' && 
    (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)) {
 
@@ -439,7 +439,7 @@ const csTeamMember = (() => {
 									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
-									selectedMemberData.salesforceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+									selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
 									return true;
       } else {
         alert(
@@ -450,7 +450,7 @@ const csTeamMember = (() => {
     }
   
       // 4 --Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
-   if ((selectedMemberData.salesforceId === '' || !selectedMemberData.salesforceId) && 
+   if ((selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId) && 
    selectedStateGuardianSalesForceId !== '' && 
    (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)) {
 
@@ -486,7 +486,7 @@ const csTeamMember = (() => {
         }
 
         if (updatesuccess) {
-        selectedMemberData.salesforceId = selectedStateGuardianSalesForceId;
+        selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
         return true;
         } else {
         alert(
@@ -942,6 +942,13 @@ const csTeamMember = (() => {
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
 
+        var selectedConsumer = plan.getSelectedConsumer();
+        let stateGuardiansOb = await consentAndSignAjax.getStateGuardiansforConsumer({
+          peopleId: selectedConsumer.id,
+        });
+
+        if (!stateGuardiansOb && planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)) alert(`No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`);
+
         // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
         setStateofPopupFields();
 
@@ -1339,7 +1346,7 @@ const csTeamMember = (() => {
 
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
-     populateGuardiansDropDown();
+    populateGuardiansDropDown();
     // 92768 await populateStateChangeMindDropDown();
 
     POPUP.show(teamMemberPopup);
