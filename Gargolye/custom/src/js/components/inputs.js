@@ -359,8 +359,6 @@ const input = (function () {
 
     element.classList.add('disabled');
     inputEle.setAttribute('tabindex', '-1');
-
-    //console.log(element.nodeName, inputEle.id, inputEle.attributes);
   }
   function enableInputField(element) {
     let inputEle;
@@ -376,7 +374,7 @@ const input = (function () {
       inputEle = element;
     }
 
-    inputEle.classList.remove('disabled');
+    element.classList.remove('disabled');
     inputEle.removeAttribute('tabindex', '-1');
   }
 
