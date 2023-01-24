@@ -947,7 +947,7 @@ const csTeamMember = (() => {
           peopleId: selectedConsumer.id,
         });
 
-        if (!stateGuardiansObj && planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)) alert(`No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`);
+        if (!stateGuardiansOb && planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)) alert(`No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`);
 
         // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
         setStateofPopupFields();
