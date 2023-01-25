@@ -475,6 +475,8 @@ var incidentOverview = (function () {
       }
     });
 
+    console.log(res);
+
     var keys = Object.keys(incidents);
 
     var data = keys.map(key => {
@@ -488,11 +490,17 @@ var incidentOverview = (function () {
       var category = obj.incidentCategory;
       var consumersInvolved = obj.consumerName;
       var viewedOn = obj.viewedOn ? true : false;
+      var orginUser = obj.originallyEnteredBy === $.session.UserId ? true : false;
+      var showBold;
+
+      if (!orginUser && !viewedOn) {
+        showBold = true;
+      }
 
       return {
         id: rowId,
         values: [location, enteredBy, date, time, category, consumersInvolved],
-        attributes: [{ key: 'data-viewed', value: viewedOn }],
+        attributes: [{ key: 'data-viewed', value: showBold }],
         onClick: async event => {
           if (!viewedOn) {
             await incidentTrackingAjax.updateIncidentViewByUser({
