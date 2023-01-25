@@ -21,18 +21,17 @@
 		});
 	}
 
-    function oneSpanBuildSigners() {
-        //(string packageName, string documentName, string filePath, string[] emails, string[] names)
-        const retrieveData = {
-            token: $.session.Token,
-            packageName: "Franklin County One Span Demo",
-            documentName: "Plan report", 
-            filePath: "C:\\Users\\mike.taft\\OneSpanSignDemo.pdf",
-            emails: ["mike.taft@primarysolutions.net", "josh.kramp@primarysolutions.net", "arletta.hinger@primarysolutions.net", "liz.thompson@primarysolutions.net"],
-            //emails: ["michaeltaft8@gmail.com"],
-            names: ["Crystal Schneider", "Michael Taft", "Karin Crabbe", "Angie Theller"]
-            //names: ["Michael Taft"]
-        };
+    function oneSpanBuildSigners(retrieveData) {
+        //(string packageName, string documentName, string filePath, string[] emails, string[] names, string[] teamMember)
+        // const retrieveData = {
+        //     token: $.session.Token,
+        //     packageName: "Franklin County One Span Demo",
+        //     documentName: "Plan report", 
+        //     filePath: "C:\\Users\\mike.taft\\OneSpanSignDemo.pdf",
+        //     emails: ["erick.bey@primarysolutions.net", "erickbey10@gmail.com", "erickbe10@yahoo.com", "erickbey1@outlook.com"],
+        //     names: ["Crystal Schneider", "Michael Taft", "Karin Crabbe", "Angie Theller"]
+        // };
+
         $.ajax({
             type: 'POST',
             url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/oneSpanBuildSigners/',
@@ -44,17 +43,17 @@
                 console.log(res)
             },
             error: function (xhr, status, error) {
-                //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+                // alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
             },
         });
     }
 
-    function oneSpanGetSignedDocuments() {
-        // packageId needs changed, this was hard coded for a test
-        const retrieveData = {
-            token: $.session.Token,
-            packageId: "Zy3UhNsvmOLCHaY0-vn56CT7h8w=",
-        };
+    function oneSpanGetSignedDocuments(retrieveData) {
+        // token, packageId, signatureId?
+        // const retrieveData = {
+        //     token: $.session.Token,
+        //     packageId: "tJtJIoFk24oranK-ZPHHbm4CE64=",
+        // };
         $.ajax({
             type: 'POST',
             url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/oneSpanGetSignedDocuments/',
@@ -71,7 +70,6 @@
             },
         })
     }
-	
 
 	return {
         sendPackage,

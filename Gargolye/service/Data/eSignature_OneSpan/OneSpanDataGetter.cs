@@ -16,24 +16,80 @@ namespace Anywhere.service.Data.eSignature_OneSpan
         private static Loger logger = new Loger();
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
-        public string getNamesForSignatures(long assessmentId)
+        public string OneSpanGetSignatures(string token, long assessmentId)
         {
             
-            logger.debug("getNamesForSignatures ");
+            logger.debug("OneSpanGetSignatures ");
             List<string> list = new List<string>();
+            list.Add(token);
             list.Add(assessmentId.ToString());
 
-            string text = "CALL DBA.ANYW_ESignature_GetSignerNames(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            string text = "CALL DBA.ANYW_ISP_OneSpan_GetSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("501-cov", ex.Message + "ANYW_ESignature_GetSignerNames(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "501-cov: error ANYW_ESignature_GetSignerNames";
+                logger.error("501-cov", ex.Message + "ANYW_ISP_OneSpan_GetSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "501-cov: error ANYW_ISP_OneSpan_GetSignatures";
             }
-        }        
+        }
+
+        public string updateOneSpanPlanConsentStatements(string token, string signatureId, string csChangeMind, string csContact, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology)
+        {
+            if (validateToken(token) == false) return null;
+            logger.debug("UpdateConsentStatements ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(signatureId);
+            list.Add(csChangeMind);
+            list.Add(csContact);
+            list.Add(csContactInput);
+            list.Add(csRightsReviewed);
+            list.Add(csAgreeToPlan);
+            list.Add(csFCOPExplained);
+            list.Add(csDueProcess);
+            list.Add(csResidentialOptions);
+            list.Add(csSupportsHealthNeeds);
+            list.Add(csTechnology);
+            string text = "CALL DBA.ANYW_ISP_updateOneSpanPlanConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3APICDG", ex.Message + "ANYW_ISP_updateOneSpanPlanConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APICDG: error ANYW_ISP_updateOneSpanPlanConsentStatements";
+            }
+        }
+
+        //public string OneSpanInsertPackageId(string token, long assessmentId, string packageId, string signedStatus)
+        //{
+        //    return "Update PackageId in DB";
+        //}
+
+        public string removeUnsavableNoteText(string note)
+        {
+            if (note == "" || note is null)
+            {
+                return note;
+            }
+            if (note.Contains("'"))
+            {
+                note = note.Replace("'", "''");
+            }
+            if (note.Contains("\\"))
+            {
+                note = note.Replace("\\", "");
+            }
+            //if (note.Contains("\""))
+            //{
+            //    note = note.Replace("\"", "\"");
+            //}
+            return note;
+        }
 
         public string executeDataBaseCallJSON(string storedProdCall)
         {
