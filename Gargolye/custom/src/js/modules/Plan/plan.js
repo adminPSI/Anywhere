@@ -817,7 +817,7 @@ const plan = (function () {
           const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
           const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
           const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-            isSuccess = assessment.generateReportWithAttachments(
+          isSuccess = assessment.generateReportWithAttachments(
             planId,
             '1',
             extraSpace,
@@ -827,17 +827,17 @@ const plan = (function () {
           );
         } else {
           //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
-            const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
-            const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
-            const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-            isSuccess = assessment.generateReportWithAttachments(
-                planId,
-                '1',
-                extraSpace,
-                planAttachmentIds,
-                wfAttachmentIds,
-                sigAttachmentIds,
-            );
+          const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+          const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+          const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+          isSuccess = assessment.generateReportWithAttachments(
+            planId,
+            '1',
+            extraSpace,
+            planAttachmentIds,
+            wfAttachmentIds,
+            sigAttachmentIds,
+          );
         }
 
         // remove spinner
@@ -1195,7 +1195,8 @@ const plan = (function () {
 
         if ($.loadedAppPage === 'planAssessment') {
           $.loadedAppPage = '';
-          assessment.showSaveWarning(loadLandingPage);
+          //assessment.showSaveWarning(loadLandingPage);
+          assessment.autoSaveAssessment(loadLandingPage);
         } else {
           loadLandingPage();
         }
@@ -1282,7 +1283,13 @@ const plan = (function () {
           } else if (targetTabIndex === '1') {
             TABS.toggleNavStatus(tabs, 'disable');
             if ($.loadedAppPage === 'planAssessment') {
-              assessment.showSaveWarning(async () => {
+              // assessment.showSaveWarning(async () => {
+              //   $.loadedAppPage = 'planISP';
+              //   await ISP.refreshISP(planId);
+              //   TABS.toggleNavStatus(tabs, 'enable');
+              //   DOM.autosizeTextarea();
+              // });
+              assessment.autoSaveAssessment(async () => {
                 $.loadedAppPage = 'planISP';
                 await ISP.refreshISP(planId);
                 TABS.toggleNavStatus(tabs, 'enable');
@@ -1297,7 +1304,17 @@ const plan = (function () {
           } else if (targetTabIndex === '2') {
             TABS.toggleNavStatus(tabs, 'disable');
             if ($.loadedAppPage === 'planAssessment') {
-              assessment.showSaveWarning(async () => {
+              // assessment.showSaveWarning(async () => {
+              //   $.loadedAppPage = 'planWorkflow';
+              //   const workflowLoadingBar = PROGRESS.SPINNER.get('Loading ISP...');
+              //   workflowWrap.innerHTML = '';
+              //   workflowWrap.appendChild(workflowLoadingBar);
+              //   const newWorkflowMarkup = await getWorkflowMarkup();
+              //   workflowWrap.innerHTML = '';
+              //   workflowWrap.appendChild(newWorkflowMarkup);
+              //   TABS.toggleNavStatus(tabs, 'enable');
+              // });
+              assessment.autoSaveAssessment(async () => {
                 $.loadedAppPage = 'planWorkflow';
                 const workflowLoadingBar = PROGRESS.SPINNER.get('Loading ISP...');
                 workflowWrap.innerHTML = '';

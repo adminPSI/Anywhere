@@ -19,12 +19,24 @@ var incidentTrackingWidget = (function () {
       name = `${name[1]}, ${name[0]}`;
       var date = UTIL.abbreviateDateYear(r.incidentDate.split(' ')[0]);
       var viewedOn = r.viewedOn ? true : false;
+      var orginUser = r.originallyEnteredBy === $.session.UserId ? true : false;
+      var showBold;
+
+      if (!orginUser && !viewedOn) {
+        showBold = true;
+      }
 
       return {
         values: [name, date, r.incidentCategory],
-        attributes: [{ key: 'data-viewed', value: viewedOn }],
+        attributes: [{ key: 'data-viewed', value: showBold }],
         id: r.incidentId,
-        onClick: () => {
+        onClick: async () => {
+          await incidentTrackingAjax.updateIncidentViewByUser({
+            token: $.session.Token,
+            incidentId: rowId,
+            userId: $.session.UserId,
+          });
+
           incidentTracking.getDropdownData(() => {
             setActiveModuleSectionAttribute('incidentTracking-overview');
             UTIL.toggleMenuItemHighlight('incidenttracking');

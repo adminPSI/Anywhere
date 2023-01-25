@@ -284,6 +284,34 @@ const assessment = (function () {
 
     POPUP.show(savePopup);
   }
+  // BELOW IS NOW AUTOSAVE
+  async function autoSaveAssessment(continueCallback) {
+    const isActive = plan.getPlanActiveStatus();
+    const status = plan.getPlanStatus();
+
+    if (!$.session.planUpdate || !isActive || status === 'C') {
+      continueCallback();
+      return;
+    }
+
+    const assessmentTab = document.getElementById('tab0');
+    const saveBar = PROGRESS.SPINNER.get('Saving Assessment...');
+    assessmentTab.innerHTML = '';
+    assessmentTab.appendChild(saveBar);
+
+    const answersArray = mainAssessment.getAnswers();
+    const success = await assessment.updateAnswers(answersArray);
+
+    if (success !== undefined && success !== null && success !== 'error') {
+      const successDiv = successfulSave.get('Assessment Saved', true);
+      assessmentTab.innerHTML = '';
+      assessmentTab.appendChild(successDiv);
+
+      setTimeout(() => {
+        continueCallback();
+      }, 1500);
+    }
+  }
 
   // Data
   //------------------------------------
@@ -519,6 +547,7 @@ const assessment = (function () {
     deleteGridRows,
     transeferPlanReportToONET,
     showSaveWarning,
+    autoSaveAssessment,
     // applicable stuff
     showApplicableWarningMessage,
     toggleIsSectionApplicable,
