@@ -30,7 +30,13 @@ var incidentTrackingWidget = (function () {
         values: [name, date, r.incidentCategory],
         attributes: [{ key: 'data-viewed', value: showBold }],
         id: r.incidentId,
-        onClick: () => {
+        onClick: async () => {
+          await incidentTrackingAjax.updateIncidentViewByUser({
+            token: $.session.Token,
+            incidentId: rowId,
+            userId: $.session.UserId,
+          });
+
           incidentTracking.getDropdownData(() => {
             setActiveModuleSectionAttribute('incidentTracking-overview');
             UTIL.toggleMenuItemHighlight('incidenttracking');

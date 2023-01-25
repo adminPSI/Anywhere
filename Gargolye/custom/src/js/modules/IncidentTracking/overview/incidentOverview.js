@@ -502,13 +502,11 @@ var incidentOverview = (function () {
         values: [location, enteredBy, date, time, category, consumersInvolved],
         attributes: [{ key: 'data-viewed', value: showBold }],
         onClick: async event => {
-          if (!viewedOn) {
-            await incidentTrackingAjax.updateIncidentViewByUser({
-              token: $.session.Token,
-              incidentId: rowId,
-              userId: $.session.UserId,
-            });
-          }
+          await incidentTrackingAjax.updateIncidentViewByUser({
+            token: $.session.Token,
+            incidentId: rowId,
+            userId: $.session.UserId,
+          });
           DOM.scrollToTopOfPage();
           reviewIncident.init(event.target.id);
         },

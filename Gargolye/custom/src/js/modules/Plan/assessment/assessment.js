@@ -294,28 +294,22 @@ const assessment = (function () {
       return;
     }
 
-    // Build and show save message
-    const savePopup = POPUP.build({
-      classNames: 'saveWarningPopup',
-      hideX: true,
-    });
-
+    const assessmentTab = document.getElementById('tab0');
     const saveBar = PROGRESS.SPINNER.get('Saving Assessment...');
-    savePopup.appendChild(saveBar);
-
-    POPUP.show(savePopup);
+    assessmentTab.innerHTML = '';
+    assessmentTab.appendChild(saveBar);
 
     const answersArray = mainAssessment.getAnswers();
     const success = await assessment.updateAnswers(answersArray);
 
     if (success !== undefined && success !== null && success !== 'error') {
+      const successDiv = successfulSave.get('Assessment Saved', true);
+      assessmentTab.innerHTML = '';
+      assessmentTab.appendChild(successDiv);
+
       setTimeout(() => {
-        const successDiv = successfulSave.get('Assessment Saved', true);
-        savePopup.removeChild(saveBar);
-        savePopup.appendChild(successDiv);
-        POPUP.hide(savePopup);
         continueCallback();
-      }, 1000);
+      }, 1500);
     }
   }
 
