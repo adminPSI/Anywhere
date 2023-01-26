@@ -33,7 +33,7 @@ var incidentTrackingWidget = (function () {
         onClick: async () => {
           await incidentTrackingAjax.updateIncidentViewByUser({
             token: $.session.Token,
-            incidentId: rowId,
+            incidentId: r.incidentId,
             userId: $.session.UserId,
           });
 
