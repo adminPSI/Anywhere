@@ -225,11 +225,10 @@ var itDetailsSection = (function () {
     sectionBody.appendChild(dropdowns);
     sectionBody.appendChild(textAreas.summary);
     sectionBody.appendChild(textAreas.action);
-    // TODO-ASH: remove below $.session and replace if's with whatever we name them when TJ is done
-    $.session.preventionPlan = true;
-    $.session.causeFactors = true;
-    if ($.session.preventionPlan) sectionBody.appendChild(textAreas.prevention);
-    if ($.session.causeFactors) sectionBody.appendChild(textAreas.cause);
+
+    if ($.session.incidentTrackingShowPreventionPlan) sectionBody.appendChild(textAreas.prevention);
+    if ($.session.incidentTrackingShowCauseAndContributingFactors)
+      sectionBody.appendChild(textAreas.cause);
 
     section.appendChild(heading);
     section.appendChild(sectionBody);
