@@ -294,20 +294,24 @@ const assessment = (function () {
       return;
     }
 
-    const assessmentTab = document.getElementById('tab0');
+    const savePopup = POPUP.build({
+      classNames: 'saveWarningPopup',
+      hideX: true,
+    });
     const saveBar = PROGRESS.SPINNER.get('Saving Assessment...');
-    assessmentTab.innerHTML = '';
-    assessmentTab.appendChild(saveBar);
+    savePopup.appendChild(saveBar);
+    POPUP.show(savePopup);
 
     const answersArray = mainAssessment.getAnswers();
     const success = await assessment.updateAnswers(answersArray);
+    savePopup.removeChild(saveBar);
 
     if (success !== undefined && success !== null && success !== 'error') {
       const successDiv = successfulSave.get('Assessment Saved', true);
-      assessmentTab.innerHTML = '';
-      assessmentTab.appendChild(successDiv);
+      savePopup.appendChild(successDiv);
 
       setTimeout(() => {
+        POPUP.hide(savePopup);
         continueCallback();
       }, 1500);
     }
