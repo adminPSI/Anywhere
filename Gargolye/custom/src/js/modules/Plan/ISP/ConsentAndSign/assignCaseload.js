@@ -10,27 +10,70 @@ const csAssignCaseload = (() => {
       header: 'Assign Case Load',
     });
 
+    let SSAlist = [
+      {
+        'value' : '0011R000003GE3GQAW',
+        'name' : 'Frank Sullivan',
+      },
+      {
+        'value' : '0022R000003GE3GQAW',
+        'name' : 'Derf Roeger',
+      },
+      {
+        'value' : '0033R000003GE3GQAW',
+        'name' : 'Jeff Wiedl',
+      }
+    ]
+
+    let consumerlist = [
+      {
+        'value' : '0044R000003GE3GQAW',
+        'name' : 'Matt Mahew',
+      },
+      {
+        'value' : '0055R000003GE3GQAW',
+        'name' : 'Scott Smith',
+      },
+      {
+        'value' : '0066R000003GE3GQAW',
+        'name' : 'Scott Curtis',
+      },
+      {
+        'value' : '0077R000003GE3GQAW',
+        'name' : 'Brent Norman',
+      },
+      {
+        'value' : '0088R000003GE3GQAW',
+        'name' : 'Kathy Shields',
+      },
+      {
+        'value' : '0099R000003GE3GQAW',
+        'name' : 'Lori Gelder',
+      }
+    ]
+
+
     let leftselectDiv = document.createElement("div")
     leftselectDiv.classList.add("assignCaseLoad-peoplelist")
-   leftselectDiv.innerHTML = `
-   <select id='leftselector' size='3'>
-   <option value='0033R000003GE3GQAW'>Frank Sullivan</option>
-   <option value='0044R000003GE3GQAW'>Derf Roeger</option>
-   <option value='0055R000003GE3GQAW'>Jeff Wiedl</option>
-   </select>
-    `
+    let selectleftHTML = `<select id='leftselector' size='3'>`
+
+    SSAlist.forEach(person => {
+      selectleftHTML = selectleftHTML + `<option value='${person.value}'>${person.name}</option>` })
+
+      selectleftHTML = selectleftHTML + `</select>`;
+      leftselectDiv.innerHTML = selectleftHTML;
+
     let rightselectDiv = document.createElement("div")
      rightselectDiv.classList.add("assignCaseLoad-peoplelist")
-    rightselectDiv.innerHTML = `
-    <select id='rightselector' multiple='multiple' size='6'>
-    <option value='0066R000003GE3GQAW'>Matt Mahew</option>
-    <option value='0077R000003GE3GQAW'>Tim Masingale</option>
-    <option value='0088R000003GE3GQAW'>Scott Curtis</option>
-    <option value='0099R000003GE3GQAW'>Kathy Shields</option>
-    <option value='0011R000003GE3GQAW'>Lori Gelder</option>
-    <option value='0022R000003GE3GQAW'>Lisa Golder</option>
-    </select>
-     `
+
+     let selectrightHTML = `<select id='rightselector' multiple='multiple' size='6'>`
+
+     consumerlist.forEach(person => {
+       selectrightHTML = selectrightHTML + `<option value='${person.value}'>${person.name}</option>` })
+ 
+       selectrightHTML = selectrightHTML + `</select>`;
+       rightselectDiv.innerHTML = selectrightHTML;
+ 
      var saveBtn = button.build({
       text: 'SAVE',
       style: 'secondary',
