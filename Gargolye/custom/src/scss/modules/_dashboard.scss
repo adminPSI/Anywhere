@@ -212,6 +212,11 @@
 // Inicident Tracking
 #incidentTrackingWidgetTable {
   .table__row {
+    &[data-viewed='true'] {
+      font-weight: $bold;
+      // color: $font-dark;
+      // background: $secondary;
+    }
     > div {
       flex-grow: 1;
     }

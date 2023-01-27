@@ -133,7 +133,6 @@
       if (conditionalQuestions[0].conditionalAnswerText !== answer) {
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
-        //inputWrap.classList.add('disabled');
         input.disableInputField(inputWrap);
         if (type !== 'checkbox') {
           inputEle.value = '';
@@ -142,7 +141,6 @@
         }
         addAnswer(answerId);
       } else {
-        //inputWrap.classList.remove('disabled');
         input.enableInputField(inputWrap);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
@@ -164,7 +162,6 @@
         if (conditionalAnswerText !== answer) {
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = false;
-          //inputWrap.classList.add('disabled');
           input.disableInputField(inputWrap);
           if (type !== 'checkbox') {
             inputEle.value = '';
@@ -173,7 +170,6 @@
           }
           addAnswer(answerId);
         } else {
-          //inputWrap.classList.remove('disabled');
           input.enableInputField(inputWrap);
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = true;
@@ -1353,6 +1349,9 @@
       const radioInput = input.buildRadio(btnOpts);
       questionInputMarkup.appendChild(radioInput);
     });
+
+    // TODO-ASH: add eraser icon here
+    // TODO-ASH: onClick -> unselect both radios, clear out conditional questions
 
     return questionInputMarkup;
   }

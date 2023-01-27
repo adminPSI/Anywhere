@@ -225,8 +225,10 @@ var itDetailsSection = (function () {
     sectionBody.appendChild(dropdowns);
     sectionBody.appendChild(textAreas.summary);
     sectionBody.appendChild(textAreas.action);
-    sectionBody.appendChild(textAreas.prevention);
-    sectionBody.appendChild(textAreas.cause);
+
+    if ($.session.incidentTrackingShowPreventionPlan) sectionBody.appendChild(textAreas.prevention);
+    if ($.session.incidentTrackingShowCauseAndContributingFactors)
+      sectionBody.appendChild(textAreas.cause);
 
     section.appendChild(heading);
     section.appendChild(sectionBody);

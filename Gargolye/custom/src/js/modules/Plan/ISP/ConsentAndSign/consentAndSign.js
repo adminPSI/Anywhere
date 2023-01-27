@@ -798,7 +798,24 @@ const planConsentAndSign = (() => {
         });
       },
     });
-    tableWrap.appendChild(addMemberBtn);
+
+    const assignCaseLoadBtn = button.build({
+      id: 'sig_assignCaseLoad',
+      text: 'ASSIGN CASE LOAD',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        csAssignCaseload.showAssignCaseLoadPopup();
+      },
+    });
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('topOutcomeWrap');
+
+    btnWrap.appendChild(addMemberBtn);
+    btnWrap.appendChild(assignCaseLoadBtn);
+
+    tableWrap.appendChild(btnWrap);
     tableWrap.appendChild(teamMemberTable);
 
     if (readOnly) {

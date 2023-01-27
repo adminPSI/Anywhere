@@ -51,7 +51,7 @@ const MODULE_MENU = (function () {
   const utilMenu = document.querySelector('.util-menu');
   let moduleMenu;
 
-  function handleMenuClick(event) {
+  async function handleMenuClick(event) {
     const target = event.target;
 
     if (target.classList.contains('menu__button')) {
@@ -65,7 +65,12 @@ const MODULE_MENU = (function () {
         return;
       }
       if ($.loadedApp === 'plan' && $.loadedAppPage === 'planAssessment') {
-        assessment.showSaveWarning(() => {
+        // assessment.showSaveWarning(() => {
+        //   moduleMenu.classList.remove('menu-visible');
+        //   bodyScrollLock.enableBodyScroll(moduleMenu);
+        //   loadApp(target.dataset.loadModule);
+        // });
+        assessment.autoSaveAssessment(() => {
           moduleMenu.classList.remove('menu-visible');
           bodyScrollLock.enableBodyScroll(moduleMenu);
           loadApp(target.dataset.loadModule);
@@ -136,9 +141,7 @@ const UTIL_MENU = (function () {
 
       utilMenu.addEventListener('click', function (event) {
         if (event.target.dataset.action === 'back') {
-          document
-            .querySelector('.submenu.menu-visible')
-            .classList.remove('menu-visible');
+          document.querySelector('.submenu.menu-visible').classList.remove('menu-visible');
           return;
         }
         if (event.target.dataset.action === 'trainingVideos') {
@@ -214,7 +217,10 @@ const MINI_MODULE_MENU = (function () {
         const appName = e.target.dataset.loadModule;
 
         if ($.loadedApp === 'plan' && $.loadedAppPage === 'planAssessment') {
-          assessment.showSaveWarning(e => {
+          // assessment.showSaveWarning(e => {
+          //   loadApp(appName);
+          // });
+          assessment.autoSaveAssessment(e => {
             loadApp(appName);
           });
         } else {
