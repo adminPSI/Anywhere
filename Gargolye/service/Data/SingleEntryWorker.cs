@@ -346,6 +346,12 @@ namespace Anywhere.service.Data
             public string Transportation_Units { get; set; }
             public string Number_Consumers_Present { get; set; }
             public string destination { get; set; }
+            public string approvedUser { get; set; }
+            public string rejectedUser { get; set; }
+            public string submittedUser { get; set; }
+            public string approved_time { get; set; }
+            public string submit_date { get; set; }
+            public string rejected_time { get; set; }
         }        
 
         public class SingleEntryById
