@@ -205,8 +205,7 @@ const csTeamMember = (() => {
     if (success) {
       pendingSave.fulfill('Linked');
       const savePopup = document.querySelector('.successfulSavePopup');
-      // DOM.ACTIONCENTER.removeChild(savePopup);
-      DOM.ACTIONCENTER.removeChild(DOM.ACTIONCENTER.childNodes[3]);
+       DOM.ACTIONCENTER.removeChild(savePopup);
       overlay.hide();
       planConsentAndSign.refreshTable();
     } else {
@@ -269,8 +268,7 @@ const csTeamMember = (() => {
               pendingSave.fulfill('Saved');
               setTimeout(() => {
                 const savePopup = document.querySelector('.successfulSavePopup');
-                // DOM.ACTIONCENTER.removeChild(savePopup);
-            DOM.ACTIONCENTER.removeChild(DOM.ACTIONCENTER.childNodes[3]);
+                DOM.ACTIONCENTER.removeChild(savePopup);
                 POPUP.hide(teamMemberPopup);
                 planConsentAndSign.refreshTable();
               }, 700);
@@ -295,8 +293,7 @@ const csTeamMember = (() => {
           pendingSave.fulfill('Saved');
           setTimeout(() => {
             const savePopup = document.querySelector('.successfulSavePopup');
-            // DOM.ACTIONCENTER.removeChild(savePopup);
-            DOM.ACTIONCENTER.removeChild(DOM.ACTIONCENTER.childNodes[3]);
+             DOM.ACTIONCENTER.removeChild(savePopup);
 
             POPUP.hide(teamMemberPopup);
             planConsentAndSign.refreshTable();
@@ -319,8 +316,7 @@ const csTeamMember = (() => {
         pendingSave.fulfill('Saved');
         setTimeout(() => {
           const savePopup = document.querySelector('.successfulSavePopup');
-          // DOM.ACTIONCENTER.removeChild(savePopup);
-          DOM.ACTIONCENTER.removeChild(DOM.ACTIONCENTER.childNodes[3]);
+         DOM.ACTIONCENTER.removeChild(savePopup);
           POPUP.hide(teamMemberPopup);
           planConsentAndSign.refreshTable();
         }, 700);
