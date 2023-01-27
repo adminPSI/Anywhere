@@ -65,11 +65,6 @@ const MODULE_MENU = (function () {
         return;
       }
       if ($.loadedApp === 'plan' && $.loadedAppPage === 'planAssessment') {
-        // assessment.showSaveWarning(() => {
-        //   moduleMenu.classList.remove('menu-visible');
-        //   bodyScrollLock.enableBodyScroll(moduleMenu);
-        //   loadApp(target.dataset.loadModule);
-        // });
         assessment.autoSaveAssessment(() => {
           moduleMenu.classList.remove('menu-visible');
           bodyScrollLock.enableBodyScroll(moduleMenu);
@@ -217,9 +212,6 @@ const MINI_MODULE_MENU = (function () {
         const appName = e.target.dataset.loadModule;
 
         if ($.loadedApp === 'plan' && $.loadedAppPage === 'planAssessment') {
-          // assessment.showSaveWarning(e => {
-          //   loadApp(appName);
-          // });
           assessment.autoSaveAssessment(e => {
             loadApp(appName);
           });
