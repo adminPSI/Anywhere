@@ -1575,7 +1575,7 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddAdditionalSupportPopup(asData, false, charLimits);
+            showAddAdditionalSupportPopup(asData, false, false, charLimits);
           },
         },
       ],
@@ -1606,7 +1606,7 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddAdditionalSupportPopup(asData, false, charLimits);
+            showAddAdditionalSupportPopup(asData, false, false, charLimits);
           },
         },
       ],
@@ -2008,7 +2008,7 @@ const servicesSupports = (() => {
             values: tableValues,
             attributes: [{ key: 'sectionId', value: asData.assessmentAreaId }],
             onClick: () => {
-              showAddAdditionalSupportPopup(asData, false, charLimits);
+              showAddAdditionalSupportPopup(asData, false, false, charLimits);
             },
           };
         });
@@ -2055,7 +2055,7 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddProfessionalReferralPopup(prData, false, charLimits);
+            showAddProfessionalReferralPopup(prData, false, false, charLimits);
           },
         },
       ],
@@ -2085,7 +2085,7 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddProfessionalReferralPopup(prData, false, charLimits);
+            showAddProfessionalReferralPopup(prData, false, false, charLimits);
           },
         },
       ],
@@ -2369,7 +2369,7 @@ const servicesSupports = (() => {
             values: tableValues,
             attributes: [{ key: 'sectionId', value: prData.assessmentAreaId }],
             onClick: () => {
-              showAddProfessionalReferralPopup(prData, false, charLimits);
+              showAddProfessionalReferralPopup(prData, false, false, charLimits);
             },
           };
         });
