@@ -739,15 +739,6 @@ function checkforErrors(xmlReturn) {
 
 function setCookieOnFail(xmlReturn) {
   if ($.loadedApp === 'plan' && $.loadedAppPage === 'planAssessment') {
-    // assessment.showSaveWarning(() => {
-    //   createCookie('psi', xmlReturn, 1);
-    //   $.session.Token = '';
-    //   if (xmlReturn.indexOf('Password has expired') > -1) {
-    //     // do nothing
-    //   } else {
-    //     document.location.href = 'login.html';
-    //   }
-    // });
     assessment.autoSaveAssessment(() => {
       createCookie('psi', xmlReturn, 1);
       $.session.Token = '';
