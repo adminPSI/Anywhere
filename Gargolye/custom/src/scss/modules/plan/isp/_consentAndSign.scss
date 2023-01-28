@@ -268,13 +268,27 @@
 
 // assignCaseLoad 
 .assignCaseLoad-container {
-  border: 3px solid #fff;
+  //display: flex;
+  //flex-flow: row wrap;
+  //flex-direction: column;
+  border: 3px solid rgb(41, 143, 41);
   padding: 20px;
+  max-width: 800px !important;
 }
 
 .assignCaseLoad-peoplelist {
   width: 50%;
+ // max-width: 300px;
   float: left;
   padding: 20px;
-  border: 2px solid red;
+  border: 2px solid rgb(17, 0, 255);
 }  
+
+.btnWrap {
+  display: flex;
+  flex-wrap: wrap;
+  flex-flow: row wrap;
+  margin-top: auto;
+  margin: 0 0 10px;
+  text-align: left;
+}

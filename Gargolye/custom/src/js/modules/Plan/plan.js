@@ -1195,7 +1195,6 @@ const plan = (function () {
 
         if ($.loadedAppPage === 'planAssessment') {
           $.loadedAppPage = '';
-          //assessment.showSaveWarning(loadLandingPage);
           assessment.autoSaveAssessment(loadLandingPage);
         } else {
           loadLandingPage();
@@ -1283,12 +1282,6 @@ const plan = (function () {
           } else if (targetTabIndex === '1') {
             TABS.toggleNavStatus(tabs, 'disable');
             if ($.loadedAppPage === 'planAssessment') {
-              // assessment.showSaveWarning(async () => {
-              //   $.loadedAppPage = 'planISP';
-              //   await ISP.refreshISP(planId);
-              //   TABS.toggleNavStatus(tabs, 'enable');
-              //   DOM.autosizeTextarea();
-              // });
               assessment.autoSaveAssessment(async () => {
                 $.loadedAppPage = 'planISP';
                 await ISP.refreshISP(planId);
@@ -1304,16 +1297,6 @@ const plan = (function () {
           } else if (targetTabIndex === '2') {
             TABS.toggleNavStatus(tabs, 'disable');
             if ($.loadedAppPage === 'planAssessment') {
-              // assessment.showSaveWarning(async () => {
-              //   $.loadedAppPage = 'planWorkflow';
-              //   const workflowLoadingBar = PROGRESS.SPINNER.get('Loading ISP...');
-              //   workflowWrap.innerHTML = '';
-              //   workflowWrap.appendChild(workflowLoadingBar);
-              //   const newWorkflowMarkup = await getWorkflowMarkup();
-              //   workflowWrap.innerHTML = '';
-              //   workflowWrap.appendChild(newWorkflowMarkup);
-              //   TABS.toggleNavStatus(tabs, 'enable');
-              // });
               assessment.autoSaveAssessment(async () => {
                 $.loadedAppPage = 'planWorkflow';
                 const workflowLoadingBar = PROGRESS.SPINNER.get('Loading ISP...');
