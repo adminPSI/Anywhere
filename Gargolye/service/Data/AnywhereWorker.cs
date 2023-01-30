@@ -339,6 +339,7 @@ namespace Anywhere.service.Data
             public string SD { get; set; }
             public string conL { get; set; }
             public string MN { get; set; }
+            public string residentNumber { get; set; }
         }
 
         public RosterLocations[] getLocationsJSON(string token)
@@ -408,6 +409,8 @@ namespace Anywhere.service.Data
             public string incidentTrackingPopulateIncidentDate { get; set; }
             public string incidentTrackingPopulateReportedTime { get; set; }
             public string incidentTrackingPopulateReportedDate { get; set; }
+            public string incidentTrackingShowCauseAndContributingFactors { get; set; }
+            public string incidentTrackingShowPreventionPlan { get; set; }
             public string schedulingPermission { get; set; }
             public string singleEntryApproveEnabled { get; set; }
             public string seShowConsumerSignature { get; set; }
