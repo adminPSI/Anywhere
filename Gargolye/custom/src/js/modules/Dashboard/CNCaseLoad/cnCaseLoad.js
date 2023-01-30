@@ -1,5 +1,5 @@
 //Widget id = 2
-const CN_CaseLoadWidget = (function() {
+const CN_CaseLoadWidget = (function () {
   //Data
   let caseLoad, widgetSettings, demographicInfo;
   let consumerName;
@@ -12,37 +12,34 @@ const CN_CaseLoadWidget = (function() {
   let lastNoteEnteredDaysBackDate;
 
   function displayConsumerCount(caseLoad) {
-  
     if (caseLoad && caseLoad.length !== 0) {
       consumerCountlbl = document.createElement('div');
       consumerCountlbl.innerHTML = `<div>
         <p style="font-family:Rubik;font-size:12px !important" ><span><center><b><i>Consumer Count: ${caseLoad.length} </i></b></center></span></p>
       </div>`;
     }
-    
   }
 
   function populateCaseLoadWidget() {
     displayConsumerCount(caseLoad);
-    const widget = document.getElementById("casenotescaseload");
+
+    const widget = document.getElementById('casenotescaseload');
     if (!widget) return;
-    const widgetBody = widget.querySelector(".widget__body");
+
+    const widgetBody = widget.querySelector('.widget__body');
     if (caseLoad.length === 0) {
-      widgetBody.innerHTML = `<span style="color:#DB162f;">
-      No consumers on case load
-      </span>
-      `
-      return
+      widgetBody.innerHTML = `<span style="color:#DB162f;">No consumers on case load</span>`;
+      return;
     }
- 
+
     const tableOptions = {
       plain: true,
-      columnHeadings: ["Consumer", "Last Note"],
-      tableId: "caseLoadWidgetTable"
+      columnHeadings: ['Consumer', 'Resident Number', 'Last Note'],
+      tableId: 'caseLoadWidgetTable',
     };
     const caseLoadTable = table.build(tableOptions);
 
-    widgetBody.innerHTML = "";
+    widgetBody.innerHTML = '';
     widgetBody.appendChild(consumerCountlbl);
     widgetBody.appendChild(caseLoadTable);
 
@@ -51,14 +48,14 @@ const CN_CaseLoadWidget = (function() {
 
     const tableData = caseLoad.map(consumer => {
       const name = `${consumer.lastName}, ${consumer.firstName}`;
-      // const dateString = consumer.lastNoteDate.split(" ")[0] === "" ? "00/00/0000" : consumer.lastNoteDate.split(" ")[0];
-      const dateString = consumer.lastNoteDate.split(" ")[0];
+      const resNumber = '';
+      const dateString = consumer.lastNoteDate.split(' ')[0];
       const lastNoteDate = new Date(dateString);
       const dateDisp =
-      lastNoteEnteredDaysBackDate < lastNoteDate
-          ? consumer.lastNoteDate.split(" ")[0]
+        lastNoteEnteredDaysBackDate < lastNoteDate
+          ? consumer.lastNoteDate.split(' ')[0]
           : `<span style="color:#DB162f;">${
-              dateString === "" ? "No Case Notes Found" : dateString
+              dateString === '' ? 'No Case Notes Found' : dateString
             }</span>`;
 
       return {
@@ -66,9 +63,10 @@ const CN_CaseLoadWidget = (function() {
         id: consumer.id,
         onClick: () => {
           getConsumerDemographics(consumer.id);
-        }
+        },
       };
     });
+
     table.populate(caseLoadTable, tableData);
   }
 
@@ -77,10 +75,10 @@ const CN_CaseLoadWidget = (function() {
     consumerName = `${demographicInfo.lastname}, ${demographicInfo.firstname}`;
     const popup = POPUP.build({
       header: consumerName,
-      id: "myCaseLoadPopup"
+      id: 'myCaseLoadPopup',
     });
     //Address
-    const addressBlock = document.createElement("div");
+    const addressBlock = document.createElement('div');
     // addressBlock.classList.add("demographicSection");
     const address1 = demographicInfo.addressone;
     const address2 = demographicInfo.addresstwo;
@@ -96,15 +94,14 @@ const CN_CaseLoadWidget = (function() {
     popup.appendChild(addressBlock);
 
     //Contact Info
-    const contactInfoBlock = document.createElement("div");
+    const contactInfoBlock = document.createElement('div');
     // contactInfoBlock.classList.add("demographicSection");
-    const tempPrimaryPhone = demographicInfo.primaryphone.split("%");
-    const tempSecondaryPhone = demographicInfo.secondaryphone.split("%");
+    const tempPrimaryPhone = demographicInfo.primaryphone.split('%');
+    const tempSecondaryPhone = demographicInfo.secondaryphone.split('%');
     const pPhoneNumber = UTIL.formatPhoneNumber(tempPrimaryPhone[0].trim());
     const sPhoneNumber = UTIL.formatPhoneNumber(tempSecondaryPhone[0].trim());
-    const pPhoneType = tempPrimaryPhone.length > 1 ? tempPrimaryPhone[1] : "";
-    const sPhoneType =
-      tempSecondaryPhone.length > 1 ? tempSecondaryPhone[1] : "";
+    const pPhoneType = tempPrimaryPhone.length > 1 ? tempPrimaryPhone[1] : '';
+    const sPhoneType = tempSecondaryPhone.length > 1 ? tempSecondaryPhone[1] : '';
     const pPhone = `${pPhoneNumber} ${pPhoneType}`;
     const sPhone = `${sPhoneNumber} ${sPhoneType}`;
     contactInfoBlock.innerHTML = `
@@ -118,17 +115,17 @@ const CN_CaseLoadWidget = (function() {
       text: 'New Case Note',
       style: 'secondary',
       type: 'contained',
-      classNames: !$.session.CaseNotesUpdate ? ['newNoteBtn','disabled'] : ['newNoteBtn'],
+      classNames: !$.session.CaseNotesUpdate ? ['newNoteBtn', 'disabled'] : ['newNoteBtn'],
       callback: () => {
         // Need to finish new note button once new roster is done
-        POPUP.hide(popup)
+        POPUP.hide(popup);
         DOM.clearActionCenter();
         setActiveModuleSectionAttribute('caseNotes-new');
-        UTIL.toggleMenuItemHighlight("casenotes")
-        actioncenter.dataset.activeModule = "casenotes"
-        note.init('new', null, null, {id: consumerId, name:consumerName});
-      }
-    })
+        UTIL.toggleMenuItemHighlight('casenotes');
+        actioncenter.dataset.activeModule = 'casenotes';
+        note.init('new', null, null, { id: consumerId, name: consumerName });
+      },
+    });
 
     // review case notes
     const reviewNotesBtn = button.build({
@@ -136,20 +133,25 @@ const CN_CaseLoadWidget = (function() {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        POPUP.hide(popup)
+        POPUP.hide(popup);
         DOM.clearActionCenter();
         setActiveModuleSectionAttribute('caseNotes-overview');
-        UTIL.toggleMenuItemHighlight("casenotes")
-        actioncenter.dataset.activeModule = "casenotes"
-        notesOverview.dashHandeler(viewNotesDaysBack, consumerId, viewEnteredByOtherUsers, consumerName)
-      }
-    })
+        UTIL.toggleMenuItemHighlight('casenotes');
+        actioncenter.dataset.activeModule = 'casenotes';
+        notesOverview.dashHandeler(
+          viewNotesDaysBack,
+          consumerId,
+          viewEnteredByOtherUsers,
+          consumerName,
+        );
+      },
+    });
 
     const btnWrap = document.createElement('div');
-    btnWrap.classList.add('btnWrap')
-    btnWrap.appendChild(newNoteBtn)
-    btnWrap.appendChild(reviewNotesBtn)
-    popup.appendChild(btnWrap)
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(newNoteBtn);
+    btnWrap.appendChild(reviewNotesBtn);
+    popup.appendChild(btnWrap);
 
     POPUP.show(popup);
   }
@@ -161,7 +163,7 @@ const CN_CaseLoadWidget = (function() {
           id: consumer.id,
           firstName: consumer.FN,
           lastName: consumer.LN,
-          lastNoteDate: consumer.last_note_datetime
+          lastNoteDate: consumer.last_note_datetime,
         };
         return consumerObj;
       });
@@ -180,12 +182,12 @@ const CN_CaseLoadWidget = (function() {
     widgetSettings.widgetConfig = {
       viewNotesDaysBack: 30,
       lastNoteEnteredDaysBack: 30,
-      viewEnteredByOtherUsers: "N"
+      viewEnteredByOtherUsers: 'N',
     };
     widgetSettingsAjax.setWidgetSettingConfig(
       2,
       JSON.stringify(widgetSettings.widgetConfig),
-      widgetSettings.showHide
+      widgetSettings.showHide,
     );
   }
 
@@ -197,16 +199,13 @@ const CN_CaseLoadWidget = (function() {
 
   function cleanSettings() {
     viewNotesDaysBack = widgetSettings.widgetConfig.viewNotesDaysBack;
-    lastNoteEnteredDaysBack =
-      widgetSettings.widgetConfig.lastNoteEnteredDaysBack;
+    lastNoteEnteredDaysBack = widgetSettings.widgetConfig.lastNoteEnteredDaysBack;
     viewEnteredByOtherUsers =
-      widgetSettings.widgetConfig.viewEnteredByOtherUsers === "N"
-        ? false
-        : true;
+      widgetSettings.widgetConfig.viewEnteredByOtherUsers === 'N' ? false : true;
   }
 
   function init() {
-    widgetSettings = dashboard.getWidgetSettings("2");
+    widgetSettings = dashboard.getWidgetSettings('2');
     if (widgetSettings.widgetConfig === null) setDefaultIfConfigNull();
     cleanSettings();
     lastNoteEnteredDaysBackDate = getDaysBackDate(lastNoteEnteredDaysBack);
@@ -214,11 +213,11 @@ const CN_CaseLoadWidget = (function() {
 
     widget = document.getElementById('casenotescaseload');
     widgetBody = widget.querySelector('.widget__body');
-    
+
     displayConsumerCount();
   }
 
   return {
-    init
+    init,
   };
 })();
