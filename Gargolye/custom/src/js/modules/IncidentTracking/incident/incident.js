@@ -96,9 +96,7 @@ var incident = (function () {
 
       if (consumersInvolvedIds) {
         consumerInvolvementId = consumersInvolvedIds.find(e => e.id === key);
-        consumerInvolvementId = consumerInvolvementId
-          ? consumerInvolvementId.involvedId
-          : 0;
+        consumerInvolvementId = consumerInvolvementId ? consumerInvolvementId.involvedId : 0;
       } else {
         consumerInvolvementId = 0;
       }
@@ -212,8 +210,6 @@ var incident = (function () {
     var location = section.querySelector('.locationDropdown');
     var summary = section.querySelector('.summary');
     var action = section.querySelector('.action');
-    var prevention = section.querySelector('.prevention');
-    var factors = section.querySelector('.factors');
 
     updateData.incidentDate = iDate.value;
     updateData.incidentTime = iTime.value;
@@ -223,12 +219,20 @@ var incident = (function () {
     updateData.locationDetailId = location.value;
     updateData.summary = UTIL.removeUnsavableNoteText(summary.value);
     updateData.note = UTIL.removeUnsavableNoteText(action.value);
-    updateData.prevention = UTIL.removeUnsavableNoteText(prevention.value);
-    updateData.contributingFactor = UTIL.removeUnsavableNoteText(factors.value);
+    updateData.prevention = '';
+    updateData.contributingFactor = '';
+
+    if ($.session.incidentTrackingShowPreventionPlan) {
+      var prevention = section.querySelector('.prevention');
+      updateData.prevention = UTIL.removeUnsavableNoteText(prevention.value);
+    }
+    if ($.session.incidentTrackingShowCauseAndContributingFactors) {
+      var factors = section.querySelector('.factors');
+      updateData.contributingFactor = UTIL.removeUnsavableNoteText(factors.value);
+    }
 
     if (details) {
-      updateData.incidentTypeId =
-        details.incidentTypeId === '' ? null : details.incidentTypeId;
+      updateData.incidentTypeId = details.incidentTypeId === '' ? null : details.incidentTypeId;
       updateData.incidentTypeDesc =
         details.incidentTypeDesc === '' ? null : details.incidentTypeDesc;
     }
@@ -354,8 +358,7 @@ var incident = (function () {
 
       var involvementId;
 
-      if (consumersInvolvedIds)
-        involvementId = consumersInvolvedIds.find(e => e.id === key);
+      if (consumersInvolvedIds) involvementId = consumersInvolvedIds.find(e => e.id === key);
       if (!involvementId) involvementId = newConsumersInvolvedIds.find(e => e.id === key);
       saveData.consumerInvolvedId = involvementId.involvedId;
 
@@ -413,8 +416,7 @@ var incident = (function () {
 
       var involvementId;
 
-      if (consumersInvolvedIds)
-        involvementId = consumersInvolvedIds.find(e => e.id === key);
+      if (consumersInvolvedIds) involvementId = consumersInvolvedIds.find(e => e.id === key);
       if (!involvementId) involvementId = newConsumersInvolvedIds.find(e => e.id === key);
       saveData.consumerInvolvedId = involvementId.involvedId;
 
@@ -476,8 +478,7 @@ var incident = (function () {
 
       var involvementId;
 
-      if (consumersInvolvedIds)
-        involvementId = consumersInvolvedIds.find(e => e.id === key);
+      if (consumersInvolvedIds) involvementId = consumersInvolvedIds.find(e => e.id === key);
       if (!involvementId) involvementId = newConsumersInvolvedIds.find(e => e.id === key);
       saveData.consumerInvolvedId = involvementId.involvedId;
 
@@ -534,8 +535,7 @@ var incident = (function () {
 
       var involvementId;
 
-      if (consumersInvolvedIds)
-        involvementId = consumersInvolvedIds.find(e => e.id === key);
+      if (consumersInvolvedIds) involvementId = consumersInvolvedIds.find(e => e.id === key);
       if (!involvementId) involvementId = newConsumersInvolvedIds.find(e => e.id === key);
       saveData.consumerInvolvedId = involvementId.involvedId;
 
@@ -588,8 +588,7 @@ var incident = (function () {
 
       var involvementId;
 
-      if (consumersInvolvedIds)
-        involvementId = consumersInvolvedIds.find(e => e.id === key);
+      if (consumersInvolvedIds) involvementId = consumersInvolvedIds.find(e => e.id === key);
       if (!involvementId) involvementId = newConsumersInvolvedIds.find(e => e.id === key);
       saveData.consumerInvolvedId = involvementId.involvedId;
 
@@ -603,9 +602,7 @@ var incident = (function () {
         var itConsumerReportId = isNew ? '' : idKey;
         var dateReported = rData.dateReported ? rData.dateReported : '';
         var timeReported = rData.timeReported ? rData.timeReported : '';
-        var reportingCategoryID = rData.reportingCategoryID
-          ? rData.reportingCategoryID
-          : '';
+        var reportingCategoryID = rData.reportingCategoryID ? rData.reportingCategoryID : '';
         var reportTo = rData.reportTo ? UTIL.removeUnsavableNoteText(rData.reportTo) : '';
         var reportBy = rData.reportBy ? UTIL.removeUnsavableNoteText(rData.reportBy) : '';
         var reportMethod = rData.reportMethod
