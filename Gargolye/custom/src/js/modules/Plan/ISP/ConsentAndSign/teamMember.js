@@ -379,6 +379,7 @@ const csTeamMember = (() => {
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
 									selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+                  selectedMemberData.peopleId = DBteamMemberswithStateSalesForceId[0].peopleId;
 									return true;
       } else {
         alert(
@@ -441,6 +442,7 @@ const csTeamMember = (() => {
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
 									selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+                  selectedMemberData.peopleId = DBteamMemberswithStateSalesForceId[0].peopleId;
 									return true;
       } else {
         alert(
