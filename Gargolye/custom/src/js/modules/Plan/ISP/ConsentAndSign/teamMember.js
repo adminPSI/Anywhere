@@ -83,7 +83,7 @@ const csTeamMember = (() => {
     });
 
     let guarddata;
-    if (stateGuardiansObj) {
+    if (stateGuardiansObj && stateGuardiansObj.length !== 0) {
       guarddata = stateGuardiansObj.map(dd => {
         return {
           value: dd.Id,
@@ -92,7 +92,7 @@ const csTeamMember = (() => {
       });
       guarddata.unshift({ value: '', text: 'SELECT MATCHING STATE GUARDIAN' });
     } else {
-      guarddata = [{ value: '', text: 'No Guardians' }];
+      guarddata = [{ value: '', text: 'NO STATE GUARDIANS FOUND' }];
     }
 
     dropdown.populate(stateGuardianDropdown, guarddata);
@@ -338,7 +338,7 @@ const csTeamMember = (() => {
 
     // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
    if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId)) {
-    alert(`This team Member will not be saved. This salesForceId has been used for a team Member in this Plan.`);
+    alert(`This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`);
     return false;
    } 
 
@@ -948,7 +948,7 @@ const csTeamMember = (() => {
           peopleId: selectedConsumer.id,
         });
 
-        if (!stateGuardiansOb && planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)) alert(`No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`);
+        if ((!stateGuardiansOb || stateGuardiansOb.length === 0)  && planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)) alert(`No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`);
 
         // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
         setStateofPopupFields();

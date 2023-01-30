@@ -426,6 +426,7 @@ var timeEntryReview = (function () {
           entry: results,
           consumers: consumers,
           payPeriod,
+          recordActivityElement: document.getElementById(`${entryId}-seRecordActivity`)
         });
       });
     });
@@ -639,8 +640,43 @@ var timeEntryReview = (function () {
       };
     });
 
-    table.populate(reviewTable, tableData);
-  }
+      table.populate(reviewTable, tableData);
+      buildSERecordActivity(results);
+    }
+
+    // Row Additional Information from ticket 71522
+    function buildSERecordActivity(seData) {
+        function createElement(status, user, date, seID, rejected) {
+            const dateVal = date.split(" ")[0];
+            const timeVal = UTIL.formatTimeString(UTIL.convertToMilitary(`${date.split(" ")[1]} ${date.split(" ")[2]}`))
+            const element = document.createElement('p');
+            element.classList.add('seRecordActivity');
+            element.id = `${seID}-seRecordActivity`;
+            element.innerText = `${status}: ${dateVal} - ${timeVal} - ${user}`;
+            if (rejected) element.classList.add('error');//add red text to the message for rejected records
+            const tableRow = document.getElementById(seID);
+            tableRow.appendChild(element);
+        }
+        seData.forEach(entry => {
+            switch (entry.Anywhere_Status) {
+                case "A":
+                    createElement('Record Submitted', entry.submittedUser, entry.submit_date, entry.Single_Entry_ID, false)
+                    break;
+                case "S":
+                case "I":
+                case "D":
+                    createElement('Record Approved', entry.approvedUser, entry.approved_time, entry.Single_Entry_ID, false)
+                    break;
+                case "R":
+                    createElement('Record Rejected', entry.rejectedUser, entry.rejected_time, entry.Single_Entry_ID, true)
+                    break;
+
+                default:
+                    break;
+            }
+        })
+    }
+
   // build
   function buildTopNav() {
     var btnWrap = document.createElement('div');
