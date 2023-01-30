@@ -338,7 +338,7 @@ const csTeamMember = (() => {
 
     // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
    if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId)) {
-    alert(`This team Member will not be saved. This salesForceId has been used for a team Member in this Plan.`);
+    alert(`This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`);
     return false;
    } 
 
