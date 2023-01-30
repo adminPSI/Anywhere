@@ -241,7 +241,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 plan.Close();
                 intro.Flush();
                 plan.Dispose();
-
+                //NATHAN TODO Add if to show where to send
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     wfAttRep = wfAttReport(wfAttachmentIds);

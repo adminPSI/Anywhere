@@ -1271,14 +1271,14 @@ var timeApproval = (function() {
         //Button will only be show map. once clicked they can't hide it. This is to prevent people from
         //showing and hiding rapidly and incuring high api usage.
 
-        // UTIL.LS.setStorage(LSKEY_showMap, showMap)
-        // if (showMap) {
-        //   mapBtn.innerHTML = icons.close + ' Hide Map'
-        //   addMap()
-        // } else {
-        //   mapBtn.innerHTML = icons.show + ' Show Map'
-        //   GOOGLE_MAP.clearMap()
-        // }
+         //UTIL.LS.setStorage(LSKEY_showMap, showMap)
+         //if (showMap) {
+         //  mapBtn.innerHTML = icons.close + ' Hide Map'
+         //  addMap()
+         //} else {
+         //  mapBtn.innerHTML = icons.show + ' Show Map'
+         //  GOOGLE_MAP.clearMap()
+         //}
         
       }
       })     
