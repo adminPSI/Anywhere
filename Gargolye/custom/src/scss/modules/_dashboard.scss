@@ -317,9 +317,13 @@
       flex-grow: 1;
     }
     > div:nth-child(1) {
-      width: 155px;
+      width: 200px;
     }
     > div:nth-child(2) {
+      text-align: right;
+      width: 140px;
+    }
+    > div:nth-child(3) {
       text-align: right;
       width: 150px;
     }

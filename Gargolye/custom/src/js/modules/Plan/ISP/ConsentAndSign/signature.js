@@ -146,6 +146,11 @@ const csSignature = (() => {
       selectedMemberData.signatureType === '2'
     ) {
       selectedMemberData.hasWetSignature = false;
+      // wrap
+      const wrap = document.createElement('div');
+      wrap.classList.add('signatureWrapInner');
+
+      // signature attachment
       const attachmentInput = document.createElement('input');
       attachmentInput.type = 'file';
       attachmentInput.classList.add('input-field__input', 'attachmentInput');
@@ -169,7 +174,26 @@ const csSignature = (() => {
         await Promise.all([attPromise]);
       });
 
-      signatureWrap.appendChild(attachmentInput);
+      // TODO-ASH: waiting on backend changes
+      // signature date
+      var date = input.build({
+        type: 'date',
+        label: 'Signature Date',
+        style: 'secondary',
+        callback: e => {
+          //selectedMemberData.signatureDate = e.target.value;
+          date.classList.remove('error');
+          checkSignautrePopupForErrors();
+        },
+      });
+      if (!selectedMemberData.signatureDate) {
+        date.classList.add('error');
+      }
+
+      wrap.appendChild(attachmentInput);
+      wrap.appendChild(date);
+
+      signatureWrap.appendChild(wrap);
 
       return signatureWrap;
     } else {
@@ -503,7 +527,6 @@ const csSignature = (() => {
     //* PROMPT
     //*------------------------------
     const prompt = document.createElement('p');
-    //prompt.innerText = `By signing below, I agree that this plan reflects actions, services, and supports as requested by the person listed. As a provider, I agree to the services listed in this plan for which I am named a responsible party. I understand that I may revoke my consent at any time verbally or in writing in accordance with DODD Rules.`;
     prompt.innerText = `I agree this plan reflects actions, services, and supports requested by me and may be sent to those providing services to me.`;
 
     prompt.style.marginBottom = '14px';
