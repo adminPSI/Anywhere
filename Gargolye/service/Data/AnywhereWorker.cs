@@ -6,6 +6,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Management.Automation.Language;
 using Microsoft.Expression.Interactivity.Media;
+using Anywhere.service.Data.PlanInformedConsent;
 
 namespace Anywhere.service.Data
 {
@@ -459,6 +460,24 @@ namespace Anywhere.service.Data
             OrganiztionId[] oidObj = js.Deserialize<OrganiztionId[]>(oidString);
             return oidObj;
         }
+
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getCaseManagersfromOptionsTable(string token)
+        {
+            string caseManagersString = dg.getCaseManagersfromOptionsTable(token);
+            PlanInformedConsentWorker.InformedConsentSSAs[] caseManagerObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(caseManagersString);
+            return caseManagerObj;
+        }
+
+
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
+        {
+            string consumersString = dg.getConsumerswithSaleforceIds(token);
+            PlanInformedConsentWorker.InformedConsentSSAs[] consumersObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(consumersString);
+            return consumersObj;
+        }
+
+
+
 
         public class OrganiztionId
         {

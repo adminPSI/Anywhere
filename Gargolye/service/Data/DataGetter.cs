@@ -831,6 +831,39 @@ namespace Anywhere.Data
             }
         }
 
+        public string getCaseManagersfromOptionsTable(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("GetCaseManagersfromOptionsTable");
+            string text = "CALL DBA.ANYW_ISP_GetCaseManagersfromOptionsTable()";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("5APICDG", ex.Message + "ANYW_ISP_GetCaseManagersfromOptionsTable()");
+                return "5APICDG: error ANYW_ISP_GetCaseManagersfromOptionsTable()";
+            }
+        }
+
+        public string getConsumerswithSaleforceIds(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getConsumerswithSaleforceIds");
+            string text = "CALL DBA.ANYW_ISP_GetConsumerswithSaleforceIds()";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("5APICDG", ex.Message + "ANYW_ISP_GetConsumerswithSaleforceIds()");
+                return "5APICDG: error ANYW_ISP_GetConsumerswithSaleforceIds";
+            }
+        }
+
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             if (tokenValidator(token) == false) return null;

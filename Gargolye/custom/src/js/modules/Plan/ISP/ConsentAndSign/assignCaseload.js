@@ -1,6 +1,8 @@
 const csAssignCaseload = (() => {
-    
-  function showAssignCaseLoadPopup() {
+    let consumerswithSaleforceIds;
+    let caseManagersfromOptionsTable;
+
+  async function showAssignCaseLoadPopup() {
     const assignCaseLoadPopup = POPUP.build({
       id: 'sig_assignCaseLoadPopup',
       classNames: 'assignCaseLoad-container',
@@ -9,9 +11,12 @@ const csAssignCaseload = (() => {
     });
 
     // TODO 96855: Replace this data with a call to the GK database ABD Double check this works for GK AND ADV
-    // NEW -- ANYW_ISP_GetCaseManagersfromOptionsTable -- need AJAX and C# layers
-    // SELECT p.ID as peopleId, p.Last_Name + ', ' + p.First_Name as name, cmo.Salesforce_ID as salesForceId FROM "dba"."ANYW_ISP_Case_Manager_Options" cmo
-    // join people p on p.Salesforce_ID = cmo.Salesforce_ID order by p.Last_Name, p.First_Name
+    caseManagersfromOptionsTable = await consentAndSignAjax.getCaseManagersfromOptionsTable({
+      token: $.session.Token,
+    });
+
+    var test1 = caseManagersfromOptionsTable;
+
     let SSAlist = [
       {
         'value' : '17094',
@@ -28,11 +33,11 @@ const csAssignCaseload = (() => {
     ]
 
     // TODO 96855: Replace this data with a call to the GK database ABD Double check this works for GK AND ADV
-    // NEW -- ANYW_ISP_GetConsumerswithSaleforceIds -- need AJAX and C# layers
-    //Select p.ID as peopleId, p.Last_Name + ', ' + p.First_Name + ' (' + Cast(p.Date_of_Birth as varchar(10)) + ')' as name, p.Salesforce_ID as salesForceId from people p  
-    //join Person_Type pt on p.ID = pt.ID
-    //where (p.Salesforce_ID is not null and  p.Salesforce_ID <> '') and pt.Type_ID = 1 
-    //order by p.Last_Name, p.First_Name
+    consumerswithSaleforceIds = await consentAndSignAjax.getConsumerswithSaleforceIds({
+      token: $.session.Token,
+    });
+
+    var test2 = consumerswithSaleforceIds;
 
     let consumerlist = [
       {
