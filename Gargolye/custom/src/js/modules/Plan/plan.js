@@ -25,6 +25,7 @@ const plan = (function () {
   let reportsScreen;
   let reportsAttachmentScreen;
   let sendToDODDScreen;
+  let changePlanTypeScreen;
 
   // DATA
   // -----------------
@@ -334,7 +335,7 @@ const plan = (function () {
     ];
     dropdown.populate(statusDropdown, dropdownData, planStatus);
     statusDropdown.addEventListener('change', e => {
-      var selectedOption = event.target.options[event.target.selectedIndex];
+      var selectedOption = e.target.options[e.target.selectedIndex];
       newStatus = selectedOption.value;
       if (newStatus === planStatus) {
         updateBtn.classList.add('disabled');
@@ -733,6 +734,77 @@ const plan = (function () {
 
     return screen;
   }
+  function buildChangePlanTypeScreen() {
+    let newType;
+
+    const screen = document.createElement('div');
+    screen.id = 'changePlanTypeScreen';
+    screen.classList.add('screen');
+
+    // current type
+    const currentType = document.createElement('div');
+    currentType.classList.add('currentType');
+    currentType.innerHTML = `
+      <p>Current Type:</p> ${planStatus === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
+    `;
+
+    // dropdown
+    const typeDropdown = dropdown.build({
+      className: `typeDropdown`,
+      label: 'Type',
+      style: 'secondary',
+    });
+    dropdown.populate(
+      typeDropdown,
+      [
+        { value: 'a', text: 'Annual' },
+        { value: 'r', text: 'Revision' },
+      ],
+      planType,
+    );
+    typeDropdown.addEventListener('change', event => {
+      var selectedOption = event.target.options[event.target.selectedIndex];
+      newType = selectedOption.value;
+      if (newType === planStatus) {
+        updateBtn.classList.add('disabled');
+      } else {
+        updateBtn.classList.remove('disabled');
+      }
+    });
+
+    // btns
+    const updateBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        // TODO-ASH: call ajax to update plan type with (newType)
+        screen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        screen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+      },
+    });
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    btnWrap.appendChild(updateBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    screen.appendChild(currentType);
+    screen.appendChild(typeDropdown);
+    screen.appendChild(btnWrap);
+
+    return screen;
+  }
   function getAttachmentIds(attachments) {
     const idArray = [];
 
@@ -995,6 +1067,12 @@ const plan = (function () {
           ? ['reactivateBtn']
           : ['reactivateBtn', 'disabled'],
     });
+    const changeTypeBtn = button.build({
+      text: 'Change Plan Type',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['planTypeBtn'],
+    });
 
     //morepopupmenu.appendChild(addWorkflowBtn);
     morepopupmenu.appendChild(reportBtn);
@@ -1006,6 +1084,7 @@ const plan = (function () {
     morepopupmenu.appendChild(statusBtn);
     morepopupmenu.appendChild(deleteBtn);
     morepopupmenu.appendChild(reactivateBtn);
+    morepopupmenu.appendChild(changeTypeBtn);
 
     morepopupmenu.addEventListener('click', async e => {
       e.target.classList.add('disabled');
@@ -1052,6 +1131,9 @@ const plan = (function () {
           targetScreen = 'reactivateScreen';
           break;
         }
+        case changeTypeBtn: {
+          targetScreen = 'changePlanTypeScreen';
+        }
         default: {
           break;
         }
@@ -1093,6 +1175,7 @@ const plan = (function () {
     reportsScreen = buildReportsScreen();
     reportsAttachmentScreen = buildReportsAttachmentsScreen();
     sendToDODDScreen = buildSendToDODDScreen();
+    changePlanTypeScreen = buildChangePlanTypeScreen();
 
     menuInnerWrap.appendChild(morePopupMenu);
     menuInnerWrap.appendChild(editDatesScreen);
@@ -1103,6 +1186,7 @@ const plan = (function () {
     menuInnerWrap.appendChild(reportsScreen);
     menuInnerWrap.appendChild(reportsAttachmentScreen);
     menuInnerWrap.appendChild(sendToDODDScreen);
+    menuInnerWrap.appendChild(changePlanTypeScreen);
 
     morePopup.appendChild(menuInnerWrap);
 
