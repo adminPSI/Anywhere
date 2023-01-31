@@ -726,11 +726,39 @@ const plan = (function () {
     screen.id = 'DODDScreen';
     screen.classList.add('screen');
 
-    const message = document.createElement('p');
-    message.classList.add('doddMessage');
+    //const message = document.createElement('p');
+    //message.classList.add('doddMessage');
+    //screen.appendChild(message);
 
-    screen.appendChild(message);
+    const attachmentsWrap = document.createElement('div');
+    attachmentsWrap.classList.add('attachmentsWrap');
+    const attachHeading = document.createElement('p');
+    attachHeading.classList.add('attachmentsHeading');
+    attachHeading.innerText = `Please select the attachment(s) that should be sent to DODD with the plan.`;
+    attachmentsWrap.appendChild(attachHeading);
 
+    planAttWrap = document.createElement('div');
+    planAttWrap.classList.add('planAttWrap');
+    signatureAttWrap = document.createElement('div');
+    signatureAttWrap.classList.add('signatureAttWrap');
+    workflowAttWrap = document.createElement('div');
+    workflowAttWrap.classList.add('workflowAttWrap');
+    attachmentsWrap.appendChild(planAttWrap);
+    attachmentsWrap.appendChild(signatureAttWrap);
+    attachmentsWrap.appendChild(workflowAttWrap);
+
+    const planHeading = document.createElement('h2');
+    const signHeading = document.createElement('h2');
+    const workflowHeading = document.createElement('h2');
+    planHeading.innerText = 'Plan and Assessment Attachments';
+    signHeading.innerText = 'Signature Attachments';
+    workflowHeading.innerText = 'Workflow Attachments';
+    planAttWrap.appendChild(planHeading);
+    signatureAttWrap.appendChild(signHeading);
+    workflowAttWrap.appendChild(workflowHeading);
+
+    screen.appendChild(attachmentsWrap);
+    
     return screen;
   }
   function getAttachmentIds(attachments) {
@@ -959,7 +987,8 @@ const plan = (function () {
       classNames:
         planStatus === 'C' && $.session.sendToDODD
           ? ['sendToDODDBtn']
-          : ['sendToDODDBtn', 'disabled'],
+//TEMPORARY!          : ['sendToDODDBtn', 'disabled'],
+          : ['sendToDODDBtn', 'enabled'],
     });
     const editDatesBtn = button.build({
       text: 'Change Dates',
