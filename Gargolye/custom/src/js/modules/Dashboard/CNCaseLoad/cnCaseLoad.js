@@ -48,7 +48,7 @@ const CN_CaseLoadWidget = (function () {
 
     const tableData = caseLoad.map(consumer => {
       const name = `${consumer.lastName}, ${consumer.firstName}`;
-      const resNumber = '';
+      const resNumber = consumer.residentNumber;
       const dateString = consumer.lastNoteDate.split(' ')[0];
       const lastNoteDate = new Date(dateString);
       const dateDisp =
@@ -59,7 +59,7 @@ const CN_CaseLoadWidget = (function () {
             }</span>`;
 
       return {
-        values: [name, dateDisp],
+        values: [name, resNumber, dateDisp],
         id: consumer.id,
         onClick: () => {
           getConsumerDemographics(consumer.id);
@@ -164,6 +164,7 @@ const CN_CaseLoadWidget = (function () {
           firstName: consumer.FN,
           lastName: consumer.LN,
           lastNoteDate: consumer.last_note_datetime,
+          residentNumber: consumer.resident_number,
         };
         return consumerObj;
       });

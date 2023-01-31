@@ -476,6 +476,23 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getCaseManagersfromOptionsTable/")]
+        PlanInformedConsentWorker.InformedConsentSSAs[] getCaseManagersfromOptionsTable(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getConsumerswithSaleforceIds/")]
+        PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Bare,
              UriTemplate = "/viewCaseNoteAttachment/")]
         //void viewCaseNoteAttachment(string attachmentId);

@@ -105,7 +105,7 @@ const planConsentAndSign = (() => {
       csTechnology: selectedMemberData.csTechnology,
       // new
       contactId: selectedMemberData.contactId,
-      salesforceId: !selectedMemberData.salesforceId ? '' : selectedMemberData.salesforceId,
+      salesforceId: !selectedMemberData.salesForceId ? '' : selectedMemberData.salesForceId,
       peopleId: selectedMemberData.peopleId,
       buildingNumber: selectedMemberData.buildingNumber,
       dateOfBirth: UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateOfBirth)),

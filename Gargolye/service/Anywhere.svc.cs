@@ -405,6 +405,17 @@ namespace Anywhere
             return anywhereWorker.getConsumerOrganizationId(peopleId);
         }
 
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getCaseManagersfromOptionsTable(string token)
+        {
+            return anywhereWorker.getCaseManagersfromOptionsTable(token);
+        }
+
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
+        {
+            return anywhereWorker.getConsumerswithSaleforceIds(token);
+        }
+
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             return dg.updateCaseNotesReviewDays(token, updatedReviewDays);

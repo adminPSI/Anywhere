@@ -218,6 +218,13 @@
       }
     }
   }
+  .signatureWrapInner {
+    display: flex;
+    
+    .attachmentInput {
+      width: 50%;
+    }
+  }
 }
 
 // Import Popups

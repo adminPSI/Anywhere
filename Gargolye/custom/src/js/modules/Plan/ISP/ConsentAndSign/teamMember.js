@@ -8,9 +8,6 @@ const csTeamMember = (() => {
   let stateGuardiansObj;
   let selectedStateGuardian = '';
   let selectedStateGuardianSalesForceId = '';
-  let stateChangeMindObj;
-  let selectedStateChangeMind = '';
-  let selectedStateChangeMindSalesForceId = '';
   let DBteamMemberswithStateSalesForceId;
   // DOM
   let teamMemberPopup; // main popup
@@ -19,7 +16,6 @@ const csTeamMember = (() => {
   let linkToSalesforceBtn;
   let teamMemberDropdown;
   let stateGuardianDropdown;
-  let stateChangeMindDropdown;
   let nameInput;
   let lNameInput;
   let dateOfBirthInput;
@@ -96,30 +92,6 @@ const csTeamMember = (() => {
     }
 
     dropdown.populate(stateGuardianDropdown, guarddata);
-  }
-
-  //TODO 92768: this function populateStateChangeMindDropDown() may not be needed if not using this form to update SSA SalesforceId
-  async function populateStateChangeMindDropDown() {
-    var selectedConsumer = plan.getSelectedConsumer();
-    //TODO 92768: CALL different OISP function to get the change mind contacts
-    stateChangeMindObj = await consentAndSignAjax.getStateGuardiansforConsumer({
-      peopleId: selectedConsumer.id,
-    });
-
-    let data;
-    if (stateChangeMindObj) {
-      data = stateChangeMindObj.map(dd => {
-        return {
-          value: dd.Id,
-          text: dd.FirstName + ' ' + dd.LastName,
-        };
-      });
-      data.unshift({ value: '', text: 'SELECT MATCHING STATE CONTACT' });
-    } else {
-      data = [{ value: '', text: 'No Contacts' }];
-    }
-
-    dropdown.populate(stateChangeMindDropdown, data);
   }
 
   async function applySelectedRelationship(relData) {
@@ -225,16 +197,6 @@ const csTeamMember = (() => {
       if (!continueGuardianSave) return;
     }
 
-    // TODO 92768 -- uncomment to await continueSaveofConsentableTeamMember -- from consentandSign.js -- function isTeamMemberConsentable(teamMember)
-    if (
-      selectedMemberData.teamMember === 'Guardian' ||
-      selectedMemberData.teamMember === 'Parent/Guardian' ||
-      selectedMemberData.teamMember === 'Person Supported'
-    ) {
-      //  var continueConsentableSave = await continueSaveofConsentableTeamMember();
-      //    if (!continueConsentableSave) return;
-    }
-
     teamMemberPopup.style.display = 'none';
     pendingSave.show('Saving...');
 
@@ -333,7 +295,6 @@ const csTeamMember = (() => {
   }
 
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian
-  // TODO 94246: All these alerts/consfirms -- do we need to make them into Anywhere style
   async function continueSaveofGuardianTeamMember() {
 
     // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
@@ -379,6 +340,7 @@ const csTeamMember = (() => {
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
 									selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+                  selectedMemberData.peopleId = DBteamMemberswithStateSalesForceId[0].peopleId;
 									return true;
       } else {
         alert(
@@ -394,26 +356,26 @@ const csTeamMember = (() => {
     (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)
     ) {
 
-      let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 						  
-      Do you wish to save the selected State Guardian as the Guardian for this particular Added Team Member?`
+      // let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 						  
+      // Do you wish to save the selected State Guardian as the Guardian for this particular Added Team Member?`
 
-      if (
-        confirm(Scenario2ConfirmText)
-      ) {
-        var fullName = selectedStateGuardian.split(' ');
-        selectedMemberData.name = fullName[0];
-        selectedMemberData.lastName = fullName[fullName.length - 1];
-        selectedMemberData.buildingNumber = '';
-        selectedMemberData.dateOfBirth = '';
-        selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
-        return true;
-      } else {
+      // if (
+      //   confirm(Scenario2ConfirmText)
+      // ) {
+      //   var fullName = selectedStateGuardian.split(' ');
+      //   selectedMemberData.name = fullName[0];
+      //   selectedMemberData.lastName = fullName[fullName.length - 1];
+      //   selectedMemberData.buildingNumber = '';
+      //   selectedMemberData.dateOfBirth = '';
+      //   selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
+      //   return true;
+      // } else {
         alert(
           `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
         );
         return false;
       }
-    }
+   // }
 
 
      // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
@@ -441,6 +403,7 @@ const csTeamMember = (() => {
 									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
 									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
 									selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+                  selectedMemberData.peopleId = DBteamMemberswithStateSalesForceId[0].peopleId;
 									return true;
       } else {
         alert(
@@ -529,79 +492,6 @@ const csTeamMember = (() => {
     return isSaleForceIdUsed;
   }
 
-  }
-
-  // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian or teamMember == Person Supported
-  // TODO 92768: All these alerts/consfirms -- do we need to make them into Anywhere style
-  // TODO 92768: Need to check if the selectedMemberData.csChangeMindSSAPeopleId in the People table has a saleForceId
-  //TODO 92768: this function continueSaveofConsentableTeamMember() may not be needed if not using this form to update SSA SalesforceId
-  async function continueSaveofConsentableTeamMember() {
-    // csChangeMind: selectedMemberData.csChangeMind,
-    // csChangeMindSSAPeopleId: selectedMemberData.csChangeMindSSAPeopleId,
-
-    // TODO 92768: Get the GK SalesForceID for the local SSA selected -- selectedLocalSSASalesForceId -- this will probably need to be global
-    var selectedLocalSSASalesForceId = '';
-
-    if (
-      confirm(
-        'Is the selected State Contact the same person as the selected local Contact in the form?',
-      )
-    ) {
-      // YES -- Continue
-    } else {
-      alert(
-        `Contact not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
-      );
-      return false;
-    }
-
-    // selected local contact/SSA SalesForceID has a value, AND selectedStateChangeMindSalesForceId has a value -- AND -- they are equal
-    if (
-      selectedStateChangeMindSalesForceId &&
-      selectedLocalSSASalesForceId === selectedStateChangeMindSalesForceId
-    ) {
-      alert('Its a match. Continue saving new team member.');
-      return true;
-
-      // THIS SCENARIO NOT POSSIBLE -- selected local contact/SSA SalesForceID has a NO value, AND selectedStateChangeMindSalesForceId has a value
-    } else if (!selectedLocalSSASalesForceId && selectedStateChangeMindSalesForceId) {
-      alert(
-        `Update the GK people.SalesForce_ID for the selectedLocalSSAPeopleID with the StateSalesForceId from the State`,
-      );
-
-      // selected local contact/SSA SalesForceID has a value, AND selectedStateChangeMindSalesForceId has a value --BUT-- they are NOT equal
-      // TODO 92768: ???? unassign the current SSA/consumer relationship at salesforce and assign a new SSA/consumer relationship at salesforce for the given SSA/QIDP and consumer.
-      // MY BEST GUESS -- assign the SalesForceID from the STATE (in stateChangeMindDropdown ) to the selected SSA in changeMindQuestion
-    } else if (
-      selectedLocalSSASalesForceId &&
-      selectedStateChangeMindSalesForceId &&
-      selectedLocalSSASalesForceId !== selectedStateChangeMindSalesForceId
-    ) {
-      if (
-        confirm(
-          `These salesForceIds do not match. Do you want to Update the GK people.SalesForce_ID for the selectedLocalSSAPeopleID with the StateSalesForceId from the State and save the selected State Guardian as a new Team Member?`,
-        )
-      ) {
-        // TODO 92768: REVIEW THIS
-        //TODO 92768: modify newSAlesForceId in PlanSignatureWorker.cs (line 192) -- psdg.createRelationship(token, planYearStart, planYearEnd, consumerId, peopleId, newSalesForceId);
-        // TODO 92768: NOT SURE WHAT THE FOLLOWING MEANS TO THE DATA BEING SAVED
-        // POSSIBILITY A SECOND UPDATE TO THE PEOPLE TABLE FOR THE SELECTED LOCAL SSA -- Update the salesforce_id in the people table in GK for the SSA to match the value found in the STATE SSA DDL (stateChangeMindDropdown).
-        // IF this update is successful then return true; otherwise return the messsage below saying the contact couldn't be saved and therefore the entire record can't be saved
-        selectedLocalSSASalesForceId = selectedStateChangeMindSalesForceId;
-        return true;
-      } else {
-        alert(
-          `Contact not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
-        );
-        return false;
-      }
-      // selectedStateChangeMindSalesForceId has NO value
-    } else {
-      alert(
-        `Contact not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
-      );
-      return false;
-    }
   }
 
   function getSignatureTypeByID(id) {
@@ -740,13 +630,6 @@ const csTeamMember = (() => {
   function getChangeMindMarkup() {
     // get markup
 
-    //TODO 92768: SELECT the SalesForceID for csChangeMindSSAPeopleId -- ASSUMPTION IF THERE IS A SALESForCEID FOR THIS PEOPLEID, THEN WE CAN CONTINE WITH function continueSaveofConsentableTeamMember()
-    // If SalesForceID for selectedMemberData.csChangeMindSSAPeopleId is NULL
-    //    THEN  -->  selectedMemberData.csChangeMindSSAPeopleId = ''; -- this will make the DDL RED and NO Value selected
-    //  ELSE --> continue
-
-    // 92768 selectedMemberData.csChangeMindSSAPeopleId = '';
-
     const changeMindQuestion = planConsentAndSign.buildChangeMindQuestion(
       {
         csChangeMindSSAPeopleId: selectedMemberData.csChangeMindSSAPeopleId,
@@ -769,19 +652,6 @@ const csTeamMember = (() => {
         } else {
           changeMindQuestion.classList.remove('error');
         }
-
-        // TODO 92768: WE ARE HERE BECAUSE -- Either the user is changing SSA OR No default SSA was selected becuase the default didn't have a SalesForceID
-        // Upon a new Selection of SSA, the following happens with the NEW selectedMemberData.csChangeMindSSAPeopleId
-        // GO TO DB AND SELECT the SalesForceID for selectedMemberData.csChangeMindSSAPeopleId
-        // If SalesForceID for csChangeMindSSAPeopleId is MULL
-        //    THEN  --> show a POPUP LIST of values from the anyw_isp_case_manager_options table in a pop up
-        //               a.  Only show records that have a salesforce_id NOT in the people table
-        //               b.  Values should show as "LastName, FirstName" and sort by last name then first name
-        //               c.  User selects SSA/QIDP from the list and clicks OK to the pop up, then...
-        //               d.  Update the salesforce_id in the people table in GK for the SSA to match the value found in the anyw_isp_case_manager table for the selected SSA.
-        //               NOW -- THE NEW SELECTION (FROM changeMindQuestion) HAS NOW BEEN UPDATED WITH THE SALESFORCEID FROM THE POPUP LIST (anyw_isp_case_manager_options)
-
-        //  ELSE --> continue -- ASSUMPTION IF THERE IS A SALESForCEID FOR THIS PEOPLEID, THEN WE CAN CONTINE WITH function continueSaveofConsentableTeamMember()
 
         planConsentAndSign.updateSSADropdownWidth(teamMemberPopup);
 
@@ -1009,7 +879,6 @@ const csTeamMember = (() => {
         // remove consent statements from DOM
         if (showConsentStatments) {
           changeMindQuestion.parentNode.removeChild(changeMindQuestion);
-          stateChangeMindDropdown.parentNode.removeChild(stateChangeMindDropdown);
           complaintQuestion.parentNode.removeChild(complaintQuestion);
           showConsentStatments = false;
         }
@@ -1056,9 +925,7 @@ const csTeamMember = (() => {
           complaintQuestion = await getContactMarkup();
           // show them
           teamMemberPopup.insertBefore(changeMindQuestion, participationRadios);
-          // 92768 teamMemberPopup.insertBefore(stateChangeMindDropdown, participationRadios);
           teamMemberPopup.insertBefore(complaintQuestion, participationRadios);
-          if (selectedStateChangeMind === '') stateChangeMindDropdown.classList.add('error');
           //
           // width them
           planConsentAndSign.setSSADropdownInitialWidth(
@@ -1075,7 +942,6 @@ const csTeamMember = (() => {
 
         if (showConsentStatments) {
           changeMindQuestion.parentNode.removeChild(changeMindQuestion);
-          // 92768  stateChangeMindDropdown.parentNode.removeChild(stateChangeMindDropdown);
           complaintQuestion.parentNode.removeChild(complaintQuestion);
           // if (showStateGuardians) stateGuardianDropdown.parentNode.removeChild(stateGuardianDropdown);
           showConsentStatments = false;
@@ -1124,43 +990,6 @@ const csTeamMember = (() => {
         DBteamMemberswithStateSalesForceId = await consentAndSignAjax.getTeamMemberBySalesForceId({
           salesForceId: selectedStateGuardianSalesForceId,
         });
-
-        if (DBteamMemberswithStateSalesForceId) {
-
-          if (DBteamMemberswithStateSalesForceId.length === 1) {
-
-            // gather the People data for this person, because we're going to use it save this Team Member
-
-          } else {
-
-            // there is more than one People record with this State SalesforceID -- the user needs to clean up the DB
-          }
-
-        } else {
-
-          // this State SaleforceID does not currently exist in the GK DB
-
-        }
-      
-
-        checkTeamMemberPopupForErrors();
-      },
-    });
-
-    // State Change Mind
-    stateChangeMindDropdown = dropdown.build({
-      dropdownId: 'sigPopup_stateChangeMind',
-      label: 'State Change Mind',
-      readonly: isSigned || readOnly,
-      callback: event => {
-        selectedStateChangeMind = event.target.options[event.target.selectedIndex].innerHTML;
-        selectedStateChangeMindSalesForceId = event.target.value;
-
-        if (event.target.value === '') {
-          stateChangeMindDropdown.classList.add('error');
-        } else {
-          stateChangeMindDropdown.classList.remove('error');
-        }
 
         checkTeamMemberPopupForErrors();
       },
@@ -1348,7 +1177,6 @@ const csTeamMember = (() => {
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
     populateGuardiansDropDown();
-    // 92768 await populateStateChangeMindDropDown();
 
     POPUP.show(teamMemberPopup);
 
