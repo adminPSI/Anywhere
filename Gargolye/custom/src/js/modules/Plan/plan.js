@@ -335,7 +335,7 @@ const plan = (function () {
     ];
     dropdown.populate(statusDropdown, dropdownData, planStatus);
     statusDropdown.addEventListener('change', e => {
-      var selectedOption = event.target.options[event.target.selectedIndex];
+      var selectedOption = e.target.options[e.target.selectedIndex];
       newStatus = selectedOption.value;
       if (newStatus === planStatus) {
         updateBtn.classList.add('disabled');
@@ -735,13 +735,73 @@ const plan = (function () {
     return screen;
   }
   function buildChangePlanTypeScreen() {
+    let newType;
+
     const screen = document.createElement('div');
     screen.id = 'changePlanTypeScreen';
     screen.classList.add('screen');
 
+    // current type
+    const currentType = document.createElement('div');
+    currentType.classList.add('currentType');
+    currentType.innerHTML = `
+      <p>Current Type:</p> ${planStatus === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
+    `;
+
     // dropdown
+    const typeDropdown = dropdown.build({
+      className: `typeDropdown`,
+      label: 'Type',
+      style: 'secondary',
+    });
+    dropdown.populate(
+      typeDropdown,
+      [
+        { value: 'a', text: 'Annual' },
+        { value: 'r', text: 'Revision' },
+      ],
+      planType,
+    );
+    typeDropdown.addEventListener('change', event => {
+      var selectedOption = event.target.options[event.target.selectedIndex];
+      newType = selectedOption.value;
+      if (newType === planStatus) {
+        updateBtn.classList.add('disabled');
+      } else {
+        updateBtn.classList.remove('disabled');
+      }
+    });
 
     // btns
+    const updateBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        // TODO-ASH: call ajax to update plan type with (newType)
+        screen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        screen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+      },
+    });
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    btnWrap.appendChild(updateBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    screen.appendChild(currentType);
+    screen.appendChild(typeDropdown);
+    screen.appendChild(btnWrap);
 
     return screen;
   }
