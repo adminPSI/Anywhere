@@ -25,6 +25,7 @@ const plan = (function () {
   let reportsScreen;
   let reportsAttachmentScreen;
   let sendToDODDScreen;
+  let changePlanTypeScreen;
 
   // DATA
   // -----------------
@@ -733,6 +734,17 @@ const plan = (function () {
 
     return screen;
   }
+  function buildChangePlanTypeScreen() {
+    const screen = document.createElement('div');
+    screen.id = 'changePlanTypeScreen';
+    screen.classList.add('screen');
+
+    // dropdown
+
+    // btns
+
+    return screen;
+  }
   function getAttachmentIds(attachments) {
     const idArray = [];
 
@@ -995,6 +1007,12 @@ const plan = (function () {
           ? ['reactivateBtn']
           : ['reactivateBtn', 'disabled'],
     });
+    const changeTypeBtn = button.build({
+      text: 'Change Plan Type',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['planTypeBtn'],
+    });
 
     //morepopupmenu.appendChild(addWorkflowBtn);
     morepopupmenu.appendChild(reportBtn);
@@ -1006,6 +1024,7 @@ const plan = (function () {
     morepopupmenu.appendChild(statusBtn);
     morepopupmenu.appendChild(deleteBtn);
     morepopupmenu.appendChild(reactivateBtn);
+    morepopupmenu.appendChild(changeTypeBtn);
 
     morepopupmenu.addEventListener('click', async e => {
       e.target.classList.add('disabled');
@@ -1052,6 +1071,9 @@ const plan = (function () {
           targetScreen = 'reactivateScreen';
           break;
         }
+        case changeTypeBtn: {
+          targetScreen = 'changePlanTypeScreen';
+        }
         default: {
           break;
         }
@@ -1093,6 +1115,7 @@ const plan = (function () {
     reportsScreen = buildReportsScreen();
     reportsAttachmentScreen = buildReportsAttachmentsScreen();
     sendToDODDScreen = buildSendToDODDScreen();
+    changePlanTypeScreen = buildChangePlanTypeScreen();
 
     menuInnerWrap.appendChild(morePopupMenu);
     menuInnerWrap.appendChild(editDatesScreen);
@@ -1103,6 +1126,7 @@ const plan = (function () {
     menuInnerWrap.appendChild(reportsScreen);
     menuInnerWrap.appendChild(reportsAttachmentScreen);
     menuInnerWrap.appendChild(sendToDODDScreen);
+    menuInnerWrap.appendChild(changePlanTypeScreen);
 
     morePopup.appendChild(menuInnerWrap);
 
