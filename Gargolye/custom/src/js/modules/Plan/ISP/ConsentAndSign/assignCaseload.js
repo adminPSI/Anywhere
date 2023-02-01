@@ -1,6 +1,7 @@
 const csAssignCaseload = (() => {
     let consumerswithSaleforceIds;
     let caseManagersfromOptionsTable;
+    let assignmentResults;
 
   async function showAssignCaseLoadPopup() {
     const assignCaseLoadPopup = POPUP.build({
@@ -71,8 +72,8 @@ const csAssignCaseload = (() => {
     leftselectDiv.classList.add("assignCaseLoad-peoplelist")
     let selectleftHTML = `<select id='leftselector' size='3'>`
 
-    SSAlist.forEach(person => {
-      selectleftHTML = selectleftHTML + `<option value='${person.value}'>${person.name}</option>` })
+    caseManagersfromOptionsTable.forEach(person => {
+      selectleftHTML = selectleftHTML + `<option value='${person.id}'>${person.name}</option>` })
 
       selectleftHTML = selectleftHTML + `</select>`;
       leftselectDiv.innerHTML = selectleftHTML;
@@ -82,8 +83,8 @@ const csAssignCaseload = (() => {
 
      let selectrightHTML = `<select id='rightselector' multiple='multiple' size='6'>`
 
-     consumerlist.forEach(person => {
-       selectrightHTML = selectrightHTML + `<option value='${person.value}'>${person.name}</option>` })
+     consumerswithSaleforceIds.forEach(person => {
+       selectrightHTML = selectrightHTML + `<option value='${person.id}'>${person.name}</option>` })
  
        selectrightHTML = selectrightHTML + `</select>`;
        rightselectDiv.innerHTML = selectrightHTML;
@@ -92,7 +93,7 @@ const csAssignCaseload = (() => {
       text: 'SAVE',
       style: 'secondary',
       type: 'contained',
-      callback: function () {
+      callback: async function () {
 
         const SSASelected = document.querySelector('#leftselector').value;
        const consumersSelected = Array.from(document.querySelector('#rightselector').options).filter
@@ -100,10 +101,19 @@ const csAssignCaseload = (() => {
 
         const consumerObjs = consumersSelected.map( pers => (
           {
-            peopleId: pers.value, 
+            id: pers.value, 
             name: pers.text
           }
         ));
+
+        assignmentResults = await consentAndSignAjax.assignStateCaseManagertoConsumers({
+         // token: $.session.Token,
+          caseManagerId: SSASelected,
+          consumers: consumerObjs,
+        });
+
+        var test4 = assignmentResults;
+
 
         let output = `List of selected consumers:\n`
        
