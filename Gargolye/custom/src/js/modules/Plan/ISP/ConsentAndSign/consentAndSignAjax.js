@@ -203,6 +203,57 @@ const consentAndSignAjax = (() => {
     }
   }
 
+  async function getCaseManagersfromOptionsTable(retrieveData) {
+    // string token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getCaseManagersfromOptionsTable/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getCaseManagersfromOptionsTableResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getConsumerswithSaleforceIds(retrieveData) {
+    // string token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerswithSaleforceIds/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getConsumerswithSaleforceIdsResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   // INSERT
   //-------------------------------------
   async function insertTeamMember(retrieveData) {
@@ -434,6 +485,8 @@ const consentAndSignAjax = (() => {
     getPlanInformedConsentVendors,
     getTeamMemberBySalesForceId,
     getConsumerOrganizationId,
+    getCaseManagersfromOptionsTable,
+    getConsumerswithSaleforceIds,
     updateTeamMember,
     updatePlanConsentStatements,
     updateTableRowOrder,

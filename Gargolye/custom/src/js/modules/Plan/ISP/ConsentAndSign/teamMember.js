@@ -356,26 +356,26 @@ const csTeamMember = (() => {
     (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)
     ) {
 
-      let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 						  
-      Do you wish to save the selected State Guardian as the Guardian for this particular Added Team Member?`
+      // let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 						  
+      // Do you wish to save the selected State Guardian as the Guardian for this particular Added Team Member?`
 
-      if (
-        confirm(Scenario2ConfirmText)
-      ) {
-        var fullName = selectedStateGuardian.split(' ');
-        selectedMemberData.name = fullName[0];
-        selectedMemberData.lastName = fullName[fullName.length - 1];
-        selectedMemberData.buildingNumber = '';
-        selectedMemberData.dateOfBirth = '';
-        selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
-        return true;
-      } else {
+      // if (
+      //   confirm(Scenario2ConfirmText)
+      // ) {
+      //   var fullName = selectedStateGuardian.split(' ');
+      //   selectedMemberData.name = fullName[0];
+      //   selectedMemberData.lastName = fullName[fullName.length - 1];
+      //   selectedMemberData.buildingNumber = '';
+      //   selectedMemberData.dateOfBirth = '';
+      //   selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
+      //   return true;
+      // } else {
         alert(
           `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
         );
         return false;
       }
-    }
+   // }
 
 
      // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
