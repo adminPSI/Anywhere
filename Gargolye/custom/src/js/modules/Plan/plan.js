@@ -783,8 +783,39 @@ const plan = (function () {
           consumerPlanId: planId,
           planType: newType.toUpperCase(),
         });
-        screen.classList.remove('visible');
-        morePopupMenu.classList.add('visible');
+
+        planType = newType;
+
+        const message =
+          success === 'Success' ? 'Type successfully updated.' : 'Type was not able to be updated.';
+        const successDiv = successfulSave.get(message, true);
+        if (success !== 'Success') successDiv.classList.add('error');
+
+        currentType.style.display = 'none';
+        typeDropdown.style.display = 'none';
+        btnWrap.style.display = 'none';
+        screen.appendChild(successDiv);
+
+        setTimeout(() => {
+          screen.removeChild(successDiv);
+
+          currentType.removeAttribute('style');
+          typeDropdown.removeAttribute('style');
+          btnWrap.removeAttribute('style');
+
+          refreshMoreMenu();
+          screen.classList.remove('visible');
+          morePopupMenu.classList.add('visible');
+
+          if (success === 1) {
+            assessmentCard.refreshAssessmentCard({
+              planStatus,
+              planId,
+              isActive: planActiveStatus,
+            });
+            ISP.refreshISP(planId);
+          }
+        }, 1000);
       },
     });
     const cancelBtn = button.build({
@@ -1115,8 +1146,8 @@ const plan = (function () {
           assessment.transeferPlanReportToONET(planId, '1');
           break;
         }
-          case sendToDODDBtn: {
-        //Nathan TODO call ajax
+        case sendToDODDBtn: {
+          //Nathan TODO call ajax
           targetScreen = 'DODDScreen';
           break;
         }
