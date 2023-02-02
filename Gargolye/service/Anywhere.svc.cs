@@ -2385,6 +2385,11 @@ namespace Anywhere
             return psw.getStateGuardiansforConsumer(peopleId);
         }
 
+        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanInformedConsentWorker.InformedConsentSSAs[] consumers)
+        {
+            return psw.assignStateCaseManagertoConsumers(caseManagerId, consumers);
+        }
+
         public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
         {
             return psw.setSalesForceIdForTeamMemberUpdate(peopleId, salesForceId);
