@@ -405,6 +405,17 @@ namespace Anywhere
             return anywhereWorker.getConsumerOrganizationId(peopleId);
         }
 
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getCaseManagersfromOptionsTable(string token)
+        {
+            return anywhereWorker.getCaseManagersfromOptionsTable(token);
+        }
+
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
+        {
+            return anywhereWorker.getConsumerswithSaleforceIds(token);
+        }
+
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             return dg.updateCaseNotesReviewDays(token, updatedReviewDays);
@@ -2374,6 +2385,11 @@ namespace Anywhere
             return psw.getStateGuardiansforConsumer(peopleId);
         }
 
+        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanInformedConsentWorker.InformedConsentSSAs[] consumers)
+        {
+            return psw.assignStateCaseManagertoConsumers(caseManagerId, consumers);
+        }
+
         public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
         {
             return psw.setSalesForceIdForTeamMemberUpdate(peopleId, salesForceId);
@@ -2789,24 +2805,23 @@ namespace Anywhere
             cnReportWorker.viewCaseNoteReport(token, reportScheduleId);
         }
 
-
-        public string oneSpanBuildSigners(string token, string packageName, string documentName, string filePath, string[] emails, string[] names)
+        public string oneSpanGetSignedDocuments(string token, string packageId, string assessmentID)
         {
             //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "", "686614946776981", "1", "false", true);
-            return osw.oneSpanBuildSigners(packageName, documentName, filePath, emails, names, null);
+            return osw.oneSpanGetSignedDocuments(token, packageId, assessmentID);
         }
 
-        public string oneSpanGetSignedDocuments(string token, string packageId)
+        public OneSpanWorker.DocumentStatus[] oneSpanCheckDocumentStatus(string token, string assessmentId)
         {
-            //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "", "686614946776981", "1", "false", true);
-            return osw.oneSpanGetSignedDocuments(packageId);
+            return osw.oneSpanCheckDocumentStatus(token, assessmentId);
         }
 
-        //public string oneSpanBuildSigners(string token, string userId, string assessmentID, string versionID, bool isp)
-        //{
-        //    MemoryStream ms = getPlanAssessmentReport(token, userId, assessmentID, versionID, "false", isp);
-        //    return osw.oneSpanBuildSigners(ms);
-        //}
+        public string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp)
+        {
+            //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "crystal", "466", "1", "false", true);
+            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp);
+            return osw.oneSpanBuildSigners(token, assessmentID, ms);
+        }
 
         //Defaults
         public DefaultsWorker.InvalidDefaults[] getInvalidDefaults(string token)

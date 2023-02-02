@@ -8,6 +8,7 @@ using System.Management.Automation.Language;
 using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Script.Serialization;
+using Anywhere.service.Data.PlanInformedConsent;
 using PSIOISP;
 
 namespace Anywhere.service.Data.PlanSignature
@@ -84,6 +85,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string signatureType { get; set; }
             public string attachmentId { get; set; }
             public string description { get; set; }
+            public string packageId { get; set; }
+            public string signedStatus { get; set; }
         }
 
         public class SigId
@@ -239,27 +242,35 @@ namespace Anywhere.service.Data.PlanSignature
 
         public TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
         {
-            // TODO 94246: STATE GUARDIANS THAT AREADY HAVE THEIR SALEFORCEID BEING USED IN THIS PLAN  
-            //string signatureString = psdg.getSignatures(token, assessmentId);
-            //PlanSignatures[] signatureObj = js.Deserialize<PlanSignatures[]>(signatureString);
-            //int count = 0;
-            //for (int i = 0; i < signatureObj.Length; i++)
-            //{
-            //    if (signatureObj[i].signature != "")
-            //    {
-            //        signatureObj[i].signature = "data:image/png;base64," + signatureObj[i].signature;
-            //    }
-            //    count++;
-            //}
-
+           
             ISPDTData ispDT = new ISPDTData();
 
             string theGuardians = ispDT.IndividualGuardians(peopleId);
-            // OISP FRANKLINONE -- 17080
-            //string teamMembers = oispW.GetIndividualContactsJSON(peopleId.ToString());
+            
             TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
 
             return stateGuardianObject;
+
+        }
+
+        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanInformedConsentWorker.InformedConsentSSAs[] consumers)
+        {
+
+            ISPDTData ispDT = new ISPDTData();
+
+            string assignresult = "";
+
+            foreach (PlanInformedConsentWorker.InformedConsentSSAs con in consumers)
+            {
+                
+               // assignresult = ispDT.AddCaseMangerToIndividal(caseManagerId, consumerid, "Assigned");
+
+            }
+
+
+           // TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
+
+            return assignresult;
 
         }
 

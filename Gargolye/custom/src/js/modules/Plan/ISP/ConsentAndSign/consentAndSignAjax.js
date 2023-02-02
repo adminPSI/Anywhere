@@ -153,6 +153,32 @@ const consentAndSignAjax = (() => {
     }
   }
   
+  async function assignStateCaseManagertoConsumers(peopleIdData) {
+    //cosumerId as a string in retrieveData
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/assignStateCaseManagertoConsumers/',
+       data: JSON.stringify(peopleIdData),
+       //data: '{"peopleId":"' + peopleId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.assignStateCaseManagertoConsumersResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async function getTeamMemberBySalesForceId(retrieveData) {
     // string salesForceId
     try {
@@ -202,6 +228,57 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
+
+  async function getCaseManagersfromOptionsTable(retrieveData) {
+    // string token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getCaseManagersfromOptionsTable/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getCaseManagersfromOptionsTableResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getConsumerswithSaleforceIds(retrieveData) {
+    // string token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerswithSaleforceIds/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getConsumerswithSaleforceIdsResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   // INSERT
   //-------------------------------------
@@ -434,6 +511,8 @@ const consentAndSignAjax = (() => {
     getPlanInformedConsentVendors,
     getTeamMemberBySalesForceId,
     getConsumerOrganizationId,
+    getCaseManagersfromOptionsTable,
+    getConsumerswithSaleforceIds,
     updateTeamMember,
     updatePlanConsentStatements,
     updateTableRowOrder,
@@ -444,5 +523,6 @@ const consentAndSignAjax = (() => {
     setSalesForceIdForTeamMemberUpdate,
     validateConsumerForSalesForceId,
     getStateGuardiansforConsumer,
+    assignStateCaseManagertoConsumers,
   };
 })();

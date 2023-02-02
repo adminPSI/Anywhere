@@ -29,6 +29,7 @@ using Anywhere.service.Data.DocumentConversion;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.AnywhereWorker;
 using static Anywhere.service.Data.DayServicesWorker;
+using Anywhere.service.Data.eSignature___OneSpan;
 
 namespace Anywhere
 {
@@ -473,6 +474,23 @@ namespace Anywhere
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getConsumerOrganizationId/")]
         AnywhereWorker.OrganiztionId[] getConsumerOrganizationId(string peopleId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getCaseManagersfromOptionsTable/")]
+        PlanInformedConsentWorker.InformedConsentSSAs[] getCaseManagersfromOptionsTable(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getConsumerswithSaleforceIds/")]
+        PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token);
+
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3374,6 +3392,14 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/assignStateCaseManagertoConsumers/")]
+        string assignStateCaseManagertoConsumers(string caseManagerId, PlanInformedConsentWorker.InformedConsentSSAs[] consumers);
+
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/setSalesForceIdForTeamMemberUpdate/")]
         string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId);
 
@@ -3920,25 +3946,34 @@ namespace Anywhere
         String deleteForm4MonthlySummary(string token, string emReviewId);
 
         [WebInvoke(Method = "POST",
-           BodyStyle = WebMessageBodyStyle.Wrapped,
-           ResponseFormat = WebMessageFormat.Json,
-           RequestFormat = WebMessageFormat.Json,
-           UriTemplate = "/oneSpanBuildSigners/")]
-        string oneSpanBuildSigners(string token, string packageName, string documentName, string filePath, string[] emails, string[] names);
+       BodyStyle = WebMessageBodyStyle.Wrapped,
+       ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/oneSpanBuildSigners/")]
+        string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp);
+        //string token, string packageName, string documentName, string filePath, string[] emails, string[] names, string[] memberTypes, string[] signatureIds
 
         [WebInvoke(Method = "POST",
            BodyStyle = WebMessageBodyStyle.Wrapped,
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/oneSpanGetSignedDocuments/")]
-        string oneSpanGetSignedDocuments(string token, string packageId);
+        string oneSpanGetSignedDocuments(string token, string packageId, string assessmentID);
+
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/oneSpanCheckDocumentStatus/")]
+        OneSpanWorker.DocumentStatus[] oneSpanCheckDocumentStatus(string token, string assessmentId);
+
 
 
     }
 
 
-// Use a data contract as illustrated in the sample below to add composite types to service operations.
-[DataContract]
+    // Use a data contract as illustrated in the sample below to add composite types to service operations.
+    [DataContract]
     public class CompositeType
     {
         bool boolValue = true;

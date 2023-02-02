@@ -1,6 +1,9 @@
 const csAssignCaseload = (() => {
-    
-  function showAssignCaseLoadPopup() {
+    let consumerswithSaleforceIds;
+    let caseManagersfromOptionsTable;
+    let assignmentResults;
+
+  async function showAssignCaseLoadPopup() {
     const assignCaseLoadPopup = POPUP.build({
       id: 'sig_assignCaseLoadPopup',
       classNames: 'assignCaseLoad-container',
@@ -9,9 +12,12 @@ const csAssignCaseload = (() => {
     });
 
     // TODO 96855: Replace this data with a call to the GK database ABD Double check this works for GK AND ADV
-    // NEW -- ANYW_ISP_GetCaseManagersfromOptionsTable -- need AJAX and C# layers
-    // SELECT p.ID as peopleId, p.Last_Name + ', ' + p.First_Name as name, cmo.Salesforce_ID as salesForceId FROM "dba"."ANYW_ISP_Case_Manager_Options" cmo
-    // join people p on p.Salesforce_ID = cmo.Salesforce_ID order by p.Last_Name, p.First_Name
+    caseManagersfromOptionsTable = await consentAndSignAjax.getCaseManagersfromOptionsTable({
+      token: $.session.Token,
+    });
+
+    var test1 = caseManagersfromOptionsTable;
+
     let SSAlist = [
       {
         'value' : '17094',
@@ -28,11 +34,11 @@ const csAssignCaseload = (() => {
     ]
 
     // TODO 96855: Replace this data with a call to the GK database ABD Double check this works for GK AND ADV
-    // NEW -- ANYW_ISP_GetConsumerswithSaleforceIds -- need AJAX and C# layers
-    //Select p.ID as peopleId, p.Last_Name + ', ' + p.First_Name + ' (' + Cast(p.Date_of_Birth as varchar(10)) + ')' as name, p.Salesforce_ID as salesForceId from people p  
-    //join Person_Type pt on p.ID = pt.ID
-    //where (p.Salesforce_ID is not null and  p.Salesforce_ID <> '') and pt.Type_ID = 1 
-    //order by p.Last_Name, p.First_Name
+    consumerswithSaleforceIds = await consentAndSignAjax.getConsumerswithSaleforceIds({
+      token: $.session.Token,
+    });
+
+    var test2 = consumerswithSaleforceIds;
 
     let consumerlist = [
       {
@@ -66,8 +72,8 @@ const csAssignCaseload = (() => {
     leftselectDiv.classList.add("assignCaseLoad-peoplelist")
     let selectleftHTML = `<select id='leftselector' size='3'>`
 
-    SSAlist.forEach(person => {
-      selectleftHTML = selectleftHTML + `<option value='${person.value}'>${person.name}</option>` })
+    caseManagersfromOptionsTable.forEach(person => {
+      selectleftHTML = selectleftHTML + `<option value='${person.id}'>${person.name}</option>` })
 
       selectleftHTML = selectleftHTML + `</select>`;
       leftselectDiv.innerHTML = selectleftHTML;
@@ -77,8 +83,8 @@ const csAssignCaseload = (() => {
 
      let selectrightHTML = `<select id='rightselector' multiple='multiple' size='6'>`
 
-     consumerlist.forEach(person => {
-       selectrightHTML = selectrightHTML + `<option value='${person.value}'>${person.name}</option>` })
+     consumerswithSaleforceIds.forEach(person => {
+       selectrightHTML = selectrightHTML + `<option value='${person.id}'>${person.name}</option>` })
  
        selectrightHTML = selectrightHTML + `</select>`;
        rightselectDiv.innerHTML = selectrightHTML;
@@ -87,7 +93,7 @@ const csAssignCaseload = (() => {
       text: 'SAVE',
       style: 'secondary',
       type: 'contained',
-      callback: function () {
+      callback: async function () {
 
         const SSASelected = document.querySelector('#leftselector').value;
        const consumersSelected = Array.from(document.querySelector('#rightselector').options).filter
@@ -95,10 +101,19 @@ const csAssignCaseload = (() => {
 
         const consumerObjs = consumersSelected.map( pers => (
           {
-            peopleId: pers.value, 
+            id: pers.value, 
             name: pers.text
           }
         ));
+
+        assignmentResults = await consentAndSignAjax.assignStateCaseManagertoConsumers({
+         // token: $.session.Token,
+          caseManagerId: SSASelected,
+          consumers: consumerObjs,
+        });
+
+        var test4 = assignmentResults;
+
 
         let output = `List of selected consumers:\n`
        
