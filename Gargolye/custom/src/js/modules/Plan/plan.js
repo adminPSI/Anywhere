@@ -818,6 +818,7 @@ const plan = (function () {
         }, 1000);
       },
     });
+    updateBtn.classList.add('disabled');
     const cancelBtn = button.build({
       text: 'Cancel',
       style: 'secondary',
