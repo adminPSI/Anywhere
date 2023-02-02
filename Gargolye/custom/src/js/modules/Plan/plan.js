@@ -1115,7 +1115,8 @@ const plan = (function () {
           assessment.transeferPlanReportToONET(planId, '1');
           break;
         }
-        case sendToDODDBtn: {
+          case sendToDODDBtn: {
+        //Nathan TODO call ajax
           targetScreen = 'DODDScreen';
           break;
         }

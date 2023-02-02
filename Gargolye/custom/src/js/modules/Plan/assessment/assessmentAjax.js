@@ -73,7 +73,11 @@ const assessmentAjax = (function () {
     var userIdInput = document.createElement('input');
     userIdInput.setAttribute('name', 'userId');
     userIdInput.setAttribute('value', retrieveData.userId);
-    userIdInput.id = 'userId';
+      userIdInput.id = 'userId';
+      var doddFlagInput = document.createElement('input');
+      userIdInput.setAttribute('name', 'doddFlag');
+      userIdInput.setAttribute('value', retrieveData.doddFlag);
+      doddFlagInput.id = 'doddFlag';
     var assessmentIDInput = document.createElement('input');
     assessmentIDInput.setAttribute('name', 'assessmentID');
     assessmentIDInput.setAttribute('value', retrieveData.assessmentID);
@@ -102,9 +106,11 @@ const assessmentAjax = (function () {
       sigAttachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
       sigAttachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
       sigAttachmentIdsInput.id = 'sigAttachmentIds';
+      //TODO add new flag same as variables above
 
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);
+    form.appendChild(doddFlagInput);
     form.appendChild(assessmentIDInput);
     form.appendChild(versionIDInput);
     form.appendChild(extraSpaceInput);
