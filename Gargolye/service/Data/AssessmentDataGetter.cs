@@ -80,8 +80,28 @@ namespace Anywhere.service.Data
                 logger.error("3ADG", ex.Message + "ANYW_ISP_insertConsumerPlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "3ADG: error ANYW_ISP_insertConsumerPlan";
             }
-        }      
+        }
 
+        public string swicthPlanType(string token, string consumerPlanId, string planType)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertConsumerPlan ");
+            List<string> list = new List<string>();
+            list.Add(consumerPlanId);
+            list.Add(planType);
+
+            string text = "CALL DBA.ANYW_ISP_SwitchPlanType(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                executeDataBaseCallJSON(text);
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                logger.error("3ADG", ex.Message + "ANYW_ISP_SwitchPlanType(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3ADG: error ANYW_ISP_SwitchPlanType";
+            }
+        }
 
         public string validateToken(string token)
         {

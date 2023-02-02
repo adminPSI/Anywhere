@@ -379,7 +379,7 @@ const assessment = (function () {
     wfAttachmentIds,
     sigAttachmentIds,
   ) {
-    assessmentAjax.getPlanAssessmentReportWithAttachments(
+    assessmentAjax.getPlanAssessmentReportWithAttachments(//Testgd
       {
         token: $.session.Token,
         userId: $.session.PeopleId,

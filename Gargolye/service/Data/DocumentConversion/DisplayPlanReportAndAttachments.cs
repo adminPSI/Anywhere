@@ -91,7 +91,7 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, string doddFlag)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
