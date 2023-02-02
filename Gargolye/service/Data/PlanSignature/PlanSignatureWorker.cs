@@ -85,6 +85,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string signatureType { get; set; }
             public string attachmentId { get; set; }
             public string description { get; set; }
+            public string packageId { get; set; }
+            public string signedStatus { get; set; }
         }
 
         public class SigId

@@ -36,16 +36,16 @@ namespace Anywhere.service.Data.eSignature_OneSpan
             }
         }
 
-        public string updateOneSpanPlanConsentStatements(string token, string signatureId, string csChangeMind, string csContact, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology)
+        public string UpdateOneSpanPlanConsentStatements(string token, string signatureId, string dateSigned, string csChangeMind, string csContact, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology)
         {
             if (validateToken(token) == false) return null;
             logger.debug("UpdateConsentStatements ");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(signatureId);
+            list.Add(dateSigned);
             list.Add(csChangeMind);
             list.Add(csContact);
-            list.Add(csContactInput);
             list.Add(csRightsReviewed);
             list.Add(csAgreeToPlan);
             list.Add(csFCOPExplained);
@@ -53,22 +53,80 @@ namespace Anywhere.service.Data.eSignature_OneSpan
             list.Add(csResidentialOptions);
             list.Add(csSupportsHealthNeeds);
             list.Add(csTechnology);
-            string text = "CALL DBA.ANYW_ISP_updateOneSpanPlanConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            string text = "CALL DBA.ANYW_ISP_UpdateOneSpanPlanConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("3APICDG", ex.Message + "ANYW_ISP_updateOneSpanPlanConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "3APICDG: error ANYW_ISP_updateOneSpanPlanConsentStatements";
+                logger.error("3APICDG", ex.Message + "ANYW_ISP_UpdateOneSpanPlanConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APICDG: error ANYW_ISP_UpdateOneSpanPlanConsentStatements";
             }
         }
 
-        //public string OneSpanInsertPackageId(string token, long assessmentId, string packageId, string signedStatus)
-        //{
-        //    return "Update PackageId in DB";
-        //}
+        public string OneSpanInsertPackageId(string token, string assessmentId, string packageId, string signedStatus)
+        {
+            if (validateToken(token) == false) return null;
+            List<string> list = new List<string>();
+
+            list.Add(token);
+            list.Add(assessmentId);
+            list.Add(packageId);
+            list.Add(signedStatus);
+
+            string text = "CALL DBA.ANYW_ISP_OneSpan_InsertPackageId(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3APICDG", ex.Message + "ANYW_ISP_OneSpan_InsertPackageId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APICDG: error ANYW_ISP_OneSpan_InsertPackageId";
+            }
+        }
+
+        public string OneSpanCheckDocumentStatus(string token, string assessmentId)
+        {
+            if (validateToken(token) == false) return null;
+            List<string> list = new List<string>();
+
+            list.Add(token);
+            list.Add(assessmentId);
+
+            string text = "CALL DBA.ANYW_ISP_OneSpan_CheckDocumentStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3APICDG", ex.Message + "ANYW_ISP_OneSpan_CheckDocumentStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APICDG: error ANYW_ISP_OneSpan_CheckDocumentStatus";
+            }
+        }
+
+        public string OneSpanUpdateDocumentSignedStatus(string token, string assessmentId, string signedStatus)
+        {
+            if (validateToken(token) == false) return null;
+            List<string> list = new List<string>();
+
+            list.Add(token);
+            list.Add(assessmentId);
+            list.Add(signedStatus);
+
+            string text = "CALL DBA.ANYW_ISP_OneSpan_UpdateDocumentSignedStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3APICDG", ex.Message + "ANYW_ISP_OneSpan_UpdateDocumentSignedStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APICDG: error ANYW_ISP_OneSpan_UpdateDocumentSignedStatus";
+            }
+        }
 
         public string removeUnsavableNoteText(string note)
         {
