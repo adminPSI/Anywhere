@@ -344,6 +344,29 @@ const planAjax = (function () {
       console.log(error.responseText);
     }
   }
+  async function updatePlanType(retrieveData) {
+    // token, consumerPlanId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/switchPlanType/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.switchPlanTypeResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
 
   // DELETE
   //------------------------------------
@@ -584,6 +607,7 @@ const planAjax = (function () {
     updateConsumerPlanSetRevisionEffectiveDates,
     updateConsumerPlanReviewDate,
     updatePlanSectionApplicable,
+    updatePlanType,
     deletePlan,
     viewPlanAttachment,
     addPlanAttachment,

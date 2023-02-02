@@ -778,7 +778,11 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        // TODO-ASH: call ajax to update plan type with (newType)
+        planAjax.updatePlanType({
+          token: $.session.Token,
+          consumerPlanId: planId,
+          planType: newType.toUpperCase(),
+        });
         screen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
       },

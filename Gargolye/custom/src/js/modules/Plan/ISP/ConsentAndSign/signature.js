@@ -144,8 +144,7 @@ const csSignature = (() => {
       innerWrap.appendChild(attachmentDesc);
 
       // signature date
-      let signDate = selectedMemberData.dateSigned.split(' ');
-      signDate = signDate[0];
+      let signDate = UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned));
       const date = input.build({
         type: 'date',
         label: 'Signature Date',

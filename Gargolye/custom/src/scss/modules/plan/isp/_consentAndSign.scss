@@ -219,10 +219,12 @@
     }
   }
   .innerWrap {
+    align-items: center;
     display: flex;
     
-    .attachmentInput {
-      width: 50%;
+    .attachmentInput,
+    .signAttachmentDesc {
+      margin-right: 10px;
     }
   }
 }
