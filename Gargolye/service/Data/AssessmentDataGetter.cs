@@ -82,7 +82,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string swicthPlanType(string token, string consumerPlanId, string planType)
+        public string switchPlanType(string token, string consumerPlanId, string planType)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertConsumerPlan ");

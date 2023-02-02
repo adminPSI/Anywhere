@@ -1653,9 +1653,9 @@ namespace Anywhere
             return aPW.insertConsumerPlanAnnual(token, consumerId, planYearStart, reviewDate);
         }
 
-        public string swicthPlanType(string token, string consumerPlanId, string planType)
+        public string switchPlanType(string token, string consumerPlanId, string planType)
         {
-            return aAW.swicthPlanType(token, consumerPlanId, planType);            
+            return aAW.switchPlanType(token, consumerPlanId, planType);            
         }
 
         public int updateConsumerNameInfo(string token, string consumerId, string firstName, string lastName, string middleName, string nickName)

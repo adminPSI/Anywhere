@@ -2430,8 +2430,8 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/swicthPlanType/")]
-        string swicthPlanType(string token, string consumerPlanId, string planType);
+            UriTemplate = "/switchPlanType/")]
+        string switchPlanType(string token, string consumerPlanId, string planType);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
