@@ -778,7 +778,7 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        planAjax.updatePlanType({
+        const success = await planAjax.updatePlanType({
           token: $.session.Token,
           consumerPlanId: planId,
           planType: newType.toUpperCase(),
