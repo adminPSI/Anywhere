@@ -345,7 +345,7 @@ const planAjax = (function () {
     }
   }
   async function updatePlanType(retrieveData) {
-    // token, consumerPlanId
+    // token, consumerPlanId, planType
     try {
       const data = await $.ajax({
         type: 'POST',
