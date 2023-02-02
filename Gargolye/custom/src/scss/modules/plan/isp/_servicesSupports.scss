@@ -266,6 +266,11 @@
     }
   }
 }
+.multiEditBtn {
+  &.enabled {
+    background: $secondary;
+  }
+}
 #additionalSupportsTable {
   margin-bottom: 10px;
 

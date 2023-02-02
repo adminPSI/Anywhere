@@ -745,7 +745,7 @@ const plan = (function () {
     const currentType = document.createElement('div');
     currentType.classList.add('currentType');
     currentType.innerHTML = `
-      <p>Current Type:</p> ${planStatus === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
+      <p>Current Type:</p> ${planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
     `;
 
     // dropdown
@@ -765,7 +765,7 @@ const plan = (function () {
     typeDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
       newType = selectedOption.value;
-      if (newType === planStatus) {
+      if (newType === planType) {
         updateBtn.classList.add('disabled');
       } else {
         updateBtn.classList.remove('disabled');

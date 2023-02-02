@@ -305,7 +305,9 @@
         margin: 0 0 10px;
       }
 
-      .planAttWrap, .workflowAttWrap, .signatureAttWrap {
+      .planAttWrap,
+      .workflowAttWrap,
+      .signatureAttWrap {
         h2 {
           margin: 0 0 10px;
         }
@@ -476,7 +478,7 @@
 .saveWarningPopup {
   height: 300px;
   padding: 0px 10px;
-  
+
   h3 {
     margin: 0 0 10px;
   }
@@ -660,9 +662,28 @@
   }
 
   .radioWrap {
-    display: inline-block;
+    display: flex;
+    align-items: center;
     padding: 5px;
     margin-left: 10px;
+
+    svg {
+      width: 36px;
+    }
+    .radio {
+      margin: 0 10px 0 0;
+  
+      &:last-child {
+        margin: 0;
+      }
+  
+      input {
+        margin: 0 6px 0 0;
+      }
+      span {
+        text-transform: capitalize;
+      }
+    }
   }
 
   &__text {
@@ -688,22 +709,6 @@
     &.hasAttachments {
       background-color: $secondary;
       pointer-events: all !important;
-    }
-  }
-}
-.radioWrap {
-  .radio {
-    margin: 0 10px 0 0;
-
-    &:last-child {
-      margin: 0;
-    }
-
-    input {
-      margin: 0 6px 0 0;
-    }
-    span {
-      text-transform: capitalize;
     }
   }
 }
