@@ -305,6 +305,7 @@ namespace Anywhere.service.Data
                 AddAttachment[] attachmentsObj = js.Deserialize<AddAttachment[]>(attachmentsString);
                 return attachmentsObj;
             }
+            
 
             public AttachmentList[] getPlanAttachmentsList(string token, long planId, string section)
             {

@@ -13,6 +13,10 @@ const servicesSupports = (() => {
   let additionalSupportsTable;
   let professionalReferralsTable;
 
+  let enableMultiEdit = false;
+  let selectedPaidSupportRows = [];
+  let multiEditBtn;
+
   let fundingSourceDropdownSelectedText;
   let servicesDropdownSelectedText;
   let servicesOtherDropdownSelectedText;
@@ -698,6 +702,130 @@ const servicesSupports = (() => {
     planSummary.checkForPaidSupports(numPaidSupports);
   }
   //-- Markup ---------
+  function showMultiEditPopup(selectedPaidSupportRows) {
+    let multiSaveUpdateData = {
+      beginDate: '',
+      endDate: '',
+      providerId: '',
+    };
+
+    const multiEditPopup = POPUP.build({
+      header: 'Update Paid Supports',
+      classNames: 'multiEditPopup',
+      hideX: true,
+    });
+
+    const providerNameDropdown = dropdown.build({
+      dropdownId: 'providerNameDropdownPS',
+      label: 'Provider Name',
+      style: 'secondary',
+      callback: (e, selectedOption) => {
+        multiSaveUpdateData.providerId = selectedOption.value;
+      },
+    });
+    const beginDateInput = input.build({
+      label: 'Begin Date',
+      type: 'date',
+      style: 'secondary',
+      // value: multiSaveUpdateData.beginDate,
+      callback: e => {
+        multiSaveUpdateData.beginDate = e.target.value;
+      },
+    });
+    const endDateInput = input.build({
+      label: 'End Date',
+      type: 'date',
+      style: 'secondary',
+      // value: multiSaveUpdateData.endDate,
+      callback: e => {
+        multiSaveUpdateData.endDate = e.target.value;
+      },
+    });
+
+    const updateBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        // TODO-ASH: call ajax to update multi rows
+        console.log(selectedPaidSupportRows);
+        POPUP.hide(multiEditPopup);
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(multiEditPopup);
+      },
+    });
+
+    multiEditPopup.appendChild(beginDateInput);
+    multiEditPopup.appendChild(endDateInput);
+    multiEditPopup.appendChild(providerNameDropdown);
+    multiEditPopup.appendChild(updateBtn);
+    multiEditPopup.appendChild(cancelBtn);
+
+    populateServiceVendorsDropdown(providerNameDropdown, '');
+
+    POPUP.show(multiEditPopup);
+  }
+  function buildMultiRowEdit() {
+    const wrap = document.createElement('div');
+    wrap.classList.add('mutliEditBtnWrap');
+
+    multiEditBtn = button.build({
+      text: 'Multi Edit Supports',
+      icon: 'multiSelect',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'multiEditBtn',
+      callback: () => {
+        enableMultiEdit = !enableMultiEdit;
+
+        mulitSelectBtn.classList.toggle('enabled');
+
+        if (enableMultiEdit) {
+          updateBtn.classList.remove('hidden');
+          cancelBtn.classList.remove('hidden');
+        } else {
+          // updateBtn.classList.add('hidden');
+          // cancelBtn.classList.add('hidden');
+          // selectedPaidSupportRows = [];
+          // var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+          // highlightedRows.forEach(row => row.classList.remove('selected'));
+        }
+      },
+    });
+
+    const updateBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        showMultiEditPopup(selectedPaidSupportRows);
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        enableMultiEdit = false;
+        updateBtn.classList.add('hidden');
+        cancelBtn.classList.add('hidden');
+
+        selectedPaidSupportRows = [];
+        var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+        highlightedRows.forEach(row => row.classList.remove('selected'));
+      },
+    });
+
+    wrap.appendChild(multiEditBtn);
+    wrap.appendChild(updateBtn);
+    wrap.appendChild(cancelBtn);
+  }
   function togglePaidSupportDoneBtn() {
     const inputsWithErrors = document.querySelector('.paidSupportPopup .error');
     const doneBtn = document.querySelector('.paidSupportPopup .doneBtn');
@@ -1486,12 +1614,18 @@ const servicesSupports = (() => {
       },
     });
 
+    const btnWrap = document.createElement('div');
+
     const addRowBtn = button.build({
       text: 'Add Paid Support',
       style: 'secondary',
       type: 'contained',
       callback: () => addPaidSupportRow(),
     });
+
+    // multi edit section
+    mutliEditBtnWrap = buildMultiRowEdit();
+
     if (isReadOnly) {
       addRowBtn.classList.add('disabled');
     }
@@ -1509,17 +1643,31 @@ const servicesSupports = (() => {
             id: rowId,
             values: tableValues,
             attributes: [{ key: 'sectionId', value: psData.assessmentAreaId }],
-            onClick: () => {
-              showAddPaidSupportPopup({
-                popupData: psData,
-                isNew: false,
-                fromAssessment: false,
-                isCopy: false,
-                charLimits,
-              });
+            onClick: event => {
+              if (!enableMultiEdit) {
+                showAddPaidSupportPopup({
+                  popupData: psData,
+                  isNew: false,
+                  fromAssessment: false,
+                  isCopy: false,
+                  charLimits,
+                });
+                return;
+              }
+
+              if (isSelected) {
+                event.target.classList.remove('selected');
+                selectedPaidSupportRows = selectedPaidSupportRows.filter(
+                  sr => sr !== paidSupportsId,
+                );
+              } else {
+                event.target.classList.add('selected');
+                selectedPaidSupportRows.push(paidSupportsId);
+              }
             },
             onCopyClick: () => {
-              if (isReadOnly) return;
+              if (isReadOnly || enableMultiEdit) return;
+
               const copiedData = { ...psData, paidSupportsId: '' };
               showAddPaidSupportPopup({
                 popupData: copiedData,

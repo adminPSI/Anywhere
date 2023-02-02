@@ -745,7 +745,7 @@ const plan = (function () {
     const currentType = document.createElement('div');
     currentType.classList.add('currentType');
     currentType.innerHTML = `
-      <p>Current Type:</p> ${planStatus === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
+      <p>Current Type:</p> ${planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
     `;
 
     // dropdown
@@ -765,7 +765,7 @@ const plan = (function () {
     typeDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
       newType = selectedOption.value;
-      if (newType === planStatus) {
+      if (newType === planType) {
         updateBtn.classList.add('disabled');
       } else {
         updateBtn.classList.remove('disabled');
@@ -778,11 +778,47 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        // TODO-ASH: call ajax to update plan type with (newType)
-        screen.classList.remove('visible');
-        morePopupMenu.classList.add('visible');
+        const success = await planAjax.updatePlanType({
+          token: $.session.Token,
+          consumerPlanId: planId,
+          planType: newType.toUpperCase(),
+        });
+
+        planType = newType;
+
+        const message =
+          success === 'Success' ? 'Type successfully updated.' : 'Type was not able to be updated.';
+        const successDiv = successfulSave.get(message, true);
+        if (success !== 'Success') successDiv.classList.add('error');
+
+        currentType.style.display = 'none';
+        typeDropdown.style.display = 'none';
+        btnWrap.style.display = 'none';
+        screen.appendChild(successDiv);
+
+        setTimeout(() => {
+          screen.removeChild(successDiv);
+
+          currentType.removeAttribute('style');
+          typeDropdown.removeAttribute('style');
+          btnWrap.removeAttribute('style');
+
+          refreshMoreMenu();
+          screen.classList.remove('visible');
+          morePopupMenu.classList.add('visible');
+
+          if (success === 1) {
+            assessmentCard.refreshAssessmentCard({
+              planStatus,
+              planId,
+              isActive: planActiveStatus,
+            });
+            ISP.refreshISP(planId);
+          }
+        }, 1000);
       },
     });
+    updateBtn.classList.add('disabled');
     const cancelBtn = button.build({
       text: 'Cancel',
       style: 'secondary',
@@ -1112,6 +1148,7 @@ const plan = (function () {
           break;
         }
         case sendToDODDBtn: {
+          //Nathan TODO call ajax
           targetScreen = 'DODDScreen';
           break;
         }

@@ -10,6 +10,8 @@
       margin: 0;
     }
 
+    
+
     // Column Widths
     > div:nth-child(2) {
       flex-basis: 90px; // Team Member
@@ -34,9 +36,15 @@
       }
     }
   }
-
   .table__row[data-signed='false'] {
     background: $bg-warning;
+  }
+  .table__row[data-hideicon] {
+    .endIcon svg {
+      cursor: none;
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 
   margin-bottom: 20px;
@@ -218,11 +226,13 @@
       }
     }
   }
-  .signatureWrapInner {
+  .innerWrap {
+    align-items: center;
     display: flex;
     
-    .attachmentInput {
-      width: 50%;
+    .attachmentInput,
+    .signAttachmentDesc {
+      margin-right: 10px;
     }
   }
 }

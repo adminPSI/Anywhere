@@ -1351,7 +1351,22 @@
     });
 
     // TODO-ASH: add eraser icon here
+    const eraser = document.createElement('div');
+    eraser.innerHTML += icons.eraser;
+    questionInputMarkup.appendChild(eraser);
     // TODO-ASH: onClick -> unselect both radios, clear out conditional questions
+    eraser.addEventListener('click', () => {
+      // clear out answer
+      addAnswer(answerId, '');
+      // mark unanswered
+      sectionQuestionCount[sectionId][setId][questionId].answered = false;
+      // clear conditionals
+      const conditionalQuestions = assessment.getConditionalQuestions(questionId);
+      toggleConditionalQuestion('', 'radio', conditionalQuestions);
+      // clear radios
+      const radios = [...questionInputMarkup.querySelectorAll('input')];
+      radios.forEach(radio => (radio.checked = false));
+    });
 
     return questionInputMarkup;
   }
