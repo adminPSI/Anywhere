@@ -41,6 +41,7 @@
   }
   .table__row[data-hideicon] {
     .endIcon svg {
+      cursor: none;
       opacity: 0;
       pointer-events: none;
     }
