@@ -260,17 +260,23 @@ namespace Anywhere.service.Data.PlanSignature
 
             string assignresult = "";
 
+            var testlist = new List<PlanInformedConsentWorker.InformedConsentSSAs>();
+
             foreach (PlanInformedConsentWorker.InformedConsentSSAs con in consumers)
             {
-                
+                var testobj = new PlanInformedConsentWorker.InformedConsentSSAs();
+                testobj.name = con.name;
+                testlist.Add(testobj);
+
                // assignresult = ispDT.AddCaseMangerToIndividal(caseManagerId, consumerid, "Assigned");
 
             }
 
+            var test5 = js.Serialize(testlist);
 
            // TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
 
-            return assignresult;
+            return test5;
 
         }
 

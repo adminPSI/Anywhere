@@ -2,6 +2,9 @@ const csAssignCaseload = (() => {
     let consumerswithSaleforceIds;
     let caseManagersfromOptionsTable;
     let assignmentResults;
+    let selectedCaseManagerName;
+    let selectedCaseManagerId;
+    let consumersSelected;
 
   async function showAssignCaseLoadPopup() {
     const assignCaseLoadPopup = POPUP.build({
@@ -11,72 +14,31 @@ const csAssignCaseload = (() => {
       header: 'Assign Case Load',
     });
 
-    // TODO 96855: Replace this data with a call to the GK database ABD Double check this works for GK AND ADV
     caseManagersfromOptionsTable = await consentAndSignAjax.getCaseManagersfromOptionsTable({
       token: $.session.Token,
     });
 
-    var test1 = caseManagersfromOptionsTable;
-
-    let SSAlist = [
-      {
-        'value' : '17094',
-        'name' : 'OISP-SSA, FRANKTHREE',
-      },
-      {
-        'value' : '17093',
-        'name' : 'OISP-SSA, FRANKTWO',
-      },
-      {
-        'value' : '17010',
-        'name' : 'Turner, Jim',
-      }
-    ]
-
-    // TODO 96855: Replace this data with a call to the GK database ABD Double check this works for GK AND ADV
     consumerswithSaleforceIds = await consentAndSignAjax.getConsumerswithSaleforceIds({
       token: $.session.Token,
     });
 
-    var test2 = consumerswithSaleforceIds;
-
-    let consumerlist = [
-      {
-        'value' : '17080',
-        'name' : 'OISP, FranklinOne (1989-07-04)',
-      },
-      {
-        'value' : '17016',
-        'name' : 'OISP, FranklinTwo (2017-05-05)',
-      },
-      {
-        'value' : '1352',
-        'name' : 'OISP-Dill, Joshua (1983-01-14)',
-      },
-      {
-        'value' : '139',
-        'name' : 'OISP-Kernan, FranklinThree (1942-09-02)',
-      },
-      {
-        'value' : '6892',
-        'name' : 'Orozco-Ruiz, Cristobal (2008-04-27)',
-      },
-      {
-        'value' : '2568',
-        'name' : 'Orsini, Jaggerd (1983-02-25)',
-      }
-    ]
-
+    let CaseManagerHeadingDiv = document.createElement("div")
+    CaseManagerHeadingDiv.classList.add("assignCaseLoad-peoplelist")
+    CaseManagerHeadingDiv.innerHTML = `<b>Select a Case Manager</b>`;
 
     let leftselectDiv = document.createElement("div")
     leftselectDiv.classList.add("assignCaseLoad-peoplelist")
-    let selectleftHTML = `<select id='leftselector' size='3'>`
+    let selectleftHTML = `<select id='leftselector' size='6'>`
 
     caseManagersfromOptionsTable.forEach(person => {
       selectleftHTML = selectleftHTML + `<option value='${person.id}'>${person.name}</option>` })
 
       selectleftHTML = selectleftHTML + `</select>`;
       leftselectDiv.innerHTML = selectleftHTML;
+
+    let consumerHeadingDiv = document.createElement("div")
+    consumerHeadingDiv.classList.add("assignCaseLoad-peoplelist")
+    consumerHeadingDiv.innerHTML = `<b>Select one (or multiple) consumers</b>`;
 
     let rightselectDiv = document.createElement("div")
      rightselectDiv.classList.add("assignCaseLoad-peoplelist")
@@ -89,56 +51,87 @@ const csAssignCaseload = (() => {
        selectrightHTML = selectrightHTML + `</select>`;
        rightselectDiv.innerHTML = selectrightHTML;
  
-     var saveBtn = button.build({
-      text: 'SAVE',
+     var assignBtn = button.build({
+      text: 'ASSIGN',
       style: 'secondary',
       type: 'contained',
       callback: async function () {
 
-        const SSASelected = document.querySelector('#leftselector').value;
-       const consumersSelected = Array.from(document.querySelector('#rightselector').options).filter
+      selectedCaseManagerId = document.querySelector('#leftselector').value;
+      selectedCaseManagerName = document.querySelector('#leftselector').selectedOptions[0].innerHTML;
+      consumersSelected = Array.from(document.querySelector('#rightselector').options).filter
        (function (option) {return option.selected;});
 
-        const consumerObjs = consumersSelected.map( pers => (
+        const selectedConsumerObjs = consumersSelected.map( pers => (
           {
             id: pers.value, 
             name: pers.text
           }
         ));
 
-        assignmentResults = await consentAndSignAjax.assignStateCaseManagertoConsumers({
-         // token: $.session.Token,
-          caseManagerId: SSASelected,
-          consumers: consumerObjs,
-        });
-
-        var test4 = assignmentResults;
-
-
-        let output = `List of selected consumers:\n`
+        let listofSelectedConsumers = `These individuals are about to be assigned in Salesforce to ${selectedCaseManagerName}. Do you want to proceed?\n`
        
-       consumerObjs.forEach(person => {
-          // TODO 96855: this is a C# call (not JS)  -- need AJAX and C# layers
-          // OISPDLL.AddCaseMangerToIndividal(ByVal PeopleID As Long, ByVal CasemangerPeopleID As Long, ByVal Status As String) As String
-          // let returnmsg = OISPDLL.AddCaseMangerToIndividal(person.peopleId, SSASelected, 'Assigned'); 
-          // if (returnmsg = 'failed') --> then add person.name to the output
-          output = output + `\t* ${person.name}\n`
+        selectedConsumerObjs.forEach(person => {
+          listofSelectedConsumers = listofSelectedConsumers + `\t* ${person.name}\n`
         })
 
-        alert(output);
+       /// alert(listofSelectedConsumers);
+        if (
+          confirm(listofSelectedConsumers)
+        ) {
 
+            assignmentResults = await consentAndSignAjax.assignStateCaseManagertoConsumers({
+              // token: $.session.Token,
+              caseManagerId: selectedCaseManagerId,
+              consumers: selectedConsumerObjs,
+            });
+    
+            var processedStateConsumerObjs = JSON.parse(assignmentResults);
+            
+              let listofProcessedConsumers = `The following consumers were assigned to ${selectedCaseManagerName}.\n`
+              processedStateConsumerObjs.forEach(person => {
+                listofProcessedConsumers = listofProcessedConsumers + `\t* ${person.name}\n`
+              })
+
+          alert(listofProcessedConsumers);  
+          
+          POPUP.hide(assignCaseLoadPopup);
+
+                    
+        } else {
+          alert(
+            `Consumers were NOT assigned to ${selectedCaseManagerName}.`            
+          );
+          POPUP.hide(assignCaseLoadPopup);
+          
+        }
+
+        
+      },
+    });
+
+    var cancelBtn = button.build({
+      text: 'CANCEL',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
         POPUP.hide(assignCaseLoadPopup);
       },
     });
 
-
-    // var btnWrap = document.createElement('div');
-    // btnWrap.classList.add('btnWrap');
-    // btnWrap.appendChild(saveBtn)
-
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap-popup');
+    btnWrap.appendChild(assignBtn)
+    btnWrap.appendChild(cancelBtn)
+    CaseManagerHeadingDiv
+    assignCaseLoadPopup.appendChild(CaseManagerHeadingDiv);
+    assignCaseLoadPopup.appendChild(consumerHeadingDiv);
     assignCaseLoadPopup.appendChild(leftselectDiv);
     assignCaseLoadPopup.appendChild(rightselectDiv);
-    assignCaseLoadPopup.appendChild(saveBtn);
+    assignCaseLoadPopup.appendChild(btnWrap);
+   // assignCaseLoadPopup.appendChild(assignBtn);
+   // assignCaseLoadPopup.appendChild(cancelBtn);
+    
 
     POPUP.show(assignCaseLoadPopup);
   }

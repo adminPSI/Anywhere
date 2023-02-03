@@ -802,7 +802,7 @@ const planConsentAndSign = (() => {
 
     const assignCaseLoadBtn = button.build({
       id: 'sig_assignCaseLoad',
-      text: 'ASSIGN CASE LOAD',
+      text: ($.session.applicationName === 'Gatekeeper') ? 'ASSIGN CASE LOAD' : 'ASSIGN QIDP',
       style: 'secondary',
       type: 'contained',
       callback: () => {
