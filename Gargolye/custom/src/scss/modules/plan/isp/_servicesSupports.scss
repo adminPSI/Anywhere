@@ -5,18 +5,20 @@
 #paidSupportsTable {
   margin-bottom: 10px;
 
-  .table {
-    .table__row {
-      cursor: pointer;
+  .table__row {
+    cursor: pointer;
 
-      > div {
-        flex-grow: 1;
-        margin: 0 5px 0 0;
-        overflow-wrap: break-word;
-      }
-      > div:last-child {
-        margin: 0;
-      }
+    &.selected {
+      background: $secondary;
+    }
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+      overflow-wrap: break-word;
+    }
+    > div:last-child {
+      margin: 0;
     }
   }
 
@@ -266,11 +268,6 @@
     }
   }
 }
-.multiEditBtn {
-  &.enabled {
-    background: $secondary;
-  }
-}
 #additionalSupportsTable {
   margin-bottom: 10px;
 
@@ -464,5 +461,19 @@
     .right {
       width: 49%;
     }
+  }
+}
+
+// other
+.mutliEditBtnWrap {
+  display: flex;
+
+  button {
+    margin-right: 10px;
+  }
+}
+.multiEditBtn {
+  &.enabled {
+    background: $secondary;
   }
 }

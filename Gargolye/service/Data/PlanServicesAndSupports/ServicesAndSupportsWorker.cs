@@ -106,6 +106,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             return dg.deletePaidSupports(token, paidSupportsId);
         }
 
+        public string updateMultiPaidSupports(string token, string paidSupportsId, string providerId, string beginDate, string endDate)
+        {
+            return dg.updateMultiPaidSupports(token, paidSupportsId, providerId, beginDate, endDate);
+        }
         public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
         {
             return dg.updatePaidSupports(token, paidSupportsId, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, serviceNameOther);

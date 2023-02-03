@@ -3284,6 +3284,13 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/updateMultiPaidSupports/")]
+        string updateMultiPaidSupports(string token, string paidSupportsId, string providerId, string beginDate, string endDate);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updatePaidSupportsRowOrder/")]
         string updatePaidSupportsRowOrder(string token, long assessmentId, long supportId, int newPos, int oldPos);
 

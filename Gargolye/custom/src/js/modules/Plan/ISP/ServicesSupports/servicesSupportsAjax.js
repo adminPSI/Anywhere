@@ -27,25 +27,32 @@ const servicesSupportsAjax = (() => {
   }
 
   // ADD PAID SUPPORT Popup -- Vendors/Providers DDL
-async function getPaidSupportsVendors(fundingSourceName, serviceName) {
-  try {
-  const result = await $.ajax({
-    type: 'POST',
-    url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getPaidSupportsVendors/',
-    data: JSON.stringify({
-      fundingSourceName: fundingSourceName,
-      serviceName: serviceName,
-      areInSalesForce: $.session.areInSalesForce,
-      
-    }),
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-  });
-  return result;
-} catch (error) {
-  throw new Error(error.responseText);
-}
-}
+  async function getPaidSupportsVendors(fundingSourceName, serviceName) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getPaidSupportsVendors/',
+        data: JSON.stringify({
+          fundingSourceName: fundingSourceName,
+          serviceName: serviceName,
+          areInSalesForce: $.session.areInSalesForce,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
 
   // INSERT
   //------------------------------------
@@ -372,6 +379,29 @@ async function getPaidSupportsVendors(fundingSourceName, serviceName) {
       console.log(error);
     }
   }
+  async function updateMultiPaidSupports(retrieveData) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/updateMultiPaidSupports/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.updateMultiPaidSupportsResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   // row re-order
   //------------------
   async function updatePaidSupportsRowOrder(retrieveData) {
@@ -572,6 +602,7 @@ async function getPaidSupportsVendors(fundingSourceName, serviceName) {
     updatePaidSupportsRowOrder,
     updateServiceReferralRowOrder,
     updateAdditionalSupportsRowOrder,
+    updateMultiPaidSupports,
     deleteProfessionalReferral,
     deleteAdditionalSupports,
     deleteSSModifications,

@@ -16,6 +16,8 @@ const servicesSupports = (() => {
   let enableMultiEdit = false;
   let selectedPaidSupportRows = [];
   let multiEditBtn;
+  let multiEditUpdateBtn;
+  let multiEditCancelBtn;
 
   let fundingSourceDropdownSelectedText;
   let servicesDropdownSelectedText;
@@ -256,8 +258,6 @@ const servicesSupports = (() => {
 
       return acc;
     }, []);
-
-    console.log(selectedVendors);
   }
   function getSelectedVendors() {
     return selectedVendors;
@@ -704,6 +704,7 @@ const servicesSupports = (() => {
   //-- Markup ---------
   function showMultiEditPopup(selectedPaidSupportRows) {
     let multiSaveUpdateData = {
+      token: $.session.Token,
       beginDate: '',
       endDate: '',
       providerId: '',
@@ -742,32 +743,49 @@ const servicesSupports = (() => {
       },
     });
 
+    const wrap = document.createElement('div');
+    wrap.classList.add('btnWrap');
+
     const updateBtn = button.build({
       text: 'Update',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        // TODO-ASH: call ajax to update multi rows
-        console.log(selectedPaidSupportRows);
+      callback: async () => {
+        multiSaveUpdateData.paidSupportsId = selectedPaidSupportRows.join(',');
+        await servicesSupportsAjax.updateMultiPaidSupports(multiSaveUpdateData);
+        selectedPaidSupportRows = [];
+
+        multiEditUpdateBtn.classList.add('hidden');
+        multiEditCancelBtn.classList.add('hidden');
+
+        multiEditBtn.classList.toggle('enabled');
+
+        var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+        highlightedRows.forEach(row => row.classList.remove('selected'));
+
         POPUP.hide(multiEditPopup);
+
+        enableMultiEdit = false;
       },
     });
     const cancelBtn = button.build({
-      text: 'Update',
+      text: 'Cancel',
       style: 'secondary',
-      type: 'contained',
+      type: 'outlined',
       callback: () => {
         POPUP.hide(multiEditPopup);
       },
     });
+
+    wrap.appendChild(updateBtn);
+    wrap.appendChild(cancelBtn);
 
     multiEditPopup.appendChild(beginDateInput);
     multiEditPopup.appendChild(endDateInput);
     multiEditPopup.appendChild(providerNameDropdown);
-    multiEditPopup.appendChild(updateBtn);
-    multiEditPopup.appendChild(cancelBtn);
+    multiEditPopup.appendChild(wrap);
 
-    populateServiceVendorsDropdown(providerNameDropdown, '');
+    populateServiceVendorsDropdown(providerNameDropdown, '%');
 
     POPUP.show(multiEditPopup);
   }
@@ -784,22 +802,23 @@ const servicesSupports = (() => {
       callback: () => {
         enableMultiEdit = !enableMultiEdit;
 
-        mulitSelectBtn.classList.toggle('enabled');
+        multiEditBtn.classList.toggle('enabled');
 
         if (enableMultiEdit) {
-          updateBtn.classList.remove('hidden');
-          cancelBtn.classList.remove('hidden');
+          selectedPaidSupportRows = [];
+          multiEditUpdateBtn.classList.remove('hidden');
+          multiEditCancelBtn.classList.remove('hidden');
         } else {
-          // updateBtn.classList.add('hidden');
-          // cancelBtn.classList.add('hidden');
-          // selectedPaidSupportRows = [];
-          // var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
-          // highlightedRows.forEach(row => row.classList.remove('selected'));
+          selectedPaidSupportRows = [];
+          multiEditUpdateBtn.classList.add('hidden');
+          multiEditCancelBtn.classList.add('hidden');
+          var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+          highlightedRows.forEach(row => row.classList.remove('selected'));
         }
       },
     });
 
-    const updateBtn = button.build({
+    multiEditUpdateBtn = button.build({
       text: 'Update',
       style: 'secondary',
       type: 'contained',
@@ -807,24 +826,28 @@ const servicesSupports = (() => {
         showMultiEditPopup(selectedPaidSupportRows);
       },
     });
-    const cancelBtn = button.build({
-      text: 'Update',
+    multiEditCancelBtn = button.build({
+      text: 'Cancel',
       style: 'secondary',
-      type: 'contained',
+      type: 'outlined',
       callback: () => {
         enableMultiEdit = false;
-        updateBtn.classList.add('hidden');
-        cancelBtn.classList.add('hidden');
+        multiEditUpdateBtn.classList.add('hidden');
+        multiEditCancelBtn.classList.add('hidden');
 
         selectedPaidSupportRows = [];
         var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
         highlightedRows.forEach(row => row.classList.remove('selected'));
       },
     });
+    multiEditUpdateBtn.classList.add('hidden');
+    multiEditCancelBtn.classList.add('hidden');
 
     wrap.appendChild(multiEditBtn);
-    wrap.appendChild(updateBtn);
-    wrap.appendChild(cancelBtn);
+    wrap.appendChild(multiEditUpdateBtn);
+    wrap.appendChild(multiEditCancelBtn);
+
+    return wrap;
   }
   function togglePaidSupportDoneBtn() {
     const inputsWithErrors = document.querySelector('.paidSupportPopup .error');
@@ -1654,15 +1677,16 @@ const servicesSupports = (() => {
                 });
                 return;
               }
+              const isSelected = event.target.classList.contains('selected');
 
               if (isSelected) {
                 event.target.classList.remove('selected');
                 selectedPaidSupportRows = selectedPaidSupportRows.filter(
-                  sr => sr !== paidSupportsId,
+                  sr => sr !== psData.paidSupportsId,
                 );
               } else {
                 event.target.classList.add('selected');
-                selectedPaidSupportRows.push(paidSupportsId);
+                selectedPaidSupportRows.push(psData.paidSupportsId);
               }
             },
             onCopyClick: () => {
@@ -1685,6 +1709,7 @@ const servicesSupports = (() => {
 
     paidSupportsDiv.appendChild(paidSupportsTable);
     paidSupportsDiv.appendChild(addRowBtn);
+    paidSupportsDiv.appendChild(mutliEditBtnWrap);
 
     return paidSupportsDiv;
   }

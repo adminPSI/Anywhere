@@ -26,6 +26,7 @@ const plan = (function () {
   let reportsAttachmentScreen;
   let sendToDODDScreen;
   let changePlanTypeScreen;
+  let generalInfoBar;
 
   // DATA
   // -----------------
@@ -784,7 +785,12 @@ const plan = (function () {
           planType: newType.toUpperCase(),
         });
 
-        planType = newType;
+        if (success === 'Success') {
+          planType = newType;
+          currentType.innerHTML = `<p>Current Type:</p> ${
+            planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'
+          }`;
+        }
 
         const message =
           success === 'Success' ? 'Type successfully updated.' : 'Type was not able to be updated.';
@@ -807,7 +813,8 @@ const plan = (function () {
           screen.classList.remove('visible');
           morePopupMenu.classList.add('visible');
 
-          if (success === 1) {
+          if (success === 'Success') {
+            refreshGeneralInfo();
             assessmentCard.refreshAssessmentCard({
               planStatus,
               planId,
@@ -1282,7 +1289,7 @@ const plan = (function () {
       splitFormatedDate4[2]
     }/${splitFormatedDate4[0].substring(2)}`;
 
-    const generalInfoBar = document.createElement('div');
+    generalInfoBar = document.createElement('div');
     generalInfoBar.classList.add('generalInfo');
 
     const consumerName = `<p>${getConsumerNameFromCard(selectedConsumer.card)}</p>`;
