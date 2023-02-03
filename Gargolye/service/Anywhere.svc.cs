@@ -2305,6 +2305,10 @@ namespace Anywhere
         {
             return ssw.updatePaidSupports(token, paidSupportsId, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, serviceNameOther);
         }
+        public string updateMultiPaidSupports(string token, string paidSupportsId, string providerId, string beginDate, string endDate)
+        {
+            return ssw.updateMultiPaidSupports(token, paidSupportsId, providerId, beginDate, endDate);
+        }
 
         public string insertPaidSupports(string token, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
         {

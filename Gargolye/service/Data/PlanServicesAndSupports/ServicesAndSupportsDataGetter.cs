@@ -372,6 +372,28 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             }
         }
 
+        public string updateMultiPaidSupports(string token, string paidSupportsId, string providerId, string beginDate, string endDate)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertMultiPaidSupports ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(paidSupportsId.ToString());
+            list.Add(providerId);
+            list.Add(beginDate);
+            list.Add(endDate);
+            string text = "CALL DBA.ANYW_ISP_UpdateMultiPaidSupports(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4SSDG", ex.Message + "ANYW_ISP_UpdateMultiPaidSupports(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4SSDG: error ANYW_ISP_UpdateMultiPaidSupports";
+            }
+        }
+
         public string insertPaidSupports(string token, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
         {
             if (tokenValidator(token) == false) return null;

@@ -1350,11 +1350,10 @@
       questionInputMarkup.appendChild(radioInput);
     });
 
-    // TODO-ASH: add eraser icon here
     const eraser = document.createElement('div');
     eraser.innerHTML += icons.eraser;
     questionInputMarkup.appendChild(eraser);
-    // TODO-ASH: onClick -> unselect both radios, clear out conditional questions
+
     eraser.addEventListener('click', () => {
       // clear out answer
       addAnswer(answerId, '');

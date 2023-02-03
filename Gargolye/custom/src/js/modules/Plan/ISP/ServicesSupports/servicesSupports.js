@@ -16,6 +16,8 @@ const servicesSupports = (() => {
   let enableMultiEdit = false;
   let selectedPaidSupportRows = [];
   let multiEditBtn;
+  let multiEditUpdateBtn;
+  let multiEditCancelBtn;
 
   let fundingSourceDropdownSelectedText;
   let servicesDropdownSelectedText;
@@ -256,8 +258,6 @@ const servicesSupports = (() => {
 
       return acc;
     }, []);
-
-    console.log(selectedVendors);
   }
   function getSelectedVendors() {
     return selectedVendors;
@@ -369,7 +369,7 @@ const servicesSupports = (() => {
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
-  async function populateServiceVendorsDropdown(dropdownEle, defaultValue) {
+  async function populateServiceVendorsDropdown(dropdownEle, defaultValue, ignoreGuardClauses) {
     // const data = dropdownData.serviceVendors.map(dd => {
     //   return {
     //     value: dd.vendorId,
@@ -377,58 +377,61 @@ const servicesSupports = (() => {
     //   };
     // });
 
-    // handles populating provider DDL when: 1. a service has just been selected 2. a service already exists for an existing record
-    // Guard clause -- if no fundingSource selected , therefore no data in serviceVEndorDropDown
-    if (!fundingSourceDropdownSelectedText || fundingSourceDropdownSelectedText == '') {
-      const thisVendorDropDownData = [].map(dd => {
-        return {
-          value: dd.vendorId,
-          text: dd.vendorName,
-        };
-      });
+    if (!ignoreGuardClauses) {
+      // handles populating provider DDL when: 1. a service has just been selected 2. a service already exists for an existing record
+      // Guard clause -- if no fundingSource selected , therefore no data in serviceVEndorDropDown
+      if (!fundingSourceDropdownSelectedText || fundingSourceDropdownSelectedText == '') {
+        const thisVendorDropDownData = [].map(dd => {
+          return {
+            value: dd.vendorId,
+            text: dd.vendorName,
+          };
+        });
 
-      //if there's no default value, and only one option, make that option the default
-      if (!defaultValue) {
-        if (thisVendorDropDownData.length === 1) {
-          defaultValue = thisVendorDropDownData[0].value;
-          saveUpdateProvider = defaultValue;
-          dropdownEle.classList.remove('error');
+        //if there's no default value, and only one option, make that option the default
+        if (!defaultValue) {
+          if (thisVendorDropDownData.length === 1) {
+            defaultValue = thisVendorDropDownData[0].value;
+            saveUpdateProvider = defaultValue;
+            dropdownEle.classList.remove('error');
+          }
         }
+
+        thisVendorDropDownData.unshift({ value: '%', text: '' });
+        dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
+
+        return;
       }
 
-      thisVendorDropDownData.unshift({ value: '%', text: '' });
-      dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
+      // Guard clause --if HCBS/ICF fundingSource selected but no service selected, therefore no data in serviceVEndorDropDown
+      if (
+        (fundingSourceDropdownSelectedText.includes('HCBS') ||
+          fundingSourceDropdownSelectedText.includes('ICF')) &&
+        servicesDropdownSelectedText == '%'
+      ) {
+        const thisVendorDropDownData = [].map(dd => {
+          return {
+            value: dd.vendorId,
+            text: dd.vendorName,
+          };
+        });
 
-      return;
-    }
-
-    // Guard clause --if HCBS/ICF fundingSource selected but no service selected, therefore no data in serviceVEndorDropDown
-    if (
-      (fundingSourceDropdownSelectedText.includes('HCBS') ||
-        fundingSourceDropdownSelectedText.includes('ICF')) &&
-      servicesDropdownSelectedText == '%'
-    ) {
-      const thisVendorDropDownData = [].map(dd => {
-        return {
-          value: dd.vendorId,
-          text: dd.vendorName,
-        };
-      });
-
-      //if there's no default value, and only one option, make that option the default
-      if (!defaultValue) {
-        if (thisVendorDropDownData.length === 1) {
-          defaultValue = thisVendorDropDownData[0].value;
-          saveUpdateProvider = defaultValue;
-          dropdownEle.classList.remove('error');
+        //if there's no default value, and only one option, make that option the default
+        if (!defaultValue) {
+          if (thisVendorDropDownData.length === 1) {
+            defaultValue = thisVendorDropDownData[0].value;
+            saveUpdateProvider = defaultValue;
+            dropdownEle.classList.remove('error');
+          }
         }
+
+        thisVendorDropDownData.unshift({ value: '%', text: '' });
+        dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
+
+        return;
       }
-
-      thisVendorDropDownData.unshift({ value: '%', text: '' });
-      dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
-
-      return;
     }
+
     // if guard clauses are not used (see above), then repopulate serviceVEndorDropDown
     const { getPaidSupportsVendorsResult: vendorNumbers } =
       await servicesSupportsAjax.getPaidSupportsVendors(
@@ -704,9 +707,10 @@ const servicesSupports = (() => {
   //-- Markup ---------
   function showMultiEditPopup(selectedPaidSupportRows) {
     let multiSaveUpdateData = {
-      beginDate: '',
-      endDate: '',
-      providerId: '',
+      token: $.session.Token,
+      beginDate: '1900-01-01',
+      endDate: '1900-01-01',
+      providerId: '0',
     };
 
     const multiEditPopup = POPUP.build({
@@ -742,32 +746,49 @@ const servicesSupports = (() => {
       },
     });
 
+    const wrap = document.createElement('div');
+    wrap.classList.add('btnWrap');
+
     const updateBtn = button.build({
       text: 'Update',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        // TODO-ASH: call ajax to update multi rows
-        console.log(selectedPaidSupportRows);
+      callback: async () => {
+        multiSaveUpdateData.paidSupportsId = selectedPaidSupportRows.join(',');
+        await servicesSupportsAjax.updateMultiPaidSupports(multiSaveUpdateData);
+        selectedPaidSupportRows = [];
+
+        multiEditUpdateBtn.classList.add('hidden');
+        multiEditCancelBtn.classList.add('hidden');
+
+        multiEditBtn.classList.toggle('enabled');
+
+        var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+        highlightedRows.forEach(row => row.classList.remove('selected'));
+
         POPUP.hide(multiEditPopup);
+
+        enableMultiEdit = false;
       },
     });
     const cancelBtn = button.build({
-      text: 'Update',
+      text: 'Cancel',
       style: 'secondary',
-      type: 'contained',
+      type: 'outlined',
       callback: () => {
         POPUP.hide(multiEditPopup);
       },
     });
+
+    wrap.appendChild(updateBtn);
+    wrap.appendChild(cancelBtn);
 
     multiEditPopup.appendChild(beginDateInput);
     multiEditPopup.appendChild(endDateInput);
     multiEditPopup.appendChild(providerNameDropdown);
-    multiEditPopup.appendChild(updateBtn);
-    multiEditPopup.appendChild(cancelBtn);
+    multiEditPopup.appendChild(wrap);
 
-    populateServiceVendorsDropdown(providerNameDropdown, '');
+    populateServiceVendorsDropdown(providerNameDropdown, '%', true);
 
     POPUP.show(multiEditPopup);
   }
@@ -784,22 +805,23 @@ const servicesSupports = (() => {
       callback: () => {
         enableMultiEdit = !enableMultiEdit;
 
-        mulitSelectBtn.classList.toggle('enabled');
+        multiEditBtn.classList.toggle('enabled');
 
         if (enableMultiEdit) {
-          updateBtn.classList.remove('hidden');
-          cancelBtn.classList.remove('hidden');
+          selectedPaidSupportRows = [];
+          multiEditUpdateBtn.classList.remove('hidden');
+          multiEditCancelBtn.classList.remove('hidden');
         } else {
-          // updateBtn.classList.add('hidden');
-          // cancelBtn.classList.add('hidden');
-          // selectedPaidSupportRows = [];
-          // var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
-          // highlightedRows.forEach(row => row.classList.remove('selected'));
+          selectedPaidSupportRows = [];
+          multiEditUpdateBtn.classList.add('hidden');
+          multiEditCancelBtn.classList.add('hidden');
+          var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+          highlightedRows.forEach(row => row.classList.remove('selected'));
         }
       },
     });
 
-    const updateBtn = button.build({
+    multiEditUpdateBtn = button.build({
       text: 'Update',
       style: 'secondary',
       type: 'contained',
@@ -807,24 +829,28 @@ const servicesSupports = (() => {
         showMultiEditPopup(selectedPaidSupportRows);
       },
     });
-    const cancelBtn = button.build({
-      text: 'Update',
+    multiEditCancelBtn = button.build({
+      text: 'Cancel',
       style: 'secondary',
-      type: 'contained',
+      type: 'outlined',
       callback: () => {
         enableMultiEdit = false;
-        updateBtn.classList.add('hidden');
-        cancelBtn.classList.add('hidden');
+        multiEditUpdateBtn.classList.add('hidden');
+        multiEditCancelBtn.classList.add('hidden');
 
         selectedPaidSupportRows = [];
         var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
         highlightedRows.forEach(row => row.classList.remove('selected'));
       },
     });
+    multiEditUpdateBtn.classList.add('hidden');
+    multiEditCancelBtn.classList.add('hidden');
 
     wrap.appendChild(multiEditBtn);
-    wrap.appendChild(updateBtn);
-    wrap.appendChild(cancelBtn);
+    wrap.appendChild(multiEditUpdateBtn);
+    wrap.appendChild(multiEditCancelBtn);
+
+    return wrap;
   }
   function togglePaidSupportDoneBtn() {
     const inputsWithErrors = document.querySelector('.paidSupportPopup .error');
@@ -1654,15 +1680,16 @@ const servicesSupports = (() => {
                 });
                 return;
               }
+              const isSelected = event.target.classList.contains('selected');
 
               if (isSelected) {
                 event.target.classList.remove('selected');
                 selectedPaidSupportRows = selectedPaidSupportRows.filter(
-                  sr => sr !== paidSupportsId,
+                  sr => sr !== psData.paidSupportsId,
                 );
               } else {
                 event.target.classList.add('selected');
-                selectedPaidSupportRows.push(paidSupportsId);
+                selectedPaidSupportRows.push(psData.paidSupportsId);
               }
             },
             onCopyClick: () => {
@@ -1685,6 +1712,7 @@ const servicesSupports = (() => {
 
     paidSupportsDiv.appendChild(paidSupportsTable);
     paidSupportsDiv.appendChild(addRowBtn);
+    paidSupportsDiv.appendChild(mutliEditBtnWrap);
 
     return paidSupportsDiv;
   }
