@@ -2394,7 +2394,7 @@ namespace Anywhere
             return psw.getStateGuardiansforConsumer(peopleId);
         }
 
-        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanInformedConsentWorker.InformedConsentSSAs[] consumers)
+        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanSignatureWorker.AssignStateConsumer[] consumers)
         {
             return psw.assignStateCaseManagertoConsumers(caseManagerId, consumers);
         }
