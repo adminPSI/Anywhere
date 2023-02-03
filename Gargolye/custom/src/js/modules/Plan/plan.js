@@ -1804,15 +1804,33 @@ const plan = (function () {
 
           PROGRESS__BTN.SPINNER.hide(newPlanBtn);
           newPlanBtn.innerText = 'Back';
+
+          //classlist.add('hidden')
+          document.getElementById("assign-case-load-btn").style.display = "none"
         } else {
           landingPage.removeChild(planSetupPage);
           landingPage.appendChild(overviewTable);
 
           newPlanBtn.innerText = 'Add New Plan';
+          document.getElementById("assign-case-load-btn").style.display = "block"
         }
       },
     });
   }
+
+  function buildAssignCaseloadBtn() {
+    return button.build({
+       id: 'assign-case-load-btn',
+      text: ($.session.applicationName === 'Gatekeeper') ? 'ASSIGN CASE LOAD' : 'ASSIGN QIDP',
+      style: 'secondary',
+      type: 'contained',
+      classNames: !$.session.planUpdate ? ['disabled'] : ['newPlanBtn'],
+      callback: () => {
+        csAssignCaseload.showAssignCaseLoadPopup();
+      },
+    });
+  }
+
   function buildConsumerCard() {
     selectedConsumer.card.classList.remove('highlighted');
 
@@ -1879,9 +1897,16 @@ const plan = (function () {
 
     const consumerCard = buildConsumerCard();
     newPlanBtn = buildNewPlanBtn();
+    assignCaseLoadBtn = buildAssignCaseloadBtn();
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('topOutcomeWrap');
+
+    btnWrap.appendChild(newPlanBtn);
+    btnWrap.appendChild(assignCaseLoadBtn);
 
     landingPage.appendChild(consumerCard);
-    landingPage.appendChild(newPlanBtn);
+    landingPage.appendChild(btnWrap);
     DOM.ACTIONCENTER.appendChild(landingPage);
 
     const spinner = PROGRESS.SPINNER.get('Gathering Plans...');
