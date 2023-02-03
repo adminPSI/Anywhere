@@ -802,7 +802,7 @@ const servicesSupports = (() => {
       type: 'contained',
       callback: async () => {
         multiSaveUpdateData.paidSupportsId = selectedPaidSupportIds.join(',');
-        //await servicesSupportsAjax.updateMultiPaidSupports(multiSaveUpdateData);
+        await servicesSupportsAjax.updateMultiPaidSupports(multiSaveUpdateData);
         selectedPaidSupportIds = [];
         selectedPaidSupportRows = [];
 
