@@ -706,7 +706,50 @@ const servicesSupports = (() => {
     planSummary.checkForPaidSupports(numPaidSupports);
   }
   function updatePaidSupportsRowFromMultiEdit() {
-    console.log(selectedPaidSupportRows);
+    selectedPaidSupportRows.forEach(row => {
+      const { rowNode, ...tableData } = row;
+      const { tableValues, psData } = mapPaidSupportDataForTable({
+        ...tableData,
+      });
+      const rowId = `ps${psData.paidSupportsId}`;
+
+      table.updateRows(
+        paidSupportsTable,
+        [
+          {
+            id: rowId,
+            values: tableValues,
+            onClick: () => {
+              showAddPaidSupportPopup({
+                popupData: psData,
+                isNew: false,
+                fromAssessment: false,
+                isCopy: false,
+                charLimits,
+              });
+            },
+            onCopyClick: () => {
+              if (isReadOnly) return;
+              const copiedData = { ...psData, paidSupportsId: '' };
+              showAddPaidSupportPopup({
+                popupData: copiedData,
+                isNew: true,
+                fromAssessment: false,
+                isCopy: true,
+                charLimits,
+              });
+            },
+          },
+        ],
+        isSortable,
+      );
+
+      selectedVendors = selectedVendors.filter(vendor => vendor.rowOrder !== psData.rowOrder);
+      selectedVendors.push({
+        providerId: psData.providerId,
+        row: psData.rowOrder,
+      });
+    });
   }
   //-- Markup ---------
   function showMultiEditPopup(selectedPaidSupportIds) {
@@ -1702,8 +1745,8 @@ const servicesSupports = (() => {
                 );
               } else {
                 event.target.classList.add('selected');
-                selectedPaidSupportIds.push({ ...psData.paidSupportsId, rowNode: event.target });
-                selectedPaidSupportRows.push(psData);
+                selectedPaidSupportIds.push(psData.paidSupportsId);
+                selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
               }
             },
             onCopyClick: () => {
