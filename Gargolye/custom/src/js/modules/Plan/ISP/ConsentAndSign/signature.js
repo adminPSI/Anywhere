@@ -217,12 +217,6 @@ const csSignature = (() => {
       sigCanvas.classList.add('evvCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
-      // sigCanvas.addEventListener('touchend', () => {
-      //   console.log('touchend');
-      // });
-      // sigCanvas.addEventListener('mouseup', () => {
-      //   console.log('mouseup');
-      // });
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;

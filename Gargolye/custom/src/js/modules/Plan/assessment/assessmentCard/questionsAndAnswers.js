@@ -1078,35 +1078,7 @@
                 break;
               }
               case 'DATE': {
-                console.log('need to get dates from planDates');
                 return;
-
-                gridCell.setAttribute('data-cellType', 'date');
-                const inputOptions = {
-                  type: 'date',
-                  style: 'secondary',
-                  id: answerId,
-                };
-
-                if (
-                  colName.toLowerCase().includes('begin') ||
-                  colName.toLowerCase().includes('start')
-                ) {
-                  console.log('effective Start Date needed here');
-                  const startDate = UTIL.formatDateToIso(effectiveStartDate);
-                  answerText = startDate;
-                  inputOptions.value = startDate;
-                } else {
-                  console.log('effective End Date needed here');
-                  const endDate = UTIL.formatDateToIso(effectiveEndDate);
-                  answerText = endDate;
-                  inputOptions.value = endDate;
-                }
-
-                const questionInput = input.build(inputOptions);
-
-                gridCell.appendChild(questionInput);
-                break;
               }
             }
 

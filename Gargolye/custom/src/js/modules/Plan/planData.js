@@ -340,8 +340,6 @@ const planData = (() => {
         ...data.getServiceAndSupportsDataResult,
         ...defaultDropdowns,
       };
-
-      console.table(dropdowns);
     } catch (error) {
       console.log(error);
     }
