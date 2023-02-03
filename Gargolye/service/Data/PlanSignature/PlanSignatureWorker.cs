@@ -253,30 +253,39 @@ namespace Anywhere.service.Data.PlanSignature
 
         }
 
-        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanInformedConsentWorker.InformedConsentSSAs[] consumers)
+        public class AssignStateConsumer
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+            public string assignresult { get; set; }
+        }
+
+        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanSignatureWorker.AssignStateConsumer[] consumers)
         {
 
             ISPDTData ispDT = new ISPDTData();
+            var processedConsumers = new List<PlanSignatureWorker.AssignStateConsumer>();
 
-            string assignresult = "";
-
-            var testlist = new List<PlanInformedConsentWorker.InformedConsentSSAs>();
-
-            foreach (PlanInformedConsentWorker.InformedConsentSSAs con in consumers)
+            foreach (PlanSignatureWorker.AssignStateConsumer consumer in consumers)
             {
-                var testobj = new PlanInformedConsentWorker.InformedConsentSSAs();
-                testobj.name = con.name;
-                testlist.Add(testobj);
+                string assignresult = "";
+                long lngcaseManagerId = long.Parse(caseManagerId);
+                long lngConsumerId = long.Parse(consumer.id);
 
-               // assignresult = ispDT.AddCaseMangerToIndividal(caseManagerId, consumerid, "Assigned");
+                assignresult = ispDT.AddCaseMangerToIndividal(lngcaseManagerId, lngConsumerId, "Assigned");
+
+                var processedConsumerobj = new PlanSignatureWorker.AssignStateConsumer();
+                processedConsumerobj.name = consumer.name;
+                processedConsumerobj.assignresult = assignresult;
+                processedConsumers.Add(processedConsumerobj);
 
             }
 
-            var test5 = js.Serialize(testlist);
+            var assignConsumersResult = js.Serialize(processedConsumers);
 
            // TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
 
-            return test5;
+            return assignConsumersResult;
 
         }
 

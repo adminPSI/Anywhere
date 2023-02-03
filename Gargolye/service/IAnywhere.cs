@@ -3401,7 +3401,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/assignStateCaseManagertoConsumers/")]
-        string assignStateCaseManagertoConsumers(string caseManagerId, PlanInformedConsentWorker.InformedConsentSSAs[] consumers);
+        string assignStateCaseManagertoConsumers(string caseManagerId, PlanSignatureWorker.AssignStateConsumer[] consumers);
 
 
         [WebInvoke(Method = "POST",
