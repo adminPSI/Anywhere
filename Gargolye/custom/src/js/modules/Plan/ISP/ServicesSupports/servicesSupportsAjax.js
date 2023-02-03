@@ -380,6 +380,10 @@ const servicesSupportsAjax = (() => {
     }
   }
   async function updateMultiPaidSupports(retrieveData) {
+    if (retrieveData.providerId !== '') {
+      retrieveData.providerId = parseInt(retrieveData.providerId);
+    }
+
     try {
       const data = await $.ajax({
         type: 'POST',
