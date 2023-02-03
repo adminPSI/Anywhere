@@ -164,7 +164,7 @@ const CN_CaseLoadWidget = (function () {
           firstName: consumer.FN,
           lastName: consumer.LN,
           lastNoteDate: consumer.last_note_datetime,
-          residentNumber: consumer.resident_number,
+          residentNumber: consumer.residentNumber,
         };
         return consumerObj;
       });

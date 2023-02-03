@@ -167,6 +167,9 @@ const csSignature = (() => {
     ) {
       selectedMemberData.hasWetSignature = false;
 
+      const innerWrap = document.createElement('div');
+      innerWrap.classList.add('innerWrap');
+
       // signature attachment
       const attachmentInput = document.createElement('input');
       attachmentInput.type = 'file';
@@ -191,7 +194,36 @@ const csSignature = (() => {
         await Promise.all([attPromise]);
       });
 
-      signatureWrap.appendChild(attachmentInput);
+      // signature date
+      let signDate = selectedMemberData.dateSigned
+        ? UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned))
+        : null;
+      const date = input.build({
+        type: 'date',
+        label: 'Signature Date',
+        style: 'secondary',
+        value: signDate ? signDate : '',
+        callback: e => {
+          selectedMemberData.dateSigned = e.target.value;
+
+          if (!selectedMemberData.dateSigned) {
+            date.classList.add('error');
+          } else {
+            date.classList.remove('error');
+          }
+
+          checkSignautrePopupForErrors();
+        },
+      });
+
+      if (!signDate) {
+        date.classList.add('error');
+      }
+
+      innerWrap.appendChild(attachmentDesc);
+      innerWrap.appendChild(date);
+
+      signatureWrap.appendChild(innerWrap);
 
       return signatureWrap;
     } else {
@@ -217,12 +249,6 @@ const csSignature = (() => {
       sigCanvas.classList.add('evvCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
-      // sigCanvas.addEventListener('touchend', () => {
-      //   console.log('touchend');
-      // });
-      // sigCanvas.addEventListener('mouseup', () => {
-      //   console.log('mouseup');
-      // });
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;

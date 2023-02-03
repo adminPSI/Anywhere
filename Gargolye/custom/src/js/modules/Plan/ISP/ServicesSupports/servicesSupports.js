@@ -14,6 +14,7 @@ const servicesSupports = (() => {
   let professionalReferralsTable;
 
   let enableMultiEdit = false;
+  let selectedPaidSupportIds = [];
   let selectedPaidSupportRows = [];
   let multiEditBtn;
   let multiEditUpdateBtn;
@@ -704,8 +705,54 @@ const servicesSupports = (() => {
     const numPaidSupports = getNumberOfPaidSupports();
     planSummary.checkForPaidSupports(numPaidSupports);
   }
+  function updatePaidSupportsRowFromMultiEdit() {
+    selectedPaidSupportRows.forEach(row => {
+      const { rowNode, ...tableData } = row;
+      const { tableValues, psData } = mapPaidSupportDataForTable({
+        ...tableData,
+      });
+      const rowId = `ps${psData.paidSupportsId}`;
+
+      table.updateRows(
+        paidSupportsTable,
+        [
+          {
+            id: rowId,
+            values: tableValues,
+            onClick: () => {
+              showAddPaidSupportPopup({
+                popupData: psData,
+                isNew: false,
+                fromAssessment: false,
+                isCopy: false,
+                charLimits,
+              });
+            },
+            onCopyClick: () => {
+              if (isReadOnly) return;
+              const copiedData = { ...psData, paidSupportsId: '' };
+              showAddPaidSupportPopup({
+                popupData: copiedData,
+                isNew: true,
+                fromAssessment: false,
+                isCopy: true,
+                charLimits,
+              });
+            },
+          },
+        ],
+        isSortable,
+      );
+
+      selectedVendors = selectedVendors.filter(vendor => vendor.rowOrder !== psData.rowOrder);
+      selectedVendors.push({
+        providerId: psData.providerId,
+        row: psData.rowOrder,
+      });
+    });
+  }
   //-- Markup ---------
-  function showMultiEditPopup(selectedPaidSupportRows) {
+  function showMultiEditPopup(selectedPaidSupportIds) {
     let multiSaveUpdateData = {
       token: $.session.Token,
       beginDate: '1900-01-01',
@@ -754,8 +801,9 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        multiSaveUpdateData.paidSupportsId = selectedPaidSupportRows.join(',');
+        multiSaveUpdateData.paidSupportsId = selectedPaidSupportIds.join(',');
         await servicesSupportsAjax.updateMultiPaidSupports(multiSaveUpdateData);
+        selectedPaidSupportIds = [];
         selectedPaidSupportRows = [];
 
         multiEditUpdateBtn.classList.add('hidden');
@@ -765,6 +813,8 @@ const servicesSupports = (() => {
 
         var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
         highlightedRows.forEach(row => row.classList.remove('selected'));
+
+        updatePaidSupportsRowFromMultiEdit();
 
         POPUP.hide(multiEditPopup);
 
@@ -808,10 +858,12 @@ const servicesSupports = (() => {
         multiEditBtn.classList.toggle('enabled');
 
         if (enableMultiEdit) {
+          selectedPaidSupportIds = [];
           selectedPaidSupportRows = [];
           multiEditUpdateBtn.classList.remove('hidden');
           multiEditCancelBtn.classList.remove('hidden');
         } else {
+          selectedPaidSupportIds = [];
           selectedPaidSupportRows = [];
           multiEditUpdateBtn.classList.add('hidden');
           multiEditCancelBtn.classList.add('hidden');
@@ -826,7 +878,7 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        showMultiEditPopup(selectedPaidSupportRows);
+        showMultiEditPopup(selectedPaidSupportIds);
       },
     });
     multiEditCancelBtn = button.build({
@@ -838,6 +890,7 @@ const servicesSupports = (() => {
         multiEditUpdateBtn.classList.add('hidden');
         multiEditCancelBtn.classList.add('hidden');
 
+        selectedPaidSupportIds = [];
         selectedPaidSupportRows = [];
         var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
         highlightedRows.forEach(row => row.classList.remove('selected'));
@@ -1684,12 +1737,16 @@ const servicesSupports = (() => {
 
               if (isSelected) {
                 event.target.classList.remove('selected');
-                selectedPaidSupportRows = selectedPaidSupportRows.filter(
+                selectedPaidSupportIds = selectedPaidSupportIds.filter(
                   sr => sr !== psData.paidSupportsId,
+                );
+                selectedPaidSupportRows = selectedPaidSupportIds.filter(
+                  sr => sr.paidSupportsId !== psData.paidSupportsId,
                 );
               } else {
                 event.target.classList.add('selected');
-                selectedPaidSupportRows.push(psData.paidSupportsId);
+                selectedPaidSupportIds.push(psData.paidSupportsId);
+                selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
               }
             },
             onCopyClick: () => {

@@ -1499,10 +1499,10 @@ var timeEntryCard = (function () {
         totalHours = null;
         checkPermissions();
         return;
-        }
-        var now = new Date();
-        let origEndTime = endTime;
-        let systemDefaultForCheckEnd = now.getHours() + ':' + now.getMinutes();
+      }
+      var now = new Date();
+      let origEndTime = endTime;
+      let systemDefaultForCheckEnd = now.getHours() + ':' + now.getMinutes();
       endTime = `${event.target.value.split(':')[0]}:${event.target.value.split(':')[1]}`; //Edge fucks shit up with selecting time with the time picker
       if ($.session.singleEntry15minDoc === 'Y' && origEndTime !== endTime) {
         // and endTime !== event.target.value
@@ -1519,7 +1519,6 @@ var timeEntryCard = (function () {
 
       // 9:30:00 !== 9:30
       if (systemDefaultForCheckEnd !== endTime) {
-        console.log('Prev End Time: ' + origEndTime + ' New End Time:' + endTime);
         defaultEndTimeChanged = true;
         reasonRequired = true; // for evv
       } else {
@@ -1809,12 +1808,12 @@ var timeEntryCard = (function () {
       let ppObj = payPeriodData.filter(pp => pp.dateString === payPeriod.dateString);
       sendEvvData = ppObj[0].sendEvvData;
 
-        if (
-            isBillable === 'Y' &&
-            defaultTimesChanged &&
-            wcServiceType === 'A' &&
-            sendEvvData === 'Y' &&
-          reasonRequired === true
+      if (
+        isBillable === 'Y' &&
+        defaultTimesChanged &&
+        wcServiceType === 'A' &&
+        sendEvvData === 'Y' &&
+        reasonRequired === true
       ) {
         if (defaultEndTimeChanged || defaultTimesChanged) {
           showEvv();
