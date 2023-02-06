@@ -457,9 +457,6 @@ var incidentOverview = (function () {
       tableId: 'incidentOverviewTable',
       heading: 'Incident Overview',
       columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
-      callback: function () {
-        console.log('row clicked');
-      },
     };
 
     overviewTable = table.build(tableOptions);
@@ -474,8 +471,6 @@ var incidentOverview = (function () {
         incidents[r.incidentId].consumerName += `, ${r.consumerName}`;
       }
     });
-
-    console.log(res);
 
     var keys = Object.keys(incidents);
 

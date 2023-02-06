@@ -8,12 +8,19 @@
         };
 		$.ajax({
 			type: 'POST',
-            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/sendOneSpanPackage/',
+            url: 
+                $.webServer.protocol + 
+                '://' + $.webServer.address + 
+                ':' + $.webServer.port + 
+                '/' + 
+                $.webServer.serviceName + 
+                '/sendOneSpanPackage/',
             data: JSON.stringify(retrieveData),
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
 			success: function(response, status, xhr) {
                 var res = response.sendPackageResult;
+                return res;
 			},
 			error: function(xhr, status, error) {
 				//alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
@@ -21,61 +28,88 @@
 		});
 	}
 
-    function oneSpanBuildSigners() {
-        //(string packageName, string documentName, string filePath, string[] emails, string[] names)
-        const retrieveData = {
-            token: $.session.Token,
-            packageName: "Franklin County One Span Demo",
-            documentName: "Plan report", 
-            filePath: "C:\\Users\\mike.taft\\OneSpanSignDemo.pdf",
-            emails: ["mike.taft@primarysolutions.net", "josh.kramp@primarysolutions.net", "arletta.hinger@primarysolutions.net", "liz.thompson@primarysolutions.net"],
-            //emails: ["michaeltaft8@gmail.com"],
-            names: ["Crystal Schneider", "Michael Taft", "Karin Crabbe", "Angie Theller"]
-            //names: ["Michael Taft"]
-        };
+    function oneSpanBuildSigners(retrieveData) {
+        //token, assessmentID, userID, versionID, extraSpace, isp
         $.ajax({
             type: 'POST',
-            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/oneSpanBuildSigners/',
+            url: 
+                $.webServer.protocol + 
+                '://' + 
+                $.webServer.address + 
+                ':' + 
+                $.webServer.port + 
+                '/' + 
+                $.webServer.serviceName + 
+                '/oneSpanBuildSigners/',
             data: JSON.stringify(retrieveData),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (response, status, xhr) {
                 var res = response.oneSpanBuildSignersResult;
-                console.log(res)
+                return res;
             },
             error: function (xhr, status, error) {
-                //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+                // alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
             },
         });
     }
 
-    function oneSpanGetSignedDocuments() {
-        // packageId needs changed, this was hard coded for a test
-        const retrieveData = {
-            token: $.session.Token,
-            packageId: "Zy3UhNsvmOLCHaY0-vn56CT7h8w=",
-        };
-        $.ajax({
+    async function oneSpanGetSignedDocuments(retrieveData) {
+        // token, packageId, planId
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url: 
+                    $.webServer.protocol + 
+                    '://' + 
+                    $.webServer.address + 
+                    ':' + 
+                    $.webServer.port + 
+                    '/' + 
+                    $.webServer.serviceName + 
+                    '/oneSpanGetSignedDocuments/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+        });
+
+        return data.oneSpanGetSignedDocumentsResult;
+        
+     } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async function oneSpanCheckDocumentStatus(retrieveData) {
+        // token, assessmentId
+        try {
+          const data = await $.ajax({
             type: 'POST',
-            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/oneSpanGetSignedDocuments/',
+            url: 
+                $.webServer.protocol + 
+                '://' + 
+                $.webServer.address + 
+                ':' + 
+                $.webServer.port + 
+                '/' + 
+                $.webServer.serviceName + 
+                '/oneSpanCheckDocumentStatus/',
             data: JSON.stringify(retrieveData),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            success: function (response, status, xhr) {
-                var res = response.oneSpanGetSignedDocumentsResult;
-                console.log(res)
-            },
-            error: function (xhr, status, error) {
-                console.log('error')
-                // alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-            },
-        })
+            });
+
+            return data.oneSpanCheckDocumentStatusResult;
+
+        } catch (error) {
+            console.log(error);
+          }
     }
-	
 
 	return {
         sendPackage,
         oneSpanBuildSigners,
-        oneSpanGetSignedDocuments
+        oneSpanGetSignedDocuments,
+        oneSpanCheckDocumentStatus
 	};
 })();

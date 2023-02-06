@@ -699,7 +699,7 @@ const planConsentAndSign = (() => {
         const tableOBJ = {
           values: [teamMember, name, participated, signatureType],
           id: `sig-${m.signatureId}`,
-          attributes: [{ key: 'data-signed', value: isSigned }],
+          endIcon: icons.edit,
           onClick: e => {
             csTeamMember.showPopup({
               isNewMember: false,
@@ -710,8 +710,6 @@ const planConsentAndSign = (() => {
         };
 
         if (signatureType !== 'No Signature Required') {
-          // show icon
-          tableOBJ.endIcon = icons.edit;
           // set icon callback
           tableOBJ.endIconCallback = e => {
             csSignature.showPopup({
@@ -723,7 +721,10 @@ const planConsentAndSign = (() => {
           // set isSigned to true
           tableOBJ.attributes = [{ key: 'data-signed', value: isSigned }];
         } else {
-          tableOBJ.attributes = [{ key: 'data-signed', value: true }];
+          tableOBJ.attributes = [
+            { key: 'data-signed', value: true },
+            { key: 'data-hideicon', value: true },
+          ];
         }
 
         return tableOBJ;
@@ -799,21 +800,10 @@ const planConsentAndSign = (() => {
       },
     });
 
-    const assignCaseLoadBtn = button.build({
-      id: 'sig_assignCaseLoad',
-      text: 'ASSIGN CASE LOAD',
-      style: 'secondary',
-      type: 'contained',
-      callback: () => {
-        csAssignCaseload.showAssignCaseLoadPopup();
-      },
-    });
-
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('topOutcomeWrap');
 
     btnWrap.appendChild(addMemberBtn);
-    btnWrap.appendChild(assignCaseLoadBtn);
 
     tableWrap.appendChild(btnWrap);
     tableWrap.appendChild(teamMemberTable);

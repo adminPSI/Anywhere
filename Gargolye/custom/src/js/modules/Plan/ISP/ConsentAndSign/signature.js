@@ -99,6 +99,9 @@ const csSignature = (() => {
     signatureWrap.appendChild(signatureTitle);
 
     if (selectedMemberData.description) {
+      const innerWrap = document.createElement('div');
+      innerWrap.classList.add('innerWrap');
+
       const attachmentDesc = document.createElement('p');
       attachmentDesc.innerText = selectedMemberData.description;
       attachmentDesc.classList.add('signAttachmentDesc');
@@ -138,17 +141,34 @@ const csSignature = (() => {
         form.submit();
         form.remove();
       });
+      innerWrap.appendChild(attachmentDesc);
 
-      signatureWrap.appendChild(attachmentDesc);
+      // signature date
+      let signDate = UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned));
+      const date = input.build({
+        type: 'date',
+        label: 'Signature Date',
+        style: 'secondary',
+        value: signDate,
+        classNames: 'disabled',
+      });
+      if (
+        selectedMemberData.signatureType === 'In-Person' ||
+        selectedMemberData.signatureType === '2'
+      ) {
+        innerWrap.appendChild(date);
+      }
+
+      signatureWrap.appendChild(innerWrap);
       return signatureWrap;
     } else if (
       selectedMemberData.signatureType === 'In-Person' ||
       selectedMemberData.signatureType === '2'
     ) {
       selectedMemberData.hasWetSignature = false;
-      // wrap
-      const wrap = document.createElement('div');
-      wrap.classList.add('signatureWrapInner');
+
+      const innerWrap = document.createElement('div');
+      innerWrap.classList.add('innerWrap');
 
       // signature attachment
       const attachmentInput = document.createElement('input');
@@ -174,26 +194,36 @@ const csSignature = (() => {
         await Promise.all([attPromise]);
       });
 
-      // TODO-ASH: waiting on backend changes
       // signature date
-      var date = input.build({
+      let signDate = selectedMemberData.dateSigned
+        ? UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned))
+        : null;
+      const date = input.build({
         type: 'date',
         label: 'Signature Date',
         style: 'secondary',
+        value: signDate ? signDate : '',
         callback: e => {
-          //selectedMemberData.signatureDate = e.target.value;
-          date.classList.remove('error');
+          selectedMemberData.dateSigned = e.target.value;
+
+          if (!selectedMemberData.dateSigned) {
+            date.classList.add('error');
+          } else {
+            date.classList.remove('error');
+          }
+
           checkSignautrePopupForErrors();
         },
       });
-      if (!selectedMemberData.signatureDate) {
+
+      if (!signDate) {
         date.classList.add('error');
       }
 
-      wrap.appendChild(attachmentInput);
-      wrap.appendChild(date);
+      innerWrap.appendChild(attachmentDesc);
+      innerWrap.appendChild(date);
 
-      signatureWrap.appendChild(wrap);
+      signatureWrap.appendChild(innerWrap);
 
       return signatureWrap;
     } else {
@@ -219,12 +249,6 @@ const csSignature = (() => {
       sigCanvas.classList.add('evvCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
-      // sigCanvas.addEventListener('touchend', () => {
-      //   console.log('touchend');
-      // });
-      // sigCanvas.addEventListener('mouseup', () => {
-      //   console.log('mouseup');
-      // });
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;

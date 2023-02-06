@@ -134,6 +134,12 @@ namespace Anywhere.service.Data
             return assessmentObj;
         }
 
+        public string switchPlanType(string token, string consumerPlanId, string planType)
+        {
+            string resultString = adg.switchPlanType(token, consumerPlanId, planType);
+            return resultString;
+        }
+
         public string insertConsumerPlan(string token, string consumerId, string assessmentVersionId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate)
         {
             // insert the assessment

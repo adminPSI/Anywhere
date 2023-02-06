@@ -1078,35 +1078,7 @@
                 break;
               }
               case 'DATE': {
-                console.log('need to get dates from planDates');
                 return;
-
-                gridCell.setAttribute('data-cellType', 'date');
-                const inputOptions = {
-                  type: 'date',
-                  style: 'secondary',
-                  id: answerId,
-                };
-
-                if (
-                  colName.toLowerCase().includes('begin') ||
-                  colName.toLowerCase().includes('start')
-                ) {
-                  console.log('effective Start Date needed here');
-                  const startDate = UTIL.formatDateToIso(effectiveStartDate);
-                  answerText = startDate;
-                  inputOptions.value = startDate;
-                } else {
-                  console.log('effective End Date needed here');
-                  const endDate = UTIL.formatDateToIso(effectiveEndDate);
-                  answerText = endDate;
-                  inputOptions.value = endDate;
-                }
-
-                const questionInput = input.build(inputOptions);
-
-                gridCell.appendChild(questionInput);
-                break;
               }
             }
 
@@ -1350,8 +1322,22 @@
       questionInputMarkup.appendChild(radioInput);
     });
 
-    // TODO-ASH: add eraser icon here
-    // TODO-ASH: onClick -> unselect both radios, clear out conditional questions
+    const eraser = document.createElement('div');
+    eraser.innerHTML += icons.eraser;
+    questionInputMarkup.appendChild(eraser);
+
+    eraser.addEventListener('click', () => {
+      // clear out answer
+      addAnswer(answerId, '');
+      // mark unanswered
+      sectionQuestionCount[sectionId][setId][questionId].answered = false;
+      // clear conditionals
+      const conditionalQuestions = assessment.getConditionalQuestions(questionId);
+      toggleConditionalQuestion('', 'radio', conditionalQuestions);
+      // clear radios
+      const radios = [...questionInputMarkup.querySelectorAll('input')];
+      radios.forEach(radio => (radio.checked = false));
+    });
 
     return questionInputMarkup;
   }

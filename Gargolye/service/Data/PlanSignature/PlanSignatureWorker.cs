@@ -8,6 +8,7 @@ using System.Management.Automation.Language;
 using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Script.Serialization;
+using Anywhere.service.Data.PlanInformedConsent;
 using PSIOISP;
 
 namespace Anywhere.service.Data.PlanSignature
@@ -84,6 +85,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string signatureType { get; set; }
             public string attachmentId { get; set; }
             public string description { get; set; }
+            public string packageId { get; set; }
+            public string signedStatus { get; set; }
         }
 
         public class SigId
@@ -239,27 +242,50 @@ namespace Anywhere.service.Data.PlanSignature
 
         public TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
         {
-            // TODO 94246: STATE GUARDIANS THAT AREADY HAVE THEIR SALEFORCEID BEING USED IN THIS PLAN  
-            //string signatureString = psdg.getSignatures(token, assessmentId);
-            //PlanSignatures[] signatureObj = js.Deserialize<PlanSignatures[]>(signatureString);
-            //int count = 0;
-            //for (int i = 0; i < signatureObj.Length; i++)
-            //{
-            //    if (signatureObj[i].signature != "")
-            //    {
-            //        signatureObj[i].signature = "data:image/png;base64," + signatureObj[i].signature;
-            //    }
-            //    count++;
-            //}
-
+           
             ISPDTData ispDT = new ISPDTData();
 
             string theGuardians = ispDT.IndividualGuardians(peopleId);
-            // OISP FRANKLINONE -- 17080
-            //string teamMembers = oispW.GetIndividualContactsJSON(peopleId.ToString());
+            
             TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
 
             return stateGuardianObject;
+
+        }
+
+        public class AssignStateConsumer
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+            public string assignresult { get; set; }
+        }
+
+        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanSignatureWorker.AssignStateConsumer[] consumers)
+        {
+
+            ISPDTData ispDT = new ISPDTData();
+            var processedConsumers = new List<PlanSignatureWorker.AssignStateConsumer>();
+
+            foreach (PlanSignatureWorker.AssignStateConsumer consumer in consumers)
+            {
+                string assignresult = "";
+                long lngcaseManagerId = long.Parse(caseManagerId);
+                long lngConsumerId = long.Parse(consumer.id);
+
+                assignresult = ispDT.AddCaseMangerToIndividal(lngcaseManagerId, lngConsumerId, "Assigned");
+
+                var processedConsumerobj = new PlanSignatureWorker.AssignStateConsumer();
+                processedConsumerobj.name = consumer.name;
+                processedConsumerobj.assignresult = assignresult;
+                processedConsumers.Add(processedConsumerobj);
+
+            }
+
+            var assignConsumersResult = js.Serialize(processedConsumers);
+
+           // TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
+
+            return assignConsumersResult;
 
         }
 

@@ -26,6 +26,7 @@ const plan = (function () {
   let reportsAttachmentScreen;
   let sendToDODDScreen;
   let changePlanTypeScreen;
+  let generalInfoBar;
 
   // DATA
   // -----------------
@@ -773,7 +774,7 @@ const plan = (function () {
     const currentType = document.createElement('div');
     currentType.classList.add('currentType');
     currentType.innerHTML = `
-      <p>Current Type:</p> ${planStatus === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
+      <p>Current Type:</p> ${planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
     `;
 
     // dropdown
@@ -793,7 +794,7 @@ const plan = (function () {
     typeDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
       newType = selectedOption.value;
-      if (newType === planStatus) {
+      if (newType === planType) {
         updateBtn.classList.add('disabled');
       } else {
         updateBtn.classList.remove('disabled');
@@ -806,11 +807,53 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        // TODO-ASH: call ajax to update plan type with (newType)
-        screen.classList.remove('visible');
-        morePopupMenu.classList.add('visible');
+        const success = await planAjax.updatePlanType({
+          token: $.session.Token,
+          consumerPlanId: planId,
+          planType: newType.toUpperCase(),
+        });
+
+        if (success === 'Success') {
+          planType = newType;
+          currentType.innerHTML = `<p>Current Type:</p> ${
+            planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'
+          }`;
+        }
+
+        const message =
+          success === 'Success' ? 'Type successfully updated.' : 'Type was not able to be updated.';
+        const successDiv = successfulSave.get(message, true);
+        if (success !== 'Success') successDiv.classList.add('error');
+
+        currentType.style.display = 'none';
+        typeDropdown.style.display = 'none';
+        btnWrap.style.display = 'none';
+        screen.appendChild(successDiv);
+
+        setTimeout(() => {
+          screen.removeChild(successDiv);
+
+          currentType.removeAttribute('style');
+          typeDropdown.removeAttribute('style');
+          btnWrap.removeAttribute('style');
+
+          refreshMoreMenu();
+          screen.classList.remove('visible');
+          morePopupMenu.classList.add('visible');
+
+          if (success === 'Success') {
+            refreshGeneralInfo();
+            assessmentCard.refreshAssessmentCard({
+              planStatus,
+              planId,
+              isActive: planActiveStatus,
+            });
+            ISP.refreshISP(planId);
+          }
+        }, 1000);
       },
     });
+    updateBtn.classList.add('disabled');
     const cancelBtn = button.build({
       text: 'Cancel',
       style: 'secondary',
@@ -1141,6 +1184,7 @@ const plan = (function () {
           break;
         }
         case sendToDODDBtn: {
+          //Nathan TODO call ajax
           targetScreen = 'DODDScreen';
           break;
         }
@@ -1274,7 +1318,7 @@ const plan = (function () {
       splitFormatedDate4[2]
     }/${splitFormatedDate4[0].substring(2)}`;
 
-    const generalInfoBar = document.createElement('div');
+    generalInfoBar = document.createElement('div');
     generalInfoBar.classList.add('generalInfo');
 
     const consumerName = `<p>${getConsumerNameFromCard(selectedConsumer.card)}</p>`;
@@ -1789,15 +1833,33 @@ const plan = (function () {
 
           PROGRESS__BTN.SPINNER.hide(newPlanBtn);
           newPlanBtn.innerText = 'Back';
+
+          //classlist.add('hidden')
+          document.getElementById("assign-case-load-btn").style.display = "none"
         } else {
           landingPage.removeChild(planSetupPage);
           landingPage.appendChild(overviewTable);
 
           newPlanBtn.innerText = 'Add New Plan';
+          document.getElementById("assign-case-load-btn").style.display = "block"
         }
       },
     });
   }
+
+  function buildAssignCaseloadBtn() {
+    return button.build({
+       id: 'assign-case-load-btn',
+      text: ($.session.applicationName === 'Gatekeeper') ? 'ASSIGN CASE LOAD' : 'ASSIGN QIDP',
+      style: 'secondary',
+      type: 'contained',
+      classNames: !$.session.planUpdate ? ['disabled'] : ['newPlanBtn'],
+      callback: () => {
+        csAssignCaseload.showAssignCaseLoadPopup();
+      },
+    });
+  }
+
   function buildConsumerCard() {
     selectedConsumer.card.classList.remove('highlighted');
 
@@ -1864,9 +1926,16 @@ const plan = (function () {
 
     const consumerCard = buildConsumerCard();
     newPlanBtn = buildNewPlanBtn();
+    assignCaseLoadBtn = buildAssignCaseloadBtn();
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('topOutcomeWrap');
+
+    btnWrap.appendChild(newPlanBtn);
+    if ($.session.planAssignCaseload) btnWrap.appendChild(assignCaseLoadBtn);
 
     landingPage.appendChild(consumerCard);
-    landingPage.appendChild(newPlanBtn);
+    landingPage.appendChild(btnWrap);
     DOM.ACTIONCENTER.appendChild(landingPage);
 
     const spinner = PROGRESS.SPINNER.get('Gathering Plans...');

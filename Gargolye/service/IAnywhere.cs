@@ -29,6 +29,7 @@ using Anywhere.service.Data.DocumentConversion;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.AnywhereWorker;
 using static Anywhere.service.Data.DayServicesWorker;
+using Anywhere.service.Data.eSignature___OneSpan;
 
 namespace Anywhere
 {
@@ -2456,6 +2457,14 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/switchPlanType/")]
+        string switchPlanType(string token, string consumerPlanId, string planType);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertConsumerPlanRevision/")]
         string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string effectiveStart, string effectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion);
 
@@ -3275,6 +3284,13 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/updateMultiPaidSupports/")]
+        string updateMultiPaidSupports(string token, string paidSupportsId, string providerId, string beginDate, string endDate);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updatePaidSupportsRowOrder/")]
         string updatePaidSupportsRowOrder(string token, long assessmentId, long supportId, int newPos, int oldPos);
 
@@ -3386,6 +3402,14 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getStateGuardiansforConsumer/")]
         PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/assignStateCaseManagertoConsumers/")]
+        string assignStateCaseManagertoConsumers(string caseManagerId, PlanSignatureWorker.AssignStateConsumer[] consumers);
+
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -3937,25 +3961,34 @@ namespace Anywhere
         String deleteForm4MonthlySummary(string token, string emReviewId);
 
         [WebInvoke(Method = "POST",
-           BodyStyle = WebMessageBodyStyle.Wrapped,
-           ResponseFormat = WebMessageFormat.Json,
-           RequestFormat = WebMessageFormat.Json,
-           UriTemplate = "/oneSpanBuildSigners/")]
-        string oneSpanBuildSigners(string token, string packageName, string documentName, string filePath, string[] emails, string[] names);
+       BodyStyle = WebMessageBodyStyle.Wrapped,
+       ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/oneSpanBuildSigners/")]
+        string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp);
+        //string token, string packageName, string documentName, string filePath, string[] emails, string[] names, string[] memberTypes, string[] signatureIds
 
         [WebInvoke(Method = "POST",
            BodyStyle = WebMessageBodyStyle.Wrapped,
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/oneSpanGetSignedDocuments/")]
-        string oneSpanGetSignedDocuments(string token, string packageId);
+        string oneSpanGetSignedDocuments(string token, string packageId, string assessmentID);
+
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/oneSpanCheckDocumentStatus/")]
+        OneSpanWorker.DocumentStatus[] oneSpanCheckDocumentStatus(string token, string assessmentId);
+
 
 
     }
 
 
-// Use a data contract as illustrated in the sample below to add composite types to service operations.
-[DataContract]
+    // Use a data contract as illustrated in the sample below to add composite types to service operations.
+    [DataContract]
     public class CompositeType
     {
         bool boolValue = true;

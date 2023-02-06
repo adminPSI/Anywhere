@@ -52,8 +52,6 @@ const assessmentCard = (function () {
       newAssessmentMarkup = await build(assessmentData, {
         ...assessmentGeneralInfo,
       });
-    } else {
-      console.log('ERROR: general info missing for refresh assessment card');
     }
 
     assessmentWrap.innerHTML = '';
