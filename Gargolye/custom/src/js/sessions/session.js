@@ -237,6 +237,7 @@ $.session.hideAllScheduleButton = false;
 $.session.planUpdate = false;
 $.session.planView = false;
 $.session.planInsertNewTeamMember = false;
+$.session.planAssignCaseload = false;
 $.session.planSignatureUpdateDOB = false;
 $.session.planSignatureUpdateBuildingNumber = false;
 // Transportation
@@ -538,6 +539,9 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
         $.session.planInsertNewTeamMember = true;
+      }
+      if (tmpPerm == 'Assign Case Load' || $.session.isPSI == true) {
+        $.session.planAssignCaseload = true;
       }
       if (tmpPerm == 'Update DOB' || $.session.isPSI == true) {
         $.session.planSignatureUpdateDOB = true;

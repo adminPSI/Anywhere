@@ -90,7 +90,7 @@ const csAssignCaseload = (() => {
             
               let listofProcessedConsumers = `The following consumers were assigned to ${selectedCaseManagerName}.\n`
               processedStateConsumerObjs.forEach(person => {
-                listofProcessedConsumers = listofProcessedConsumers + `\t* ${person.name} assign result ${person.assignresult} \n`
+                listofProcessedConsumers = listofProcessedConsumers + `\t* ${person.name} assign result:  ${person.assignresult} \n`
               })
 
           alert(listofProcessedConsumers);  

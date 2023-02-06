@@ -1903,7 +1903,7 @@ const plan = (function () {
     btnWrap.classList.add('topOutcomeWrap');
 
     btnWrap.appendChild(newPlanBtn);
-    btnWrap.appendChild(assignCaseLoadBtn);
+    if ($.session.planAssignCaseload) btnWrap.appendChild(assignCaseLoadBtn);
 
     landingPage.appendChild(consumerCard);
     landingPage.appendChild(btnWrap);
