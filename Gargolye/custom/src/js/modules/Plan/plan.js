@@ -24,6 +24,7 @@ const plan = (function () {
   let addWorkflowScreen;
   let reportsScreen;
   let reportsAttachmentScreen;
+  let DODDScreen;
   let sendToDODDScreen;
   let changePlanTypeScreen;
   let generalInfoBar;
@@ -723,7 +724,7 @@ const plan = (function () {
 
     return screen;
   }
-  function buildSendToDODDScreen() {
+  function buildDODDScreen() {
     const screen = document.createElement('div');
     screen.id = 'DODDScreen';
     screen.classList.add('screen');
@@ -761,6 +762,17 @@ const plan = (function () {
 
     screen.appendChild(attachmentsWrap);
     
+    return screen;
+  }
+  function buildSendToDODDScreen() {
+    const screen = document.createElement('div');
+    screen.id = 'sendToDODDScreen';
+    screen.classList.add('screen');
+
+    const message = document.createElement('p');
+    message.classList.add('doddMessage');
+    screen.appendChild(message);
+
     return screen;
   }
   function buildChangePlanTypeScreen() {
@@ -991,8 +1003,90 @@ const plan = (function () {
     });
 
     reportsScreen.appendChild(doneBtn);
+    }
+
+  async function runDODDScreen(extraSpace) {
+    const selectedAttachmentsPlan = {};
+    const selectedAttachmentsWorkflow = {};
+    const selectedAttachmentsSignature = {};
+    // Show Attachements
+    const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+        token: $.session.Token,
+        assessmentId: planId, //TODO
+    });
+
+    let index = 0;
+
+    if (attachments) {
+        for (const prop in attachments) {
+            attachments[prop].order = index;
+            const a = attachments[prop];
+            const attachment = document.createElement('div');
+            attachment.classList.add('attachment');
+            const description = document.createElement('p');
+            description.innerText = a.description;
+            attachment.appendChild(description);
+
+            attachment.addEventListener('click', () => {
+                if (!attachment.classList.contains('selected')) {
+                    attachment.classList.add('selected');
+                    if (a.sigAttachmentId) {
+                        selectedAttachmentsSignature[a.order] = { ...a };
+                    } else if (a.whereFrom === 'Plan') {
+                        selectedAttachmentsPlan[a.order] = { ...a };
+                    } else {
+                        selectedAttachmentsWorkflow[a.order] = { ...a };
+                    }
+                } else {
+                    attachment.classList.remove('selected');
+                    if (a.sigAttachmentId) {
+                        delete selectedAttachmentsSignature[a.order];
+                    } else if (a.whereFrom === 'Plan') {
+                        delete selectedAttachmentsPlan[a.order];
+                    } else {
+                        delete selectedAttachmentsWorkflow[a.order];
+                    }
+                }
+            });
+
+            if (a.sigAttachmentId) {
+                signatureAttWrap.appendChild(attachment);
+            } else if (a.whereFrom === 'Plan') {
+                planAttWrap.appendChild(attachment);
+            } else {
+                workflowAttWrap.appendChild(attachment);
+            }
+
+            index++;
+        }
+    }
+
+    const doneBtn = button.build({
+        text: 'Send To DODD',
+        style: 'secondary',
+        type: 'contained',
+        callback: async () => {
+            runSendToDODDScreen();
+            //TODO Send the selected plan attachments to DODD by calling the function
+            //ISPDTData.Attachment(Plan_Attachment_ID);
+        },
+    });
+
+    const cancelBtn = button.build({
+        text: 'Cancel',
+        style: 'secondary',
+        type: 'outlined',
+        callback: () => {
+            DODDScreen.classList.remove('visible');
+            morePopupMenu.classList.add('visible');
+        },
+    });
+
+    DODDScreen.appendChild(doneBtn);
+    DODDScreen.appendChild(cancelBtn);
   }
-  async function runDODDScreen() {
+
+  async function runSendToDODDScreen() {
     // build & show spinner
     const spinner = PROGRESS.SPINNER.get('Sending Plan to DODD...');
     sendToDODDScreen.appendChild(spinner);
@@ -1220,7 +1314,7 @@ const plan = (function () {
       }
 
       if (targetScreen === 'DODDScreen') {
-        runDODDScreen();
+        runDODDScreen(extraSpace);
       }
 
       if (targetScreen === 'reportsScreen') {
@@ -1247,6 +1341,7 @@ const plan = (function () {
     addWorkflowScreen = buildAddWorkflowScreen();
     reportsScreen = buildReportsScreen();
     reportsAttachmentScreen = buildReportsAttachmentsScreen();
+    DODDScreen = buildDODDScreen();
     sendToDODDScreen = buildSendToDODDScreen();
     changePlanTypeScreen = buildChangePlanTypeScreen();
 
