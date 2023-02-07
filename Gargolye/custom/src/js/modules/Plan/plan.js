@@ -1930,13 +1930,13 @@ const plan = (function () {
           newPlanBtn.innerText = 'Back';
 
           //classlist.add('hidden')
-          document.getElementById("assign-case-load-btn").style.display = "none"
+          if (document.getElementById("assign-case-load-btn")) document.getElementById("assign-case-load-btn").style.display = "none"
         } else {
           landingPage.removeChild(planSetupPage);
           landingPage.appendChild(overviewTable);
 
           newPlanBtn.innerText = 'Add New Plan';
-          document.getElementById("assign-case-load-btn").style.display = "block"
+          if (document.getElementById("assign-case-load-btn")) document.getElementById("assign-case-load-btn").style.display = "block"
         }
       },
     });
