@@ -800,21 +800,10 @@ const planConsentAndSign = (() => {
       },
     });
 
-    const assignCaseLoadBtn = button.build({
-      id: 'sig_assignCaseLoad',
-      text: ($.session.applicationName === 'Gatekeeper') ? 'ASSIGN CASE LOAD' : 'ASSIGN QIDP',
-      style: 'secondary',
-      type: 'contained',
-      callback: () => {
-        csAssignCaseload.showAssignCaseLoadPopup();
-      },
-    });
-
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('topOutcomeWrap');
 
     btnWrap.appendChild(addMemberBtn);
-    btnWrap.appendChild(assignCaseLoadBtn);
 
     tableWrap.appendChild(btnWrap);
     tableWrap.appendChild(teamMemberTable);
