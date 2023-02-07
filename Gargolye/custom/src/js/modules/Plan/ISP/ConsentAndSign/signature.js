@@ -220,7 +220,7 @@ const csSignature = (() => {
         date.classList.add('error');
       }
 
-      innerWrap.appendChild(attachmentDesc);
+      innerWrap.appendChild(attachmentInput);
       innerWrap.appendChild(date);
 
       signatureWrap.appendChild(innerWrap);
