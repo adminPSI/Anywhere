@@ -377,6 +377,10 @@ const servicesSupports = (() => {
     //     text: dd.vendorName,
     //   };
     // });
+    // let data = vendorNumbers.map(vendorNumber => ({
+    //   value: vendorNumber.vendorId,
+    //   text: vendorNumber.vendorName,
+    // }));
 
     if (!ignoreGuardClauses) {
       // handles populating provider DDL when: 1. a service has just been selected 2. a service already exists for an existing record
@@ -439,11 +443,6 @@ const servicesSupports = (() => {
         fundingSourceDropdownSelectedText,
         servicesDropdownSelectedText,
       );
-
-    let data = vendorNumbers.map(vendorNumber => ({
-      value: vendorNumber.vendorId,
-      text: vendorNumber.vendorName,
-    }));
 
     const selectedVendorIds = getSelectedVendorIds();
 
@@ -705,13 +704,29 @@ const servicesSupports = (() => {
     const numPaidSupports = getNumberOfPaidSupports();
     planSummary.checkForPaidSupports(numPaidSupports);
   }
-  function updatePaidSupportsRowFromMultiEdit() {
+  function updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData) {
     selectedPaidSupportRows.forEach(row => {
       const { rowNode, ...tableData } = row;
+
+      if (multiSaveUpdateData.beginDate !== '1900-01-01') {
+        tableData.beginDate = multiSaveUpdateData.beginDate;
+      }
+      if (multiSaveUpdateData.endDate !== '1900-01-01') {
+        tableData.endDate = multiSaveUpdateData.endDate;
+      }
+      if (multiSaveUpdateData.providerId !== '0') {
+        tableData.providerId = multiSaveUpdateData.providerId;
+      }
+
       const { tableValues, psData } = mapPaidSupportDataForTable({
         ...tableData,
       });
       const rowId = `ps${psData.paidSupportsId}`;
+
+      if (multiSaveUpdateData.providerId !== '0') {
+        tableValues.providerName = multiSaveUpdateData.providerName;
+        psData.providerName = multiSaveUpdateData.providerName;
+      }
 
       table.updateRows(
         paidSupportsTable,
@@ -719,14 +734,39 @@ const servicesSupports = (() => {
           {
             id: rowId,
             values: tableValues,
-            onClick: () => {
-              showAddPaidSupportPopup({
-                popupData: psData,
-                isNew: false,
-                fromAssessment: false,
-                isCopy: false,
-                charLimits,
-              });
+            onClick: event => {
+              if (!enableMultiEdit) {
+                showAddPaidSupportPopup({
+                  popupData: psData,
+                  isNew: false,
+                  fromAssessment: false,
+                  isCopy: false,
+                  charLimits,
+                });
+                return;
+              }
+
+              const isSelected = event.target.classList.contains('selected');
+
+              if (isSelected) {
+                event.target.classList.remove('selected');
+                selectedPaidSupportIds = selectedPaidSupportIds.filter(
+                  sr => sr !== psData.paidSupportsId,
+                );
+                selectedPaidSupportRows = selectedPaidSupportIds.filter(
+                  sr => sr.paidSupportsId !== psData.paidSupportsId,
+                );
+              } else {
+                event.target.classList.add('selected');
+                selectedPaidSupportIds.push(psData.paidSupportsId);
+                selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
+              }
+
+              if (selectedPaidSupportIds.length === 0) {
+                multiEditUpdateBtn.classList.add('disabled');
+              } else {
+                multiEditUpdateBtn.classList.remove('disabled');
+              }
             },
             onCopyClick: () => {
               if (isReadOnly) return;
@@ -752,9 +792,8 @@ const servicesSupports = (() => {
     });
   }
   //-- Markup ---------
-  function showMultiEditPopup(selectedPaidSupportIds) {
+  function showMultiEditPopup() {
     let multiSaveUpdateData = {
-      token: $.session.Token,
       beginDate: '1900-01-01',
       endDate: '1900-01-01',
       providerId: '0',
@@ -772,6 +811,7 @@ const servicesSupports = (() => {
       style: 'secondary',
       callback: (e, selectedOption) => {
         multiSaveUpdateData.providerId = selectedOption.value;
+        multiSaveUpdateData.providerName = selectedOption.innerText;
       },
     });
     const beginDateInput = input.build({
@@ -801,11 +841,15 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        multiSaveUpdateData.paidSupportsId = selectedPaidSupportIds.join(',');
-        await servicesSupportsAjax.updateMultiPaidSupports(multiSaveUpdateData);
-        selectedPaidSupportIds = [];
-        selectedPaidSupportRows = [];
+        await servicesSupportsAjax.updateMultiPaidSupports({
+          token: $.session.Token,
+          beginDate: multiSaveUpdateData.beginDate,
+          endDate: multiSaveUpdateData.endDate,
+          providerId: multiSaveUpdateData.providerId,
+          paidSupportsId: selectedPaidSupportIds.join(','),
+        });
 
+        multiEditUpdateBtn.classList.add('disabled');
         multiEditUpdateBtn.classList.add('hidden');
         multiEditCancelBtn.classList.add('hidden');
 
@@ -814,7 +858,9 @@ const servicesSupports = (() => {
         var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
         highlightedRows.forEach(row => row.classList.remove('selected'));
 
-        updatePaidSupportsRowFromMultiEdit();
+        updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData);
+        selectedPaidSupportIds = [];
+        selectedPaidSupportRows = [];
 
         POPUP.hide(multiEditPopup);
 
@@ -865,6 +911,7 @@ const servicesSupports = (() => {
         } else {
           selectedPaidSupportIds = [];
           selectedPaidSupportRows = [];
+          multiEditUpdateBtn.classList.add('disabled');
           multiEditUpdateBtn.classList.add('hidden');
           multiEditCancelBtn.classList.add('hidden');
           var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
@@ -877,8 +924,9 @@ const servicesSupports = (() => {
       text: 'Update',
       style: 'secondary',
       type: 'contained',
+      classNames: 'disabled',
       callback: () => {
-        showMultiEditPopup(selectedPaidSupportIds);
+        showMultiEditPopup();
       },
     });
     multiEditCancelBtn = button.build({
@@ -887,6 +935,8 @@ const servicesSupports = (() => {
       type: 'outlined',
       callback: () => {
         enableMultiEdit = false;
+        multiEditBtn.classList.toggle('enabled');
+        multiEditUpdateBtn.classList.add('disabled');
         multiEditUpdateBtn.classList.add('hidden');
         multiEditCancelBtn.classList.add('hidden');
 
@@ -1733,6 +1783,7 @@ const servicesSupports = (() => {
                 });
                 return;
               }
+
               const isSelected = event.target.classList.contains('selected');
 
               if (isSelected) {
@@ -1747,6 +1798,12 @@ const servicesSupports = (() => {
                 event.target.classList.add('selected');
                 selectedPaidSupportIds.push(psData.paidSupportsId);
                 selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
+              }
+
+              if (selectedPaidSupportIds.length === 0) {
+                multiEditUpdateBtn.classList.add('disabled');
+              } else {
+                multiEditUpdateBtn.classList.remove('disabled');
               }
             },
             onCopyClick: () => {
@@ -2796,6 +2853,7 @@ const servicesSupports = (() => {
     servicesSupportsData = data;
     dropdownData = planData.getDropdownData();
     charLimits = planData.getISPCharacterLimits('servicesSupports');
+    enableMultiEdit = false;
 
     if (!$.session.planUpdate) {
       isSortable = false;
