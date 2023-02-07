@@ -24,7 +24,7 @@ const plan = (function () {
   let addWorkflowScreen;
   let reportsScreen;
   let reportsAttachmentScreen;
-  let DODDScreen;
+  let createDODDScreen;
   let sendToDODDScreen;
   let changePlanTypeScreen;
   let generalInfoBar;
@@ -1341,7 +1341,7 @@ const plan = (function () {
     addWorkflowScreen = buildAddWorkflowScreen();
     reportsScreen = buildReportsScreen();
     reportsAttachmentScreen = buildReportsAttachmentsScreen();
-    DODDScreen = buildDODDScreen();
+    createDODDScreen = buildDODDScreen();
     sendToDODDScreen = buildSendToDODDScreen();
     changePlanTypeScreen = buildChangePlanTypeScreen();
 
@@ -1353,7 +1353,7 @@ const plan = (function () {
     menuInnerWrap.appendChild(addWorkflowScreen);
     menuInnerWrap.appendChild(reportsScreen);
     menuInnerWrap.appendChild(reportsAttachmentScreen);
-    menuInnerWrap.appendChild(sendToDODDScreen);
+    menuInnerWrap.appendChild(createDODDScreen);
     menuInnerWrap.appendChild(changePlanTypeScreen);
 
     morePopup.appendChild(menuInnerWrap);
