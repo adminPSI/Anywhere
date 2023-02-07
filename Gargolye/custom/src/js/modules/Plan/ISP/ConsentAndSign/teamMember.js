@@ -305,7 +305,7 @@ const csTeamMember = (() => {
 
     // A -- No State Guardian in Dropdown (stateGuardianDropdown) -- you can't save
     if (!selectedStateGuardianSalesForceId) {
-      alert(`A Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
+      alert(`A Guardian is not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
       return false;
     }
 
@@ -327,7 +327,7 @@ const csTeamMember = (() => {
       } 
 
       let Scenario1ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 
-      However, the following Guardian was found in the GK DB that matches the SalesforceID 
+      However, the following Guardian was found in the local database that matches the SalesforceID 
       of the selected State Guardian: ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName}.
       Do you wish to save ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName} 
       as the Guardian for this particular Added Team Member?`
@@ -344,7 +344,7 @@ const csTeamMember = (() => {
 									return true;
       } else {
         alert(
-          `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+          `The Imported Guardian does not match the State Guardian listed in Salesforce and must be entered in Salesforce Portal.`,
         );
         return false;
       }
@@ -371,7 +371,7 @@ const csTeamMember = (() => {
       //   return true;
       // } else {
         alert(
-          `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+          `Imported Guardian selected is not listed in Salesforce for this individual and must be entered on Salesforce portal.`,
         );
         return false;
       }
@@ -390,7 +390,7 @@ const csTeamMember = (() => {
       } 
 
     let Scenario3ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
-    However, the following Guardian was found in the GK DB that matches the SalesforceID 
+    However, the following Guardian was found in the local database that matches the SalesforceID 
     of the selected State Guardian: ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName}.
     Do you wish to save ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName} 
     as the Guardian for this particular Added Team Member?`
@@ -407,7 +407,7 @@ const csTeamMember = (() => {
 									return true;
       } else {
         alert(
-          `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+          `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
         );
         return false;
       }
@@ -419,12 +419,12 @@ const csTeamMember = (() => {
    (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)) {
 
     if (
-      confirm('Is the selected State Guardian the same person as the entered Guardian in the form?')
+      confirm('Is the selected State Guardian the same person as the Imported Guardian in the form?')
     ) {
       // YES -- Continue
     } else {
       alert(
-        `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+        `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
       );
       return false;
     }
@@ -454,13 +454,13 @@ const csTeamMember = (() => {
         return true;
         } else {
         alert(
-          'Update of GK people.SalesForceID failed; therefore, inserting this Guardian will not be attempted.',
+          'Assigning the selected State SalesforceID to the Imported Guardian failed; therefore, inserting this Guardian will not be attempted.',
         );
         return false;
         }
     } else {
       alert(
-        `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+        `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
       );
       return false;
     }
@@ -470,12 +470,12 @@ const csTeamMember = (() => {
   // Final Guard Clause and Message for a failed attempt to Save New team Member
   if (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length > 1) {
     alert(
-      `Unable to save Team Member. There were multiple people in the GateKeeper Database with the SalesForceID: ${DBteamMemberswithStateSalesForceId[0].salesForceId}. Correct this issue before continuing.`,
+      `Unable to save Team Member. There were multiple people in your local Database with the SalesForceID: ${DBteamMemberswithStateSalesForceId[0].salesForceId}. Correct this issue before continuing.`,
     );
     return false;
   } else {
     alert(
-      `Guardian not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+      `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
     );
     return false;
   }
