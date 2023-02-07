@@ -255,6 +255,14 @@
     align-items: center;
     display: flex;
 
+    .input-field {
+      margin: 0;
+    }
+
+    .attachmentInput {
+      width: 45%;
+    }
+
     .attachmentInput,
     .signAttachmentDesc {
       margin-right: 10px;
