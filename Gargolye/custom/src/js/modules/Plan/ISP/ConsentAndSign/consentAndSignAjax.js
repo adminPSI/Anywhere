@@ -141,8 +141,8 @@ const consentAndSignAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/getStateGuardiansforConsumer/',
-       data: JSON.stringify(peopleIdData),
-       //data: '{"peopleId":"' + peopleId + '"}',
+        data: JSON.stringify(peopleIdData),
+        //data: '{"peopleId":"' + peopleId + '"}',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -152,7 +152,7 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
-  
+
   async function assignStateCaseManagertoConsumers(peopleIdData) {
     //cosumerId as a string in retrieveData
     try {
@@ -167,8 +167,8 @@ const consentAndSignAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/assignStateCaseManagertoConsumers/',
-       data: JSON.stringify(peopleIdData),
-       //data: '{"peopleId":"' + peopleId + '"}',
+        data: JSON.stringify(peopleIdData),
+        //data: '{"peopleId":"' + peopleId + '"}',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -279,7 +279,6 @@ const consentAndSignAjax = (() => {
     }
   }
 
-
   // INSERT
   //-------------------------------------
   async function insertTeamMember(retrieveData) {
@@ -341,15 +340,15 @@ const consentAndSignAjax = (() => {
     //  );
     //}
 
-      try {
-          var binary = '';
-          var bytes = new Uint8Array(retrieveData.attachment);
-          var len = bytes.byteLength;
-          for (var i = 0; i < len; i++) {
-              binary += String.fromCharCode(bytes[i]);
-          }
-          let abString = window.btoa(binary);
-          retrieveData.attachment = abString;
+    try {
+      var binary = '';
+      var bytes = new Uint8Array(retrieveData.attachment);
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      let abString = window.btoa(binary);
+      retrieveData.attachment = abString;
 
       const data = await $.ajax({
         type: 'POST',
@@ -477,7 +476,6 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
-
   async function validateConsumerForSalesForceId(retrieveData) {
     //cosumerId as a string in retrieveData
     try {
@@ -502,8 +500,6 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
-
-
 
   return {
     getConsentAndSignData,

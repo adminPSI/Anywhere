@@ -88,6 +88,7 @@ const planConsentAndSign = (() => {
       // sign/disent
       signature: selectedMemberData.signature,
       signatureType: selectedMemberData.signatureType,
+      dateSigned: selectedMemberData.dateSigned,
       dissentAreaDisagree: selectedMemberData.dissentAreaDisagree,
       dissentHowToAddress: selectedMemberData.dissentHowToAddress,
       // consent
@@ -173,6 +174,7 @@ const planConsentAndSign = (() => {
       signatureId: selectedMemberData.signatureId,
       signature: selectedMemberData.signature,
       signatureType: selectedMemberData.signatureType,
+      dateSigned: selectedMemberData.dateSigned,
       dissentAreaDisagree: selectedMemberData.dissentAreaDisagree,
       dissentHowToAddress: selectedMemberData.dissentHowToAddress,
       // new
