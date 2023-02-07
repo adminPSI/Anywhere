@@ -229,12 +229,6 @@ const servicesSupports = (() => {
       const tableBody = paidSupportsTable.querySelector('.table__body');
       const tableRows = [...tableBody.querySelectorAll('.table__row')];
       return tableRows.length;
-      // if (tableRows.length > 0) {
-      //   return tableRows.reduce((acc, row) => {
-      //     acc = acc + 1;
-      //     return acc;
-      //   }, 0);
-      // } else return 0;
     }
   }
   function getNumberOfAdditionalSupports(sectionId) {
@@ -588,13 +582,38 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddPaidSupportPopup({
-              popupData: psData,
-              isNew: false,
-              fromAssessment: false,
-              isCopy: false,
-              charLimits,
-            });
+            if (!enableMultiEdit) {
+              showAddPaidSupportPopup({
+                popupData: psData,
+                isNew: false,
+                fromAssessment: false,
+                isCopy: false,
+                charLimits,
+              });
+              return;
+            }
+
+            const isSelected = event.target.classList.contains('selected');
+
+            if (isSelected) {
+              event.target.classList.remove('selected');
+              selectedPaidSupportIds = selectedPaidSupportIds.filter(
+                sr => sr !== psData.paidSupportsId,
+              );
+              selectedPaidSupportRows = selectedPaidSupportIds.filter(
+                sr => sr.paidSupportsId !== psData.paidSupportsId,
+              );
+            } else {
+              event.target.classList.add('selected');
+              selectedPaidSupportIds.push(psData.paidSupportsId);
+              selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
+            }
+
+            if (selectedPaidSupportIds.length === 0) {
+              multiEditUpdateBtn.classList.add('disabled');
+            } else {
+              multiEditUpdateBtn.classList.remove('disabled');
+            }
           },
           onCopyClick: () => {
             if (isReadOnly) return;
@@ -652,13 +671,38 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddPaidSupportPopup({
-              popupData: psData,
-              isNew: false,
-              fromAssessment: false,
-              isCopy: false,
-              charLimits,
-            });
+            if (!enableMultiEdit) {
+              showAddPaidSupportPopup({
+                popupData: psData,
+                isNew: false,
+                fromAssessment: false,
+                isCopy: false,
+                charLimits,
+              });
+              return;
+            }
+
+            const isSelected = event.target.classList.contains('selected');
+
+            if (isSelected) {
+              event.target.classList.remove('selected');
+              selectedPaidSupportIds = selectedPaidSupportIds.filter(
+                sr => sr !== psData.paidSupportsId,
+              );
+              selectedPaidSupportRows = selectedPaidSupportIds.filter(
+                sr => sr.paidSupportsId !== psData.paidSupportsId,
+              );
+            } else {
+              event.target.classList.add('selected');
+              selectedPaidSupportIds.push(psData.paidSupportsId);
+              selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
+            }
+
+            if (selectedPaidSupportIds.length === 0) {
+              multiEditUpdateBtn.classList.add('disabled');
+            } else {
+              multiEditUpdateBtn.classList.remove('disabled');
+            }
           },
           onCopyClick: () => {
             if (isReadOnly) return;
