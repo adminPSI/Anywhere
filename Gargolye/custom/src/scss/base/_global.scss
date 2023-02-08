@@ -130,3 +130,7 @@ input[type='radio' i]:focus {
   color: rgba(0, 0, 0, 0.5) !important;
   pointer-events: none;
 }
+
+.noPointerEvents {
+  pointer-events: none;
+}

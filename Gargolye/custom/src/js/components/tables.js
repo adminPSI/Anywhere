@@ -116,11 +116,11 @@ var table = (function () {
       // build row
       const row = document.createElement('div');
       row.classList.add('table__row');
-        if (d.overlap !== null) {
-            if (d.overlap === true) {
-                row.classList.add('yellowbackground');//
-            }
+      if (d.overlap !== null) {
+        if (d.overlap === true) {
+          row.classList.add('yellowbackground'); //
         }
+      }
       // set id & attributes
       if (d.id) row.id = d.id;
       if (d.attributes) {
@@ -133,7 +133,9 @@ var table = (function () {
       if (d.onClick && !disabled) {
         row.addEventListener('click', e => {
           if (e.target === row) {
+            e.target.classList.add('noPointerEvents');
             d.onClick(e);
+            e.target.classList.remove('noPointerEvents');
           }
         });
         row.classList.add('customLink');
@@ -165,16 +167,15 @@ var table = (function () {
         cell.addEventListener('click', d.endIconCallback);
         row.appendChild(cell);
       }
-        if (disabled !== true) {
-            if (d.onCopyClick) {
-                const cell = document.createElement('div');
-                cell.classList.add('copyIcon');
-                cell.innerHTML = icons.copy;
-                cell.addEventListener('click', d.onCopyClick);
-                row.appendChild(cell);
-            }
+      if (disabled !== true) {
+        if (d.onCopyClick) {
+          const cell = document.createElement('div');
+          cell.classList.add('copyIcon');
+          cell.innerHTML = icons.copy;
+          cell.addEventListener('click', d.onCopyClick);
+          row.appendChild(cell);
         }
-      
+      }
 
       tableBody.appendChild(row);
     });
@@ -313,112 +314,112 @@ var table = (function () {
     const tableRows = [...tableBody.querySelectorAll('.table__row')];
 
     return tableRows.length;
-    }
+  }
 
-    // Add the ability to click a header on the the table to sort the table
-    function sortTableByHeader(table) {
-        // Query the headers
-        const headers = table.querySelectorAll('.header div');
+  // Add the ability to click a header on the the table to sort the table
+  function sortTableByHeader(table) {
+    // Query the headers
+    const headers = table.querySelectorAll('.header div');
 
-        // Track sort directions
-        const directions = Array.from(headers).map(function (header) {
-            return '';
-        });
+    // Track sort directions
+    const directions = Array.from(headers).map(function (header) {
+      return '';
+    });
 
-        // Loop over the headers
-        [].forEach.call(headers, function (header, index) {
-                header.addEventListener('click', function () {
-                    // This function will sort the column
-                    sortColumn(index);
-            });
-        });
+    // Loop over the headers
+    [].forEach.call(headers, function (header, index) {
+      header.addEventListener('click', function () {
+        // This function will sort the column
+        sortColumn(index);
+      });
+    });
 
-        // Transform the content of given cell in given column
-        const transform = function (index, content) {
-            // Get the data type of column
-            const type = headers[index].getAttribute('data-type');
-            switch (type) {
-                case 'number':
-                    return parseFloat(content);
-                case 'date':
-                    return Date.parse(content);
-                case 'string':
-                default:
-                    return content;
-            }
-        };
+    // Transform the content of given cell in given column
+    const transform = function (index, content) {
+      // Get the data type of column
+      const type = headers[index].getAttribute('data-type');
+      switch (type) {
+        case 'number':
+          return parseFloat(content);
+        case 'date':
+          return Date.parse(content);
+        case 'string':
+        default:
+          return content;
+      }
+    };
 
-        const sortColumn = function (index) {
-            //Loop over the headers, removing the sort order class
-            [].forEach.call(headers, function (header) {
-                header.classList.remove('headersortup');
-                header.classList.remove('headersortdown');
-            });
+    const sortColumn = function (index) {
+      //Loop over the headers, removing the sort order class
+      [].forEach.call(headers, function (header) {
+        header.classList.remove('headersortup');
+        header.classList.remove('headersortdown');
+      });
 
-            // Get the current direction
-            const direction = directions[index] || 'asc';
+      // Get the current direction
+      const direction = directions[index] || 'asc';
 
-            // A factor based on the direction
-            const multiplier = (direction === 'asc') ? 1 : -1;
+      // A factor based on the direction
+      const multiplier = direction === 'asc' ? 1 : -1;
 
-            // Query all rows
-            const tableBody = table.querySelector('.table__body');
-            const rows = [...tableBody.querySelectorAll('.table__row')];
+      // Query all rows
+      const tableBody = table.querySelector('.table__body');
+      const rows = [...tableBody.querySelectorAll('.table__row')];
 
-            // Clone the rows
-            const newRows = Array.from(rows);
+      // Clone the rows
+      const newRows = Array.from(rows);
 
-            // Sort rows by the content of cells
-            newRows.sort(function (rowA, rowB) {
-                // Get the content of cells
-                const cellA = rowA.childNodes[index].innerText;
-                const cellB = rowB.childNodes[index].innerText;
+      // Sort rows by the content of cells
+      newRows.sort(function (rowA, rowB) {
+        // Get the content of cells
+        const cellA = rowA.childNodes[index].innerText;
+        const cellB = rowB.childNodes[index].innerText;
 
-                // Transform the content of cells
-                var a = transform(index, cellA);
-                var b = transform(index, cellB);
+        // Transform the content of cells
+        var a = transform(index, cellA);
+        var b = transform(index, cellB);
 
-                // Make string comparison case insensitive
-                const type = headers[index].getAttribute('data-type');
-                if (type === 'string') {
-                    a = a.toLowerCase();
-                    b = b.toLowerCase();
-                }
+        // Make string comparison case insensitive
+        const type = headers[index].getAttribute('data-type');
+        if (type === 'string') {
+          a = a.toLowerCase();
+          b = b.toLowerCase();
+        }
 
-                // And compare them
-                switch (true) {
-                    case a > b:
-                        return 1 * multiplier;
-                    case a < b:
-                        return -1 * multiplier;
-                    case a === b:
-                        return 0;
-                }
-            });
+        // And compare them
+        switch (true) {
+          case a > b:
+            return 1 * multiplier;
+          case a < b:
+            return -1 * multiplier;
+          case a === b:
+            return 0;
+        }
+      });
 
-            // Reverse the direction
-            directions[index] = direction === 'asc' ? 'desc' : 'asc';
-            
-            // Assign the appropriate sort direction class
-            if (direction === 'asc') {
-                headers[index].classList.remove('headersortup');
-                headers[index].classList.add('headersortdown');
-            } else if (direction === 'desc') {
-                headers[index].classList.remove('headersortdown');
-                headers[index].classList.add('headersortup');
-            }
-            
-            // Remove old rows
-            [].forEach.call(rows, function (row) {
-                tableBody.removeChild(row);
-            });
+      // Reverse the direction
+      directions[index] = direction === 'asc' ? 'desc' : 'asc';
 
-            // Append new row
-            newRows.forEach(function (newRow) {
-                tableBody.appendChild(newRow);
-            });
-        };
-    }
+      // Assign the appropriate sort direction class
+      if (direction === 'asc') {
+        headers[index].classList.remove('headersortup');
+        headers[index].classList.add('headersortdown');
+      } else if (direction === 'desc') {
+        headers[index].classList.remove('headersortdown');
+        headers[index].classList.add('headersortup');
+      }
+
+      // Remove old rows
+      [].forEach.call(rows, function (row) {
+        tableBody.removeChild(row);
+      });
+
+      // Append new row
+      newRows.forEach(function (newRow) {
+        tableBody.appendChild(newRow);
+      });
+    };
+  }
 
   return {
     build,
