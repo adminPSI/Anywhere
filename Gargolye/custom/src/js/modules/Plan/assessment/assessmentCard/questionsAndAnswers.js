@@ -126,6 +126,10 @@
       const inputWrap = question.querySelector('.input-field');
       const inputEle = question.querySelector('.input-field__input');
 
+      // check for radios
+      if (!inputWrap) inputWrap = question.querySelector('.radioWrap');
+      if (!inputEle) inputEle = question.querySelector('input');
+
       const sectionId = section.id.replace('section', '');
       const setId = questionSet.id.replace('set', '');
       const answerId = inputEle.id;
@@ -134,10 +138,13 @@
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
         input.disableInputField(inputWrap);
-        if (type !== 'checkbox') {
-          inputEle.value = '';
-        } else {
+        if (type === 'checkbox') {
           inputEle.checked = false;
+        } else {
+          inputEle.value = '';
+          const radios = [...inputWrap.querySelectorAll('input')];
+          if (radios.length === 0) return;
+          radios.forEach(radio => (radio.checked = false));
         }
         addAnswer(answerId);
       } else {
@@ -167,11 +174,15 @@
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = false;
           input.disableInputField(inputWrap);
-          if (type !== 'checkbox') {
-            inputEle.value = '';
-          } else {
+          if (type === 'checkbox') {
             inputEle.checked = false;
+          } else {
+            inputEle.value = '';
+            const radios = [...inputWrap.querySelectorAll('input')];
+            if (radios.length === 0) return;
+            radios.forEach(radio => (radio.checked = false));
           }
+
           addAnswer(answerId);
         } else {
           input.enableInputField(inputWrap);
