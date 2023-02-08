@@ -444,22 +444,25 @@ var schedulingApproveRequest = (function () {
         openShiftTableBody.querySelectorAll('.table__row'),
       );
       overlapApprovalData = overlapApprovedShifts(openShiftRequests);
-      // check approved shifts to ensure no overlap (before checking for overlaps with assigned shifts)
-      if (overlapApprovalData !== 'NoOverLap') {
-        return;
-      }
     }
     if (callOffTable) {
       var callOffTableBody = callOffTable.querySelector('.table__body');
       var callOffRequests = Array.prototype.slice.call(
         callOffTableBody.querySelectorAll('.table__row'),
       );
+      overlapApprovalData = overlapApprovedShifts(callOffRequests);
     }
     if (daysOffTable) {
       var daysOffTableBody = daysOffTable.querySelector('.table__body');
       var daysOffRequests = Array.prototype.slice.call(
         daysOffTableBody.querySelectorAll('.table__row'),
       );
+      overlapApprovalData = overlapApprovedShifts(daysOffRequests);
+    }
+
+    // check approved shifts to ensure no overlap (before checking for overlaps with assigned shifts)
+    if (overlapApprovalData !== 'NoOverLap') {
+      return;
     }
 
     // check selected shifts against shifts already assigned to the user
