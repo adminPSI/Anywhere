@@ -464,7 +464,19 @@
   }
 }
 
-// other
+.multiEditPopup {
+  .popupMessage {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    font-style: italic;
+  }
+
+  .popup__header {
+    margin: 0 0 20px;
+  }
+}
+
 .btnWrap {
   .addRowBtnPaidSupports {
     width: 100%;

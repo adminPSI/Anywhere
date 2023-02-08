@@ -863,6 +863,7 @@ const servicesSupports = (() => {
     });
 
     const message = document.createElement('p');
+    message.classList.add('');
     message.innerText = `Fields left blank will not be updated`;
 
     // const providerNameDropdown = dropdown.build({
@@ -959,7 +960,7 @@ const servicesSupports = (() => {
     wrap.classList.add('mutliEditBtnWrap');
 
     multiEditBtn = button.build({
-      text: 'Multi Edit Supports',
+      text: 'Multi Select Supports',
       icon: 'multiSelect',
       style: 'secondary',
       type: 'contained',
@@ -1825,6 +1826,7 @@ const servicesSupports = (() => {
 
     if (isReadOnly) {
       addRowBtn.classList.add('disabled');
+      multiEditBtn.classList.add('disabled');
     }
 
     if (servicesSupportsData && servicesSupportsData.paidSupport) {
