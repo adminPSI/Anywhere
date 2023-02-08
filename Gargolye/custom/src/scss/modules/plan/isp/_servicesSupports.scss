@@ -465,15 +465,39 @@
 }
 
 // other
-.mutliEditBtnWrap {
-  display: flex;
-
-  button {
-    margin-right: 10px;
+.btnWrap {
+  .addRowBtnPaidSupports {
+    width: 100%;
+    margin: 0 0 10px;
   }
-}
-.multiEditBtn {
-  &.enabled {
-    background: $secondary;
+  .mutliEditBtnWrap {
+    display: flex;
+    width: 100%;
+    margin: 0;
+
+    button {
+      margin-right: 10px;
+      width: 100px;
+    }
+
+    .multiEditBtn {
+      margin: 0;
+      width: auto;
+
+      &.enabled {
+        margin-right: 10px;
+        background: $secondary;
+      }
+    }
+  }
+
+  @media screen and (min-width: '800px') {
+    .addRowBtnPaidSupports {
+      max-width: 200px;
+      margin: 0 10px 0 0;
+    }
+    .mutliEditBtnWrap {
+      width: auto;
+    }
   }
 }

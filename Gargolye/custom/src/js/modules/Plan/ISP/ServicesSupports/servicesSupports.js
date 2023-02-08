@@ -752,25 +752,25 @@ const servicesSupports = (() => {
     selectedPaidSupportRows.forEach(row => {
       const { rowNode, ...tableData } = row;
 
-      if (multiSaveUpdateData.beginDate !== '1900-01-01') {
+      if (multiSaveUpdateData.beginDate !== '') {
         tableData.beginDate = multiSaveUpdateData.beginDate;
       }
-      if (multiSaveUpdateData.endDate !== '1900-01-01') {
+      if (multiSaveUpdateData.endDate !== '') {
         tableData.endDate = multiSaveUpdateData.endDate;
       }
-      if (multiSaveUpdateData.providerId !== '0') {
-        tableData.providerId = multiSaveUpdateData.providerId;
-      }
+      // if (multiSaveUpdateData.providerId !== '0') {
+      //   tableData.providerId = multiSaveUpdateData.providerId;
+      // }
 
       const { tableValues, psData } = mapPaidSupportDataForTable({
         ...tableData,
       });
       const rowId = `ps${psData.paidSupportsId}`;
 
-      if (multiSaveUpdateData.providerId !== '0') {
-        tableValues.providerName = multiSaveUpdateData.providerName;
-        psData.providerName = multiSaveUpdateData.providerName;
-      }
+      // if (multiSaveUpdateData.providerId !== '0') {
+      //   tableValues.providerName = multiSaveUpdateData.providerName;
+      //   psData.providerName = multiSaveUpdateData.providerName;
+      // }
 
       table.updateRows(
         paidSupportsTable,
@@ -836,11 +836,24 @@ const servicesSupports = (() => {
     });
   }
   //-- Markup ---------
+  function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
+    if (
+      multiSaveUpdateData.beginDate !== '' ||
+      multiSaveUpdateData.endDate !== '' ||
+      multiSaveUpdateData.providerId !== ''
+    ) {
+      updateBtn.classList.remove('disabled');
+      return;
+    }
+
+    updateBtn.classList.remove('disabled');
+  }
   function showMultiEditPopup() {
     let multiSaveUpdateData = {
-      beginDate: '1900-01-01',
-      endDate: '1900-01-01',
-      providerId: '0',
+      beginDate: '',
+      endDate: '',
+      providerId: '',
+      providerName: '',
     };
 
     const multiEditPopup = POPUP.build({
@@ -849,15 +862,19 @@ const servicesSupports = (() => {
       hideX: true,
     });
 
-    const providerNameDropdown = dropdown.build({
-      dropdownId: 'providerNameDropdownPS',
-      label: 'Provider Name',
-      style: 'secondary',
-      callback: (e, selectedOption) => {
-        multiSaveUpdateData.providerId = selectedOption.value;
-        multiSaveUpdateData.providerName = selectedOption.innerText;
-      },
-    });
+    const message = document.createElement('p');
+    message.innerText = `Fields left blank will not be updated`;
+
+    // const providerNameDropdown = dropdown.build({
+    //   dropdownId: 'providerNameDropdownPS',
+    //   label: 'Provider Name',
+    //   style: 'secondary',
+    //   callback: (e, selectedOption) => {
+    //     multiSaveUpdateData.providerId = selectedOption.value;
+    //     multiSaveUpdateData.providerName = selectedOption.innerText;
+    //     toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+    //   },
+    // });
     const beginDateInput = input.build({
       label: 'Begin Date',
       type: 'date',
@@ -865,6 +882,7 @@ const servicesSupports = (() => {
       // value: multiSaveUpdateData.beginDate,
       callback: e => {
         multiSaveUpdateData.beginDate = e.target.value;
+        toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
       },
     });
     const endDateInput = input.build({
@@ -874,6 +892,7 @@ const servicesSupports = (() => {
       // value: multiSaveUpdateData.endDate,
       callback: e => {
         multiSaveUpdateData.endDate = e.target.value;
+        toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
       },
     });
 
@@ -884,12 +903,14 @@ const servicesSupports = (() => {
       text: 'Update',
       style: 'secondary',
       type: 'contained',
+      classNames: 'disabled',
       callback: async () => {
         await servicesSupportsAjax.updateMultiPaidSupports({
           token: $.session.Token,
-          beginDate: multiSaveUpdateData.beginDate,
-          endDate: multiSaveUpdateData.endDate,
-          providerId: multiSaveUpdateData.providerId,
+          beginDate:
+            multiSaveUpdateData.beginDate !== '' ? multiSaveUpdateData.beginDate : '1900-01-01',
+          endDate: multiSaveUpdateData.endDate !== '' ? multiSaveUpdateData.endDate : '1900-01-01',
+          providerId: multiSaveUpdateData.providerId !== '' ? multiSaveUpdateData.providerId : '0',
           paidSupportsId: selectedPaidSupportIds.join(','),
         });
 
@@ -923,12 +944,13 @@ const servicesSupports = (() => {
     wrap.appendChild(updateBtn);
     wrap.appendChild(cancelBtn);
 
+    multiEditPopup.appendChild(message);
     multiEditPopup.appendChild(beginDateInput);
     multiEditPopup.appendChild(endDateInput);
-    multiEditPopup.appendChild(providerNameDropdown);
+    // multiEditPopup.appendChild(providerNameDropdown);
     multiEditPopup.appendChild(wrap);
 
-    populateServiceVendorsDropdown(providerNameDropdown, '%', true);
+    // populateServiceVendorsDropdown(providerNameDropdown, '', true);
 
     POPUP.show(multiEditPopup);
   }
@@ -1788,6 +1810,7 @@ const servicesSupports = (() => {
     });
 
     const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
 
     const addRowBtn = button.build({
       text: 'Add Paid Support',
@@ -1795,6 +1818,7 @@ const servicesSupports = (() => {
       type: 'contained',
       callback: () => addPaidSupportRow(),
     });
+    addRowBtn.classList.add('addRowBtnPaidSupports');
 
     // multi edit section
     mutliEditBtnWrap = buildMultiRowEdit();
@@ -1868,9 +1892,11 @@ const servicesSupports = (() => {
       table.populate(paidSupportsTable, tableData, isSortable, isReadOnly);
     }
 
+    btnWrap.appendChild(addRowBtn);
+    btnWrap.appendChild(mutliEditBtnWrap);
+
     paidSupportsDiv.appendChild(paidSupportsTable);
-    paidSupportsDiv.appendChild(addRowBtn);
-    paidSupportsDiv.appendChild(mutliEditBtnWrap);
+    paidSupportsDiv.appendChild(btnWrap);
 
     return paidSupportsDiv;
   }
