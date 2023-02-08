@@ -242,6 +242,13 @@ namespace Anywhere.service.Data.DocumentConversion
                 intro.Flush();
                 plan.Dispose();
                 //NATHAN TODO Add if to show where to send
+                if(doddFlag == "true")
+                {
+                    //inside of here is here you concatenate the report and send
+                    //and loop over the attachment arrays and get the type
+                    //existing code is in other functions in this file on how to
+                    //based on the type, send to correct API
+                }
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     wfAttRep = wfAttReport(wfAttachmentIds);
