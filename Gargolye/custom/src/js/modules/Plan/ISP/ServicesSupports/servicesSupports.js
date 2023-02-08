@@ -863,6 +863,7 @@ const servicesSupports = (() => {
     });
 
     const message = document.createElement('p');
+    message.classList.add('popupMessage');
     message.innerText = `Fields left blank will not be updated`;
 
     // const providerNameDropdown = dropdown.build({
