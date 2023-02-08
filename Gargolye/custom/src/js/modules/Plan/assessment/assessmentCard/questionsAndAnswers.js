@@ -152,8 +152,12 @@
         const question = document.getElementById(`question${questionId}`);
         const section = question.closest('.assessment__section');
         const questionSet = question.closest('.questionSet');
-        const inputWrap = question.querySelector('.input-field');
-        const inputEle = question.querySelector('.input-field__input');
+        let inputWrap = question.querySelector('.input-field');
+        let inputEle = question.querySelector('.input-field__input');
+
+        // check for radios
+        if (!inputWrap) inputWrap = question.querySelector('.radioWrap');
+        if (!inputEle) inputEle = question.querySelector('input');
 
         const sectionId = section.id.replace('section', '');
         const setId = questionSet.id.replace('set', '');
@@ -1331,12 +1335,12 @@
       addAnswer(answerId, '');
       // mark unanswered
       sectionQuestionCount[sectionId][setId][questionId].answered = false;
-      // clear conditionals
-      const conditionalQuestions = assessment.getConditionalQuestions(questionId);
-      toggleConditionalQuestion('', 'radio', conditionalQuestions);
       // clear radios
       const radios = [...questionInputMarkup.querySelectorAll('input')];
       radios.forEach(radio => (radio.checked = false));
+      // clear conditionals
+      const conditionalQuestions = assessment.getConditionalQuestions(questionId);
+      toggleConditionalQuestion('', 'radio', conditionalQuestions);
     });
 
     return questionInputMarkup;
