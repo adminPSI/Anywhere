@@ -83,6 +83,11 @@ const csAssignCaseload = (() => {
      let consumersoption = document.createElement("option");
      consumersoption.value = person.id;
      consumersoption.text = person.name;
+     consumersoption.addEventListener("mousedown", function(e) {
+      e.preventDefault();
+      $(this).prop('selected', !$(this).prop('selected'));
+       return false;
+     });
      selectConsumerDIV.appendChild(consumersoption);
     });
 
