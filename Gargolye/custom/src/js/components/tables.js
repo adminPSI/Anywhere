@@ -131,10 +131,10 @@ var table = (function () {
 
       // set onclick
       if (d.onClick && !disabled) {
-        row.addEventListener('click', e => {
+        row.addEventListener('click', async e => {
           if (e.target === row) {
             e.target.classList.add('noPointerEvents');
-            d.onClick(e);
+            await d.onClick(e);
             e.target.classList.remove('noPointerEvents');
           }
         });
