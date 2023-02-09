@@ -90,7 +90,7 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(relationshipImport);
             list.Add(salesForceId);
             list.Add(signatureType);
-            list.Add(isVendor);
+            list.Add(isVendor.ToString());
             string text = "CALL DBA.ANYW_ISP_InsertTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
