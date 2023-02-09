@@ -122,7 +122,8 @@ const planConsentAndSign = (() => {
       attachmentType: selectedMemberData.attachmentType ? selectedMemberData.attachmentType : '',
       // ignore
       section: '',
-      questionId: '0',
+        questionId: '0',
+      isVendor: 'false',
     };
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
