@@ -9,6 +9,8 @@
       > div:nth-child(3) {
         // Name
         flex-basis: 80px;
+        max-width: 212px;
+        word-break: break-all;
       }
       > div:nth-child(4) {
         // Participated
@@ -44,6 +46,8 @@
     > div:nth-child(2) {
       // Name
       flex-basis: 80px;
+      max-width: 212px;
+      word-break: break-all;
     }
     > div:nth-child(3) {
       // Participated

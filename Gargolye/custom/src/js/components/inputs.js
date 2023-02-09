@@ -346,36 +346,58 @@ const input = (function () {
   function disableInputField(element) {
     let inputEle;
 
-    if (
-      element.nodeName !== 'INPUT' ||
-      element.nodeName !== 'TEXTAREA' ||
-      element.nodeName !== 'SELECT'
-    ) {
-      inputEle = element.querySelector('.input-field__input');
-      if (!inputEle) inputEle = element.querySelector('.dropdown__select');
-    } else {
-      inputEle = element;
+    switch (element.nodeName) {
+      case 'INPUT':
+      case 'TEXTAREA':
+      case 'SELECT': {
+        inputEle = element;
+      }
+      default: {
+        element.classList.add('disabled');
+
+        inputEle = element.querySelector('input');
+        if (!inputEle) inputEle = element.querySelector('textarea');
+        if (!inputEle) inputEle = element.querySelector('select');
+      }
     }
 
-    element.classList.add('disabled');
-    inputEle.setAttribute('tabindex', '-1');
+    if (inputEle.type !== 'radio') {
+      inputEle.setAttribute('tabindex', '-1');
+      return;
+    }
+
+    const radios = [...element.querySelectorAll('input')];
+    radios.forEach(radio => {
+      radio.setAttribute('tabindex', '-1');
+    });
   }
   function enableInputField(element) {
     let inputEle;
 
-    if (
-      element.nodeName !== 'INPUT' ||
-      element.nodeName !== 'TEXTAREA' ||
-      element.nodeName !== 'SELECT'
-    ) {
-      inputEle = element.querySelector('.input-field__input');
-      if (!inputEle) inputEle = element.querySelector('.dropdown__select');
-    } else {
-      inputEle = element;
+    switch (element.nodeName) {
+      case 'INPUT':
+      case 'TEXTAREA':
+      case 'SELECT': {
+        inputEle = element;
+      }
+      default: {
+        element.classList.remove('disabled');
+
+        inputEle = element.querySelector('input');
+        if (!inputEle) inputEle = element.querySelector('textarea');
+        if (!inputEle) inputEle = element.querySelector('select');
+      }
     }
 
-    element.classList.remove('disabled');
-    inputEle.removeAttribute('tabindex', '-1');
+    if (inputEle.type !== 'radio') {
+      inputEle.removeAttribute('tabindex', '-1');
+      return;
+    }
+
+    const radios = [...element.querySelectorAll('input')];
+    radios.forEach(radio => {
+      radio.removeAttribute('tabindex', '-1');
+    });
   }
 
   return {

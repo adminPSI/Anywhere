@@ -446,18 +446,18 @@ var schedulingApproveRequest = (function () {
       overlapApprovalData = overlapApprovedShifts(openShiftRequests);
     }
     if (callOffTable) {
-      callOffTable = callOffTable.querySelector('.table__body');
+      var callOffTableBody = callOffTable.querySelector('.table__body');
       var callOffRequests = Array.prototype.slice.call(
-        callOffTable.querySelectorAll('.table__row'),
+        callOffTableBody.querySelectorAll('.table__row'),
       );
-      //overlapApprovalData = overlapApprovedShifts(callOffRequests);
+      overlapApprovalData = overlapApprovedShifts(callOffRequests);
     }
     if (daysOffTable) {
-      daysOffTable = daysOffTable.querySelector('.table__body');
+      var daysOffTableBody = daysOffTable.querySelector('.table__body');
       var daysOffRequests = Array.prototype.slice.call(
-        daysOffTable.querySelectorAll('.table__row'),
+        daysOffTableBody.querySelectorAll('.table__row'),
       );
-      //overlapApprovalData = overlapApprovedShifts(daysOffRequests);
+      overlapApprovalData = overlapApprovedShifts(daysOffRequests);
     }
 
     // check approved shifts to ensure no overlap (before checking for overlaps with assigned shifts)

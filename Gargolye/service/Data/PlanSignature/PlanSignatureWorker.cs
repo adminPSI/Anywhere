@@ -272,7 +272,7 @@ namespace Anywhere.service.Data.PlanSignature
                 long lngcaseManagerId = long.Parse(caseManagerId);
                 long lngConsumerId = long.Parse(consumer.id);
 
-                assignresult = ispDT.AddCaseMangerToIndividal(lngcaseManagerId, lngConsumerId, "Assigned");
+                assignresult = ispDT.AddCaseMangerToIndividal(lngConsumerId, lngcaseManagerId, "Assigned");
 
                 var processedConsumerobj = new PlanSignatureWorker.AssignStateConsumer();
                 processedConsumerobj.name = consumer.name;
