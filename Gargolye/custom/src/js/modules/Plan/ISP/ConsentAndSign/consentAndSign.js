@@ -702,8 +702,8 @@ const planConsentAndSign = (() => {
           values: [teamMember, name, participated, signatureType],
           id: `sig-${m.signatureId}`,
           endIcon: icons.edit,
-          onClick: e => {
-            csTeamMember.showPopup({
+          onClick: async e => {
+            await csTeamMember.showPopup({
               isNewMember: false,
               isReadOnly: readOnly,
               memberData: m,
