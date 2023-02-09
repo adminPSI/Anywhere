@@ -443,26 +443,28 @@ var schedulingApproveRequest = (function () {
       var openShiftRequests = Array.prototype.slice.call(
         openShiftTableBody.querySelectorAll('.table__row'),
       );
+
+      // check approved shifts to ensure no overlap (before checking for overlaps with assigned shifts)
       overlapApprovalData = overlapApprovedShifts(openShiftRequests);
+      if (overlapApprovalData !== 'NoOverLap') {
+        return;
+      }
     }
     if (callOffTable) {
       var callOffTableBody = callOffTable.querySelector('.table__body');
       var callOffRequests = Array.prototype.slice.call(
         callOffTableBody.querySelectorAll('.table__row'),
       );
-      overlapApprovalData = overlapApprovedShifts(callOffRequests);
     }
     if (daysOffTable) {
       var daysOffTableBody = daysOffTable.querySelector('.table__body');
       var daysOffRequests = Array.prototype.slice.call(
         daysOffTableBody.querySelectorAll('.table__row'),
       );
-      overlapApprovalData = overlapApprovedShifts(daysOffRequests);
     }
 
-    // check approved shifts to ensure no overlap (before checking for overlaps with assigned shifts)
-    if (overlapApprovalData !== 'NoOverLap') {
-      return;
+    if (!overlapApprovalData) {
+      overlapApprovalData = 'NoOverLap';
     }
 
     // check selected shifts against shifts already assigned to the user
@@ -480,13 +482,18 @@ var schedulingApproveRequest = (function () {
         const { getOverlapDataforSelectedShiftResult: overlapWithExistingShiftData } =
           await schedulingAjax.getOverlapDataforSelectedShiftAjax(shiftId, personId);
 
-        if (overlapWithExistingShiftData == 'NoOverLap' && decision !== '') {
+        if (overlapWithExistingShiftData === 'NoOverLap' && decision !== '') {
+          schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
+            token: $.session.Token,
+            requestedShiftId: shiftId,
+            decision: decision,
+          });
+        } else if (overlapWithExistingShiftData !== 'NoOverLap' && decision === 'D') {
           schedulingAjax.approveDenyOpenShiftRequestSchedulingAjax({
             token: $.session.Token,
             requestedShiftId: shiftId,
             decision: decision,
           }); //ajax
-        } else if (overlapWithExistingShiftData == undefined) {
         } else {
           if (overlapWithExistingShiftData != 'NoOverLap' && decision === 'A') {
             overlapsExist = true;
