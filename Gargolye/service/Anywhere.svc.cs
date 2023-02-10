@@ -1651,6 +1651,11 @@ namespace Anywhere
             return aAW.getPaidSupportsVendors(fundingSourceName, serviceName, areInSalesForce);
         }
 
+        public AnywhereAssessmentWorker.ActiveVendors[] getAllActiveVendors(string token)
+        {
+            return aAW.getAllActiveVendors(token);
+        }
+
 
         public string insertPlanReportToBeTranferredToONET(string token, string report, long planId)
         {

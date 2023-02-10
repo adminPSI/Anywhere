@@ -268,6 +268,24 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string getAllActiveVendors(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getAllActiveVendors ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_ISP_getAllActiveVendors(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("8ADG", ex.Message + "ANYW_ISP_getAllActiveVendors(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "8ADG: error ANYW_ISP_getAllActiveVendors";
+            }
+        }
+
 
         public string getPaidSupportsVendors(string fundingSourceName, string serviceName, string areInSalesForce)
         {

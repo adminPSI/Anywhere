@@ -220,6 +220,14 @@ namespace Anywhere.service.Data
             return vendorObj;
         }
 
+        public ActiveVendors[] getAllActiveVendors(string token)
+        {
+            string vendorString = adg.getAllActiveVendors(token);
+            ActiveVendors[] vendorObj = js.Deserialize<ActiveVendors[]>(vendorString);
+
+            return vendorObj;
+        }
+
         public class ServiceAndsSupportData
         {
             public AssessmentAreas[] assessmentAreas { get; set; }
@@ -239,6 +247,13 @@ namespace Anywhere.service.Data
         {
             public string vendorId { get; set; }
             public string vendorName { get; set; }
+        }
+
+        public class ActiveVendors
+        {
+            public string vendorId { get; set; }
+            public string vendorName { get; set; }
+            public string vendorAddress { get; set; }
         }
 
         public class ServiceTypesOther

@@ -2411,6 +2411,14 @@ namespace Anywhere
                     UriTemplate = "/getPaidSupportsVendors/")]
         AnywhereAssessmentWorker.ServiceVendors[] getPaidSupportsVendors(string fundingSourceName, string serviceName, string areInSalesForce);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                    BodyStyle = WebMessageBodyStyle.Wrapped,
+                    ResponseFormat = WebMessageFormat.Json,
+                    RequestFormat = WebMessageFormat.Json,
+                    UriTemplate = "/getAllActiveVendors/")]
+        AnywhereAssessmentWorker.ActiveVendors[] getAllActiveVendors(string token);
+
 
         [OperationContract]
         [WebInvoke(Method = "POST",
