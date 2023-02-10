@@ -8,7 +8,7 @@ using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
-using static PSIOISP.Deserialize;
+using PSIOISP;
 using System.Web.Services.Description;
 using pdftron.PDF;
 using pdftron.Filters;
@@ -35,6 +35,7 @@ namespace Anywhere.service.Data.DocumentConversion
         JavaScriptSerializer js = new JavaScriptSerializer();
         GetReportsStreams grs = new GetReportsStreams();
         PDFGenerator.Data obj = new PDFGenerator.Data();
+        
       //  PDFDoc doc = new PDFDoc();
 
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
@@ -93,6 +94,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
         public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, string doddFlag)
         {
+            var psiOispDT = new PSIOISP.ISPDTData();
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
@@ -241,13 +243,49 @@ namespace Anywhere.service.Data.DocumentConversion
                 plan.Close();
                 intro.Flush();
                 plan.Dispose();
-                //NATHAN TODO Add if to show where to send
-                if(doddFlag == "true")
+
+               
+
+                if (doddFlag == "true")
                 {
-                    //inside of here is here you concatenate the report and send
+                    //inside of here is where you concatenate the report and send
                     //and loop over the attachment arrays and get the type
                     //existing code is in other functions in this file on how to
                     //based on the type, send to correct API
+                    if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                    {
+                        long wfAttach;
+                        //Repeatedly call this function to send attachments to DODD
+                        foreach (string wfAttachmentId in wfAttachmentIds)
+                        {
+                            //Type cast wfAttachmentId from string to long
+                            wfAttach = long.Parse(wfAttachmentId);
+                            psiOispDT.Attachment(wfAttach);
+                        }
+                    }
+                    if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
+                    {
+                        long sigAttach;
+                        //Repeatedly call this function to send attachments to DODD
+                        foreach (string sigAttachmentId in sigAttachmentIds)
+                        {
+                            //Type cast sigAttachmentId from string to long
+                            sigAttach = long.Parse(sigAttachmentId);
+                            psiOispDT.Attachment(sigAttach);
+                        }
+                    }
+                    if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
+                    {
+                        long planAttach;
+                        //Repeatedly call this function to send attachments to DODD
+                        foreach (string planAttachmentId in planAttachmentIds)
+                        {
+                            //Type cast planAttachmentId from string to long
+                            planAttach = long.Parse(planAttachmentId);
+                            psiOispDT.Attachment(planAttach);
+                        }
+                    }
+
                 }
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {

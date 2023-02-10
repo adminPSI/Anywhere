@@ -24,7 +24,7 @@ const plan = (function () {
   let addWorkflowScreen;
   let reportsScreen;
   let reportsAttachmentScreen;
-  let createDODDScreen;
+  let DODDScreen;
   let sendToDODDScreen;
   let changePlanTypeScreen;
   let generalInfoBar;
@@ -979,6 +979,7 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
+            'false'
           );
         } else {
           //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
@@ -992,6 +993,7 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
+            'false'
           );
         }
 
@@ -1066,9 +1068,37 @@ const plan = (function () {
         style: 'secondary',
         type: 'contained',
         callback: async () => {
+            //Send plan to DODD
             runSendToDODDScreen();
-            //TODO Send the selected plan attachments to DODD by calling the function
-            //ISPDTData.Attachment(Plan_Attachment_ID);
+
+            //Send the selected plan attachments to DODD by calling the same function the report uses
+            let isSuccess;
+            // build & show spinner
+            const spinner = PROGRESS.SPINNER.get('Building DODD...');
+            DODDScreen.innerHTML = '';
+            DODDScreen.appendChild(spinner);
+            // generate report
+            if (
+                Object.keys(selectedAttachmentsPlan).length > 0 ||
+                Object.keys(selectedAttachmentsWorkflow).length > 0 ||
+                Object.keys(selectedAttachmentsSignature).length > 0
+            ) {
+                const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+                const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+                const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+                isSuccess = assessment.generateReportWithAttachments(
+                    planId,
+                    '1',
+                    extraSpace,
+                    planAttachmentIds,
+                    wfAttachmentIds,
+                    sigAttachmentIds,
+                    'true'
+                );
+            }
+
+            //TODO set date_sent_to_dodd column when the attachment is successfully uploaded to DODD
+
         },
     });
 
@@ -1090,7 +1120,7 @@ const plan = (function () {
     // build & show spinner
     const spinner = PROGRESS.SPINNER.get('Sending Plan to DODD...');
     sendToDODDScreen.appendChild(spinner);
-    // send report
+    // send DODD
     const success = await planAjax.uploadPlanToDODD({
       consumerId: selectedConsumer.id,
       planId,
@@ -1129,7 +1159,7 @@ const plan = (function () {
         // build & show spinner
         const spinner = PROGRESS.SPINNER.get('Sending Plan to DODD...');
         sendToDODDScreen.appendChild(spinner);
-        // send report
+        // send DODD
         const success = await planAjax.uploadPlanToDODD({
           consumerId: selectedConsumer.id,
           planId,
@@ -1196,8 +1226,7 @@ const plan = (function () {
       classNames:
         planStatus === 'C' && $.session.sendToDODD
           ? ['sendToDODDBtn']
-//TEMPORARY!          : ['sendToDODDBtn', 'disabled'],
-          : ['sendToDODDBtn', 'enabled'],
+          : ['sendToDODDBtn', 'disabled'],
     });
     const editDatesBtn = button.build({
       text: 'Change Dates',
@@ -1280,6 +1309,11 @@ const plan = (function () {
         case sendToDODDBtn: {
           //Nathan TODO call ajax
           targetScreen = 'DODDScreen';
+          retrieveData = {
+            token: $.session.Token,
+            assessmentId: '19',
+          };
+          const planWFAttachList = await planAjax.getPlanAndWorkFlowAttachments(retrieveData);
           break;
         }
         case editDatesBtn: {
@@ -1314,7 +1348,8 @@ const plan = (function () {
       }
 
       if (targetScreen === 'DODDScreen') {
-        runDODDScreen(extraSpace);
+          const extraSpace = e.target === sendToDODDBtn ? 'false' : 'true';
+          runDODDScreen(extraSpace);
       }
 
       if (targetScreen === 'reportsScreen') {
@@ -1341,7 +1376,7 @@ const plan = (function () {
     addWorkflowScreen = buildAddWorkflowScreen();
     reportsScreen = buildReportsScreen();
     reportsAttachmentScreen = buildReportsAttachmentsScreen();
-    createDODDScreen = buildDODDScreen();
+    DODDScreen = buildDODDScreen();
     sendToDODDScreen = buildSendToDODDScreen();
     changePlanTypeScreen = buildChangePlanTypeScreen();
 
@@ -1353,7 +1388,8 @@ const plan = (function () {
     menuInnerWrap.appendChild(addWorkflowScreen);
     menuInnerWrap.appendChild(reportsScreen);
     menuInnerWrap.appendChild(reportsAttachmentScreen);
-    menuInnerWrap.appendChild(createDODDScreen);
+    menuInnerWrap.appendChild(DODDScreen);
+    menuInnerWrap.appendChild(sendToDODDScreen);
     menuInnerWrap.appendChild(changePlanTypeScreen);
 
     morePopup.appendChild(menuInnerWrap);
