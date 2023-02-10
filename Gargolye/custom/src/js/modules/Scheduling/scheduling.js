@@ -1,38 +1,38 @@
-var scheduling = (function() {
+var scheduling = (function () {
   function loadSchedulingLanding() {
     let schedulingCalendarBtn = button.build({
-      text: "View Calendar",
-      style: "secondary",
-      type: "contained",
-      callback: function() {
+      text: 'View Calendar',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
         setActiveModuleSectionAttribute('scheduling-calendar');
         PROGRESS.SPINNER.show('Loading Schedule...');
         schedulingCalendar.init();
-      }
+      },
     });
     let schedulingRequestTimeOffBtn = button.build({
-      text: "Request Time Off",
-      style: "secondary",
-      type: "contained",
-      callback: function() {
+      text: 'Request Time Off',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
         setActiveModuleSectionAttribute('scheduling-requestTimeOff');
         PROGRESS.SPINNER.show('Loading...');
         schedulingRequestTimeOff.init();
-      }
+      },
     });
     let schedulingApproveRequestBtn = button.build({
-      text: "Approve Requests",
-      style: "secondary",
-      type: "contained",
-      callback: function() {
+      text: 'Approve Requests',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
         setActiveModuleSectionAttribute('scheduling-approveRequests');
         PROGRESS.SPINNER.show('Loading...');
         schedulingApproveRequest.init();
-      }
+      },
     });
 
-    var btnWrap = document.createElement("div");
-    btnWrap.classList.add("landingBtnWrap");
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('landingBtnWrap');
 
     btnWrap.appendChild(schedulingCalendarBtn);
 
@@ -56,6 +56,6 @@ var scheduling = (function() {
   }
 
   return {
-    init
+    init,
   };
 })();
