@@ -87,6 +87,7 @@ namespace Anywhere.service.Data.PlanSignature
             public string description { get; set; }
             public string packageId { get; set; }
             public string signedStatus { get; set; }
+            public string isVendor { get; set; }
         }
 
         public class SigId
@@ -155,7 +156,7 @@ namespace Anywhere.service.Data.PlanSignature
         public SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
-               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType)
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, bool isVendor)
         {
             string signatureIdString = "";
             string signatureId = "";
@@ -163,6 +164,8 @@ namespace Anywhere.service.Data.PlanSignature
             string peopleIdReturn = "";
             string peopId = "";
             string newSalesForceId = "";
+            //TODO ERICK SKIP TO INSERT IF VENDOR
+            //
             //Call to add person to people table and get salesforceId will go here
             if (peopleId == "")
             {
@@ -216,7 +219,7 @@ namespace Anywhere.service.Data.PlanSignature
             if (dateOfBirth == null) dateOfBirth = "";
             signatureIdString = psdg.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact,
                                     csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
-                                csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, salesforceId, signatureType);
+                                csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, salesforceId, signatureType, isVendor);
             SigId[] sigObj = js.Deserialize<SigId[]>(signatureIdString);
             if (hasWetSignature)
             {
@@ -428,7 +431,7 @@ namespace Anywhere.service.Data.PlanSignature
                     psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", signatureObj[i].csChangeMind, signatureObj[i].csChangeMindSSAPeopleId,
                                             signatureObj[i].csContact, signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, signatureObj[i].csRightsReviewed, signatureObj[i].csAgreeToPlan, signatureObj[i].csFCOPExplained,
                                             signatureObj[i].csDueProcess, signatureObj[i].csResidentialOptions, signatureObj[i].csSupportsHealthNeeds, signatureObj[i].csTechnology, signatureObj[i].buildingNumber,
-                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType);
+                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, bool.Parse(signatureObj[i].isVendor));
                 }
 
             }
