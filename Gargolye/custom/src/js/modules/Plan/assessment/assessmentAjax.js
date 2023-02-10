@@ -106,7 +106,11 @@ const assessmentAjax = (function () {
       sigAttachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
       sigAttachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
       sigAttachmentIdsInput.id = 'sigAttachmentIds';
-      //TODO add new flag same as variables above
+    //TODO add new flag same as variables above
+    var DODDFlagInput = document.createElement('input');
+      DODDFlagInput.setAttribute('name', 'DODDFlag');
+      DODDFlagInput.setAttribute('value', retrieveData.doddFlag);
+      DODDFlagInput.id = 'DODDFlag';
 
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);
@@ -118,6 +122,7 @@ const assessmentAjax = (function () {
     form.appendChild(planAttachmentIdsInput);
     form.appendChild(wfAttachmentIdsInput);
     form.appendChild(sigAttachmentIdsInput);
+    form.appendChild(DODDFlagInput);
 
     form.style.position = 'absolute';
     form.style.opacity = '0';
