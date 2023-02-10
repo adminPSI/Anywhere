@@ -50,6 +50,9 @@ const plan = (function () {
   let planAttWrap;
   let workflowAttWrap;
   let signatureAttWrap;
+  let DODDplanAttWrap;
+  let DODDworkflowAttWrap;
+  let DODDsignatureAttWrap;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -740,15 +743,15 @@ const plan = (function () {
     attachHeading.innerText = `Please select the attachment(s) that should be sent to DODD with the plan.`;
     attachmentsWrap.appendChild(attachHeading);
 
-    planAttWrap = document.createElement('div');
-    planAttWrap.classList.add('planAttWrap');
-    signatureAttWrap = document.createElement('div');
-    signatureAttWrap.classList.add('signatureAttWrap');
-    workflowAttWrap = document.createElement('div');
-    workflowAttWrap.classList.add('workflowAttWrap');
-    attachmentsWrap.appendChild(planAttWrap);
-    attachmentsWrap.appendChild(signatureAttWrap);
-    attachmentsWrap.appendChild(workflowAttWrap);
+    DODDplanAttWrap = document.createElement('div');
+    DODDplanAttWrap.classList.add('planAttWrap');
+    DODDsignatureAttWrap = document.createElement('div');
+    DODDsignatureAttWrap.classList.add('signatureAttWrap');
+    DODDworkflowAttWrap = document.createElement('div');
+    DODDworkflowAttWrap.classList.add('workflowAttWrap');
+    attachmentsWrap.appendChild(DODDplanAttWrap);
+    attachmentsWrap.appendChild(DODDsignatureAttWrap);
+    attachmentsWrap.appendChild(DODDworkflowAttWrap);
 
     const planHeading = document.createElement('h2');
     const signHeading = document.createElement('h2');
@@ -756,9 +759,9 @@ const plan = (function () {
     planHeading.innerText = 'Plan and Assessment Attachments';
     signHeading.innerText = 'Signature Attachments';
     workflowHeading.innerText = 'Workflow Attachments';
-    planAttWrap.appendChild(planHeading);
-    signatureAttWrap.appendChild(signHeading);
-    workflowAttWrap.appendChild(workflowHeading);
+    DODDplanAttWrap.appendChild(planHeading);
+    DODDsignatureAttWrap.appendChild(signHeading);
+    DODDworkflowAttWrap.appendChild(workflowHeading);
 
     screen.appendChild(attachmentsWrap);
     
@@ -939,6 +942,7 @@ const plan = (function () {
               delete selectedAttachmentsWorkflow[a.order];
             }
           }
+
         });
 
         if (a.sigAttachmentId) {
@@ -1052,11 +1056,11 @@ const plan = (function () {
             });
 
             if (a.sigAttachmentId) {
-                signatureAttWrap.appendChild(attachment);
+                DODDsignatureAttWrap.appendChild(attachment);
             } else if (a.whereFrom === 'Plan') {
-                planAttWrap.appendChild(attachment);
+              DODDplanAttWrap.appendChild(attachment);
             } else {
-                workflowAttWrap.appendChild(attachment);
+              DODDworkflowAttWrap.appendChild(attachment);
             }
 
             index++;
