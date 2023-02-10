@@ -33,19 +33,8 @@ const csAssignCaseload = (() => {
       selectCaseManagerDIV.setAttribute("id", "leftselector");
       selectCaseManagerDIV.setAttribute("size", "6");
       selectCaseManagerDIV.classList.add("assignCaseLoad-peoplelist")
-      selectCaseManagerDIV.addEventListener("click", function() {
-        currentCaseManagerSelected = Array.from(document.querySelector('#leftselector').options).filter
-        (function (option) {return option.selected;});
-
-        currentconsumersSelected = Array.from(document.querySelector('#rightselector').options).filter
-        (function (option) {return option.selected;});
-
-        if (currentCaseManagerSelected.length > 0 && currentconsumersSelected > 0) {
-          assignBtn.classList.remove('disabled');
-        } else {
-          assignBtn.classList.add('disabled');
-        }
-
+      selectCaseManagerDIV.addEventListener("click", function(e) {
+     
      });
 
      caseManagersfromOptionsTable.forEach(person => {
@@ -64,19 +53,19 @@ const csAssignCaseload = (() => {
      selectConsumerDIV.setAttribute("multiple", "multiple");
      selectConsumerDIV.setAttribute("size", "6");
      selectConsumerDIV.classList.add("assignCaseLoad-peoplelist")
-     selectConsumerDIV.addEventListener("click", function() {
-        currentconsumersSelected = Array.from(document.querySelector('#rightselector').options).filter
-        (function (option) {return option.selected;});
+    
+     selectConsumerDIV.addEventListener("click", function(e) {
+        // currentconsumersSelected = Array.from(document.querySelector('#rightselector').options).filter
+        // (function (option) {return option.selected;});
 
-        currentCaseManagerSelected = Array.from(document.querySelector('#leftselector').options).filter
-        (function (option) {return option.selected;});
+        // currentCaseManagerSelected = Array.from(document.querySelector('#leftselector').options).filter
+        // (function (option) {return option.selected;});
 
-        if (currentconsumersSelected.length > 0 && currentCaseManagerSelected.length > 0) {
-          assignBtn.classList.remove('disabled');
-        } else {
-          assignBtn.classList.add('disabled');
-        }
-
+        // if (currentconsumersSelected.length > 0 && currentCaseManagerSelected.length > 0) {
+        //   assignBtn.classList.remove('disabled');
+        // } else {
+        //   assignBtn.classList.add('disabled');
+        // }
      });
 
      consumerswithSaleforceIds.forEach(person => {
@@ -84,7 +73,8 @@ const csAssignCaseload = (() => {
      consumersoption.value = person.id;
      consumersoption.text = person.name;
      consumersoption.addEventListener("mousedown", function(e) {
-      e.preventDefault();
+       e.preventDefault();
+       // e.stopPropagation();
       $(this).prop('selected', !$(this).prop('selected'));
        return false;
      });
@@ -96,6 +86,19 @@ const csAssignCaseload = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async function () {
+
+         currentconsumersSelected = Array.from(document.querySelector('#rightselector').options).filter
+         (function (option) {return option.selected;});
+
+         currentCaseManagerSelected = Array.from(document.querySelector('#leftselector').options).filter
+         (function (option) {return option.selected;});
+
+         if (currentconsumersSelected.length > 0 && currentCaseManagerSelected.length > 0) {
+
+          } else {
+           alert('Must select a Case Manager and at least one consumer before clicking Assign button.');
+           return;
+         }
 
           selectedCaseManagerId = document.querySelector('#leftselector').value;
           selectedCaseManagerName = document.querySelector('#leftselector').selectedOptions[0].innerHTML;
@@ -156,7 +159,7 @@ const csAssignCaseload = (() => {
 
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap-popup');
-    assignBtn.classList.add('disabled');
+    //assignBtn.classList.add('disabled');
     btnWrap.appendChild(assignBtn)
     btnWrap.appendChild(cancelBtn)
     CaseManagerHeadingDiv
