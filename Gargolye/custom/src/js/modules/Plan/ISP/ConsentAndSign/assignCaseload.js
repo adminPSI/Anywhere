@@ -1,181 +1,269 @@
 const csAssignCaseload = (() => {
-    let consumerswithSaleforceIds;
-    let caseManagersfromOptionsTable;
-    let assignmentResults;
-    let selectedCaseManagerName;
-    let selectedCaseManagerId;
-    let consumersSelected;
-    let currentconsumersSelected;
-    let currentCaseManagerSelected;
-    let assignBtn;
+  // data
+  let consumerswithSaleforceIds;
+  let caseManagersfromOptionsTable;
+  let assignmentResults;
+  // case manager
+  let currentCaseManagerSelected;
+  // consumer
+  let currentconsumersSelected = [];
+  let consumersSelected;
+  // dom
+  let assignCaseLoadPopup;
+  let assignBtn;
 
-  async function showAssignCaseLoadPopup() {
-    const assignCaseLoadPopup = POPUP.build({
-      id: 'sig_assignCaseLoadPopup',
-      classNames: 'assignCaseLoad-container',
-     // hideX: true,
-      header: 'Assign Case Load',
+  function toggleAssignButton() {
+    if (!currentCaseManagerSelected || currentconsumersSelected.length === 0) {
+      assignBtn.classList.add('disabled');
+      return;
+    }
+
+    assignBtn.classList.remove('disabled');
+  }
+  function showConfirmationPopup() {
+    let selectedConsumerObjs = [];
+
+    const confirmCaseLoadPopup = POPUP.build({
+      id: 'sig_assignCaseLoadConfirmPopup',
+      classNames: 'confirmCaseLoadPopup',
+      hideX: true,
     });
 
+    const message = document.createElement('p');
+    message.classList.add('popupMessage');
+    message.innerHTML = `
+      These individuals are about to be assigned in Salesforce to <span>${currentCaseManagerSelected.name}</span>. Do you want to proceed?
+    `;
+
+    const assignedConsumerList = document.createElement('div');
+    assignedConsumerList.classList.add('assignedConsumerList');
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    currentconsumersSelected.forEach(consumer => {
+      // set data to OBJ
+      selectedConsumerObjs.push({
+        id: consumer.id,
+        name: consumer.name,
+      });
+      // build list
+      const c = document.createElement('p');
+      c.innerText = consumer.name;
+      assignedConsumerList.appendChild(c);
+    });
+
+    const confirmBtn = button.build({
+      text: 'confirm',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        assignedConsumerList.innerHTML = '';
+        btnWrap.innerHTML = '';
+        message.innerHTML = '';
+        confirmCaseLoadPopup.removeChild(message);
+        confirmCaseLoadPopup.removeChild(assignedConsumerList);
+        confirmCaseLoadPopup.removeChild(btnWrap);
+
+        const spinner = PROGRESS.SPINNER.get('Assigning Individuals...');
+        confirmCaseLoadPopup.appendChild(spinner);
+
+        assignmentResults = await consentAndSignAjax.assignStateCaseManagertoConsumers({
+          // token: $.session.Token,
+          caseManagerId: currentCaseManagerSelected.id,
+          consumers: selectedConsumerObjs,
+        });
+
+        confirmCaseLoadPopup.removeChild(spinner);
+        POPUP.hide(confirmCaseLoadPopup);
+        POPUP.hide(assignCaseLoadPopup);
+
+        // confirmCaseLoadPopup.appendChild(message);
+        // confirmCaseLoadPopup.appendChild(assignedConsumerList);
+        // confirmCaseLoadPopup.appendChild(btnWrap);
+
+        // message.innerHTML = `The following consumers were assigned to <span>${currentCaseManagerSelected.name}</span>.`;
+
+        // const processedStateConsumerObjs = JSON.parse(assignmentResults);
+
+        // processedStateConsumerObjs.forEach(consumer => {
+        //   const c = document.createElement('p');
+        //   c.innerHTML = `${consumer.name} <span>Assign result: ${consumer.assignresult}</span>`;
+        //   assignedConsumerList.appendChild(c);
+        // });
+
+        // const okBtn = button.build({
+        //   text: 'ok',
+        //   style: 'secondary',
+        //   type: 'contained',
+        //   callback: () => {
+        //     POPUP.hide(confirmCaseLoadPopup);
+        //     POPUP.hide(assignCaseLoadPopup);
+        //   },
+        // });
+        // btnWrap.appendChild(okBtn);
+
+        // reset values last
+        currentCaseManagerSelected = null;
+        currentconsumersSelected = [];
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'cancel',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        DOM.ACTIONCENTER.removeChild(confirmCaseLoadPopup);
+        assignCaseLoadPopup.style.display = 'block';
+      },
+    });
+
+    btnWrap.appendChild(confirmBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    confirmCaseLoadPopup.appendChild(message);
+    confirmCaseLoadPopup.appendChild(assignedConsumerList);
+    confirmCaseLoadPopup.appendChild(btnWrap);
+
+    assignCaseLoadPopup.style.display = 'none';
+    POPUP.show(confirmCaseLoadPopup);
+  }
+
+  async function showAssignCaseLoadPopup() {
     caseManagersfromOptionsTable = await consentAndSignAjax.getCaseManagersfromOptionsTable({
       token: $.session.Token,
     });
-
     consumerswithSaleforceIds = await consentAndSignAjax.getConsumerswithSaleforceIds({
       token: $.session.Token,
     });
 
-     let CaseManagerHeadingDiv = document.createElement("div")
-     CaseManagerHeadingDiv.classList.add("assignCaseLoad-peoplelist")
-     CaseManagerHeadingDiv.innerHTML = `<b>Select a Case Manager</b>`;
+    // Poup
+    assignCaseLoadPopup = POPUP.build({
+      id: 'sig_assignCaseLoadPopup',
+      classNames: 'assignCaseLoadPopup',
+      hideX: true,
+      header: 'Assign Case Load',
+    });
+    const popupMessage = document.createElement('p');
+    popupMessage.classList.add('popupMessage');
+    popupMessage.innerText =
+      '*Must select a Case Manager and at least one consumer before clicking Assign button.';
 
-      let selectCaseManagerDIV = document.createElement("select");
-      selectCaseManagerDIV.setAttribute("id", "leftselector");
-      selectCaseManagerDIV.setAttribute("size", "6");
-      selectCaseManagerDIV.classList.add("assignCaseLoad-peoplelist")
-      selectCaseManagerDIV.addEventListener("click", function(e) {
-     
-     });
+    const innerWrap = document.createElement('div');
+    innerWrap.classList.add('peopleListWrap');
 
-     caseManagersfromOptionsTable.forEach(person => {
-      let caseManageroption = document.createElement("option");
-      caseManageroption.value = person.id;
-      caseManageroption.text = person.name;
-      selectCaseManagerDIV.appendChild(caseManageroption);
-     });
+    // Case Managers
+    const caseManagersContainer = document.createElement('div');
+    caseManagersContainer.classList.add('assignCaseLoadPeopleList');
 
-    let consumerHeadingDiv = document.createElement("div")
-    consumerHeadingDiv.classList.add("assignCaseLoad-peoplelist")
-    consumerHeadingDiv.innerHTML = `<b>Select one (or multiple) consumers</b>`;
+    const cmHeading = document.createElement('p');
+    cmHeading.innerText = 'Select a Case Manager';
 
-     let selectConsumerDIV = document.createElement("select");
-     selectConsumerDIV.setAttribute("id", "rightselector");
-     selectConsumerDIV.setAttribute("multiple", "multiple");
-     selectConsumerDIV.setAttribute("size", "6");
-     selectConsumerDIV.classList.add("assignCaseLoad-peoplelist")
-    
-     selectConsumerDIV.addEventListener("click", function(e) {
-        // currentconsumersSelected = Array.from(document.querySelector('#rightselector').options).filter
-        // (function (option) {return option.selected;});
+    const multiSelectBodyCM = document.createElement('div');
+    caseManagersfromOptionsTable.forEach(person => {
+      let caseManager = document.createElement('p');
+      caseManager.classList.add('caseManager');
+      caseManager.setAttribute('data-personId', person.id);
+      caseManager.innerText = person.name;
+      multiSelectBodyCM.appendChild(caseManager);
 
-        // currentCaseManagerSelected = Array.from(document.querySelector('#leftselector').options).filter
-        // (function (option) {return option.selected;});
+      caseManager.addEventListener('click', e => {
+        //* There can only ever be one case manager selected
+        const isSelected = e.target.classList.contains('selected');
 
-        // if (currentconsumersSelected.length > 0 && currentCaseManagerSelected.length > 0) {
-        //   assignBtn.classList.remove('disabled');
-        // } else {
-        //   assignBtn.classList.add('disabled');
-        // }
-     });
+        if (isSelected) {
+          e.target.classList.remove('selected');
+          currentCaseManagerSelected = null;
+        } else {
+          // check for existing case manager & remove
+          const existing = [...multiSelectBodyCM.querySelectorAll('.caseManager.selected')];
+          existing.forEach(row => row.classList.remove('selected'));
+          // set new case manager
+          e.target.classList.add('selected');
+          currentCaseManagerSelected = person;
+        }
 
-     consumerswithSaleforceIds.forEach(person => {
-     let consumersoption = document.createElement("option");
-     consumersoption.value = person.id;
-     consumersoption.text = person.name;
-     consumersoption.addEventListener("mousedown", function(e) {
-       e.preventDefault();
-       // e.stopPropagation();
-      $(this).prop('selected', !$(this).prop('selected'));
-       return false;
-     });
-     selectConsumerDIV.appendChild(consumersoption);
+        toggleAssignButton();
+      });
     });
 
-     assignBtn = button.build({
+    caseManagersContainer.appendChild(cmHeading);
+    caseManagersContainer.appendChild(multiSelectBodyCM);
+
+    // Consumers
+    const consumersContainer = document.createElement('div');
+    consumersContainer.classList.add('assignCaseLoadPeopleList');
+
+    const cHeading = document.createElement('p');
+    cHeading.innerText = 'Select one (or multiple) consumers';
+
+    const multiSelectBodyC = document.createElement('div');
+    consumerswithSaleforceIds.forEach(person => {
+      let consumer = document.createElement('p');
+      consumer.setAttribute('data-personId', person.id);
+      consumer.innerText = person.name;
+      multiSelectBodyC.appendChild(consumer);
+
+      consumer.addEventListener('click', e => {
+        //* Multiple consumers can be selected
+        const isSelected = e.target.classList.contains('selected');
+
+        if (isSelected) {
+          e.target.classList.remove('selected');
+          currentconsumersSelected = currentconsumersSelected.filter(cs => cs.id !== person.id);
+        } else {
+          e.target.classList.add('selected');
+          currentconsumersSelected.push(person);
+        }
+
+        toggleAssignButton();
+      });
+    });
+
+    consumersContainer.appendChild(cHeading);
+    consumersContainer.appendChild(multiSelectBodyC);
+
+    // Action Buttons
+    assignBtn = button.build({
       text: 'ASSIGN',
       style: 'secondary',
       type: 'contained',
       callback: async function () {
+        console.log(currentCaseManagerSelected);
+        console.log(currentconsumersSelected);
 
-         currentconsumersSelected = Array.from(document.querySelector('#rightselector').options).filter
-         (function (option) {return option.selected;});
-
-         currentCaseManagerSelected = Array.from(document.querySelector('#leftselector').options).filter
-         (function (option) {return option.selected;});
-
-         if (currentconsumersSelected.length > 0 && currentCaseManagerSelected.length > 0) {
-
-          } else {
-           alert('Must select a Case Manager and at least one consumer before clicking Assign button.');
-           return;
-         }
-
-          selectedCaseManagerId = document.querySelector('#leftselector').value;
-          selectedCaseManagerName = document.querySelector('#leftselector').selectedOptions[0].innerHTML;
-          consumersSelected = Array.from(document.querySelector('#rightselector').options).filter
-          (function (option) {return option.selected;});
-
-            const selectedConsumerObjs = consumersSelected.map( pers => (
-              {
-                id: pers.value, 
-                name: pers.text
-              }
-            ));
-
-            let listofSelectedConsumers = `These individuals are about to be assigned in Salesforce to ${selectedCaseManagerName}. Do you want to proceed?\n`
-          
-            selectedConsumerObjs.forEach(person => {
-              listofSelectedConsumers = listofSelectedConsumers + `\t* ${person.name}\n`
-            })
-
-            if (
-              confirm(listofSelectedConsumers)
-            ) {
-
-                assignmentResults = await consentAndSignAjax.assignStateCaseManagertoConsumers({
-                  // token: $.session.Token,
-                  caseManagerId: selectedCaseManagerId,
-                  consumers: selectedConsumerObjs,
-                });
-        
-                var processedStateConsumerObjs = JSON.parse(assignmentResults);
-                
-                  let listofProcessedConsumers = `The following consumers were assigned to ${selectedCaseManagerName}.\n`
-                  processedStateConsumerObjs.forEach(person => {
-                    listofProcessedConsumers = listofProcessedConsumers + `\t* ${person.name} assign result:  ${person.assignresult} \n`
-                  })
-
-              alert(listofProcessedConsumers);  
-              
-              POPUP.hide(assignCaseLoadPopup);
-                      
-            } else {
-              alert(
-                `Consumers were NOT assigned to ${selectedCaseManagerName}.`            
-              );
-              POPUP.hide(assignCaseLoadPopup);       
-            }
+        showConfirmationPopup();
       },
     });
+    assignBtn.classList.add('disabled');
 
     var cancelBtn = button.build({
       text: 'CANCEL',
       style: 'secondary',
       type: 'contained',
       callback: function () {
+        currentCaseManagerSelected = null;
+        currentconsumersSelected = [];
         POPUP.hide(assignCaseLoadPopup);
       },
     });
 
     var btnWrap = document.createElement('div');
-    btnWrap.classList.add('btnWrap-popup');
-    //assignBtn.classList.add('disabled');
-    btnWrap.appendChild(assignBtn)
-    btnWrap.appendChild(cancelBtn)
-    CaseManagerHeadingDiv
-    assignCaseLoadPopup.appendChild(CaseManagerHeadingDiv);
-    assignCaseLoadPopup.appendChild(consumerHeadingDiv);
-    assignCaseLoadPopup.appendChild(selectCaseManagerDIV);
-    assignCaseLoadPopup.appendChild(selectConsumerDIV);
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(assignBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    innerWrap.appendChild(caseManagersContainer);
+    innerWrap.appendChild(consumersContainer);
+
+    assignCaseLoadPopup.appendChild(popupMessage);
+    assignCaseLoadPopup.appendChild(innerWrap);
     assignCaseLoadPopup.appendChild(btnWrap);
-   // assignCaseLoadPopup.appendChild(assignBtn);
-   // assignCaseLoadPopup.appendChild(cancelBtn);
-    
+
     POPUP.show(assignCaseLoadPopup);
   }
 
-    return {
-        showAssignCaseLoadPopup,
-        
-      };
-    })();
+  return {
+    showAssignCaseLoadPopup,
+  };
+})();

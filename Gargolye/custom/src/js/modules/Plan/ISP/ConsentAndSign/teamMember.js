@@ -177,7 +177,7 @@ const csTeamMember = (() => {
     if (success) {
       pendingSave.fulfill('Linked');
       const savePopup = document.querySelector('.successfulSavePopup');
-       DOM.ACTIONCENTER.removeChild(savePopup);
+      DOM.ACTIONCENTER.removeChild(savePopup);
       overlay.hide();
       planConsentAndSign.refreshTable();
     } else {
@@ -255,7 +255,7 @@ const csTeamMember = (() => {
           pendingSave.fulfill('Saved');
           setTimeout(() => {
             const savePopup = document.querySelector('.successfulSavePopup');
-             DOM.ACTIONCENTER.removeChild(savePopup);
+            DOM.ACTIONCENTER.removeChild(savePopup);
 
             POPUP.hide(teamMemberPopup);
             planConsentAndSign.refreshTable();
@@ -278,7 +278,7 @@ const csTeamMember = (() => {
         pendingSave.fulfill('Saved');
         setTimeout(() => {
           const savePopup = document.querySelector('.successfulSavePopup');
-         DOM.ACTIONCENTER.removeChild(savePopup);
+          DOM.ACTIONCENTER.removeChild(savePopup);
           POPUP.hide(teamMemberPopup);
           planConsentAndSign.refreshTable();
         }, 700);
@@ -296,52 +296,61 @@ const csTeamMember = (() => {
 
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian
   async function continueSaveofGuardianTeamMember() {
-
-    // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
-   if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId)) {
-    alert(`This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`);
-    return false;
-   } 
+    // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
+    if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId)) {
+      alert(
+        `This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`,
+      );
+      return false;
+    }
 
     // A -- No State Guardian in Dropdown (stateGuardianDropdown) -- you can't save
     if (!selectedStateGuardianSalesForceId) {
-      alert(`A Guardian is not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
+      alert(
+        `A Guardian is not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
+      );
       return false;
     }
 
     // B -- Imported Guardian and Selected State Guardian have matching SaleForceIDs
-    if (selectedStateGuardianSalesForceId && selectedMemberData.salesForceId === selectedStateGuardianSalesForceId) {
-      return true;
-   }
-
-   // 1 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
-   if ((selectedMemberData.salesForceId  && selectedMemberData.salesForceId !== '')  && selectedStateGuardianSalesForceId !== '' && 
-   selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId && 
-    (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)
+    if (
+      selectedStateGuardianSalesForceId &&
+      selectedMemberData.salesForceId === selectedStateGuardianSalesForceId
     ) {
+      return true;
+    }
 
-       // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
+    // 1 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, BUT there is a SalesforceID in the People table that matches the selected State Guardian.
+    if (
+      selectedMemberData.salesForceId &&
+      selectedMemberData.salesForceId !== '' &&
+      selectedStateGuardianSalesForceId !== '' &&
+      selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId &&
+      DBteamMemberswithStateSalesForceId &&
+      DBteamMemberswithStateSalesForceId.length === 1
+    ) {
+      // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
       if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
-        alert(`This team Member will not be saved. No salesForceIds are available to be used for this team Member in this Plan.`);
+        alert(
+          `This team Member will not be saved. No salesForceIds are available to be used for this team Member in this Plan.`,
+        );
         return false;
-      } 
+      }
 
       let Scenario1ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 
       However, the following Guardian was found in the local database that matches the SalesforceID 
       of the selected State Guardian: ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName}.
       Do you wish to save ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName} 
-      as the Guardian for this particular Added Team Member?`
+      as the Guardian for this particular Added Team Member?`;
 
-      if (
-        confirm(Scenario1ConfirmText)
-      ) {
-                  selectedMemberData.name = DBteamMemberswithStateSalesForceId[0].name;
-									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
-									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
-									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
-									selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
-                  selectedMemberData.peopleId = DBteamMemberswithStateSalesForceId[0].peopleId;
-									return true;
+      if (confirm(Scenario1ConfirmText)) {
+        selectedMemberData.name = DBteamMemberswithStateSalesForceId[0].name;
+        selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
+        selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
+        selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
+        selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+        selectedMemberData.peopleId = DBteamMemberswithStateSalesForceId[0].peopleId;
+        return true;
       } else {
         alert(
           `The Imported Guardian does not match the State Guardian listed in Salesforce and must be entered in Salesforce Portal.`,
@@ -350,13 +359,16 @@ const csTeamMember = (() => {
       }
     }
 
-     // 2 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
-   if ((selectedMemberData.salesForceId  && selectedMemberData.salesForceId !== '') && selectedStateGuardianSalesForceId !== '' && 
-   selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId && 
-    (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)
+    // 2 -- Imported Guardian and Selected State Guardian do not have matching SaleForceIDs, AND there is NO SalesforceID in the People table that matches the selected State Guardian.
+    if (
+      selectedMemberData.salesForceId &&
+      selectedMemberData.salesForceId !== '' &&
+      selectedStateGuardianSalesForceId !== '' &&
+      selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId &&
+      (!DBteamMemberswithStateSalesForceId ||
+        (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0))
     ) {
-
-      // let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs. 						  
+      // let Scenario2ConfirmText = `The Imported Guardian and selected State Guardian do not have matching SalesForceIDs.
       // Do you wish to save the selected State Guardian as the Guardian for this particular Added Team Member?`
 
       // if (
@@ -370,41 +382,42 @@ const csTeamMember = (() => {
       //   selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
       //   return true;
       // } else {
+      alert(
+        `Imported Guardian selected is not listed in Salesforce for this individual and must be entered on Salesforce portal.`,
+      );
+      return false;
+    }
+    // }
+
+    // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian.
+    if (
+      (selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId) &&
+      selectedStateGuardianSalesForceId !== '' &&
+      DBteamMemberswithStateSalesForceId &&
+      DBteamMemberswithStateSalesForceId.length === 1
+    ) {
+      // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
+      if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
         alert(
-          `Imported Guardian selected is not listed in Salesforce for this individual and must be entered on Salesforce portal.`,
+          `This team Member will not be saved. No salesForceIds are available to be used for this team Member in this Plan.`,
         );
         return false;
       }
-   // }
 
-
-     // 3 -- Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, BUT there is a SalesforceID in the People table that matches the selected State Guardian. 
-   if ((selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId) && 
-   selectedStateGuardianSalesForceId !== '' && 
-   (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 1)) {
-
-      // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan   
-      if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
-        alert(`This team Member will not be saved. No salesForceIds are available to be used for this team Member in this Plan.`);
-        return false;
-      } 
-
-    let Scenario3ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
+      let Scenario3ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
     However, the following Guardian was found in the local database that matches the SalesforceID 
     of the selected State Guardian: ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName}.
     Do you wish to save ${DBteamMemberswithStateSalesForceId[0].name} ${DBteamMemberswithStateSalesForceId[0].lastName} 
-    as the Guardian for this particular Added Team Member?`
+    as the Guardian for this particular Added Team Member?`;
 
-      if (
-        confirm(Scenario3ConfirmText)
-      ) {
-                  selectedMemberData.name = DBteamMemberswithStateSalesForceId[0].name;
-									selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
-									selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
-									selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
-									selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
-                  selectedMemberData.peopleId = DBteamMemberswithStateSalesForceId[0].peopleId;
-									return true;
+      if (confirm(Scenario3ConfirmText)) {
+        selectedMemberData.name = DBteamMemberswithStateSalesForceId[0].name;
+        selectedMemberData.lastName = DBteamMemberswithStateSalesForceId[0].lastName;
+        selectedMemberData.buildingNumber = DBteamMemberswithStateSalesForceId[0].buildingNumber;
+        selectedMemberData.dateOfBirth = DBteamMemberswithStateSalesForceId[0].dateOfBirth;
+        selectedMemberData.salesForceId = DBteamMemberswithStateSalesForceId[0].salesForceId;
+        selectedMemberData.peopleId = DBteamMemberswithStateSalesForceId[0].peopleId;
+        return true;
       } else {
         alert(
           `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
@@ -412,52 +425,68 @@ const csTeamMember = (() => {
         return false;
       }
     }
-  
-      // 4 --Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, AND there is NO SalesforceID in the People table that matches the selected State Guardian. 
-   if ((selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId) && 
-   selectedStateGuardianSalesForceId !== '' && 
-   (!DBteamMemberswithStateSalesForceId || DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0)) {
 
+    // 4 --Imported Guardian has NO SaleforceID, but the Selected State Guardian does have a SaleForceID, AND there is NO SalesforceID in the People table that matches the selected State Guardian.
     if (
-      confirm('Is the selected State Guardian the same person as the Imported Guardian in the form?')
+      (selectedMemberData.salesForceId === '' || !selectedMemberData.salesForceId) &&
+      selectedStateGuardianSalesForceId !== '' &&
+      (!DBteamMemberswithStateSalesForceId ||
+        (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0))
     ) {
-      // YES -- Continue
-    } else {
-      alert(
-        `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
-      );
-      return false;
-    }
+      if (
+        confirm(
+          'Is the selected State Guardian the same person as the Imported Guardian in the form?',
+        )
+      ) {
+        // YES -- Continue
+      } else {
+        alert(
+          `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
+        );
+        return false;
+      }
 
-    let Scenario4ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
+      let Scenario4ConfirmText = `The Imported Guardian does NOT have a SalesForceID, but the selected State Guardian does. 
     Do you wish to assign the selected State SalesforceID to the Imported Guardian (${selectedMemberData.name} ${selectedMemberData.lastName}) and then save
-    ${selectedMemberData.name} ${selectedMemberData.lastName} as the Guardian for this particular Added Team Member? `
+    ${selectedMemberData.name} ${selectedMemberData.lastName} as the Guardian for this particular Added Team Member? `;
 
-    let updatesuccess;
+      let updatesuccess;
 
-    if (
-      confirm(Scenario4ConfirmText)
-    ) {
-      // update the imported/manually entered member with the State SaleforceID
-      try {
-        await consentAndSignAjax.setSalesForceIdForTeamMemberUpdate({
-          peopleId: selectedMemberData.contactId,
-          salesForceId: selectedStateGuardianSalesForceId,
-        });
-        updatesuccess = true;
+      if (confirm(Scenario4ConfirmText)) {
+        // update the imported/manually entered member with the State SaleforceID
+        try {
+          await consentAndSignAjax.setSalesForceIdForTeamMemberUpdate({
+            peopleId: selectedMemberData.contactId,
+            salesForceId: selectedStateGuardianSalesForceId,
+          });
+          updatesuccess = true;
         } catch (error) {
-        updatesuccess = false;
+          updatesuccess = false;
         }
 
         if (updatesuccess) {
-        selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
-        return true;
+          selectedMemberData.salesForceId = selectedStateGuardianSalesForceId;
+          return true;
         } else {
+          alert(
+            'Assigning the selected State SalesforceID to the Imported Guardian failed; therefore, inserting this Guardian will not be attempted.',
+          );
+          return false;
+        }
+      } else {
         alert(
-          'Assigning the selected State SalesforceID to the Imported Guardian failed; therefore, inserting this Guardian will not be attempted.',
+          `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
         );
         return false;
-        }
+      }
+    }
+
+    // Final Guard Clause and Message for a failed attempt to Save New team Member
+    if (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length > 1) {
+      alert(
+        `Unable to save Team Member. There were multiple people in your local Database with the SalesForceID: ${DBteamMemberswithStateSalesForceId[0].salesForceId}. Correct this issue before continuing.`,
+      );
+      return false;
     } else {
       alert(
         `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
@@ -465,33 +494,16 @@ const csTeamMember = (() => {
       return false;
     }
 
-  }
-  
-  // Final Guard Clause and Message for a failed attempt to Save New team Member
-  if (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length > 1) {
-    alert(
-      `Unable to save Team Member. There were multiple people in your local Database with the SalesForceID: ${DBteamMemberswithStateSalesForceId[0].salesForceId}. Correct this issue before continuing.`,
-    );
-    return false;
-  } else {
-    alert(
-      `The Imported Guardian does not match the State Guardian listed in the Salesforce and must be entered in Salesforce Portal.`,
-    );
-    return false;
-  }
-  
-  function hasSalesForceIdBeenUsed(selectedSalesForceID) {
+    function hasSalesForceIdBeenUsed(selectedSalesForceID) {
+      let isSaleForceIdUsed = false;
 
-    let isSaleForceIdUsed = false;
-
-    if (currentTeamMemberList && currentTeamMemberList.length > 0) {
-      currentTeamMemberList.forEach(p => {
-        if (selectedSalesForceID === p.salesForceId) isSaleForceIdUsed = true;
-      });
+      if (currentTeamMemberList && currentTeamMemberList.length > 0) {
+        currentTeamMemberList.forEach(p => {
+          if (selectedSalesForceID === p.salesForceId) isSaleForceIdUsed = true;
+        });
+      }
+      return isSaleForceIdUsed;
     }
-    return isSaleForceIdUsed;
-  }
-
   }
 
   function getSignatureTypeByID(id) {
@@ -813,12 +825,18 @@ const csTeamMember = (() => {
       callback: async event => {
         selectedMemberData.teamMember = event.target.value;
 
-        var selectedConsumer = plan.getSelectedConsumer();
-        let stateGuardiansOb = await consentAndSignAjax.getStateGuardiansforConsumer({
-          peopleId: selectedConsumer.id,
-        });
+        // var selectedConsumer = plan.getSelectedConsumer();
+        // let stateGuardiansOb = await consentAndSignAjax.getStateGuardiansforConsumer({
+        //   peopleId: selectedConsumer.id,
+        // });
 
-        if ((!stateGuardiansOb || stateGuardiansOb.length === 0)  && planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)) alert(`No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`);
+        // if (
+        //   (!stateGuardiansOb || stateGuardiansOb.length === 0) &&
+        //   planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember)
+        // )
+        //   alert(
+        //     `No State Guardians found for this individual. No Guardian or Parent/Guardian can be entered as new team member. Enter a new guardian for this individual in the SalesForce Portal.`,
+        //   );
 
         // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
         setStateofPopupFields();
@@ -1111,20 +1129,44 @@ const csTeamMember = (() => {
 
     // initial display of Form/popup before a teamMember designations is selected
 
-    if ($.session.planInsertNewTeamMember) {
-      teamMemberDropdown.classList.add('error');
-      linkToRelationshipBtn.classList.add('disabled');
+    if (!$.session.planInsertNewTeamMember) {
+      teamMemberDropdown.classList.add('disabled');
       nameInput.classList.add('disabled');
       lNameInput.classList.add('disabled');
-      nameInput.classList.remove('error');
-      lNameInput.classList.remove('error');
+      // nameInput.classList.remove('error');
+      // lNameInput.classList.remove('error');
       dateOfBirthInput.classList.add('disabled');
       buildingNumberInput.classList.add('disabled');
       participatedYesRadio.classList.add('disabled');
       participatedNoRadio.classList.add('disabled');
-      radioDiv.classList.remove('error');
+      // radioDiv.classList.remove('error');
       signatureTypeDropdown.classList.add('disabled');
-      saveTeamMemberBtn.classList.add('disabled');//
+      saveTeamMemberBtn.classList.add('disabled'); //
+    }
+
+    //* Required Fields
+    //*------------------------------
+    if ($.session.planInsertNewTeamMember) {
+      if (selectedMemberData.teamMember === '') {
+        teamMemberDropdown.classList.add('error');
+      } else {
+        teamMemberDropdown.classList.remove('error');
+      }
+      if (selectedMemberData.name === '') {
+        nameInput.classList.add('error');
+      } else {
+        nameInput.classList.remove('error');
+      }
+      if (selectedMemberData.signatureType === '') {
+        signatureTypeDropdown.classList.add('error');
+      } else {
+        signatureTypeDropdown.classList.remove('error');
+      }
+      if (isNew) {
+        if (selectedMemberData.lastName === '') {
+          lNameInput.classList.add('error');
+        }
+      }
     }
 
     //* Add elements to popup
