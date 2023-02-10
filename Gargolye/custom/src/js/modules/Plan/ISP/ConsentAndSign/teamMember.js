@@ -858,7 +858,6 @@ const csTeamMember = (() => {
         buildingNumberInput.classList.remove('disabled');
         participatedYesRadio.classList.remove('disabled');
         participatedNoRadio.classList.remove('disabled');
-        radioDiv.classList.add('error');
         signatureTypeDropdown.classList.remove('disabled');
       }
 
