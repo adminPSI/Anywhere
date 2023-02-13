@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.IO;
+using Anywhere.Data;
 
 namespace Anywhere.service.Data.eSignature_OneSpan
 {
@@ -116,15 +117,15 @@ namespace Anywhere.service.Data.eSignature_OneSpan
             list.Add(assessmentId);
             list.Add(signedStatus);
 
-            string text = "CALL DBA.ANYW_ISP_OneSpan_UpdateDocumentSignedStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            string text = "CALL DBA.ANYW_OneSpan_UpdateDocumentSignedStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("3APICDG", ex.Message + "ANYW_ISP_OneSpan_UpdateDocumentSignedStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "3APICDG: error ANYW_ISP_OneSpan_UpdateDocumentSignedStatus";
+                logger.error("3APICDG", ex.Message + "ANYW_OneSpan_UpdateDocumentSignedStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APICDG: error ANYW_OneSpan_UpdateDocumentSignedStatus";
             }
         }
 

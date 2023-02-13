@@ -58,7 +58,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 string[] emails = { "erick.bey@primarysolutions.net", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
 
-                //List<string> emails = new List<string>();
+                //List<string> emailsList = new List<string>();
                 List<string> namesList = new List<string>();
                 List<string> memberTypesList = new List<string>();
                 List<string> signatureIdsList = new List<string>();
@@ -79,31 +79,30 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 string[] signatureTypes = signatureTypeList.ToArray();
 
                 //TODO: Change these values to whatever Josh specifies
-                string lastName = "N/A";
-                string packageName = "this is a test";
-                string documentName = "This is a  test";
+                string lastName = "(No Last Name Provided)";
+                string packageName = "Plan Report";
                 PackageBuilder superPackage = PackageBuilder.NewPackageNamed(packageName);
-                packageName = "Testing Package";
 
                 int i = 0;
                 List<Signer> allSigners = new List<Signer>();
                 foreach (string email in emails)
                 {
-                    // Does not create a signer if the user has "No Signature Required
                     if (signatureTypes[i] != "1")
                     {
                         i++;
                         continue;
                     }
                     string fullName = names[i];
-                    var name = fullName.Trim().Split(' ');
-                    if (name.Length > 1)
+                    string[] splitName = fullName.Trim().Split(' ');
+
+                    if (splitName.Length > 1)
                     {
-                        lastName = name[1];
+                        //lastName = name[1];
+                        lastName = string.Join(" ", splitName, 1, splitName.Length - 1);
                     }
 
                     Signer signer = SignerBuilder.NewSignerWithEmail(email)
-                        .WithFirstName(name[0])
+                        .WithFirstName(splitName[0])
                         .WithLastName(lastName)
                         .WithCustomId(signatureIds[i])
                         .WithTitle(memberTypes[i])
@@ -113,10 +112,10 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     allSigners.Add(signer);
 
                     i++;
-                    lastName = "N/A";
+                    lastName = "(No Last Name Provided)";
                 }
 
-                return createDocument(token, assessmentID, allSigners, documentName, names, signatureTypes, superPackage, ms);
+                return createDocument(token, assessmentID, allSigners, names, signatureTypes, superPackage, ms);
             }
         }
 
@@ -152,9 +151,24 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             return oneSpanRadioButton;
         }
 
-        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string documentName, string[] names, string[]signatureTypes, PackageBuilder package, MemoryStream ms)
+        public Field createTextAreaField(string idName, string anchorText)
         {
-            DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Franklin County One Span Demo")
+            Field textAreaInput = FieldBuilder.TextArea()
+                .WithId(idName)
+                .WithFontSize(12)
+                .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchorText)
+                                                                        .AtPosition(TextAnchorPosition.TOPLEFT)
+                                                                        .WithSize(500, 200)
+                                                                        .WithCharacter(0)
+                                                                        .WithOffset(50, 50))
+                .Build();
+
+            return textAreaInput;
+        }
+
+        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string[] names, string[]signatureTypes, PackageBuilder package, MemoryStream ms)
+        {
+            DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Plan Report")
                                 .FromStream(ms, DocumentType.PDF)
                                 .EnableExtraction();
 
@@ -186,13 +200,12 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             int i = 0;
             foreach (Signer signer in allSigners)
             {
-                // Skips creating the signatures if "No Signature Required" has been selected
                 if (signatureTypes[i] != "1")
                 {
                     i++;
                     continue;
                 }
-                string anchor = names[i] + " Signature";
+                string anchor = names[i] + " /";
                 string dateAnchor = names[i] + " Date";
 
                 if ( signer.Title == "Guardian" || signer.Title == "Person Supported" || signer.Title == "Parent/Guardian")
@@ -233,7 +246,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                         .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
-                                                                    .WithOffset(1, 8)
+                                                                    .WithOffset(450, 8)
                                                                     .WithCharacter(0)
                                                                     .WithOccurrence(0))
                                                                     .WithField(FieldBuilder.SignatureDate()
@@ -242,7 +255,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                                                                             .AtPosition(TextAnchorPosition.BOTTOMLEFT)
                                                                                             .WithSize(75, 40)
                                                                                             .WithCharacter(4)
-                                                                                            .WithOffset(-10, -7)
+                                                                                            .WithOffset(725, 0)
                                                                                             .WithOccurrence(0)))
                                             .Build();
                     occurence += 1;
@@ -256,16 +269,16 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                            .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
-                                                                    .WithOffset(1, 8)
+                                                                    .WithOffset(450, 8)
                                                                     .WithCharacter(0)
                                                                     .WithOccurrence(0))
                                                                     .WithField(FieldBuilder.SignatureDate()
                                                                     .WithId("Date_Signed-" + i)
-                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(dateAnchor)
+                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
                                                                                             .AtPosition(TextAnchorPosition.BOTTOMLEFT)
                                                                                             .WithSize(75, 40)
                                                                                             .WithCharacter(4)
-                                                                                            .WithOffset(-10, -7)
+                                                                                            .WithOffset(725, 0)
                                                                                             .WithOccurrence(0)))
                                             .Build();
                     document.WithSignature(sig1);
@@ -329,8 +342,9 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
             if (signingStatus.ToString().Equals("COMPLETE"))
             {
+                string signedStatus = signingStatus.ToString();
+
                 //TODO: Maybe save the completed PDF to the Plan_PDF column of ANYW_ISP_Consumer_Plans
-                //TODO: update the db to show completed status
                 byte[] zipContent = ossClient.DownloadZippedDocuments(currentPackageId);
                 File.WriteAllBytes(@"C:\Users\erick.bey\Downloads"
                                     + "/package-documents.zip", zipContent);
@@ -340,6 +354,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                     + "/evidence-summary.pdf", evidenceContent);
 
                 updateTeamMemberTable = true;
+                osdg.OneSpanUpdateDocumentSignedStatus(token, assessmentID, signedStatus);
             }
 
             // Code below sets the values from the documents radio buttons and assigns them to fieldIds using the fieldName as the value. This is all grouped by each signers signatureID so we can send each signers values to be updated in the DB
