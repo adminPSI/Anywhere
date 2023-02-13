@@ -21,6 +21,7 @@ using pdftron;
 using System.Management.Automation.Language;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 using iTextSharp.text.pdf.qrcode;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -69,6 +70,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 foreach (PlanAttachments wfa in planAttachmentsObj)
@@ -80,6 +82,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 //string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
@@ -91,10 +94,71 @@ namespace Anywhere.service.Data.DocumentConversion
                 return null;
             }
         }
-
-        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, string doddFlag)
+        public void sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds)
         {
-            var psiOispDT = new PSIOISP.ISPDTData();
+
+          //  var psiOispDT = new PSIOISP.ISPDTData();
+            WorkflowDataGetter wfdg = new WorkflowDataGetter();
+            PlanDataGetter pdg = new PlanDataGetter();
+
+           // if (doddFlag == "true")
+          //  {
+                //inside of here is where you concatenate the report and send
+                //and loop over the attachment arrays and get the type
+                //existing code is in other functions in this file on how to
+                //based on the type, send to correct API
+                if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                {
+                    long wfAttach;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string wfAttachmentId in wfAttachmentIds)
+                    {
+                        //Type cast wfAttachmentId from string to long
+                        // wfAttach = long.Parse(wfAttachmentId);
+                        // string result = psiOispDT.Attachment(wfAttach);
+                        //if (result !== "failed")
+                        //{
+                        string test1 = wfdg.updateWorkflowStepDocumentsenttoDODD(wfAttachmentId, "Y");
+                        //}
+                    }
+                }
+                if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
+                {
+                    long sigAttach;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string sigAttachmentId in sigAttachmentIds)
+                    {
+                        //Type cast sigAttachmentId from string to long
+                        // sigAttach = long.Parse(sigAttachmentId);
+                        // string result = psiOispDT.Attachment(sigAttach);
+                        //if (result !== "failed")
+                        //{
+                        string test2 = pdg.updatePlanAttachmentsenttoDODD(sigAttachmentId, "Y");
+                        //}
+                    }
+                }
+                if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
+                {
+                    long planAttach;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string planAttachmentId in planAttachmentIds)
+                    {
+                        //Type cast planAttachmentId from string to long
+                        // planAttach = long.Parse(planAttachmentId);
+                        // string result = psiOispDT.Attachment(planAttach);
+                        //if (result !== "failed")
+                        //{
+                        string test3 = pdg.updatePlanAttachmentsenttoDODD(planAttachmentId, "Y");
+                        //}
+                    }
+                }
+           // }
+
+        }
+
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        {
+           
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
@@ -113,6 +177,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 MemoryStream assessment = new MemoryStream();
                 MemoryStream intro = new MemoryStream();
                 MemoryStream plan = new MemoryStream();
+               
                 foreach (ReportSectionOrder ord in order)
                 {
                     if (true == true)
@@ -228,9 +293,8 @@ namespace Anywhere.service.Data.DocumentConversion
                         
 
                     }
-                }
+                 }
 
-                
                 byte[] introReport = StreamExtensions.ToByteArray(intro);
                 intro.Close();
                 intro.Flush();
@@ -244,49 +308,6 @@ namespace Anywhere.service.Data.DocumentConversion
                 intro.Flush();
                 plan.Dispose();
 
-               
-
-                if (doddFlag == "true")
-                {
-                    //inside of here is where you concatenate the report and send
-                    //and loop over the attachment arrays and get the type
-                    //existing code is in other functions in this file on how to
-                    //based on the type, send to correct API
-                    if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
-                    {
-                        long wfAttach;
-                        //Repeatedly call this function to send attachments to DODD
-                        foreach (string wfAttachmentId in wfAttachmentIds)
-                        {
-                            //Type cast wfAttachmentId from string to long
-                            wfAttach = long.Parse(wfAttachmentId);
-                            psiOispDT.Attachment(wfAttach);
-                        }
-                    }
-                    if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
-                    {
-                        long sigAttach;
-                        //Repeatedly call this function to send attachments to DODD
-                        foreach (string sigAttachmentId in sigAttachmentIds)
-                        {
-                            //Type cast sigAttachmentId from string to long
-                            sigAttach = long.Parse(sigAttachmentId);
-                            psiOispDT.Attachment(sigAttach);
-                        }
-                    }
-                    if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
-                    {
-                        long planAttach;
-                        //Repeatedly call this function to send attachments to DODD
-                        foreach (string planAttachmentId in planAttachmentIds)
-                        {
-                            //Type cast planAttachmentId from string to long
-                            planAttach = long.Parse(planAttachmentId);
-                            psiOispDT.Attachment(planAttach);
-                        }
-                    }
-
-                }
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     wfAttRep = wfAttReport(wfAttachmentIds);
@@ -300,8 +321,6 @@ namespace Anywhere.service.Data.DocumentConversion
                     planAttRep = planAttReport(planAttachmentIds);
                 }
                 
-                
-
                 foreach (ReportSectionOrder ord in order)
                 {
                     if(ord.setting_value == "1")
@@ -1101,7 +1120,8 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
-
+            public string workflowstepdocId { get; set; }
+            
         }
 
         public class PlanAttachments
@@ -1113,6 +1133,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
+            public string workflowstepdocId { get; set; }
         }
 
         public class WorkFlowAttachments
@@ -1124,6 +1145,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
+            public string workflowstepdocId { get; set; }
         }
 
         public class POrWFAttachment

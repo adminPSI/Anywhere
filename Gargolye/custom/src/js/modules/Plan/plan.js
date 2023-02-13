@@ -900,6 +900,17 @@ const plan = (function () {
 
     return idArray;
   }
+
+  function getwfstepdocIds(attachments) {
+    const idArray = [];
+
+    for (const prop in attachments) {
+      idArray.push(attachments[prop].workflowstepdocId);
+    }
+
+    return idArray;
+  }
+
   async function runReportScreen(extraSpace) {
     const selectedAttachmentsPlan = {};
     const selectedAttachmentsWorkflow = {};
@@ -1032,6 +1043,8 @@ const plan = (function () {
             const description = document.createElement('p');
             description.innerText = a.description;
             attachment.appendChild(description);
+           // attachment.setAttribute('data-WF-stepdocId', a.workflowstepdocId);
+          //  attachment.setAttribute('data-attachmentId', a.attachmentId);
 
             attachment.addEventListener('click', () => {
                 if (!attachment.classList.contains('selected')) {
@@ -1088,17 +1101,14 @@ const plan = (function () {
                 Object.keys(selectedAttachmentsSignature).length > 0
             ) {
                 const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
-                const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+                const wfAttachmentIds = getwfstepdocIds(selectedAttachmentsWorkflow);
                 const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-                isSuccess = assessment.generateReportWithAttachments(
-                    planId,
-                    '1',
-                    extraSpace,
-                    planAttachmentIds,
-                    wfAttachmentIds,
-                    sigAttachmentIds,
-                    'true'
-                );
+                isSuccess = assessmentAjax.sendSelectedAttachmentsToDODD({
+                  token: $.session.Token,
+                  planAttachmentIds: planAttachmentIds,
+                  wfAttachmentIds:  wfAttachmentIds,
+                  sigAttachmentIds:  sigAttachmentIds,
+                  });
             }
 
             //TODO set date_sent_to_dodd column when the attachment is successfully uploaded to DODD

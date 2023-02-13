@@ -642,6 +642,27 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string updatePlanAttachmentsenttoDODD(string attachmentId, string senttoDODD)
+        {
+          
+            logger.debug("updatePlanAttachmentsenttoDODD");
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            list.Add(senttoDODD);
+         
+            string text = "CALL DBA.ANYW_ISP_UpdatePlanAttachmentsenttoDODD(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("539.2", ex.Message + "ANYW_ISP_UpdatePlanAttachmentsenttoDODD(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "539.2: error ANYW_ISP_UpdatePlanAttachmentsenttoDODD";
+            }
+        }
+
+
         public string deletePlanAttachment(string token, long planId, string attachmentId)
         {
             if (tokenValidator(token) == false) return null;

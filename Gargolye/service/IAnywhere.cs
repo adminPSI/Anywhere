@@ -30,6 +30,7 @@ using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttach
 using static Anywhere.service.Data.AnywhereWorker;
 using static Anywhere.service.Data.DayServicesWorker;
 using Anywhere.service.Data.eSignature___OneSpan;
+using System.Management.Automation.Language;
 
 namespace Anywhere
 {
@@ -3694,6 +3695,11 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getPlanAndWorkFlowAttachments/")]
         PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId);
+       
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "/sendSelectedAttachmentsToDODD/")]
+        void sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Bare,
