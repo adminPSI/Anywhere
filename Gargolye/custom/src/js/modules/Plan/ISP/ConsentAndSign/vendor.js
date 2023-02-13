@@ -56,7 +56,7 @@ const csVendor = (() => {
           
         let vendorDropdownData = [{text: "", value: ""}];
         vendorDropdownData = vendorDropdownData.concat(vendorData.map(vendor => ({text: vendor.vendorName, value: vendor.vendorName})));
-        
+
         dropdown.populate(vendorDropdown, vendorDropdownData, teamMember)
     }
 
@@ -64,10 +64,11 @@ const csVendor = (() => {
         const existingTeamMemberType = teamMember.split(" ", 2).join(" ");
       const dropdownData = [
         { text: '', value: '' },
-        { text: 'Home Provider Vendor', value: 'Home Provider Vendor' },
-        { text: 'Day Provider Vendor', value: 'Day Provider Vendor' },
-        { text: 'Other Vendor', value: 'Other Vendor' },
+        { text: 'Home Provider', value: 'Home Provider Vendor' },
+        { text: 'Day Provider', value: 'Day Provider Vendor' },
+        { text: 'Other', value: 'Other Vendor' },
       ];
+
       dropdown.populate(teamMemberDropdown, dropdownData, teamMember);
     }
 
@@ -349,8 +350,14 @@ const csVendor = (() => {
         label: 'Vendor',
         readonly: isSigned || readOnly,
         callback: async event => {
-            
           selectedMemberData.name = event.target.value;
+
+          if (event.target.value === '') {
+            vendorDropdown.classList.add('error');
+          } else {
+            vendorDropdown.classList.remove('error');
+          }
+
           const vendorRel = getSelectedVendorRel(selectedMemberData.name)
           selectedMemberData.buildingNumber = vendorRel.vendorAddress;
 
@@ -374,6 +381,12 @@ const csVendor = (() => {
         readonly: isSigned || readOnly,
         callback: async event => {
           selectedMemberData.teamMember = event.target.value;
+
+          if (event.target.value === '') {
+            teamMemberDropdown.classList.add('error');
+          } else {
+            teamMemberDropdown.classList.remove('error');
+          }
 
           // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
           setStateofPopupFields();
