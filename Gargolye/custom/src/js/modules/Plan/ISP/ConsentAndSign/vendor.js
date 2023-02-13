@@ -112,7 +112,7 @@ const csVendor = (() => {
             if (usePerson) {
               pendingSavePopup.style.display = 'block';
               selectedMemberData.peopleId = rd.existingPeopleId;
-              await planConsentAndSign.insertNewTeamMember(selectedMemberData);
+              await planConsentAndSign.insertNewTeamMember(selectedMemberData, true);
               success = true;
   
               if (success) {
