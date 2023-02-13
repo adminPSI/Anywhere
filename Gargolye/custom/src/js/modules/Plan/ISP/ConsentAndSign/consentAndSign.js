@@ -74,7 +74,7 @@ const planConsentAndSign = (() => {
   //*------------------------------------------------------
   //* INSERT/UPDATE/DELETE
   //*------------------------------------------------------
-  async function insertNewTeamMember(selectedMemberData) {
+  async function insertNewTeamMember(selectedMemberData, isVendor) {
     // UNSAVABLE NOTE TEXT IS REMOVED IN BACKEND ON INSERTS
     const data = {
       token: $.session.Token,
@@ -125,6 +125,10 @@ const planConsentAndSign = (() => {
         questionId: '0',
       isVendor: 'false',
     };
+
+    if (isVendor === true) {
+      data.isVendor = true;
+    }
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
 
@@ -688,6 +692,7 @@ const planConsentAndSign = (() => {
     if (teamMemberData) {
       const tableData = teamMemberData.map(m => {
         const isSigned = m.dateSigned !== '';
+
         const teamMember = m.teamMember;
         const name = contactInformation.cleanName({
           lastName: m.lastName,
@@ -704,11 +709,19 @@ const planConsentAndSign = (() => {
           id: `sig-${m.signatureId}`,
           endIcon: icons.edit,
           onClick: async e => {
-            await csTeamMember.showPopup({
+            if (m.teamMember.slice(-6) === 'Vendor') {
+              await csVendor.showPopup({
+                isNewMember: false,
+                isReadOnly: readOnly,
+                memberData: m,
+              });
+            } else {
+              await csTeamMember.showPopup({
               isNewMember: false,
               isReadOnly: readOnly,
               memberData: m,
             });
+            }
           },
         };
 
@@ -803,10 +816,58 @@ const planConsentAndSign = (() => {
       },
     });
 
+    const addVendorBtn = button.build({
+      id: 'sig_addVendor',
+      text: 'ADD VENDOR',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        csVendor.showPopup({
+          isNewMember: true,
+          isReadOnly: readOnly,
+          memberData: {
+            teamMember: '',
+            name: '',
+            lastName: '',
+            participated: '',
+            // sign/disent
+            signature: '',
+            signatureType: '',
+            dissentAreaDisagree: '',
+            dissentHowToAddress: '',
+            dateSigned: '',
+            dissentDate: '',
+            // consent
+            csAgreeToPlan: '',
+            csChangeMind: '',
+            csChangeMindSSAPeopleId: csSSAPeopleIdGlobal,
+            csContact: '',
+            csContactInput: csContactInputGlobal,
+            csContactProviderVendorId: csrVendorIdGlobal,
+            csDueProcess: '',
+            csFCOPExplained: '',
+            csResidentialOptions: '',
+            csRightsReviewed: '',
+            csSupportsHealthNeeds: '',
+            csTechnology: '',
+            // new
+            contactId: '',
+            peopleId: '',
+            buildingNumber: '',
+            dateOfBirth: '',
+            planYearStart: '',
+            planYearEnd: '',
+          },
+          currentTeamMemberData: teamMemberData,
+        });
+      },
+    });
+
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('topOutcomeWrap');
 
     btnWrap.appendChild(addMemberBtn);
+    btnWrap.appendChild(addVendorBtn);
 
     tableWrap.appendChild(btnWrap);
     tableWrap.appendChild(teamMemberTable);
@@ -814,6 +875,7 @@ const planConsentAndSign = (() => {
     if (readOnly) {
       teamMemberTable.classList.add('disableDrag');
       addMemberBtn.classList.add('disabled');
+      addVendorBtn.classList.add('disabled');
     }
 
     // build it

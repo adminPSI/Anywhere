@@ -73,6 +73,31 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
+
+  async function getAllActiveVendors(retrieveData) {
+    // string token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getAllActiveVendors/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getAllActiveVendorsResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async function GetSalesForceId() {
     // token, signatureId
     const retrieveData = {
@@ -520,5 +545,6 @@ const consentAndSignAjax = (() => {
     validateConsumerForSalesForceId,
     getStateGuardiansforConsumer,
     assignStateCaseManagertoConsumers,
+    getAllActiveVendors
   };
 })();

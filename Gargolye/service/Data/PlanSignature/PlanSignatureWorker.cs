@@ -164,57 +164,61 @@ namespace Anywhere.service.Data.PlanSignature
             string peopleIdReturn = "";
             string peopId = "";
             string newSalesForceId = "";
-            //TODO ERICK SKIP TO INSERT IF VENDOR
-            //
-            //Call to add person to people table and get salesforceId will go here
-            if (peopleId == "")
-            {
-                //MAT readd below two when buildingNumber and DOB are required again
-                //string checkNumber = buildingNumber.Split(' ').First();
-                //checkExistReturn = psdg.checkPeopleExist(name, lastName, checkNumber, dateOfBirth);
-                checkExistReturn = psdg.checkPeopleExist(name, lastName);
-            }
-            if (checkExistReturn.IndexOf("Does not exist") != -1 && checkExistReturn != "")
-            {
-                if (buildingNumber == null) buildingNumber = "";
-                if (dateOfBirth == null) dateOfBirth = "";
-                peopleIdReturn = psdg.newPersonToPeopleTable(token, name, lastName, buildingNumber, dateOfBirth);
-                NewPeopleId[] peoObj = js.Deserialize<NewPeopleId[]>(peopleIdReturn);
-                peopleId = peoObj[0].newPeopleId;
-                //newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopId));
-            }
-            if (checkExistReturn.IndexOf("Does not exist") == -1 && checkExistReturn != "")
-            {
-                SigId[] sigObjPeop = new SigId[1];
-                ExistingMember[] existingMemObj = js.Deserialize<ExistingMember[]>(checkExistReturn);
-                sigObjPeop[0] = new SigId();
-                sigObjPeop[0].existingPeopleId = existingMemObj[0].id.ToString();
+            
+            
+                //Call to add person to people table and get salesforceId will go here
+                if (peopleId == "")
+                {
+                    //MAT readd below two when buildingNumber and DOB are required again
+                    //string checkNumber = buildingNumber.Split(' ').First();
+                    //checkExistReturn = psdg.checkPeopleExist(name, lastName, checkNumber, dateOfBirth);
+                    checkExistReturn = psdg.checkPeopleExist(name, lastName);
+                }
+                if (checkExistReturn.IndexOf("Does not exist") != -1 && checkExistReturn != "")
+                {
+                    if (buildingNumber == null) buildingNumber = "";
+                    if (dateOfBirth == null) dateOfBirth = "";
+                 peopleIdReturn = psdg.newPersonToPeopleTable(token, name, lastName, buildingNumber, dateOfBirth);
+                    NewPeopleId[] peoObj = js.Deserialize<NewPeopleId[]>(peopleIdReturn);
+                    peopleId = peoObj[0].newPeopleId;
+                    //newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopId));
+                }
+                if (checkExistReturn.IndexOf("Does not exist") == -1 && checkExistReturn != "")
+                {
+                    SigId[] sigObjPeop = new SigId[1];
+                    ExistingMember[] existingMemObj = js.Deserialize<ExistingMember[]>(checkExistReturn);
+                    sigObjPeop[0] = new SigId();
+                    sigObjPeop[0].existingPeopleId = existingMemObj[0].id.ToString();
 
-                return sigObjPeop;
-            }
+                    return sigObjPeop;
+                }
             //if(peopleId != "" && createRelationship == "F")
             //{
             //    newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
             //}
-
-            if (salesforceId == "")
-            {
-                newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
-
-                if (newSalesForceId != null)
-                {
-                    salesforceId = newSalesForceId.ToString();
-                }
-                if (salesforceId == "0" || salesforceId == null)
-                {
-                    salesforceId = "";
-                }
-            }
-            if (createRelationship == "T")
+            if (isVendor == false)
             {
 
-                psdg.createRelationship(token, planYearStart, planYearEnd, consumerId, peopleId, newSalesForceId);
+                if (salesforceId == "")
+                {
+                    newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
+
+                    if (newSalesForceId != null)
+                    {
+                        salesforceId = newSalesForceId.ToString();
+                    }
+                    if (salesforceId == "0" || salesforceId == null)
+                    {
+                        salesforceId = "";
+                    }
+                }
+                if (createRelationship == "T")
+                {
+
+                    psdg.createRelationship(token, planYearStart, planYearEnd, consumerId, peopleId, newSalesForceId);
+                }
             }
+            
             if (buildingNumber == null) buildingNumber = "";
             if (dateOfBirth == null) dateOfBirth = "";
             signatureIdString = psdg.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact,
