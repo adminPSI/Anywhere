@@ -3706,8 +3706,10 @@ namespace Anywhere
        
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/sendSelectedAttachmentsToDODD/")]
-        void sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds);
+        string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Bare,

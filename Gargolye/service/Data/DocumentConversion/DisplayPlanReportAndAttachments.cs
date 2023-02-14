@@ -94,7 +94,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 return null;
             }
         }
-        public void sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds)
+        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds)
         {
 
             var psiOispDT = new PSIOISP.ISPDTData();
@@ -141,6 +141,8 @@ namespace Anywhere.service.Data.DocumentConversion
                   
                     }
                 }
+
+            return "SUCCESSFUL";
            // }
 
         }

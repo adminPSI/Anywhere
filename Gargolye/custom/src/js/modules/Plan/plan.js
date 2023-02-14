@@ -1117,7 +1117,7 @@ const plan = (function () {
         // runSendToDODDScreen();
 
         //Send the selected plan attachments to DODD by calling the same function the report uses
-        let isSuccess;
+        let sendSuccess;
         // build & show spinner
         const spinner = PROGRESS.SPINNER.get('Sending to DODD...');
         const screenInner = DODDScreen.querySelector('.attachmentsWrap');
@@ -1136,12 +1136,13 @@ const plan = (function () {
           try {
             // await needed to allow spinner to spin while request is being made
             // try catch added to prevent code from stopping on ajax error
-            isSuccess = await assessmentAjax.sendSelectedAttachmentsToDODD({
+            sendSuccess = await assessmentAjax.sendSelectedAttachmentsToDODD({
               token: $.session.Token,
               planAttachmentIds: planAttachmentIds,
               wfAttachmentIds: wfAttachmentIds,
               sigAttachmentIds: sigAttachmentIds,
             });
+
           } catch (error) {
             console.log(error.statusText);
           }

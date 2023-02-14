@@ -36,9 +36,10 @@ const assessmentAjax = (function () {
     });
   }
 
-  function sendSelectedAttachmentsToDODD(retrieveData) {
+  async function sendSelectedAttachmentsToDODD(retrieveData) {
      //token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds
-     return $.ajax({
+     try {
+      const data = await $.ajax({
          type: 'POST',
          url:
              $.webServer.protocol +
@@ -53,6 +54,12 @@ const assessmentAjax = (function () {
          contentType: 'application/json; charset=utf-8',
          dataType: 'json',
      });
+
+     return data.sendSelectedAttachmentsToDODDResult;
+
+    } catch (error) {
+      console.log(error);
+    }
   }
   
   function getPlanAssessmentReportWithAttachments(retrieveData, callback) {
