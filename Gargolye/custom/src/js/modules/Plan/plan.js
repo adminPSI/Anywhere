@@ -1119,7 +1119,7 @@ const plan = (function () {
         //Send the selected plan attachments to DODD by calling the same function the report uses
         let isSuccess;
         // build & show spinner
-        const spinner = PROGRESS.SPINNER.get('Building DODD...');
+        const spinner = PROGRESS.SPINNER.get('Sending to DODD...');
         const screenInner = DODDScreen.querySelector('.attachmentsWrap');
         DODDScreen.removeChild(doneBtn);
         DODDScreen.removeChild(screenInner);
