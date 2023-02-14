@@ -202,49 +202,49 @@ const csVendor = (() => {
     }
   
     function buildParticipationRadios() {
-      const radioContainer = document.createElement('div');
-      radioContainer.classList.add('sig_radioContainer');
-  
-      const radioContainerTitle = document.createElement('p');
-      radioContainerTitle.innerText = 'Participated in Planning?';
-  
-      participatedYesRadio = input.buildRadio({
-        text: 'Yes',
-        name: 'pipRadioSet',
-        isChecked: selectedMemberData.participated === 'Y',
-        isDisabled: isSigned || readOnly,
-        callback: () => {
-          selectedMemberData.participated = 'Y';
-          radioDiv.classList.remove('error');
-          checkcsVendorPopupForErrors();
-        },
-      });
-      participatedNoRadio = input.buildRadio({
-        text: 'No',
-        name: 'pipRadioSet',
-        isChecked: selectedMemberData.participated === 'N',
-        isDisabled: isSigned || readOnly,
-        callback: () => {
-          selectedMemberData.participated = 'N';
-          radioDiv.classList.remove('error');
-          checkcsVendorPopupForErrors();
-        },
-      });
-  
-      radioDiv = document.createElement('div');
-      radioDiv.classList.add('signatures_radioDiv');
-      radioDiv.appendChild(participatedYesRadio);
-      radioDiv.appendChild(participatedNoRadio);
-  
-      if (isNew && $.session.planInsertNewTeamMember) {
-        radioDiv.classList.add('error');
+        const radioContainer = document.createElement('div');
+        radioContainer.classList.add('sig_radioContainer');
+    
+        const radioContainerTitle = document.createElement('p');
+        radioContainerTitle.innerText = 'Participated in Planning?';
+    
+        participatedYesRadio = input.buildRadio({
+          text: 'Yes',
+          name: 'pipRadioSet',
+          isChecked: selectedMemberData.participated === 'Y',
+          isDisabled: isSigned || readOnly,
+          callback: () => {
+            selectedMemberData.participated = 'Y';
+            radioDiv.classList.remove('error');
+            checkcsVendorPopupForErrors();
+          },
+        });
+        participatedNoRadio = input.buildRadio({
+          text: 'No',
+          name: 'pipRadioSet',
+          isChecked: selectedMemberData.participated === 'N',
+          isDisabled: isSigned || readOnly,
+          callback: () => {
+            selectedMemberData.participated = 'N';
+            radioDiv.classList.remove('error');
+            checkcsVendorPopupForErrors();
+          },
+        });
+    
+        radioDiv = document.createElement('div');
+        radioDiv.classList.add('signatures_radioDiv');
+        radioDiv.appendChild(participatedYesRadio);
+        radioDiv.appendChild(participatedNoRadio);
+    
+        if (isNew && $.session.planInsertNewTeamMember) {
+          radioDiv.classList.add('error');
+        }
+    
+        radioContainer.appendChild(radioContainerTitle);
+        radioContainer.appendChild(radioDiv);
+    
+        return radioContainer;
       }
-  
-      radioContainer.appendChild(radioContainerTitle);
-      radioContainer.appendChild(radioDiv);
-  
-      return radioContainer;
-    }
   
     function buildDateSignedDisplay() {
       const dateSignedDisplay = document.createElement('p');
@@ -326,7 +326,6 @@ const csVendor = (() => {
       readOnly = isReadOnly;
       showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
       selectedMemberData = { ...memberData };
-      // TOOD 94246: IF the LIMITED NUMBER OF GUARDIANS or Parent Guardians have been reached, then REMOVE 'Guardians' from the teamMember DDL
       currentTeamMemberList = currentTeamMemberData;
   
       // if (!isNew && $.session.applicationName === 'Advisor') {
@@ -363,12 +362,12 @@ const csVendor = (() => {
 
           buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber.substring(0, 4);
           buildingNumberInput.classList.add('disabled');
-  
+
           // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
           setStateofPopupFields();
   
           // inserting/removing the conditional fields based on teamMemberDropdown selection
-          //insertingConditionalFieldsintoPopup();
+          // insertingConditionalFieldsintoPopup();
   
           checkcsVendorPopupForErrors();
         }, // end callback
@@ -387,30 +386,30 @@ const csVendor = (() => {
           } else {
             teamMemberDropdown.classList.remove('error');
           }
-
-          // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
-          setStateofPopupFields();
-  
-          // inserting/removing the conditional fields based on teamMemberDropdown selection
-          insertingConditionalFieldsintoPopup();
-  
-          checkcsVendorPopupForErrors();
         }, // end callback
       }); // end DROP DOWN BUILD
   
       // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
       function setStateofPopupFields() {
         if ($.session.planInsertNewTeamMember) {
-          buildingNumberInput.classList.remove('disabled');
+          //buildingNumberInput.classList.remove('disabled');
           participatedYesRadio.classList.remove('disabled');
           participatedNoRadio.classList.remove('disabled');
-          radioDiv.classList.add('error');
           signatureTypeDropdown.classList.remove('disabled');
+
+          vendorDropdown.classList.add('error');
+          teamMemberDropdown.classList.add('error');
+          signatureTypeDropdown.classList.add('error');
         }
   
         //* Required Fields
         //*------------------------------
         if ($.session.planInsertNewTeamMember) {
+          if (selectedMemberData.name === '') {
+            vendorDropdown.classList.add('error');
+          } else {
+            vendorDropdown.classList.remove('error');
+          }
           if (selectedMemberData.teamMember === '') {
             teamMemberDropdown.classList.add('error');
           } else {
@@ -421,25 +420,18 @@ const csVendor = (() => {
           } else {
             signatureTypeDropdown.classList.remove('error');
           }
+        //   if (selectedMemberData.buildingNumber === '') {
+        //     buildingNumberInput.classList.add('error');
+        //   } else {
+        //     buildingNumberInput.classList.remove('error');
+        //   }
           if (selectedMemberData.participated === '') {
-            console.log("here")
-            participationRadios.classList.add('error');
+            radioDiv.classList.add('error');
           } else {
-            participationRadios.classList.remove('error');
+            radioDiv.classList.remove('error');
           }
         }
-      }
-  
-      // inserting/removing the conditional fields based on teamMemberDropdown selection
-      function insertingConditionalFieldsintoPopup() {
-        if (selectedMemberData.teamMember === '') {
-          // team member has NOT been selected
-  
-          teamMemberDropdown.classList.add('error');
-
-        }  //end if -- team member has been selected
-      } // end if -- function insertingConditionalFieldsintoPopup()
-  
+      }  
   
       teamMemberDropdown.classList.add('teamMemberDropdown');
   
@@ -497,16 +489,46 @@ const csVendor = (() => {
         buildingNumberInput.classList.add('disabled');
       }
   
-      // initial display of Form/popup before a teamMember designations is selected
-  
-      if ($.session.planInsertNewTeamMember) {
-        teamMemberDropdown.classList.add('error');
+       // initial display of Form/popup before a teamMember designations is selected
+       if (!$.session.planInsertNewTeamMember) {
+        vendorDropdown.classList.add('disabled');
+        teamMemberDropdown.classList.add('disabled');
         buildingNumberInput.classList.add('disabled');
         participatedYesRadio.classList.add('disabled');
         participatedNoRadio.classList.add('disabled');
-        radioDiv.classList.remove('error');
+        // radioDiv.classList.remove('error');
         signatureTypeDropdown.classList.add('disabled');
-        saveTeamMemberBtn.classList.add('disabled');//
+        saveTeamMemberBtn.classList.add('disabled'); //
+      }
+  
+      //* Required Fields
+      //*------------------------------
+      if ($.session.planInsertNewTeamMember) {
+        if (selectedMemberData.name === '') {
+          vendorDropdown.classList.add('error');
+        } else {
+          vendorDropdown.classList.remove('error');
+        }
+        if (selectedMemberData.teamMember === '') {
+          teamMemberDropdown.classList.add('error');
+        } else {
+          teamMemberDropdown.classList.remove('error');
+        }
+        // if (selectedMemberData.buildingNumber === '') {
+        //   buildingNumberInput.classList.add('error');
+        // } else {
+        //   buildingNumberInput.classList.remove('error');
+        // }
+        if (selectedMemberData.participated === '') {
+            radioDiv.classList.add('error');
+          } else {
+            radioDiv.classList.remove('error');
+          }
+        if (selectedMemberData.signatureType === '') {
+          signatureTypeDropdown.classList.add('error');
+        } else {
+          signatureTypeDropdown.classList.remove('error');
+        }
       }
   
       //* Add elements to popup
