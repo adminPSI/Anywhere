@@ -85,13 +85,13 @@ const csVendor = (() => {
       );
     }
   
-    async function saveTeamMember() {  
+    async function saveTeamMember() {
       csVendorPopup.style.display = 'none';
       pendingSave.show('Saving...');
-  
+
       let res = null;
       let success;
-  
+
       // Gather Data
       if (isNew) {
         if (importedFromRelationship) {
@@ -104,49 +104,20 @@ const csVendor = (() => {
 
         let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData, true);
         rd = rd ? rd[0] : {};
-  
+
         if (rd.existingPeopleId) {
+          selectedMemberData.peopleId = rd.existingPeopleId;
+
+          await planConsentAndSign.insertNewTeamMember(selectedMemberData, true);
+          success = true;
           const pendingSavePopup = document.querySelector('.pendingSavePopup');
           pendingSavePopup.style.display = 'none';
-  
-          csRelationship.showExistingPopup(selectedMemberData, async usePerson => {
-            if (usePerson) {
-              pendingSavePopup.style.display = 'block';
-              selectedMemberData.peopleId = rd.existingPeopleId;
-              await planConsentAndSign.insertNewTeamMember(selectedMemberData, true);
-              success = true;
-  
-              if (success) {
-                pendingSave.fulfill('Saved');
-                setTimeout(() => {
-                  const savePopup = document.querySelector('.successfulSavePopup');
-                  DOM.ACTIONCENTER.removeChild(savePopup);
-                  POPUP.hide(csVendorPopup);
-                  planConsentAndSign.refreshTable();
-                }, 700);
-              } else {
-                pendingSave.reject('Failed to save, please try again.');
-                console.error(res);
-                setTimeout(() => {
-                  const failPopup = document.querySelector('.failSavePopup');
-                  DOM.ACTIONCENTER.removeChild(failPopup);
-                  csVendorPopup.style.removeProperty('display');
-                }, 2000);
-              }
-            } else {
-              pendingSave.hide();
-              overlay.show();
-            }
-          });
-        } else {
-          success = true;
-  
+
           if (success) {
             pendingSave.fulfill('Saved');
             setTimeout(() => {
               const savePopup = document.querySelector('.successfulSavePopup');
-               DOM.ACTIONCENTER.removeChild(savePopup);
-  
+              DOM.ACTIONCENTER.removeChild(savePopup);
               POPUP.hide(csVendorPopup);
               planConsentAndSign.refreshTable();
             }, 700);
@@ -159,16 +130,19 @@ const csVendor = (() => {
               csVendorPopup.style.removeProperty('display');
             }, 2000);
           }
+        } else {
+          pendingSave.hide();
+          overlay.show();
         }
       } else {
         await planConsentAndSign.updateTeamMember(selectedMemberData);
         success = true;
-  
+
         if (success) {
           pendingSave.fulfill('Saved');
           setTimeout(() => {
             const savePopup = document.querySelector('.successfulSavePopup');
-           DOM.ACTIONCENTER.removeChild(savePopup);
+            DOM.ACTIONCENTER.removeChild(savePopup);
             POPUP.hide(csVendorPopup);
             planConsentAndSign.refreshTable();
           }, 700);
@@ -392,7 +366,6 @@ const csVendor = (() => {
       // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
       function setStateofPopupFields() {
         if ($.session.planInsertNewTeamMember) {
-          //buildingNumberInput.classList.remove('disabled');
           participatedYesRadio.classList.remove('disabled');
           participatedNoRadio.classList.remove('disabled');
           signatureTypeDropdown.classList.remove('disabled');
@@ -420,11 +393,6 @@ const csVendor = (() => {
           } else {
             signatureTypeDropdown.classList.remove('error');
           }
-        //   if (selectedMemberData.buildingNumber === '') {
-        //     buildingNumberInput.classList.add('error');
-        //   } else {
-        //     buildingNumberInput.classList.remove('error');
-        //   }
           if (selectedMemberData.participated === '') {
             radioDiv.classList.add('error');
           } else {
@@ -447,6 +415,7 @@ const csVendor = (() => {
           checkcsVendorPopupForErrors();
         },
       });
+      buildingNumberInput.classList.add('disabled');
       // Participate Yes/NO
       const participationRadios = buildParticipationRadios();
   
@@ -485,6 +454,11 @@ const csVendor = (() => {
   
       //* Disabled Fields
       //*------------------------------
+    //   if (!isNew) {
+    //     if (selectedMemberData.buildingNumber !== '') {
+    //       buildingNumberInput.classList.add('disabled');
+
+    //   }
       if (selectedMemberData.buildingNumber) {
         buildingNumberInput.classList.add('disabled');
       }
@@ -514,11 +488,6 @@ const csVendor = (() => {
         } else {
           teamMemberDropdown.classList.remove('error');
         }
-        // if (selectedMemberData.buildingNumber === '') {
-        //   buildingNumberInput.classList.add('error');
-        // } else {
-        //   buildingNumberInput.classList.remove('error');
-        // }
         if (selectedMemberData.participated === '') {
             radioDiv.classList.add('error');
           } else {
