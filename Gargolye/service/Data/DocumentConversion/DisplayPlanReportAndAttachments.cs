@@ -97,7 +97,7 @@ namespace Anywhere.service.Data.DocumentConversion
         public void sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds)
         {
 
-          //  var psiOispDT = new PSIOISP.ISPDTData();
+            var psiOispDT = new PSIOISP.ISPDTData();
             WorkflowDataGetter wfdg = new WorkflowDataGetter();
             PlanDataGetter pdg = new PlanDataGetter();
 
@@ -109,46 +109,49 @@ namespace Anywhere.service.Data.DocumentConversion
                 //based on the type, send to correct API
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
-                    long wfAttach;
+                    long wfAttachId;
                     //Repeatedly call this function to send attachments to DODD
                     foreach (string wfAttachmentId in wfAttachmentIds)
                     {
                         //Type cast wfAttachmentId from string to long
-                        // wfAttach = long.Parse(wfAttachmentId);
-                        // string result = psiOispDT.Attachment(wfAttach);
-                        //if (result !== "failed")
-                        //{
-                        string test1 = wfdg.updateWorkflowStepDocumentsenttoDODD(wfAttachmentId, "Y");
+                         wfAttachId = long.Parse(wfAttachmentId);
+                    // string result = psiOispDT.Attachment(wfAttach);
+                    //if (result !== "failed")
+                    //{
+                   // string test1A = psiOispDT.Attachment(wfAttachId, true);
+                   // string test1 = wfdg.updateWorkflowStepDocumentsenttoDODD(wfAttachmentId, "Y");
                         //}
                     }
                 }
                 if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
                 {
-                    long sigAttach;
+                    long sigAttachId;
                     //Repeatedly call this function to send attachments to DODD
                     foreach (string sigAttachmentId in sigAttachmentIds)
                     {
-                        //Type cast sigAttachmentId from string to long
-                        // sigAttach = long.Parse(sigAttachmentId);
-                        // string result = psiOispDT.Attachment(sigAttach);
-                        //if (result !== "failed")
-                        //{
-                        string test2 = pdg.updatePlanAttachmentsenttoDODD(sigAttachmentId, "Y");
+                    //Type cast sigAttachmentId from string to long
+                     sigAttachId = long.Parse(sigAttachmentId);
+                    // string result = psiOispDT.Attachment(sigAttach);
+                    //if (result !== "failed")
+                    //{
+                   // string test2A = psiOispDT.Attachment(sigAttachId, false);
+                   // string test2 = pdg.updatePlanAttachmentsenttoDODD(sigAttachmentId, "Y");
                         //}
                     }
                 }
                 if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
                 {
-                    long planAttach;
+                    long planAttachId;
                     //Repeatedly call this function to send attachments to DODD
                     foreach (string planAttachmentId in planAttachmentIds)
                     {
-                        //Type cast planAttachmentId from string to long
-                        // planAttach = long.Parse(planAttachmentId);
-                        // string result = psiOispDT.Attachment(planAttach);
-                        //if (result !== "failed")
-                        //{
-                        string test3 = pdg.updatePlanAttachmentsenttoDODD(planAttachmentId, "Y");
+                    //Type cast planAttachmentId from string to long
+                     planAttachId = long.Parse(planAttachmentId);
+                    // string result = psiOispDT.Attachment(planAttach);
+                    //if (result !== "failed")
+                    //{
+                   //  string test3A = psiOispDT.Attachment(planAttachId, false);
+                  //  string test3 = pdg.updatePlanAttachmentsenttoDODD(planAttachmentId, "Y");
                         //}
                     }
                 }
