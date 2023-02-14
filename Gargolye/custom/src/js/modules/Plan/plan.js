@@ -1086,7 +1086,7 @@ const plan = (function () {
         type: 'contained',
         callback: async () => {
             //Send plan to DODD
-            runSendToDODDScreen();
+           // runSendToDODDScreen();
 
             //Send the selected plan attachments to DODD by calling the same function the report uses
             let isSuccess;
@@ -1110,7 +1110,10 @@ const plan = (function () {
                   sigAttachmentIds:  sigAttachmentIds,
                   });
             }
-
+            DODDScreen.removeChild(spinner);
+            DODDScreen.classList.remove('visible');
+            morePopupMenu.classList.add('visible');
+           
             //TODO set date_sent_to_dodd column when the attachment is successfully uploaded to DODD
 
         },
@@ -1126,8 +1129,10 @@ const plan = (function () {
         },
     });
 
+   // DODDScreen = buildDODDScreen();
     DODDScreen.appendChild(doneBtn);
     DODDScreen.appendChild(cancelBtn);
+    
   }
 
   async function runSendToDODDScreen() {
@@ -1363,7 +1368,9 @@ const plan = (function () {
 
       if (targetScreen === 'DODDScreen') {
           const extraSpace = e.target === sendToDODDBtn ? 'false' : 'true';
+        //  DODDScreen = buildDODDScreen();
           runDODDScreen(extraSpace);
+
       }
 
       if (targetScreen === 'reportsScreen') {
