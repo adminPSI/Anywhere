@@ -75,16 +75,22 @@ const csAssignCaseload = (() => {
         });
 
         confirmCaseLoadPopup.removeChild(spinner);
-        POPUP.hide(confirmCaseLoadPopup);
-        POPUP.hide(assignCaseLoadPopup);
-
         confirmCaseLoadPopup.appendChild(message);
         confirmCaseLoadPopup.appendChild(assignedConsumerList);
         confirmCaseLoadPopup.appendChild(btnWrap);
 
-        message.innerHTML = `The following consumers were not able to be assigned to <span>${currentCaseManagerSelected.name}</span>. Please contact DODD.`;
-
         const processedStateConsumerObjs = JSON.parse(assignmentResults);
+        const filteredStateConsumers = processedStateConsumerObjs.filter(obj =>
+          obj.assignresult.includes('Case Manger Not Assigned'),
+        );
+
+        if (filteredStateConsumers.length === 0) {
+          POPUP.hide(confirmCaseLoadPopup);
+          POPUP.hide(assignCaseLoadPopup);
+          return;
+        }
+
+        message.innerHTML = `The following consumers were not able to be assigned to <span>${currentCaseManagerSelected.name}</span>. Please contact DODD.`;
 
         processedStateConsumerObjs.forEach(consumer => {
           if (consumer.assignresult.includes('Case Manger Not Assigned')) {
