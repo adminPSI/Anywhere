@@ -78,30 +78,33 @@ const csAssignCaseload = (() => {
         POPUP.hide(confirmCaseLoadPopup);
         POPUP.hide(assignCaseLoadPopup);
 
-        // confirmCaseLoadPopup.appendChild(message);
-        // confirmCaseLoadPopup.appendChild(assignedConsumerList);
-        // confirmCaseLoadPopup.appendChild(btnWrap);
+        confirmCaseLoadPopup.appendChild(message);
+        confirmCaseLoadPopup.appendChild(assignedConsumerList);
+        confirmCaseLoadPopup.appendChild(btnWrap);
 
-        // message.innerHTML = `The following consumers were assigned to <span>${currentCaseManagerSelected.name}</span>.`;
+        message.innerHTML = `The following consumers were not able to be assigned to <span>${currentCaseManagerSelected.name}</span>. Please contact DODD.`;
 
-        // const processedStateConsumerObjs = JSON.parse(assignmentResults);
+        const processedStateConsumerObjs = JSON.parse(assignmentResults);
 
-        // processedStateConsumerObjs.forEach(consumer => {
-        //   const c = document.createElement('p');
-        //   c.innerHTML = `${consumer.name} <span>Assign result: ${consumer.assignresult}</span>`;
-        //   assignedConsumerList.appendChild(c);
-        // });
+        processedStateConsumerObjs.forEach(consumer => {
+          if (consumer.assignresult.includes('Case Manger Not Assigned')) {
+            const c = document.createElement('p');
+            c.innerHTML = `${consumer.name}`;
+            // c.innerHTML = `${consumer.name} <span>Assign result: ${consumer.assignresult}</span>`;
+            assignedConsumerList.appendChild(c);
+          }
+        });
 
-        // const okBtn = button.build({
-        //   text: 'ok',
-        //   style: 'secondary',
-        //   type: 'contained',
-        //   callback: () => {
-        //     POPUP.hide(confirmCaseLoadPopup);
-        //     POPUP.hide(assignCaseLoadPopup);
-        //   },
-        // });
-        // btnWrap.appendChild(okBtn);
+        const okBtn = button.build({
+          text: 'ok',
+          style: 'secondary',
+          type: 'contained',
+          callback: () => {
+            POPUP.hide(confirmCaseLoadPopup);
+            POPUP.hide(assignCaseLoadPopup);
+          },
+        });
+        btnWrap.appendChild(okBtn);
 
         // reset values last
         currentCaseManagerSelected = null;
