@@ -50,10 +50,14 @@ const csVendor = (() => {
     }
 
     async function populateVendorDropdownData(teamMember) {
+        pendingSave.show('Loading Vendors...');
+        
         vendorData = await consentAndSignAjax.getAllActiveVendors({
             token: $.session.Token,
           });
-          
+
+        pendingSave.hide();
+
         let vendorDropdownData = [{text: "", value: ""}];
         vendorDropdownData = vendorDropdownData.concat(vendorData.map(vendor => ({text: vendor.vendorName, value: vendor.vendorName})));
 
