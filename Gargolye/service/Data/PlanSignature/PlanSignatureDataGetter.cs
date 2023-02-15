@@ -104,7 +104,7 @@ namespace Anywhere.service.Data.PlanSignature
         }
 
         //UPDATE
-        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string signatureType, string dateSigned)
+        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string signatureType, string dateSigned, bool isVendor)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updateTeamMember ");
@@ -124,6 +124,7 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(salesForceId);
             list.Add(signatureType);
             list.Add(dateSigned);
+            list.Add(isVendor.ToString());
             string text = "CALL DBA.ANYW_ISP_UpdateTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {

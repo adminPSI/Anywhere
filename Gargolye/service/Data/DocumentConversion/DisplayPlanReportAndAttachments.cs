@@ -101,12 +101,7 @@ namespace Anywhere.service.Data.DocumentConversion
             WorkflowDataGetter wfdg = new WorkflowDataGetter();
             PlanDataGetter pdg = new PlanDataGetter();
 
-           // if (doddFlag == "true")
-          //  {
-                //inside of here is where you concatenate the report and send
-                //and loop over the attachment arrays and get the type
-                //existing code is in other functions in this file on how to
-                //based on the type, send to correct API
+          
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     long wfAttachId;
@@ -115,12 +110,9 @@ namespace Anywhere.service.Data.DocumentConversion
                     {
                         //Type cast wfAttachmentId from string to long
                          wfAttachId = long.Parse(wfAttachmentId);
-                    // string result = psiOispDT.Attachment(wfAttach);
-                    //if (result !== "failed")
-                    //{
-                   // string test1A = psiOispDT.Attachment(wfAttachId, true);
-                   // string test1 = wfdg.updateWorkflowStepDocumentsenttoDODD(wfAttachmentId, "Y");
-                        //}
+                    
+                        string test1A = psiOispDT.Attachment(wfAttachId, true);
+                   
                     }
                 }
                 if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
@@ -131,12 +123,9 @@ namespace Anywhere.service.Data.DocumentConversion
                     {
                     //Type cast sigAttachmentId from string to long
                      sigAttachId = long.Parse(sigAttachmentId);
-                    // string result = psiOispDT.Attachment(sigAttach);
-                    //if (result !== "failed")
-                    //{
-                   // string test2A = psiOispDT.Attachment(sigAttachId, false);
-                   // string test2 = pdg.updatePlanAttachmentsenttoDODD(sigAttachmentId, "Y");
-                        //}
+                    
+                    string test2A = psiOispDT.Attachment(sigAttachId, false);
+                   
                     }
                 }
                 if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
@@ -147,12 +136,9 @@ namespace Anywhere.service.Data.DocumentConversion
                     {
                     //Type cast planAttachmentId from string to long
                      planAttachId = long.Parse(planAttachmentId);
-                    // string result = psiOispDT.Attachment(planAttach);
-                    //if (result !== "failed")
-                    //{
-                   //  string test3A = psiOispDT.Attachment(planAttachId, false);
-                  //  string test3 = pdg.updatePlanAttachmentsenttoDODD(planAttachmentId, "Y");
-                        //}
+                    
+                    string test3A = psiOispDT.Attachment(planAttachId, false);
+                  
                     }
                 }
            // }
