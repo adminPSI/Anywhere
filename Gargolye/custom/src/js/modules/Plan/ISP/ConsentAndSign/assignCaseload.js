@@ -86,6 +86,8 @@ const csAssignCaseload = (() => {
         if (filteredStateConsumers.length === 0) {
           POPUP.hide(confirmCaseLoadPopup);
           POPUP.hide(assignCaseLoadPopup);
+          currentCaseManagerSelected = null;
+          currentconsumersSelected = [];
           return;
         }
 
@@ -107,25 +109,15 @@ const csAssignCaseload = (() => {
           callback: () => {
             POPUP.hide(confirmCaseLoadPopup);
             POPUP.hide(assignCaseLoadPopup);
-            console.log('ok button click');
-            console.log(currentCaseManagerSelected);
-            console.log(currentconsumersSelected);
             currentCaseManagerSelected = null;
             currentconsumersSelected = [];
-            console.log(currentCaseManagerSelected);
-            console.log(currentconsumersSelected);
           },
         });
         btnWrap.appendChild(okBtn);
 
         // reset values last
-        console.log('confirm button click');
-        console.log(currentCaseManagerSelected);
-        console.log(currentconsumersSelected);
         currentCaseManagerSelected = null;
         currentconsumersSelected = [];
-        console.log(currentCaseManagerSelected);
-        console.log(currentconsumersSelected);
       },
     });
     const cancelBtn = button.build({
@@ -133,9 +125,6 @@ const csAssignCaseload = (() => {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        console.log('cancel button click');
-        console.log(currentCaseManagerSelected);
-        console.log(currentconsumersSelected);
         DOM.ACTIONCENTER.removeChild(confirmCaseLoadPopup);
         assignCaseLoadPopup.style.display = 'block';
       },
@@ -252,9 +241,6 @@ const csAssignCaseload = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async function () {
-        console.log('assign button click');
-        console.log(currentCaseManagerSelected);
-        console.log(currentconsumersSelected);
         showConfirmationPopup();
       },
     });
@@ -265,13 +251,8 @@ const csAssignCaseload = (() => {
       style: 'secondary',
       type: 'contained',
       callback: function () {
-        console.log('cancel button click');
-        console.log(currentCaseManagerSelected);
-        console.log(currentconsumersSelected);
         currentCaseManagerSelected = null;
         currentconsumersSelected = [];
-        console.log(currentCaseManagerSelected);
-        console.log(currentconsumersSelected);
         POPUP.hide(assignCaseLoadPopup);
       },
     });

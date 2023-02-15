@@ -1502,7 +1502,10 @@ var timeEntryCard = (function () {
           endTime = '0';
         }
       }
-      origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
+
+      if (origEndTime) {
+        origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
+      }
 
       if (origEndTime !== endTime) defaultTimesChanged = true;
 
