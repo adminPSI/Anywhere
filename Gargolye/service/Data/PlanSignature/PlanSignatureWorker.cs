@@ -372,7 +372,7 @@ namespace Anywhere.service.Data.PlanSignature
         }
 
         public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
-                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned)
+                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, bool isVendor)
         {
             string newSalesForceId = "";
             if (salesForceId == "" || salesForceId == null)
@@ -395,7 +395,7 @@ namespace Anywhere.service.Data.PlanSignature
                 dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
             }
 
-            return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned);
+            return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, isVendor);
         }
         public string deletePlanSignature(string token, string signatureId)
         {
