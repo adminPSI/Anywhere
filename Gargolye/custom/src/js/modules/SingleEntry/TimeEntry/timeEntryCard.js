@@ -1472,21 +1472,10 @@ var timeEntryCard = (function () {
       checkPermissions();
       UTIL.getGeoLocation(setStartTimeLocation);
     });
-    // startTimeInput.addEventListener('focusout', event => {
-    //   if ($.session.singleEntry15minDoc === 'Y' && startTime !== `${nowHour}:${nowMinutes}`) {
-    // 		var min = parseInt(startTime.split(':')[1]);
-    // 		if (min % 15 !== 0) {
-    // 			errorPopup('This is not a valid time, you must document to the nearest quarter hour.');
-    // 			event.target.value = '';
-    // 			startTime = '0';
-    // 		}
-    //   }
-    // 	UTIL.getGeoLocation(setStartTimeLocation);
-    // })
     endTimeInput.addEventListener('click', event => {
       setEndTimeOnClick(event);
     });
-    endTimeInput.addEventListener('change', event => {
+    endTimeInput.addEventListener('focusout', event => {
       var hoursInput = totalHoursInput.querySelector('input');
       var endInput = endTimeInput.querySelector('input');
       var isTimeValid = UTIL.validateTime(event.target.value);
@@ -1513,7 +1502,10 @@ var timeEntryCard = (function () {
           endTime = '0';
         }
       }
-      origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
+
+      if (origEndTime) {
+        origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
+      }
 
       if (origEndTime !== endTime) defaultTimesChanged = true;
 

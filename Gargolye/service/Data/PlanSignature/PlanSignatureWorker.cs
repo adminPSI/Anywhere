@@ -87,7 +87,6 @@ namespace Anywhere.service.Data.PlanSignature
             public string description { get; set; }
             public string packageId { get; set; }
             public string signedStatus { get; set; }
-            public string isVendor { get; set; }
         }
 
         public class SigId
@@ -373,7 +372,7 @@ namespace Anywhere.service.Data.PlanSignature
         }
 
         public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
-                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned)
+                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, bool isVendor)
         {
             string newSalesForceId = "";
             if (salesForceId == "" || salesForceId == null)
@@ -387,10 +386,16 @@ namespace Anywhere.service.Data.PlanSignature
             if (buildingNumber == null) buildingNumber = "";
             if (dateOfBirth == null || dateOfBirth == "") dateOfBirth = "";
             if (hasWetSignature)
+            
             {
                 pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), signatureId);
             }
-            return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned);
+            if (signature != "")
+            {
+                dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
+            }
+
+            return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, isVendor);
         }
         public string deletePlanSignature(string token, string signatureId)
         {
@@ -435,7 +440,7 @@ namespace Anywhere.service.Data.PlanSignature
                     psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", signatureObj[i].csChangeMind, signatureObj[i].csChangeMindSSAPeopleId,
                                             signatureObj[i].csContact, signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, signatureObj[i].csRightsReviewed, signatureObj[i].csAgreeToPlan, signatureObj[i].csFCOPExplained,
                                             signatureObj[i].csDueProcess, signatureObj[i].csResidentialOptions, signatureObj[i].csSupportsHealthNeeds, signatureObj[i].csTechnology, signatureObj[i].buildingNumber,
-                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, bool.Parse(signatureObj[i].isVendor));
+                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, true);
                 }
 
             }

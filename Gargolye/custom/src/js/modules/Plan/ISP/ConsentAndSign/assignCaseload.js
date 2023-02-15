@@ -7,7 +7,6 @@ const csAssignCaseload = (() => {
   let currentCaseManagerSelected;
   // consumer
   let currentconsumersSelected = [];
-  let consumersSelected;
   // dom
   let assignCaseLoadPopup;
   let assignBtn;
@@ -87,6 +86,8 @@ const csAssignCaseload = (() => {
         if (filteredStateConsumers.length === 0) {
           POPUP.hide(confirmCaseLoadPopup);
           POPUP.hide(assignCaseLoadPopup);
+          currentCaseManagerSelected = null;
+          currentconsumersSelected = [];
           return;
         }
 
@@ -108,6 +109,8 @@ const csAssignCaseload = (() => {
           callback: () => {
             POPUP.hide(confirmCaseLoadPopup);
             POPUP.hide(assignCaseLoadPopup);
+            currentCaseManagerSelected = null;
+            currentconsumersSelected = [];
           },
         });
         btnWrap.appendChild(okBtn);
@@ -238,9 +241,6 @@ const csAssignCaseload = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async function () {
-        console.log(currentCaseManagerSelected);
-        console.log(currentconsumersSelected);
-
         showConfirmationPopup();
       },
     });
