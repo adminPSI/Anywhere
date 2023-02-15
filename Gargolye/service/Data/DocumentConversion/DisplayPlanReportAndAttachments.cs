@@ -94,14 +94,29 @@ namespace Anywhere.service.Data.DocumentConversion
                 return null;
             }
         }
-        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds)
+        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
+            string sendtoDODDResult = string.Empty; 
 
-            var psiOispDT = new PSIOISP.ISPDTData();
-            WorkflowDataGetter wfdg = new WorkflowDataGetter();
-            PlanDataGetter pdg = new PlanDataGetter();
+            try
+            {
+                var psiOispDT = new PSIOISP.ISPDTData();
+                WorkflowDataGetter wfdg = new WorkflowDataGetter();
+                PlanDataGetter pdg = new PlanDataGetter();
+                string sendPlanResult;
 
-          
+                long lngPlanId = long.Parse(planId);
+                long lngConsumerId = long.Parse(consumerId);
+
+                // send Plan to DODD
+                // success -- "ISP Successfully Uploaded."
+                sendtoDODDResult = psiOispDT.UploadISP(lngConsumerId, lngPlanId);
+
+                if (sendtoDODDResult == "Error uploading ISP, Please try again." || sendtoDODDResult == "")
+                {
+                    return "Error uploading ISP. Please try again.";
+                }
+
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     long wfAttachId;
@@ -109,10 +124,15 @@ namespace Anywhere.service.Data.DocumentConversion
                     foreach (string wfAttachmentId in wfAttachmentIds)
                     {
                         //Type cast wfAttachmentId from string to long
-                         wfAttachId = long.Parse(wfAttachmentId);
-                    
-                        string test1A = psiOispDT.Attachment(wfAttachId, true);
-                   
+                        wfAttachId = long.Parse(wfAttachmentId);
+
+                        // success -- Successful
+                        sendtoDODDResult = psiOispDT.Attachment(wfAttachId, true);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Workflow Attachment. Please try again.";
+                        }
+
                     }
                 }
                 if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
@@ -121,11 +141,15 @@ namespace Anywhere.service.Data.DocumentConversion
                     //Repeatedly call this function to send attachments to DODD
                     foreach (string sigAttachmentId in sigAttachmentIds)
                     {
-                    //Type cast sigAttachmentId from string to long
-                     sigAttachId = long.Parse(sigAttachmentId);
-                    
-                    string test2A = psiOispDT.Attachment(sigAttachId, false);
-                   
+                        //Type cast sigAttachmentId from string to long
+                        sigAttachId = long.Parse(sigAttachmentId);
+
+                        sendtoDODDResult = psiOispDT.Attachment(sigAttachId, false);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Signature Attachment. Please try again.";
+                        }
+
                     }
                 }
                 if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
@@ -134,15 +158,24 @@ namespace Anywhere.service.Data.DocumentConversion
                     //Repeatedly call this function to send attachments to DODD
                     foreach (string planAttachmentId in planAttachmentIds)
                     {
-                    //Type cast planAttachmentId from string to long
-                     planAttachId = long.Parse(planAttachmentId);
-                    
-                    string test3A = psiOispDT.Attachment(planAttachId, false);
-                  
+                        //Type cast planAttachmentId from string to long
+                        planAttachId = long.Parse(planAttachmentId);
+
+                        sendtoDODDResult = psiOispDT.Attachment(planAttachId, false);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Plan Attachment. Please try again.";
+                        }
+
                     }
                 }
-
-            return "SUCCESSFUL";
+            }
+            catch (Exception)
+            {
+                return "There was failure in the send process. Please contact your adminitrator.";        
+            }
+          
+            return "Successfully sent Plan and selected Attachments to DODD.";
            // }
 
         }

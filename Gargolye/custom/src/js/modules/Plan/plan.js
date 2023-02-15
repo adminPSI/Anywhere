@@ -1141,6 +1141,8 @@ const plan = (function () {
               planAttachmentIds: planAttachmentIds,
               wfAttachmentIds: wfAttachmentIds,
               sigAttachmentIds: sigAttachmentIds,
+              planId: planId,
+              consumerId: selectedConsumer.id, 
             });
 
           } catch (error) {
@@ -1153,6 +1155,9 @@ const plan = (function () {
           //   planId,
           // });
         }
+
+        sendtoDODDAlert(sendSuccess);
+
         DODDScreen.removeChild(spinner);
         DODDScreen.appendChild(screenInner);
         DODDScreen.classList.remove('visible');
@@ -1163,6 +1168,35 @@ const plan = (function () {
     });
 
     DODDScreen.appendChild(doneBtn);
+  }
+
+  function sendtoDODDAlert(sendtoDODDResponse) {
+
+    var alertPopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+    });
+    var alertbtnWrap = document.createElement('div');
+    alertbtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      icon: 'checkmark',
+      callback: async function() {
+        POPUP.hide(alertPopup);
+        overlay.show();
+        
+      },
+    });
+    
+    alertbtnWrap.appendChild(alertokBtn);
+    var alertMessage = document.createElement('p');
+    alertMessage.innerHTML = sendtoDODDResponse;
+    alertPopup.appendChild(alertMessage);
+    alertPopup.appendChild(alertbtnWrap);
+    POPUP.show(alertPopup);
+	
   }
 
   function buildMorePopupMenu() {
