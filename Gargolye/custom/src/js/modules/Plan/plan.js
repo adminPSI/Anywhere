@@ -1125,11 +1125,11 @@ const plan = (function () {
         DODDScreen.removeChild(screenInner);
         DODDScreen.appendChild(spinner);
         // generate report
-        if (
-          Object.keys(selectedAttachmentsPlan).length > 0 ||
-          Object.keys(selectedAttachmentsWorkflow).length > 0 ||
-          Object.keys(selectedAttachmentsSignature).length > 0
-        ) {
+        // if (
+        //   Object.keys(selectedAttachmentsPlan).length > 0 ||
+        //   Object.keys(selectedAttachmentsWorkflow).length > 0 ||
+        //   Object.keys(selectedAttachmentsSignature).length > 0
+        // ) {
           const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
           const wfAttachmentIds = getwfstepdocIds(selectedAttachmentsWorkflow);
           const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
@@ -1154,7 +1154,7 @@ const plan = (function () {
           //   consumerId: selectedConsumer.id,
           //   planId,
           // });
-        }
+       // }
 
         sendtoDODDAlert(sendSuccess);
 
