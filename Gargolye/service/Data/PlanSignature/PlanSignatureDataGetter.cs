@@ -56,7 +56,7 @@ namespace Anywhere.service.Data.PlanSignature
 
         public string insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, 
-               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType, bool isVendor)
+               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType, string vendorId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getPlanTeamMember ");
@@ -90,7 +90,7 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(relationshipImport);
             list.Add(salesForceId);
             list.Add(signatureType);
-            list.Add(isVendor.ToString());
+            list.Add(vendorId);
             string text = "CALL DBA.ANYW_ISP_InsertTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -103,8 +103,54 @@ namespace Anywhere.service.Data.PlanSignature
             }
         }
 
+        public string insertVendor(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
+               string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
+               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType, string vendorId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertVendor ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(assessmentId);
+            list.Add(teamMember);
+            list.Add(name);
+            list.Add(lastName);
+            list.Add(participated);
+            list.Add(signature);
+            list.Add(contactId);
+            list.Add(dissentAreaDisagree);
+            list.Add(dissentHowToAddress);
+            list.Add(csChangeMind);
+            list.Add(csChangeMindSSAPeopleId);
+            list.Add(csContact);
+            list.Add(csContactProviderVendorId);
+            list.Add(csContactInput);
+            list.Add(csRightsReviewed);
+            list.Add(csAgreeToPlan);
+            list.Add(csFCOPExplained);
+            list.Add(csDueProcess);
+            list.Add(csResidentialOptions);
+            list.Add(csSupportsHealthNeeds);
+            list.Add(csTechnology);
+            list.Add(buildingNumber);
+            list.Add(dateOfBirth);
+            list.Add(relationshipImport);
+            list.Add(peopleId);
+            list.Add(signatureType);
+            list.Add(vendorId);
+            string text = "CALL DBA.ANYW_ISP_InsertVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2APSDG", ex.Message + "ANYW_ISP_InsertVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2APSDG: error ANYW_ISP_InsertVendor";
+            }
+        }
         //UPDATE
-        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string signatureType, string dateSigned, bool isVendor)
+        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string signatureType, string dateSigned, string vendorId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updateTeamMember ");
@@ -124,7 +170,7 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(salesForceId);
             list.Add(signatureType);
             list.Add(dateSigned);
-            list.Add(isVendor.ToString());
+            list.Add(vendorId);
             string text = "CALL DBA.ANYW_ISP_UpdateTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -134,6 +180,37 @@ namespace Anywhere.service.Data.PlanSignature
             {
                 logger.error("3APSDG", ex.Message + "ANYW_ISP_UpdateTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "3APSDG: error ANYW_ISP_UpdateTeamMember";
+            }
+        }
+
+        public string updateVendor(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string signatureType, string dateSigned, string vendorId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateVendor ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(signatureId);
+            list.Add(teamMember);
+            list.Add(name);
+            list.Add(lastName);
+            list.Add(participated);
+            list.Add(dissentAreaDisagree);
+            list.Add(dissentHowToAddress);
+            list.Add(signature);
+            list.Add(contactId);
+            list.Add(buildingNumber);
+            list.Add(dateOfBirth);
+            list.Add(signatureType);
+            list.Add(dateSigned);
+            string text = "CALL DBA.ANYW_ISP_UpdateVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3APSDG", ex.Message + "ANYW_ISP_UpdateVendor(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3APSDG: error ANYW_ISP_UpdateVendor";
             }
         }
 

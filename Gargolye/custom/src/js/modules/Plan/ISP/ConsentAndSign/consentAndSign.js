@@ -122,13 +122,9 @@ const planConsentAndSign = (() => {
       attachmentType: selectedMemberData.attachmentType ? selectedMemberData.attachmentType : '',
       // ignore
       section: '',
-        questionId: '0',
-      isVendor: 'false',
+      questionId: '0',
+      vendorId: selectedMemberData.vendorId,
     };
-
-    if (isVendor === true) {
-      data.isVendor = true;
-    }
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
 
@@ -165,7 +161,7 @@ const planConsentAndSign = (() => {
 
     return stuff;
   }
-  async function updateTeamMember(selectedMemberData) {
+  async function updateTeamMember(selectedMemberData, isVendor) {
     const data = {
       token: $.session.Token,
       assessmentId: planId,
@@ -201,7 +197,9 @@ const planConsentAndSign = (() => {
       // ignore
       section: '',
       questionId: '0',
+      vendorId: selectedMemberData.vendorId,
     };
+
     const data2 = {
       token: $.session.Token,
       signatureId: selectedMemberData.signatureId,

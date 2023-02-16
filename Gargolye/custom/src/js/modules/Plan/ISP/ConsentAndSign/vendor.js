@@ -22,13 +22,13 @@ const csVendor = (() => {
     //*------------------------------------------------------
     function checkcsVendorPopupForErrors() {
       const errors = csVendorPopup.querySelectorAll('.error');
-      const isConsentable = planConsentAndSign.isTeamMemberConsentable(selectedMemberData.teamMember);
+      //const isConsentable = planConsentAndSign.isTeamMemberConsentable(selectedMemberData.teamMember);
   
       if (
         errors.length > 0 ||
         ($.session.applicationName === 'Gatekeeper' &&
-          selectedMemberData.csContactProviderVendorId === '' &&
-          isConsentable)
+          selectedMemberData.csContactProviderVendorId === '') 
+          //&&         isConsentable)
       ) {
         saveTeamMemberBtn.classList.add('disabled');
       } else if (selectedMemberData.csContactProviderVendorId === '' || selectedMemberData.participationRadios === '' || selectedMemberData.signatureType === '' || selectedMemberData.participated === '') {
@@ -49,7 +49,7 @@ const csVendor = (() => {
         } 
     }
 
-    async function populateVendorDropdownData(teamMember) {
+    async function populateVendorDropdownData(vendorDropdown, teamMember) {
         pendingSave.show('Loading Vendors...');
         
         vendorData = await consentAndSignAjax.getAllActiveVendors({
@@ -65,7 +65,6 @@ const csVendor = (() => {
     }
 
     function populateTeamMemberDropdown(teamMemberDropdown, teamMember) {
-        const existingTeamMemberType = teamMember.split(" ", 2).join(" ");
       const dropdownData = [
         { text: '', value: '' },
         { text: 'Home Provider', value: 'Home Provider Vendor' },
@@ -106,16 +105,17 @@ const csVendor = (() => {
           selectedMemberData.createRelationship = 'T';
         }
 
-        let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData, true);
+        let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
         rd = rd ? rd[0] : {};
 
         if (rd.existingPeopleId) {
           selectedMemberData.peopleId = rd.existingPeopleId;
 
-          await planConsentAndSign.insertNewTeamMember(selectedMemberData, true);
+          await planConsentAndSign.insertNewTeamMember(selectedMemberData);
           success = true;
           const pendingSavePopup = document.querySelector('.pendingSavePopup');
           pendingSavePopup.style.display = 'none';
+          pendingSave.show('Saving...');
 
           if (success) {
             pendingSave.fulfill('Saved');
@@ -136,7 +136,8 @@ const csVendor = (() => {
           }
         } else {
           pendingSave.hide();
-          overlay.show();
+          planConsentAndSign.refreshTable();
+          //overlay.show();
         }
       } else {
         await planConsentAndSign.updateTeamMember(selectedMemberData);
@@ -337,6 +338,7 @@ const csVendor = (() => {
 
           const vendorRel = getSelectedVendorRel(selectedMemberData.name)
           selectedMemberData.buildingNumber = vendorRel.vendorAddress;
+          selectedMemberData.vendorId = vendorRel.vendorId;
 
           buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber.substring(0, 4);
           buildingNumberInput.classList.add('disabled');
@@ -364,44 +366,34 @@ const csVendor = (() => {
           } else {
             teamMemberDropdown.classList.remove('error');
           }
+
+          checkcsVendorPopupForErrors();
         }, // end callback
       }); // end DROP DOWN BUILD
   
       // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
-      function setStateofPopupFields() {
-        if ($.session.planInsertNewTeamMember) {
-          participatedYesRadio.classList.remove('disabled');
-          participatedNoRadio.classList.remove('disabled');
-          signatureTypeDropdown.classList.remove('disabled');
-
-          vendorDropdown.classList.add('error');
-          teamMemberDropdown.classList.add('error');
-          signatureTypeDropdown.classList.add('error');
-        }
-  
+      function setStateofPopupFields() {  
         //* Required Fields
         //*------------------------------
-        if ($.session.planInsertNewTeamMember) {
-          if (selectedMemberData.name === '') {
-            vendorDropdown.classList.add('error');
-          } else {
-            vendorDropdown.classList.remove('error');
-          }
-          if (selectedMemberData.teamMember === '') {
-            teamMemberDropdown.classList.add('error');
-          } else {
-            teamMemberDropdown.classList.remove('error');
-          }
-          if (selectedMemberData.signatureType === '') {
-            signatureTypeDropdown.classList.add('error');
-          } else {
-            signatureTypeDropdown.classList.remove('error');
-          }
-          if (selectedMemberData.participated === '') {
-            radioDiv.classList.add('error');
-          } else {
-            radioDiv.classList.remove('error');
-          }
+        if (selectedMemberData.name === '') {
+          vendorDropdown.classList.add('error');
+        } else {
+          vendorDropdown.classList.remove('error');
+        }
+        if (selectedMemberData.teamMember === '') {
+          teamMemberDropdown.classList.add('error');
+        } else {
+          teamMemberDropdown.classList.remove('error');
+        }
+        if (selectedMemberData.signatureType === '') {
+          signatureTypeDropdown.classList.add('error');
+        } else {
+          signatureTypeDropdown.classList.remove('error');
+        }
+        if (selectedMemberData.participated === '') {
+          radioDiv.classList.add('error');
+        } else {
+          radioDiv.classList.remove('error');
         }
       }  
   
@@ -441,13 +433,6 @@ const csVendor = (() => {
         },
       });
   
-      //* GLOBAL CONSENT QUESTIONS
-      //*------------------------------
-    //   if (showConsentStatments) {
-    //     changeMindQuestion = getChangeMindMarkup();
-    //     complaintQuestion = await getContactMarkup();
-    //   }
-  
       //* BUTTONS
       //*------------------------------
       const btns = buildActionBtns();
@@ -458,50 +443,31 @@ const csVendor = (() => {
   
       //* Disabled Fields
       //*------------------------------
-    //   if (!isNew) {
-    //     if (selectedMemberData.buildingNumber !== '') {
-    //       buildingNumberInput.classList.add('disabled');
-
-    //   }
       if (selectedMemberData.buildingNumber) {
         buildingNumberInput.classList.add('disabled');
       }
   
-       // initial display of Form/popup before a teamMember designations is selected
-       if (!$.session.planInsertNewTeamMember) {
-        vendorDropdown.classList.add('disabled');
-        teamMemberDropdown.classList.add('disabled');
-        buildingNumberInput.classList.add('disabled');
-        participatedYesRadio.classList.add('disabled');
-        participatedNoRadio.classList.add('disabled');
-        // radioDiv.classList.remove('error');
-        signatureTypeDropdown.classList.add('disabled');
-        saveTeamMemberBtn.classList.add('disabled'); //
-      }
-  
       //* Required Fields
       //*------------------------------
-      if ($.session.planInsertNewTeamMember) {
-        if (selectedMemberData.name === '') {
-          vendorDropdown.classList.add('error');
-        } else {
-          vendorDropdown.classList.remove('error');
-        }
-        if (selectedMemberData.teamMember === '') {
-          teamMemberDropdown.classList.add('error');
-        } else {
-          teamMemberDropdown.classList.remove('error');
-        }
-        if (selectedMemberData.participated === '') {
-            radioDiv.classList.add('error');
-          } else {
-            radioDiv.classList.remove('error');
-          }
-        if (selectedMemberData.signatureType === '') {
-          signatureTypeDropdown.classList.add('error');
-        } else {
-          signatureTypeDropdown.classList.remove('error');
-        }
+      if (selectedMemberData.name === '') {
+        vendorDropdown.classList.add('error');
+      } else {
+        vendorDropdown.classList.remove('error');
+      }
+      if (selectedMemberData.teamMember === '') {
+        teamMemberDropdown.classList.add('error');
+      } else {
+        teamMemberDropdown.classList.remove('error');
+      }
+      if (selectedMemberData.participated === '') {
+        radioDiv.classList.add('error');
+      } else {
+        radioDiv.classList.remove('error');
+      }
+      if (selectedMemberData.signatureType === '') {
+        signatureTypeDropdown.classList.add('error');
+      } else {
+        signatureTypeDropdown.classList.remove('error');
       }
   
       //* Add elements to popup
@@ -517,7 +483,7 @@ const csVendor = (() => {
       csVendorPopup.appendChild(signatureTypeDropdown);
       csVendorPopup.appendChild(btns);
  
-      await populateVendorDropdownData(selectedMemberData.name);
+      await populateVendorDropdownData(vendorDropdown, selectedMemberData.name);
       populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
       populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
 
