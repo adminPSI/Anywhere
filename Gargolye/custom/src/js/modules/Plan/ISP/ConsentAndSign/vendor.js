@@ -36,6 +36,15 @@ const csVendor = (() => {
       } else {
         saveTeamMemberBtn.classList.remove('disabled');
       }
+
+      if ($.session.applicationName === 'Advisor') {
+        if (selectedMemberData.name === '' || selectedMemberData.teamMember === '' || selectedMemberData.signatureType === '' || selectedMemberData.participated === '') {
+          saveTeamMemberBtn.classList.add('disabled');
+        } else {
+          saveTeamMemberBtn.classList.remove('disabled');
+        }
+      }
+
     }
 
     function getSelectedVendorRel(vendorData, vendorName) {
@@ -478,14 +487,16 @@ const csVendor = (() => {
       populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
 
       const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name)
-      buildingNumberInputValue = vendorRel.vendorAddress.substring(0, 4);
-      buildingNumberInput.childNodes[0].value = buildingNumberInputValue;
-
+      if (vendorRel !== undefined) {
+        buildingNumberInputValue = vendorRel.vendorAddress.substring(0, 4);
+        buildingNumberInput.childNodes[0].value = buildingNumberInputValue;
+      }
+      
       POPUP.show(csVendorPopup);
   
-      if ($.session.planInsertNewTeamMember) {
-        checkcsVendorPopupForErrors();
-      }
+      // if ($.session.planInsertNewTeamMember) {
+      //   checkcsVendorPopupForErrors();
+      // }
     }
   
     return {
