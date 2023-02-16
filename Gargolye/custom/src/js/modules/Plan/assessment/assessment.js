@@ -371,7 +371,7 @@ const assessment = (function () {
       return error.statusText;
     }
   }
-  function generateReportWithAttachments(
+  function generateReportWithAttachments(//TODO Nathan. Add flag if to DODD
     assessmentID,
     versionID,
     extraSpace,
@@ -379,7 +379,7 @@ const assessment = (function () {
     wfAttachmentIds,
     sigAttachmentIds,
   ) {
-    assessmentAjax.getPlanAssessmentReportWithAttachments(
+    assessmentAjax.getPlanAssessmentReportWithAttachments(//Testgd
       {
         token: $.session.Token,
         userId: $.session.PeopleId,
