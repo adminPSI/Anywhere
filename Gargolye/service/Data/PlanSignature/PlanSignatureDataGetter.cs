@@ -90,7 +90,6 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(relationshipImport);
             list.Add(salesForceId);
             list.Add(signatureType);
-            list.Add(vendorId);
             string text = "CALL DBA.ANYW_ISP_InsertTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -170,7 +169,6 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(salesForceId);
             list.Add(signatureType);
             list.Add(dateSigned);
-            list.Add(vendorId);
             string text = "CALL DBA.ANYW_ISP_UpdateTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {

@@ -106,18 +106,10 @@ const csVendor = (() => {
           selectedMemberData.relationshipImport = 'F';
           selectedMemberData.createRelationship = 'T';
         }
-
-        let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
-        rd = rd ? rd[0] : {};
-
-        if (rd.existingPeopleId) {
-          selectedMemberData.peopleId = rd.existingPeopleId;
-
           await planConsentAndSign.insertNewTeamMember(selectedMemberData);
           success = true;
           const pendingSavePopup = document.querySelector('.pendingSavePopup');
           pendingSavePopup.style.display = 'none';
-          pendingSave.show('Saving...');
 
           if (success) {
             pendingSave.fulfill('Saved');
@@ -136,12 +128,7 @@ const csVendor = (() => {
               csVendorPopup.style.removeProperty('display');
             }, 2000);
           }
-        } else {
-          pendingSave.hide();
-          planConsentAndSign.refreshTable();
-          //overlay.show();
-        }
-      } else {
+       } else {
         await planConsentAndSign.updateTeamMember(selectedMemberData);
         success = true;
 
