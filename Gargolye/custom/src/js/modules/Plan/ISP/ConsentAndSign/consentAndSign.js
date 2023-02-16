@@ -5,6 +5,7 @@ const planConsentAndSign = (() => {
   let effStartDate;
   let effEndDate;
   // DATA
+  let vendorData;
   let teamMemberData;
   let paidSupportProviders;
   let providerDropdownData;
@@ -74,7 +75,7 @@ const planConsentAndSign = (() => {
   //*------------------------------------------------------
   //* INSERT/UPDATE/DELETE
   //*------------------------------------------------------
-  async function insertNewTeamMember(selectedMemberData, isVendor) {
+  async function insertNewTeamMember(selectedMemberData) {
     // UNSAVABLE NOTE TEXT IS REMOVED IN BACKEND ON INSERTS
     const data = {
       token: $.session.Token,
@@ -161,7 +162,7 @@ const planConsentAndSign = (() => {
 
     return stuff;
   }
-  async function updateTeamMember(selectedMemberData, isVendor) {
+  async function updateTeamMember(selectedMemberData) {
     const data = {
       token: $.session.Token,
       assessmentId: planId,
@@ -200,6 +201,12 @@ const planConsentAndSign = (() => {
       vendorId: selectedMemberData.vendorId,
     };
 
+    // Gets the connection between the selected vendor name and the correct vendorId
+    const vendorRel = csVendor.getSelectedVendorRel(vendorData, data.name);
+    if (vendorRel !== undefined) {
+      data.vendorId = vendorRel.vendorId;
+    }
+    
     const data2 = {
       token: $.session.Token,
       signatureId: selectedMemberData.signatureId,
@@ -712,6 +719,7 @@ const planConsentAndSign = (() => {
                 isNewMember: false,
                 isReadOnly: readOnly,
                 memberData: m,
+                vendorData: vendorData
               });
             } else {
               await csTeamMember.showPopup({
@@ -857,6 +865,7 @@ const planConsentAndSign = (() => {
             planYearEnd: '',
           },
           currentTeamMemberData: teamMemberData,
+          vendorData: vendorData
         });
       },
     });
@@ -912,6 +921,10 @@ const planConsentAndSign = (() => {
     teamMemberData = await consentAndSignAjax.getConsentAndSignData({
       token: $.session.Token,
       assessmentId: planId,
+    });
+
+    vendorData = await consentAndSignAjax.getAllActiveVendors({
+      token: $.session.Token,
     });
 
     if (teamMemberData && teamMemberData.length !== 0) {

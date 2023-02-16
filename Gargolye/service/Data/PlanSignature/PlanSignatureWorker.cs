@@ -165,7 +165,7 @@ namespace Anywhere.service.Data.PlanSignature
             string peopId = "";
             string newSalesForceId = "";
 
-            if (vendorId != "")
+            if (vendorId != null)
             {
                 signatureIdString = psdg.insertVendor(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact,
                                         csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
@@ -385,7 +385,7 @@ namespace Anywhere.service.Data.PlanSignature
                                         bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId)
         {
             //Runs this section if we are updating the vendors and not the team member
-            if (vendorId != "")
+            if (vendorId != null)
             {
                 if (buildingNumber == null) buildingNumber = "";
                 if (dateOfBirth == null || dateOfBirth == "") dateOfBirth = "";
