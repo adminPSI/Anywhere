@@ -104,6 +104,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 WorkflowDataGetter wfdg = new WorkflowDataGetter();
                 PlanDataGetter pdg = new PlanDataGetter();
                 string sendPlanResult;
+                //string noAttachmentsMessage = string.Empty;
 
                 long lngPlanId = long.Parse(planId);
                 long lngConsumerId = long.Parse(consumerId);
@@ -174,8 +175,15 @@ namespace Anywhere.service.Data.DocumentConversion
             {
                 return "There was failure in the send process. Please contact your adminitrator.";        
             }
-          
-            return "Successfully sent Plan and selected Attachments to DODD.";
+
+            if (wfAttachmentIds.Length == 0 && sigAttachmentIds.Length == 0 && planAttachmentIds.Length == 0)
+            {
+                return "Successfully sent Plan to DODD.";
+            } else
+            {
+                return "Successfully sent Plan and selected Attachments to DODD.";
+            }
+            
            // }
 
         }
