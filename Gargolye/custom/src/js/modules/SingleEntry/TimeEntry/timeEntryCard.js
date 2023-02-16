@@ -1486,7 +1486,7 @@ var timeEntryCard = (function () {
     endTimeInput.addEventListener('click', event => {
       setEndTimeOnClick(event);
     });
-    endTimeInput.addEventListener('change', event => {
+    endTimeInput.addEventListener('focusout', event => {
       var hoursInput = totalHoursInput.querySelector('input');
       var endInput = endTimeInput.querySelector('input');
       var isTimeValid = UTIL.validateTime(event.target.value);
@@ -1499,10 +1499,10 @@ var timeEntryCard = (function () {
         totalHours = null;
         checkPermissions();
         return;
-        }
-        var now = new Date();
-        let origEndTime = endTime;
-        let systemDefaultForCheckEnd = now.getHours() + ':' + now.getMinutes();
+      }
+      var now = new Date();
+      let origEndTime = endTime;
+      let systemDefaultForCheckEnd = now.getHours() + ':' + now.getMinutes();
       endTime = `${event.target.value.split(':')[0]}:${event.target.value.split(':')[1]}`; //Edge fucks shit up with selecting time with the time picker
       if ($.session.singleEntry15minDoc === 'Y' && origEndTime !== endTime) {
         // and endTime !== event.target.value
@@ -1513,7 +1513,10 @@ var timeEntryCard = (function () {
           endTime = '0';
         }
       }
-      origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
+
+      if (origEndTime) {
+        origEndTime = `${origEndTime.split(':')[0]}:${origEndTime.split(':')[1]}`;
+      }
 
       if (origEndTime !== endTime) defaultTimesChanged = true;
 
@@ -1809,12 +1812,12 @@ var timeEntryCard = (function () {
       let ppObj = payPeriodData.filter(pp => pp.dateString === payPeriod.dateString);
       sendEvvData = ppObj[0].sendEvvData;
 
-        if (
-            isBillable === 'Y' &&
-            defaultTimesChanged &&
-            wcServiceType === 'A' &&
-            sendEvvData === 'Y' &&
-          reasonRequired === true
+      if (
+        isBillable === 'Y' &&
+        defaultTimesChanged &&
+        wcServiceType === 'A' &&
+        sendEvvData === 'Y' &&
+        reasonRequired === true
       ) {
         if (defaultEndTimeChanged || defaultTimesChanged) {
           showEvv();
