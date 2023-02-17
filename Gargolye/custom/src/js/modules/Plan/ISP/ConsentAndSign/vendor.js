@@ -394,10 +394,12 @@ const csVendor = (() => {
         callback: event => {
           selectedMemberData.buildingNumber = event.target.value;
   
-          checkcsVendorPopupForErrors();
+          checkcsVendorPopupForErrors();a
         },
       });
       buildingNumberInput.classList.add('disabled');
+
+      input.disableInputField(buildingNumberInput);
       // Participate Yes/NO
       const participationRadios = buildParticipationRadios();
   
