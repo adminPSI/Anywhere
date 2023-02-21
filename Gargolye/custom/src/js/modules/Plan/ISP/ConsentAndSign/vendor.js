@@ -36,11 +36,21 @@ const csVendor = (() => {
       } else {
         saveTeamMemberBtn.classList.remove('disabled');
       }
+
+      if ($.session.applicationName === 'Advisor') {
+        if (selectedMemberData.name === '' || selectedMemberData.teamMember === '' || selectedMemberData.signatureType === '' || selectedMemberData.participated === '') {
+          saveTeamMemberBtn.classList.add('disabled');
+        } else {
+          saveTeamMemberBtn.classList.remove('disabled');
+        }
+      }
+
     }
 
-    function getSelectedVendorRel(vendorName) {
+    function getSelectedVendorRel(vendorData, vendorName) {
+      const cleanedVendorName = vendorName.trim();
         let selectedVendorData = vendorData.find(function(vendor) {
-            return vendor.vendorName === vendorName;
+            return vendor.vendorName === cleanedVendorName;
           });
 
           
@@ -49,19 +59,11 @@ const csVendor = (() => {
         } 
     }
 
-    async function populateVendorDropdownData(vendorDropdown, teamMember) {
-        pendingSave.show('Loading Vendors...');
-        
-        vendorData = await consentAndSignAjax.getAllActiveVendors({
-            token: $.session.Token,
-          });
-
-        pendingSave.hide();
-
+    function populateVendorDropdownData(vendorData, vendorDropdown, teamMember) {
         let vendorDropdownData = [{text: "", value: ""}];
         vendorDropdownData = vendorDropdownData.concat(vendorData.map(vendor => ({text: vendor.vendorName, value: vendor.vendorName})));
 
-        dropdown.populate(vendorDropdown, vendorDropdownData, teamMember)
+        dropdown.populate(vendorDropdown, vendorDropdownData, teamMember.trim())
     }
 
     function populateTeamMemberDropdown(teamMemberDropdown, teamMember) {
@@ -87,7 +89,7 @@ const csVendor = (() => {
         type,
       );
     }
-  
+
     async function saveTeamMember() {
       csVendorPopup.style.display = 'none';
       pendingSave.show('Saving...');
@@ -104,18 +106,10 @@ const csVendor = (() => {
           selectedMemberData.relationshipImport = 'F';
           selectedMemberData.createRelationship = 'T';
         }
-
-        let rd = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
-        rd = rd ? rd[0] : {};
-
-        if (rd.existingPeopleId) {
-          selectedMemberData.peopleId = rd.existingPeopleId;
-
           await planConsentAndSign.insertNewTeamMember(selectedMemberData);
           success = true;
           const pendingSavePopup = document.querySelector('.pendingSavePopup');
           pendingSavePopup.style.display = 'none';
-          pendingSave.show('Saving...');
 
           if (success) {
             pendingSave.fulfill('Saved');
@@ -134,12 +128,7 @@ const csVendor = (() => {
               csVendorPopup.style.removeProperty('display');
             }, 2000);
           }
-        } else {
-          pendingSave.hide();
-          planConsentAndSign.refreshTable();
-          //overlay.show();
-        }
-      } else {
+       } else {
         await planConsentAndSign.updateTeamMember(selectedMemberData);
         success = true;
 
@@ -299,7 +288,7 @@ const csVendor = (() => {
     //*------------------------------------------------------
     //* MAIN
     //*------------------------------------------------------
-    async function showPopup({ isNewMember, isReadOnly, memberData, currentTeamMemberData }) {
+    async function showPopup({ isNewMember, isReadOnly, memberData, currentTeamMemberData, vendorData }) {
       isNew = isNewMember;
       isSigned = memberData.dateSigned !== '';
       readOnly = isReadOnly;
@@ -336,7 +325,7 @@ const csVendor = (() => {
             vendorDropdown.classList.remove('error');
           }
 
-          const vendorRel = getSelectedVendorRel(selectedMemberData.name)
+          const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name)
           selectedMemberData.buildingNumber = vendorRel.vendorAddress;
           selectedMemberData.vendorId = vendorRel.vendorId;
 
@@ -345,9 +334,6 @@ const csVendor = (() => {
 
           // Enabling/Disabling fields depending upon teamMemberDropdown selection -- Guardian or not
           setStateofPopupFields();
-  
-          // inserting/removing the conditional fields based on teamMemberDropdown selection
-          // insertingConditionalFieldsintoPopup();
   
           checkcsVendorPopupForErrors();
         }, // end callback
@@ -408,10 +394,12 @@ const csVendor = (() => {
         callback: event => {
           selectedMemberData.buildingNumber = event.target.value;
   
-          checkcsVendorPopupForErrors();
+          checkcsVendorPopupForErrors();a
         },
       });
       buildingNumberInput.classList.add('disabled');
+
+      input.disableInputField(buildingNumberInput);
       // Participate Yes/NO
       const participationRadios = buildParticipationRadios();
   
@@ -483,20 +471,26 @@ const csVendor = (() => {
       csVendorPopup.appendChild(signatureTypeDropdown);
       csVendorPopup.appendChild(btns);
  
-      await populateVendorDropdownData(vendorDropdown, selectedMemberData.name);
+      populateVendorDropdownData(vendorData, vendorDropdown, selectedMemberData.name);
       populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
       populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
 
-  
+      const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name)
+      if (vendorRel !== undefined) {
+        buildingNumberInputValue = vendorRel.vendorAddress.substring(0, 4);
+        buildingNumberInput.childNodes[0].value = buildingNumberInputValue;
+      }
+      
       POPUP.show(csVendorPopup);
   
-      if ($.session.planInsertNewTeamMember) {
-        checkcsVendorPopupForErrors();
-      }
+      // if ($.session.planInsertNewTeamMember) {
+      //   checkcsVendorPopupForErrors();
+      // }
     }
   
     return {
       showPopup,
       getSignatureTypeByID,
+      getSelectedVendorRel
     };
   })();
