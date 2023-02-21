@@ -582,7 +582,7 @@ const csSignature = (() => {
           if (!selectedMemberData.description || selectedMemberData.description === '') {
             saveFromSignature();
           } else {
-            showWarningPopup(sigPadData);
+            showWarningPopup();
           }
         } else {
           if (sigPadData === emptySignatureDataURL || sigPadData === '') {
