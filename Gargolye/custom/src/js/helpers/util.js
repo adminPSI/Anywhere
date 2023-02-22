@@ -776,7 +776,11 @@ const UTIL = (function () {
       case 'OOD': {
         target = document.getElementById('OODsettingsdiv');
         break;
-      }
+        }
+        case 'resetPassword': {
+            target = document.getElementById('Adminsettingdiv');
+            break;
+        }
       default: {
         break;
       }

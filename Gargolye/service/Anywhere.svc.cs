@@ -43,6 +43,7 @@ using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttach
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
 using static Anywhere.service.Data.AnywhereWorker;
+using Anywhere.service.Data.ResetPassword;
 
 namespace Anywhere
 {
@@ -97,7 +98,7 @@ namespace Anywhere
         CaseNoteReportBuilderWorker cnReportWorker = new CaseNoteReportBuilderWorker();
         SignInUser siu = new SignInUser();
         DisplayPlanReportAndAttachments dpra = new DisplayPlanReportAndAttachments();
-        
+        ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
 
         public AnywhereService()
         {
@@ -2979,6 +2980,21 @@ namespace Anywhere
                 return false;
             }
             return true;
+        }
+
+        public ResetPasswordWorker.ActiveInactiveUser[] getActiveInactiveUserDateJSON(string token, string isActive)
+        {
+            return resetPasswordWorker.getActiveInactiveUserDateJSON(token, isActive);
+        }
+
+        public string getUserCredDateJSON(string token, string userId)
+        {
+            return dg.getUserCredJSON(userId);
+        }
+
+        public string resetPassword(string userId, string hash, string newPassword, string changingToHashPassword)
+        {
+            return dg.resetPassword(userId, hash, newPassword, changingToHashPassword);
         }
 
     }

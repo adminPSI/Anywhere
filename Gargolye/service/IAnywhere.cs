@@ -31,6 +31,7 @@ using static Anywhere.service.Data.AnywhereWorker;
 using static Anywhere.service.Data.DayServicesWorker;
 using Anywhere.service.Data.eSignature___OneSpan;
 using System.Management.Automation.Language;
+using Anywhere.service.Data.ResetPassword;
 
 namespace Anywhere
 {
@@ -3998,7 +3999,29 @@ namespace Anywhere
            UriTemplate = "/oneSpanCheckDocumentStatus/")]
         OneSpanWorker.DocumentStatus[] oneSpanCheckDocumentStatus(string token, string assessmentId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getActiveInactiveUserDateJSON/")]
+        ResetPasswordWorker.ActiveInactiveUser[] getActiveInactiveUserDateJSON(string token, string isActive);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getUserCredDateJSON/")]
+        string getUserCredDateJSON(string token, string userId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/resetPassword/")]
+        string resetPassword(string userId, string hash, string newPassword, string changingToHashPassword);
 
     }
 

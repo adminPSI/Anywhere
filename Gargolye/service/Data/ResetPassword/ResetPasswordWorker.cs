@@ -1,0 +1,35 @@
+﻿using Anywhere.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Script.Serialization;
+
+namespace Anywhere.service.Data.ResetPassword
+{
+    public class ResetPasswordWorker
+    {
+        ResetPasswordDataGetter rpdg = new ResetPasswordDataGetter();
+        JavaScriptSerializer js = new JavaScriptSerializer();
+
+      
+        public ActiveInactiveUser[] getActiveInactiveUserDateJSON(string token,string isActive)
+        {
+            string seByDateString = rpdg.getActiveInactiveUserDateJSON(token, isActive);
+            ActiveInactiveUser[] seByDateObj = js.Deserialize<ActiveInactiveUser[]>(seByDateString);
+            return seByDateObj;
+        }
+
+        public class ActiveInactiveUser
+        {
+            public string User_ID { get; set; }
+            public string Last_Name { get; set; }
+            public string First_Name { get; set; }
+            public string Active { get; set; }           
+        }
+      
+    }
+
+}
+
+

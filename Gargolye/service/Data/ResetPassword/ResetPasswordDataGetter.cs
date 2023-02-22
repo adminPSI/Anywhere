@@ -1,0 +1,132 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Data.Common;
+using System.Data.Odbc;
+using System.Data.SqlClient;
+using System.Configuration;
+using Anywhere.Log;
+using System.Drawing;
+using System.IO;
+using System.Text;
+using System.Web.Script.Serialization;
+using System.Text.RegularExpressions;
+using static Anywhere.service.Data.AnywhereWorker;
+using System.Management.Automation.Language;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
+using static Anywhere.service.Data.AnywhereAbsentWorker;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Runtime.InteropServices.ComTypes;
+
+namespace Anywhere.service.Data.ResetPassword
+{
+    public class ResetPasswordDataGetter
+    {
+        private static Loger logger = new Loger();
+        //private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(typeof(DataGetter));
+        private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+
+  
+
+        public string getActiveInactiveUserDateJSON(string token, string isInactiveUser)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getActiveInactiveUserDateJSON" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_GetInactiveUsers( '" + isInactiveUser + "');");
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("561", ex.Message + " ANYW_GetInactiveUsers( '" + isInactiveUser + "')");
+                return "561: Error getting single entry by id";
+            }
+
+        }
+
+        public string executeDataBaseCallJSON(string storedProdCall)
+        {
+            OdbcConnection conn = null;
+            OdbcCommand cmd;
+            OdbcDataReader rdr = null;
+            string result = "[";
+
+            List<string> arr = new List<string>();
+
+            try
+            {
+                if (connectString.ToUpper().IndexOf("UID") == -1)
+                {
+                    connectString = connectString + "UID=anywhereuser;PWD=anywhere4u;";
+                }
+
+                conn = new OdbcConnection(connectString);
+
+                cmd = new OdbcCommand(storedProdCall);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Connection = conn;
+
+                conn.Open();
+                rdr = cmd.ExecuteReader();
+
+                // iterate through results
+                while (rdr.Read())
+                {
+                    Dictionary<string, string> holder = new Dictionary<string, string>();
+                    for (int ordinal = 0; ordinal < rdr.FieldCount; ordinal++)
+                    {
+
+                        var val = rdr.GetValue(ordinal);
+                        string str = val.ToString();
+                        holder[rdr.GetName(ordinal)] = str;
+                    }
+                    arr.Add((new JavaScriptSerializer()).Serialize(holder));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //change now, calling method must catch this error, it helps make better logging 
+                //more of a pain debugging
+                throw ex;
+            }
+
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
+                if (rdr != null)
+                {
+                    rdr.Close();
+                    rdr.Dispose();
+                }
+            }
+
+            return result + String.Join(",", arr) + "]";
+        }
+
+        public bool tokenValidator(string token)
+        {
+            if (token.Contains(" "))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+
+
+
+    }
+
+}

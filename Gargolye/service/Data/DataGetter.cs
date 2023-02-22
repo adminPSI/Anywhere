@@ -6061,6 +6061,21 @@ namespace Anywhere.Data
             return memorystream;
         }
 
+        public string resetPassword(string userId, string hash, string newPassword, string changingToHashPassword)
+        {
+            logger.trace("101", "resetPassword:" + userId);
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_ResetPassword('" + userId + "','" + hash + "','" + newPassword + "','" + changingToHashPassword + "');", "results", "permissions");
+            }
+            catch (Exception ex)
+            {
+                logger.error("515", ex.Message + " ANYW_ResetPassword('" + userId + "','" + hash + "')");
+                return "515: " + ex.Message;
+            }
+        }
+
     }
 
 }
