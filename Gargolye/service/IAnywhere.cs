@@ -4023,6 +4023,14 @@ namespace Anywhere
             UriTemplate = "/resetPassword/")]
         string resetPassword(string userId, string hash, string newPassword, string changingToHashPassword);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/updateActiveInactiveUser/")]
+        string updateActiveInactiveUserDateJSON(string token, string isActive, string userId);
+
     }
 
 

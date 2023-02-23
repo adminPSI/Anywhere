@@ -79,8 +79,32 @@ const resetPasswordAjax = (function () {
         });
     }
 
+    function updateActiveInactiveUser(dataObj, callback) {
+        // dataObj = {IsInActive,userId}
+        $.ajax({
+            type: 'POST',
+            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateActiveInactiveUser/',
+            data:
+                '{"token":"' +
+                $.session.Token +
+                '","isActive":"' +
+                dataObj.isActive +
+                '","userId":"' +
+                dataObj.userId +
+                '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                var res = response.getActiveInactiveUserDateJSONResult;
+                //callback(res);
+            },
+            error: function (xhr, status, error) { },
+        });
+    }
+
     return {
         getActiveInactiveUserlist,
-        changeUserPassword
+        changeUserPassword,
+        updateActiveInactiveUser
     }
 })();

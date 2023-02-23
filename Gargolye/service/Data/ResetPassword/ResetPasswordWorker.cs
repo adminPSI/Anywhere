@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.service.Data.ResetPassword
 {
@@ -17,6 +18,13 @@ namespace Anywhere.service.Data.ResetPassword
         {
             string seByDateString = rpdg.getActiveInactiveUserDateJSON(token, isActive);
             ActiveInactiveUser[] seByDateObj = js.Deserialize<ActiveInactiveUser[]>(seByDateString);
+            return seByDateObj;
+        }
+
+        public string updateActiveInactiveUserDateJSON(string token, string isActive ,string userId)
+        {
+            string seByDateString = rpdg.updateActiveInactiveUserDateJSON(token, isActive, userId);
+            string seByDateObj = "";
             return seByDateObj;
         }
 

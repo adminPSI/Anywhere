@@ -47,6 +47,44 @@ namespace Anywhere.service.Data.ResetPassword
 
         }
 
+        public string updateActiveInactiveUserDateJSON(string token, string isInactiveUser, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateActiveInactiveUserDateJSON" + token);
+            List<string> list = new List<string>();
+            list.Add(isInactiveUser);
+            list.Add(userId);
+            string text = "CALL DBA.ANYW_updateUserStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("561", ex.Message + " ANYW_updateUserStatus( '" + isInactiveUser + "')");
+                return "561: Error getting single entry by id";
+            }
+
+        }
+
+        public string removeUnsavableNoteText(string note)
+        {
+            if (note == "" || note is null)
+            {
+                return note;
+            }
+            if (note.Contains("'"))
+            {
+                note = note.Replace("'", "''");
+            }
+            if (note.Contains("\\"))
+            {
+                note = note.Replace("\\", "");
+            }
+            return note;
+        }
+
         public string executeDataBaseCallJSON(string storedProdCall)
         {
             OdbcConnection conn = null;
@@ -89,8 +127,6 @@ namespace Anywhere.service.Data.ResetPassword
             }
             catch (Exception ex)
             {
-                //change now, calling method must catch this error, it helps make better logging 
-                //more of a pain debugging
                 throw ex;
             }
 
@@ -110,6 +146,7 @@ namespace Anywhere.service.Data.ResetPassword
 
             return result + String.Join(",", arr) + "]";
         }
+
 
         public bool tokenValidator(string token)
         {

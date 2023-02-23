@@ -67,11 +67,13 @@ const resetPassword = function () {
     function buildActiveChkBox(checked) {
         return input.buildCheckbox({
             isChecked: checked === 'Y' ? true : false,
+            callback: () => setCheckForInactiveUser(event.target)
         });
     }
 
     function buildTable() {
         var tableOptions = {
+            plain: false,
             tableId: 'singleEntryAdminReviewTable',
             columnHeadings: [
                 'User Name',
@@ -80,7 +82,9 @@ const resetPassword = function () {
                 '',
                 'Active'
             ],
+            endIcon: true,
             callback: handleUserTableEvents
+            
         };
 
         return table.build(tableOptions);
@@ -360,11 +364,12 @@ const resetPassword = function () {
     }
 
     // events
-    function handleUserTableEvents() {
+    function handleUserTableEvents() { 
+        if (event.target.id == '') return;
         var userId = event.target.id;
         var rowLastName = event.target.childNodes[1].innerText;
         var rowFirstName = event.target.childNodes[2].innerText;
-
+        var rowIsActive = event.target.dataset.status;
         buildChangePasswordPopup(userId, rowFirstName, rowLastName);
     }
 
@@ -383,6 +388,7 @@ const resetPassword = function () {
 
             return {
                 id: userID,
+                endIcon: activeCheckbox.outerHTML, 
                 FirstName: FirstName,
                 LastName: LastName,
                 Active: Active,
@@ -391,18 +397,20 @@ const resetPassword = function () {
                     LastName,
                     FirstName,
                     additionalInformation.outerHTML,
-                    activeCheckbox.outerHTML,
                 ],
                 attributes: [
-                    { key: 'data-status', value: userID },
-                    { key: 'data-consumer-id', value: userID },
+                    { key: 'data-status', value: Active },
+                    { key: 'data-consumer-id', value: userID }, 
                 ],
+                endIconCallback: e => {
+                    setCheckUpdateUserStatus(Active, userID);
+                },
             };
         });
         if (IsFirstLoad) {
             tempUserTableData = userTableData;
         }
-        table.populate(userTable, userTableData);
+        table.populate(userTable, userTableData ,false,true); 
     }
 
 
@@ -440,6 +448,52 @@ const resetPassword = function () {
             isChecked = true;
         }
         loadReviewPage(isChecked)
+    }
+
+    function setCheckUpdateUserStatus(active, id) { 
+        resetPasswordAjax.updateActiveInactiveUser(
+            {
+                isActive: active == 'Y' ? 'N' : 'Y',
+                userId: id,
+            },
+            function (results, error) {
+                populateTable(results, true);
+            },
+        );
+
+        loadReviewPage(true);
+
+        const passwordChangeConfPOPUP = POPUP.build({
+            hideX: true,
+        });
+        const okBtn = button.build({
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained', 
+            callback: () => {
+                POPUP.hide(passwordChangeConfPOPUP);
+            },
+        });
+        okBtn.style.width = '100%';
+        const message = document.createElement('p');
+        if (active == 'Y') {
+            message.innerText = 'The User has been de-activated and can no longer login to the website.';
+        }
+        else {
+            message.innerText = 'The User has been reactivated and can login to the website.';
+        }
+            
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        passwordChangeConfPOPUP.appendChild(message);
+        passwordChangeConfPOPUP.appendChild(okBtn);
+        bodyScrollLock.disableBodyScroll(passwordChangeConfPOPUP);
+        const overlayElement = document.querySelector('.overlay');
+        overlayElement.style.zIndex = '2';
+        passwordChangeConfPOPUP.style.zIndex = '3';
+        passwordChangeConfPOPUP.style.top = '40%';
+        okBtn.focus();
+        POPUP.show(passwordChangeConfPOPUP);
     }
 
     function tableUserSearch(searchValue) {

@@ -187,6 +187,12 @@ var ACTION_NAV = (function () {
                 hide();
                 break;
             }
+            case 'ConsumerFinances': {
+                ConsumerFinances.handleActionNavEvent(target);
+                clear();
+                hide();
+                break;
+            }
         }
 
         var miniRosterBtn = document.querySelector('.consumerListBtn');

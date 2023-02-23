@@ -44,6 +44,7 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
 using static Anywhere.service.Data.AnywhereWorker;
 using Anywhere.service.Data.ResetPassword;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere
 {
@@ -2985,6 +2986,11 @@ namespace Anywhere
         public ResetPasswordWorker.ActiveInactiveUser[] getActiveInactiveUserDateJSON(string token, string isActive)
         {
             return resetPasswordWorker.getActiveInactiveUserDateJSON(token, isActive);
+        }
+
+        public string updateActiveInactiveUserDateJSON(string token, string isActive ,string userId)
+        {
+            return resetPasswordWorker.updateActiveInactiveUserDateJSON(token, isActive , userId);
         }
 
         public string getUserCredDateJSON(string token, string userId)

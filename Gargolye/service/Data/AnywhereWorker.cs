@@ -55,7 +55,8 @@ namespace Anywhere.service.Data
         {
             string companyWorkWeekStart = dg.getCompanyWorkWeekStartFromDB(token);
             StartDayOfWeek[] startDay = js.Deserialize<StartDayOfWeek[]>(companyWorkWeekStart);
-            string workWeekStart = startDay[0].Day_of_Week.ToString();
+            //string workWeekStart = startDay[0].Day_of_Week.ToString();
+            string workWeekStart = startDay.Length != 0 ? startDay[0].Day_of_Week.ToString() : "S"; 
             int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
             DateTime weekStart = DateTime.Today.AddDays(-ded);
             return weekStart;
@@ -425,6 +426,8 @@ namespace Anywhere.service.Data
             public string azureSttApi { get; set; }
             public string reportSeconds { get; set; }
             public string planPeopleId { get; set; }
+
+            public string adminPermission { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
