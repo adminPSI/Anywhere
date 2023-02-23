@@ -1,11 +1,15 @@
 ﻿using Anywhere.Data;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using System.Windows.Input;
+using System.Xml;
 
 namespace Anywhere.service.Data
 {
@@ -220,14 +224,21 @@ namespace Anywhere.service.Data
         public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision)
         {
             string[] dateArr = daysOffIdString.Split(',');
+            string overlapDaysoffRequest = string.Empty; 
 
             foreach (var dayOffId in dateArr)
             {
-                dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
+                overlapDaysoffRequest = dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
                 ////Notification
                 //dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
 
+                if (overlapDaysoffRequest.Contains("is not unique: Primary key value"))
+                {
+                    return "OverLapFound";
+                }
+
             }
+
             //Notification
             foreach (var dayOffId in dateArr)
             {

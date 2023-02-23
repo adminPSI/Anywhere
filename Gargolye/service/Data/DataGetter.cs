@@ -4652,7 +4652,7 @@ namespace Anywhere.Data
             catch (Exception ex)
             {
                 logger.error("703", ex.Message + "ANYW_Scheduling_ApproveDenyDaysOffRequest(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "703: error ANYW_Scheduling_ApproveDenyCallOffRequest";
+                return ex.Message;
             }
         }
 

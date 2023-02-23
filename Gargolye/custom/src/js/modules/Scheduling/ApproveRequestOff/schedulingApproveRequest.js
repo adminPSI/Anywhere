@@ -524,17 +524,22 @@ var schedulingApproveRequest = (function () {
     }
 
     if (daysOffRequests) {
-      daysOffRequests.forEach(request => {
+      //let responseMessage;
+     await daysOffRequests.forEach(async request => {
         var shiftIds = request.id;
         var decision = request.dataset.approvalStatus;
         decision = decision === 'approve' ? 'A' : decision === 'deny' ? 'D' : '';
         if (decision !== '') {
           //token, daysOffIdString(comma separated), decision
-          schedulingAjax.approveDenyDaysOffRequestSchedulingAjax({
+          const { approveDenyDaysOffRequestSchedulingResult: approveDenyResponse } = await schedulingAjax.approveDenyDaysOffRequestSchedulingAjax({
             token: $.session.Token,
             daysOffIdString: shiftIds,
             decision: decision,
           });
+
+          if (approveDenyResponse == 'OverLapFound') {
+            alert("Overlap found. Processing stopped.")
+          }
         }
       });
     }
