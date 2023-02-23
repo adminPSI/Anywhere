@@ -224,29 +224,37 @@ namespace Anywhere.service.Data
         public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision)
         {
             string[] dateArr = daysOffIdString.Split(',');
-            string overlapDaysoffRequest = string.Empty; 
+            string response = string.Empty;
+            Boolean returnOverlapMessage = false;
 
             foreach (var dayOffId in dateArr)
             {
-                overlapDaysoffRequest = dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
+                response = dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
                 ////Notification
                 //dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
 
-                if (overlapDaysoffRequest.Contains("is not unique: Primary key value"))
+                if (response.Contains("is not unique: Primary key value"))
                 {
-                    return "OverLapFound";
+                    returnOverlapMessage = true;
+                } else
+                {
+                    dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
                 }
-
             }
 
             //Notification
-            foreach (var dayOffId in dateArr)
-            {
-                dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
-                break;
+            //foreach (var dayOffId in dateArr)
+            //{
+            //    dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
+            //    break;
+            //}
+
+            if (returnOverlapMessage) {
+                return "OverlapFound.";
+            } else { 
+                return "Success";
             }
             
-            return "Success";
         }
 
         public class AllScheduleData
