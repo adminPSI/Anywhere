@@ -524,20 +524,55 @@ var schedulingApproveRequest = (function () {
     }
 
     if (daysOffRequests) {
-      daysOffRequests.forEach(request => {
+      //let responseMessage;
+     await daysOffRequests.forEach(async request => {
         var shiftIds = request.id;
         var decision = request.dataset.approvalStatus;
         decision = decision === 'approve' ? 'A' : decision === 'deny' ? 'D' : '';
         if (decision !== '') {
           //token, daysOffIdString(comma separated), decision
-          schedulingAjax.approveDenyDaysOffRequestSchedulingAjax({
+          const { approveDenyDaysOffRequestSchedulingResult: approveDenyResponse } = await schedulingAjax.approveDenyDaysOffRequestSchedulingAjax({
             token: $.session.Token,
             daysOffIdString: shiftIds,
             decision: decision,
           });
+
+          if (approveDenyResponse == 'OverlapFound.') {
+           // alert("Overlap found. Please review the days off requests NOT processed. These requests are in conflict with already approved requests.")
+           overlapAlert();
+          }
         }
       });
     }
+  }
+
+  function overlapAlert() {
+
+    var alertPopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+    });
+    var alertbtnWrap = document.createElement('div');
+    alertbtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      icon: 'checkmark',
+      callback: async function() {
+        POPUP.hide(alertPopup);
+       // overlay.show();
+        
+      },
+    });
+
+    alertbtnWrap.appendChild(alertokBtn);
+    var alertMessage = document.createElement('p');
+    alertMessage.innerHTML = "Overlap found. Please review the days off requests NOT processed. These requests are in conflict with already approved requests.";
+    alertPopup.appendChild(alertMessage);
+    alertPopup.appendChild(alertbtnWrap);
+    POPUP.show(alertPopup);
+	
   }
 
   function init() {

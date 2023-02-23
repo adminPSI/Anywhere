@@ -9,7 +9,7 @@ namespace Anywhere.service.Data
 {
     public class SingleEntryWorker
     {
-        DataGetter dg = new DataGetter();
+        DataGetter dg = new DataGetter(); 
         JavaScriptSerializer js = new JavaScriptSerializer();
 
         public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
