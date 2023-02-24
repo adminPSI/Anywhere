@@ -394,10 +394,10 @@ namespace Anywhere.service.Data.PlanSignature
                 {
                     pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), signatureId);
                 }
-                if (signature != "")
-                {
-                    dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
-                }
+                //if (signature != "")
+                //{
+                //    dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
+                //}
 
                 return psdg.updateVendor(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, vendorId);
             } else
@@ -418,10 +418,10 @@ namespace Anywhere.service.Data.PlanSignature
                     {
                         pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), signatureId);
                     }
-                    if (signature != "")
-                    {
-                        dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
-                    }
+                    //if (signature != "")
+                    //{
+                    //    dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
+                    //}
 
                     return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, vendorId);
             }
