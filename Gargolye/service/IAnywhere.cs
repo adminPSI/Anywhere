@@ -32,6 +32,7 @@ using static Anywhere.service.Data.DayServicesWorker;
 using Anywhere.service.Data.eSignature___OneSpan;
 using System.Management.Automation.Language;
 using Anywhere.service.Data.ResetPassword;
+using Anywhere.service.Data.ConsumerFinances;
 
 namespace Anywhere
 {
@@ -4030,6 +4031,22 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/updateActiveInactiveUser/")]
         string updateActiveInactiveUserDateJSON(string token, string isActive, string userId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getAccountTransectionEntries/")]
+       ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string amount, string checkNo, string balance, string enteredBy);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getActiveAccount/")]
+        ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token);
 
     }
 

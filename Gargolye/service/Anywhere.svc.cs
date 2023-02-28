@@ -45,6 +45,7 @@ using static Anywhere.service.Data.AnywhereAttachmentWorker;
 using static Anywhere.service.Data.AnywhereWorker;
 using Anywhere.service.Data.ResetPassword;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
+using Anywhere.service.Data.ConsumerFinances;
 
 namespace Anywhere
 {
@@ -100,7 +101,7 @@ namespace Anywhere
         SignInUser siu = new SignInUser();
         DisplayPlanReportAndAttachments dpra = new DisplayPlanReportAndAttachments();
         ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
-
+        ConsumerFinancesWorker cf = new ConsumerFinancesWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -3001,6 +3002,16 @@ namespace Anywhere
         public string resetPassword(string userId, string hash, string newPassword, string changingToHashPassword)
         {
             return dg.resetPassword(userId, hash, newPassword, changingToHashPassword);
+        }
+
+        public ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate ,string activityEndDate, string accountName, string payee, string category, string amount, string checkNo, string balance, string enteredBy)
+        {
+            return cf.getAccountTransectionEntries(token,consumerIds, activityStartDate , activityEndDate, accountName, payee, category, amount, checkNo, balance, enteredBy);
+        }
+
+        public ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token)
+        {
+            return cf.getActiveAccount(token);
         }
 
     }
