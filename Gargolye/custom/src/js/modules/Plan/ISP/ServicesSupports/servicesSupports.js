@@ -600,7 +600,7 @@ const servicesSupports = (() => {
               selectedPaidSupportIds = selectedPaidSupportIds.filter(
                 sr => sr !== psData.paidSupportsId,
               );
-              selectedPaidSupportRows = selectedPaidSupportIds.filter(
+              selectedPaidSupportRows = selectedPaidSupportRows.filter(
                 sr => sr.paidSupportsId !== psData.paidSupportsId,
               );
             } else {
@@ -689,7 +689,7 @@ const servicesSupports = (() => {
               selectedPaidSupportIds = selectedPaidSupportIds.filter(
                 sr => sr !== psData.paidSupportsId,
               );
-              selectedPaidSupportRows = selectedPaidSupportIds.filter(
+              selectedPaidSupportRows = selectedPaidSupportRows.filter(
                 sr => sr.paidSupportsId !== psData.paidSupportsId,
               );
             } else {
@@ -797,7 +797,7 @@ const servicesSupports = (() => {
                 selectedPaidSupportIds = selectedPaidSupportIds.filter(
                   sr => sr !== psData.paidSupportsId,
                 );
-                selectedPaidSupportRows = selectedPaidSupportIds.filter(
+                selectedPaidSupportRows = selectedPaidSupportRows.filter(
                   sr => sr.paidSupportsId !== psData.paidSupportsId,
                 );
               } else {
@@ -1861,7 +1861,7 @@ const servicesSupports = (() => {
                 selectedPaidSupportIds = selectedPaidSupportIds.filter(
                   sr => sr !== psData.paidSupportsId,
                 );
-                selectedPaidSupportRows = selectedPaidSupportIds.filter(
+                selectedPaidSupportRows = selectedPaidSupportRows.filter(
                   sr => sr.paidSupportsId !== psData.paidSupportsId,
                 );
               } else {
