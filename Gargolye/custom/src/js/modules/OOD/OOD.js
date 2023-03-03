@@ -113,7 +113,7 @@ const OOD = (() => {
 		const tableOptions = {
 		  plain: false,
 		  tableId: 'OODEntriesTable',
-		  columnHeadings: ['Service Date','Consumer', 'Service', 'Reference No', 'User Updated', 'Employer' ],
+		  columnHeadings: ['Service Date','Consumer', 'Service', 'Reference No', 'User Updated', 'Employer', 'ST' ],
 		  endIcon: false,
 		  
 		};
@@ -143,9 +143,11 @@ const OOD = (() => {
 			});	
 
 			let tableData = OODEntries.map((entry) => ({
-				values : [entry.serviceDate, entry.consumerName, entry.serviceCode, entry.referenceNumber, entry.userUpdated, entry.employerName],
+				values : [entry.serviceDate, entry.consumerName, entry.serviceCode, entry.referenceNumber, entry.userUpdated, entry.employerName, entry.serviceType],
 				//TODO JOE: add key: ServiceType value: entry.serviceType (T1 and T2)
-				attributes: [{ key: 'OODReportType', value: (entry.employerName == 'Monthly Review') ? 'monthlySummary' : 'newEntry'}, {key: 'consumerId', value: entry.consumerId}, {key: 'Id', value: entry.ID}, {key: 'userId', value: entry.userUpdated}],
+				attributes: [{ key: 'OODReportType', value: (entry.employerName == 'Monthly Review') ? 'monthlySummary' : 'newEntry'}, 
+				{key: 'consumerId', value: entry.consumerId}, 
+				{key: 'Id', value: entry.ID}, {key: 'userId', value: entry.userUpdated}, {key: 'serviceType', value: entry.serviceType}],
 				onClick: (e) => {
 			    var rowConsumer = selectedConsumers.filter(function (x) {return x.id == entry.consumerId });
 				//TODO JOE: add to the if clause below (Form4) and add two more ifs to cover the Form 8 ---  
@@ -704,9 +706,9 @@ function buildEditEmployersBtn() {
 		} = await OODAjax.getActiveServiceCodesAsync(OODENTRIESFILTER);
 	  // const templates = WorkflowViewerComponent.getTemplates();
 	  let data = services.map((service) => ({
-		  id: service.serviceId, 
+		  id: service.serviceType, 
 		  value: service.serviceId, 
-		  text: service.serviceCode,
+		  text: service.serviceName,
 	  })); 
 	  data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value         
 	  dropdown.populate("servicesDropdown", data, filterValues.serviceId);        
@@ -741,7 +743,7 @@ function buildEditEmployersBtn() {
 
 	  //TODO JOE: id: should use selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened 
 	  let data = services.map((service) => ({
-		  id: service.serviceId,  // replace with selectedConsumerServiceType to get T1 and T2 info
+		  id: service.serviceType,  // replace with selectedConsumerServiceType to get T1 and T2 info
 		  value: service.serviceId, 
 		  text: service.serviceName + ' - Ref # ' + service.referenceNumber,
 	  })); 
@@ -762,7 +764,7 @@ function buildEditEmployersBtn() {
 		// const templates = WorkflowViewerComponent.getTemplates();
 		 //TODO JOE: id: should use selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened 
 		let data = services.map((service) => ({
-			id: service.serviceId,   // replace with selectedConsumerServiceType to get T1 and T2 info
+			id: service.serviceType,   // replace with selectedConsumerServiceType to get T1 and T2 info
 			value: service.serviceId, 
 			text: service.serviceName,
 		})); 

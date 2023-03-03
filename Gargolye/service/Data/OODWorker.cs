@@ -36,7 +36,9 @@ namespace Anywhere.service.Data
             public string userUpdated { get; set; }
             [DataMember(Order = 7)]
             public string employerName { get; set; }
-            
+            [DataMember(Order = 8)]
+            public string serviceType { get; set; }
+
         }
 
         [DataContract]
@@ -83,7 +85,8 @@ namespace Anywhere.service.Data
             public string serviceCode { get; set; }
             [DataMember(Order = 3)]
             public string referenceNumber { get; set; }
-
+            [DataMember(Order = 4)]
+            public string serviceType { get; set; }
         }
 
         [DataContract]
