@@ -424,87 +424,6 @@ var consumerInfo = (function () {
 
     sectionInner.appendChild(attachmentsList);
   }
-  function populateDemographicsSection(section, data) {
-    var sectionInner = section.querySelector('.sectionInner');
-    sectionInner.innerHTML = '';
-
-    var addressOne = data.addressone;
-    var addressTwo = data.addresstwo;
-    var city = data.mailcity;
-    var state = data.mailstate;
-    var zip = data.mailzipcode;
-    zip = zip ? zip.trim() : zip;
-    var tempPrimaryPhone = data.primaryphone.split('%');
-    var tempSecondaryPhone = data.secondaryphone.split('%');
-    var pPhoneNumber = UTIL.formatPhoneNumber(tempPrimaryPhone[0].trim());
-    var sPhoneNumber = UTIL.formatPhoneNumber(tempSecondaryPhone[0].trim());
-    var pPhoneType = tempPrimaryPhone.length > 1 ? tempPrimaryPhone[1] : '';
-    var sPhoneType = tempSecondaryPhone.length > 1 ? tempSecondaryPhone[1] : '';
-    var pPhone = `${pPhoneNumber} ${pPhoneType}`;
-    var sPhone = `${sPhoneNumber} ${sPhoneType}`;
-    var cellPhoneNumber = '';
-    if (data.cellphone !== null && data.cellphone !== undefined) {
-      const cell = data.cellphone.trim();
-      if (cell !== '%') {
-        cellPhoneNumber = UTIL.formatPhoneNumber(cell);
-      } else {
-        cellPhoneNumber = '';
-      }
-    }
-
-    sectionInner.innerHTML = `
-      <div>
-        <h3>Address</h3>
-        <p class="addressone">${addressOne}</p>
-        <p class="addresstwo">${addressTwo}</p>
-        <p class="mail">${city}, ${state} ${zip}</p>
-      </div>
-      <div>
-        <h3>Contact Info</h3>
-        <p class="primaryphone">Primary: <a href=tel:+1-${pPhone}>${pPhone}</a></p>
-        <p class="secondaryphone">Secondary: <a href=tel:+1-${sPhone}>${sPhone}</a></p>
-        ${
-          $.session.applicationName === 'Gatekeeper'
-            ? `<p class="secondaryphone">Cell: <a href=tel:+1-${cellPhoneNumber}>${cellPhoneNumber}</a></p>`
-            : ''
-        }
-      </div>
-      <div>
-        <h3>Additional Info</h3>
-        <input type="button" id="infoButton" value="Show Details" class="btn btn--secondary btn--contained" style="float: right;">
-        <p class="primaryphone" id="DOB">DOB: </p>
-        <p class="primaryphone" id="SSN">SSN: </p>
-        <p class="primaryphone" id="Medicaid">Medicaid: </p>
-      </div>
-    `;
-
-    document.getElementById('infoButton').addEventListener('click', function (e) {
-      if (e.target.value === 'Show Details') {
-        e.target.value = 'Hide Details';
-        let formatDOB;
-        if (data.DOB !== '') {
-          let newDate = new Date(data.DOB);
-          let theMonth = newDate.getMonth() + 1;
-          formatDOB =
-            UTIL.leadingZero(theMonth) +
-            '/' +
-            UTIL.leadingZero(newDate.getDate()) +
-            '/' +
-            newDate.getFullYear();
-        } else {
-          formatDOB = '';
-        }
-        document.getElementById('DOB').textContent = `DOB: ${formatDOB}`;
-        document.getElementById('SSN').textContent = `SSN: ${data.SSN}`;
-        document.getElementById('Medicaid').textContent = `Medicaid: ${data.MedicaidNumber}`;
-      } else {
-        e.target.value = 'Show Details';
-        document.getElementById('DOB').textContent = 'DOB:';
-        document.getElementById('SSN').textContent = 'SSN:';
-        document.getElementById('Medicaid').textContent = 'Medicaid:';
-      }
-    });
-  }
   function showRelationshipDetails(section, sectionInner, data) {
     // set sectionInner to display none
     sectionInner.style.display = 'none';
@@ -951,7 +870,7 @@ var consumerInfo = (function () {
         case 'Demographics': {
           targetSection = consumerInfoCard.querySelector('.demographicsSection');
           rosterAjax.getConsumerDemographics(consumerId, function (results) {
-            populateDemographicsSection(targetSection, results[0]);
+            demographics.populate(targetSection, results[0]);
           });
           break;
         }
