@@ -485,7 +485,8 @@ var incidentOverview = (function () {
       var category = obj.incidentCategory;
       var consumersInvolved = obj.consumerName;
       var viewedOn = obj.viewedOn ? true : false;
-      var orginUser = obj.originallyEnteredBy === $.session.UserId ? true : false;
+      var orginUser =
+        obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
       var showBold;
 
       if (!orginUser && !viewedOn) {

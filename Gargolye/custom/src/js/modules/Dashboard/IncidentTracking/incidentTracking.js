@@ -19,7 +19,8 @@ var incidentTrackingWidget = (function () {
       name = `${name[1]}, ${name[0]}`;
       var date = UTIL.abbreviateDateYear(r.incidentDate.split(' ')[0]);
       var viewedOn = r.viewedOn ? true : false;
-      var orginUser = r.originallyEnteredBy === $.session.UserId ? true : false;
+      var orginUser =
+        r.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
       var showBold;
 
       if (!orginUser && !viewedOn) {
