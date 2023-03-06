@@ -11,6 +11,7 @@ var timeEntry = (function () {
   var evvReasonCodes;
   var crossmidnightisadminedit;
   var crossmidnightpayperiod;
+  let saveAndSubmit;
   // required fields
   var requiredFields = {
     isDestinationRequired: '',
@@ -28,11 +29,11 @@ var timeEntry = (function () {
   function showOverlapPopup(updateorsave = 'save') {
     var popup = POPUP.build({});
     var message = document.createElement('p');
-    message.style.marginBottom = "2em";
+    message.style.marginBottom = '2em';
     message.innerHTML = `There is an overlap with an existing Time Entry record. Do you wish to proceed?`;
 
     var btnWrap = document.createElement('div');
-      btnWrap.classList.add('btnWrap');
+    btnWrap.classList.add('btnWrap');
 
     var yesBtn = button.build({
       text: 'Yes',
@@ -40,17 +41,21 @@ var timeEntry = (function () {
       type: 'contained',
       callback: function () {
         POPUP.hide(popup);
-        if ($.session.singleEntrycrossMidnight && updateorsave === 'save')
+        if ($.session.singleEntrycrossMidnight && updateorsave === 'save') {
           showMultipleEntriesPopup();
-        if (!$.session.singleEntrycrossMidnight && updateorsave === 'save')
-          getEntryData();
-        if ($.session.singleEntrycrossMidnight && updateorsave === 'update')
+        }
+        if (!$.session.singleEntrycrossMidnight && updateorsave === 'save') {
+          getEntryData(('', saveAndSubmit));
+        }
+        if ($.session.singleEntrycrossMidnight && updateorsave === 'update') {
           showMultipleEntriesPopup('update');
-        if (!$.session.singleEntrycrossMidnight && updateorsave === 'update')
+        }
+        if (!$.session.singleEntrycrossMidnight && updateorsave === 'update') {
           updateEntry();
+        }
       },
     });
-  var noBtn = button.build({
+    var noBtn = button.build({
       text: 'No',
       style: 'secondary',
       type: 'contained',
@@ -79,7 +84,9 @@ var timeEntry = (function () {
       type: 'contained',
       callback: function () {
         POPUP.hide(popup2);
-        updateorsave === 'save' ? getEntryData() : updateEntry();
+        updateorsave === 'save'
+          ? getEntryData(('', saveAndSubmit))
+          : updateEntry('', '', '', saveAndSubmit);
       },
     });
     var noBtn2 = button.build({
@@ -99,7 +106,8 @@ var timeEntry = (function () {
     POPUP.show(popup2);
   }
 
-  function getEntryData(keyStartStop) {
+  function getEntryData(keyStartStop, saveAndSubmitBool) {
+    saveAndSubmit = saveAndSubmitBool;
     if (keyStartStop === 'Y') {
       var overlapData = timeEntryCard.getOverlapData();
       singleEntryAjax.singleEntryOverlapCheck(overlapData, function (results) {
@@ -108,7 +116,7 @@ var timeEntry = (function () {
         } else {
           $.session.singleEntrycrossMidnight
             ? showMultipleEntriesPopup()
-            : getEntryData();
+            : getEntryData('', saveAndSubmit);
         }
       });
 
@@ -153,10 +161,10 @@ var timeEntry = (function () {
       // * Date Constructor Doc: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
       // * Note on constructing date on date string is highly discouraged due to browser differences and inconsistencies.
       // * This was the issue for the crossing over midnight issue in older versions of safari.
-      const year = parseInt(saveData.dateOfService.split("-")[0]);
-      const month = parseInt(saveData.dateOfService.split("-")[1]);
-      const day = parseInt(saveData.dateOfService.split("-")[2]);
-      var nextDay = new Date(year, (month - 1), day);
+      const year = parseInt(saveData.dateOfService.split('-')[0]);
+      const month = parseInt(saveData.dateOfService.split('-')[1]);
+      const day = parseInt(saveData.dateOfService.split('-')[2]);
+      var nextDay = new Date(year, month - 1, day);
       nextDay.setDate(nextDay.getDate() + 1);
 
       var dd = ('0' + nextDay.getDate()).slice(-2);
@@ -179,28 +187,54 @@ var timeEntry = (function () {
   function saveEntryData(saveData) {
     if (saveData.locationId !== '' || saveData.consumerId === '') {
       singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
-        successfulSave.show('SAVED');
-        setTimeout(function () {
-          successfulSave.hide();
-          timeEntryCard.clearAllGlobalVariables();
-          roster2.clearActiveConsumers();
-          newTimeEntry.init(true);
-        }, 1000);
+        if (!saveAndSubmit) {
+          successfulSave.show('SAVED');
+          setTimeout(function () {
+            successfulSave.hide();
+            timeEntryCard.clearAllGlobalVariables();
+            roster2.clearActiveConsumers();
+            newTimeEntry.init(true);
+          }, 1000);
+        } else {
+          var entryId = results[1].replace('</', '');
+          var updateObj = {
+            token: $.session.Token,
+            singleEntryIdString: entryId,
+            newStatus: 'S',
+          };
+          var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+
+          timeEntryReview.showDeleteEntryWarningPopup(warningMessage, () => {
+            singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
+              successfulSave.show('SAVED & SUBMITTED');
+              setTimeout(function () {
+                successfulSave.hide();
+                timeEntryCard.clearAllGlobalVariables();
+                roster2.clearActiveConsumers();
+                newTimeEntry.init(true);
+              }, 1000);
+            });
+          });
+        }
       });
     } else {
       singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
-        successfulSave.show('SAVED');
-        setTimeout(function () {
-          successfulSave.hide();
-          timeEntryCard.clearAllGlobalVariables();
-          roster2.clearActiveConsumers();
-          newTimeEntry.init();
-        }, 1000);
+        if (!saveAndSubmit) {
+          successfulSave.show('SAVED');
+          setTimeout(function () {
+            successfulSave.hide();
+            timeEntryCard.clearAllGlobalVariables();
+            roster2.clearActiveConsumers();
+            newTimeEntry.init();
+          }, 1000);
+        }
       });
     }
   }
 
-  function updateEntry(isAdminEdit, payPeriod, keyStartStop) {
+  function updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndSubmitBool) {
+    saveAndSubmit = saveAndSubmitBool;
+
     if (keyStartStop === 'Y') {
       if ($.session.singleEntrycrossMidnight) {
         crossmidnightisadminedit = isAdminEdit;
@@ -222,7 +256,6 @@ var timeEntry = (function () {
       // 			showOverlapPopup('update');
       // 		}
       // 	});
-
       // 	return;
       // }
 
@@ -248,10 +281,10 @@ var timeEntry = (function () {
       // * Date Constructor Doc: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
       // * Note on constructing date on date string is highly discouraged due to browser differences and inconsistencies.
       // * This was the issue for the crossing over midnight issue in older versions of safari.
-      const year = parseInt(saveData.dateOfService.split("-")[0]);
-      const month = parseInt(saveData.dateOfService.split("-")[1]);
-      const day = parseInt(saveData.dateOfService.split("-")[2]);
-      var nextDay = new Date(year, (month - 1), day);
+      const year = parseInt(saveData.dateOfService.split('-')[0]);
+      const month = parseInt(saveData.dateOfService.split('-')[1]);
+      const day = parseInt(saveData.dateOfService.split('-')[2]);
+      var nextDay = new Date(year, month - 1, day);
       nextDay.setDate(nextDay.getDate() + 1);
 
       var dd = ('0' + nextDay.getDate()).slice(-2);
@@ -273,25 +306,54 @@ var timeEntry = (function () {
 
   function updateSingleEntry(isAdminEdit, payPeriod, updateData) {
     singleEntryAjax.updateSingleEntry(updateData, function (results) {
-      // var updateObj = {
-      // 	token: $.session.Token,
-      // 	singleEntryIdString: saveData.singleEntryId,
-      // 	newStatus: 'S',
-      // };
-      // singleEntryAjax.updateSingleEntryStatus(updateObj, function() {
-      if (!$.session.singleEntrycrossMidnight) successfulSave.show('UPDATED');
-      setTimeout(function () {
-        if (!$.session.singleEntrycrossMidnight) successfulSave.hide();
-        roster2.clearActiveConsumers();
-        timeEntryCard.clearAllGlobalVariables();
-
-        if (isAdminEdit) {
-          timeApproval.refreshPage(payPeriod);
-        } else {
-          timeEntryReview.refreshPage(payPeriod);
+      if (!saveAndSubmit) {
+        // Orig Update
+        if (!$.session.singleEntrycrossMidnight) {
+          successfulSave.show('UPDATED');
         }
-      }, 1000);
-      // });
+        setTimeout(function () {
+          if (!$.session.singleEntrycrossMidnight) {
+            successfulSave.hide();
+          }
+          roster2.clearActiveConsumers();
+          timeEntryCard.clearAllGlobalVariables();
+
+          if (isAdminEdit) {
+            timeApproval.refreshPage(payPeriod);
+          } else {
+            timeEntryReview.refreshPage(payPeriod);
+          }
+        }, 1000);
+      } else {
+        // Update w/Submit
+        var updateObj = {
+          token: $.session.Token,
+          singleEntryIdString: updateData.singleEntryId,
+          newStatus: 'S',
+        };
+        var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+
+        timeEntryReview.showDeleteEntryWarningPopup(warningMessage, () => {
+          singleEntryAjax.updateSingleEntryStatus(updateObj, () => {
+            if (!$.session.singleEntrycrossMidnight) {
+              successfulSave.show('UPDATED & SUBMITTED');
+            }
+            setTimeout(function () {
+              if (!$.session.singleEntrycrossMidnight) {
+                successfulSave.hide();
+              }
+              roster2.clearActiveConsumers();
+              timeEntryCard.clearAllGlobalVariables();
+
+              if (isAdminEdit) {
+                timeApproval.refreshPage(payPeriod);
+              } else {
+                timeEntryReview.refreshPage(payPeriod);
+              }
+            }, 1000);
+          });
+        });
+      }
     });
   }
 
@@ -383,11 +445,7 @@ var timeEntry = (function () {
         currentAdminDate = UTIL.formatDateToIso(
           `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`,
         );
-        currentAdminPayPeriod = setSelectedPayPeriod(
-          startDateIso,
-          endDateIso,
-          dateString,
-        );
+        currentAdminPayPeriod = setSelectedPayPeriod(startDateIso, endDateIso, dateString);
         adminDatesSet = true;
 
         if (anywhereClosed === 'False') {

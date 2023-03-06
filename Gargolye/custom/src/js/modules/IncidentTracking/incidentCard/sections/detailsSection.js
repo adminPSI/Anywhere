@@ -28,6 +28,11 @@ var itDetailsSection = (function () {
   var reportedDateInput;
   var reportedTimeInput;
 
+  var summaryTextarea;
+  var actionTextarea;
+  var preventionTextarea;
+  var causeTextarea;
+
   function getSectionData() {
     categories = incidentTracking.getCategories();
     incidentLocations = incidentTracking.getLocations();
@@ -160,28 +165,28 @@ var itDetailsSection = (function () {
     return dropdownWrap;
   }
   function buildTextAreas() {
-    var summaryTextarea = input.build({
+    summaryTextarea = input.build({
       label: 'Summary Of Incident',
       style: 'secondary',
       type: 'textarea',
       classNames: ['autosize', 'summary'],
       value: summaryText,
     });
-    var actionTextarea = input.build({
+    actionTextarea = input.build({
       label: 'Immediate Action',
       style: 'secondary',
       type: 'textarea',
       classNames: ['autosize', 'action'],
       value: actionText,
     });
-    var preventionTextarea = input.build({
+    preventionTextarea = input.build({
       label: 'Prevention Plan',
       style: 'secondary',
       type: 'textarea',
       classNames: ['autosize', 'prevention'],
       value: preventionText,
     });
-    var causeTextarea = input.build({
+    causeTextarea = input.build({
       label: 'Cause & Contributing Factors',
       style: 'secondary',
       type: 'textarea',
@@ -240,9 +245,8 @@ var itDetailsSection = (function () {
   }
 
   function checkEntireIncidentCardforErrors() {
-    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+    var detailSectionHasErrors = checkRequiredFields();
     var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
-    // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
 
     if (detailSectionHasErrors || consumerSectionHasErrors) {
       incidentCard.toggleSave(true);
@@ -252,8 +256,30 @@ var itDetailsSection = (function () {
   }
 
   function setupEvents() {
-    incidentDateInput.addEventListener('change', event => {
-      incidentDate = event.target.value;
+    incidentDateInput.addEventListener('change', e => {
+      incidentDate = e.target.value;
+      checkEntireIncidentCardforErrors();
+    });
+    incidentTimeInput.addEventListener('change', e => {
+      checkEntireIncidentCardforErrors();
+    });
+    reportedDateInput.addEventListener('change', e => {
+      checkEntireIncidentCardforErrors();
+    });
+    reportedTimeInput.addEventListener('change', e => {
+      checkEntireIncidentCardforErrors();
+    });
+
+    summaryTextarea.addEventListener('change', e => {
+      checkEntireIncidentCardforErrors();
+    });
+    actionTextarea.addEventListener('change', e => {
+      checkEntireIncidentCardforErrors();
+    });
+    preventionTextarea.addEventListener('change', e => {
+      checkEntireIncidentCardforErrors();
+    });
+    causeTextarea.addEventListener('change', e => {
       checkEntireIncidentCardforErrors();
     });
 

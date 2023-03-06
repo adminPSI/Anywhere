@@ -110,24 +110,9 @@ var timeEntryCard = (function () {
     var targetAction = target.dataset.actionNav;
 
     switch (targetAction) {
-      // case 'rosterDone': {
-      // 	roster.selectedConsumersToEnabledList();
-      // 	if (isNew) {
-      // 		newTimeEntry.loadPage();
-      // 	} else {
-      // 		editTimeEntry.loadPage();
-      // 	}
-      // 	break;
-      // }
-      // case 'rosterCancel': {
-      // 	timeEntry.init();
-      // 	break;
-      // }
       case 'miniRosterDone': {
         DOM.toggleNavLayout();
-        // var selectedConsumers = roster.getSelectedConsumers();
         const selectedConsumers = roster2.getActiveConsumers();
-        // roster.selectedConsumersToActiveList();
         moveConsumersToTimeCard(selectedConsumers);
         break;
       }
@@ -1382,10 +1367,12 @@ var timeEntryCard = (function () {
       ) {
         saveBtn.classList.add('disabled');
         deleteBtn.classList.add('disabled');
-        //saveOrUpdate.classList.add('disabled');
       } else {
         saveBtn.classList.remove('disabled');
         deleteBtn.classList.remove('disabled');
+        if (endTime) {
+          saveAndSumbitBtn.classList.remove('disabled');
+        }
       }
     }
 
@@ -1474,6 +1461,12 @@ var timeEntryCard = (function () {
     });
     endTimeInput.addEventListener('click', event => {
       setEndTimeOnClick(event);
+
+      if (endTime) {
+        saveAndSumbitBtn.classList.remove('disabled');
+      } else {
+        saveAndSumbitBtn.classList.add('disabled');
+      }
     });
     endTimeInput.addEventListener('focusout', event => {
       var hoursInput = totalHoursInput.querySelector('input');
@@ -1522,6 +1515,12 @@ var timeEntryCard = (function () {
       setTotalHours();
       checkPermissions();
       UTIL.getGeoLocation(setEndTimeLocation);
+
+      if (endTime) {
+        saveAndSumbitBtn.classList.remove('disabled');
+      } else {
+        saveAndSumbitBtn.classList.add('disabled');
+      }
     });
     // TOTALHOURSINPUT - changed from keyup to input because using the arrow keys
     // (not on the keyboard but in the input itself) didn't trigger the event listener
@@ -1542,6 +1541,18 @@ var timeEntryCard = (function () {
 
       if (saveOrUpdate === 'Save') timeEntry.getEntryData(keyStartStop);
       if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
+    });
+    saveAndSumbitBtn.addEventListener('click', event => {
+      // Save entry first
+      event.target.classList.add('disabled');
+      saveBtn.classList.add('disabled');
+      saveOrUpdate = event.target.dataset.insertType;
+
+      const saveAndUpdate = true;
+
+      if (saveOrUpdate === 'Save') timeEntry.getEntryData(keyStartStop, saveAndUpdate);
+      if (saveOrUpdate === 'Update')
+        timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndUpdate);
     });
     cancelBtn.addEventListener('click', () => {
       if (isAdminEdit) {
@@ -2119,6 +2130,13 @@ var timeEntryCard = (function () {
       classNames: ['disabled'],
       attributes: [{ key: 'data-insert-type', value: saveOrUpdate }],
     });
+    saveAndSumbitBtn = button.build({
+      text: `${saveOrUpdate} and submit`,
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['disabled'],
+      attributes: [{ key: 'data-insert-type', value: saveOrUpdate }],
+    });
     deleteBtn = button.build({
       text: 'Delete',
       style: 'secondary',
@@ -2135,6 +2153,7 @@ var timeEntryCard = (function () {
     btnWrap.classList.add('timeCard__actions');
 
     btnWrap.appendChild(saveBtn);
+    btnWrap.appendChild(saveAndSumbitBtn);
     if (isEdit) btnWrap.appendChild(deleteBtn);
     btnWrap.appendChild(cancelBtn);
 
