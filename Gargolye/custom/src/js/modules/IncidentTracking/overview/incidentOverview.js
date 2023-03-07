@@ -468,7 +468,9 @@ var incidentOverview = (function () {
       if (!incidents[r.incidentId]) {
         incidents[r.incidentId] = r;
       } else {
-        incidents[r.incidentId].consumerName += `, ${r.consumerName}`;
+        if (incidents[r.incidentId].consumerName !== r.consumerName) {
+          incidents[r.incidentId].consumerName += `, ${r.consumerName}`;
+        }
       }
     });
 

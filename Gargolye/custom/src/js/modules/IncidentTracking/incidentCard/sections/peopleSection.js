@@ -60,6 +60,9 @@ var itPeopleSection = (function () {
 
     var otherPeopleRow = document.createElement('div');
     otherPeopleRow.classList.add('peopleRow');
+    otherPeopleRow.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
 
     var nameInput = input.build({
       label: 'Name',

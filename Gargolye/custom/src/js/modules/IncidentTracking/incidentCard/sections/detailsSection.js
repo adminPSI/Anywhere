@@ -244,7 +244,7 @@ var itDetailsSection = (function () {
     section.appendChild(sectionBody);
 
     setupEvents();
-    checkEntireIncidentCardforErrors();
+    incidentCard.checkEntireIncidentCardforErrors();
 
     return section;
   }

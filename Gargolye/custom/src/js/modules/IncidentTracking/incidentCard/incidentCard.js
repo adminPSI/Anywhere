@@ -214,9 +214,9 @@ var incidentCard = (function () {
     var consumerSectionHasErrors = checkforRequiredConsumer();
 
     if (detailSectionHasErrors || consumerSectionHasErrors) {
-      incidentCard.toggleSave(true);
+      toggleSaveBtnStatus(true);
     } else {
-      incidentCard.toggleSave(false);
+      toggleSaveBtnStatus(false);
     }
   }
 

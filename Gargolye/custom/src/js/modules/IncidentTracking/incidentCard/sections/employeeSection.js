@@ -102,6 +102,9 @@ var itEmployeeSection = (function () {
 
     var employeeRow = document.createElement('div');
     employeeRow.classList.add('employeeRow');
+    employeeRow.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
 
     var nameDropdown = buildNameDropdown(name);
     var involvmentTypeDropdown = buildInvolvmentDropdown(involvement);
