@@ -1293,9 +1293,8 @@ var timeEntryCard = (function () {
       if ($.session.SingleEntryEditTimeEntry && status === 'A') {
         saveBtn.classList.remove('disabled');
         deleteBtn.classList.remove('disabled');
-        if (endTime) {
-          saveAndSumbitBtn.classList.remove('disabled');
-        }
+        saveAndSumbitBtn.classList.remove('disabled');
+
         if (hasErrors.length !== 0) {
           saveBtn.classList.add('disabled');
           deleteBtn.classList.add('disabled');
@@ -1757,6 +1756,7 @@ var timeEntryCard = (function () {
     if (isCardDisabled) {
       card.classList.add('disabled');
       saveBtn.classList.add('disabled');
+      saveAndSumbitBtn.classList.add('disabled');
       deleteBtn.classList.add('disabled');
       roster2.toggleMiniRosterBtnVisible(false);
       workCodeDropdown.classList.add('disabled');
