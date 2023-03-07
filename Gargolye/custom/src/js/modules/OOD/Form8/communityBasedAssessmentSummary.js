@@ -627,8 +627,8 @@ let OODMonthlySummariesTable; // To be added in future release
               icon: 'checkmark',
               callback: async function() {
                         POPUP.hide(deletepopup);
-                         let result = await OODAjax.deleteForm4MonthlySummaryAsync(emReviewId);  
-                         if (result.deleteForm4MonthlySummaryResult === "1"){
+                         let result = await OODAjax.deleteFormMonthlySummaryAsync(emReviewId);  
+                         if (result.deleteFormMonthlySummaryResult === "1"){
                               OOD.loadOODLanding();                
                          }
               },

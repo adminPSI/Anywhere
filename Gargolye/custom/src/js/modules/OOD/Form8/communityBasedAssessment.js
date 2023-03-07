@@ -805,8 +805,8 @@ function validateStartEndTimes(validateTime) {
         icon: 'checkmark',
         callback: async function() {
                   POPUP.hide(deletepopup);
-                   let result = await OODAjax.deleteForm4MonthlyPlacementEditDataAsync(caseNoteId);  
-                   if (result.deleteForm4MonthlyPlacementEditDataResult === "1"){
+                   let result = await OODAjax.deleteOODFormEntryAsync(caseNoteId);  
+                   if (result.deleteOODFormEntryResult === "1"){
                         OOD.loadOODLanding();                
                    }
         },

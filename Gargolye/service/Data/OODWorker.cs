@@ -191,6 +191,58 @@ namespace Anywhere.service.Data
             public string serviceId { get; set; }
         }
 
+        [DataContract]
+        public class Form8CommunityBasedAssessment
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string caseNoteId { get; set; }
+            [DataMember(Order = 2)]
+            public string serviceDate { get; set; }
+            [DataMember(Order = 3)]
+            public string startTime { get; set; }
+            [DataMember(Order = 4)]
+            public string endTime { get; set; }
+            [DataMember(Order = 5)]
+            public string SAMLevel { get; set; }
+            [DataMember(Order = 6)]
+            public string contactMethod { get; set; }
+            [DataMember(Order = 7)]
+            public string behavioralIndicators { get; set; }
+            [DataMember(Order = 8)]
+            public string jobTaskQualityIndicators { get; set; }
+            [DataMember(Order = 9)]
+            public string jobTaskQuantityIndicators { get; set; }
+            [DataMember(Order = 10)]
+            public string narrative { get; set; }
+            [DataMember(Order = 11)]
+            public string interventions { get; set; }
+        }
+
+
+        [DataContract]
+        public class Form8MonthlySummary
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string emReviewId { get; set; }
+            [DataMember(Order = 2)]
+            public string emReviewDate { get; set; }
+            [DataMember(Order = 3)]
+            public string emNextScheduledReview { get; set; }
+
+            [DataMember(Order = 4)]
+            public string emSummaryIndivSelfAssessment { get; set; }
+            [DataMember(Order = 5)]
+            public string emSummaryIndivEmployerAssessment { get; set; }
+            [DataMember(Order = 6)]
+            public string emSummaryIndivProviderAssessment { get; set; }
+          
+        }
+
+
         public OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
@@ -471,7 +523,7 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
-        public string deleteForm4MonthlyPlacementEditData(string token, string caseNoteId)
+        public string deleteOODFormEntry(string token, string caseNoteId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -482,7 +534,7 @@ namespace Anywhere.service.Data
                     if (caseNoteId == null) throw new Exception("formId is required");
 
                     // insert group steps
-                    String rowsDeleted = Odg.deleteForm4MonthlyPlacementEditData(caseNoteId, transaction);
+                    String rowsDeleted = Odg.deleteOODFormEntry(caseNoteId, transaction);
 
                     return rowsDeleted;
                 }
@@ -502,7 +554,7 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
-        public string deleteForm4MonthlySummary(string token, string emReviewId)
+        public string deleteFormMonthlySummary(string token, string emReviewId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -513,7 +565,7 @@ namespace Anywhere.service.Data
                     if (emReviewId == null) throw new Exception("reviewId is required");
 
                     // insert group steps
-                    String rowsDeleted = Odg.deleteForm4MonthlySummary(emReviewId, transaction);
+                    String rowsDeleted = Odg.deleteFormMonthlySummary(emReviewId, transaction);
 
                     return rowsDeleted;
                 }
@@ -524,10 +576,25 @@ namespace Anywhere.service.Data
                 }
             }
         }
-        //Gets from the database
 
+        // Form 8 Community Based Assessment
+        public Form8CommunityBasedAssessment[] getForm8CommunityBasedAssessment(string token, string caseNoteId)
+        {
+            string editDataString = Odg.getForm8CommunityBasedAssessment(token, caseNoteId);
+            Form8CommunityBasedAssessment[] editDataObj = js.Deserialize<Form8CommunityBasedAssessment[]>(editDataString);
+            return editDataObj;
+        }
 
-        //Send to the database
+      
+
+        // Form 8 Monthly Summary
+        public Form8MonthlySummary[] getForm8MonthlySummary(string token, string emReviewId)
+        {
+            string editDataString = Odg.getForm8MonthlySummary(token, emReviewId);
+            Form8MonthlySummary[] editDataObj = js.Deserialize<Form8MonthlySummary[]>(editDataString);
+            return editDataObj;
+        }
+
 
     }
 }
