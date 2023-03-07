@@ -1156,11 +1156,7 @@ var timeEntryCard = (function () {
         totalHoursInput.classList.remove('error');
       } else {
         if (keyStartStop === 'Y') {
-          if (timeOverlap) {
-            // startTimeInput.classList.add('error');
-            // endTimeInput.classList.add('error');
-            // errorPopup('This is time wraps and will result in two Time Entry rows.');
-          } else {
+          if (!timeOverlap) {
             endTimeInput.classList.remove('error');
           }
 
@@ -1179,26 +1175,22 @@ var timeEntryCard = (function () {
               isBillable === 'Y' &&
               entryDate === todaysDate &&
               checkTimeForAfterNow(endInput.value)
-            )
+            ) {
               endTimeInput.classList.add('error');
+            }
           } else if (isEdit && evvReasonCode === '') {
-            if (isBillable === 'Y' && entryDate > todaysDate) endTimeInput.classList.add('error');
+            if (isBillable === 'Y' && entryDate > todaysDate) {
+              endTimeInput.classList.add('error');
+            }
           } else {
             if (
               isBillable === 'Y' &&
               entryDate === todaysDate &&
               $.session.singleEntrycrossMidnight
-            )
+            ) {
               endTimeInput.classList.add('error');
+            }
           }
-
-          // if (isEdit && $.session.singleEntrycrossMidnight) endTimeInput.classList.add('error');
-
-          // if (isEndTimeValid && isEndTimeValid !== undefined) {
-          //   endTimeInput.classList.remove('error');
-          // } else {
-          //   endTimeInput.classList.add('error');
-          // }
           totalHoursInput.classList.remove('error');
         } else {
           if (hoursInput.value === '' || hoursInput.value < 0) {
@@ -1301,17 +1293,33 @@ var timeEntryCard = (function () {
       if ($.session.SingleEntryEditTimeEntry && status === 'A') {
         saveBtn.classList.remove('disabled');
         deleteBtn.classList.remove('disabled');
+        if (endTime) {
+          saveAndSumbitBtn.classList.remove('disabled');
+        }
         if (hasErrors.length !== 0) {
           saveBtn.classList.add('disabled');
           deleteBtn.classList.add('disabled');
+          saveAndSumbitBtn.classList.add('disabled');
         }
       } else {
         saveBtn.classList.add('disabled');
         deleteBtn.classList.add('disabled');
+        saveAndSumbitBtn.classList.add('disabled');
       }
     } else {
       saveBtn.classList.remove('disabled');
       deleteBtn.classList.remove('disabled');
+      if (keyStartStop === 'Y') {
+        // if 'Y' then end time is enabled and we need to check for it
+        if (endTime) {
+          saveAndSumbitBtn.classList.remove('disabled');
+        } else {
+          saveAndSumbitBtn.classList.add('disabled');
+        }
+      } else {
+        // no check needed, done by hasErrors
+        saveAndSumbitBtn.classList.remove('disabled');
+      }
     }
   }
   function checkPermissions() {
@@ -1367,12 +1375,11 @@ var timeEntryCard = (function () {
       ) {
         saveBtn.classList.add('disabled');
         deleteBtn.classList.add('disabled');
+        saveAndSumbitBtn.classList.add('disabled');
       } else {
         saveBtn.classList.remove('disabled');
         deleteBtn.classList.remove('disabled');
-        if (endTime) {
-          saveAndSumbitBtn.classList.remove('disabled');
-        }
+        saveAndSumbitBtn.classList.remove('disabled');
       }
     }
 
@@ -1461,12 +1468,6 @@ var timeEntryCard = (function () {
     });
     endTimeInput.addEventListener('click', event => {
       setEndTimeOnClick(event);
-
-      if (endTime) {
-        saveAndSumbitBtn.classList.remove('disabled');
-      } else {
-        saveAndSumbitBtn.classList.add('disabled');
-      }
     });
     endTimeInput.addEventListener('focusout', event => {
       var hoursInput = totalHoursInput.querySelector('input');
@@ -1515,12 +1516,6 @@ var timeEntryCard = (function () {
       setTotalHours();
       checkPermissions();
       UTIL.getGeoLocation(setEndTimeLocation);
-
-      if (endTime) {
-        saveAndSumbitBtn.classList.remove('disabled');
-      } else {
-        saveAndSumbitBtn.classList.add('disabled');
-      }
     });
     // TOTALHOURSINPUT - changed from keyup to input because using the arrow keys
     // (not on the keyboard but in the input itself) didn't trigger the event listener
