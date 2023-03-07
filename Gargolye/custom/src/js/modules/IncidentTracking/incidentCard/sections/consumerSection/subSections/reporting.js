@@ -1,4 +1,4 @@
-var consumerReporting = (function() {
+var consumerReporting = (function () {
   // DOM
   //---------------------
   var section;
@@ -22,7 +22,7 @@ var consumerReporting = (function() {
   var reportingData;
   var reportingDeleteData;
   var reportingCategories;
-	// Values
+  // Values
   //---------------------
   var selectedConsumerId;
   var selectedReportId;
@@ -82,7 +82,7 @@ var consumerReporting = (function() {
   }
 
   function getDropdownData() {
-    incidentTrackingAjax.getitReportingCategories(function(res) {
+    incidentTrackingAjax.getitReportingCategories(function (res) {
       reportingCategories = res;
     });
   }
@@ -98,29 +98,29 @@ var consumerReporting = (function() {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     var yesBtn = button.build({
-			text: 'Yes',
-			type: 'contained',
-			style: 'secondary',
-			callback: () => {
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
         deleteConsumerReportingData();
         POPUP.hide(deleteWarningPopup);
-      }
+      },
     });
     var noBtn = button.build({
-			text: 'No',
-			type: 'contained',
-			style: 'secondary',
-			callback: () => {
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
         POPUP.hide(deleteWarningPopup);
-      }
+      },
     });
-    
+
     btnWrap.appendChild(yesBtn);
     btnWrap.appendChild(noBtn);
 
     deleteWarningPopup.appendChild(message);
     deleteWarningPopup.appendChild(btnWrap);
-    
+
     POPUP.show(deleteWarningPopup);
   }
   function checkRequiredFields() {
@@ -163,7 +163,7 @@ var consumerReporting = (function() {
     console.table(formData);
     if (formData) {
       dateReported = formData.dateReported;
-      reportTime = formData.timeReported;// todo
+      reportTime = formData.timeReported; // todo
       reportBy = formData.reportBy;
       reportMethod = formData.reportMethod;
       reportTo = formData.reportTo;
@@ -210,7 +210,7 @@ var consumerReporting = (function() {
         showDeleteWarning();
       });
     }
-    
+
     formButtons.addEventListener('click', e => {
       if (e.target === saveBtn) {
         if (!reportingData[selectedConsumerId]) {
@@ -228,20 +228,35 @@ var consumerReporting = (function() {
             reportMethod: '',
             dateReported: '',
             notes: '',
-            updated: ''
+            updated: '',
           };
         }
 
-        if (tmpReportingCategoryId || tmpReportedBy || tmpReportedTo || tmpReportMethod || tmpReportDate || tmpReportTime || tmpNote) {
+        if (
+          tmpReportingCategoryId ||
+          tmpReportedBy ||
+          tmpReportedTo ||
+          tmpReportMethod ||
+          tmpReportDate ||
+          tmpReportTime ||
+          tmpNote
+        ) {
           reportingData[selectedConsumerId][selectedReportId].updated = true;
         }
 
-        if (tmpReportingCategoryId) reportingData[selectedConsumerId][selectedReportId].reportingCategoryID = tmpReportingCategoryId;
-        if (tmpReportedBy) reportingData[selectedConsumerId][selectedReportId].reportBy = tmpReportedBy;
-        if (tmpReportedTo) reportingData[selectedConsumerId][selectedReportId].reportTo = tmpReportedTo;
-        if (tmpReportMethod) reportingData[selectedConsumerId][selectedReportId].reportMethod = tmpReportMethod;
-        if (tmpReportDate) reportingData[selectedConsumerId][selectedReportId].dateReported = tmpReportDate;
-        if (tmpReportTime) reportingData[selectedConsumerId][selectedReportId].timeReported = tmpReportTime;
+        if (tmpReportingCategoryId)
+          reportingData[selectedConsumerId][selectedReportId].reportingCategoryID =
+            tmpReportingCategoryId;
+        if (tmpReportedBy)
+          reportingData[selectedConsumerId][selectedReportId].reportBy = tmpReportedBy;
+        if (tmpReportedTo)
+          reportingData[selectedConsumerId][selectedReportId].reportTo = tmpReportedTo;
+        if (tmpReportMethod)
+          reportingData[selectedConsumerId][selectedReportId].reportMethod = tmpReportMethod;
+        if (tmpReportDate)
+          reportingData[selectedConsumerId][selectedReportId].dateReported = tmpReportDate;
+        if (tmpReportTime)
+          reportingData[selectedConsumerId][selectedReportId].timeReported = tmpReportTime;
         if (tmpNote) reportingData[selectedConsumerId][selectedReportId].notes = tmpNote;
 
         selectedReportId = undefined;
@@ -270,9 +285,9 @@ var consumerReporting = (function() {
   function buildReportingCategoryDropdown() {
     var opts = {
       label: 'Reporting To Category',
-      style: 'secondary'
+      style: 'secondary',
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -282,8 +297,8 @@ var consumerReporting = (function() {
     var data = reportingCategories.map(cat => {
       return {
         value: cat.itReportingCategoryId,
-        text: cat.itReportingCategoryName
-      }
+        text: cat.itReportingCategoryName,
+      };
     });
 
     data.unshift({ value: '%', text: '' });
@@ -297,9 +312,9 @@ var consumerReporting = (function() {
       label: 'Reported By',
       type: 'text',
       style: 'secondary',
-      value: reportBy
+      value: reportBy,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -313,9 +328,9 @@ var consumerReporting = (function() {
       label: 'Reported To',
       type: 'text',
       style: 'secondary',
-      value: reportTo
+      value: reportTo,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -329,9 +344,9 @@ var consumerReporting = (function() {
       label: 'Report Method',
       type: 'text',
       style: 'secondary',
-      value: reportMethod
+      value: reportMethod,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -345,9 +360,9 @@ var consumerReporting = (function() {
       label: 'Date Reported',
       type: 'date',
       style: 'secondary',
-      value: dateReported
+      value: dateReported,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -361,9 +376,9 @@ var consumerReporting = (function() {
       label: 'Reported Time',
       type: 'time',
       style: 'secondary',
-      value: reportTime
+      value: reportTime,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -377,9 +392,9 @@ var consumerReporting = (function() {
       label: 'Notes',
       type: 'textarea',
       style: 'secondary',
-      value: reportNotes
+      value: reportNotes,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -395,15 +410,16 @@ var consumerReporting = (function() {
     saveBtn = button.build({
       text: 'Done',
       type: 'contained',
-      style: 'secondary'
+      style: 'secondary',
     });
     cancelBtn = button.build({
       text: 'Cancel',
       type: 'outlined',
-      style: 'secondary'
+      style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
+      btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -413,7 +429,7 @@ var consumerReporting = (function() {
       text: 'Delete',
       type: 'contained',
       style: 'secondary',
-      classNames: 'error'
+      classNames: 'error',
     });
 
     return btn;
@@ -452,12 +468,12 @@ var consumerReporting = (function() {
     isEdit = isedit;
 
     consumerSubSections.hideBackBtn();
-      
+
     reportingHome.classList.add('hidden');
 
     var reportingForm = buildNewReportingForm();
     section.appendChild(reportingForm);
-    
+
     setupFormEvents();
     checkRequiredFields();
   }
@@ -477,7 +493,9 @@ var consumerReporting = (function() {
     var keys = Object.keys(reportingData[selectedConsumerId]);
     keys.forEach(key => {
       var data = reportingData[selectedConsumerId][key];
-      var filteredCategories = reportingCategories.filter(rCat => rCat.itReportingCategoryId === data.reportingCategoryID);
+      var filteredCategories = reportingCategories.filter(
+        rCat => rCat.itReportingCategoryId === data.reportingCategoryID,
+      );
       var reportedCategory = filteredCategories[0].itReportingCategoryName;
       var date = data.dateReported ? data.dateReported.split(' ')[0] : '';
       date = date ? UTIL.formatDateFromIso(date) : date;
@@ -485,7 +503,7 @@ var consumerReporting = (function() {
 
       tableData.push({
         id: key,
-        values: [reportedCategory, date, reportBy]
+        values: [reportedCategory, date, reportBy],
       });
     });
 
@@ -494,15 +512,14 @@ var consumerReporting = (function() {
   function buildReviewTable() {
     var reviewTable = table.build({
       tableId: 'consumerReportingTable',
-      columnHeadings: [
-        'Reporting Category',
-        'Date Reported',
-        'Reported By'
-      ]
+      columnHeadings: ['Reporting Category', 'Date Reported', 'Reported By'],
     });
 
     reviewTable.addEventListener('click', event => {
-      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
+      if (
+        event.target.classList.contains('table__row') &&
+        !event.target.classList.contains('header')
+      ) {
         selectedReportId = event.target.id;
         setFormDataDefaults(reportingData[selectedConsumerId][selectedReportId]);
         showForm(true);
@@ -511,12 +528,12 @@ var consumerReporting = (function() {
 
     return reviewTable;
   }
-  
+
   // Home Page
   //-----------------------------------------------
   function init() {
     formReadOnly = $.session.incidentTrackingUpdate === true ? false : true;
-    
+
     reportingData = {};
     reportingDeleteData = {};
     getDropdownData();
@@ -525,10 +542,13 @@ var consumerReporting = (function() {
     var btn = button.build({
       text: 'Add New Reporting',
       type: 'contained',
-      style: 'secondary'
+      style: 'secondary',
     });
 
-    btn.addEventListener('click', () => showForm(false));
+    btn.addEventListener('click', () => {
+      showForm(false);
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
 
     return btn;
   }
@@ -546,7 +566,7 @@ var consumerReporting = (function() {
 
     if ($.session.incidentTrackingUpdate) reportingHome.appendChild(newReportingBtn);
     reportingHome.appendChild(reportingReviewTable);
-    
+
     section.appendChild(reportingHome);
 
     return section;
@@ -559,15 +579,17 @@ var consumerReporting = (function() {
         if (!reportingData[selectedConsumerId]) {
           reportingData[selectedConsumerId] = {};
         }
-  
+
         if (!reportingData[selectedConsumerId][d.itConsumerReportId]) {
           reportingData[selectedConsumerId][d.itConsumerReportId] = d;
           reportingData[selectedConsumerId][d.itConsumerReportId].updated = false;
-  
+
           // format dates
           if (reportingData[selectedConsumerId][d.itConsumerReportId].dateReported) {
-            var dateReported = reportingData[selectedConsumerId][d.itConsumerReportId].dateReported.split(' ')[0];
-            reportingData[selectedConsumerId][d.itConsumerReportId].dateReported = UTIL.formatDateToIso(dateReported);
+            var dateReported =
+              reportingData[selectedConsumerId][d.itConsumerReportId].dateReported.split(' ')[0];
+            reportingData[selectedConsumerId][d.itConsumerReportId].dateReported =
+              UTIL.formatDateToIso(dateReported);
           }
         }
       });
@@ -583,6 +605,6 @@ var consumerReporting = (function() {
     clearData,
     deleteConsumerData,
     getData: getDataForSave,
-    getDeleteData: getDataForDelete
-  }
+    getDeleteData: getDataForDelete,
+  };
 })();

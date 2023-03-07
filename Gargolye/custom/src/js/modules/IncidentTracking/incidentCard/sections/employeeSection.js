@@ -16,22 +16,11 @@ var itEmployeeSection = (function () {
     countHolder.innerHTML = `( ${count} )`;
   }
 
-  function checkEntireIncidentCardforErrors() {
-    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
-    var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
-
-    if (detailSectionHasErrors || consumerSectionHasErrors) {
-      incidentCard.toggleSave(true);
-    } else {
-      incidentCard.toggleSave(false);
-    }
-  }
-
   function addNewEmployeeRow() {
     var employeeCard = buildEmployeeCard();
     sectionBody.appendChild(employeeCard);
     displayCount();
-    checkEntireIncidentCardforErrors();
+    incidentCard.checkEntireIncidentCardforErrors();
   }
 
   // Populate
@@ -113,6 +102,9 @@ var itEmployeeSection = (function () {
 
     var employeeRow = document.createElement('div');
     employeeRow.classList.add('employeeRow');
+    employeeRow.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
 
     var nameDropdown = buildNameDropdown(name);
     var involvmentTypeDropdown = buildInvolvmentDropdown(involvement);

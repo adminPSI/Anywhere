@@ -33,6 +33,8 @@ using Anywhere.service.Data.eSignature___OneSpan;
 using System.Management.Automation.Language;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.ConsumerFinances;
+using OneSpanSign.Sdk;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 
 namespace Anywhere
 {
@@ -4097,6 +4099,54 @@ namespace Anywhere
              UriTemplate = "/getActiveAccount/")]
         ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getPayees/")]
+        ConsumerFinancesWorker.Payees[] getPayees(string token ,string UserId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getCatogories/")]
+        ConsumerFinancesWorker.Category[] getCatogories(string token ,string categoryID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getSubCatogories/")]
+        ConsumerFinancesWorker.SubCategory[] getSubCatogories(string token, string categoryID);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                 BodyStyle = WebMessageBodyStyle.Wrapped,
+                 ResponseFormat = WebMessageFormat.Json,
+                 RequestFormat = WebMessageFormat.Json,
+                 UriTemplate = "/insertPayee/")]
+        ConsumerFinancesWorker.ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                 BodyStyle = WebMessageBodyStyle.Wrapped,
+                 ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/insertAccount/")]
+        ConsumerFinancesWorker.AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category,string subCategory, string checkNo, string description, string attachmentType, string attachment, string receipt, string userId,string eventType,string regId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getAccountEntriesById/")]
+        ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId);
     }
 
 

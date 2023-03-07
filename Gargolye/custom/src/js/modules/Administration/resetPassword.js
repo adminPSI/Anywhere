@@ -78,11 +78,12 @@ const resetPassword = function () {
             columnHeadings: [
                 'User Name',
                 'Last Name',
-                'First Name',
-                '',
+                'First Name',      
+                '   ',
                 'Active'
             ],
-            endIcon: true,
+            endIcon: true, 
+
             callback: handleUserTableEvents
             
         };
@@ -396,7 +397,8 @@ const resetPassword = function () {
                     userID,
                     LastName,
                     FirstName,
-                    additionalInformation.outerHTML,
+                    additionalInformation.outerHTML, 
+                    ''
                 ],
                 attributes: [
                     { key: 'data-status', value: Active },

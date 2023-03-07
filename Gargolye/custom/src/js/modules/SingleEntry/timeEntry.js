@@ -227,6 +227,26 @@ var timeEntry = (function () {
             roster2.clearActiveConsumers();
             newTimeEntry.init();
           }, 1000);
+        } else {
+          const idArray = results.map(r => r.singleEntryId);
+          var updateObj = {
+            token: $.session.Token,
+            singleEntryIdString: idArray.join(','),
+            newStatus: 'S',
+          };
+          var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+
+          timeEntryReview.showDeleteEntryWarningPopup(warningMessage, () => {
+            singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
+              successfulSave.show('SAVED & SUBMITTED');
+              setTimeout(function () {
+                successfulSave.hide();
+                timeEntryCard.clearAllGlobalVariables();
+                roster2.clearActiveConsumers();
+                newTimeEntry.init();
+              }, 1000);
+            });
+          });
         }
       });
     }

@@ -9,6 +9,7 @@ const ConsumerFinances = (() => {
     let consumerRow;
     let consumerElement;
     let filterPopup;
+    let newEntryPopup;
     var selectedConsumers;
     var selectedConsumersName;
 
@@ -24,10 +25,10 @@ const ConsumerFinances = (() => {
         var targetAction = target.dataset.actionNav;
 
         switch (targetAction) {
-            case 'miniRosterDone': { 
-                selectedConsumers = roster2.getActiveConsumers();
+            case 'miniRosterDone': {
+                selectedConsumers = roster2.getActiveConsumers(); 
                 await loadConsumerFinanceLanding();
-                DOM.toggleNavLayout();  
+                DOM.toggleNavLayout();
                 break;
             }
             case 'miniRosterCancel': {
@@ -46,7 +47,7 @@ const ConsumerFinances = (() => {
 
         landingPage = document.createElement('div');
         var LineBr = document.createElement('br');
-  
+
         selectedConsumers.forEach((consumer) => {
             selectedConsumersName = consumer.card.innerText
             const topButton = buildHeaderButton(consumer);
@@ -74,13 +75,12 @@ const ConsumerFinances = (() => {
     async function buildConsumerFinanceEntriesTable(filterValues) {
         const tableOptions = {
             plain: false,
-            tableId: 'OODEntriesTable',
+            tableId: 'singleEntryAdminReviewTable',
             headline: selectedConsumersName,
             columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By'],
-            endIcon: false,
-
+            //callback: handleAccountTableEvents
         };
-
+    
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
         let ConsumerFinancesEntries = await ConsumerFinancesAjax.getAccountTransectionEntriesAsync(
             selectedConsumerIds.join(", "),
@@ -95,7 +95,6 @@ const ConsumerFinances = (() => {
             filterValues.enteredBy,
         );
 
-        debugger;
         ConsumerFinancesEntries.getAccountTransectionEntriesResult.forEach(function (entry) {
             let newDate = new Date(entry.activityDate);
             let theMonth = newDate.getMonth() + 1;
@@ -106,16 +105,19 @@ const ConsumerFinances = (() => {
 
         let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
             values: [entry.activityDate, entry.account, entry.payee, entry.category, entry.amount, entry.checkno, entry.balance, entry.enteredby],
-
-            attributes: [{ key: 'registerId', value: entry.ID }, { key: 'userId', value: entry.enteredby }],
+            attributes: [{ key: 'registerId', value: entry.ID }],
             onClick: (e) => {
-
+                handleAccountTableEvents(e.target.attributes.registerId.value) 
             },
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
 
         return oTable;
+    }
+
+    function handleAccountTableEvents(registerId) {
+        NewEntryCF.buildNewEntryForm(registerId)
     }
 
     // build display of Account and button
@@ -141,18 +143,16 @@ const ConsumerFinances = (() => {
         const filterButtonBar = document.createElement('div');
         dropdownButtonBar.style.width = '32%';
         entryButtonBar.style.width = '32%';
-        filterButtonBar.style.width = '32%'; 
-       
+        filterButtonBar.style.width = '32%';
+
         accountDropdown = dropdown.build({
             label: "Accounts:",
             dropdownId: "accountDropdown",
         });
 
         accountDropdown.addEventListener('change', event => {
-            debugger;
-            //filterValues.userId = event.target.value;
             filterValues.accountName = event.target.options[event.target.selectedIndex].text;
-            loadConsumerFinanceLanding(); 
+            loadConsumerFinanceLanding();
             //ConsumerFinanceEntriesTable =  buildConsumerFinanceEntriesTable(filterValues); 
         });
 
@@ -161,8 +161,9 @@ const ConsumerFinances = (() => {
             text: '+ New Entry',
             style: 'secondary',
             type: 'contained',
-            attributes: [{ key: 'consumerId', value: consumer.id }, { key: 'btnType', value: 'newEntry' }],
-            classNames: !$.session.OODInsert ? ['newEntryBtn', 'disabled'] : ['newEntryBtn'],
+            //attributes: [{ key: 'consumerId', value: consumer.id }, { key: 'btnType', value: 'newEntry' }],
+            classNames: 'newEntryBtn',
+            callback: async () => { NewEntryCF.init() }, 
         });
         entryBtn.style.height = '50px';
         entryBtn.style.minWidth = '100%';
@@ -297,7 +298,7 @@ const ConsumerFinances = (() => {
         // build popup
 
         filterPopup.appendChild(accountDropdown);
-     
+
         filterPopup.appendChild(btnWrap);
 
         eventListeners();
