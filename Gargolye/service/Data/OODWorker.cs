@@ -523,7 +523,7 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
-        public string deleteForm4MonthlyPlacementEditData(string token, string caseNoteId)
+        public string deleteOODFormEntry(string token, string caseNoteId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -534,7 +534,7 @@ namespace Anywhere.service.Data
                     if (caseNoteId == null) throw new Exception("formId is required");
 
                     // insert group steps
-                    String rowsDeleted = Odg.deleteForm4MonthlyPlacementEditData(caseNoteId, transaction);
+                    String rowsDeleted = Odg.deleteOODFormEntry(caseNoteId, transaction);
 
                     return rowsDeleted;
                 }
@@ -554,7 +554,7 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
-        public string deleteForm4MonthlySummary(string token, string emReviewId)
+        public string deleteFormMonthlySummary(string token, string emReviewId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -565,7 +565,7 @@ namespace Anywhere.service.Data
                     if (emReviewId == null) throw new Exception("reviewId is required");
 
                     // insert group steps
-                    String rowsDeleted = Odg.deleteForm4MonthlySummary(emReviewId, transaction);
+                    String rowsDeleted = Odg.deleteFormMonthlySummary(emReviewId, transaction);
 
                     return rowsDeleted;
                 }

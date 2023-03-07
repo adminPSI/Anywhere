@@ -3945,8 +3945,8 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/deleteForm4MonthlyPlacementEditData/")]
-        String deleteForm4MonthlyPlacementEditData(string token, string caseNoteId);
+            UriTemplate = "/deleteOODFormEntry/")]
+        String deleteOODFormEntry(string token, string caseNoteId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3977,8 +3977,8 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/deleteForm4MonthlySummary/")]
-        String deleteForm4MonthlySummary(string token, string emReviewId);
+            UriTemplate = "/deleteFormMonthlySummary/")]
+        String deleteFormMonthlySummary(string token, string emReviewId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

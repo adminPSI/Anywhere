@@ -375,11 +375,11 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string deleteForm4MonthlyPlacementEditData(string caseNoteId, DistributedTransaction transaction)
+        public string deleteOODFormEntry(string caseNoteId, DistributedTransaction transaction)
         {
             try
             {
-                logger.debug("deleteForm4MonthlyPlacementEditData ");
+                logger.debug("deleteOODFormEntry ");
 
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@caseNoteId", DbType.String, caseNoteId);
@@ -483,11 +483,11 @@ namespace Anywhere.service.Data
 
         }
 
-        public string deleteForm4MonthlySummary(string emReviewId, DistributedTransaction transaction)
+        public string deleteFormMonthlySummary(string emReviewId, DistributedTransaction transaction)
         {
             try
             {
-                logger.debug("deleteForm4MonthlySummary ");
+                logger.debug("deleteFormMonthlySummary ");
 
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@emReviewId", DbType.String, emReviewId);
@@ -496,7 +496,7 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("ODG", ex.Message + "deleteForm4MonthlySummary(" + emReviewId + ")");
+                logger.error("ODG", ex.Message + "deleteFormMonthlySummary(" + emReviewId + ")");
                 throw ex;
             }
         }
