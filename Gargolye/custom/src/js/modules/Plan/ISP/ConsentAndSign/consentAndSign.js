@@ -129,6 +129,9 @@ const planConsentAndSign = (() => {
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
 
+    // triggers event listener for one span button
+    oneSpan.fireDataUpdateEvent(planId);
+
     // if first insert set global values
     const isMemberConsentable = isTeamMemberConsentable(selectedMemberData.teamMember);
     if (teamMemberData.length === 0) {
@@ -227,6 +230,9 @@ const planConsentAndSign = (() => {
     await consentAndSignAjax.updateTeamMember(data);
     await consentAndSignAjax.updatePlanConsentStatements(data2);
 
+    // triggers event listener for one span button
+    oneSpan.fireDataUpdateEvent(planId);
+
     const isMemberConsentable = isTeamMemberConsentable(selectedMemberData.teamMember);
     if (teamMemberData.length > 1) {
       if (isMemberConsentable) {
@@ -262,6 +268,9 @@ const planConsentAndSign = (() => {
         token: $.session.Token,
         signatureId: id,
       });
+
+      // triggers event listener for one span button
+    oneSpan.fireDataUpdateEvent(planId);
 
       if (res === '[]') {
         pendingSave.fulfill('Deleted');
@@ -870,11 +879,26 @@ const planConsentAndSign = (() => {
       },
     });
 
+    const sendDocumentToOneSpanBtn = oneSpan.buildSendDocumentToOneSpanBtn(planId);
+
+    //initial check for digital signers to remove disabled class from one span button
+    teamMemberData.forEach(member => {
+      if (member.signatureType === '1') {
+        sendDocumentToOneSpanBtn.classList.remove('disabled');
+      }
+    })
+
+    // Checks for any changes in the team members and the signature type 
+    document.addEventListener("data-update", function(event) {
+      oneSpan.shouldBeDisabled(sendDocumentToOneSpanBtn, event.detail.data);
+    })
+
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('topOutcomeWrap');
 
     btnWrap.appendChild(addMemberBtn);
     btnWrap.appendChild(addVendorBtn);
+    btnWrap.appendChild(sendDocumentToOneSpanBtn);
 
     tableWrap.appendChild(btnWrap);
     tableWrap.appendChild(teamMemberTable);
@@ -910,6 +934,25 @@ const planConsentAndSign = (() => {
     });
   }
 
+  async function checkOneSpan() {
+    // Checks for new signed values or completed documents to retrieve
+      oneSpanDocumentStatus = await oneSpanAjax.oneSpanCheckDocumentStatus({
+        token: $.session.Token,
+        assessmentId: planId
+      });
+    
+    // Retrieves signers values and downloads document if all digital signers have signed
+      if (oneSpanDocumentStatus[0].signedStatus !== "") {
+        const oneSpanRetrieveData = {
+          token: $.session.Token,
+          packageId: oneSpanDocumentStatus[0].packageId,
+          assessmentID: planId
+        }
+      
+        await oneSpanAjax.oneSpanGetSignedDocuments(oneSpanRetrieveData);
+      }
+    }
+
   async function init(data) {
     planId = data.planId;
     readOnly = data.readOnly;
@@ -917,6 +960,8 @@ const planConsentAndSign = (() => {
     effStartDate = planDates.getEffectiveStartDate();
     effEndDate = planDates.getEffectiveEndDate();
     selectedConsumer = plan.getSelectedConsumer();
+
+    await checkOneSpan();
 
     teamMemberData = await consentAndSignAjax.getConsentAndSignData({
       token: $.session.Token,

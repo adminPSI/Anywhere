@@ -9,6 +9,7 @@ using OneSpanSign.Sdk;
 using OneSpanSign.Sdk.Builder;
 using OneSpanSign.Sdk.Services;
 using Org.BouncyCastle.Cms;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,7 +59,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 string[] emails = { "erick.bey@primarysolutions.net", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
 
-                //List<string> emailsList = new List<string>();
+                List<string> emailsList = new List<string>();
                 List<string> namesList = new List<string>();
                 List<string> memberTypesList = new List<string>();
                 List<string> signatureIdsList = new List<string>();
@@ -66,7 +67,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 foreach (var item in result)
                 {
-                    //emails.Add(item["email"]);
+                    emailsList.Add(item["email"]);
                     namesList.Add(item["name"]);
                     memberTypesList.Add(item["teamMember"]);
                     signatureIdsList.Add(item["signatureId"]);
@@ -85,6 +86,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 int i = 0;
                 List<Signer> allSigners = new List<Signer>();
+                // TODO: change emails to emailList when pushing to unit
                 foreach (string email in emails)
                 {
                     if (signatureTypes[i] != "1")
@@ -151,16 +153,16 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             return oneSpanRadioButton;
         }
 
-        public Field createTextAreaField(string idName, string anchorText)
+        public Field createTextAreaField(string idName, int i, string anchorText)
         {
             Field textAreaInput = FieldBuilder.TextArea()
-                .WithId(idName)
+                .WithId(idName + i)
                 .WithFontSize(12)
                 .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchorText)
                                                                         .AtPosition(TextAnchorPosition.TOPLEFT)
-                                                                        .WithSize(500, 200)
+                                                                        .WithSize(50, 50)
                                                                         .WithCharacter(0)
-                                                                        .WithOffset(50, 50))
+                                                                        .WithOffset(0, 50))
                 .Build();
 
             return textAreaInput;
@@ -170,6 +172,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         {
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Plan Report")
                                 .FromStream(ms, DocumentType.PDF)
+                                .WithId("Plan_Report")
                                 .EnableExtraction();
 
             string[] groupNames = {
@@ -243,6 +246,10 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                         .WithField(createRadioButton("N", groupNames[8], "csResidentialOptions-No", i, descriptionAnchor[8], occurence))
                                         .WithField(createRadioButton("N/A", groupNames[8], "csResidentialOptions", i, descriptionAnchor[8], occurence))
 
+                                        //TODO: ADD IN THE TEXTAREA FIELDS
+                                        .WithField(createTextAreaField("dissentAreaDisagree-", i, "Areas team members disagree"))
+                                        .WithField(createTextAreaField("dissentHowToAddress-", i, "How to address"))
+
                                         .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
@@ -266,6 +273,10 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 {
                     Signature sig1 = SignatureBuilder.SignatureFor(signer.Email)
                                         .WithName(signer.Email)
+                                           //TODO: ADD IN THE TEXTAREA FIELDS
+                                           .WithField(createTextAreaField("dissentAreaDisagree-", i, "Areas team members disagree"))
+                                           .WithField(createTextAreaField("dissentHowToAddress-", i, "How to address"))
+
                                            .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
@@ -338,20 +349,33 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
             DocumentPackageStatus packageStatus = sentPackage.Status;
 
+            OneSpanSign.Sdk.Document test = sentPackage.GetDocument(packageId);
+
             SigningStatus signingStatus = ossClient.GetSigningStatus(currentPackageId, null, null);
 
             if (signingStatus.ToString().Equals("COMPLETE"))
             {
                 string signedStatus = signingStatus.ToString();
 
-                //TODO: Maybe save the completed PDF to the Plan_PDF column of ANYW_ISP_Consumer_Plans
-                byte[] zipContent = ossClient.DownloadZippedDocuments(currentPackageId);
-                File.WriteAllBytes(@"C:\Users\erick.bey\Downloads"
-                                    + "/package-documents.zip", zipContent);
+                var current = HttpContext.Current;
+                var response = current.Response;
+                response.Buffer = true;
 
-                byte[] evidenceContent = ossClient.DownloadEvidenceSummary(currentPackageId);
-                File.WriteAllBytes(@"C:\Users\erick.bey\Downloads"
-                                    + "/evidence-summary.pdf", evidenceContent);
+                //TODO: Maybe save the completed PDF to the Plan_PDF column of ANYW_ISP_Consumer_Plans
+                //byte[] zipContent = ossClient.DownloadZippedDocuments(currentPackageId);
+                //File.WriteAllBytes(@"C:\Users\erick.bey\Downloads"
+                //                    + "/package-documents.zip", zipContent);
+
+                byte[] completedDocument = ossClient.DownloadDocument(currentPackageId, "Plan_Report");
+
+                // Get the path to the user's downloads folder
+                string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
+
+                // Create the file path by combining the downloads path and file name
+                string filePath = Path.Combine(downloadsPath, "Signed_Plan.pdf");
+
+                // Downloads the comletedDocument to the users download folder
+                File.WriteAllBytes(filePath, completedDocument);
 
                 updateTeamMemberTable = true;
                 osdg.OneSpanUpdateDocumentSignedStatus(token, assessmentID, signedStatus);
@@ -360,7 +384,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             // Code below sets the values from the documents radio buttons and assigns them to fieldIds using the fieldName as the value. This is all grouped by each signers signatureID so we can send each signers values to be updated in the DB
             List<FieldSummary> fieldSummaries = ossClient.FieldSummaryService.GetFieldSummary(new PackageId(packageId));
 
-            var fieldIds = new List<string> { "csChangeMind", "csChangeMindSSAPeopleId", "csContact", "csContactProviderVendorId", "csContactInput", "csRightsReviewed", "csAgreeToPlan", "csFCOPExplained", "csDueProcess", "csResidentialOptions", "csSupportsHealthNeeds", "csTechnology" };
+            var fieldIds = new List<string> { "csChangeMind", "csChangeMindSSAPeopleId", "csContact", "csContactProviderVendorId", "csContactInput", "csRightsReviewed", "csAgreeToPlan", "csFCOPExplained", "csDueProcess", "csResidentialOptions", "csSupportsHealthNeeds", "csTechnology", "dissentAreaDisagree", "dissentHowToAddress" };
 
             int i = 0;
             foreach (string sigId in signatureIds)
@@ -378,11 +402,18 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                     foreach (var fieldSummary in filteredFieldSummaries)
                     {
-                        // Removes the "-" cahracter and the following characters from the fieldId
+                        // Removes the "-" character and the following characters from the fieldId
                         string fieldId = Regex.Replace(fieldSummary.FieldId, "-.*", "");
                         if (fieldIds.Contains(fieldId))
                         {
-                            fieldDictionary.Add(fieldId, fieldSummary.FieldName);
+                            if (fieldId == "dissentAreaDisagree" || fieldId == "dissentHowToAddress")
+                            {
+                                fieldDictionary.Add(fieldId, fieldSummary.FieldValue);
+                            } else
+                            {
+                                fieldDictionary.Add(fieldId, fieldSummary.FieldName);
+                            }
+                            
                         }
 
                         if (fieldId == "Date_Signed")
@@ -402,7 +433,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                             fieldDictionary.Add(fieldId, "");
                         }
                     }
-
+                    // TODO: add in the textarea field values
                     osdg.UpdateOneSpanPlanConsentStatements(
                         token,
                         fieldDictionary["signatureId"],
@@ -415,7 +446,9 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                         fieldDictionary["csDueProcess"],
                         fieldDictionary["csResidentialOptions"],
                         fieldDictionary["csSupportsHealthNeeds"],
-                        fieldDictionary["csTechnology"]
+                        fieldDictionary["csTechnology"],
+                        fieldDictionary["dissentAreaDisagree"],
+                        fieldDictionary["dissentHowToAddress"]
                     );
                     i++;
                     updateTeamMemberTable = true;
