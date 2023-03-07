@@ -1,8 +1,8 @@
-﻿var adminSingleEntryWidget = (function() {
+﻿var adminSingleEntryWidget = (function () {
   var statuses = {
-    "A": 'Needs Approval',
-    "P": 'Pending',
-    "R": 'Rejected'
+    A: 'Needs Approval',
+    P: 'Pending',
+    R: 'Rejected',
   };
   // DATA
   //-----------------------
@@ -20,17 +20,17 @@
   var widgetBody;
   var filterPopup;
   var consumerDropdown;
-  var locationDropdown
+  var locationDropdown;
   var applyFiltersBtn;
   var cancelFilterBtn;
 
   // Filtering
   function buildFilterPopup() {
     widget = document.getElementById('admindashsingleentrywidget');
-    
+    if (!widget) return;
     var widgetFilter = widget.querySelector('.widget__filters');
     if (widgetFilter) return;
-    
+
     widgetBody = widget.querySelector('.widget__body');
 
     filterPopup = dashboard.buildFilterPopup();
@@ -39,23 +39,23 @@
       dropdownId: 'adminWidgetEmployees',
       label: 'Employees',
       style: 'secondary',
-      readonly: false
+      readonly: false,
     });
     locationDropdown = dropdown.build({
       dropdownId: 'adminWidgetLocations',
       label: 'Locations',
       style: 'secondary',
-      readonly: false
+      readonly: false,
     });
     applyFiltersBtn = button.build({
       text: 'Apply',
       style: 'secondary',
-      type: 'contained'
+      type: 'contained',
     });
     cancelFilterBtn = button.build({
       text: 'Cancel',
       style: 'secondary',
-      type: 'outlined'
+      type: 'outlined',
     });
 
     var btnWrap = document.createElement('div');
@@ -63,7 +63,6 @@
     btnWrap.appendChild(applyFiltersBtn);
     btnWrap.appendChild(cancelFilterBtn);
 
-    
     filterPopup.appendChild(consumerDropdown);
     filterPopup.appendChild(locationDropdown);
     filterPopup.appendChild(btnWrap);
@@ -74,36 +73,35 @@
     for (var key in consumerNames) {
       if (consumerNames[key].peopleId === $.session.PeopleId) {
         delete consumerNames[key];
-      }	
-  }
+      }
+    }
 
     let data = Object.keys(consumerNames).map(c => {
       return {
         value: consumerNames[c].peopleId,
-        text: consumerNames[c].name
-      }
+        text: consumerNames[c].name,
+      };
     });
     //order Consumer DropDown by name
-    data.sort((a, b) => (a.text > b.text) ? 1 : -1) 
+    data.sort((a, b) => (a.text > b.text ? 1 : -1));
 
-    data.unshift({value: '%', text: 'ALL'});
+    data.unshift({ value: '%', text: 'ALL' });
 
     dropdown.populate('adminWidgetEmployees', data, selectedConsumerId);
   }
 
   function populateLocationsDropDown(locationNames) {
-  if (locationNames.length > 0) {
-    let data = Object.keys(locationNames).map(l => {
-      return {
-        value: locationNames[l].locationId,
-        text: locationNames[l].description
-      }
-    });
-    data.unshift({value: '%', text: 'ALL'});
+    if (locationNames.length > 0) {
+      let data = Object.keys(locationNames).map(l => {
+        return {
+          value: locationNames[l].locationId,
+          text: locationNames[l].description,
+        };
+      });
+      data.unshift({ value: '%', text: 'ALL' });
 
-    dropdown.populate('adminWidgetLocations', data, selectedLocationId);
-  }
-    
+      dropdown.populate('adminWidgetLocations', data, selectedLocationId);
+    }
   }
 
   function eventSetup() {
@@ -111,16 +109,15 @@
     var oldSelectedConsumerName;
     var oldSelectedLocationId;
     var oldSelectedLocationDescription;
-    
+
     consumerDropdown.addEventListener('change', event => {
       var selectedConsumerOption = event.target.options[event.target.selectedIndex];
 
       oldSelectedConsumerId = selectedConsumerId;
       oldSelectedConsumerName = selectedConsumerName;
 
-      selectedConsumerId = selectedConsumerOption.value
+      selectedConsumerId = selectedConsumerOption.value;
       selectedConsumerName = selectedConsumerOption.innerHTML;
-
     });
     locationDropdown.addEventListener('change', event => {
       var selectedLocationOption = event.target.options[event.target.selectedIndex];
@@ -128,7 +125,7 @@
       oldSelectedLocationId = selectedLocationId;
       oldSelectedLocationDescription = selectedLocationDescription;
 
-      selectedLocationId = selectedLocationOption.value
+      selectedLocationId = selectedLocationOption.value;
       selectedLocationDescription = selectedLocationOption.innerHTML;
     });
     applyFiltersBtn.addEventListener('click', event => {
@@ -176,7 +173,7 @@
     var entryGroups = Object.keys(entriesObj);
     entryGroups.forEach(group => {
       var dateRanges = Object.keys(entriesObj[group]);
-      dateRanges.sort((a,b) => {
+      dateRanges.sort((a, b) => {
         var dateA = a.split('{*}')[0];
         var dateB = b.split('{*}')[0];
         dateA = new Date(dateA);
@@ -194,43 +191,43 @@
         var text = range.split('{*}').join(' - ');
         var count = entriesObj[group][range].count;
         var p = document.createElement('p');
-        p.setAttribute("start-date", range.split('{*}')[0])
-        p.setAttribute("end-date", range.split('{*}')[1])
+        p.setAttribute('start-date', range.split('{*}')[0]);
+        p.setAttribute('end-date', range.split('{*}')[1]);
         p.innerHTML = `${text} - <span>${count}</span>`;
-        p.classList.add('customLink')
+        p.classList.add('customLink');
         if (group === 'P') {
           pendingSection.appendChild(p);
-          addEvent(p, "P")
+          addEvent(p, 'P');
         } else if (group === 'A') {
           approvalSection.appendChild(p);
-          addEvent(p, "A")
+          addEvent(p, 'A');
         } else if (group === 'R') {
           rejectedSection.appendChild(p);
-          addEvent(p, "R")
+          addEvent(p, 'R');
         }
       });
     });
   }
 
   function addEvent(element, status) {
-    element.addEventListener("click", event => {
-      let startDate = event.target.getAttribute("start-date")
-      let endDate = event.target.getAttribute("end-date")
+    element.addEventListener('click', event => {
+      let startDate = event.target.getAttribute('start-date');
+      let endDate = event.target.getAttribute('end-date');
       setActiveModuleSectionAttribute('timeEntry-approval');
-      actioncenter.dataset.activeModule = "timeEntry"
+      actioncenter.dataset.activeModule = 'timeEntry';
       DOM.clearActionCenter();
       DOM.scrollToTopOfPage();
-      UTIL.toggleMenuItemHighlight("timeEntry")
+      UTIL.toggleMenuItemHighlight('timeEntry');
       timeEntry.getInitialData(() => {
-        timeApproval.dashHandler(startDate, endDate, status)
-      })
-  })
+        timeApproval.dashHandler(startDate, endDate, status);
+      });
+    });
   }
   function buildWidgetTabs() {
     var widgetTabs = widgetBody.querySelector('.tabs');
     if (!widgetTabs) {
       var tabOptions = {
-        sections: ['Needs Approval', 'Pending', 'Rejected']
+        sections: ['Needs Approval', 'Pending', 'Rejected'],
       };
 
       widgetTabs = tabs.build(tabOptions);
@@ -242,34 +239,40 @@
     entriesObj = {};
     data.forEach(d => {
       if (statuses[d.Anywhere_Status]) {
-        if (selectedConsumerId && (selectedConsumerId === d.People_ID || selectedConsumerId === '%')) {
-          if (selectedLocationId && (selectedLocationId === d.Location_ID || selectedLocationId === '%')) {
-          var peopleId = d.People_ID;
-          var locationId = d.Location_ID;
-          var name = `${d.last_name}` + ', ' + `${d.first_name}`;
-          var status = d.Anywhere_Status;
-          var startDate = d.startdate.split(' ')[0];
-          var endDate = d.enddate.split(' ')[0];
-          var dateString = `${startDate}{*}${endDate}`;
-  
-          if (!entriesObj[status]) {
-            entriesObj[status] = {};
+        if (
+          selectedConsumerId &&
+          (selectedConsumerId === d.People_ID || selectedConsumerId === '%')
+        ) {
+          if (
+            selectedLocationId &&
+            (selectedLocationId === d.Location_ID || selectedLocationId === '%')
+          ) {
+            var peopleId = d.People_ID;
+            var locationId = d.Location_ID;
+            var name = `${d.last_name}` + ', ' + `${d.first_name}`;
+            var status = d.Anywhere_Status;
+            var startDate = d.startdate.split(' ')[0];
+            var endDate = d.enddate.split(' ')[0];
+            var dateString = `${startDate}{*}${endDate}`;
+
+            if (!entriesObj[status]) {
+              entriesObj[status] = {};
+            }
+            if (!entriesObj[status][dateString]) {
+              entriesObj[status][dateString] = { count: 0 };
+            }
+            entriesObj[status][dateString].count++;
+
+            if (!consumerNames[peopleId]) {
+              consumerNames[peopleId] = { peopleId, name };
+            }
           }
-          if (!entriesObj[status][dateString]) {
-            entriesObj[status][dateString] = {count: 0};
-          }
-          entriesObj[status][dateString].count++;
-  
-          if (!consumerNames[peopleId]) {
-            consumerNames[peopleId] = {peopleId, name};
-          }
-        }
         }
       }
     });
   }
-  
-	function init() {
+
+  function init() {
     if (!selectedConsumerName) selectedConsumerName = 'ALL';
     if (!selectedConsumerId) selectedConsumerId = '%';
     if (!selectedLocationDescription) selectedLocationDescription = 'ALL';
@@ -281,12 +284,12 @@
 
     dashboard.appendFilterButton('admindashsingleentrywidget', 'adminSeFilterBtn');
 
-    adminSingleEntryWidgetAjax.getSingleEntryAdminLocations(function(results, error) {
-       cachedResults_locations = results;
-      // populateLocationsDropDown(results2); 
+    adminSingleEntryWidgetAjax.getSingleEntryAdminLocations(function (results, error) {
+      cachedResults_locations = results;
+      // populateLocationsDropDown(results2);
     });
 
-    adminSingleEntryWidgetAjax.getSingleEntryAdminApprovalNumbers(function(results, error) {
+    adminSingleEntryWidgetAjax.getSingleEntryAdminApprovalNumbers(function (results, error) {
       cachedResults = results;
       groupCountInfo(results, selectedConsumerId, selectedLocationId);
       // filtering
@@ -294,16 +297,14 @@
       buildFilterPopup();
       eventSetup();
       populateConsumerDropdown();
-      populateLocationsDropDown(cachedResults_locations); 
+      populateLocationsDropDown(cachedResults_locations);
       // info/tabs
       buildWidgetTabs();
       populateCountInfo();
     });
+  }
 
-  
-	}
-
-	return {
-		init,
-	};
+  return {
+    init,
+  };
 })();
