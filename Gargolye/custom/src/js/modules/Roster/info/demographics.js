@@ -107,6 +107,7 @@ const demographics = (function () {
 
   function populateDemographicsSection(section, data) {
     demoData = formatDataForDisplay(data);
+    isGK = $.session.applicationName === 'Gatekeeper';
 
     var sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
@@ -128,7 +129,7 @@ const demographics = (function () {
           <a href=tel:+1-${demoData.sPhone}>${demoData.sPhone}</a>
         </p>
         ${
-          $.session.applicationName === 'Gatekeeper'
+          isGK
             ? `<p class="secondaryphone">Cell: <a href=tel:+1-${demoData.cPhone}>${demoData.cPhone}</a></p>`
             : ''
         }

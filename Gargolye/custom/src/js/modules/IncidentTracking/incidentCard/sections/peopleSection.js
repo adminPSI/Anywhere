@@ -16,22 +16,11 @@ var itPeopleSection = (function () {
     countHolder.innerHTML = `( ${count} )`;
   }
 
-  function checkEntireIncidentCardforErrors() {
-    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
-    var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
-
-    if (detailSectionHasErrors || consumerSectionHasErrors) {
-      incidentCard.toggleSave(true);
-    } else {
-      incidentCard.toggleSave(false);
-    }
-  }
-
   function addNewPersonRow() {
     var peopleCard = buildOtherPersonCard();
     sectionBody.appendChild(peopleCard);
     displayCount();
-    checkEntireIncidentCardforErrors();
+    incidentCard.checkEntireIncidentCardforErrors();
   }
 
   // Populate

@@ -209,11 +209,22 @@ var incidentCard = (function () {
       return true; // true means do disable the Save BTN
     }
   }
+  function checkEntireIncidentCardforErrors() {
+    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+    var consumerSectionHasErrors = checkforRequiredConsumer();
+
+    if (detailSectionHasErrors || consumerSectionHasErrors) {
+      incidentCard.toggleSave(true);
+    } else {
+      incidentCard.toggleSave(false);
+    }
+  }
 
   return {
     build: buildCard,
     toggleSave: toggleSaveBtnStatus,
     checkforRequiredConsumer,
+    checkEntireIncidentCardforErrors,
     toggleActionBtns,
   };
 })();

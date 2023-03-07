@@ -1,4 +1,4 @@
-var consumerFollowUp = (function() {
+var consumerFollowUp = (function () {
   // DOM
   //---------------------
   var section;
@@ -16,12 +16,12 @@ var consumerFollowUp = (function() {
   var deleteBtn;
   var saveBtn;
   var cancelBtn;
-	// DATA
+  // DATA
   //---------------------
-  var followUpsData;// save/update data
+  var followUpsData; // save/update data
   var followUpsDeleteData;
   var followUpTypes;
-	// Values
+  // Values
   //---------------------
   var selectedConsumerId;
   var selectedFollowUpId;
@@ -80,9 +80,9 @@ var consumerFollowUp = (function() {
     clearFormDataDefaults();
     populateReviewTable();
   }
-  
+
   function getDropdownData() {
-    incidentTrackingAjax.getitConsumerFollowUpTypes(function(res) {
+    incidentTrackingAjax.getitConsumerFollowUpTypes(function (res) {
       followUpTypes = res;
     });
   }
@@ -98,29 +98,29 @@ var consumerFollowUp = (function() {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     var yesBtn = button.build({
-			text: 'Yes',
-			type: 'contained',
-			style: 'secondary',
-			callback: () => {
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
         deleteConsumerFollowUpData();
         POPUP.hide(deleteWarningPopup);
-      }
+      },
     });
     var noBtn = button.build({
-			text: 'No',
-			type: 'contained',
-			style: 'secondary',
-			callback: () => {
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
         POPUP.hide(deleteWarningPopup);
-      }
+      },
     });
-    
+
     btnWrap.appendChild(yesBtn);
     btnWrap.appendChild(noBtn);
 
     deleteWarningPopup.appendChild(message);
     deleteWarningPopup.appendChild(btnWrap);
-    
+
     POPUP.show(deleteWarningPopup);
   }
   function checkRequiredFields() {
@@ -188,16 +188,16 @@ var consumerFollowUp = (function() {
         showDeleteWarning();
       });
     }
-    
+
     formButtons.addEventListener('click', e => {
       if (e.target === saveBtn) {
         if (!followUpsData[selectedConsumerId]) {
           followUpsData[selectedConsumerId] = {};
         }
-        
+
         if (!followUpsData[selectedConsumerId][selectedFollowUpId]) {
           var keys = Object.keys(followUpsData[selectedConsumerId]);
-          selectedFollowUpId = keys.length === 0 ? `new${keys.length}` : `new${keys.length + 1}`;;
+          selectedFollowUpId = keys.length === 0 ? `new${keys.length}` : `new${keys.length + 1}`;
 
           followUpsData[selectedConsumerId][selectedFollowUpId] = {
             dateCompleted: '',
@@ -205,19 +205,29 @@ var consumerFollowUp = (function() {
             followUpTypeId: '',
             notes: '',
             personResponsible: '',
-            updated: ''
+            updated: '',
           };
         }
 
-        if (tmpCompletedDate || tmpDueDate || tmpFollowUpTypeId || tmpNote || tmpPersonResponsible) {
+        if (
+          tmpCompletedDate ||
+          tmpDueDate ||
+          tmpFollowUpTypeId ||
+          tmpNote ||
+          tmpPersonResponsible
+        ) {
           followUpsData[selectedConsumerId][selectedFollowUpId].updated = true;
         }
-        
-        if (tmpCompletedDate) followUpsData[selectedConsumerId][selectedFollowUpId].dateCompleted = tmpCompletedDate;
+
+        if (tmpCompletedDate)
+          followUpsData[selectedConsumerId][selectedFollowUpId].dateCompleted = tmpCompletedDate;
         if (tmpDueDate) followUpsData[selectedConsumerId][selectedFollowUpId].dueDate = tmpDueDate;
-        if (tmpFollowUpTypeId) followUpsData[selectedConsumerId][selectedFollowUpId].followUpTypeId = tmpFollowUpTypeId;
+        if (tmpFollowUpTypeId)
+          followUpsData[selectedConsumerId][selectedFollowUpId].followUpTypeId = tmpFollowUpTypeId;
         if (tmpNote) followUpsData[selectedConsumerId][selectedFollowUpId].notes = tmpNote;
-        if (tmpPersonResponsible) followUpsData[selectedConsumerId][selectedFollowUpId].personResponsible = tmpPersonResponsible;
+        if (tmpPersonResponsible)
+          followUpsData[selectedConsumerId][selectedFollowUpId].personResponsible =
+            tmpPersonResponsible;
 
         selectedFollowUpId = undefined;
 
@@ -245,9 +255,9 @@ var consumerFollowUp = (function() {
   function buildFollowUpTypeDropdown() {
     var opts = {
       label: 'Follow Up Type',
-      style: 'secondary'
+      style: 'secondary',
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -257,11 +267,11 @@ var consumerFollowUp = (function() {
     var data = followUpTypes.map(fu => {
       return {
         value: fu.itFollowUpTypeId,
-        text: fu.followUpTypeName
-      }
+        text: fu.followUpTypeName,
+      };
     });
 
-    data.unshift({value: '%', text: '' });
+    data.unshift({ value: '%', text: '' });
 
     dropdown.populate(followUptypeDrop, data, followUpTypeId);
 
@@ -272,9 +282,9 @@ var consumerFollowUp = (function() {
       label: 'Person Responsible',
       type: 'text',
       style: 'secondary',
-      value: personResponsible
+      value: personResponsible,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -288,9 +298,9 @@ var consumerFollowUp = (function() {
       label: 'Due Date',
       type: 'date',
       style: 'secondary',
-      value: ''
+      value: '',
     };
-    
+
     if (dueDate) inputOptions.value = dueDate;
     if (isEdit && formReadOnly) {
       inputOptions.readonly = true;
@@ -305,7 +315,7 @@ var consumerFollowUp = (function() {
       label: 'Date Completed',
       type: 'date',
       style: 'secondary',
-      value: ''
+      value: '',
     };
 
     if (dateCompleted) inputOptions.value = dateCompleted;
@@ -322,9 +332,9 @@ var consumerFollowUp = (function() {
       label: 'Note',
       type: 'textarea',
       style: 'secondary',
-      value: followUpNote
+      value: followUpNote,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -341,15 +351,16 @@ var consumerFollowUp = (function() {
       text: 'Done',
       type: 'contained',
       style: 'secondary',
-      classNames: 'disabled'
+      classNames: 'disabled',
     });
     cancelBtn = button.build({
       text: 'Cancel',
       type: 'outlined',
-      style: 'secondary'
+      style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
+      btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -359,7 +370,7 @@ var consumerFollowUp = (function() {
       text: 'Delete',
       type: 'contained',
       style: 'secondary',
-      classNames: 'error'
+      classNames: 'error',
     });
 
     return btn;
@@ -394,7 +405,7 @@ var consumerFollowUp = (function() {
     isEdit = isedit;
 
     consumerSubSections.hideBackBtn();
-      
+
     followUpHome.classList.add('hidden');
 
     followUpForm = buildNewFollowUpForm();
@@ -420,7 +431,9 @@ var consumerFollowUp = (function() {
     keys.forEach(key => {
       var followUpData = followUpsData[selectedConsumerId][key];
 
-      var filterFollowUpTypes = followUpTypes.filter(type => type.itFollowUpTypeId === followUpData.followUpTypeId);
+      var filterFollowUpTypes = followUpTypes.filter(
+        type => type.itFollowUpTypeId === followUpData.followUpTypeId,
+      );
       var followUpType = filterFollowUpTypes[0] ? filterFollowUpTypes[0].followUpTypeName : '';
       var personResponsible = followUpData.personResponsible;
       var dueDate = followUpData.dueDate ? followUpData.dueDate.split(' ')[0] : '';
@@ -428,7 +441,7 @@ var consumerFollowUp = (function() {
 
       tableData.push({
         id: key,
-        values: [followUpType, personResponsible, dueDate]
+        values: [followUpType, personResponsible, dueDate],
       });
     });
 
@@ -437,11 +450,14 @@ var consumerFollowUp = (function() {
   function buildReviewTable() {
     var reviewTable = table.build({
       tableId: 'consumerFollowUpTable',
-      columnHeadings: ['Follow Up Type', 'Person Responsible', 'Due Date']
+      columnHeadings: ['Follow Up Type', 'Person Responsible', 'Due Date'],
     });
 
     reviewTable.addEventListener('click', event => {
-      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
+      if (
+        event.target.classList.contains('table__row') &&
+        !event.target.classList.contains('header')
+      ) {
         selectedFollowUpId = event.target.id;
         setFormDataDefaults(followUpsData[selectedConsumerId][selectedFollowUpId]);
         showForm(true);
@@ -455,7 +471,7 @@ var consumerFollowUp = (function() {
   //-----------------------------------------------
   function init() {
     formReadOnly = $.session.incidentTrackingUpdate === true ? false : true;
-    
+
     followUpsData = {};
     followUpsDeleteData = {};
     getDropdownData();
@@ -464,10 +480,12 @@ var consumerFollowUp = (function() {
     var btn = button.build({
       text: 'Add New Follow Up',
       type: 'contained',
-      style: 'secondary'
+      style: 'secondary',
     });
-
-    btn.addEventListener('click', () => showForm(false));
+    btn.addEventListener('click', () => {
+      showForm(false);
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
 
     return btn;
   }
@@ -485,7 +503,7 @@ var consumerFollowUp = (function() {
 
     if ($.session.incidentTrackingUpdate) followUpHome.appendChild(newFollowUpBtn);
     followUpHome.appendChild(followUpReviewTable);
-    
+
     section.appendChild(followUpHome);
 
     return section;
@@ -498,22 +516,25 @@ var consumerFollowUp = (function() {
         if (!followUpsData[selectedConsumerId]) {
           followUpsData[selectedConsumerId] = {};
         }
-  
+
         if (!followUpsData[selectedConsumerId][d.itConsumerFollowUpId]) {
           followUpsData[selectedConsumerId][d.itConsumerFollowUpId] = d;
           followUpsData[selectedConsumerId][d.itConsumerFollowUpId].updated = false;
-  
+
           // format dates
-          var dateTimeCompleted = followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dateCompleted;
+          var dateTimeCompleted =
+            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dateCompleted;
           var dueDateTime = followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate;
           dateCompleted = dateTimeCompleted ? dateTimeCompleted.split(' ')[0] : null;
           dueDate = dueDateTime ? dueDateTime.split(' ')[0] : null;
 
           if (dateCompleted) {
-            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dateCompleted = UTIL.formatDateToIso(dateCompleted);
+            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dateCompleted =
+              UTIL.formatDateToIso(dateCompleted);
           }
           if (dueDate) {
-            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate = UTIL.formatDateToIso(dueDate);
+            followUpsData[selectedConsumerId][d.itConsumerFollowUpId].dueDate =
+              UTIL.formatDateToIso(dueDate);
           }
         }
       });
@@ -530,6 +551,6 @@ var consumerFollowUp = (function() {
     clearData,
     deleteConsumerData,
     getData: getDataForSave,
-    getDeleteData: getDataForDelete
-  }
+    getDeleteData: getDataForDelete,
+  };
 })();

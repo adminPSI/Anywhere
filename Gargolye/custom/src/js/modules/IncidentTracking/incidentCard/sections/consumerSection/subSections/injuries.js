@@ -1,4 +1,4 @@
-var consumerInjuries = (function() {
+var consumerInjuries = (function () {
   // DOM
   //---------------------
   var section;
@@ -16,13 +16,13 @@ var consumerInjuries = (function() {
   var deleteBtn;
   var saveBtn;
   var cancelBtn;
-	// DATA
+  // DATA
   //---------------------
-  var injuryData;// save/update data
+  var injuryData; // save/update data
   var injuryDeleteData;
   var injuryLocations;
   var injuryTypes;
-	// Values
+  // Values
   //---------------------
   var selectedConsumerId;
   var selectedInjuryId;
@@ -83,10 +83,10 @@ var consumerInjuries = (function() {
   }
 
   function getDropdownData() {
-    incidentTrackingAjax.getInjuryLocationsDropdown(function(locations) {
+    incidentTrackingAjax.getInjuryLocationsDropdown(function (locations) {
       injuryLocations = locations;
 
-      incidentTrackingAjax.getInjuryTypesDropdown(function(types) {
+      incidentTrackingAjax.getInjuryTypesDropdown(function (types) {
         injuryTypes = types;
       });
     });
@@ -103,29 +103,29 @@ var consumerInjuries = (function() {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     var yesBtn = button.build({
-			text: 'Yes',
-			type: 'contained',
-			style: 'secondary',
-			callback: () => {
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
         deleteConsumerInjuryData();
         POPUP.hide(deleteWarningPopup);
-      }
+      },
     });
     var noBtn = button.build({
-			text: 'No',
-			type: 'contained',
-			style: 'secondary',
-			callback: () => {
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
         POPUP.hide(deleteWarningPopup);
-      }
+      },
     });
-    
+
     btnWrap.appendChild(yesBtn);
     btnWrap.appendChild(noBtn);
 
     deleteWarningPopup.appendChild(message);
     deleteWarningPopup.appendChild(btnWrap);
-    
+
     POPUP.show(deleteWarningPopup);
   }
   function checkRequiredFields() {
@@ -209,7 +209,7 @@ var consumerInjuries = (function() {
         showDeleteWarning();
       });
     }
-    
+
     formButtons.addEventListener('click', e => {
       if (e.target === saveBtn) {
         if (!injuryData[selectedConsumerId]) {
@@ -227,20 +227,32 @@ var consumerInjuries = (function() {
             injuryDetails: '',
             injuryTreatment: '',
             checkedDate: '',
-            updated: ''
+            updated: '',
           };
         }
 
-        if (tmpInjuryLocation || tmpInjuryType || tmpCheckedBy || tmpDetails || tmpTreatment || tmpDateChecked) {
+        if (
+          tmpInjuryLocation ||
+          tmpInjuryType ||
+          tmpCheckedBy ||
+          tmpDetails ||
+          tmpTreatment ||
+          tmpDateChecked
+        ) {
           injuryData[selectedConsumerId][selectedInjuryId].updated = true;
         }
 
-        if (tmpInjuryLocation) injuryData[selectedConsumerId][selectedInjuryId].injuryLocationId = tmpInjuryLocation;
-        if (tmpInjuryType) injuryData[selectedConsumerId][selectedInjuryId].injuryTypeId = tmpInjuryType;
-        if (tmpCheckedBy) injuryData[selectedConsumerId][selectedInjuryId].checkedByNurse = tmpCheckedBy;
+        if (tmpInjuryLocation)
+          injuryData[selectedConsumerId][selectedInjuryId].injuryLocationId = tmpInjuryLocation;
+        if (tmpInjuryType)
+          injuryData[selectedConsumerId][selectedInjuryId].injuryTypeId = tmpInjuryType;
+        if (tmpCheckedBy)
+          injuryData[selectedConsumerId][selectedInjuryId].checkedByNurse = tmpCheckedBy;
         if (tmpDetails) injuryData[selectedConsumerId][selectedInjuryId].injuryDetails = tmpDetails;
-        if (tmpTreatment) injuryData[selectedConsumerId][selectedInjuryId].injuryTreatment = tmpTreatment;
-        if (tmpDateChecked) injuryData[selectedConsumerId][selectedInjuryId].checkedDate = tmpDateChecked;
+        if (tmpTreatment)
+          injuryData[selectedConsumerId][selectedInjuryId].injuryTreatment = tmpTreatment;
+        if (tmpDateChecked)
+          injuryData[selectedConsumerId][selectedInjuryId].checkedDate = tmpDateChecked;
 
         selectedInjuryId = undefined;
 
@@ -268,9 +280,9 @@ var consumerInjuries = (function() {
   function buildInjuryLocationDropdown() {
     var opts = {
       label: 'Injury Location',
-      style: 'secondary'
+      style: 'secondary',
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -280,8 +292,8 @@ var consumerInjuries = (function() {
     var data = injuryLocations.map(loc => {
       return {
         value: loc.injuryLocationId,
-        text: loc.injuryLocation
-      }
+        text: loc.injuryLocation,
+      };
     });
 
     data.unshift({ value: '%', text: '' });
@@ -293,9 +305,9 @@ var consumerInjuries = (function() {
   function buildInjuryTypeDropdown() {
     var opts = {
       label: 'Injury Type',
-      style: 'secondary'
+      style: 'secondary',
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -305,8 +317,8 @@ var consumerInjuries = (function() {
     var data = injuryTypes.map(type => {
       return {
         value: type.injuryTypeId,
-        text: type.injuryType
-      }
+        text: type.injuryType,
+      };
     });
 
     data.unshift({ value: '%', text: '' });
@@ -318,9 +330,9 @@ var consumerInjuries = (function() {
   function buildCheckedByCheckbox() {
     var opts = {
       text: 'Checked By Nurse',
-      isChecked: checkedByNurse === 'Y' ? true : false
+      isChecked: checkedByNurse === 'Y' ? true : false,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -334,15 +346,15 @@ var consumerInjuries = (function() {
       label: 'Details',
       type: 'textarea',
       style: 'secondary',
-      value: details
+      value: details,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
 
     var dInput = input.build(opts);
-    
+
     return dInput;
   }
   function buildTreatmentInput() {
@@ -350,15 +362,15 @@ var consumerInjuries = (function() {
       label: 'Treatment',
       type: 'textarea',
       style: 'secondary',
-      value: treatment
+      value: treatment,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
 
     var tInput = input.build(opts);
-    
+
     return tInput;
   }
   function buildDateCheckedInput() {
@@ -366,9 +378,9 @@ var consumerInjuries = (function() {
       label: 'Date Checked',
       type: 'date',
       style: 'secondary',
-      value: dateChecked
+      value: dateChecked,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -384,15 +396,16 @@ var consumerInjuries = (function() {
     saveBtn = button.build({
       text: 'Done',
       type: 'contained',
-      style: 'secondary'
+      style: 'secondary',
     });
     cancelBtn = button.build({
       text: 'Cancel',
       type: 'outlined',
-      style: 'secondary'
+      style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
+      btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -402,7 +415,7 @@ var consumerInjuries = (function() {
       text: 'Delete',
       type: 'contained',
       style: 'secondary',
-      classNames: 'error'
+      classNames: 'error',
     });
 
     return btn;
@@ -464,7 +477,9 @@ var consumerInjuries = (function() {
     var keys = Object.keys(injuryData[selectedConsumerId]);
     keys.forEach(key => {
       var data = injuryData[selectedConsumerId][key];
-      var filteredLocations = injuryLocations.filter(iLoc => iLoc.injuryLocationId === data.injuryLocationId);
+      var filteredLocations = injuryLocations.filter(
+        iLoc => iLoc.injuryLocationId === data.injuryLocationId,
+      );
       var filteredTypes = injuryTypes.filter(iType => iType.injuryTypeId === data.injuryTypeId);
       var injuryLocation = filteredLocations[0].injuryLocation;
       var injuryType = filteredTypes[0].injuryType;
@@ -472,7 +487,7 @@ var consumerInjuries = (function() {
 
       tableData.push({
         id: key,
-        values: [injuryLocation, injuryType, nurseChecked]
+        values: [injuryLocation, injuryType, nurseChecked],
       });
     });
 
@@ -481,15 +496,14 @@ var consumerInjuries = (function() {
   function buildReviewTable() {
     var reviewTable = table.build({
       tableId: 'consumerInjuriesTable',
-      columnHeadings: [
-        'Injury Location',
-        'Injury Type',
-        'Checked By Nurse'
-      ]
+      columnHeadings: ['Injury Location', 'Injury Type', 'Checked By Nurse'],
     });
 
     reviewTable.addEventListener('click', event => {
-      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
+      if (
+        event.target.classList.contains('table__row') &&
+        !event.target.classList.contains('header')
+      ) {
         selectedInjuryId = event.target.id;
         setFormDataDefaults(injuryData[selectedConsumerId][selectedInjuryId]);
         showForm(true);
@@ -512,10 +526,13 @@ var consumerInjuries = (function() {
     var btn = button.build({
       text: 'Add New Injury',
       type: 'contained',
-      style: 'secondary'
+      style: 'secondary',
     });
 
-    btn.addEventListener('click', () => showForm(false));
+    btn.addEventListener('click', () => {
+      showForm(false);
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
 
     return btn;
   }
@@ -533,7 +550,7 @@ var consumerInjuries = (function() {
 
     if ($.session.incidentTrackingUpdate) injuriesHome.appendChild(newInjuryBtn);
     injuriesHome.appendChild(injuriesReviewTable);
-    
+
     section.appendChild(injuriesHome);
 
     return section;
@@ -546,7 +563,7 @@ var consumerInjuries = (function() {
         if (!injuryData[selectedConsumerId]) {
           injuryData[selectedConsumerId] = {};
         }
-  
+
         if (!injuryData[selectedConsumerId][d.itConsumerInjuryId]) {
           injuryData[selectedConsumerId][d.itConsumerInjuryId] = d;
           injuryData[selectedConsumerId][d.itConsumerInjuryId].updated = false;
@@ -556,7 +573,8 @@ var consumerInjuries = (function() {
           dateChecked = dateChecked ? dateChecked.split(' ')[0] : null;
 
           if (dateChecked) {
-            injuryData[selectedConsumerId][d.itConsumerInjuryId].checkedDate = UTIL.formatDateToIso(dateChecked);
+            injuryData[selectedConsumerId][d.itConsumerInjuryId].checkedDate =
+              UTIL.formatDateToIso(dateChecked);
           }
         }
       });
@@ -572,6 +590,6 @@ var consumerInjuries = (function() {
     clearData,
     deleteConsumerData,
     getData: getDataForSave,
-    getDeleteData: getDataForDelete
-  }
+    getDeleteData: getDataForDelete,
+  };
 })();
