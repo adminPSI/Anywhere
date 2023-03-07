@@ -904,7 +904,7 @@ const roster2 = (function () {
         if (!consumercount) return `Select consumer(s) below`;
         return `Select consumer(s) below <span>Total Consumer Count:</span> ${consumercount}`;
         break;
-      }
+      } 
     }
   }
   function buildMiniRosterPopup(rosterMarkup) {
@@ -931,6 +931,7 @@ const roster2 = (function () {
     if (
       $.loadedApp === 'outcomes' ||
       $.loadedApp === 'plan' ||
+      $.loadedApp === 'ConsumerFinances' || 
       $.loadedApp === 'covid' ||
       $.loadedApp === 'forms' ||
       activeSection === 'caseNotesSSA-new' ||
@@ -1177,6 +1178,7 @@ const roster2 = (function () {
       if (
         $.loadedApp === 'outcomes' ||
         $.loadedApp === 'plan' ||
+        $.loadedApp === 'ConsumerFinances' || 
         $.loadedApp === 'covid' ||
         $.loadedApp === 'forms' ||
         // $.loadedApp === 'OOD' ||

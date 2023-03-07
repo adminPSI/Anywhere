@@ -5,6 +5,10 @@ using System.Data.Odbc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
+using OneSpanSign.Sdk;
+using static System.Windows.Forms.AxHost;
+using System.Reflection.Emit;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {
@@ -15,7 +19,7 @@ namespace Anywhere.service.Data.ConsumerFinances
         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
 
         //data for OOD Entries Listing on OOD Module Landing Page
-        public string getAccountTransectionEntries(string token, string consumerIds, string activityStartDate,string activityEndDate, string accountName, string payee, string category, string amount, string checkNo, string balance, string enteredBy, DistributedTransaction transaction)
+        public string getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string amount, string checkNo, string balance, string enteredBy, DistributedTransaction transaction)
         {
             try
             {
@@ -38,7 +42,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_WF_getOODEntries(" + consumerIds + ")");
+                logger.error("WFDG", ex.Message + "ANYW_getConsumerFinancesEntries(" + consumerIds + ")");
                 throw ex;
             }
         }
@@ -58,7 +62,168 @@ namespace Anywhere.service.Data.ConsumerFinances
                 throw ex;
             }
         }
-  
+
+        public string getPayees(DistributedTransaction transaction, string UserId)
+        {
+
+            try
+            {
+                logger.debug("getPayees");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getPayees()", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getPayees()");
+                throw ex;
+            }
+        }
+
+        public string getCatogories(DistributedTransaction transaction, string categoryID)
+        {
+            List<string> list = new List<string>();
+            list.Add(categoryID);
+            try
+            {
+                logger.debug("getCatogories");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getCatagories(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getCatogories()");
+                throw ex;
+            }
+
+        }
+
+        public string getSubCatogories(DistributedTransaction transaction, string categoryID)
+        {
+            List<string> list = new List<string>();
+            list.Add(categoryID);
+            try
+            {
+                logger.debug("getSubCatogories");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getSubCatagories(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getSubCatogories()");
+                throw ex;
+            }
+
+        }
+
+        public string insertPayee(string payeeName, string address1, string address2, string city, string state, string zipcode, string userId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("insertPayee");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[7];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@payeeName", DbType.String, payeeName);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@address1", DbType.String, address1);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@address2", DbType.String, address2);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@city", DbType.String, city);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@state", DbType.String, state);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@zipcode", DbType.String, zipcode);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
+
+                // returns the employerId  that was just inserted
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertPayee(?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_insertPayee(" + payeeName + "," + address1 + "," + city + ")");
+                throw ex;
+            }
+        }
+
+        public string updateAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string attachment, string receipt, string userId, DistributedTransaction transaction, string regId)
+        {
+            try
+            {
+                logger.debug("updateAccount");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[13];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@date", DbType.String, date);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amount", DbType.String, amount);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amountType", DbType.String, amountType);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@account", DbType.Double, account);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@payee", DbType.String, payee);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@category", DbType.String, category);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@subCategory", DbType.String, subCategory);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@checkNo", DbType.String, checkNo);
+                args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@description", DbType.String, description);
+                args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentId", DbType.String, attachment);
+                args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@receipt", DbType.String, receipt);
+                args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
+                args[12] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@regId", DbType.String, regId);
+                
+
+
+                // returns the employerId  that was just inserted
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updateAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_updateAccount(" + date + "," + amount + "," + account + ")");
+                throw ex;
+            }
+
+        }
+
+        public string insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string attachment, string receipt, string userId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("insertAccount");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[12];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@date", DbType.String, date);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amount", DbType.String, amount);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amountType", DbType.String, amountType);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@account", DbType.Double, account);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@payee", DbType.String, payee);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@category", DbType.String, category);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@subCategory", DbType.String, subCategory);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@checkNo", DbType.String, checkNo);
+                args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@description", DbType.String, description);
+                args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentId", DbType.String, attachment);
+                args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@receipt", DbType.String, receipt);
+                args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
+
+
+                // returns the employerId  that was just inserted
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_insertAccount(" + date + "," + amount + "," + account + ")");
+                throw ex;
+            }
+
+        }
+
+        public string getAccountEntriesById(string token, string registerId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getAccountEntriesById ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerId", DbType.String, registerId);
+               
+
+                // returns the workflow document descriptions for the given workflowId
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinancesEntryById(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getConsumerFinancesEntryById(" + registerId + ")");
+                throw ex;
+            }
+        }
+
+
 
     }
 }
