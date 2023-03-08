@@ -170,7 +170,7 @@ const OOD = (() => {
 				});
 				} 
 				if (rowConsumer[0] && e.target.attributes.OODReportType.value === 'monthlySummary' && e.target.attributes.serviceType.value === 'T2' ) {
-					OODAjax.getForm4MonthlySummary(e.target.attributes.Id.value, function (results) {
+					OODAjax.getForm8MonthlySummary(e.target.attributes.Id.value, function (results) {
 						communityBasedAssessmentSummaryForm.init(results, rowConsumer[0], undefined, e.target.attributes.userId.value);
 					});
 				}

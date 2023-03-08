@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
+using System.Web.Services.Description;
+using PDFGenerator;
 
 namespace Anywhere.service.Data
 {
@@ -606,7 +609,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment)
+        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string userId)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -621,7 +624,9 @@ namespace Anywhere.service.Data
             list.Add(emSummaryIndivSelfAssessment);
             list.Add(emSummaryIndivEmployerAssessment);
             list.Add(emSummaryIndivProviderAssessment);
-           
+            list.Add(emReviewVTS);
+            list.Add(userId);
+
             string text = "CALL DBA.ANYW_OOD_updateForm8MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -635,7 +640,7 @@ namespace Anywhere.service.Data
 
         }
 
-        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment)
+        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string userId, string serviceId)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -649,6 +654,9 @@ namespace Anywhere.service.Data
             list.Add(emSummaryIndivSelfAssessment);
             list.Add(emSummaryIndivEmployerAssessment);
             list.Add(emSummaryIndivProviderAssessment);
+            list.Add(emReviewVTS);
+            list.Add(userId);
+            list.Add(serviceId);
 
             string text = "CALL DBA.ANYW_OOD_insertForm8MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try

@@ -15,10 +15,10 @@ const communityBasedAssessmentSummaryForm = (() => {
   let emReviewDate;         // monthYearDropdown
   let emReviewDateDBValue;  // monthYearDropdown  
   let emNextScheduledReview;  //  nextScheduledReviewInput
-  let emSelfAssessment;   //  selfAssessmentInput
+  let emSummaryIndivSelfAssessment;   //  selfAssessmentInput
   let emReferralQuestions;  //referralQuestionsInput
-  let emEmployerAssessment;  // employerAssessmentInput
-  let emProviderAssessment;  // providerAssessmentInput
+  let emSummaryIndivEmployerAssessment;  // employerAssessmentInput
+  let emSummaryIndivProviderAssessment;  // providerAssessmentInput
   let emReviewVTS;   // reviewVTSDropdown
 
   // buttons
@@ -55,12 +55,12 @@ let OODMonthlySummariesTable; // To be added in future release
             userId = $.session.UserId;
             emReviewId = emReviewData.emReviewId;
             emReviewDate = getShortDate(emReviewData.emReviewDate);  
-            emReviewDateDBValue = new Date(emReviewData.emReviewDate);    // TODO JOE: EM_Review.EM_Review_Date                     
-            emNextScheduledReview = emReviewData.emNextScheduledReview; // TODO JOE: EM_Review.EM_Review_Next_date
-            emSelfAssessment = emReviewData.emEmploymentGoal;  //TODO JOE -- EM_Review.EM_Sum_Ind_Self_Assess
-            emEmployerAssessment = emReviewData.emIndivInputonSearch; //TODO JOE -- EM_Review.EM_Sum_Employer.Assess
-           // emProviderAssessment = emReviewData.emIndivInputonSearch; //TODO JOE -- EM_Review.EM_Sum_Provider_Assess
-            emReviewVTS = emReviewData.emPotentialIssueswithProgress; //TODO JOE -- em_review.vts_review column *********** as Y or N ***************
+            emReviewDateDBValue = new Date(emReviewData.emReviewDate);                    
+            emNextScheduledReview = emReviewData.emNextScheduledReview; 
+            emSummaryIndivSelfAssessment = emReviewData.emSummaryIndivSelfAssessment;  
+            emSummaryIndivEmployerAssessment = emReviewData.emSummaryIndivEmployerAssessment; 
+           emSummaryIndivProviderAssessment = emReviewData.emSummaryIndivProviderAssessment; 
+           emReviewVTS = emReviewData.emReviewVTS;
 
           } else {
             userId = $.session.UserId;
@@ -69,9 +69,9 @@ let OODMonthlySummariesTable; // To be added in future release
             emReviewDate = ('0' + (todaysdate.getMonth() + 1)).slice(-2) + '/' + todaysdate.getFullYear();   
             emReviewDateDBValue = new Date(todaysdate.getFullYear(), todaysdate.getMonth(), 1);                          
             emNextScheduledReview = '';
-            emSelfAssessment = '';
-            emEmployerAssessment = '';
-            emProviderAssessment = '';
+            emSummaryIndivSelfAssessment = '';
+            emSummaryIndivEmployerAssessment = '';
+            emSummaryIndivProviderAssessment = '';
             emReviewVTS = '';
             
           }
@@ -132,7 +132,7 @@ let OODMonthlySummariesTable; // To be added in future release
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
-      value: emSelfAssessment,
+      value: emSummaryIndivSelfAssessment,
       readonly: formReadOnly,
       // charLimit: 256,
      // forceCharLimit: true,
@@ -145,7 +145,7 @@ let OODMonthlySummariesTable; // To be added in future release
         type: 'textarea',
         style: 'secondary',
         classNames: 'autosize',
-        value: emEmployerAssessment,
+        value: emSummaryIndivEmployerAssessment,
         readonly: formReadOnly,
       });
     //  employerAssessmentInput.classList.add('introTextArea');
@@ -156,7 +156,7 @@ let OODMonthlySummariesTable; // To be added in future release
         type: 'textarea',
         style: 'secondary',
         classNames: 'autosize',
-        value: emProviderAssessment,
+        value: emSummaryIndivProviderAssessment,
         readonly: formReadOnly,
       });
     //  providerAssessmentInput.classList.add('introTextArea');
@@ -460,19 +460,19 @@ let OODMonthlySummariesTable; // To be added in future release
       });
 
       selfAssessmentInput.addEventListener('input', event => {
-        emSelfAssessment = event.target.value;
+        emSummaryIndivSelfAssessment = event.target.value;
       checkRequiredFields();
     });
 
 
     employerAssessmentInput.addEventListener('input', event => {
-      emEmployerAssessment = event.target.value;
+      emSummaryIndivEmployerAssessment = event.target.value;
       checkRequiredFields();
     });
 
     // provider
     providerAssessmentInput.addEventListener('input', event => {
-      emProviderAssessment = event.target.value;
+      emSummaryIndivProviderAssessment = event.target.value;
       checkRequiredFields();
     });
 
@@ -554,14 +554,15 @@ let OODMonthlySummariesTable; // To be added in future release
               emReviewDate: emReviewDateDBValue.getFullYear() + '-' + (emReviewDateDBValue.getMonth() +1).toString().padStart(2, "0") + '-' + '01', 
              // emReviewDate: UTIL.formatDateToIso(emReviewDateDBValue.split(' ')[0]), 
              emNextScheduledReview: UTIL.formatDateToIso(emNextScheduledReview.split(' ')[0]),
-             emSelfAssessment,
-             emEmployerAssessment,
-             emProviderAssessment,
-              emReviewVTS,
-              userId,
+             emSummaryIndivSelfAssessment,
+             emSummaryIndivEmployerAssessment,
+             emSummaryIndivProviderAssessment,
+             emReviewVTS,
+             userId,
+             
             };
             // TODO JOE: need new C# and SP for Form 8
-            OODAjax.updateForm4MonthlySummary(data, function(results) {
+            OODAjax.updateForm8MonthlySummary(data, function(results) {
               successfulSave.show();
                 setTimeout(function() {
                   successfulSave.hide();
@@ -587,15 +588,16 @@ let OODMonthlySummariesTable; // To be added in future release
               emReviewDate: emReviewDateDBValue.getFullYear() + '-' + (emReviewDateDBValue.getMonth() +1).toString().padStart(2, "0") + '-' + '01', 
              // emNextScheduledReview: emNextScheduledReviewDBValue.getFullYear() + '-' + (emNextScheduledReviewDBValue.getMonth()).toString().padStart(2, "0") + '-' + '01',
              emNextScheduledReview: UTIL.formatDateToIso(emNextScheduledReview.split(' ')[0]),
-             emSelfAssessment,
-             emEmployerAssessment,
-             emProviderAssessment,
-              emReviewVTS,
-              userId,
-              serviceId,
+             emSummaryIndivSelfAssessment,
+             emSummaryIndivEmployerAssessment,
+             emSummaryIndivProviderAssessment,
+             emReviewVTS,
+             userId,
+             serviceId,
+           
             };
             // TODO JOE: need new C# and SP for Form 8
-            OODAjax.insertForm4MonthlySummary(data, function(results) {
+            OODAjax.insertForm8MonthlySummary(data, function(results) {
               successfulSave.show();
               if (saveType == 'saveandNew') {
                 setTimeout(function() {

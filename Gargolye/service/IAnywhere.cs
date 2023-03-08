@@ -4018,7 +4018,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateForm8MonthlySummary/")]
-        string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment);
+        string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4026,7 +4026,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertForm8MonthlySummary/")]
-        string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment);
+        string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emReviewVTS, string userId, string serviceId);
 
 
         [WebInvoke(Method = "POST",
