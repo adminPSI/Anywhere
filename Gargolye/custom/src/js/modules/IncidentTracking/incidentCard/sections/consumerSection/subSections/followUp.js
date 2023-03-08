@@ -237,6 +237,7 @@ var consumerFollowUp = (function () {
         consumerSubSections.showBackBtn();
         clearFormDataDefaults();
         populateReviewTable();
+        incidentCard.checkEntireIncidentCardforErrors();
         return;
       }
 
@@ -398,8 +399,6 @@ var consumerFollowUp = (function () {
     form.appendChild(notesInput);
     form.appendChild(formButtons);
 
-    form.addEventListener('change', () => incidentCard.checkEntireIncidentCardforErrors());
-
     return form;
   }
   // show
@@ -486,7 +485,6 @@ var consumerFollowUp = (function () {
     });
     btn.addEventListener('click', () => {
       showForm(false);
-      incidentCard.checkEntireIncidentCardforErrors();
     });
 
     return btn;

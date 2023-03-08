@@ -262,6 +262,7 @@ var consumerInjuries = (function () {
         consumerSubSections.showBackBtn();
         clearFormDataDefaults();
         populateReviewTable();
+        incidentCard.checkEntireIncidentCardforErrors();
         return;
       }
 
@@ -533,7 +534,6 @@ var consumerInjuries = (function () {
 
     btn.addEventListener('click', () => {
       showForm(false);
-      incidentCard.checkEntireIncidentCardforErrors();
     });
 
     return btn;

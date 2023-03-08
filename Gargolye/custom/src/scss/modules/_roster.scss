@@ -404,6 +404,11 @@
       cursor: pointer;
       margin: 0 0 10px 0;
 
+      &.unEditabled {
+        pointer-events: none;
+        cursor: default;
+      }
+
       &.editMode {
         .edit {
           display: flex;
@@ -427,7 +432,28 @@
         border: 1px solid black;
         border-radius: 4px;
         padding: 5px 3px;
-        width: 100%;
+        margin: 0 2px 0 0;
+        width: calc(100% - 26px);
+      }
+      .saveIcon {
+        color: $secondary;
+        width: 24px;
+        display: inline-flex;
+
+        .spinner__small {
+          display: flex;
+          align-items: center;
+        }
+        .spinner__bar {
+          height: 24px;
+          width: 24px;
+          border-width: 5px;
+        }
+
+        &.hidden {
+          visibility: hidden;
+          pointer-events: none;
+        }
       }
 
       .edit {
@@ -451,7 +477,15 @@
           &.city,
           &.state,
           &.zip {
-            margin: 0 0 10px 0;
+            margin: 0 5px 10px 0;
+            max-width: 31%;
+            flex-grow: 1;
+          }
+          &.state {
+            max-width: 76px;
+          }
+          &.zip {
+            max-width: 120px;
           }
         }
       }

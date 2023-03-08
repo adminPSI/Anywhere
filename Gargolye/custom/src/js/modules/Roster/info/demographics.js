@@ -1,5 +1,34 @@
 const demographics = (function () {
   let demoData;
+  let sectionInner;
+  let unEditabled = [
+    'county',
+    'organization',
+    'organizationAddress',
+    'organizationPhone',
+    'name',
+    'generation',
+    'age',
+    'race',
+    'maritalStatus',
+    'gender',
+    'primaryLanguage',
+    'educationLevel',
+  ];
+  let gkOnly = ['cellPhone', 'generation'];
+
+  function clearCurrentEdit() {
+    // check for field in edit mode and switch to view
+    const currentEdit = [...sectionInner.querySelectorAll('.editMode')];
+    if (currentEdit && currentEdit.length > 0) {
+      currentEdit.forEach(ce => {
+        ce.classList.remove('editMode');
+        // clear icon here so its only removed if they click on another field
+        const saveIcon = ce.querySelector('.saveIcon');
+        saveIcon.innerHTML = '';
+      });
+    }
+  }
 
   function formatPhoneNumber(number) {
     if (!number) return;
@@ -51,6 +80,7 @@ const demographics = (function () {
     const secondaryPhone = formatPhoneNumber(data.secondaryphone);
     let cellPhone = data.cellPhone ? data.cellphone.trim() : undefined;
     cellPhone = cellPhone !== '%' ? UTIL.formatPhoneNumber(cellPhone) : '';
+    const email = data.emailAddress;
 
     // Additional Info
     const dateOfBirth = formatDOB(data.DOB);
@@ -89,6 +119,7 @@ const demographics = (function () {
         primaryPhone,
         secondaryPhone,
         cellPhone,
+        email,
       },
       // Additional Info
       additional: {
@@ -121,55 +152,96 @@ const demographics = (function () {
   function buildInputGroupWrap(title) {
     const wrap = document.createElement('div');
     wrap.classList.add('inputGroupWrap', `${title.split(' ')[0].toLowerCase()}`);
+
     const heading = document.createElement('h3');
     heading.innerText = title;
+
     wrap.appendChild(heading);
+
+    wrap.addEventListener('click', e => {
+      if (e.target.classList.contains('inputGroup')) {
+        if (e.target.classList.contains('unEditabled')) return;
+        clearCurrentEdit();
+        // set target to edit mode
+        if (title !== 'Address') {
+          if (!e.target.classList.contains('editMode')) {
+            e.target.classList.add('editMode');
+          }
+        } else {
+          if (!wrap.classList.contains('editMode')) {
+            wrap.classList.add('editMode');
+          }
+        }
+      }
+    });
+
     return wrap;
   }
   function buildInputGroup(name, value) {
+    // Input Group
     const inputGroup = document.createElement('div');
     inputGroup.classList.add('inputGroup', `${name.match(/([A-Z]?[^A-Z]*)/g)[0]}`);
 
     // view element
     const viewElement = document.createElement('p');
-    viewElement.classList.add('view', name);
+    viewElement.classList.add('view');
     viewElement.innerText = value ? value : '';
 
     // edit element
-    const editElement = document.createElement('div');
-    editElement.classList.add('edit', name);
+    let editElement;
+    if (!unEditabled.includes(name)) {
+      editElement = document.createElement('div');
+      editElement.classList.add('edit');
 
-    const label = document.createElement('label');
-    label.setAttribute('for', name);
-    label.innerText = formatLabelText(name);
-    const input = document.createElement('input');
-    input.id = name;
-    input.placeholder = value ? value : '';
+      const label = document.createElement('label');
+      label.setAttribute('for', name);
+      label.innerText = formatLabelText(name);
+      const input = document.createElement('input');
+      input.id = name;
+      input.placeholder = value ? value : '';
+      const saveIcon = document.createElement('span');
+      saveIcon.classList.add('saveIcon');
 
-    editElement.appendChild(label);
-    editElement.appendChild(input);
+      input.addEventListener('focusout', async e => {
+        // show spinner
+        PROGRESS__ANYWHERE.init();
+        PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
+        // save value
+        // await rosterAjax.updateDemographicsValue({token: $.session.token, consumerId: '', fieldName: name, newValue: e.target.value})
+        // show save icon
+        setTimeout(() => {
+          saveIcon.innerHTML = icons['checkmark'];
+          // set timeout mimic ajax call for now
+          e.stopPropagation();
+        }, 3000);
+      });
+
+      editElement.appendChild(label);
+      editElement.appendChild(input);
+      editElement.appendChild(saveIcon);
+    } else {
+      inputGroup.classList.add('unEditabled');
+    }
 
     inputGroup.appendChild(viewElement);
-    inputGroup.appendChild(editElement);
+    if (!unEditabled.includes(name)) inputGroup.appendChild(editElement);
 
-    return { inputGroup, viewEle: viewElement, editEle: input };
+    return { inputGroup, viewEle: viewElement };
   }
 
   function buildAddressInfo() {
     const groupWrap = buildInputGroupWrap('Address');
 
     for (const prop in demoData.address) {
+      // GK Only Check
+      if ($.session.applicationName === 'Advisor') {
+        if (gkOnly.includes(prop)) break;
+      }
       const propValue = demoData.address[prop];
-      const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
+      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
       if (prop === 'city') viewEle.innerText += ', ';
       groupWrap.appendChild(inputGroup);
     }
-
-    groupWrap.addEventListener('click', e => {
-      if (e.target.classList.contains('inputGroup')) {
-        groupWrap.classList.add('editMode');
-      }
-    });
 
     return groupWrap;
   }
@@ -177,19 +249,16 @@ const demographics = (function () {
     const groupWrap = buildInputGroupWrap('Contact Info');
 
     for (const prop in demoData.contact) {
+      // GK Only Check
+      if ($.session.applicationName === 'Advisor') {
+        if (gkOnly.includes(prop)) break;
+      }
       const propValue = demoData.contact[prop];
-      const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
+      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
       // set label for view elements
       viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
       if (prop === 'primaryPhone' || prop === 'secondaryPhone' || prop === 'cellPhone') {
       }
-
-      // event
-      inputGroup.addEventListener('click', e => {
-        if (!e.target.classList.contains('editMode')) {
-          e.target.classList.add('editMode');
-        }
-      });
 
       // append
       groupWrap.appendChild(inputGroup);
@@ -201,17 +270,14 @@ const demographics = (function () {
     const groupWrap = buildInputGroupWrap('Additional Info');
 
     for (const prop in demoData.additional) {
+      // GK Only Check
+      if ($.session.applicationName === 'Advisor') {
+        if (gkOnly.includes(prop)) break;
+      }
       const propValue = demoData.additional[prop];
-      const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
+      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
       // set label for view elements
       viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
-
-      // event
-      inputGroup.addEventListener('click', e => {
-        if (!e.target.classList.contains('editMode')) {
-          e.target.classList.add('editMode');
-        }
-      });
 
       // append
       groupWrap.appendChild(inputGroup);
@@ -223,17 +289,14 @@ const demographics = (function () {
     const groupWrap = buildInputGroupWrap('Organization Info');
 
     for (const prop in demoData.organization) {
+      // GK Only Check
+      if ($.session.applicationName === 'Advisor') {
+        if (gkOnly.includes(prop)) break;
+      }
       const propValue = demoData.organization[prop];
-      const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
+      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
       // set label for view elements
       viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
-
-      // event
-      inputGroup.addEventListener('click', e => {
-        if (!e.target.classList.contains('editMode')) {
-          e.target.classList.add('editMode');
-        }
-      });
 
       // append
       groupWrap.appendChild(inputGroup);
@@ -245,17 +308,17 @@ const demographics = (function () {
     const groupWrap = buildInputGroupWrap('Demographic Info');
 
     for (const prop in demoData.demographic) {
+      // GK Only Check
+      if ($.session.applicationName === 'Advisor') {
+        if (gkOnly.includes(prop)) break;
+      }
       const propValue = demoData.demographic[prop];
-      const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
+      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
       // set label for view elements
       viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
 
       // event
-      inputGroup.addEventListener('click', e => {
-        if (!e.target.classList.contains('editMode')) {
-          e.target.classList.add('editMode');
-        }
-      });
+      inputGroup.addEventListener('click', e => {});
 
       // append
       groupWrap.appendChild(inputGroup);
@@ -284,7 +347,7 @@ const demographics = (function () {
     demoData = formatDataForDisplay(data);
     isGK = $.session.applicationName === 'Gatekeeper';
 
-    const sectionInner = section.querySelector('.sectionInner');
+    sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
 
     const addressInfo = buildAddressInfo();
