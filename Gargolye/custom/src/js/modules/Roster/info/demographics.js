@@ -118,10 +118,6 @@ const demographics = (function () {
     };
   }
 
-  //? THOUGHTS:
-  // clicking on any part of address will enable editing for all, separate input for each city, state, etc..
-  // everything else can have click contained
-
   function buildInputGroupWrap(title) {
     const wrap = document.createElement('div');
     wrap.classList.add('inputGroupWrap', `${title.split(' ')[0].toLowerCase()}`);
@@ -184,7 +180,7 @@ const demographics = (function () {
       const propValue = demoData.contact[prop];
       const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerText = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
       if (prop === 'primaryPhone' || prop === 'secondaryPhone' || prop === 'cellPhone') {
       }
 
@@ -208,7 +204,7 @@ const demographics = (function () {
       const propValue = demoData.additional[prop];
       const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerText = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
 
       // event
       inputGroup.addEventListener('click', e => {
@@ -230,7 +226,7 @@ const demographics = (function () {
       const propValue = demoData.organization[prop];
       const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerText = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
 
       // event
       inputGroup.addEventListener('click', e => {
@@ -252,7 +248,7 @@ const demographics = (function () {
       const propValue = demoData.demographic[prop];
       const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerText = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
 
       // event
       inputGroup.addEventListener('click', e => {

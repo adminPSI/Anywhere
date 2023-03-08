@@ -445,6 +445,8 @@ var consumerInjuries = (function () {
     form.appendChild(dateCheckedInput);
     form.appendChild(formButtons);
 
+    form.addEventListener('change', () => incidentCard.checkEntireIncidentCardforErrors());
+
     return form;
   }
   // show

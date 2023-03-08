@@ -398,6 +398,8 @@ var consumerFollowUp = (function () {
     form.appendChild(notesInput);
     form.appendChild(formButtons);
 
+    form.addEventListener('change', () => incidentCard.checkEntireIncidentCardforErrors());
+
     return form;
   }
   // show

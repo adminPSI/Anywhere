@@ -447,6 +447,8 @@ var consumerReporting = (function () {
     reportNotesInput = buildNotesInput();
     formButtons = buildFormBtns();
 
+    form.addEventListener('change', () => incidentCard.checkEntireIncidentCardforErrors());
+
     if (isEdit && $.session.incidentTrackingUpdate && $.session.incidentTrackingDelete) {
       deleteBtn = buildDeleteBtn();
       form.appendChild(deleteBtn);
