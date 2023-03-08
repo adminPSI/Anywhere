@@ -1547,6 +1547,10 @@ var timeEntryCard = (function () {
       if (saveOrUpdate === 'Save') timeEntry.getEntryData(keyStartStop, saveAndUpdate);
       if (saveOrUpdate === 'Update')
         timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndUpdate);
+
+      // TODO, make global so access from timeentry.js
+      // event.target.classList.remove('disabled');
+      // saveBtn.classList.remove('disabled');
     });
     cancelBtn.addEventListener('click', () => {
       if (isAdminEdit) {
@@ -1556,6 +1560,10 @@ var timeEntryCard = (function () {
       }
       clearAllGlobalVariables();
     });
+  }
+  function enableSaveButtons() {
+    saveBtn.classList.remove('disabled');
+    saveAndSumbitBtn.classList.remove('disabled');
   }
 
   async function customRosterApplyFilterEvent() {
@@ -2219,5 +2227,6 @@ var timeEntryCard = (function () {
     moveConsumersToTimeCard,
     handleActionNavEvent,
     clearAllGlobalVariables,
+    enableSaveButtons,
   };
 })();

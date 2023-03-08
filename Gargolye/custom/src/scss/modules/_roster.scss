@@ -392,11 +392,12 @@
 }
 .demographicsSection {
   .inputGroupWrap {
-    margin: 0 0 10px 0;
+    margin: 0 0 15px 0;
 
     h3 {
       width: 100%;
       margin: 0 0 8px;
+      font-weight: 600;
     }
 
     .inputGroup {
@@ -424,6 +425,7 @@
       }
       input {
         border: 1px solid black;
+        border-radius: 4px;
         padding: 5px 3px;
         width: 100%;
       }

@@ -71,6 +71,37 @@ var timeEntry = (function () {
 
     POPUP.show(popup);
   }
+  function showDeleteEntryWarningPopup(messageText, callback) {
+    var popup = POPUP.build({ classNames: ['warning'], hideX: true });
+    var message = document.createElement('p');
+    message.innerHTML = messageText;
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    var yesBtn = button.build({
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        callback();
+      },
+    });
+    var noBtn = button.build({
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        timeEntryCard.enableSaveButtons();
+      },
+    });
+    btnWrap.appendChild(yesBtn);
+    btnWrap.appendChild(noBtn);
+    popup.appendChild(message);
+    popup.appendChild(btnWrap);
+
+    POPUP.show(popup);
+  }
 
   function showMultipleEntriesPopup(updateorsave = 'save') {
     var popup2 = POPUP.build({});
@@ -85,7 +116,7 @@ var timeEntry = (function () {
       callback: function () {
         POPUP.hide(popup2);
         updateorsave === 'save'
-          ? getEntryData(('', saveAndSubmit))
+          ? getEntryData('', saveAndSubmit)
           : updateEntry('', '', '', saveAndSubmit);
       },
     });
@@ -186,25 +217,18 @@ var timeEntry = (function () {
 
   function saveEntryData(saveData) {
     if (saveData.locationId !== '' || saveData.consumerId === '') {
-      singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
-        if (!saveAndSubmit) {
-          successfulSave.show('SAVED');
-          setTimeout(function () {
-            successfulSave.hide();
-            timeEntryCard.clearAllGlobalVariables();
-            roster2.clearActiveConsumers();
-            newTimeEntry.init(true);
-          }, 1000);
-        } else {
-          var entryId = results[1].replace('</', '');
-          var updateObj = {
-            token: $.session.Token,
-            singleEntryIdString: entryId,
-            newStatus: 'S',
-          };
-          var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+      if (saveAndSubmit) {
+        var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
-          timeEntryReview.showDeleteEntryWarningPopup(warningMessage, () => {
+        showDeleteEntryWarningPopup(warningMessage, () => {
+          singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
+            var entryId = results[1].replace('</', '');
+            var updateObj = {
+              token: $.session.Token,
+              singleEntryIdString: entryId,
+              newStatus: 'S',
+            };
+
             singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
               successfulSave.show('SAVED & SUBMITTED');
               setTimeout(function () {
@@ -215,28 +239,31 @@ var timeEntry = (function () {
               }, 1000);
             });
           });
-        }
-      });
-    } else {
-      singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
-        if (!saveAndSubmit) {
+        });
+      } else {
+        singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
           successfulSave.show('SAVED');
           setTimeout(function () {
             successfulSave.hide();
             timeEntryCard.clearAllGlobalVariables();
             roster2.clearActiveConsumers();
-            newTimeEntry.init();
+            newTimeEntry.init(true);
           }, 1000);
-        } else {
-          const idArray = results.map(r => r.singleEntryId);
-          var updateObj = {
-            token: $.session.Token,
-            singleEntryIdString: idArray.join(','),
-            newStatus: 'S',
-          };
-          var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+        });
+      }
+    } else {
+      if (!saveAndSubmit) {
+        var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
-          timeEntryReview.showDeleteEntryWarningPopup(warningMessage, () => {
+        showDeleteEntryWarningPopup(warningMessage, () => {
+          singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
+            const idArray = results.map(r => r.singleEntryId);
+            var updateObj = {
+              token: $.session.Token,
+              singleEntryIdString: idArray.join(','),
+              newStatus: 'S',
+            };
+
             singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
               successfulSave.show('SAVED & SUBMITTED');
               setTimeout(function () {
@@ -247,8 +274,18 @@ var timeEntry = (function () {
               }, 1000);
             });
           });
-        }
-      });
+        });
+      } else {
+        singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
+          successfulSave.show('SAVED');
+          setTimeout(function () {
+            successfulSave.hide();
+            timeEntryCard.clearAllGlobalVariables();
+            roster2.clearActiveConsumers();
+            newTimeEntry.init();
+          }, 1000);
+        });
+      }
     }
   }
 
@@ -353,7 +390,7 @@ var timeEntry = (function () {
         };
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
-        timeEntryReview.showDeleteEntryWarningPopup(warningMessage, () => {
+        showDeleteEntryWarningPopup(warningMessage, () => {
           singleEntryAjax.updateSingleEntryStatus(updateObj, () => {
             if (!$.session.singleEntrycrossMidnight) {
               successfulSave.show('UPDATED & SUBMITTED');

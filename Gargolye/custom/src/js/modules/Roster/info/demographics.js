@@ -184,7 +184,7 @@ const demographics = (function () {
       const propValue = demoData.contact[prop];
       const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerText = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
       if (prop === 'primaryPhone' || prop === 'secondaryPhone' || prop === 'cellPhone') {
       }
 
@@ -208,7 +208,7 @@ const demographics = (function () {
       const propValue = demoData.additional[prop];
       const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerText = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
 
       // event
       inputGroup.addEventListener('click', e => {
@@ -230,7 +230,7 @@ const demographics = (function () {
       const propValue = demoData.organization[prop];
       const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerText = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
 
       // event
       inputGroup.addEventListener('click', e => {
@@ -252,7 +252,7 @@ const demographics = (function () {
       const propValue = demoData.demographic[prop];
       const { inputGroup, viewEle, editEle } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerText = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
 
       // event
       inputGroup.addEventListener('click', e => {
