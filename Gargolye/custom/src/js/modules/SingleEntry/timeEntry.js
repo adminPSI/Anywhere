@@ -252,7 +252,7 @@ var timeEntry = (function () {
         });
       }
     } else {
-      if (!saveAndSubmit) {
+      if (saveAndSubmit) {
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
         showDeleteEntryWarningPopup(warningMessage, () => {
