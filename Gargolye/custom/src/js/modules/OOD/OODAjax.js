@@ -716,7 +716,9 @@ var OODAjax = (function () {
         emNextScheduledReview: data.emNextScheduledReview,
         emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
         emSummaryIndivEmployerAssessment: data.emSummaryIndivEmployerAssessment,
-        emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment,     
+        emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment,  
+        emReviewVTS: data.emReviewVTS,
+        userId: data.userId, 
          }
     return $.ajax({
     type: 'POST',
@@ -739,7 +741,10 @@ var OODAjax = (function () {
       emNextScheduledReview: data.emNextScheduledReview,
       emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
       emSummaryIndivEmployerAssessment: data.emSummaryIndivEmployerAssessment,
-      emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment,     
+      emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment,
+      emReviewVTS: data.emReviewVTS,
+      userId: data.userId,
+      serviceId: data.serviceId     
        }
   return $.ajax({
   type: 'POST',

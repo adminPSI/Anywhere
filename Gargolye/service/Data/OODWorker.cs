@@ -239,7 +239,11 @@ namespace Anywhere.service.Data
             public string emSummaryIndivEmployerAssessment { get; set; }
             [DataMember(Order = 6)]
             public string emSummaryIndivProviderAssessment { get; set; }
-          
+
+            [DataMember(Order = 7)]
+            public string emReviewVTS { get; set; }
+
+            
         }
 
 

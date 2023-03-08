@@ -741,7 +741,7 @@ function validateStartEndTimes(validateTime) {
         jobTaskQualityIndicator,
       };
     // TODO JOE: This AJAX needs to change 
-      OODAjax.updateForm4MonthlyPlacementEditData(data, function(results) {
+      OODAjax.updateForm8CommunityBasedAssessment(data, function(results) {
         successfulSave.show();
           setTimeout(function() {
             successfulSave.hide();
@@ -772,7 +772,7 @@ function validateStartEndTimes(validateTime) {
         jobTaskQualityIndicator,
       };
       // TODO JOE: This AJAX needs to change 
-      OODAjax.insertForm4MonthlyPlacementEditData(data, function(results) {
+      OODAjax.insertForm8CommunityBasedAssessment(data, function(results) {
         successfulSave.show();
         if (saveType == 'saveandNew') {
           setTimeout(function() {
