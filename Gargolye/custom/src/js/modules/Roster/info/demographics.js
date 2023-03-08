@@ -118,10 +118,6 @@ const demographics = (function () {
     };
   }
 
-  //? THOUGHTS:
-  // clicking on any part of address will enable editing for all, separate input for each city, state, etc..
-  // everything else can have click contained
-
   function buildInputGroupWrap(title) {
     const wrap = document.createElement('div');
     wrap.classList.add('inputGroupWrap', `${title.split(' ')[0].toLowerCase()}`);
