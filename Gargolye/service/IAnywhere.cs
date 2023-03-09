@@ -3918,6 +3918,30 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getContactMethods/")]
+        OODWorker.OODDDLItem[] getContactMethods(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getIndicators/")]
+        OODWorker.OODDDLItem[] getIndicators(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getPositions/")]
+        OODWorker.OODDDLItem[] getPositions(string consumerId, string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
@@ -3994,7 +4018,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateForm8CommunityBasedAssessment/")]
-        string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions);
+        string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4002,7 +4026,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertForm8CommunityBasedAssessment/")]
-        string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions);
+        string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

@@ -674,6 +674,8 @@ var OODAjax = (function () {
           jobTaskQuantityIndicators: data.jobTaskQuantityIndicators,
           narrative: data.narrative,
           interventions: data.interventions,
+          userId: data.userId,
+          serviceId: data.serviceId,
     
          }
     return $.ajax({

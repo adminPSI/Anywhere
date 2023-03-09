@@ -259,7 +259,7 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_OOD_getContactTypes");
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getContactTypes");
                 throw ex;
             }
         }
@@ -277,7 +277,63 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_OOD_getOutcomes");
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getOutcomes");
+                throw ex;
+            }
+        }
+        //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
+        public string getContactMethods(DistributedTransaction transaction)
+        {
+
+            try
+            {
+                logger.debug("getContactMethods ");
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getContactMethods()", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getContactMethods");
+                throw ex;
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Indicatorss data for DDLs
+        public string getIndicators(DistributedTransaction transaction)
+        {
+
+            try
+            {
+                logger.debug("getIndicators ");
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getIndicators()", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getIndicators");
+                throw ex;
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Positions data for DDL
+        public string getPositions(string consumerId, DistributedTransaction transaction)
+        {
+
+            try
+            {
+                logger.debug("getPositions ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
+                //args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hasAssignedFormTypes", DbType.String, hasAssignedFormTypes);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getPositions(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getPositions");
                 throw ex;
             }
         }
@@ -521,7 +577,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions)
+        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
         {
             if (tokenValidator(token) == false) return null;
             //if (stringInjectionValidator(caseNote) == false) return null;
@@ -541,7 +597,8 @@ namespace Anywhere.service.Data
             list.Add(jobTaskQuantityIndicators);
             list.Add(narrative);
             list.Add(interventions);
-        
+            list.Add(userId);
+
             string text = "CALL DBA.ANYW_OOD_updateForm8CommunityBasedAssessment(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
 
             try
@@ -556,11 +613,11 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions)
+        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
-            logger.debug("insertForm4MonthlyPlacementEditData" + token);
+            logger.debug("insertForm8CommunityBasedAssessment" + token);
 
             List<string> list = new List<string>();
 
@@ -577,8 +634,10 @@ namespace Anywhere.service.Data
             list.Add(jobTaskQuantityIndicators);
             list.Add(narrative);
             list.Add(interventions);
+            list.Add(userId);
+            list.Add(serviceId);
 
-            string text = "CALL DBA.ANYW_OOD_insertForm4MonthlyPlacementEditData(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            string text = "CALL DBA.ANYW_OOD_insertForm8CommunityBasedAssessment(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
 
             try
             {
@@ -587,7 +646,7 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("536", ex.Message + " ANYW_OOD_insertForm4MonthlyPlacementEditData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + contactMethod + "', '" + behavioralIndicators + "', '" + jobTaskQualityIndicators + "', '" + jobTaskQuantityIndicators + "', '" + narrative + "', '" + interventions + "')");
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm8CommunityBasedAssessment('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + contactMethod + "', '" + behavioralIndicators + "', '" + jobTaskQualityIndicators + "', '" + jobTaskQuantityIndicators + "', '" + narrative + "', '" + interventions + "')");
                 return "536: Error saving case note";
             }
         }
