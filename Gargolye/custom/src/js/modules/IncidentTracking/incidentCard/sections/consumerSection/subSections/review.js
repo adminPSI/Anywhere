@@ -207,6 +207,7 @@ var consumerReview = (function () {
         consumerSubSections.showBackBtn();
         clearFormDataDefaults();
         populateReviewTable();
+        incidentCard.checkEntireIncidentCardforErrors();
         return;
       }
 
@@ -414,7 +415,6 @@ var consumerReview = (function () {
 
     btn.addEventListener('click', () => {
       showForm(false);
-      incidentCard.checkEntireIncidentCardforErrors();
     });
 
     return btn;

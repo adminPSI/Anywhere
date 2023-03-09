@@ -53,11 +53,12 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             else
             {
                 long assessmentId = long.Parse(assessmentID);
+                // Gathers all the signatures for the plan
                 string input = osdg.OneSpanGetSignatures(token, assessmentId);
 
                 List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
 
-                string[] emails = { "erick.bey@primarysolutions.net", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
+                string[] emails = { "erickbey1@outlook.com", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
 
                 List<string> emailsList = new List<string>();
                 List<string> namesList = new List<string>();
@@ -65,6 +66,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 List<string> signatureIdsList = new List<string>();
                 List<string> signatureTypeList = new List<string>();
 
+                // Seperates the signers info into lists
                 foreach (var item in result)
                 {
                     emailsList.Add(item["email"]);
@@ -74,15 +76,23 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     signatureTypeList.Add(item["signatureType"]);
                 }
 
+                // Converts the lists into arrays
                 string[] names = namesList.ToArray();
                 string[] memberTypes = memberTypesList.ToArray();
                 string[] signatureIds = signatureIdsList.ToArray();
                 string[] signatureTypes = signatureTypeList.ToArray();
 
-                //TODO: Change these values to whatever Josh specifies
+                // Sets the senders info
+                string firstNameTest = "Your County Board";
+                string lastNameTest = "of DD";
+                SenderInfoBuilder sender = SenderInfoBuilder
+                    .NewSenderInfo("mike.taft@primarysolutions.net")
+                    .WithName(firstNameTest, lastNameTest);
+
+                // Sets default last name value if one is not provided
                 string lastName = "(No Last Name Provided)";
                 string packageName = "Plan Report";
-                PackageBuilder superPackage = PackageBuilder.NewPackageNamed(packageName);
+                PackageBuilder superPackage = PackageBuilder.NewPackageNamed(packageName).WithSenderInfo(sender);
 
                 int i = 0;
                 List<Signer> allSigners = new List<Signer>();
@@ -99,7 +109,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                     if (splitName.Length > 1)
                     {
-                        //lastName = name[1];
                         lastName = string.Join(" ", splitName, 1, splitName.Length - 1);
                     }
 
@@ -349,33 +358,11 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
             DocumentPackageStatus packageStatus = sentPackage.Status;
 
-            OneSpanSign.Sdk.Document test = sentPackage.GetDocument(packageId);
-
             SigningStatus signingStatus = ossClient.GetSigningStatus(currentPackageId, null, null);
 
             if (signingStatus.ToString().Equals("COMPLETE"))
             {
                 string signedStatus = signingStatus.ToString();
-
-                var current = HttpContext.Current;
-                var response = current.Response;
-                response.Buffer = true;
-
-                //TODO: Maybe save the completed PDF to the Plan_PDF column of ANYW_ISP_Consumer_Plans
-                //byte[] zipContent = ossClient.DownloadZippedDocuments(currentPackageId);
-                //File.WriteAllBytes(@"C:\Users\erick.bey\Downloads"
-                //                    + "/package-documents.zip", zipContent);
-
-                byte[] completedDocument = ossClient.DownloadDocument(currentPackageId, "Plan_Report");
-
-                // Get the path to the user's downloads folder
-                string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-
-                // Create the file path by combining the downloads path and file name
-                string filePath = Path.Combine(downloadsPath, "Signed_Plan.pdf");
-
-                // Downloads the comletedDocument to the users download folder
-                File.WriteAllBytes(filePath, completedDocument);
 
                 updateTeamMemberTable = true;
                 osdg.OneSpanUpdateDocumentSignedStatus(token, assessmentID, signedStatus);

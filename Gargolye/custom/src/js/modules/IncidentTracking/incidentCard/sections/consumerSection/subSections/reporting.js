@@ -267,6 +267,7 @@ var consumerReporting = (function () {
         consumerSubSections.showBackBtn();
         clearFormDataDefaults();
         populateReviewTable();
+        incidentCard.checkEntireIncidentCardforErrors();
         return;
       }
 
@@ -549,7 +550,6 @@ var consumerReporting = (function () {
 
     btn.addEventListener('click', () => {
       showForm(false);
-      incidentCard.checkEntireIncidentCardforErrors();
     });
 
     return btn;
