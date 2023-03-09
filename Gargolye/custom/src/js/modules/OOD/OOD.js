@@ -165,7 +165,7 @@ const OOD = (() => {
 					});
 				} 
 				if (rowConsumer[0] && e.target.attributes.OODReportType.value === 'newEntry' && e.target.attributes.serviceType.value === 'T2' ) {
-					OODAjax.getForm4MonthlyPlacementEditData(e.target.attributes.Id.value, function (results) {
+					OODAjax.getForm8CommunityBasedAssessment(e.target.attributes.Id.value, function (results) {
 						communityBasedAssessmentForm.init(results, rowConsumer[0], undefined, undefined, e.target.attributes.userId.value, undefined);
 				});
 				} 

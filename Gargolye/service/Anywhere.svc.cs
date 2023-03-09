@@ -2705,6 +2705,22 @@ namespace Anywhere
             return Ow.getOutcomes(token);
         }
 
+        public OODWorker.OODDDLItem[] getContactMethods(string token)
+        {
+            return Ow.getContactMethods(token);
+        }
+
+        public OODWorker.OODDDLItem[] getIndicators(string token)
+        {
+            return Ow.getIndicators(token);
+        }
+
+        public OODWorker.OODDDLItem[] getPositions(string consumerId, string token)
+        {
+            return Ow.getPositions(consumerId, token);
+        }
+
+
         public OODWorker.Form4MonthlyPlacementEditData[] getForm4MonthlyPlacementEditDataJSON(string token, string caseNoteId)
         {
             return Ow.getForm4MonthlyPlacementEditDataJSON(token, caseNoteId);
@@ -2750,14 +2766,14 @@ namespace Anywhere
             return Ow.getForm8CommunityBasedAssessment(token, caseNoteId);
         }
 
-        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions)
+        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
         {
-            return Odg.updateForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions);
+            return Odg.updateForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId);
         }
 
-        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions)
+        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId)
         {
-            return Odg.insertForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions);
+            return Odg.insertForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId, serviceId);
         }
 
         public OODWorker.Form8MonthlySummary[] getForm8MonthlySummary(string token, string emReviewId)

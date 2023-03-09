@@ -118,6 +118,16 @@ namespace Anywhere.service.Data
         }
 
         [DataContract]
+        public class OODDDLItem
+        {
+            [DataMember(Order = 0)]
+            public string code { get; set; }
+            [DataMember(Order = 1)]
+            public string caption { get; set; }
+
+        }
+
+        [DataContract]
         public class Form4MonthlyPlacementEditData
         {
             [DataMember(Order = 0)]
@@ -510,6 +520,66 @@ namespace Anywhere.service.Data
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     Outcome[] outcomes = js.Deserialize<Outcome[]>(Odg.getOutcomes(transaction));
                     return outcomes;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
+        public OODDDLItem[] getContactMethods(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    OODDDLItem[] contactMethods = js.Deserialize<OODDDLItem[]> (Odg.getContactMethods(transaction));
+                    return contactMethods;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Indicators data for DDLs
+        public OODDDLItem[] getIndicators(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    OODDDLItem[] indicators = js.Deserialize<OODDDLItem[]>(Odg.getIndicators(transaction));
+                    return indicators;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Positions data for DDLs
+        public OODDDLItem[] getPositions(string token, string consumerId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    OODDDLItem[] positions = js.Deserialize<OODDDLItem[]>(Odg.getPositions(consumerId, transaction));
+                    return positions;
                 }
                 catch (Exception ex)
                 {

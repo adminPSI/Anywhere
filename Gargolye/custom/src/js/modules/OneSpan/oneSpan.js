@@ -140,7 +140,6 @@ const oneSpan = (() => {
                 style: 'secondary',
                 type: 'contained',
                 callback: async () => {
-                  //TODO: Gather data not hardcode
                   oneSpanDocumentData = {
                     token: $.session.Token,
                     assessmentID: planId,
