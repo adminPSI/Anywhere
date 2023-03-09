@@ -19,14 +19,15 @@ const demographics = (function () {
 
   function clearCurrentEdit() {
     // check for field in edit mode and switch to view
-    const currentEdit = [...sectionInner.querySelectorAll('.editMode')];
-    if (currentEdit && currentEdit.length > 0) {
-      currentEdit.forEach(ce => {
-        ce.classList.remove('editMode');
-        // clear icon here so its only removed if they click on another field
-        const saveIcon = ce.querySelector('.saveIcon');
-        saveIcon.innerHTML = '';
+    const currentEdit = sectionInner.querySelector('.editMode');
+    if (currentEdit) {
+      // clear icon here so its only removed if they click on another field
+      const saveIcons = [...currentEdit.querySelectorAll('.saveIcon')];
+      saveIcons.forEach(si => {
+        si.innerHTML = '';
       });
+
+      currentEdit.classList.remove('editMode');
     }
   }
 
@@ -64,6 +65,70 @@ const demographics = (function () {
       .map(t => UTIL.capitalize(t));
     return splitText.join(' ');
   }
+  function formatViewInnerHTML(name, value) {
+    if (!value) value = '';
+
+    switch (name) {
+      case 'city': {
+        return `${value}, `;
+      }
+      case 'addressOne':
+      case 'addressTwo':
+      case 'state':
+      case 'zip': {
+        return value;
+      }
+      default: {
+        return `<span>${formatLabelText(name)}:</span> ${value}`;
+      }
+    }
+  }
+  function formatOrganizationAddress(add1, add2, city, zip) {
+    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''} ${zip ? zip : ''}`;
+  }
+  function setInputType(input, name) {
+    // DATE
+    if (name === 'dateOfBirth') {
+      input.type = 'date';
+      return;
+    }
+    // EMAIL
+    if (name === 'email') {
+      input.type = 'email';
+      return;
+    }
+    // NUMBER
+    if (
+      name === 'zip' ||
+      name === 'medicaidNumber' ||
+      name === 'medicareNumber' ||
+      name === 'residentNumber'
+    ) {
+      input.type = 'number';
+    }
+    // TEL
+    if (
+      name === 'primaryPhone' ||
+      name === 'secondaryPhone' ||
+      name === 'cellPhone' ||
+      name === 'organizationPhone'
+    ) {
+      input.type = 'tel';
+      return;
+    }
+
+    input.type = 'text';
+  }
+  function getAgeFromDOB(dob) {
+    var currentDate = new Date();
+    var birthDate = new Date(dob);
+    var age = currentDate.getFullYear() - birthDate.getFullYear();
+    var monthDiff = currentDate.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && currentDate.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  }
 
   function formatDataForDisplay(data) {
     const pathToEmployment = data.pathToEmployment;
@@ -80,28 +145,33 @@ const demographics = (function () {
     const secondaryPhone = formatPhoneNumber(data.secondaryphone);
     let cellPhone = data.cellPhone ? data.cellphone.trim() : undefined;
     cellPhone = cellPhone !== '%' ? UTIL.formatPhoneNumber(cellPhone) : '';
-    const email = data.emailAddress;
+    const email = data.email;
 
     // Additional Info
     const dateOfBirth = formatDOB(data.DOB);
     const medicaidNumber = data.MedicaidNumber;
     const medicareNumber = data.MedicareNumber;
-    const residentNumber = data.residentNumber;
+    const residentNumber = data.ResidentNumber;
 
     // Organization Info
     const county = data.county;
-    const organization = data.organization;
-    const organizationAddress = data.organizationAddress;
-    const organizationPhone = formatPhoneNumber(data.organizationPhone);
+    const organization = data.orgName;
+    const organizationAddress = formatOrganizationAddress(
+      data.orgAdd1,
+      data.orgAdd2,
+      data.city,
+      data.orgZipCode,
+    );
+    const organizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
 
     // Demographic Info
-    const name = data.name;
+    const name = `${data.firstname} ${data.lastname}`;
     const generation = data.generation;
-    const age = data.age;
+    const age = getAgeFromDOB(data.DOB);
     const race = data.race;
     const maritalStatus = data.maritalStatus;
     const gender = data.gender;
-    const primaryLanguage = data.primaryLanguage;
+    const primaryLanguage = data.language;
     const educationLevel = data.educationLevel;
 
     return {
@@ -160,6 +230,7 @@ const demographics = (function () {
 
     wrap.addEventListener('click', e => {
       if (e.target.classList.contains('inputGroup')) {
+        console.log('click from wrap');
         if (e.target.classList.contains('unEditabled')) return;
         clearCurrentEdit();
         // set target to edit mode
@@ -185,7 +256,7 @@ const demographics = (function () {
     // view element
     const viewElement = document.createElement('p');
     viewElement.classList.add('view');
-    viewElement.innerText = value ? value : '';
+    viewElement.innerHTML = formatViewInnerHTML(name, value);
 
     // edit element
     let editElement;
@@ -199,21 +270,20 @@ const demographics = (function () {
       const input = document.createElement('input');
       input.id = name;
       input.placeholder = value ? value : '';
+      setInputType(input, name);
       const saveIcon = document.createElement('span');
       saveIcon.classList.add('saveIcon');
 
       input.addEventListener('focusout', async e => {
+        console.log('focusout from input');
         // show spinner
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
         // save value
         // await rosterAjax.updateDemographicsValue({token: $.session.token, consumerId: '', fieldName: name, newValue: e.target.value})
+        // await new Promise(resolve => setTimeout(resolve, 50000));
         // show save icon
-        setTimeout(() => {
-          saveIcon.innerHTML = icons['checkmark'];
-          // set timeout mimic ajax call for now
-          e.stopPropagation();
-        }, 3000);
+        saveIcon.innerHTML = icons['checkmark'];
       });
 
       editElement.appendChild(label);
@@ -235,11 +305,11 @@ const demographics = (function () {
     for (const prop in demoData.address) {
       // GK Only Check
       if ($.session.applicationName === 'Advisor') {
-        if (gkOnly.includes(prop)) break;
+        if (gkOnly.includes(prop)) continue;
       }
       const propValue = demoData.address[prop];
-      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
-      if (prop === 'city') viewEle.innerText += ', ';
+      const { inputGroup } = buildInputGroup(prop, propValue);
+
       groupWrap.appendChild(inputGroup);
     }
 
@@ -251,14 +321,11 @@ const demographics = (function () {
     for (const prop in demoData.contact) {
       // GK Only Check
       if ($.session.applicationName === 'Advisor') {
-        if (gkOnly.includes(prop)) break;
+        if (gkOnly.includes(prop)) continue;
       }
       const propValue = demoData.contact[prop];
-      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
+      const { inputGroup } = buildInputGroup(prop, propValue);
       // set label for view elements
-      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
-      if (prop === 'primaryPhone' || prop === 'secondaryPhone' || prop === 'cellPhone') {
-      }
 
       // append
       groupWrap.appendChild(inputGroup);
@@ -272,12 +339,10 @@ const demographics = (function () {
     for (const prop in demoData.additional) {
       // GK Only Check
       if ($.session.applicationName === 'Advisor') {
-        if (gkOnly.includes(prop)) break;
+        if (gkOnly.includes(prop)) continue;
       }
       const propValue = demoData.additional[prop];
-      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
-      // set label for view elements
-      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      const { inputGroup } = buildInputGroup(prop, propValue);
 
       // append
       groupWrap.appendChild(inputGroup);
@@ -291,12 +356,10 @@ const demographics = (function () {
     for (const prop in demoData.organization) {
       // GK Only Check
       if ($.session.applicationName === 'Advisor') {
-        if (gkOnly.includes(prop)) break;
+        if (gkOnly.includes(prop)) continue;
       }
       const propValue = demoData.organization[prop];
-      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
-      // set label for view elements
-      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
+      const { inputGroup } = buildInputGroup(prop, propValue);
 
       // append
       groupWrap.appendChild(inputGroup);
@@ -310,15 +373,10 @@ const demographics = (function () {
     for (const prop in demoData.demographic) {
       // GK Only Check
       if ($.session.applicationName === 'Advisor') {
-        if (gkOnly.includes(prop)) break;
+        if (gkOnly.includes(prop)) continue;
       }
       const propValue = demoData.demographic[prop];
-      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
-      // set label for view elements
-      viewEle.innerHTML = `<span>${formatLabelText(prop)}:</span> ${viewEle.innerText}`;
-
-      // event
-      inputGroup.addEventListener('click', e => {});
+      const { inputGroup } = buildInputGroup(prop, propValue);
 
       // append
       groupWrap.appendChild(inputGroup);
