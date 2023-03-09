@@ -570,7 +570,7 @@ namespace Anywhere.service.Data
         }
 
         //  Form 8 Community Based Assessment Form -- Positions data for DDLs
-        public OODDDLItem[] getPositions(string token, string consumerId)
+        public OODDDLItem[] getPositions(string consumerId, string token)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
