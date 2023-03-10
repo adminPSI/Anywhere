@@ -1,4 +1,4 @@
-var consumerReview = (function() {
+var consumerReview = (function () {
   // DOM
   //---------------------
   var section;
@@ -13,12 +13,12 @@ var consumerReview = (function() {
   var deleteBtn;
   var saveBtn;
   var cancelBtn;
-	// DATA
+  // DATA
   //---------------------
   var reviewData;
   var reviewDeleteData;
   var reviewedByDropdownData;
-	// Values
+  // Values
   //---------------------
   var selectedConsumerId;
   var selectedReviewId;
@@ -31,7 +31,7 @@ var consumerReview = (function() {
 
   var isEdit;
   var formReadOnly;
-  
+
   function getDataForSave() {
     return reviewData;
   }
@@ -65,7 +65,7 @@ var consumerReview = (function() {
     }
 
     delete reviewData[selectedConsumerId][selectedReviewId];
-    
+
     selectedReviewId = undefined;
     var form = section.querySelector('.reviewForm');
     section.removeChild(form);
@@ -74,9 +74,9 @@ var consumerReview = (function() {
     clearFormDataDefaults();
     populateReviewTable();
   }
-  
+
   function getDropdownData() {
-    incidentTrackingAjax.getReviewedByDropdown(function(res) {
+    incidentTrackingAjax.getReviewedByDropdown(function (res) {
       reviewedByDropdownData = res;
     });
   }
@@ -92,29 +92,29 @@ var consumerReview = (function() {
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     var yesBtn = button.build({
-			text: 'Yes',
-			type: 'contained',
-			style: 'secondary',
-			callback: () => {
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
         deleteConsumerReviewData();
         POPUP.hide(deleteWarningPopup);
-      }
+      },
     });
     var noBtn = button.build({
-			text: 'No',
-			type: 'contained',
-			style: 'secondary',
-			callback: () => {
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: () => {
         POPUP.hide(deleteWarningPopup);
-      }
+      },
     });
-    
+
     btnWrap.appendChild(yesBtn);
     btnWrap.appendChild(noBtn);
 
     deleteWarningPopup.appendChild(message);
     deleteWarningPopup.appendChild(btnWrap);
-    
+
     POPUP.show(deleteWarningPopup);
   }
   function checkRequiredFields() {
@@ -170,7 +170,7 @@ var consumerReview = (function() {
         showDeleteWarning();
       });
     }
-    
+
     formButtons.addEventListener('click', e => {
       if (e.target === saveBtn) {
         if (!reviewData[selectedConsumerId]) {
@@ -185,7 +185,7 @@ var consumerReview = (function() {
             reviewedDate: '',
             reviewedBy: '',
             notes: '',
-            updated: ''
+            updated: '',
           };
         }
 
@@ -193,8 +193,10 @@ var consumerReview = (function() {
           reviewData[selectedConsumerId][selectedReviewId].updated = true;
         }
 
-        if (tmpReviewDate) reviewData[selectedConsumerId][selectedReviewId].reviewedDate = tmpReviewDate;
-        if (tmpReviewedBy) reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
+        if (tmpReviewDate)
+          reviewData[selectedConsumerId][selectedReviewId].reviewedDate = tmpReviewDate;
+        if (tmpReviewedBy)
+          reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
         if (tmpNote) reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
 
         selectedReviewId = undefined;
@@ -205,6 +207,7 @@ var consumerReview = (function() {
         consumerSubSections.showBackBtn();
         clearFormDataDefaults();
         populateReviewTable();
+        incidentCard.checkEntireIncidentCardforErrors();
         return;
       }
 
@@ -225,9 +228,9 @@ var consumerReview = (function() {
       label: 'Review Date',
       type: 'date',
       style: 'secondary',
-      value: reviewedDate
+      value: reviewedDate,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -239,9 +242,9 @@ var consumerReview = (function() {
   function buildReviewedByDropdown() {
     var opts = {
       label: 'Reviewed By',
-      style: 'secondary'
+      style: 'secondary',
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -251,8 +254,8 @@ var consumerReview = (function() {
     var data = reviewedByDropdownData.map(rb => {
       return {
         value: rb.employeeId,
-        text: rb.employeeName
-      }
+        text: rb.employeeName,
+      };
     });
 
     data.unshift({ value: '%', text: '' });
@@ -266,9 +269,9 @@ var consumerReview = (function() {
       label: 'Notes',
       type: 'textarea',
       style: 'secondary',
-      value: reviewNotes
+      value: reviewNotes,
     };
-    
+
     if (isEdit && formReadOnly) {
       opts.readonly = true;
     }
@@ -284,15 +287,16 @@ var consumerReview = (function() {
     saveBtn = button.build({
       text: 'Done',
       type: 'contained',
-      style: 'secondary'
+      style: 'secondary',
     });
     cancelBtn = button.build({
       text: 'Cancel',
       type: 'outlined',
-      style: 'secondary'
+      style: 'secondary',
     });
 
-    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate) btnWrap.appendChild(saveBtn);
+    if ((!isEdit || (isEdit && !formReadOnly)) && $.session.incidentTrackingUpdate)
+      btnWrap.appendChild(saveBtn);
     btnWrap.appendChild(cancelBtn);
 
     return btnWrap;
@@ -302,7 +306,7 @@ var consumerReview = (function() {
       text: 'Delete',
       type: 'contained',
       style: 'secondary',
-      classNames: 'error'
+      classNames: 'error',
     });
 
     return btn;
@@ -320,11 +324,13 @@ var consumerReview = (function() {
       deleteBtn = buildDeleteBtn();
       form.appendChild(deleteBtn);
     }
-    
+
     form.appendChild(reviewDateInput);
     form.appendChild(reviewedByDropdown);
     form.appendChild(notesInput);
     form.appendChild(formButtons);
+
+    form.addEventListener('change', () => incidentCard.checkEntireIncidentCardforErrors());
 
     return form;
   }
@@ -333,7 +339,7 @@ var consumerReview = (function() {
     isEdit = isedit;
 
     consumerSubSections.hideBackBtn();
-      
+
     reviewsHome.classList.add('hidden');
 
     var reviewForm = buildNewReviewForm();
@@ -365,7 +371,7 @@ var consumerReview = (function() {
 
       tableData.push({
         id: key,
-        values: [reviewedBy, dateReviewed]
+        values: [reviewedBy, dateReviewed],
       });
     });
 
@@ -374,14 +380,14 @@ var consumerReview = (function() {
   function buildReviewTable() {
     var reviewTable = table.build({
       tableId: 'consumerReviewTable',
-      columnHeadings: [
-        'Reviewed By',
-        'Date Reviewed',
-      ]
+      columnHeadings: ['Reviewed By', 'Date Reviewed'],
     });
 
     reviewTable.addEventListener('click', event => {
-      if (event.target.classList.contains('table__row') && !event.target.classList.contains('header')) {
+      if (
+        event.target.classList.contains('table__row') &&
+        !event.target.classList.contains('header')
+      ) {
         selectedReviewId = event.target.id;
         setFormDataDefaults(reviewData[selectedConsumerId][selectedReviewId]);
         showForm(true);
@@ -395,7 +401,7 @@ var consumerReview = (function() {
   //-----------------------------------------------
   function init() {
     formReadOnly = $.session.incidentTrackingUpdate === true ? false : true;
-    
+
     reviewData = {};
     reviewDeleteData = {};
     getDropdownData();
@@ -404,10 +410,12 @@ var consumerReview = (function() {
     var btn = button.build({
       text: 'Add New Review',
       type: 'contained',
-      style: 'secondary'
+      style: 'secondary',
     });
 
-    btn.addEventListener('click', () => showForm(false));
+    btn.addEventListener('click', () => {
+      showForm(false);
+    });
 
     return btn;
   }
@@ -425,7 +433,7 @@ var consumerReview = (function() {
 
     if ($.session.incidentTrackingUpdate) reviewsHome.appendChild(newReviewBtn);
     reviewsHome.appendChild(reviewsReviewTable);
-    
+
     section.appendChild(reviewsHome);
 
     return section;
@@ -438,15 +446,17 @@ var consumerReview = (function() {
         if (!reviewData[selectedConsumerId]) {
           reviewData[selectedConsumerId] = {};
         }
-  
+
         if (!reviewData[selectedConsumerId][d.itConsumerReviewId]) {
           reviewData[selectedConsumerId][d.itConsumerReviewId] = d;
           reviewData[selectedConsumerId][d.itConsumerReviewId].updated = false;
-  
+
           // format dates
           if (reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate) {
-            var reviewDate = reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate.split(' ')[0];
-            reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate = UTIL.formatDateToIso(reviewDate);
+            var reviewDate =
+              reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate.split(' ')[0];
+            reviewData[selectedConsumerId][d.itConsumerReviewId].reviewedDate =
+              UTIL.formatDateToIso(reviewDate);
           }
         }
       });
@@ -462,6 +472,6 @@ var consumerReview = (function() {
     clearData,
     deleteConsumerData,
     getData: getDataForSave,
-    getDeleteData: getDataForDelete
-  }
+    getDeleteData: getDataForDelete,
+  };
 })();

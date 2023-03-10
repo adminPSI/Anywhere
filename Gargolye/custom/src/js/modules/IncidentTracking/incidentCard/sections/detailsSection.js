@@ -28,6 +28,13 @@ var itDetailsSection = (function () {
   var reportedDateInput;
   var reportedTimeInput;
 
+  var summaryTextarea;
+  var actionTextarea;
+  var preventionTextarea;
+  var causeTextarea;
+  var categoryDropdown;
+  var locationDetailDropdown;
+
   function getSectionData() {
     categories = incidentTracking.getCategories();
     incidentLocations = incidentTracking.getLocations();
@@ -123,16 +130,16 @@ var itDetailsSection = (function () {
     var dropdownWrap = document.createElement('div');
     dropdownWrap.classList.add('dropdownWrap');
     // build markup
-    var categoryDropdown = dropdown.build({
+    categoryDropdown = dropdown.build({
       className: 'categoryDropdown',
       label: 'Incident Category',
     });
-    var locationDetailDropdown = dropdown.build({
+    locationDetailDropdown = dropdown.build({
       className: 'locationDropdown',
       label: 'Location Detail',
     });
-    // get/set data
 
+    // get/set data
     var categoryData = categories.map(c => {
       if (c.incidentCategory === 'New Incident') {
         categoryId;
@@ -148,11 +155,14 @@ var itDetailsSection = (function () {
         text: l.description,
       };
     });
+
     var defaultDropdownOption = { value: '', text: '' };
     locationData.unshift(defaultDropdownOption);
+
     // populate
     dropdown.populate(categoryDropdown, categoryData, categoryId);
     dropdown.populate(locationDetailDropdown, locationData, locationId);
+
     // append
     dropdownWrap.appendChild(categoryDropdown);
     dropdownWrap.appendChild(locationDetailDropdown);
@@ -160,28 +170,28 @@ var itDetailsSection = (function () {
     return dropdownWrap;
   }
   function buildTextAreas() {
-    var summaryTextarea = input.build({
+    summaryTextarea = input.build({
       label: 'Summary Of Incident',
       style: 'secondary',
       type: 'textarea',
       classNames: ['autosize', 'summary'],
       value: summaryText,
     });
-    var actionTextarea = input.build({
+    actionTextarea = input.build({
       label: 'Immediate Action',
       style: 'secondary',
       type: 'textarea',
       classNames: ['autosize', 'action'],
       value: actionText,
     });
-    var preventionTextarea = input.build({
+    preventionTextarea = input.build({
       label: 'Prevention Plan',
       style: 'secondary',
       type: 'textarea',
       classNames: ['autosize', 'prevention'],
       value: preventionText,
     });
-    var causeTextarea = input.build({
+    causeTextarea = input.build({
       label: 'Cause & Contributing Factors',
       style: 'secondary',
       type: 'textarea',
@@ -225,40 +235,53 @@ var itDetailsSection = (function () {
     sectionBody.appendChild(dropdowns);
     sectionBody.appendChild(textAreas.summary);
     sectionBody.appendChild(textAreas.action);
-    sectionBody.appendChild(textAreas.prevention);
-    sectionBody.appendChild(textAreas.cause);
+
+    if ($.session.incidentTrackingShowPreventionPlan) sectionBody.appendChild(textAreas.prevention);
+    if ($.session.incidentTrackingShowCauseAndContributingFactors)
+      sectionBody.appendChild(textAreas.cause);
 
     section.appendChild(heading);
     section.appendChild(sectionBody);
 
     setupEvents();
-    checkEntireIncidentCardforErrors();
+    incidentCard.checkEntireIncidentCardforErrors();
 
     return section;
   }
 
-  function checkEntireIncidentCardforErrors() {
-    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
-    var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
-    // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
-
-    if (detailSectionHasErrors || consumerSectionHasErrors) {
-      incidentCard.toggleSave(true);
-    } else {
-      incidentCard.toggleSave(false);
-    }
-  }
-
   function setupEvents() {
-    incidentDateInput.addEventListener('change', event => {
-      incidentDate = event.target.value;
-      checkEntireIncidentCardforErrors();
+    incidentDateInput.addEventListener('change', e => {
+      incidentDate = e.target.value;
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    incidentTimeInput.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    reportedDateInput.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    reportedTimeInput.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
     });
 
-    // incidentTimeInput.addEventListener('change', event => {
-    //   incidentTime = event.target.value;
-    //   checkEntireIncidentCardforErrors();
-    // });
+    summaryTextarea.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    actionTextarea.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    preventionTextarea.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    causeTextarea.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    categoryDropdown.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    locationDetailDropdown.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
   }
 
   function checkRequiredFields() {
