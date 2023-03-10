@@ -426,8 +426,8 @@ namespace Anywhere.service.Data
             public string azureSttApi { get; set; }
             public string reportSeconds { get; set; }
             public string planPeopleId { get; set; }
-
             public string adminPermission { get; set; }
+            public string oneSpan { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
