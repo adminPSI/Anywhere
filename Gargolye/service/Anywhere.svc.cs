@@ -2638,6 +2638,16 @@ namespace Anywhere
             return fw.getConsumerForms(token, userId, consumerId, hasAssignedFormTypes);
         }
 
+        public string checkFormsLock(string formId, string userId)
+        {
+            return fw.checkFormsLock(formId, userId);
+        }
+
+        public void removeFormsLock(string formId, string userId)
+        {
+            fw.removeFormsLock(formId, userId);
+        }
+
         //OOD Module
 
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
