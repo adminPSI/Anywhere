@@ -164,9 +164,14 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
         public Field createTextAreaField(string idName, int i, string anchorText)
         {
+            FieldValidator characterLimit = FieldValidatorBuilder.Basic()
+                .MaxLength(2500)
+                .Build();
+
             Field textAreaInput = FieldBuilder.TextArea()
                 .WithId(idName + i)
                 .WithFontSize(12)
+                .WithValidation(characterLimit)
                 .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchorText)
                                                                         .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                         .WithSize(50, 50)
