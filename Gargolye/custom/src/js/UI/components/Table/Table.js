@@ -1,5 +1,5 @@
 //? THOUGHTS
-//?
+//? Web Components??????????
 
 //* OPTIONS
 //-----------------------
@@ -10,7 +10,9 @@ function TABLE(options) {
   this._options = { ...options };
 }
 
-TABLE.prototype.build = () => {};
+TABLE.prototype.build = function () {
+  console.log(this._options);
+};
 TABLE.prototype.populate = () => {};
 TABLE.prototype.clear = () => {};
 TABLE.prototype.addRow = () => {};
