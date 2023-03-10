@@ -404,7 +404,9 @@ let currentEntryUserId;
 						}
 
       data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
-      dropdown.populate("behavioralIndicatorsDropdown", data, behavioralIndicators);        
+      dropdown.populate("behavioralIndicatorsDropdown", data, behavioralIndicators);      
+      dropdown.populate('jobTaskQualityIndicatorsDropdown', data, jobTaskQualityIndicators); 
+     dropdown.populate('jobTaskQuantityIndicatorsDropdown', data, jobTaskQuantityIndicators);  
     }
 
 
@@ -454,11 +456,11 @@ let currentEntryUserId;
    // TODO JOE: Double check that DDL is properly populated -- not yes/no for Form 8 
     // Job Task Quality Indicators -Job Task Quality Indicators (Work Days) dropdown should
     // be a list of values (code_table.caption) where code_table.table_id = employment_code and code_table.field_id = Lichert Scale 2
-   dropdown.populate(jobTaskQualityIndicatorsDropdown, yesNoDropdownData, jobTaskQualityIndicators); 
+  // dropdown.populate(jobTaskQualityIndicatorsDropdown, yesNoDropdownData, jobTaskQualityIndicators); 
    // TODO JOE: Double check that DDL is properly populated -- not yes/no for Form 8 
     // Job Task Quantity Indicators -Job Task Quantity Indicators (Work Days) dropdown  
     // should be a list of values (code_table.caption) where code_table.table_id = employment_code and code_table.field_id = Lichert Scale 2
-    dropdown.populate(jobTaskQuantityIndicatorsDropdown, yesNoDropdownData, jobTaskQuantityIndicators);
+    // dropdown.populate(jobTaskQuantityIndicatorsDropdown, yesNoDropdownData, jobTaskQuantityIndicators);
   }
 
   function checkRequiredFields() {
@@ -807,6 +809,7 @@ function validateStartEndTimes(validateTime) {
         startTime,
         endTime,
         SAMLevel,
+        position,
         contactMethod,
         behavioralIndicators,
         jobTaskQualityIndicators,
@@ -835,6 +838,7 @@ function validateStartEndTimes(validateTime) {
         startTime,
         endTime,
         SAMLevel,
+        position,
         contactMethod,
         behavioralIndicators,
         jobTaskQualityIndicators,
@@ -843,6 +847,7 @@ function validateStartEndTimes(validateTime) {
         interventions,
         userId,
         serviceId,
+        caseManagerId,
       };
       // TODO JOE: This AJAX needs to change 
       OODAjax.insertForm8CommunityBasedAssessment(data, function(results) {

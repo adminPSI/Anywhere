@@ -721,6 +721,7 @@ var OODAjax = (function () {
           startTime: data.startTime,
           endTime: data.endTime,
           SAMLevel: data.SAMLevel,
+          position: data.position,
           contactMethod: data.contactMethod,
           behavioralIndicators: data.behavioralIndicators,
           jobTaskQualityIndicators: data.jobTaskQualityIndicators,
@@ -750,6 +751,7 @@ var OODAjax = (function () {
           startTime: data.startTime,
           endTime: data.endTime,
           SAMLevel: data.SAMLevel,
+          position: data.position,
           contactMethod: data.contactMethod,
           behavioralIndicators: data.behavioralIndicators,
           jobTaskQualityIndicators: data.jobTaskQualityIndicators,
@@ -758,6 +760,7 @@ var OODAjax = (function () {
           interventions: data.interventions,
           userId: data.userId,
           serviceId: data.serviceId,
+          caseManagerId: data.caseManagerId,
     
          }
     return $.ajax({

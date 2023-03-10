@@ -228,6 +228,8 @@ namespace Anywhere.service.Data
             public string narrative { get; set; }
             [DataMember(Order = 11)]
             public string interventions { get; set; }
+            [DataMember(Order = 12)]
+            public string position { get; set; }
         }
 
 
