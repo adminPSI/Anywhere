@@ -273,7 +273,7 @@
         dropdown.populate("templateDropdown", data);        
     }
 
-	function displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate, formCompleteDate ) {
+	async function displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate, formCompleteDate ) {
 
 		let formPopup = POPUP.build({
 			header: "",
@@ -294,7 +294,36 @@
 		POPUP.show(formPopup);
 
 		formsAjax.openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, $.session.applicationName, formCompleteDate);
-		
+
+		const userId = $.session.UserId
+		const checkFormsLockValue = await formsAjax.checkFormsLock(formId, userId);
+
+		if (checkFormsLockValue != '') {
+		  const popup = POPUP.build({
+			id: 'formLocksPopup',
+			classNames: 'warning',
+		  });
+		  const btnWrap = document.createElement('div');
+		  btnWrap.classList.add('btnWrap');
+		  const okBtn = button.build({
+			text: 'OK',
+			style: 'secondary',
+			type: 'contained',
+			icon: 'checkmark',
+			callback: async function () {
+			  POPUP.hide(popup);
+			  overlay.show();
+			},
+		  });
+
+		  btnWrap.appendChild(okBtn);
+		  const warningMessage = document.createElement('p');
+		  warningMessage.innerHTML =
+			`This form is currently locked by ${checkFormsLockValue}. Any changes you make to this form will not be saved.`;
+		  popup.appendChild(warningMessage);
+		  popup.appendChild(btnWrap);
+		  POPUP.show(popup);
+		}
 	}
 
 	function displayWFStepFormPopup(templateId, templateName, stepId, docOrder, isTemplate, documntEdited, consumerId) {

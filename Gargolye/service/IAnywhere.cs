@@ -3801,6 +3801,21 @@ namespace Anywhere
             UriTemplate = "/deleteConsumerForm/")]
         String deleteConsumerForm(string token, string formId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+    BodyStyle = WebMessageBodyStyle.Wrapped,
+    ResponseFormat = WebMessageFormat.Json,
+    RequestFormat = WebMessageFormat.Json,
+    UriTemplate = "/checkFormsLock/")]
+        String checkFormsLock(string formId, string userId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/removeFormsLock/")]
+        void removeFormsLock(string formId, string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

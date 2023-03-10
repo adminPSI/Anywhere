@@ -381,7 +381,89 @@ var OODAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  
+  //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
+   async function getContactMethodsAsync() {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getContactMethods/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
+   //  Form 8 Community Based Assessment Form -- Indicators data for DDLs
+   async function getIndicatorsAsync() {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getIndicators/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
+   //  Form 8 Community Based Assessment Form -- Positions data for DDLs
+   async function getPositionsAsync(consumerId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getPositions/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          consumerId: consumerId,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
+
   // Form 4 -- Monthly Placement
   function getForm4MonthlyPlacementEditData(caseNoteId, callback) {
     $.ajax({
@@ -775,6 +857,9 @@ var OODAjax = (function () {
       getConsumerServiceCodesAsync,
       getContactTypesAsync,
       getOutcomesAsync,
+      getContactMethodsAsync,
+      getIndicatorsAsync,
+      getPositionsAsync,
       getForm4MonthlyPlacementEditData,
       updateForm4MonthlyPlacementEditData,
       insertForm4MonthlyPlacementEditData,

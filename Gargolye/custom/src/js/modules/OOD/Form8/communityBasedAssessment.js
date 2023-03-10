@@ -5,6 +5,7 @@ const communityBasedAssessmentForm = (() => {
   let startTimeInput;
   let endTimeInput;
   let SAMLevelDropdown;
+  let positionDropdown;
   let contactMethodDropdown;
   let behavioralIndicatorsDropdown; 
   let jobTaskQualityIndicatorsDropdown; 
@@ -26,6 +27,7 @@ let serviceDate;
 let startTime;
 let endTime;
 let SAMLevel;
+let position;
 let contactMethod;
 let behavioralIndicators;
 let jobTaskQualityIndicators;
@@ -60,6 +62,7 @@ let currentEntryUserId;
       startTime = caseNoteData[0].startTime; //TODO JOE: Case_Notes.Start_Time
       endTime = caseNoteData[0].endTime; //TODO JOE: Case_Notes.End_Time
       SAMLevel = caseNoteData[0].SAMLevel; //TODO JOE: Case_Notes.Service_Area_Modifier (populates with N/A, 1, 2, or 3)
+      position = caseNoteData[0].position;
       contactMethod = caseNoteData[0].contactMethod; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.contact_method
       jobTaskQuantityIndicators = caseNoteData[0].jobTaskQuantityIndicators; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.quantity_indicators
       narrative = caseNoteData[0].narrative; //TODO JOE: emp_ood.narrative
@@ -78,6 +81,7 @@ let currentEntryUserId;
       startTime = '';
       endTime = '';
       SAMLevel = '';
+      position = '';
       contactMethod = '';
       jobTaskQuantityIndicators = '';
       narrative = '';
@@ -131,6 +135,15 @@ let currentEntryUserId;
         label: 'SAM Level',
         dropdownId: "SAMLevelDropdown",
         value: SAMLevel,
+        readonly: formReadOnly,
+        //readonly: true,
+        // type: 'email',
+      });
+
+      positionDropdown = dropdown.build({
+        label: 'Position',
+        dropdownId: "positionDropdown",
+        value: position,
         readonly: formReadOnly,
         //readonly: true,
         // type: 'email',
@@ -268,6 +281,7 @@ let currentEntryUserId;
      
     const inputContainer1 = document.createElement('div');
     inputContainer1.classList.add('ood_form4monthlyplacement_inputContainer1'); // new _OOD.scss setting  -- ood_form8monthlyplacement_inputContainer1
+    inputContainer1.appendChild(positionDropdown);
     inputContainer1.appendChild(SAMLevelDropdown);
     inputContainer1.appendChild(contactMethodDropdown);
     
@@ -315,6 +329,8 @@ let currentEntryUserId;
 
       populateStaticDropDowns();
       populateContactMethodDropdown();
+      populatePositionDropdown();
+      populateIndicatorsDropdown();
      // populateOutcomeDropdown();
       
 
@@ -331,13 +347,13 @@ let currentEntryUserId;
 	  async function populateContactMethodDropdown() { 
 		
       const {
-        getContactTypesResult: contactTypes,
-      } = await OODAjax.getContactTypesAsync();
+        getContactMethodsResult: contactMethods,
+      } = await OODAjax.getContactMethodsAsync();
       // const templates = WorkflowViewerComponent.getTemplates();
-      let data = contactTypes.map((contactType) => ({
-        id: contactType.contactCode, 
-        value: contactType.contactCode, 
-        text: contactType.contactCaption,
+      let data = contactMethods.map((contactMethod) => ({
+        id: contactMethod.code, 
+        value: contactMethod.code, 
+        text: contactMethod.caption,
       })); 
 
       const index = data.findIndex((x) => x.id == contactMethod);
@@ -348,6 +364,50 @@ let currentEntryUserId;
       data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
       dropdown.populate("contactMethodDropdown", data, contactMethod);        
     }
+
+    async function populatePositionDropdown() { 
+		
+      const {
+        getPositionsResult: positions,
+      } = await OODAjax.getPositionsAsync(consumerId);
+      // const templates = WorkflowViewerComponent.getTemplates();
+      let data = positions.map((position) => ({
+        id: position.code, 
+        value: position.code, 
+        text: position.caption,
+      })); 
+
+      const index = data.findIndex((x) => x.id == position);
+						if (index === -1) {
+							// case note contactType not in the contactTypes DDL
+						}
+
+      data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
+      dropdown.populate("positionDropdown", data, position);        
+    }
+
+    async function populateIndicatorsDropdown() { 
+		
+      const {
+        getIndicatorsResult: indicators,
+      } = await OODAjax.getIndicatorsAsync();
+      // const templates = WorkflowViewerComponent.getTemplates();
+      let data = indicators.map((indicator) => ({
+        id: indicator.code, 
+        value: indicator.code, 
+        text: indicator.caption,
+      })); 
+
+      const index = data.findIndex((x) => x.id == position);
+						if (index === -1) {
+							// case note contactType not in the contactTypes DDL
+						}
+
+      data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
+      dropdown.populate("behavioralIndicatorsDropdown", data, behavioralIndicators);        
+    }
+
+
     // TODO JOE: Look into whether this AJAX needs to change or not
     // THis DDL may not be needed? 
     // async function populateOutcomeDropdown() { 
@@ -390,7 +450,7 @@ let currentEntryUserId;
     // TODO JOE: Double check that DDL is properly populated -- not yes/no for Form 8 
     // Behavioral Indicators (Work Days) dropdown should be a list of
     // values (code_table.caption) where code_table.table_id = employment_code and code_table.field_id = Lichert Scale 2
-   dropdown.populate(behavioralIndicatorsDropdown, yesNoDropdownData, behavioralIndicators); 
+  // dropdown.populate(behavioralIndicatorsDropdown, yesNoDropdownData, behavioralIndicators); 
    // TODO JOE: Double check that DDL is properly populated -- not yes/no for Form 8 
     // Job Task Quality Indicators -Job Task Quality Indicators (Work Days) dropdown should
     // be a list of values (code_table.caption) where code_table.table_id = employment_code and code_table.field_id = Lichert Scale 2
@@ -410,6 +470,15 @@ let currentEntryUserId;
       SAMLevelDropdown.classList.remove('error');
      // return 'success';
     }
+    
+    if (!position || position === '') {
+      positionDropdown.classList.add('error');
+      //return 'error';
+    } else {
+      positionDropdown.classList.remove('error');
+     // return 'success';
+    }
+
 
     if (!contactMethod || contactMethod === '') {
       contactMethodDropdown.classList.add('error');
@@ -600,6 +669,17 @@ function validateStartEndTimes(validateTime) {
           SAMLevel = '';
       } else {
         SAMLevel = selectedOption.value;
+      }
+      checkRequiredFields();
+    });
+
+    positionDropdown.addEventListener('change', event => {
+      var selectedOption = event.target.options[event.target.selectedIndex];
+       
+      if (selectedOption.value == "SELECT") {
+          position = '';
+      } else {
+        position = selectedOption.value;
       }
       checkRequiredFields();
     });
