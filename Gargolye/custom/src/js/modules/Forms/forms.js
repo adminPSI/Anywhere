@@ -7,6 +7,7 @@
  	 let overviewTable;
   	let newFormBtn;
 	let selectedConsumer;
+	let isFormLocked;
 
 	// values for selectTemplatePopup
 	let templateId;
@@ -293,12 +294,10 @@
 
 		POPUP.show(formPopup);
 
-		formsAjax.openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, $.session.applicationName, formCompleteDate);
-
-		const userId = $.session.UserId
-		const checkFormsLockValue = await formsAjax.checkFormsLock(formId, userId);
+		const checkFormsLockValue = await formsAjax.checkFormsLock(formId, $.session.UserId);
 
 		if (checkFormsLockValue != '') {
+			isFormLocked = true;
 		  const popup = POPUP.build({
 			id: 'formLocksPopup',
 			classNames: 'warning',
@@ -324,6 +323,9 @@
 		  popup.appendChild(btnWrap);
 		  POPUP.show(popup);
 		}
+
+		formsAjax.openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, $.session.applicationName, formCompleteDate, isFormLocked);
+		isFormLocked = false;
 	}
 
 	function displayWFStepFormPopup(templateId, templateName, stepId, docOrder, isTemplate, documntEdited, consumerId) {

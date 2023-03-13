@@ -301,7 +301,7 @@
   }
 
   
-  function openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, applicationName, formCompleteDate) {
+  function openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, applicationName, formCompleteDate, isFormLocked) {
  
       $.ajax({
           type: 'POST',
@@ -342,6 +342,9 @@
                               onClick: async () => {
 
                               try{
+                                if (isFormLocked) {
+                                  throw new Error();
+                                }
             
                                  let formID;
                                  const doc = docViewer.getDocument();
@@ -369,10 +372,14 @@
 
                                   alert('Document has been saved.');
 
-                              } catch {
-                                      // 
-                                      alert('This PDF document format does not allow saving. Document NOT saved.');
-                                     // POPUP.hide(formPopup);
+                              } catch(e) { 
+                                      if(e) {
+                                        alert('Cannot save while document is locked. Document NOT saved.')
+                                      } else {
+                                        //
+                                        alert('This PDF document format does not allow saving. Document NOT saved.');
+                                        // POPUP.hide(formPopup);
+                                      }  
                               }
 
                               }
