@@ -750,7 +750,7 @@ function checkInfalConnectionAjax(callback) {
       }
     },
     error: function (xhr, status, error) {
-      callback(error, null);
+      //callback(error, null);
     },
   });
 }
