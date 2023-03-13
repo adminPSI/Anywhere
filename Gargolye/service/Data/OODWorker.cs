@@ -230,6 +230,8 @@ namespace Anywhere.service.Data
             public string interventions { get; set; }
             [DataMember(Order = 12)]
             public string position { get; set; }
+            [DataMember(Order = 13)]
+            public string serviceName { get; set; }
         }
 
 

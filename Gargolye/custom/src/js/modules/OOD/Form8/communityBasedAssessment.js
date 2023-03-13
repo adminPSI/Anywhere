@@ -46,7 +46,7 @@ let formReadOnly = false;
 
 let currentEntryUserId;
 
-  async function init(caseNoteData, currentConsumer, selectedConsumerServiceId, selectedConsumerReferenceNumber, currentRecordUserId, selectedServiceDate, clickSource = 'OODGrid') {
+  async function init(caseNoteData, currentConsumer, selectedConsumerServiceId, selectedConsumerServiceName, selectedConsumerReferenceNumber, currentRecordUserId, selectedServiceDate, clickSource = 'OODGrid') {
 
     DOM.clearActionCenter();
     document.querySelectorAll('.consumerListBtn').forEach(e => e.remove());
@@ -264,7 +264,7 @@ let currentEntryUserId;
      var LineBr = document.createElement('br');
 
      const heading = document.createElement('h2');
-     heading.innerHTML = 'Community Based Assessment - OOD Form 8';
+     heading.innerHTML = `${selectedConsumerServiceName} - OOD Form 8`;
      heading.classList.add('OODsectionHeading');
 
      container.appendChild(myconsumer);
