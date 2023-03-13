@@ -468,7 +468,8 @@ var incidentOverview = (function () {
       if (!incidents[r.incidentId]) {
         incidents[r.incidentId] = r;
       } else {
-        if (incidents[r.incidentId].consumerName !== r.consumerName) {
+        const dupName = incidents[r.incidentId].consumerName.includes(r.consumerName);
+        if (!dupName) {
           incidents[r.incidentId].consumerName += `, ${r.consumerName}`;
         }
       }
