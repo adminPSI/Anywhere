@@ -247,6 +247,8 @@ namespace Anywhere.service.Data
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorPlanId", DbType.String, priorPlanId);
                 // returns the consumerPlanId of the consumer plan that was just inserted
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerPlan(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                //System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerPlan(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
+                //return convertToJSON(returnMsg);
             }
             catch (Exception ex)
             {

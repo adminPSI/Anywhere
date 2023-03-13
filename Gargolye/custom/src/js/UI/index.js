@@ -1,8 +1,15 @@
-const UI = (function () {
-  // Entry Point For All UI Components
-  const TABLE = getTable;
+// const UI = (function () {
+//   // Entry Point For All UI Components
+//   const TABLE = getTable;
 
-  return {
-    TABLE,
-  };
-})();
+//   return {
+//     TABLE,
+//   };
+// })();
+
+// const newTable = UI.TABLE({
+//   id: '1',
+// });
+// const newTable2 = UI.TABLE({
+//   id: '2',
+// });

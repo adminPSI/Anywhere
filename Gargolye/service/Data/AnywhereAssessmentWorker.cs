@@ -82,6 +82,7 @@ namespace Anywhere.service.Data
         public class ConsumerPlan
         {
             public string consumerPlanId { get; set; }
+            public string cQFullName { get; set; }
         }
 
         [DataContract]
