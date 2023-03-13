@@ -118,6 +118,7 @@ var itEmployeeSection = (function () {
         var parent = employeeRow.parentElement;
         parent.removeChild(employeeRow);
         displayCount();
+        incidentCard.checkEntireIncidentCardforErrors();
       },
     });
 
