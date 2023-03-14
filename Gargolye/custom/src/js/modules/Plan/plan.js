@@ -12,6 +12,7 @@ const plan = (function () {
   let prevPlanTable;
   let datesBoxDiv;
   let doneBtn;
+  let addedMemberPopup;
   // main plan page
   let planHeader;
   let planHeaderButtons;
@@ -1736,6 +1737,11 @@ const plan = (function () {
     };
     planWorkflow.showWorkflowListPopup(wfvData, workflowCallback);
   }
+  function getSelectedConsumerName(selectedConsumer) {
+    const last = selectedConsumer.card.querySelector('.name_last');
+    const first = selectedConsumer.card.querySelector('.name_first');
+    return `${first} ${last}`;
+  }
   async function createNewPlan(selectedConsumer, processId, selectedWorkflows) {
     const EffectiveEndDate = planDates.getEffectiveEndDate();
     let edDate = UTIL.formatDateFromDateObj(EffectiveEndDate);
@@ -1811,7 +1817,13 @@ const plan = (function () {
 
     planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
 
-    buildPlanPage();
+    const consumer = getSelectedConsumerName(selectedConsumer);
+    showAddedToTeamMemberPopup(consumer, '');
+
+    setTimeout(() => {
+      POPUP.hide(addedMemberPopup);
+      buildPlanPage();
+    }, 2000);
   }
 
   function buildPreviousPlansTable() {
@@ -1940,17 +1952,17 @@ const plan = (function () {
     POPUP.show(warningPopup);
   }
   function showAddedToTeamMemberPopup(consumer, ssa) {
-    const memberPopup = POPUP.build({
+    addedMemberPopup = POPUP.build({
       id: 'importRelationshipPopup',
     });
 
     const message1 = `${consumer} has been added as a Team Member to this plan.`;
     const message2 = `${ssa} has been added as a Team Member to this plan.`;
 
-    memberPopup.appendChild(message1);
-    memberPopup.appendChild(message2);
+    addedMemberPopup.appendChild(message1);
+    addedMemberPopup.appendChild(message2);
 
-    POPUP.show(memberPopup);
+    POPUP.show(addedMemberPopup);
   }
 
   function buildNewPlanBtn() {
@@ -1974,10 +1986,6 @@ const plan = (function () {
               return;
             }
           }
-
-          //TODO: calls for adding consumer and SSA/QIDP to team member table
-          // await insertQIDP
-          // await insertConsumer
 
           planSetupPage = await buildNewPlanSetupPage(selectedConsumer);
 

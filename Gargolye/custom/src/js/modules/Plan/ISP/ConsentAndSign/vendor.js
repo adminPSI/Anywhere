@@ -24,27 +24,13 @@ const csVendor = (() => {
       const errors = csVendorPopup.querySelectorAll('.error');
       //const isConsentable = planConsentAndSign.isTeamMemberConsentable(selectedMemberData.teamMember);
   
-      if (
-        errors.length > 0 ||
-        ($.session.applicationName === 'Gatekeeper' &&
-          selectedMemberData.csContactProviderVendorId === '') 
-          //&&         isConsentable)
-      ) {
+      if (errors.length > 0) {
         saveTeamMemberBtn.classList.add('disabled');
-      } else if (selectedMemberData.csContactProviderVendorId === '' || selectedMemberData.participationRadios === '' || selectedMemberData.signatureType === '' || selectedMemberData.participated === '') {
+      } else if (selectedMemberData.name === '' || selectedMemberData.teamMember === '' || selectedMemberData.signatureType === '' || selectedMemberData.participated === '') {
         saveTeamMemberBtn.classList.add('disabled');
       } else {
         saveTeamMemberBtn.classList.remove('disabled');
       }
-
-      if ($.session.applicationName === 'Advisor') {
-        if (selectedMemberData.name === '' || selectedMemberData.teamMember === '' || selectedMemberData.signatureType === '' || selectedMemberData.participated === '') {
-          saveTeamMemberBtn.classList.add('disabled');
-        } else {
-          saveTeamMemberBtn.classList.remove('disabled');
-        }
-      }
-
     }
 
     function getSelectedVendorRel(vendorData, vendorName) {
