@@ -534,6 +534,8 @@ var incidentOverview = (function () {
     });
 
     table.populate(overviewTable, data);
+
+    console.log(data);
   }
 
   function init() {
