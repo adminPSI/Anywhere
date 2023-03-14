@@ -78,6 +78,7 @@ let currentEntryUserId;
       caseNoteId = '0';
       serviceDate = selectedServiceDate;
       //serviceDate = UTIL.getTodaysDate();
+      referenceNumber = selectedConsumerReferenceNumber;
       startTime = '';
       endTime = '';
       SAMLevel = '';
@@ -847,6 +848,7 @@ function validateStartEndTimes(validateTime) {
         interventions,
         userId,
         serviceId,
+        referenceNumber,
         caseManagerId,
       };
       // TODO JOE: This AJAX needs to change 
