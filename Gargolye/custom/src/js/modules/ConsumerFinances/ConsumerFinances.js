@@ -1,6 +1,5 @@
 const ConsumerFinances = (() => {
     //Inputs
-
     let newFilterBtn;
     let filterRow;
     let newEntryBtn;
@@ -26,7 +25,7 @@ const ConsumerFinances = (() => {
 
         switch (targetAction) {
             case 'miniRosterDone': {
-                selectedConsumers = roster2.getActiveConsumers(); 
+                selectedConsumers = roster2.getActiveConsumers();
                 await loadConsumerFinanceLanding();
                 DOM.toggleNavLayout();
                 break;
@@ -40,9 +39,14 @@ const ConsumerFinances = (() => {
     }
 
     // Build OOD Module Landing Page 
-    async function loadConsumerFinanceLanding() {
+    async function loadConsumerFinanceLanding(value) {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
+
+        if (value) {
+            filterValues.accountName = value;
+        }
+            
         if (!document.querySelector('.consumerListBtn')) roster2.miniRosterinit();
 
         landingPage = document.createElement('div');
@@ -57,9 +61,8 @@ const ConsumerFinances = (() => {
         filterRow = document.createElement('div');
         filterRow.classList.add('filterElement');
 
-        //TODO:
-        //const filteredBy = buildFilteredBy();
-        //filterRow.appendChild(filteredBy);
+        const filteredBy = buildFilteredBy();
+        filterRow.appendChild(filteredBy);
 
         landingPage.appendChild(LineBr);
         landingPage.appendChild(LineBr);
@@ -77,10 +80,9 @@ const ConsumerFinances = (() => {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
             headline: selectedConsumersName,
-            columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By'],
-            //callback: handleAccountTableEvents
+            columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By',''],
         };
-    
+
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
         let ConsumerFinancesEntries = await ConsumerFinancesAjax.getAccountTransectionEntriesAsync(
             selectedConsumerIds.join(", "),
@@ -89,7 +91,8 @@ const ConsumerFinances = (() => {
             filterValues.accountName,
             filterValues.payee,
             filterValues.category,
-            filterValues.amount,
+            filterValues.minamount,
+            filterValues.maxamount,
             filterValues.checkNo,
             filterValues.Balance,
             filterValues.enteredBy,
@@ -102,12 +105,11 @@ const ConsumerFinances = (() => {
             entry.activityDate = formatActivityDate;
         });
 
-
-        let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
-            values: [entry.activityDate, entry.account, entry.payee, entry.category, entry.amount, entry.checkno, entry.balance, entry.enteredby],
+        let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({ 
+            values: [entry.activityDate, entry.account, entry.payee, entry.category, entry.amount, entry.checkno, entry.balance, entry.enteredby, entry.AttachmentsID ==0 ? ''  :`${icons['attachmentSmall']}` ],  
             attributes: [{ key: 'registerId', value: entry.ID }],
             onClick: (e) => {
-                handleAccountTableEvents(e.target.attributes.registerId.value) 
+                handleAccountTableEvents(e.target.attributes.registerId.value)
             },
         }));
         const oTable = table.build(tableOptions);
@@ -151,9 +153,8 @@ const ConsumerFinances = (() => {
         });
 
         accountDropdown.addEventListener('change', event => {
-            filterValues.accountName = event.target.options[event.target.selectedIndex].text;
-            loadConsumerFinanceLanding();
-            //ConsumerFinanceEntriesTable =  buildConsumerFinanceEntriesTable(filterValues); 
+            filterValues.accountName = event.target.value;
+            loadConsumerFinanceLanding(filterValues.accountName); 
         });
 
 
@@ -161,9 +162,8 @@ const ConsumerFinances = (() => {
             text: '+ New Entry',
             style: 'secondary',
             type: 'contained',
-            //attributes: [{ key: 'consumerId', value: consumer.id }, { key: 'btnType', value: 'newEntry' }],
             classNames: 'newEntryBtn',
-            callback: async () => { NewEntryCF.init() }, 
+            callback: async () => { NewEntryCF.init() },
         });
         entryBtn.style.height = '50px';
         entryBtn.style.minWidth = '100%';
@@ -182,8 +182,6 @@ const ConsumerFinances = (() => {
         buttonBar.appendChild(dropdownButtonBar);
         buttonBar.appendChild(entryButtonBar);
         buttonBar.appendChild(filterButtonBar);
-        populateAccountDropdown();
-
         return buttonBar;
     }
 
@@ -196,7 +194,8 @@ const ConsumerFinances = (() => {
             accountName: '%',
             payee: '%',
             category: '%',
-            amount: '',
+            minamount: '-10000',
+            maxamount: '10000',
             checkNo: '',
             Balance: '',
             enteredBy: '%'
@@ -206,8 +205,7 @@ const ConsumerFinances = (() => {
             text: 'Filter',
             style: 'secondary',
             type: 'contained',
-            //Todo : 
-            /*callback: () => buildFilterPopUp(filterValues)*/
+            callback: () => buildFilterPopUp(filterValues)
         });
     }
 
@@ -218,17 +216,13 @@ const ConsumerFinances = (() => {
         } = await ConsumerFinancesAjax.getActiveAccountAsync();
         let data = accounts.map((account) => ({
             id: account.accountId,
-            value: account.accountId,
+            value: account.accountName, 
             text: account.accountName
         }));
-        data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value    
-        data.unshift({ id: null, value: '%', text: 'ALL' });
+        data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
         dropdown.populate("accountDropdown", data, filterValues.accountName);
     }
 
-
-
-    //TODO:
     // build the display of the current Filter Settings (next to the Filter button) 
     function buildFilteredBy() {
         var filteredBy = document.querySelector('.widgetFilteredBy');
@@ -248,17 +242,19 @@ const ConsumerFinances = (() => {
         const startDate = moment(filterValues.activityStartDate, 'YYYY-MM-DD').format('M/D/YYYY');
         const endDate = moment(filterValues.activityEndDate, 'YYYY-MM-DD').format('M/D/YYYY');
 
-        filteredBy.innerHTML = `
-		  <div class="filteredByData">
+        filteredBy.innerHTML = `<div class="filteredByData">
 			<p>
-                <span>Date:</span> ${startDate}&nbsp;&nbsp;
-			    <span>End date:</span> ${endDate}&nbsp;&nbsp;
+                <span>From Date:</span> ${startDate}&nbsp;&nbsp;
+			    <span>To date:</span> ${endDate}&nbsp;&nbsp;
+                <span>Min Amount:</span>$ ${filterValues.minamount}&nbsp;&nbsp;
+                <span>Max Amount:</span>$ ${filterValues.maxamount}&nbsp;&nbsp;
                 <span>Account:</span> ${(filterValues.accountName == '%') ? 'ALL' : filterValues.accountName}&nbsp;&nbsp;
 			    <span>Payee:</span> ${(filterValues.payee == '%') ? 'ALL' : filterValues.payee}&nbsp;&nbsp;
-			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category}
+			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category} &nbsp;&nbsp;
+                <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.enteredBy} &nbsp;&nbsp;
+                <span>Has Attachment:</span> Yes 
             </p>
-		  </div>
-		`;
+		  </div>`;
 
         return filteredBy;
     }
@@ -271,10 +267,68 @@ const ConsumerFinances = (() => {
             classNames: ['rosterFilterPopup'],
             hideX: true,
         });
+
+        fromDateInput = input.build({
+            id: 'fromDateInput',
+            type: 'date',
+            label: 'From Date',
+            style: 'secondary',
+            value: (filterValues.activityStartDate) ? filterValues.activityStartDate : '',
+        });
+
+        toDateInput = input.build({
+            id: 'toDateInput',
+            type: 'date',
+            label: 'To Date',
+            style: 'secondary',
+            value: (filterValues.activityEndDate) ? filterValues.activityEndDate : '',
+        });
+
+        minAmountInput = input.build({
+            id: 'minAmountInput',
+            type: 'number',
+            label: 'Min Amount',
+            style: 'secondary',
+            value: (filterValues.minamount) ? filterValues.minamount : '',
+        });
+
+        maxAmountInput = input.build({
+            id: 'maxAmountInput',
+            type: 'number',
+            label: 'Max Amount',
+            style: 'secondary',
+            value: (filterValues.maxamount) ? filterValues.maxamount : '',
+        });
+
         // dropdowns & inputs
-        accountDropdown = dropdown.build({
+        accountFilterDropdown = dropdown.build({
             label: "Account",
-            dropdownId: "accountDropdown",
+            dropdownId: "accountFilterDropdown",
+        });
+
+        payeeDropdown = dropdown.build({
+            id: 'payeeDropdown',
+            label: "Payee",
+            dropdownId: "payeeDropdown",
+        });
+
+        categoryDropdown = dropdown.build({
+            id: 'categoryDropdown',
+            label: "Category",
+            dropdownId: "categoryDropdown",
+        });
+
+        lastUpdateDropdown = dropdown.build({
+            id: 'lastUpdateDropdown',
+            label: "Last Update By",
+            dropdownId: "lastUpdateDropdown",
+        });
+
+        isAttachedChkBox = input.buildCheckbox({
+            isChecked: false,
+            text: "Has Attachment ?",
+            //isChecked: checked === 'Y' ? true : false,
+            // callback: () => setCheckForInactiveUser(event.target)
         });
 
         // apply filters button
@@ -290,29 +344,129 @@ const ConsumerFinances = (() => {
             type: 'outlined',
             callback: () => filterPopupCancelBtn()
         });
+        fromDateInput.style.width = '170px';
+        toDateInput.style.width = '170px';
+        minAmountInput.style.width = '170px';
+        maxAmountInput.style.width = '170px';
+        toDateInput.style.marginLeft = '12px';
+        maxAmountInput.style.marginLeft = '12px';
+
+
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
         btnWrap.appendChild(APPLY_BTN);
         btnWrap.appendChild(CANCEL_BTN);
 
-        // build popup
+        var dateWrap = document.createElement('div');
+        dateWrap.classList.add('dropdownWrap');
+        dateWrap.appendChild(fromDateInput);
+        dateWrap.appendChild(toDateInput);
 
-        filterPopup.appendChild(accountDropdown);
+        var amountWrap = document.createElement('div');
+        amountWrap.classList.add('dropdownWrap');
+        amountWrap.appendChild(minAmountInput);
+        amountWrap.appendChild(maxAmountInput);
+
+        // build popup
+        filterPopup.appendChild(dateWrap);
+        filterPopup.appendChild(amountWrap);
+        filterPopup.appendChild(accountFilterDropdown);
+
+        filterPopup.appendChild(payeeDropdown);
+        filterPopup.appendChild(categoryDropdown);
+        filterPopup.appendChild(lastUpdateDropdown);
+        filterPopup.appendChild(isAttachedChkBox);
 
         filterPopup.appendChild(btnWrap);
-
         eventListeners();
-
+        populateFilterDropdown();
         POPUP.show(filterPopup);
     }
 
     // ToDO:
     // binding filter events 
-    function eventListeners() {
-        accountDropdown.addEventListener('change', event => {
-            filterValues.serviceId = event.target.value;
-            filterValues.serviceName = event.target.options[event.target.selectedIndex].text;
+    function eventListeners() {      
+        fromDateInput.addEventListener('change', event => {
+            if (UTIL.validateDateFromInput(event.target.value)) {
+                filterValues.activityStartDate = event.target.value;
+            } else {
+                event.target.value = filterValues.activityStartDate;
+            }
         });
+        toDateInput.addEventListener('change', event => {
+            if (UTIL.validateDateFromInput(event.target.value)) {
+                filterValues.activityEndDate = event.target.value;
+            } else {
+                event.target.value = filterValues.activityEndDate;
+            }
+        });
+
+        minAmountInput.addEventListener('keyup', event => {
+            filterValues.minamount = event.target.value;
+        });
+
+        maxAmountInput.addEventListener('keyup', event => {
+            filterValues.maxamount = event.target.value;
+        });
+
+        accountFilterDropdown.addEventListener('change', event => {
+            filterValues.accountName = event.target.value;
+        });
+        lastUpdateDropdown.addEventListener('change', event => {
+            filterValues.enteredBy = event.target.value;
+        });
+        payeeDropdown.addEventListener('change', event => {
+            filterValues.payee = event.target.value;
+        });
+        categoryDropdown.addEventListener('change', event => {
+            filterValues.category = event.target.value;
+        });
+    }
+
+    async function populateFilterDropdown() {
+        const {
+            getActiveAccountResult: accounts,
+        } = await ConsumerFinancesAjax.getActiveAccountAsync();
+        let accountData = accounts.map((account) => ({
+            id: account.accountId,
+            value: account.accountName,
+            text: account.accountName
+        }));
+        accountData.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
+        dropdown.populate("accountFilterDropdown", accountData, filterValues.accountName);
+
+        const {
+            getPayeesResult: Payees,
+        } = await ConsumerFinancesAjax.getPayeesAsync();
+        let payeeData = Payees.map((payees) => ({
+            id: payees.CategoryID,
+            value: payees.Description,
+            text: payees.Description 
+        }));
+        payeeData.unshift({ id: null, value: '%', text: 'ALL' });
+        dropdown.populate("payeeDropdown", payeeData, filterValues.payee);
+        let categoryID;
+        const {
+            getCatogoriesResult: Category,
+        } = await ConsumerFinancesAjax.getCategoriesAsync(categoryID);
+        let categoryData = Category.map((category) => ({
+            id: category.CategoryID,
+            value: category.CategoryDescription,
+            text: category.CategoryDescription
+        }));
+        categoryData.unshift({ id: null, value: '%', text: 'ALL' });
+        dropdown.populate("categoryDropdown", categoryData, filterValues.category);
+
+        const {
+            getActiveEmployeesResult: employees,
+        } = await ConsumerFinancesAjax.getActiveEmployeesAsync();
+        let data = employees.map((employee) => ({
+            id: employee.userId,
+            value: employee.userId,
+            text: employee.userName
+        }));
+        data.unshift({ id: null, value: '%', text: 'ALL' });
+        dropdown.populate("lastUpdateDropdown", data, filterValues.userId);
     }
 
     async function filterPopupDoneBtn() {

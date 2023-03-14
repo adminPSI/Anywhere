@@ -1,6 +1,6 @@
 var ConsumerFinancesAjax = (function () {
     // OOD Main/Landing Page
-    async function getAccountTransectionEntriesAsync(consumerIds, activityStartDate, activityEndDate, accountName, payee, category, amount, checkNo, balance, enteredBy) {
+    async function getAccountTransectionEntriesAsync(consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -28,8 +28,10 @@ var ConsumerFinancesAjax = (function () {
                     payee +
                     '", "category":"' +
                     category +
-                    '", "amount":"' +
-                    amount +
+                    '", "minamount":"' +
+                    minamount +
+                    '", "maxamount":"' +
+                    maxamount +
                     '", "checkNo":"' +
                     checkNo +
                     '", "balance":"' +
@@ -191,17 +193,9 @@ var ConsumerFinancesAjax = (function () {
     }
 
     async function insertAccountAsync(
-        date, amount, amountType, AccountID, payee, CategoryID, subCategory, checkNo, description, attachmentType, attachment, receipt, BtnName, regId
+        date, amount, amountType, AccountID, payee, CategoryID, subCategory, checkNo, description, attachment, receipt, BtnName, regId
     ) {
-        try {
-            debugger; 
-            var binary = '';
-            var bytes = new Uint8Array(attachment);
-            var len = bytes.byteLength;
-            for (var i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            let abString = window.btoa(binary);
+        try { 
             const result = await $.ajax({
                 type: 'POST',
                 url:
@@ -224,8 +218,7 @@ var ConsumerFinancesAjax = (function () {
                     subCategory: subCategory,
                     checkNo: checkNo,
                     description: description,
-                    attachmentType: attachmentType,
-                    attachment: abString,
+                    attachment: attachment,
                     receipt: receipt,  
                     userId: $.session.UserId,
                     eventType: BtnName,
@@ -268,6 +261,140 @@ var ConsumerFinancesAjax = (function () {
         }
     }
 
+    async function deleteConsumerFinanceAccountAsync(registerId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/deleteConsumerFinanceAccount/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "registerId":"' +
+                    registerId +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getActiveEmployeesAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getActiveEmployees/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function addCFAttachment(retrieveData) {
+        try {
+            var binary = '';
+            var bytes = new Uint8Array(retrieveData.attachment);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            let abString = window.btoa(binary);
+            retrieveData.attachment = abString;
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/addCFAttachment/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.addCFAttachmentResult;
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
+
+    function deleteCFAttachment(planId, attachmentId) {
+        data = {
+            token: $.session.Token,
+            planId: planId, //long
+            attachmentId: attachmentId, //long
+        };
+        $.ajax({
+            type: 'POST',
+            url:
+                $.webServer.protocol +
+                '://' +
+                $.webServer.address +
+                ':' +
+                $.webServer.port +
+                '/' +
+                $.webServer.serviceName +
+                '/deletePlanAttachment/',
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                var res = response.deletePlanAttachmentResult;
+            },
+            error: function (xhr, status, error) { },
+        });
+    }
+
+    async function getCFAttachmentsList(retrieveData) {
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getCFAttachmentsList/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return data.getCFAttachmentsListResult; 
+        } catch (error) {
+            console.log(error.responseText);
+        }
+    }
 
     return {
         getAccountTransectionEntriesAsync,
@@ -278,6 +405,10 @@ var ConsumerFinancesAjax = (function () {
         insertPayeeAsync,
         insertAccountAsync,
         getAccountEntriesByIDAsync,
-
+        deleteConsumerFinanceAccountAsync,
+        getActiveEmployeesAsync,
+        addCFAttachment,
+        deleteCFAttachment,
+        getCFAttachmentsList,
     };
 })();
