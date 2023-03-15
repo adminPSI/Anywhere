@@ -4128,7 +4128,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getAccountTransectionEntries/")]
-       ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category,string minamount, string maxamount, string checkNo, string balance, string enteredBy ,string isattachment);
+       ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string amount, string checkNo, string balance, string enteredBy);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4177,7 +4177,7 @@ namespace Anywhere
                  ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/insertAccount/")]
-        ConsumerFinancesWorker.AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category,string subCategory, string checkNo, string description, string[] attachment, string receipt, string userId,string eventType,string regId);
+        ConsumerFinancesWorker.AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category,string subCategory, string checkNo, string description, string attachmentType, string attachment, string receipt, string userId,string eventType,string regId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4186,31 +4186,6 @@ namespace Anywhere
                 RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getAccountEntriesById/")]
         ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId);
-
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-                BodyStyle = WebMessageBodyStyle.Wrapped,
-                ResponseFormat = WebMessageFormat.Json,
-                RequestFormat = WebMessageFormat.Json,
-                UriTemplate = "/deleteConsumerFinanceAccount/")]
-        string deleteConsumerFinanceAccount(string token, string registerId);
-
-
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-          BodyStyle = WebMessageBodyStyle.Wrapped,
-          ResponseFormat = WebMessageFormat.Json,
-          RequestFormat = WebMessageFormat.Json,
-          UriTemplate = "/addCFAttachment/")]
-        string addCFAttachment(string token, string attachmentType, string attachment);
-
-        [OperationContract]
-        [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/getCFAttachmentsList/")]
-        ConsumerFinancesWorker.CFAttachmentsList[] getCFAttachmentsList(string token, string regId);
     }
 
 

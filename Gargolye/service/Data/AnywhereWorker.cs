@@ -385,6 +385,7 @@ namespace Anywhere.service.Data
             public string emarPermission { get; set; }
             public string formsPermission { get; set; }
             public string OODPermission { get; set; }
+            public string resetPassword { get; set; }
             public string workshopPermission { get; set; }
             public string anywhereSchedulingPermission { get; set; }
             public string anywherePlanPermission { get; set; }

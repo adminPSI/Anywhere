@@ -11,11 +11,6 @@ using static Anywhere.service.Data.OODWorker;
 using OneSpanSign.Sdk;
 using static System.Windows.Forms.AxHost;
 using System.Reflection.Emit;
-using pdftron.PDF;
-using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
-using System.Security.Principal;
-using static Anywhere.service.Data.ResetPassword.ResetPasswordWorker;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {
@@ -39,6 +34,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string payee { get; set; }
             [DataMember(Order = 4)]
             public string category { get; set; }
+
             [DataMember(Order = 5)]
             public string amount { get; set; }
             [DataMember(Order = 6)]
@@ -53,14 +49,16 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string subCategory { get; set; }
             [DataMember(Order = 11)]
             public string accountType { get; set; }
+
             [DataMember(Order = 12)]
             public string description { get; set; }
             [DataMember(Order = 13)]
             public string receipt { get; set; }
-            [DataMember(Order = 14)]
+
+            [DataMember(Order = 13)]
             public string accountID { get; set; }
 
-        }
+    }
 
         [DataContract]
         public class ActiveAccount
@@ -119,33 +117,25 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string state { get; set; }
             [DataMember(Order = 6)]
             public string zipcode { get; set; }
+
+
         }
 
         [DataContract]
         public class AccountRegister
         {
             [DataMember(Order = 0)]
-            public string registerId { get; set; }
+            public string accountID { get; set; }
 
         }
 
-        public class CFAttachmentsList
-        {
-            [DataMember(Order = 0)]
-            public string attachmentID { get; set; } 
-            [DataMember(Order = 1)]
-            public string description { get; set; }
-
-        }
-
-
-        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment)
+        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string amount, string checkNo, string balance, string enteredBy)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    ConsumerFinancesEntry[] entries = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy,  isattachment, transaction));
+                    ConsumerFinancesEntry[] entries = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, amount, checkNo, balance, enteredBy, transaction));
 
                     return entries;
 
@@ -267,41 +257,14 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public string addCFAttachment(string token, string attachmentType, string attachment)
+
+        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string attachmentType, string attachment, string receipt, string userId, string eventType, string regId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    AccountRegister acountRegister = new AccountRegister();
-                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-
-                    if (attachmentType == null) throw new Exception("attachmentType is required");
-                    if (attachment == null) throw new Exception("attachment is required");
-
-                    String attachmentId = "0";
-                    if (attachmentType != null && attachment != null)
-                    {
-                        attachmentId = wfdg.insertAttachment(attachmentType, attachment, transaction);
-                    }
-                    return attachmentId;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
-                }
-            }
-        }
-
-
-        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachment, string receipt, string userId, string eventType, string regId)
-        {
-            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
-            {
-                try
-                {
-                    AccountRegister acountRegister = new AccountRegister();
+                    AccountRegister acount = new AccountRegister();
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
 
                     if (date == null) throw new Exception("date is required");
@@ -310,25 +273,26 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (category == null) throw new Exception("category is required");
                     if (userId == null) throw new Exception("userId is required");
 
-
-                    String RegisterID;
+                    String attachmentId = "0";
+                    if (attachmentType != null && attachment != null)
+                    {
+                        attachmentId = wfdg.insertAttachment(attachmentType, attachment, transaction);
+                    }
+                    String AccountID;
 
                     if (eventType == "UPDATE")
                     {
-                        RegisterID = Odg.updateAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, regId);
+                        AccountID = Odg.updateAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, receipt, userId, transaction, regId);
                     }
                     else
                     {
-                        RegisterID = Odg.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction);
+                        AccountID = Odg.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, receipt, userId, transaction);
                     }
 
-                    foreach (string AttachId in attachment)
-                    {
-                        Odg.insertAccountRegisterAttachments(token, RegisterID, AttachId, description, userId, transaction);
-                    }
+                    acount.accountID = AccountID;
 
-                    acountRegister.registerId = RegisterID;
-                    return acountRegister;
+                    return acount;
+
                 }
                 catch (Exception ex)
                 {
@@ -355,43 +319,9 @@ namespace Anywhere.service.Data.ConsumerFinances
                     throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
                 }
             }
+
         }
 
-        public string deleteConsumerFinanceAccount(string token, string registerId)
-        {
-            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
-            {
-                try
-                {
-                    return Odg.deleteConsumerFinanceAccount(token, registerId, transaction);
-
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
-                }
-            }
-        }
-
-        public CFAttachmentsList[] getCFAttachmentsList(string token, string regId)
-        {
-            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
-            {
-                try
-                {
-                    js.MaxJsonLength = Int32.MaxValue;
-                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    CFAttachmentsList[] attachmentsList = js.Deserialize<CFAttachmentsList[]>(Odg.getCFAttachmentsList(transaction, regId));
-                    return attachmentsList;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
-                }
-            }
-        }
 
     }
 }
