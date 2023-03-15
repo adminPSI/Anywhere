@@ -1,4 +1,4 @@
-var timeApproval = (function() {
+var timeApproval = (function () {
   //-DATA------------------
   var locationData;
   var payPeriodData;
@@ -35,9 +35,9 @@ var timeApproval = (function() {
   var applyBtn;
   // action nav items
   var cancelBtn;
-  var approveNavBtn
-  var rejectNavBtn
-  var submitNavBtn
+  var approveNavBtn;
+  var rejectNavBtn;
+  var submitNavBtn;
   //-WorkCode---------------
   var workCodeData;
   var workCodeDropdown;
@@ -51,25 +51,25 @@ var timeApproval = (function() {
     { key: 'P', value: 'Pending' },
     { key: 'I', value: 'Imported' },
     { key: 'S', value: 'Submitted' },
-    { key: 'R', value: 'Rejected' }
+    { key: 'R', value: 'Rejected' },
   ];
   var statusLookup = {
-    'A': 'Awaiting Approval',
-    'P': 'Pending',
-    'R': 'Rejected',
-    'I': 'Imported',
-    'S': 'Submitted',
-    'D': 'Duplicate'
-    };
-    var workCodeLookup = {
-        'A': 'Awake Service',
-        'L': '1:1 Lucas County',
-        'N': 'Non Billable',
-        'O': 'On Behalf Of - Admin',
-        'S': 'Sleep',
-        'T': 'Transportation',
-        'V': 'Vacation'
-    };
+    A: 'Awaiting Approval',
+    P: 'Pending',
+    R: 'Rejected',
+    I: 'Imported',
+    S: 'Submitted',
+    D: 'Duplicate',
+  };
+  var workCodeLookup = {
+    A: 'Awake Service',
+    L: '1:1 Lucas County',
+    N: 'Non Billable',
+    O: 'On Behalf Of - Admin',
+    S: 'Sleep',
+    T: 'Transportation',
+    V: 'Vacation',
+  };
   var enableMultiEdit = false;
   var enableSelectAll = false;
   var selectedRows = []; // array of row ids
@@ -82,7 +82,7 @@ var timeApproval = (function() {
 
   function clearAllGlobalVariables() {
     selectedRows = [];
-    
+
     locationData = undefined;
     payPeriodData = undefined;
     payPeriod = undefined;
@@ -92,7 +92,7 @@ var timeApproval = (function() {
     employees = undefined;
     locations = undefined;
     supervisors = undefined;
-    
+
     supervisorId = undefined;
     locationId = undefined;
     employeeId = undefined;
@@ -104,8 +104,8 @@ var timeApproval = (function() {
     tmpWorkCodeId = undefined;
     tmpWorkCodeName = undefined;
 
-    enableSelectAll = false
-    enableMultiEdit = false
+    enableSelectAll = false;
+    enableMultiEdit = false;
   }
   function sortSelectedRowsForUpdate() {
     sortedSelectedRows = {};
@@ -125,17 +125,20 @@ var timeApproval = (function() {
   function updateSelectAllStatus(type) {
     let updatePromiseArray = [];
     const selectedRowKeys = Object.keys(sortedSelectedRows);
-    let statusUpdateData = {}
+    let statusUpdateData = {};
     switch (type) {
       case 'approve':
         selectedRowKeys.forEach(key => {
           if (key === 'A') {
             statusUpdateData = {
               token: $.session.Token,
-              singleEntryIdString: sortedSelectedRows[key].length > 1 ? sortedSelectedRows[key].join(',') : sortedSelectedRows[key][0],
+              singleEntryIdString:
+                sortedSelectedRows[key].length > 1
+                  ? sortedSelectedRows[key].join(',')
+                  : sortedSelectedRows[key][0],
               newStatus: 'S',
               userID: $.session.UserId,
-              rejectionReason: ''
+              rejectionReason: '',
             };
           }
         });
@@ -145,10 +148,13 @@ var timeApproval = (function() {
           if (key === 'A') {
             statusUpdateData = {
               token: $.session.Token,
-              singleEntryIdString: sortedSelectedRows[key].length > 1 ? sortedSelectedRows[key].join(',') : sortedSelectedRows[key][0],
+              singleEntryIdString:
+                sortedSelectedRows[key].length > 1
+                  ? sortedSelectedRows[key].join(',')
+                  : sortedSelectedRows[key][0],
               newStatus: 'R',
               userID: $.session.UserId,
-              rejectionReason: rejectionReasonText
+              rejectionReason: rejectionReasonText,
             };
           }
         });
@@ -158,10 +164,13 @@ var timeApproval = (function() {
           if (key === 'P') {
             statusUpdateData = {
               token: $.session.Token,
-              singleEntryIdString: sortedSelectedRows[key].length > 1 ? sortedSelectedRows[key].join(',') : sortedSelectedRows[key][0],
+              singleEntryIdString:
+                sortedSelectedRows[key].length > 1
+                  ? sortedSelectedRows[key].join(',')
+                  : sortedSelectedRows[key][0],
               newStatus: 'A',
               userID: $.session.UserId,
-              rejectionReason: ''
+              rejectionReason: '',
             };
           }
         });
@@ -171,7 +180,7 @@ var timeApproval = (function() {
     }
 
     var updatePromise = new Promise((fulfill, reject) => {
-      singleEntryAjax.adminUpdateSingleEntryStatus(statusUpdateData, function(results) {
+      singleEntryAjax.adminUpdateSingleEntryStatus(statusUpdateData, function (results) {
         fulfill();
       });
     });
@@ -179,9 +188,9 @@ var timeApproval = (function() {
     updatePromise.then(() => {
       successfulSave.show();
       selectedRows = [];
-      setTimeout(function() {
+      setTimeout(function () {
         successfulSave.hide();
-        getReviewTableData(populateTable);       
+        getReviewTableData(populateTable);
       }, 1000);
     });
   }
@@ -193,22 +202,25 @@ var timeApproval = (function() {
     selectedRowKeys.forEach(key => {
       var statusUpdateData = {
         token: $.session.Token,
-        singleEntryIdString: sortedSelectedRows[key].length > 1 ? sortedSelectedRows[key].join(',') : sortedSelectedRows[key][0],
+        singleEntryIdString:
+          sortedSelectedRows[key].length > 1
+            ? sortedSelectedRows[key].join(',')
+            : sortedSelectedRows[key][0],
         newStatus: '',
         userID: $.session.UserId,
-        rejectionReason: ''
+        rejectionReason: '',
       };
 
       statusUpdateData.newStatus = key === 'P' ? 'A' : '';
       if (statusUpdateData.newStatus === '' && rejectOrApprove) {
-          statusUpdateData.newStatus = rejectOrApprove === 'approve' ? 'S' : 'R';
-          statusUpdateData.rejectionReason = rejectOrApprove === 'approve' ? '' : rejectionReasonText;
-      } 
+        statusUpdateData.newStatus = rejectOrApprove === 'approve' ? 'S' : 'R';
+        statusUpdateData.rejectionReason = rejectOrApprove === 'approve' ? '' : rejectionReasonText;
+      }
 
       console.table(statusUpdateData);
 
       var updatePromise = new Promise((fulfill, reject) => {
-        singleEntryAjax.adminUpdateSingleEntryStatus(statusUpdateData, function(results) {
+        singleEntryAjax.adminUpdateSingleEntryStatus(statusUpdateData, function (results) {
           fulfill();
         });
       });
@@ -219,9 +231,9 @@ var timeApproval = (function() {
     Promise.all(updatePromiseArray).then(() => {
       successfulSave.show();
       selectedRows = [];
-      setTimeout(function() {
+      setTimeout(function () {
         successfulSave.hide();
-        getReviewTableData(populateTable);       
+        getReviewTableData(populateTable);
       }, 1000);
     });
   }
@@ -244,7 +256,9 @@ var timeApproval = (function() {
       var pMessageWrap = document.createElement('div');
       pMessageWrap.classList.add('timeApprovalWarningPopup__messageWrap');
       var pMessage = document.createElement('p');
-      pMessage.innerHTML = `You have selected ${pCount} ${pCount === 1 ? `entry` : 'entries'} with a status of Pending, to be submitted.`;
+      pMessage.innerHTML = `You have selected ${pCount} ${
+        pCount === 1 ? `entry` : 'entries'
+      } with a status of Pending, to be submitted.`;
       pMessageWrap.appendChild(pMessage);
 
       pMessageContainer.appendChild(pMessageWrap);
@@ -255,22 +269,26 @@ var timeApproval = (function() {
     if (aCount > 0) {
       var aMessageContainer = document.createElement('div');
       aMessageContainer.classList.add('timeApprovalWarningPopup__messageContainer');
-      
+
       var aMessageWrap = document.createElement('div');
       aMessageWrap.classList.add('timeApprovalWarningPopup__messageWrap');
       var aMessage = document.createElement('p');
-      aMessage.innerHTML = `You have selected ${aCount} ${aCount === 1 ? `entry` : 'entries'} with a status of Awaiting Approval.`;
+      aMessage.innerHTML = `You have selected ${aCount} ${
+        aCount === 1 ? `entry` : 'entries'
+      } with a status of Awaiting Approval.`;
       aMessageWrap.appendChild(aMessage);
 
       var aMessage2Wrap = document.createElement('div');
       aMessage2Wrap.classList.add('timeApprovalWarningPopup__messageWrap', 'messageWithBtns');
       var aMessage2 = document.createElement('p');
 
-      aMessage2.innerHTML = `Would you like to Approve or Reject ${aCount === 1 ? `this entry` : 'these entries'}?`;
+      aMessage2.innerHTML = `Would you like to Approve or Reject ${
+        aCount === 1 ? `this entry` : 'these entries'
+      }?`;
       var aMessageBtnWrap = document.createElement('div');
       aMessageBtnWrap.classList.add('btnWrap');
-      var approveBtn = button.build({text: 'Approve'});
-      var rejectBtn = button.build({text: 'Reject'});
+      var approveBtn = button.build({ text: 'Approve' });
+      var rejectBtn = button.build({ text: 'Reject' });
 
       approveBtn.addEventListener('click', () => {
         approveBtn.classList.add('enabled');
@@ -307,21 +325,21 @@ var timeApproval = (function() {
     btnWrap.classList.add('btnWrap');
 
     var yesBtn = button.build({
-      text: 'Proceed', 
-      type: 'contained', 
+      text: 'Proceed',
+      type: 'contained',
       style: 'secondary',
       callback: function () {
         updateEntryStatus();
         POPUP.hide(warningPop);
-      }
+      },
     });
     var noBtn = button.build({
-      text: 'Cancel', 
-      type: 'contained', 
+      text: 'Cancel',
+      type: 'contained',
       style: 'secondary',
-      callback: function() {
+      callback: function () {
         POPUP.hide(warningPop);
-      }
+      },
     });
 
     btnWrap.appendChild(yesBtn);
@@ -334,20 +352,23 @@ var timeApproval = (function() {
   }
 
   // Data Getters
-	//------------------------------------
+  //------------------------------------
   function getDropdownData(callback) {
-    singleEntryAjax.getSingleEntrySupervisors($.session.PeopleId, function(results) {
+    singleEntryAjax.getSingleEntrySupervisors($.session.PeopleId, function (results) {
       supervisors = results;
 
-      singleEntryAjax.getSubEmployeeListAndCountInfo(parseInt($.session.PeopleId), function(results) {
-        employees = results;
-        
-        singleEntryAjax.getAdminSingleEntryLocations(function(results) {
-          locations = results;
+      singleEntryAjax.getSubEmployeeListAndCountInfo(
+        parseInt($.session.PeopleId),
+        function (results) {
+          employees = results;
 
-          callback();
-        });
-      });
+          singleEntryAjax.getAdminSingleEntryLocations(function (results) {
+            locations = results;
+
+            callback();
+          });
+        },
+      );
     });
   }
   function getReviewTableData(callback) {
@@ -359,20 +380,20 @@ var timeApproval = (function() {
       locationId: locationId ? locationId : '',
       employeeId: employeeId ? employeeId : '',
       status: status || status !== '%' ? status : '',
-      workCodeId: workCodeId ? workCodeId : ''
-    }
-    singleEntryAjax.singleEntryFilterAdminList(filterData, function(results) {
+      workCodeId: workCodeId ? workCodeId : '',
+    };
+    singleEntryAjax.singleEntryFilterAdminList(filterData, function (results) {
       reviewTableData = results;
       callback(results);
 
       //clear google map. Don't show it unless they click the show map button.
-      
+
       // if (showMap) {
       //   addMap()
       // } else GOOGLE_MAP.clearMap()
 
-      GOOGLE_MAP.clearMap()
-      showMap = false
+      GOOGLE_MAP.clearMap();
+      showMap = false;
     });
   }
 
@@ -391,90 +412,89 @@ var timeApproval = (function() {
     highlightedRows.forEach(row => row.classList.remove('selected'));
 
     if (selectedRows.length > 0) {
-        if (type === 'reject') {
-            //open rejection reason popup
-            var popup = POPUP.build({
-                header: 'Reject Multiple Time Records'
-            });
+      if (type === 'reject') {
+        //open rejection reason popup
+        var popup = POPUP.build({
+          header: 'Reject Multiple Time Records',
+        });
 
-            var dataMessage = document.createElement('p');
-            dataMessage.style.marginBottom = "2em";
-            dataMessage.innerHTML = "";
+        var dataMessage = document.createElement('p');
+        dataMessage.style.marginBottom = '2em';
+        dataMessage.innerHTML = '';
 
-            // Text Input
-            var rejectionReason = input.build({
-                label: 'Reason:',
-                type: 'textarea',
-                style: 'secondary',
-                classNames: 'autosize',
-                charLimit: '500',
-                forceCharLimit: true,
-            });
-            var reasonInput = document.createElement('div');
-            reasonInput.appendChild(rejectionReason);
-            rejectionReason.addEventListener("change", event => {
-                rejectionReasonText = event.target.value;
-            });
+        // Text Input
+        var rejectionReason = input.build({
+          label: 'Reason:',
+          type: 'textarea',
+          style: 'secondary',
+          classNames: 'autosize',
+          charLimit: '500',
+          forceCharLimit: true,
+        });
+        var reasonInput = document.createElement('div');
+        reasonInput.appendChild(rejectionReason);
+        rejectionReason.addEventListener('change', event => {
+          rejectionReasonText = event.target.value;
+        });
 
-            var btnWrap = document.createElement('div');
-            btnWrap.classList.add('btnWrap');
+        var btnWrap = document.createElement('div');
+        btnWrap.classList.add('btnWrap');
 
-            //save button
-            var notifyBtn = button.build({
-                text: 'Save',
-                style: 'secondary',
-                type: 'contained',
-                callback: function () {
-                    sortSelectedRowsForUpdate();
-                    setApproveOrReject('reject');
-                    updateSelectAllStatus(type);
-
-                    rejectionReasonText = "";
-                    POPUP.hide(popup);
-                },
-            });
-
-            //cancel button
-            var cancelBtn = button.build({
-                text: 'Cancel',
-                style: 'secondary',
-                type: 'contained',
-                callback: function () {
-                    POPUP.hide(popup);
-                },
-            });
-
-            //display data
-            popup.appendChild(dataMessage);
-            popup.appendChild(reasonInput);
-
-            btnWrap.appendChild(notifyBtn);
-            btnWrap.appendChild(cancelBtn);
-            popup.appendChild(btnWrap);
-
-            //show popup
-            POPUP.show(popup);
-
-        } else { 
+        //save button
+        var notifyBtn = button.build({
+          text: 'Save',
+          style: 'secondary',
+          type: 'contained',
+          callback: function () {
             sortSelectedRowsForUpdate();
+            setApproveOrReject('reject');
             updateSelectAllStatus(type);
-        }
+
+            rejectionReasonText = '';
+            POPUP.hide(popup);
+          },
+        });
+
+        //cancel button
+        var cancelBtn = button.build({
+          text: 'Cancel',
+          style: 'secondary',
+          type: 'contained',
+          callback: function () {
+            POPUP.hide(popup);
+          },
+        });
+
+        //display data
+        popup.appendChild(dataMessage);
+        popup.appendChild(reasonInput);
+
+        btnWrap.appendChild(notifyBtn);
+        btnWrap.appendChild(cancelBtn);
+        popup.appendChild(btnWrap);
+
+        //show popup
+        POPUP.show(popup);
+      } else {
+        sortSelectedRowsForUpdate();
+        updateSelectAllStatus(type);
+      }
     }
   }
 
   function handleActionNavEvent(target) {
     var targetAction = target.dataset.actionNav;
-    switch(targetAction) {
+    switch (targetAction) {
       case 'timeApprovalApprove': {
-        actionNavEvent('approve')
+        actionNavEvent('approve');
         break;
       }
       case 'timeApprovalSubmit': {
-        actionNavEvent('submit')
+        actionNavEvent('submit');
         break;
       }
       case 'timeApprovalReject': {
-        actionNavEvent('reject')
+        actionNavEvent('reject');
         break;
       }
       default:
@@ -486,20 +506,20 @@ var timeApproval = (function() {
       text: 'Approve',
       style: 'secondary',
       type: 'contained',
-      attributes: [{ key: 'data-action-nav', value: 'timeApprovalApprove' }]
-    })
+      attributes: [{ key: 'data-action-nav', value: 'timeApprovalApprove' }],
+    });
     submitNavBtn = button.build({
       text: 'Submit',
       style: 'secondary',
       type: 'contained',
-      attributes: [{ key: 'data-action-nav', value: 'timeApprovalSubmit' }]
-    })
+      attributes: [{ key: 'data-action-nav', value: 'timeApprovalSubmit' }],
+    });
     rejectNavBtn = button.build({
       text: 'Reject',
       style: 'secondary',
       type: 'contained',
-      attributes: [{ key: 'data-action-nav', value: 'timeApprovalReject' }]
-    })
+      attributes: [{ key: 'data-action-nav', value: 'timeApprovalReject' }],
+    });
     ACTION_NAV.populate([approveNavBtn, submitNavBtn, rejectNavBtn]);
     ACTION_NAV.hide();
   }
@@ -512,13 +532,17 @@ var timeApproval = (function() {
     if (!filteredBy) {
       filteredBy = document.createElement('div');
       filteredBy.classList.add('widgetFilteredBy');
-      }
+    }
 
-      var splitStartDate = startDate.split('-');
-      var splitEndDate = endDate.split('-');
+    var splitStartDate = startDate.split('-');
+    var splitEndDate = endDate.split('-');
 
-      filteredBy.innerHTML = `<div class="filteredByData">
-        <p><span>Pay Period:</span> ${UTIL.leadingZero(splitStartDate[1])}/${UTIL.leadingZero(splitStartDate[2])}/${splitStartDate[0].slice(2, 4)} - ${UTIL.leadingZero(splitEndDate[1])}/${UTIL.leadingZero(splitEndDate[2])}/${splitEndDate[0].slice(2, 4)}</p>
+    filteredBy.innerHTML = `<div class="filteredByData">
+        <p><span>Pay Period:</span> ${UTIL.leadingZero(splitStartDate[1])}/${UTIL.leadingZero(
+      splitStartDate[2],
+    )}/${splitStartDate[0].slice(2, 4)} - ${UTIL.leadingZero(splitEndDate[1])}/${UTIL.leadingZero(
+      splitEndDate[2],
+    )}/${splitEndDate[0].slice(2, 4)}</p>
         <p><span>Supervisor:</span> ${supervisorName}</p>
         <p><span>Employee:</span> ${employeeName}</p>
         <p><span>Location:</span> ${locationName}</p>
@@ -544,14 +568,14 @@ var timeApproval = (function() {
     var select = dropdown.build({
       label: 'Supervisor',
       style: 'secondary',
-      readonly: false
+      readonly: false,
     });
 
     var data = supervisors.map(sup => {
       return {
         value: sup.Person_ID,
-        text: `${sup.last_name}, ${sup.first_name}`
-      }
+        text: `${sup.last_name}, ${sup.first_name}`,
+      };
     });
 
     data.sort((a, b) => {
@@ -559,7 +583,7 @@ var timeApproval = (function() {
       var bNameSplit = b.text.split(',');
       var aName = `${aNameSplit[0].trim()}${aNameSplit[1].trim()}`.toLowerCase();
       var bName = `${bNameSplit[0].trim()}${bNameSplit[1].trim()}`.toLowerCase();
-      
+
       return aName > bName ? 1 : -1;
     });
 
@@ -568,29 +592,29 @@ var timeApproval = (function() {
     return select;
   }
   function buildEmployeeDropdown() {
-    var select =  dropdown.build({
+    var select = dropdown.build({
       dropdownId: 'subEmployeeList',
       label: 'Employee',
       style: 'secondary',
-      readonly: false
+      readonly: false,
     });
     var data = employees.map(emp => {
       return {
         value: emp.Person_ID,
-        text: `${emp.last_name}, ${emp.first_name}`
-      }
+        text: `${emp.last_name}, ${emp.first_name}`,
+      };
     });
     data.sort((a, b) => {
       var aNameSplit = a.text.split(',');
       var bNameSplit = b.text.split(',');
       var aName = `${aNameSplit[0].trim()}${aNameSplit[1].trim()}`.toLowerCase();
       var bName = `${bNameSplit[0].trim()}${bNameSplit[1].trim()}`.toLowerCase();
-      
+
       return aName > bName ? 1 : -1;
     });
     data.unshift({
       value: '',
-      text: 'All'
+      text: 'All',
     });
 
     dropdown.populate(select, data, employeeId);
@@ -602,8 +626,8 @@ var timeApproval = (function() {
     var data = employees.map(emp => {
       return {
         value: emp.Person_ID,
-        text: `${emp.last_name}, ${emp.first_name}`
-      }
+        text: `${emp.last_name}, ${emp.first_name}`,
+      };
     });
 
     data.sort((a, b) => {
@@ -611,34 +635,34 @@ var timeApproval = (function() {
       var bNameSplit = b.text.split(',');
       var aName = `${aNameSplit[0].trim()}${aNameSplit[1].trim()}`.toLowerCase();
       var bName = `${bNameSplit[0].trim()}${bNameSplit[1].trim()}`.toLowerCase();
-      
+
       return aName > bName ? 1 : -1;
     });
 
     data.unshift({
       value: '',
-      text: 'All'
+      text: 'All',
     });
 
     dropdown.populate('subEmployeeList', data);
   }
   function buildLocationDropdown() {
-    var select =  dropdown.build({
+    var select = dropdown.build({
       label: 'Location',
       style: 'secondary',
-      readonly: false
+      readonly: false,
     });
 
     var data = locations.map(loc => {
       return {
         value: loc.locationID,
-        text: loc.shortDescription
-      }
+        text: loc.shortDescription,
+      };
     });
-    data.sort((a, b) => a.text > b.text ? 1 : -1);
+    data.sort((a, b) => (a.text > b.text ? 1 : -1));
     data.unshift({
       value: '%',
-      text: 'All'
+      text: 'All',
     });
 
     var defaultVal;
@@ -650,51 +674,51 @@ var timeApproval = (function() {
     return select;
   }
   function buildStatusDropdown() {
-    var select =  dropdown.build({
+    var select = dropdown.build({
       label: 'Status',
       style: 'secondary',
-      readonly: false
+      readonly: false,
     });
 
     var data = statuses.map(status => {
       return {
         value: status.key,
-        text: status.value
-      }
+        text: status.value,
+      };
     });
 
     data.unshift({
       value: '%',
-      text: 'All'
+      text: 'All',
     });
 
     dropdown.populate(select, data, status);
 
     return select;
-    }
-    function buildWorkCodeDropdown() {
-        var select = dropdown.build({
-            label: 'Work Codes',
-            style: 'secondary',
-            readonly: false
-        });
+  }
+  function buildWorkCodeDropdown() {
+    var select = dropdown.build({
+      label: 'Work Codes',
+      style: 'secondary',
+      readonly: false,
+    });
 
-        var data = workCodeData.map(wc => {
-            return {
-                value: wc.workcodeid,
-                text: wc.workcodename,
-            };
-        });
+    var data = workCodeData.map(wc => {
+      return {
+        value: wc.workcodeid,
+        text: wc.workcodename,
+      };
+    });
 
-        data.unshift({
-            value: '%',
-            text: 'All'
-        });
+    data.unshift({
+      value: '%',
+      text: 'All',
+    });
 
-        dropdown.populate(select, data, workCodeId);
+    dropdown.populate(select, data, workCodeId);
 
-        return select;
-    }
+    return select;
+  }
   function setupFilterEvents() {
     var tmpSupervisorId;
     var tmpSupervisorName;
@@ -705,31 +729,31 @@ var timeApproval = (function() {
     var tmpStatus;
     var tmpStatusText;
 
-    supervisorDropdown.addEventListener('change', (event) => {
+    supervisorDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
       tmpSupervisorId = selectedOption.value;
       tmpSupervisorName = selectedOption.innerHTML;
-      singleEntryAjax.getSubEmployeeListAndCountInfo(tmpSupervisorId, function(results) {
+      singleEntryAjax.getSubEmployeeListAndCountInfo(tmpSupervisorId, function (results) {
         employees = results;
         repopulateEmployeeDropdown();
       });
     });
-    employeeDropdown.addEventListener('change', (event) => {
+    employeeDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
       tmpEmployeeId = selectedOption.value;
       tmpEmployeeName = selectedOption.innerHTML;
     });
-    locationDropdown.addEventListener('change', (event) => {
+    locationDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
       tmpLocationId = selectedOption.value;
       tmpLocationName = selectedOption.innerHTML;
     });
-    statusDropdown.addEventListener('change', (event) => {
+    statusDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
       tmpStatus = selectedOption.value;
       tmpStatusText = selectedOption.innerHTML;
-      });
-    workCodeDropdown.addEventListener('change', (event) => {
+    });
+    workCodeDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
       tmpWorkCodeId = selectedOption.value;
       tmpWorkCodeName = selectedOption.innerHTML;
@@ -744,7 +768,7 @@ var timeApproval = (function() {
       if (tmpWorkCodeId) workCodeId = tmpWorkCodeId;
       if (tmpWorkCodeName) workCodeName = tmpWorkCodeName;
 
-      updateFilterData({  
+      updateFilterData({
         tmpSupervisorId,
         tmpSupervisorName,
         tmpLocationId,
@@ -754,16 +778,20 @@ var timeApproval = (function() {
         tmpStatus,
         tmpStatusText,
         tmpWorkCodeId,
-        tmpWorkCodeName
+        tmpWorkCodeName,
       });
 
       //reformat startDate
-        var splitStartDate = startDate.split('-');
-        var splitEndDate = endDate.split('-');
+      var splitStartDate = startDate.split('-');
+      var splitEndDate = endDate.split('-');
 
       var filteredBy = document.querySelector('.widgetFilteredBy');
-        filteredBy.innerHTML = `<div class="filteredByData">
-        <p><span>Pay Period:</span> ${UTIL.leadingZero(splitStartDate[1])}/${UTIL.leadingZero(splitStartDate[2])}/${splitStartDate[0].slice(2, 4)} - ${UTIL.leadingZero(splitEndDate[1])}/${UTIL.leadingZero(splitEndDate[2])}/${splitEndDate[0].slice(2, 4)}</p>
+      filteredBy.innerHTML = `<div class="filteredByData">
+        <p><span>Pay Period:</span> ${UTIL.leadingZero(splitStartDate[1])}/${UTIL.leadingZero(
+        splitStartDate[2],
+      )}/${splitStartDate[0].slice(2, 4)} - ${UTIL.leadingZero(splitEndDate[1])}/${UTIL.leadingZero(
+        splitEndDate[2],
+      )}/${splitEndDate[0].slice(2, 4)}</p>
         <p><span>Supervisor:</span> ${supervisorName}</p>
         <p><span>Employee:</span> ${employeeName}</p>
         <p><span>Location:</span> ${locationName}</p>
@@ -786,16 +814,15 @@ var timeApproval = (function() {
       endDate = payPeriod.end;
 
       getDropdownData(function () {
-          loadReviewPage();
+        loadReviewPage();
       });
-
     });
     cancelBtn.addEventListener('click', () => {
       POPUP.hide(filterPopup);
     });
   }
   function showFilterPopup() {
-    filterPopup = POPUP.build({hideX: true});
+    filterPopup = POPUP.build({ hideX: true });
 
     payPeriodsDropdown = buildPayPeriodDropdown();
     supervisorDropdown = buildSupervisorDropdown();
@@ -807,12 +834,12 @@ var timeApproval = (function() {
     applyBtn = button.build({
       text: 'Apply',
       style: 'secondary',
-      type: 'contained'
+      type: 'contained',
     });
     cancelBtn = button.build({
       text: 'Cancel',
       style: 'secondary',
-      type: 'outlined'
+      type: 'outlined',
     });
 
     var btnWrap = document.createElement('div');
@@ -837,25 +864,35 @@ var timeApproval = (function() {
   //------------------------------------
   function getDataForTimeEntryEdit(status, entryId) {
     $.session.editSingleEntryCardStatus = status;
-    singleEntryAjax.getSingleEntryById(entryId, (results) => {
-      singleEntryAjax.getSingleEntryConsumersPresent(entryId, (consumers) => {
+    singleEntryAjax.getSingleEntryById(entryId, results => {
+      singleEntryAjax.getSingleEntryConsumersPresent(entryId, consumers => {
         editTimeEntry.init({
           entry: results,
           consumers: consumers,
           isAdminEdit: true,
           payPeriod,
-          recordActivityElement: document.getElementById(`${entryId}-seRecordActivity`)
+          recordActivityElement: document.getElementById(`${entryId}-seRecordActivity`),
         });
       });
     });
   }
-    function showRowDetails(entryId, entryStatus, consumersPresent, isValid, rowName, rowDate, rowStartTime, rowEndTime, rowWorkCode) {
+  function showRowDetails(
+    entryId,
+    entryStatus,
+    consumersPresent,
+    isValid,
+    rowName,
+    rowDate,
+    rowStartTime,
+    rowEndTime,
+    rowWorkCode,
+  ) {
     selectedRows = [];
-    selectedRows.push({id: entryId, status: entryStatus});
+    selectedRows.push({ id: entryId, status: entryStatus });
     sortSelectedRowsForUpdate();
     // popup
     var popup = POPUP.build({
-      classNames: 'timeEntryDetailsPopup'
+      classNames: 'timeEntryDetailsPopup',
     });
     // btns
     var btnWrap = document.createElement('div');
@@ -866,30 +903,30 @@ var timeApproval = (function() {
       type: 'contained',
       //icon: 'edit',
       classNames: 'editEntryBtn',
-      callback: function() {
+      callback: function () {
         POPUP.hide(popup);
         getDataForTimeEntryEdit(entryStatus, entryId);
-      }
+      },
     });
     var approveBtn = button.build({
       text: 'Approve',
       style: 'secondary',
       type: 'contained',
-      callback: function() {
+      callback: function () {
         POPUP.hide(popup);
         if (!isValid) {
           showSubmitError(`Unable to approve entry, end time needed.`);
         } else {
           setApproveOrReject('approve');
-          updateEntryStatus();  
+          updateEntryStatus();
         }
-      }
+      },
     });
     var submitBtn = button.build({
       text: 'Submit',
       style: 'secondary',
       type: 'contained',
-      callback: function() {
+      callback: function () {
         POPUP.hide(popup);
         if (!isValid) {
           showSubmitError(`Unable to submit entry, end time needed.`);
@@ -897,89 +934,99 @@ var timeApproval = (function() {
           setApproveOrReject('');
           updateEntryStatus();
         }
-      }
+      },
     });
     var rejectBtn = button.build({
       text: 'Reject',
       style: 'secondary',
       type: 'contained',
-      callback: function() {
+      callback: function () {
         POPUP.hide(popup);
         function showRejectionPopup() {
+          //popup
+          var popup = POPUP.build({
+            header: 'Reject Time Entry - ' + rowName,
+          });
 
-            //popup
-            var popup = POPUP.build({
-                header: 'Reject Time Entry - ' + rowName
-            });
+          //put together work code description
+          var workCode = workCodeLookup[rowWorkCode];
+          if (workCode != '') {
+            var workCodeText = rowWorkCode + ' - ' + workCode;
+          } else {
+            var workCodeText = rowWorkCode;
+          }
 
-            //put together work code description
-            var workCode = workCodeLookup[rowWorkCode];
-            if (workCode != "") {
-                var workCodeText = rowWorkCode + " - " + workCode;
-            } else {
-                var workCodeText = rowWorkCode;
-            }
+          //format consumer data before displaying
+          var dataMessage = document.createElement('p');
+          dataMessage.style.marginBottom = '2em';
+          dataMessage.innerHTML =
+            'Date: ' +
+            rowDate +
+            '<br />' +
+            'Start Time: ' +
+            rowStartTime +
+            '<br />' +
+            'End Time: ' +
+            rowEndTime +
+            '<br />' +
+            'Work Code: ' +
+            workCodeText;
 
-            //format consumer data before displaying
-            var dataMessage = document.createElement('p');
-            dataMessage.style.marginBottom = "2em";
-            dataMessage.innerHTML = "Date: " + rowDate + "<br />" + "Start Time: " + rowStartTime + "<br />" + "End Time: " + rowEndTime + "<br />" + "Work Code: " + workCodeText;
+          // Text Input
+          var rejectionReason = input.build({
+            label: 'Reason:',
+            type: 'textarea',
+            style: 'secondary',
+            classNames: 'autosize',
+            charLimit: '500',
+            forceCharLimit: true,
+          });
+          var reasonInput = document.createElement('div');
+          reasonInput.appendChild(rejectionReason);
+          rejectionReason.addEventListener('change', event => {
+            rejectionReasonText = event.target.value;
+          });
 
-            // Text Input
-            var rejectionReason = input.build({
-                label: 'Reason:',
-                type: 'textarea',
-                style: 'secondary',
-                classNames: 'autosize',
-                charLimit: '500',
-                forceCharLimit: true,
-            });
-            var reasonInput = document.createElement('div');
-            reasonInput.appendChild(rejectionReason);
-            rejectionReason.addEventListener("change", event => {
-                rejectionReasonText = event.target.value;
-            });
+          var btnWrap = document.createElement('div');
+          btnWrap.classList.add('btnWrap');
 
-            var btnWrap = document.createElement('div');
-            btnWrap.classList.add('btnWrap');
+          //save button
+          var notifyBtn = button.build({
+            text: 'Save',
+            style: 'secondary',
+            type: 'contained',
+            callback: function () {
+              //Update Work Code and the Rejection Reason
+              setApproveOrReject('reject');
+              updateEntryStatus();
+              rejectionReasonText = '';
+              POPUP.hide(popup);
+            },
+          });
 
-            //save button
-            var notifyBtn = button.build ({
-                text: 'Save',
-                style: 'secondary',
-                type: 'contained',
-                callback: function () {
-                    //Update Work Code and the Rejection Reason
-                    setApproveOrReject('reject');
-                    updateEntryStatus();
-                    rejectionReasonText = '';
-                    POPUP.hide(popup);
-                },
-            });
-            
-            //cancel button
-            var cancelBtn = button.build ({
-                text: 'Cancel',
-                style: 'secondary',
-                type: 'contained',
-                callback: function () {
-                    POPUP.hide(popup);
-                },
-            });
-            
-            //display data
-            popup.appendChild(dataMessage);
-            popup.appendChild(reasonInput);
+          //cancel button
+          var cancelBtn = button.build({
+            text: 'Cancel',
+            style: 'secondary',
+            type: 'contained',
+            callback: function () {
+              POPUP.hide(popup);
+            },
+          });
 
-            btnWrap.appendChild(notifyBtn);
-            btnWrap.appendChild(cancelBtn);
-            popup.appendChild(btnWrap);
+          //display data
+          popup.appendChild(dataMessage);
+          popup.appendChild(reasonInput);
 
-            //show popup
-            POPUP.show(popup);
+          btnWrap.appendChild(notifyBtn);
+          btnWrap.appendChild(cancelBtn);
+          popup.appendChild(btnWrap);
+
+          //show popup
+          POPUP.show(popup);
         }
         showRejectionPopup();
-      }
+      },
     });
 
     btnWrap.appendChild(editBtn);
@@ -991,13 +1038,13 @@ var timeApproval = (function() {
       btnWrap.appendChild(rejectBtn);
     }
     // Aditional details
-    const consumerDisplay = document.createElement('div')
-    consumerDisplay.id = "consumerDisplay"
-    const loadingDisplay = document.createElement('div')
-    loadingDisplay.id = "loadingDisplay"
-    const transportationDisplay = document.createElement('div')
-    transportationDisplay.id = "transportationDisplay"
-    
+    const consumerDisplay = document.createElement('div');
+    consumerDisplay.id = 'consumerDisplay';
+    const loadingDisplay = document.createElement('div');
+    loadingDisplay.id = 'loadingDisplay';
+    const transportationDisplay = document.createElement('div');
+    transportationDisplay.id = 'transportationDisplay';
+
     popup.appendChild(loadingDisplay);
     popup.appendChild(consumerDisplay);
     popup.appendChild(transportationDisplay);
@@ -1013,7 +1060,7 @@ var timeApproval = (function() {
     enableMultiEdit = !enableMultiEdit;
 
     mulitSelectBtn.classList.toggle('enabled');
-    
+
     if (enableMultiEdit) {
       ACTION_NAV.show();
     } else {
@@ -1047,7 +1094,7 @@ var timeApproval = (function() {
 
         if (entryStatus === 'P' || entryStatus === 'A') {
           r.classList.add('selected');
-          selectedRows.push({id: entryId, status: entryStatus});
+          selectedRows.push({ id: entryId, status: entryStatus });
         }
       });
     } else {
@@ -1056,7 +1103,7 @@ var timeApproval = (function() {
       mulitSelectBtn.classList.remove('disabled');
 
       selectedRows = [];
-      
+
       var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
       highlightedRows.forEach(row => row.classList.remove('selected'));
     }
@@ -1080,7 +1127,8 @@ var timeApproval = (function() {
     if (!isRow) return; // if not row return
 
     if (enableMultiEdit && isValid) {
-      if (isSelected) {// if alread selected, de-select it
+      if (isSelected) {
+        // if alread selected, de-select it
         event.target.classList.remove('selected');
         selectedRows = selectedRows.filter(sr => sr.id !== entryId);
         if (enableSelectAll) {
@@ -1092,25 +1140,37 @@ var timeApproval = (function() {
       } else {
         if (entryStatus === 'P' || entryStatus === 'A') {
           event.target.classList.add('selected');
-          selectedRows.push({id: entryId, status: entryStatus});
+          selectedRows.push({ id: entryId, status: entryStatus });
         }
       }
-    } else if(!enableMultiEdit) {
+    } else if (!enableMultiEdit) {
       selectedRows = [];
-        showRowDetails(entryId, entryStatus, consumersPresent, isValid, rowName, rowDate, rowStartTime, rowEndTime, rowWorkCode);
+      showRowDetails(
+        entryId,
+        entryStatus,
+        consumersPresent,
+        isValid,
+        rowName,
+        rowDate,
+        rowStartTime,
+        rowEndTime,
+        rowWorkCode,
+      );
     }
   }
   // populate
   function populateTable(results) {
-    var workCodes = timeEntry.getWorkCodes();
-    totalHours = 0
+    // var workCodes = timeEntry.getWorkCodes();
+    totalHours = 0;
     var tableData = results.map(entry => {
       var entryId = entry.Single_Entry_ID;
       var status = statusLookup[entry.Anywhere_status];
       var employee = `${entry.lastname}, ${entry.firstname}`;
       var date = entry.Date_of_Service.split(' ')[0];
       var start = UTIL.convertFromMilitary(entry.start_time);
-      var end = UTIL.convertFromMilitary(entry.end_time === "23:59:59" ? "00:00:00" : entry.end_time);
+      var end = UTIL.convertFromMilitary(
+        entry.end_time === '23:59:59' ? '00:00:00' : entry.end_time,
+      );
       var hours = parseFloat(entry.check_hours);
       var location = entry.Location_Name;
       var workcode = entry.WCCode;
@@ -1118,9 +1178,15 @@ var timeApproval = (function() {
       const transportationUnits = entry.transportation_units;
       let isValid;
 
-        totalHours += hours
-        var workCodeData = workCodes.filter(wc => wc.workcodeid === entry.workCodeId);
-      if (workCodeData[0] && workCodeData[0].keyTimes === 'Y') {
+      totalHours += hours;
+      // var workCodeData = workCodes.filter(wc => wc.workcodeid === entry.workCodeId);
+      // if (workCodeData[0] && workCodeData[0].keyTimes === 'Y') {
+      //   // end time required to be valid
+      //   isValid = entry.end_time === '' ? 'false' : 'true';
+      // } else {
+      //   isValid = 'true';
+      // }
+      if (entry.keyTimes === 'Y') {
         // end time required to be valid
         isValid = entry.end_time === '' ? 'false' : 'true';
       } else {
@@ -1132,7 +1198,7 @@ var timeApproval = (function() {
       additionalInformation.classList.add('additionalInfoBox');
       additionalInformation.innerHTML = consumersPresent;
       if (transportationUnits !== '') additionalInformation.innerHTML += icons.car;
- 
+
       return {
         id: entryId,
         values: [
@@ -1144,63 +1210,82 @@ var timeApproval = (function() {
           hours,
           location,
           workcode,
-          additionalInformation.outerHTML
+          additionalInformation.outerHTML,
         ],
         attributes: [
-          {key: 'data-status', value: entry.Anywhere_status},
-          {key: 'data-consumers', value: consumersPresent},
-          {key: 'data-valid', value: isValid}
-        ]
-      }
+          { key: 'data-status', value: entry.Anywhere_status },
+          { key: 'data-consumers', value: consumersPresent },
+          { key: 'data-valid', value: isValid },
+        ],
+      };
     });
 
     table.populate(reviewTable, tableData);
-    totalHours = totalHours.toFixed(2)
-    buildHoursWorked(totalHours)
-    buildSERecordActivity(results)
+    totalHours = totalHours.toFixed(2);
+    buildHoursWorked(totalHours);
+    buildSERecordActivity(results);
   }
   // BUILD ==============
   // == Build Hours Worked ==
   function buildHoursWorked(hours) {
-    if (Array.from(document.querySelectorAll(".table__row")).length === 1) return // 1st row is the headers. If there is only the first row, there are no records
-    const lastRow = Array.from(document.querySelectorAll(".table__row")).pop()
+    if (Array.from(document.querySelectorAll('.table__row')).length === 1) return; // 1st row is the headers. If there is only the first row, there are no records
+    const lastRow = Array.from(document.querySelectorAll('.table__row')).pop();
     const lastRowHour = lastRow.childNodes[5].innerText;
-    lastRow.childNodes[5].outerHTML = `<div><p>${lastRowHour}</p><div class="totalhoursdiv">Total Hours: ${hours}</div></div>`
+    lastRow.childNodes[5].outerHTML = `<div><p>${lastRowHour}</p><div class="totalhoursdiv">Total Hours: ${hours}</div></div>`;
   }
 
   // Row Additional Information from ticket 66490 Submitted/Rejected/Approved User and Date
   function buildSERecordActivity(seData) {
-    function createElement(status, user, date, seID,rejected) {
-      const dateVal = date.split(" ")[0];
-      const timeVal = UTIL.formatTimeString(UTIL.convertToMilitary(`${date.split(" ")[1]} ${date.split(" ")[2]}`))
+    function createElement(status, user, date, seID, rejected) {
+      const dateVal = date.split(' ')[0];
+      const timeVal = UTIL.formatTimeString(
+        UTIL.convertToMilitary(`${date.split(' ')[1]} ${date.split(' ')[2]}`),
+      );
       const element = document.createElement('p');
       element.classList.add('seRecordActivity');
       element.id = `${seID}-seRecordActivity`;
       element.innerText = `${status}: ${dateVal} - ${timeVal} - ${user}`;
-      if (rejected) element.classList.add('error');//add red text to the message for rejected records
+      if (rejected) element.classList.add('error'); //add red text to the message for rejected records
       const tableRow = document.getElementById(seID);
       tableRow.appendChild(element);
     }
     seData.forEach(entry => {
       switch (entry.Anywhere_status) {
-        case "A":
-          createElement('Record Submitted', entry.submittedUser, entry.submit_date, entry.Single_Entry_ID, false)
+        case 'A':
+          createElement(
+            'Record Submitted',
+            entry.submittedUser,
+            entry.submit_date,
+            entry.Single_Entry_ID,
+            false,
+          );
           break;
-        case "S":
-        case "I":
-        case "D":
-          createElement('Record Approved', entry.approvedUser, entry.approved_time, entry.Single_Entry_ID,false)
+        case 'S':
+        case 'I':
+        case 'D':
+          createElement(
+            'Record Approved',
+            entry.approvedUser,
+            entry.approved_time,
+            entry.Single_Entry_ID,
+            false,
+          );
           break;
-        case "R":
-          createElement('Record Rejected', entry.rejectedUser, entry.rejected_time, entry.Single_Entry_ID, true)
+        case 'R':
+          createElement(
+            'Record Rejected',
+            entry.rejectedUser,
+            entry.rejected_time,
+            entry.Single_Entry_ID,
+            true,
+          );
           break;
-      
+
         default:
           break;
       }
-    })
+    });
   }
-
 
   function buildTopNav() {
     var btnWrap = document.createElement('div');
@@ -1212,7 +1297,7 @@ var timeApproval = (function() {
       style: 'secondary',
       type: 'contained',
       classNames: 'filterBtn',
-      callback: showFilterPopup
+      callback: showFilterPopup,
     });
     mulitSelectBtn = button.build({
       text: 'Multi Select',
@@ -1220,7 +1305,7 @@ var timeApproval = (function() {
       style: 'secondary',
       type: 'contained',
       classNames: 'multiSelectBtn',
-      callback: enableMultiEditRows
+      callback: enableMultiEditRows,
     });
     selectAllBtn = button.build({
       text: 'Select All',
@@ -1228,9 +1313,8 @@ var timeApproval = (function() {
       style: 'secondary',
       type: 'contained',
       classNames: 'selectAllBtn',
-      callback: enableSelectAllRows
+      callback: enableSelectAllRows,
     });
-
 
     btnWrap.appendChild(filterBtn);
     btnWrap.appendChild(mulitSelectBtn);
@@ -1251,56 +1335,54 @@ var timeApproval = (function() {
         'Hours',
         'Location',
         'Work Code',
-        ''
+        '',
       ],
-      callback: handleReviewTableEvents
+      callback: handleReviewTableEvents,
     };
 
     return table.build(tableOptions);
   }
   function buildReviewPage() {
     mapBtn = button.build({
-      text: showMap ? ' Hide Map' : " Show Map",
+      text: showMap ? ' Hide Map' : ' Show Map',
       style: 'secodary',
       type: 'text',
       classNames: 'mapBtn',
-      callback: function() {
-        if (!showMap) addMap()
-        showMap = true
+      callback: function () {
+        if (!showMap) addMap();
+        showMap = true;
         //See comment in init func regarding the removal of local storage setting for Map.
         //Button will only be show map. once clicked they can't hide it. This is to prevent people from
         //showing and hiding rapidly and incuring high api usage.
 
-         //UTIL.LS.setStorage(LSKEY_showMap, showMap)
-         //if (showMap) {
-         //  mapBtn.innerHTML = icons.close + ' Hide Map'
-         //  addMap()
-         //} else {
-         //  mapBtn.innerHTML = icons.show + ' Show Map'
-         //  GOOGLE_MAP.clearMap()
-         //}
-        
-      }
-      })     
-    mapBtn.innerHTML = icons.show + " Show Map";
+        //UTIL.LS.setStorage(LSKEY_showMap, showMap)
+        //if (showMap) {
+        //  mapBtn.innerHTML = icons.close + ' Hide Map'
+        //  addMap()
+        //} else {
+        //  mapBtn.innerHTML = icons.show + ' Show Map'
+        //  GOOGLE_MAP.clearMap()
+        //}
+      },
+    });
+    mapBtn.innerHTML = icons.show + ' Show Map';
 
     DOM.clearActionCenter();
     var topNav = buildTopNav();
     var fitleredBy = buildFilteredBy();
     reviewTable = buildTable();
 
-    DOM.ACTIONCENTER.appendChild(topNav); 
+    DOM.ACTIONCENTER.appendChild(topNav);
     DOM.ACTIONCENTER.appendChild(fitleredBy);
     DOM.ACTIONCENTER.appendChild(reviewTable);
     DOM.ACTIONCENTER.appendChild(mapBtn);
-    
-    
+
     setupActionNav();
   }
   // load
   function loadReviewPage() {
     $.session.singleEntrycrossMidnight = false;
-    roster2.removeMiniRosterBtn()
+    roster2.removeMiniRosterBtn();
     if (!supervisorId) supervisorId = $.session.PeopleId;
     if (!supervisorName) supervisorName = `${$.session.Name} ${$.session.LName}`;
     if (!employeeId) employeeId = '';
@@ -1324,7 +1406,7 @@ var timeApproval = (function() {
       dropdownId: 'payPeriodsDropdown',
       label: 'Pay Periods',
       style: 'secondary',
-      readonly: false
+      readonly: false,
     });
     // populate
     var dropdownData = payPeriodData.map(pp => {
@@ -1336,12 +1418,12 @@ var timeApproval = (function() {
 
       return {
         value: `${startDate} - ${endDate}`,
-        text: `${startDateAbbr} - ${endDateAbbr}`
-      }
+        text: `${startDateAbbr} - ${endDateAbbr}`,
+      };
     });
-    dropdown.populate(select, dropdownData, payPeriod.dateString); 
+    dropdown.populate(select, dropdownData, payPeriod.dateString);
     // event
-    select.addEventListener('change', function() {
+    select.addEventListener('change', function () {
       var dateRange = event.target.value.split(' - ');
       var startDateIso = UTIL.formatDateToIso(dateRange[0]);
       var endDateIso = UTIL.formatDateToIso(dateRange[1]);
@@ -1350,7 +1432,7 @@ var timeApproval = (function() {
 
     return select;
   }
-  /** 
+  /**
    * Handle navigation from dashboard widget to module
    * @param {string} startPeriod - M/D/Y Start of the pay period
    * @param {string} endPeriod - M/D/Y End of the pay period
@@ -1359,61 +1441,64 @@ var timeApproval = (function() {
   function dashHandler(startPeriod, endPeriod, dashStatus) {
     payPeriodData = timeEntry.getPayPeriods(false);
     locationData = timeEntry.getLocations();
-    let startDateIso = UTIL.formatDateToIso(startPeriod)
-    let endDateIso = UTIL.formatDateToIso(endPeriod)
-    startDate = startDateIso
-    endDate = endDateIso
-    status = dashStatus
+    let startDateIso = UTIL.formatDateToIso(startPeriod);
+    let endDateIso = UTIL.formatDateToIso(endPeriod);
+    startDate = startDateIso;
+    endDate = endDateIso;
+    status = dashStatus;
     workCodeData = timeEntry.getWorkCodes();
 
-    payPeriod = timeEntry.setSelectedPayPeriod(startDateIso, endDateIso, `${startPeriod} - ${endPeriod}`);
+    payPeriod = timeEntry.setSelectedPayPeriod(
+      startDateIso,
+      endDateIso,
+      `${startPeriod} - ${endPeriod}`,
+    );
 
-    getDropdownData(function() {
+    getDropdownData(function () {
       loadReviewPage();
     });
   }
-  
+
   function addMap() {
-    let center
-    let markers = []
-    let markerLabels = []
+    let center;
+    let markers = [];
+    let markerLabels = [];
     reviewTableData.forEach((el, i) => {
-      if (el.latitude == 0 && el.longitude == 0) return
-      latLngObj = {        
+      if (el.latitude == 0 && el.longitude == 0) return;
+      latLngObj = {
         lat: parseFloat(el.latitude),
-        lng: parseFloat(el.longitude)
-      }
-      let markerLabelDate = el.Date_of_Service.split(" ")[0]
-      let markerLabelStartTime = UTIL.formatTimeString(el.start_time)
-      let markerLabelEndTime = UTIL.formatTimeString(el.end_time)
+        lng: parseFloat(el.longitude),
+      };
+      let markerLabelDate = el.Date_of_Service.split(' ')[0];
+      let markerLabelStartTime = UTIL.formatTimeString(el.start_time);
+      let markerLabelEndTime = UTIL.formatTimeString(el.end_time);
       let markerLabelText = `
       ${el.lastname}, ${el.firstname}<br>
       ${markerLabelDate} ${markerLabelStartTime} - ${markerLabelEndTime}<br>
       ${el.Location_Name}
-      `
-      markers.push(latLngObj)
-      markerLabels.push(markerLabelText)
+      `;
+      markers.push(latLngObj);
+      markerLabels.push(markerLabelText);
     });
-
 
     markers = GOOGLE_MAP.createMarkerArray(markers, markerLabels);
 
-    let recordCnt = markers.latLngObj.length
+    let recordCnt = markers.latLngObj.length;
     if (recordCnt === 0) {
       GOOGLE_MAP.clearMap();
-      return
+      return;
     }
-    center = markers.latLngObj[0]
-    GOOGLE_MAP.createBoundry(markers.latLngObj)
+    center = markers.latLngObj[0];
+    GOOGLE_MAP.createBoundry(markers.latLngObj);
     GOOGLE_MAP.clearMap();
     GOOGLE_MAP.createElement(DOM.ACTIONCENTER);
-    
-    GOOGLE_MAP.initMap(10, center, markers)
+
+    GOOGLE_MAP.initMap(10, center, markers);
   }
 
   function refreshPage(payperiod) {
     payPeriodData = timeEntry.getPayPeriods(false);
-    payPeriod = (payperiod) ? payperiod : timeEntry.getCurrentPayPeriod(false);
+    payPeriod = payperiod ? payperiod : timeEntry.getCurrentPayPeriod(false);
     locationData = timeEntry.getLocations();
     setActiveModuleSectionAttribute('timeEntry-approval');
     workCodeData = timeEntry.getWorkCodes();
@@ -1422,7 +1507,7 @@ var timeApproval = (function() {
   }
 
   function showSubmitError(messageText) {
-    var popup = POPUP.build({classNames: ['error']});
+    var popup = POPUP.build({ classNames: ['error'] });
     var message = document.createElement('p');
     message.innerHTML = messageText;
     popup.appendChild(message);
@@ -1431,7 +1516,7 @@ var timeApproval = (function() {
   }
 
   function init() {
-    //Removing Local Storage Key for showing Map. Map will now be defaulted to off, 
+    //Removing Local Storage Key for showing Map. Map will now be defaulted to off,
     //end user will always need to click on show map button to load map.
     //this is to prevent over usage of google api.
     // showMap = UTIL.LS.getStorage(LSKEY_showMap);
@@ -1447,7 +1532,7 @@ var timeApproval = (function() {
     endDate = payPeriod.end;
 
     getDropdownData(function () {
-        loadReviewPage();
+      loadReviewPage();
     });
   }
 
@@ -1456,6 +1541,6 @@ var timeApproval = (function() {
     dashHandler,
     clearAllGlobalVariables,
     refreshPage,
-    init
-  }
+    init,
+  };
 })();

@@ -301,7 +301,7 @@
   }
 
   
-  function openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, applicationName, formCompleteDate) {
+  function openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, applicationName, formCompleteDate, isFormLocked) {
  
       $.ajax({
           type: 'POST',
@@ -311,7 +311,7 @@
           dataType: 'json',
           success: function (response, status, xhr) {
               var arr = response.openFormEditorResult;
-          
+
               WebViewer({
                   path: './WebViewer/lib', // path to the PDFTron 'lib' folder on your server
                   // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
@@ -342,6 +342,9 @@
                               onClick: async () => {
 
                               try{
+                                if (isFormLocked) {
+                                  throw new Error();
+                                }
             
                                  let formID;
                                  const doc = docViewer.getDocument();
@@ -369,10 +372,14 @@
 
                                   alert('Document has been saved.');
 
-                              } catch {
-                                      // 
-                                      alert('This PDF document format does not allow saving. Document NOT saved.');
-                                     // POPUP.hide(formPopup);
+                              } catch(e) { 
+                                      if(e) {
+                                        alert('Cannot save while document is locked. Document NOT saved.')
+                                      } else {
+                                        //
+                                        alert('This PDF document format does not allow saving. Document NOT saved.');
+                                        // POPUP.hide(formPopup);
+                                      }  
                               }
 
                               }
@@ -388,8 +395,10 @@
                                       //POPUP.hide(formPopup);
                                       if ($.session.formsUpdate) { 
                                         closewarningPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
+                                        removeFormsLock(formId, consumerId);
                                       } else {
                                         POPUP.hide(formPopup);
+                                        removeFormsLock(formId, consumerId);
                                       }
   
                                   }
@@ -477,7 +486,6 @@
                          
                       });
                   });
-
           },
           error: function (xhr, status, error) {
               //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
@@ -811,6 +819,52 @@
     POPUP.show(closewarningpopup);
   }
 
+  async function checkFormsLock(formId, userId) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/checkFormsLock/',
+          data: '{"formId":"' + formId + '", "userId":"' + userId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.checkFormsLockResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
+  async function removeFormsLock(formId) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/removeFormsLock/',
+          data: '{"formId":"' + formId + '", "userId":"' + $.session.UserId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.removeFormsLockResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
   return {       
       openEditor,
       openPDFEditor,
@@ -823,6 +877,7 @@
       getconsumerFormsAsync,
       getPDFDocData,
       getPDFFormData,
-
+      removeFormsLock,
+      checkFormsLock
   };
 }) ();

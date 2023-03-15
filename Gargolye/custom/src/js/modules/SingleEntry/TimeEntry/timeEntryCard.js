@@ -1293,9 +1293,8 @@ var timeEntryCard = (function () {
       if ($.session.SingleEntryEditTimeEntry && status === 'A') {
         saveBtn.classList.remove('disabled');
         deleteBtn.classList.remove('disabled');
-        if (endTime) {
-          saveAndSumbitBtn.classList.remove('disabled');
-        }
+        saveAndSumbitBtn.classList.remove('disabled');
+
         if (hasErrors.length !== 0) {
           saveBtn.classList.add('disabled');
           deleteBtn.classList.add('disabled');
@@ -1548,6 +1547,10 @@ var timeEntryCard = (function () {
       if (saveOrUpdate === 'Save') timeEntry.getEntryData(keyStartStop, saveAndUpdate);
       if (saveOrUpdate === 'Update')
         timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndUpdate);
+
+      // TODO, make global so access from timeentry.js
+      // event.target.classList.remove('disabled');
+      // saveBtn.classList.remove('disabled');
     });
     cancelBtn.addEventListener('click', () => {
       if (isAdminEdit) {
@@ -1557,6 +1560,10 @@ var timeEntryCard = (function () {
       }
       clearAllGlobalVariables();
     });
+  }
+  function enableSaveButtons() {
+    saveBtn.classList.remove('disabled');
+    saveAndSumbitBtn.classList.remove('disabled');
   }
 
   async function customRosterApplyFilterEvent() {
@@ -1757,6 +1764,7 @@ var timeEntryCard = (function () {
     if (isCardDisabled) {
       card.classList.add('disabled');
       saveBtn.classList.add('disabled');
+      saveAndSumbitBtn.classList.add('disabled');
       deleteBtn.classList.add('disabled');
       roster2.toggleMiniRosterBtnVisible(false);
       workCodeDropdown.classList.add('disabled');
@@ -2219,5 +2227,6 @@ var timeEntryCard = (function () {
     moveConsumersToTimeCard,
     handleActionNavEvent,
     clearAllGlobalVariables,
+    enableSaveButtons,
   };
 })();

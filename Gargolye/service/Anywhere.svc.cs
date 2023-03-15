@@ -2639,6 +2639,16 @@ namespace Anywhere
             return fw.getConsumerForms(token, userId, consumerId, hasAssignedFormTypes);
         }
 
+        public string checkFormsLock(string formId, string userId)
+        {
+            return fw.checkFormsLock(formId, userId);
+        }
+
+        public void removeFormsLock(string formId, string userId)
+        {
+            fw.removeFormsLock(formId, userId);
+        }
+
         //OOD Module
 
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
@@ -2706,6 +2716,22 @@ namespace Anywhere
             return Ow.getOutcomes(token);
         }
 
+        public OODWorker.OODDDLItem[] getContactMethods(string token)
+        {
+            return Ow.getContactMethods(token);
+        }
+
+        public OODWorker.OODDDLItem[] getIndicators(string token)
+        {
+            return Ow.getIndicators(token);
+        }
+
+        public OODWorker.OODDDLItem[] getPositions(string consumerId, string token)
+        {
+            return Ow.getPositions(consumerId, token);
+        }
+
+
         public OODWorker.Form4MonthlyPlacementEditData[] getForm4MonthlyPlacementEditDataJSON(string token, string caseNoteId)
         {
             return Ow.getForm4MonthlyPlacementEditDataJSON(token, caseNoteId);
@@ -2721,9 +2747,9 @@ namespace Anywhere
             return Odg.insertForm4MonthlyPlacementEditData(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, employer, contactType, jobSeekerPresent, outcome, TSCNotified, bilingualSupplement, notes, caseManagerId, userId, serviceId, referenceNumber, application, interview);
         }
 
-        public string deleteForm4MonthlyPlacementEditData(string token, string caseNoteId)
+        public string deleteOODFormEntry(string token, string caseNoteId)
         {
-            return Ow.deleteForm4MonthlyPlacementEditData(token, caseNoteId);
+            return Ow.deleteOODFormEntry(token, caseNoteId);
         }
 
         public OODWorker.Form4MonthlySummary[] getForm4MonthlySummaryJSON(string token, string emReviewId)
@@ -2741,10 +2767,41 @@ namespace Anywhere
             return Odg.insertForm4MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emEmploymentGoal, emReferralQuestions, emIndivInputonSearch, emPotentialIssueswithProgress, emPlanGoalsNextMonth, emNumberofConsumerContacts, emNumberEmployerContactsbyConsumer, emNumberEmployerContactsbyStaff, emNumberMonthsJobDevelopment, userId, serviceId);
         }
 
-        public string deleteForm4MonthlySummary(string token, string emReviewId)
+        public string deleteFormMonthlySummary(string token, string emReviewId)
         {
-            return Ow.deleteForm4MonthlySummary(token, emReviewId);
+            return Ow.deleteFormMonthlySummary(token, emReviewId);
         }
+
+        public OODWorker.Form8CommunityBasedAssessment[] getForm8CommunityBasedAssessment(string token, string caseNoteId)
+        {
+            return Ow.getForm8CommunityBasedAssessment(token, caseNoteId);
+        }
+
+        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
+        {
+            return Odg.updateForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, position, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId);
+        }
+
+        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            return Odg.insertForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, position, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId, serviceId, referenceNumber, caseManagerId);
+        }
+
+        public OODWorker.Form8MonthlySummary[] getForm8MonthlySummary(string token, string emReviewId)
+        {
+            return Ow.getForm8MonthlySummary(token, emReviewId);
+        }
+
+        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId)
+        {
+            return Odg.updateForm8MonthlySummary(token, consumerId, emReviewId, emReviewDate, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId);
+        }
+
+        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId)
+        {
+            return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emNextScheduledReview, emSummaryIndivSelfAssessment,emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
+        }
+
 
         //Case note reporting
         public CaseNoteReportBuilderWorker.ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,

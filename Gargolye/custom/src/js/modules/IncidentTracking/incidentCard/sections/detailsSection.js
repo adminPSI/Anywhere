@@ -32,6 +32,8 @@ var itDetailsSection = (function () {
   var actionTextarea;
   var preventionTextarea;
   var causeTextarea;
+  var categoryDropdown;
+  var locationDetailDropdown;
 
   function getSectionData() {
     categories = incidentTracking.getCategories();
@@ -128,16 +130,16 @@ var itDetailsSection = (function () {
     var dropdownWrap = document.createElement('div');
     dropdownWrap.classList.add('dropdownWrap');
     // build markup
-    var categoryDropdown = dropdown.build({
+    categoryDropdown = dropdown.build({
       className: 'categoryDropdown',
       label: 'Incident Category',
     });
-    var locationDetailDropdown = dropdown.build({
+    locationDetailDropdown = dropdown.build({
       className: 'locationDropdown',
       label: 'Location Detail',
     });
-    // get/set data
 
+    // get/set data
     var categoryData = categories.map(c => {
       if (c.incidentCategory === 'New Incident') {
         categoryId;
@@ -153,11 +155,14 @@ var itDetailsSection = (function () {
         text: l.description,
       };
     });
+
     var defaultDropdownOption = { value: '', text: '' };
     locationData.unshift(defaultDropdownOption);
+
     // populate
     dropdown.populate(categoryDropdown, categoryData, categoryId);
     dropdown.populate(locationDetailDropdown, locationData, locationId);
+
     // append
     dropdownWrap.appendChild(categoryDropdown);
     dropdownWrap.appendChild(locationDetailDropdown);
@@ -239,54 +244,44 @@ var itDetailsSection = (function () {
     section.appendChild(sectionBody);
 
     setupEvents();
-    checkEntireIncidentCardforErrors();
+    incidentCard.checkEntireIncidentCardforErrors();
 
     return section;
-  }
-
-  function checkEntireIncidentCardforErrors() {
-    var detailSectionHasErrors = checkRequiredFields();
-    var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
-
-    if (detailSectionHasErrors || consumerSectionHasErrors) {
-      incidentCard.toggleSave(true);
-    } else {
-      incidentCard.toggleSave(false);
-    }
   }
 
   function setupEvents() {
     incidentDateInput.addEventListener('change', e => {
       incidentDate = e.target.value;
-      checkEntireIncidentCardforErrors();
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     incidentTimeInput.addEventListener('change', e => {
-      checkEntireIncidentCardforErrors();
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     reportedDateInput.addEventListener('change', e => {
-      checkEntireIncidentCardforErrors();
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     reportedTimeInput.addEventListener('change', e => {
-      checkEntireIncidentCardforErrors();
+      incidentCard.checkEntireIncidentCardforErrors();
     });
 
     summaryTextarea.addEventListener('change', e => {
-      checkEntireIncidentCardforErrors();
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     actionTextarea.addEventListener('change', e => {
-      checkEntireIncidentCardforErrors();
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     preventionTextarea.addEventListener('change', e => {
-      checkEntireIncidentCardforErrors();
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     causeTextarea.addEventListener('change', e => {
-      checkEntireIncidentCardforErrors();
+      incidentCard.checkEntireIncidentCardforErrors();
     });
-
-    // incidentTimeInput.addEventListener('change', event => {
-    //   incidentTime = event.target.value;
-    //   checkEntireIncidentCardforErrors();
-    // });
+    categoryDropdown.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+    locationDetailDropdown.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
   }
 
   function checkRequiredFields() {

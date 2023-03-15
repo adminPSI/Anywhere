@@ -381,7 +381,89 @@ var OODAjax = (function () {
       throw new Error(error.responseText);
     }
   }
-  
+  //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
+   async function getContactMethodsAsync() {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getContactMethods/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
+   //  Form 8 Community Based Assessment Form -- Indicators data for DDLs
+   async function getIndicatorsAsync() {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getIndicators/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
+   //  Form 8 Community Based Assessment Form -- Positions data for DDLs
+   async function getPositionsAsync(consumerId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getPositions/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          consumerId: consumerId,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
+
   // Form 4 -- Monthly Placement
   function getForm4MonthlyPlacementEditData(caseNoteId, callback) {
     $.ajax({
@@ -470,8 +552,8 @@ var OODAjax = (function () {
   });
   }
   
-  // Form 4 -- Monthly Placement
-  async function deleteForm4MonthlyPlacementEditDataAsync(caseNoteId) {
+  // Both Forms (Form 4 and Form 8) -- OOD Form Entry
+  async function deleteOODFormEntryAsync(caseNoteId) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -483,7 +565,7 @@ var OODAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/deleteForm4MonthlyPlacementEditData/',
+          '/deleteOODFormEntry/',
         data:
           '{"token":"' +
           $.session.Token +
@@ -582,8 +664,8 @@ var OODAjax = (function () {
   });
   }
   
-  // Form 4 -- Monthly Summary
-  async function deleteForm4MonthlySummaryAsync(emReviewId) {
+  // Both Forms (Form 4 and Form 8) -- Monthly Entry
+  async function deleteFormMonthlySummaryAsync(emReviewId) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -595,7 +677,7 @@ var OODAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/deleteForm4MonthlySummary/',
+          '/deleteFormMonthlySummary/',
         data:
           '{"token":"' +
           $.session.Token +
@@ -611,6 +693,161 @@ var OODAjax = (function () {
     }
   }
   
+    // Form 8 -- Form8CommunityBasedAssessment
+    function getForm8CommunityBasedAssessment(caseNoteId, callback) {
+      $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm8CommunityBasedAssessment/',
+        data: '{"token":"' + $.session.Token + '", "caseNoteId":"' + caseNoteId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function(response, status, xhr) {
+          var res = response.getForm8CommunityBasedAssessmentResult;
+          callback(res);
+        },
+        error: function(xhr, status, error) {
+          //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+        },
+      });
+    }
+    
+    // Form 8 -- Form8CommunityBasedAssessment
+    function updateForm8CommunityBasedAssessment(data, callback) {
+        data = {
+          token: $.session.Token, 
+          consumerId: data.consumerId, 
+          caseNoteId: data.caseNoteId,
+          serviceDate: data.serviceDate,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          SAMLevel: data.SAMLevel,
+          position: data.position,
+          contactMethod: data.contactMethod,
+          behavioralIndicators: data.behavioralIndicators,
+          jobTaskQualityIndicators: data.jobTaskQualityIndicators,
+          jobTaskQuantityIndicators: data.jobTaskQuantityIndicators,
+          narrative: data.narrative,
+          interventions: data.interventions,
+           }
+      return $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm8CommunityBasedAssessment/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+      callback(response.updateForm8CommunityBasedAssessmentResult);
+      },
+      });
+    }
+    
+    // Form 8 -- Form8CommunityBasedAssessment
+    function insertForm8CommunityBasedAssessment(data, callback) {
+      data = {
+        token: $.session.Token, 
+          consumerId: data.consumerId, 
+          caseNoteId: data.caseNoteId,
+          serviceDate: data.serviceDate,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          SAMLevel: data.SAMLevel,
+          position: data.position,
+          contactMethod: data.contactMethod,
+          behavioralIndicators: data.behavioralIndicators,
+          jobTaskQualityIndicators: data.jobTaskQualityIndicators,
+          jobTaskQuantityIndicators: data.jobTaskQuantityIndicators,
+          narrative: data.narrative,
+          interventions: data.interventions,
+          userId: data.userId,
+          serviceId: data.serviceId,
+          referenceNumber: data.referenceNumber,
+          caseManagerId: data.caseManagerId,
+    
+         }
+    return $.ajax({
+    type: 'POST',
+    url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm8CommunityBasedAssessment/',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    success: function(response, status, xhr) {
+    callback(response.insertForm8CommunityBasedAssessmentResult);
+    },
+    });
+    }
+  
+      // Form 8 -- Monthly Summary
+  function getForm8MonthlySummary(emReviewId, callback) {
+    $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm8MonthlySummary/',
+      data: '{"token":"' + $.session.Token + '", "emReviewId":"' + emReviewId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+        var res = response.getForm8MonthlySummaryResult[0];
+        callback(res);
+      },
+      error: function(xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+  
+  // Form 8 -- Monthly Summary
+  function updateForm8MonthlySummary(data, callback) {
+      data = {
+        token: $.session.Token, 
+        consumerId: data.consumerId, 
+        emReviewId: data.emReviewId,
+        emReviewDate: data.emReviewDate,
+        emNextScheduledReview: data.emNextScheduledReview,
+        emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
+        emSummaryIndivEmployerAssessment: data.emSummaryIndivEmployerAssessment,
+        emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment, 
+        emSupportandTransition: data.emSupportandTransition,
+        emReviewVTS: data.emReviewVTS,
+        userId: data.userId, 
+         }
+    return $.ajax({
+    type: 'POST',
+    url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm8MonthlySummary/',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    success: function(response, status, xhr) {
+    callback(response.updateForm8MonthlySummaryResult);
+    },
+    });
+  }
+  
+  // Form 8 -- Monthly Summary
+  function insertForm8MonthlySummary(data, callback) {
+    data = {
+      token: $.session.Token, 
+      consumerId: data.consumerId, 
+      emReviewDate: data.emReviewDate,
+      emNextScheduledReview: data.emNextScheduledReview,
+      emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
+      emSummaryIndivEmployerAssessment: data.emSummaryIndivEmployerAssessment,
+      emSummaryIndivProviderAssessment: data.emSummaryIndivProviderAssessment,
+      emSupportandTransition: data.emSupportandTransition,
+      emReviewVTS: data.emReviewVTS,
+      userId: data.userId,
+      serviceId: data.serviceId     
+       }
+  return $.ajax({
+  type: 'POST',
+  url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm8MonthlySummary/',
+  data: JSON.stringify(data),
+  contentType: 'application/json; charset=utf-8',
+  dataType: 'json',
+  success: function(response, status, xhr) {
+  callback(response.insertForm8MonthlySummaryResult);
+  },
+  });
+  }
+
   return {       
    
       getOODEntriesAsync,
@@ -626,14 +863,25 @@ var OODAjax = (function () {
       getConsumerServiceCodesAsync,
       getContactTypesAsync,
       getOutcomesAsync,
+      getContactMethodsAsync,
+      getIndicatorsAsync,
+      getPositionsAsync,
       getForm4MonthlyPlacementEditData,
       updateForm4MonthlyPlacementEditData,
       insertForm4MonthlyPlacementEditData,
-      deleteForm4MonthlyPlacementEditDataAsync,
+      deleteOODFormEntryAsync,
       getForm4MonthlySummary,
       updateForm4MonthlySummary,
       insertForm4MonthlySummary,
-      deleteForm4MonthlySummaryAsync,
+      deleteFormMonthlySummaryAsync,
+      getForm8CommunityBasedAssessment,
+      updateForm8CommunityBasedAssessment,
+      insertForm8CommunityBasedAssessment,
+      getForm8MonthlySummary,
+      updateForm8MonthlySummary,
+      insertForm8MonthlySummary,
+      
+
   };
   }) ();
   

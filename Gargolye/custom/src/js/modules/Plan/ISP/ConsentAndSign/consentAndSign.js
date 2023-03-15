@@ -879,8 +879,10 @@ const planConsentAndSign = (() => {
       },
     });
 
-    const sendDocumentToOneSpanBtn = oneSpan.buildSendDocumentToOneSpanBtn(planId);
-
+    let sendDocumentToOneSpanBtn;
+    if($.session.oneSpan) {
+      sendDocumentToOneSpanBtn = oneSpan.buildSendDocumentToOneSpanBtn(planId);
+      
     //initial check for digital signers to remove disabled class from one span button
     teamMemberData.forEach(member => {
       if (member.signatureType === '1') {
@@ -892,13 +894,19 @@ const planConsentAndSign = (() => {
     document.addEventListener("data-update", function(event) {
       oneSpan.shouldBeDisabled(sendDocumentToOneSpanBtn, event.detail.data);
     })
+    }
+    
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('topOutcomeWrap');
 
     btnWrap.appendChild(addMemberBtn);
     btnWrap.appendChild(addVendorBtn);
-    btnWrap.appendChild(sendDocumentToOneSpanBtn);
+
+    if($.session.oneSpan) {
+      btnWrap.appendChild(sendDocumentToOneSpanBtn);
+    }
+    
 
     tableWrap.appendChild(btnWrap);
     tableWrap.appendChild(teamMemberTable);

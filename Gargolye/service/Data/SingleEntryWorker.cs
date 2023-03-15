@@ -412,6 +412,7 @@ namespace Anywhere.service.Data
             public string approvedUser { get; set; }
             public string rejectedUser { get; set; }
             public string submittedUser { get; set; }
+            public string keyTimes { get; set; }
         }        
 
         public class AdminSELocations

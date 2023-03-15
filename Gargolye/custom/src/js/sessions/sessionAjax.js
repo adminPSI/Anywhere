@@ -750,7 +750,7 @@ function checkInfalConnectionAjax(callback) {
       }
     },
     error: function (xhr, status, error) {
-      callback(error, null);
+      //callback(error, null);
     },
   });
 }
@@ -918,6 +918,7 @@ function getDefaultAnywhereSettings() {
       $.session.singleEntryShowTransportation = res.seShowTransportation;
       $.session.schedAllowCallOffRequests = res.allowCallOffRequests;
       $.session.schedRequestOpenShifts = res.requestOpenShifts;
+      $.session.oneSpan = res.oneSpan;
 
       //Default Work
       //.session.

@@ -118,6 +118,16 @@ namespace Anywhere.service.Data
         }
 
         [DataContract]
+        public class OODDDLItem
+        {
+            [DataMember(Order = 0)]
+            public string code { get; set; }
+            [DataMember(Order = 1)]
+            public string caption { get; set; }
+
+        }
+
+        [DataContract]
         public class Form4MonthlyPlacementEditData
         {
             [DataMember(Order = 0)]
@@ -190,6 +200,69 @@ namespace Anywhere.service.Data
             [DataMember(Order = 15)]
             public string serviceId { get; set; }
         }
+
+        [DataContract]
+        public class Form8CommunityBasedAssessment
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string caseNoteId { get; set; }
+            [DataMember(Order = 2)]
+            public string serviceDate { get; set; }
+            [DataMember(Order = 3)]
+            public string startTime { get; set; }
+            [DataMember(Order = 4)]
+            public string endTime { get; set; }
+            [DataMember(Order = 5)]
+            public string SAMLevel { get; set; }
+            [DataMember(Order = 6)]
+            public string contactMethod { get; set; }
+            [DataMember(Order = 7)]
+            public string behavioralIndicators { get; set; }
+            [DataMember(Order = 8)]
+            public string jobTaskQualityIndicators { get; set; }
+            [DataMember(Order = 9)]
+            public string jobTaskQuantityIndicators { get; set; }
+            [DataMember(Order = 10)]
+            public string narrative { get; set; }
+            [DataMember(Order = 11)]
+            public string interventions { get; set; }
+            [DataMember(Order = 12)]
+            public string position { get; set; }
+            [DataMember(Order = 13)]
+            public string serviceName { get; set; }
+        }
+
+
+        [DataContract]
+        public class Form8MonthlySummary
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string emReviewId { get; set; }
+            [DataMember(Order = 2)]
+            public string emReviewDate { get; set; }
+            [DataMember(Order = 3)]
+            public string emNextScheduledReview { get; set; }
+
+            [DataMember(Order = 4)]
+            public string emSummaryIndivSelfAssessment { get; set; }
+            [DataMember(Order = 5)]
+            public string emSummaryIndivEmployerAssessment { get; set; }
+            [DataMember(Order = 6)]
+            public string emSummaryIndivProviderAssessment { get; set; }
+
+            [DataMember(Order = 7)]
+            public string emSupportandTransition { get; set; }
+
+            [DataMember(Order = 8)]
+            public string emReviewVTS { get; set; }
+
+            
+        }
+
 
         public OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
@@ -463,6 +536,66 @@ namespace Anywhere.service.Data
             }
         }
 
+        //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
+        public OODDDLItem[] getContactMethods(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    OODDDLItem[] contactMethods = js.Deserialize<OODDDLItem[]> (Odg.getContactMethods(transaction));
+                    return contactMethods;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Indicators data for DDLs
+        public OODDDLItem[] getIndicators(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    OODDDLItem[] indicators = js.Deserialize<OODDDLItem[]>(Odg.getIndicators(transaction));
+                    return indicators;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Positions data for DDLs
+        public OODDDLItem[] getPositions(string consumerId, string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    OODDDLItem[] positions = js.Deserialize<OODDDLItem[]>(Odg.getPositions(consumerId, transaction));
+                    return positions;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
         // Form 4 Monthly Placement
         public Form4MonthlyPlacementEditData[] getForm4MonthlyPlacementEditDataJSON(string token, string caseNoteId)
         {
@@ -471,7 +604,7 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
-        public string deleteForm4MonthlyPlacementEditData(string token, string caseNoteId)
+        public string deleteOODFormEntry(string token, string caseNoteId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -482,7 +615,7 @@ namespace Anywhere.service.Data
                     if (caseNoteId == null) throw new Exception("formId is required");
 
                     // insert group steps
-                    String rowsDeleted = Odg.deleteForm4MonthlyPlacementEditData(caseNoteId, transaction);
+                    String rowsDeleted = Odg.deleteOODFormEntry(caseNoteId, transaction);
 
                     return rowsDeleted;
                 }
@@ -502,7 +635,7 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
-        public string deleteForm4MonthlySummary(string token, string emReviewId)
+        public string deleteFormMonthlySummary(string token, string emReviewId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -513,7 +646,7 @@ namespace Anywhere.service.Data
                     if (emReviewId == null) throw new Exception("reviewId is required");
 
                     // insert group steps
-                    String rowsDeleted = Odg.deleteForm4MonthlySummary(emReviewId, transaction);
+                    String rowsDeleted = Odg.deleteFormMonthlySummary(emReviewId, transaction);
 
                     return rowsDeleted;
                 }
@@ -524,10 +657,25 @@ namespace Anywhere.service.Data
                 }
             }
         }
-        //Gets from the database
 
+        // Form 8 Community Based Assessment
+        public Form8CommunityBasedAssessment[] getForm8CommunityBasedAssessment(string token, string caseNoteId)
+        {
+            string editDataString = Odg.getForm8CommunityBasedAssessment(token, caseNoteId);
+            Form8CommunityBasedAssessment[] editDataObj = js.Deserialize<Form8CommunityBasedAssessment[]>(editDataString);
+            return editDataObj;
+        }
 
-        //Send to the database
+      
+
+        // Form 8 Monthly Summary
+        public Form8MonthlySummary[] getForm8MonthlySummary(string token, string emReviewId)
+        {
+            string editDataString = Odg.getForm8MonthlySummary(token, emReviewId);
+            Form8MonthlySummary[] editDataObj = js.Deserialize<Form8MonthlySummary[]>(editDataString);
+            return editDataObj;
+        }
+
 
     }
 }

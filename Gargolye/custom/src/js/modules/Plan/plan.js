@@ -5,12 +5,14 @@ const plan = (function () {
   let landingPage;
   let overviewTable;
   let newPlanBtn;
+  let assignCaseLoadBtn;
   // new plan setup
   let planSetupPage;
   let setupWrap;
   let prevPlanTable;
   let datesBoxDiv;
   let doneBtn;
+  let addedMemberPopup;
   // main plan page
   let planHeader;
   let planHeaderButtons;
@@ -1130,31 +1132,30 @@ const plan = (function () {
         //   Object.keys(selectedAttachmentsWorkflow).length > 0 ||
         //   Object.keys(selectedAttachmentsSignature).length > 0
         // ) {
-          const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
-          const wfAttachmentIds = getwfstepdocIds(selectedAttachmentsWorkflow);
-          const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-          try {
-            // await needed to allow spinner to spin while request is being made
-            // try catch added to prevent code from stopping on ajax error
-            sendSuccess = await assessmentAjax.sendSelectedAttachmentsToDODD({
-              token: $.session.Token,
-              planAttachmentIds: planAttachmentIds,
-              wfAttachmentIds: wfAttachmentIds,
-              sigAttachmentIds: sigAttachmentIds,
-              planId: planId,
-              consumerId: selectedConsumer.id, 
-            });
-
-          } catch (error) {
-            console.log(error.statusText);
-          }
-          //* if we need to upload to dodd after sending attachments
-          //* below was old code from old sendToDODD screen
-          // const success = await planAjax.uploadPlanToDODD({
-          //   consumerId: selectedConsumer.id,
-          //   planId,
-          // });
-       // }
+        const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+        const wfAttachmentIds = getwfstepdocIds(selectedAttachmentsWorkflow);
+        const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+        try {
+          // await needed to allow spinner to spin while request is being made
+          // try catch added to prevent code from stopping on ajax error
+          sendSuccess = await assessmentAjax.sendSelectedAttachmentsToDODD({
+            token: $.session.Token,
+            planAttachmentIds: planAttachmentIds,
+            wfAttachmentIds: wfAttachmentIds,
+            sigAttachmentIds: sigAttachmentIds,
+            planId: planId,
+            consumerId: selectedConsumer.id,
+          });
+        } catch (error) {
+          console.log(error.statusText);
+        }
+        //* if we need to upload to dodd after sending attachments
+        //* below was old code from old sendToDODD screen
+        // const success = await planAjax.uploadPlanToDODD({
+        //   consumerId: selectedConsumer.id,
+        //   planId,
+        // });
+        // }
 
         sendtoDODDAlert(sendSuccess);
 
@@ -1171,7 +1172,6 @@ const plan = (function () {
   }
 
   function sendtoDODDAlert(sendtoDODDResponse) {
-
     var alertPopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
@@ -1183,20 +1183,18 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       icon: 'checkmark',
-      callback: async function() {
+      callback: async function () {
         POPUP.hide(alertPopup);
         overlay.show();
-        
       },
     });
-    
+
     alertbtnWrap.appendChild(alertokBtn);
     var alertMessage = document.createElement('p');
     alertMessage.innerHTML = sendtoDODDResponse;
     alertPopup.appendChild(alertMessage);
     alertPopup.appendChild(alertbtnWrap);
     POPUP.show(alertPopup);
-	
   }
 
   function buildMorePopupMenu() {
@@ -1739,6 +1737,11 @@ const plan = (function () {
     };
     planWorkflow.showWorkflowListPopup(wfvData, workflowCallback);
   }
+  function getSelectedConsumerName(selectedConsumer) {
+    const last = selectedConsumer.card.querySelector('.name_last');
+    const first = selectedConsumer.card.querySelector('.name_first');
+    return `${first} ${last}`;
+  }
   async function createNewPlan(selectedConsumer, processId, selectedWorkflows) {
     const EffectiveEndDate = planDates.getEffectiveEndDate();
     let edDate = UTIL.formatDateFromDateObj(EffectiveEndDate);
@@ -1814,7 +1817,13 @@ const plan = (function () {
 
     planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
 
-    buildPlanPage();
+    const consumer = getSelectedConsumerName(selectedConsumer);
+    showAddedToTeamMemberPopup(consumer, '');
+
+    setTimeout(() => {
+      POPUP.hide(addedMemberPopup);
+      buildPlanPage();
+    }, 2000);
   }
 
   function buildPreviousPlansTable() {
@@ -1927,7 +1936,7 @@ const plan = (function () {
 
   // Plan Landing Page
   //---------------------------------------------
-  function showInvalidSalesForceWarningPop() {
+  function showInvalidSalesForceWarningPopup() {
     const warningPopup = POPUP.build({
       id: 'importRelationshipPopup',
       // closeCallback: () => {
@@ -1942,6 +1951,20 @@ const plan = (function () {
 
     POPUP.show(warningPopup);
   }
+  function showAddedToTeamMemberPopup(consumer, ssa) {
+    addedMemberPopup = POPUP.build({
+      id: 'importRelationshipPopup',
+    });
+
+    const message1 = `${consumer} has been added as a Team Member to this plan.`;
+    const message2 = `${ssa} has been added as a Team Member to this plan.`;
+
+    addedMemberPopup.appendChild(message1);
+    addedMemberPopup.appendChild(message2);
+
+    POPUP.show(addedMemberPopup);
+  }
+
   function buildNewPlanBtn() {
     return button.build({
       text: 'Add New Plan',
@@ -1950,7 +1973,6 @@ const plan = (function () {
       classNames: !$.session.planUpdate ? ['disabled'] : ['newPlanBtn'],
       callback: async () => {
         if (newPlanBtn.innerText === 'ADD NEW PLAN') {
-          // PROGRESS__BTN.init();
           PROGRESS__BTN.SPINNER.show(newPlanBtn);
 
           if ($.session.areInSalesForce) {
@@ -1960,7 +1982,7 @@ const plan = (function () {
             });
             if (!isValidSalesforce) {
               PROGRESS__BTN.SPINNER.hide(newPlanBtn);
-              showInvalidSalesForceWarningPop();
+              showInvalidSalesForceWarningPopup();
               return;
             }
           }
@@ -1973,16 +1995,17 @@ const plan = (function () {
           PROGRESS__BTN.SPINNER.hide(newPlanBtn);
           newPlanBtn.innerText = 'Back';
 
-          //classlist.add('hidden')
-          if (document.getElementById('assign-case-load-btn'))
-            document.getElementById('assign-case-load-btn').style.display = 'none';
+          if (assignCaseLoadBtn) {
+            assignCaseLoadBtn.style.display = 'none';
+          }
         } else {
           landingPage.removeChild(planSetupPage);
           landingPage.appendChild(overviewTable);
 
           newPlanBtn.innerText = 'Add New Plan';
-          if (document.getElementById('assign-case-load-btn'))
-            document.getElementById('assign-case-load-btn').style.display = 'block';
+          if (assignCaseLoadBtn) {
+            assignCaseLoadBtn.style.display = 'block';
+          }
         }
       },
     });

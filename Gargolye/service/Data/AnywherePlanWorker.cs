@@ -88,6 +88,7 @@ namespace Anywhere.service.Data
             public class ConsumerPlan
             {
                 public string consumerPlanId { get; set; }
+                public string cQFullName { get; set; }
                 public string consumerId { get; set; }
                 public string planYearStart { get; set; }
                 public string planYearEnd { get; set; }
@@ -199,8 +200,9 @@ namespace Anywhere.service.Data
                         String active = "1";
                         String planType = PlanType.Annual;
                         String revisionNumber = "0";
-                        String consumerPlanId = adg.insertConsumerPlan(consumerId, planYearStart, planYearEnd, effectiveStart, effectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorPlanIdForApplicable, priorConsumerPlanId, transaction);
-
+                        String inputString = adg.insertConsumerPlan(consumerId, planYearStart, planYearEnd, effectiveStart, effectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorPlanIdForApplicable, priorConsumerPlanId, transaction);
+                        String[] splitString = inputString.Split(',');
+                        String consumerPlanId = splitString[0];
                         // always use the latest assessment version
                         String targetAssessmentVersionId = adg.getCurrentAssessmentVersionId(assessmentId, effectiveStart, transaction);
                         if (targetAssessmentVersionId == null) throw new Exception("Unable to find latest assessment");
@@ -271,8 +273,9 @@ namespace Anywhere.service.Data
                         //DateTime revDate = Convert.ToDateTime(existingPlan.reviewDate);
                         //var revDate = DateTime.Parse(existingPlan.reviewDate);
                         //var reviewDate = revDate.ToString("yyyy-MM-dd");
-                        String consumerPlanId = adg.insertConsumerPlan(existingPlan.consumerId, existingPlan.planYearStart, existingPlan.planYearEnd, newEffectiveStart, newEffectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorConsumerPlanId, priorConsumerPlanId, transaction);
-
+                        String inputString = adg.insertConsumerPlan(existingPlan.consumerId, existingPlan.planYearStart, existingPlan.planYearEnd, newEffectiveStart, newEffectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorConsumerPlanId, priorConsumerPlanId, transaction);
+                        String[] splitString = inputString.Split(',');
+                        String consumerPlanId = splitString[0];
                         // determine whether to use the existing assessment version or the lastest assessment version
                         String assessmentId = "1";
                         String targetAssessmentVersionId = adg.getCurrentAssessmentVersionId(assessmentId, newEffectiveStart, transaction);

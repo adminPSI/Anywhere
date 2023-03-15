@@ -105,8 +105,22 @@ namespace Anywhere.service.Data
             public string DOB { get; set; }
             public string SSN { get; set; }
             public string MedicaidNumber { get; set; }
-
-
+            public string MedicareNumber { get; set; }
+            public string ResidentNumber { get; set; }
+            public string County { get; set; }
+            public string orgName { get; set; }
+            public string orgAdd1 { get; set; }
+            public string orgAdd2 { get; set; }
+            public string city { get; set; }
+            public string orgZipCode { get; set; }
+            public string orgPrimaryPhone { get; set; }
+            public string pathToEmployment { get; set; }
+            public string race { get; set; }
+            public string language { get; set; }
+            public string gender { get; set; }
+            public string generation { get; set; }
+            public string maritalStatus { get; set; }
+            public string educationLevel { get; set; }
         }
         public class ConsumerRelationships
         {

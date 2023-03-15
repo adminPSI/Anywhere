@@ -39,6 +39,7 @@ const OOD = (() => {
 	 let selectedConsumerServiceId;
 	 let selectedConsumerReferenceNumber;
 	 let selectedConsumerServiceType;
+	 let selectedConsumerServiceName;
 	 let summaryServicesDropdown;
 	 let summaryServicesDoneBtn;
 	 let selectSummaryServicePopup;
@@ -164,6 +165,16 @@ const OOD = (() => {
 					OODForm4MonthlySummary.init(results, rowConsumer[0], undefined, e.target.attributes.userId.value);
 					});
 				} 
+				if (rowConsumer[0] && e.target.attributes.OODReportType.value === 'newEntry' && e.target.attributes.serviceType.value === 'T2' ) {
+					OODAjax.getForm8CommunityBasedAssessment(e.target.attributes.Id.value, function (results) {
+						communityBasedAssessmentForm.init(results, rowConsumer[0], undefined, results[0].serviceName, undefined, e.target.attributes.userId.value, undefined);
+				});
+				} 
+				if (rowConsumer[0] && e.target.attributes.OODReportType.value === 'monthlySummary' && e.target.attributes.serviceType.value === 'T2' ) {
+					OODAjax.getForm8MonthlySummary(e.target.attributes.Id.value, function (results) {
+						communityBasedAssessmentSummaryForm.init(results, rowConsumer[0], undefined, e.target.attributes.userId.value);
+					});
+				}
 				},
 			}));
 
@@ -279,6 +290,7 @@ const OOD = (() => {
 						serviceDate = CLEAREDSERVICEDATE;
 						selectedConsumerServiceId = '';
 						selectedConsumerServiceType = '';
+						selectedConsumerServiceName = '';
 						selectedConsumerReferenceNumber = '';
 						await populateConsumerServiceCodeDropdown(consumerId, serviceDate);
 					} else { 
@@ -347,11 +359,13 @@ const OOD = (() => {
 					if (selectedOption.value == "SELECT") {
 						selectedConsumerServiceId = '';
 						selectedConsumerServiceType = '';
+						selectedConsumerServiceName = '';
 						selectedConsumerReferenceNumber = '';
 					} else {
 						// TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
 						selectedConsumerServiceId = selectedOption.value;
 						selectedConsumerServiceType = selectedOption.id;
+						selectedConsumerServiceName = selectedOption.text;
 						selectedConsumerReferenceNumber = selectedOption.text.split('# ')[1];
 					}
 
@@ -471,6 +485,7 @@ async function buildSummaryServicePopUp(consumerId, btnType) {
 			summaryServicesDropdown.addEventListener('change', event => {
 				selectedConsumerServiceId = event.target.value;
 				selectedConsumerServiceType = event.target.id;
+				selectedConsumerServiceName = event.target.text;
 			});
 
 			summaryServicesDropdown.addEventListener('change', event => {
@@ -479,10 +494,12 @@ async function buildSummaryServicePopUp(consumerId, btnType) {
 				if (selectedOption.value == "SELECT") {
 					selectedConsumerServiceId = '';
 					selectedConsumerServiceType = '';
+					selectedConsumerServiceName = '';
 				} else {
 					// TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
 					selectedConsumerServiceId = selectedOption.value;
 					selectedConsumerServiceType = selectedOption.id;
+					selectedConsumerServiceName = selectedOption.text;
 				}
 				summaryServicesDropDownRequired();
 		  });
@@ -521,13 +538,16 @@ async function buildSummaryServicePopUp(consumerId, btnType) {
 		  var thisselectedConsumerServiceId = selectedConsumerServiceId
 		  var thisselectedConsumerReferenceNumber = selectedConsumerReferenceNumber;
 		  var thisselectedConsumerServiceType = selectedConsumerServiceType;
+		  var thisselectedConsumerServiceName = selectedConsumerServiceName.substr(4).split('- Ref #')[0];
 		  selectedConsumerServiceId = '';
 		  selectedConsumerServiceType = '';
 		  // TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened 
 		  // TODO JOE: Need to add to the two ifs below to include selectedConsumerServiceType
 		  // TODO JOE: Need to add two more if statements to call init() for the two Form 8 Forms
-		 if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerServiceType === 'T1') OODForm4MonthlyPlacement.init({}, thisConsumer[0], thisselectedConsumerServiceId, thisselectedConsumerReferenceNumber, $.session.UserId, serviceDate, btnType);
+		if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerServiceType === 'T1') OODForm4MonthlyPlacement.init({}, thisConsumer[0], thisselectedConsumerServiceId, thisselectedConsumerReferenceNumber, $.session.UserId, serviceDate, btnType);
 		if (thisConsumer && btnType === 'monthlySummary' && thisselectedConsumerServiceType === 'T1') OODForm4MonthlySummary.init({}, thisConsumer[0], thisselectedConsumerServiceId, $.session.UserId, btnType);
+		if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerServiceType === 'T2') communityBasedAssessmentForm.init({}, thisConsumer[0], thisselectedConsumerServiceId, thisselectedConsumerServiceName, thisselectedConsumerReferenceNumber, $.session.UserId, serviceDate, btnType);
+		if (thisConsumer && btnType === 'monthlySummary' && thisselectedConsumerServiceType === 'T2') communityBasedAssessmentSummaryForm.init({}, thisConsumer[0], thisselectedConsumerServiceId, $.session.UserId, btnType);
       // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);    
     }
 
