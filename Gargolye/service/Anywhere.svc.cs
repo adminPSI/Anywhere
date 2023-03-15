@@ -2695,9 +2695,9 @@ namespace Anywhere
             return Ow.getActiveServiceCodes(token, serviceCodeType);
         }
 
-        public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate)
+        public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string serviceType)
         {
-            return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate);
+            return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate, serviceType);
         }
 
         public OODWorker.ServiceCode[] getConsumerServiceCodes(string consumerId, string serviceDate, string token)

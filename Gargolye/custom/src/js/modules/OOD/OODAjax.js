@@ -270,7 +270,7 @@ var OODAjax = (function () {
     }
   }
   
-  async function getConsumerReferenceNumbersAsync(consumerIds, startDate, endDate) {
+  async function getConsumerReferenceNumbersAsync(consumerIds, startDate, endDate, serviceType) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -288,6 +288,7 @@ var OODAjax = (function () {
           consumerIds: consumerIds,
           startDate: startDate,
           endDate: endDate,
+          serviceType: serviceType,
           
         }),
         contentType: 'application/json; charset=utf-8',
