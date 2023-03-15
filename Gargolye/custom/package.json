@@ -5,8 +5,7 @@
   "main": "gulpfile.js",
   "scripts": {
     "start": "gulp default",
-    "build": "gulp build",
-    "startUI": "gulp startUI"
+    "build": "gulp build"
   },
   "author": "",
   "browserslist": [

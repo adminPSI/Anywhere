@@ -19,8 +19,7 @@ const paths = {
     base: './src/',
     assets: './src/assets/**',
     html: './src/*.html',
-    js: ['./src/js/**/*.js', '!./src/js/UI/**/*.js'],
-    jsui: ['./src/js/**/*.js'],
+    js: ['./src/js/**/*.js'],
     lib: './src/lib/**',
     scss: ['./src/scss/anywhere.scss', './src/scss/login.scss', './src/scss/infalAnywhere.scss'],
   },
@@ -73,21 +72,6 @@ function javaScript() {
     .pipe(size())
     .pipe(dest(paths.dist.js));
 }
-function javaScriptWithUI() {
-  return src(paths.src.jsui)
-    .pipe(plumber())
-    .pipe(sourcemaps.init())
-    .pipe(
-      babel({
-        presets: ['@babel/preset-env'],
-        sourceType: 'script',
-      }),
-    )
-    .pipe(concat('bundle.js'))
-    .pipe(sourcemaps.write('./'))
-    .pipe(size())
-    .pipe(dest(paths.dist.js));
-}
 // Other
 function copyAssets() {
   return src(paths.src.assets, { base: paths.src.base }).pipe(dest(paths.dist.base));
@@ -102,12 +86,6 @@ function copyLib() {
 // EXPORTS
 //===========================================================
 exports.build = series(parallel(copyAssets, copyHTML, copyLib), javaScript, styles);
-exports.startUI = () => {
-  fancylog(`Watching....`);
-  watch(paths.src.jsui, javaScriptWithUI);
-  watch(paths.src.base + '**/*.scss', styles);
-  watch(paths.src.html, copyHTML);
-};
 exports.default = () => {
   fancylog(`Watching....`);
   watch(paths.src.js, javaScript);

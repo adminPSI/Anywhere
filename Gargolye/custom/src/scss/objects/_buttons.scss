@@ -133,6 +133,21 @@
   }
 }
 
+.dropdownWrap {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 0 0 0;
+
+    button {
+        flex-grow: 1;
+        margin: 0 1% 0 0;
+
+        &:last-child() {
+            margin: 0;
+        }
+    }
+}
+
 // Disabled
 .btn.disabled,
 .btn-icon.disabled {
