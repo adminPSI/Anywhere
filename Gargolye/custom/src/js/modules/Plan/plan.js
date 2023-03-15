@@ -1959,8 +1959,8 @@ const plan = (function () {
     const message1 = `${consumer} has been added as a Team Member to this plan.`;
     const message2 = `${ssa} has been added as a Team Member to this plan.`;
 
-    addedMemberPopup.appendChild(message1);
-    addedMemberPopup.appendChild(message2);
+    addedMemberPopup.innerText = message1;
+    addedMemberPopup.innerText = message2;
 
     POPUP.show(addedMemberPopup);
   }
