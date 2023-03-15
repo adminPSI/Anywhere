@@ -7,6 +7,7 @@ const communityBasedAssessmentSummaryForm = (() => {
   let referralQuestionsInput;
   let employerAssessmentInput;
   let providerAssessmentInput;
+  let supportAndTransitionInput;
   let reviewVTSDropdown;
 
   // values
@@ -19,6 +20,7 @@ const communityBasedAssessmentSummaryForm = (() => {
   let emReferralQuestions;  //referralQuestionsInput
   let emSummaryIndivEmployerAssessment;  // employerAssessmentInput
   let emSummaryIndivProviderAssessment;  // providerAssessmentInput
+  let emSupportandTransition;  //supportAndTransitionInput
   let emReviewVTS;   // reviewVTSDropdown
 
   // buttons
@@ -60,6 +62,7 @@ let OODMonthlySummariesTable; // To be added in future release
             emSummaryIndivSelfAssessment = emReviewData.emSummaryIndivSelfAssessment;  
             emSummaryIndivEmployerAssessment = emReviewData.emSummaryIndivEmployerAssessment; 
            emSummaryIndivProviderAssessment = emReviewData.emSummaryIndivProviderAssessment; 
+           emSupportandTransition = emReviewData.emSupportandTransition;
            emReviewVTS = emReviewData.emReviewVTS;
 
           } else {
@@ -72,6 +75,7 @@ let OODMonthlySummariesTable; // To be added in future release
             emSummaryIndivSelfAssessment = '';
             emSummaryIndivEmployerAssessment = '';
             emSummaryIndivProviderAssessment = '';
+            emSupportandTransition = '';
             emReviewVTS = '';
             
           }
@@ -161,6 +165,15 @@ let OODMonthlySummariesTable; // To be added in future release
       });
     //  providerAssessmentInput.classList.add('introTextArea');
 
+    supportAndTransitionInput = input.build({
+      label: `Support and Transition Plan. `,
+      type: 'textarea',
+      style: 'secondary',
+      classNames: 'autosize',
+      value: emSupportandTransition,
+      readonly: formReadOnly,
+    });
+
       // reviewVTS textarea
     reviewVTSDropdown = dropdown.build({
         label: `Has the Vocational Training Stipend (VTS) been reviewed with the individual? Does it only reflect the time the individual participated? Does the individual agree to the amount of the VTS?`,
@@ -244,6 +257,7 @@ let OODMonthlySummariesTable; // To be added in future release
      container.appendChild(selfAssessmentInput);    
      container.appendChild(employerAssessmentInput);
      container.appendChild(providerAssessmentInput);
+     container.appendChild(supportAndTransitionInput);   
      container.appendChild(reviewVTSDropdown);
 
 
@@ -385,6 +399,13 @@ let OODMonthlySummariesTable; // To be added in future release
         providerAssessmentInput.classList.remove('error');
       }
 
+      var supportAndTransitionInpt = supportAndTransitionInput.querySelector('textarea');
+      if (supportAndTransitionInpt.value === '') {
+        supportAndTransitionInput.classList.add('error');
+      } else {
+        supportAndTransitionInput.classList.remove('error');
+      }
+
       // var reviewVTSInpt = reviewVTSInput.querySelector('textarea');
       // if (reviewVTSInpt.value === '') {
       //   reviewVTSInput.classList.add('error');
@@ -476,6 +497,11 @@ let OODMonthlySummariesTable; // To be added in future release
       checkRequiredFields();
     });
 
+    supportAndTransitionInput.addEventListener('input', event => {
+      emSupportandTransition = event.target.value;
+      checkRequiredFields();
+    });
+
     reviewVTSDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
        
@@ -557,6 +583,7 @@ let OODMonthlySummariesTable; // To be added in future release
              emSummaryIndivSelfAssessment,
              emSummaryIndivEmployerAssessment,
              emSummaryIndivProviderAssessment,
+             emSupportandTransition,
              emReviewVTS,
              userId,
              
@@ -591,6 +618,7 @@ let OODMonthlySummariesTable; // To be added in future release
              emSummaryIndivSelfAssessment,
              emSummaryIndivEmployerAssessment,
              emSummaryIndivProviderAssessment,
+             emSupportandTransition,
              emReviewVTS,
              userId,
              serviceId,

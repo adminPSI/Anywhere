@@ -385,6 +385,12 @@ namespace Anywhere.service.Data
             public string licensePlateNumber { get; set; }
             public string community { get; set; }
             public string rejectionReason { get; set; }
+            public string approvedUser { get; set; }
+            public string rejectedUser { get; set; }
+            public string submittedUser { get; set; }
+            public string approved_time { get; set; }
+            public string submit_date { get; set; }
+            public string rejected_time { get; set; }
         }
 
         public class SEFilteredListResults

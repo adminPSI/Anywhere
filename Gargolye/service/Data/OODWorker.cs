@@ -255,6 +255,9 @@ namespace Anywhere.service.Data
             public string emSummaryIndivProviderAssessment { get; set; }
 
             [DataMember(Order = 7)]
+            public string emSupportandTransition { get; set; }
+
+            [DataMember(Order = 8)]
             public string emReviewVTS { get; set; }
 
             
