@@ -115,7 +115,7 @@ const OOD = (() => {
 		const tableOptions = {
 		  plain: false,
 		  tableId: 'OODEntriesTable',
-		  columnHeadings: ['Service Date','Consumer', 'Service', 'Reference No', 'User Updated', 'Employer', 'ST' ],
+		  columnHeadings: ['Service Date','Consumer', 'Service', 'Reference No', 'User Updated', 'Employer'],
 		  endIcon: false,
 		  
 		};
@@ -145,7 +145,7 @@ const OOD = (() => {
 			});	
 
 			let tableData = OODEntries.map((entry) => ({
-				values : [entry.serviceDate, entry.consumerName, entry.serviceCode, entry.referenceNumber, entry.userUpdated, entry.employerName, entry.serviceType],
+				values : [entry.serviceDate, entry.consumerName, entry.serviceCode, entry.referenceNumber, entry.userUpdated, entry.employerName],
 				//TODO JOE: add key: ServiceType value: entry.serviceType (T1 and T2)
 				attributes: [{ key: 'OODReportType', value: (entry.employerName == 'Monthly Review') ? 'monthlySummary' : 'newEntry'}, 
 				{key: 'consumerId', value: entry.consumerId}, 
