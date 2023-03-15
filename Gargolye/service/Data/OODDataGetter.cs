@@ -673,7 +673,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId)
+        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -684,6 +684,7 @@ namespace Anywhere.service.Data
             list.Add(consumerId);
             list.Add(emReviewId);
             list.Add(emReviewDate);
+            list.Add(emReferenceNumber);
             list.Add(emNextScheduledReview);
             list.Add(emSummaryIndivSelfAssessment);
             list.Add(emSummaryIndivEmployerAssessment);
@@ -705,7 +706,7 @@ namespace Anywhere.service.Data
 
         }
 
-        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId)
+        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -715,6 +716,7 @@ namespace Anywhere.service.Data
             list.Add(token);
             list.Add(consumerId);
             list.Add(emReviewDate);
+            list.Add(emReferenceNumber);
             list.Add(emNextScheduledReview);
             list.Add(emSummaryIndivSelfAssessment);
             list.Add(emSummaryIndivEmployerAssessment);

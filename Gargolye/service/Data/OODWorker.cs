@@ -245,19 +245,21 @@ namespace Anywhere.service.Data
             [DataMember(Order = 2)]
             public string emReviewDate { get; set; }
             [DataMember(Order = 3)]
+            public string emReferenceNumber { get; set; }
+            [DataMember(Order = 4)]
             public string emNextScheduledReview { get; set; }
 
-            [DataMember(Order = 4)]
-            public string emSummaryIndivSelfAssessment { get; set; }
             [DataMember(Order = 5)]
-            public string emSummaryIndivEmployerAssessment { get; set; }
+            public string emSummaryIndivSelfAssessment { get; set; }
             [DataMember(Order = 6)]
+            public string emSummaryIndivEmployerAssessment { get; set; }
+            [DataMember(Order = 7)]
             public string emSummaryIndivProviderAssessment { get; set; }
 
-            [DataMember(Order = 7)]
+            [DataMember(Order = 8)]
             public string emSupportandTransition { get; set; }
 
-            [DataMember(Order = 8)]
+            [DataMember(Order = 9)]
             public string emReviewVTS { get; set; }
 
             
