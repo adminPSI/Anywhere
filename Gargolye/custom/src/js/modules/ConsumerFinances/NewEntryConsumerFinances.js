@@ -40,8 +40,9 @@ const NewEntryCF = (() => {
             });  
         }
 
-        if (registerId != undefined) {
+        if (registerId != undefined) {           
             attachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId); 
+
             BtnName = 'UPDATE'
             regId = registerId;
             const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
@@ -199,12 +200,17 @@ const NewEntryCF = (() => {
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
-        btnWrap.appendChild(NEW_SAVE_BTN);
+        
 
         if (registerId != undefined) {
+            btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_DELETE_BTN);
         }
-        btnWrap.appendChild(NEW_CANCEL_BTN);
+        else {
+            btnWrap.appendChild(NEW_SAVE_BTN);
+            btnWrap.appendChild(NEW_CANCEL_BTN);
+        }
+        
 
         var dropWrap = document.createElement('div');
         dropWrap.classList.add('vehicleInspectionDTWrap');
@@ -250,8 +256,15 @@ const NewEntryCF = (() => {
         addRightBody.appendChild(questionAttachment.attachmentButton);
 
         addRightBody.appendChild(newReceiptInput);
-        addRightBody.appendChild(btnWrap);
-
+        if (registerId != undefined) {
+            addRightBody.appendChild(btnWrap);
+            NEW_CANCEL_BTN.style.width = '100%'; 
+            addRightBody.appendChild(NEW_CANCEL_BTN);
+        }
+        else {
+            addRightBody.appendChild(btnWrap); 
+        }
+        
         column2.appendChild(addRightCard);
 
         DOM.ACTIONCENTER.appendChild(column1);

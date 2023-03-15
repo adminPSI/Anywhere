@@ -1,6 +1,6 @@
 var ConsumerFinancesAjax = (function () {
     // OOD Main/Landing Page
-    async function getAccountTransectionEntriesAsync(consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy) {
+    async function getAccountTransectionEntriesAsync(consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -38,6 +38,8 @@ var ConsumerFinancesAjax = (function () {
                     balance +
                     '", "enteredBy":"' +
                     enteredBy +
+                    '", "isattachment":"' +
+                    isattachment +
                     '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

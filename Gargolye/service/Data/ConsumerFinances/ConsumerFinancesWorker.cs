@@ -15,6 +15,7 @@ using pdftron.PDF;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 using System.Security.Principal;
+using static Anywhere.service.Data.ResetPassword.ResetPasswordWorker;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {
@@ -131,20 +132,20 @@ namespace Anywhere.service.Data.ConsumerFinances
         public class CFAttachmentsList
         {
             [DataMember(Order = 0)]
-            public int attachmentID { get; set; } 
+            public string attachmentID { get; set; } 
             [DataMember(Order = 1)]
             public string description { get; set; }
 
         }
 
 
-        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy)
+        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    ConsumerFinancesEntry[] entries = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, transaction));
+                    ConsumerFinancesEntry[] entries = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy,  isattachment, transaction));
 
                     return entries;
 
@@ -379,10 +380,10 @@ namespace Anywhere.service.Data.ConsumerFinances
             {
                 try
                 {
-                    CFAttachmentsList[] attachmentsObj = js.Deserialize<CFAttachmentsList[]>(Odg.getCFAttachmentsList(token, regId, transaction));
-
-                    return attachmentsObj;
-
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    CFAttachmentsList[] attachmentsList = js.Deserialize<CFAttachmentsList[]>(Odg.getCFAttachmentsList(transaction, regId));
+                    return attachmentsList;
                 }
                 catch (Exception ex)
                 {

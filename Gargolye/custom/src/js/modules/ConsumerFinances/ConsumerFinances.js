@@ -96,6 +96,7 @@ const ConsumerFinances = (() => {
             filterValues.checkNo,
             filterValues.Balance,
             filterValues.enteredBy,
+            filterValues.isattachment,
         );
 
         ConsumerFinancesEntries.getAccountTransectionEntriesResult.forEach(function (entry) {
@@ -198,7 +199,8 @@ const ConsumerFinances = (() => {
             maxamount: '10000',
             checkNo: '',
             Balance: '',
-            enteredBy: '%'
+            enteredBy: '%',
+            isattachment : 'Yes'
         }
 
         return button.build({
@@ -251,8 +253,8 @@ const ConsumerFinances = (() => {
                 <span>Account:</span> ${(filterValues.accountName == '%') ? 'ALL' : filterValues.accountName}&nbsp;&nbsp;
 			    <span>Payee:</span> ${(filterValues.payee == '%') ? 'ALL' : filterValues.payee}&nbsp;&nbsp;
 			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category} &nbsp;&nbsp;
-                <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.enteredBy} &nbsp;&nbsp;
-                <span>Has Attachment:</span> Yes 
+                <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;&nbsp; 
+                <span>Has Attachment:</span>  ${filterValues.isattachment}
             </p>
 		  </div>`;
 
@@ -327,8 +329,8 @@ const ConsumerFinances = (() => {
         isAttachedChkBox = input.buildCheckbox({
             isChecked: false,
             text: "Has Attachment ?",
-            //isChecked: checked === 'Y' ? true : false,
-            // callback: () => setCheckForInactiveUser(event.target)
+            isChecked: filterValues.isattachment === 'Yes' ? true : false,
+            callback: () => setIsAttachedChkBox(event.target)
         });
 
         // apply filters button
@@ -383,7 +385,15 @@ const ConsumerFinances = (() => {
         POPUP.show(filterPopup);
     }
 
-    // ToDO:
+    function setIsAttachedChkBox(input) { 
+        debugger 
+        if (input.checked) {
+            filterValues.isattachment = 'Yes';
+        } else {
+            filterValues.isattachment = 'No'; 
+        }
+    }
+
     // binding filter events 
     function eventListeners() {      
         fromDateInput.addEventListener('change', event => {
@@ -414,6 +424,7 @@ const ConsumerFinances = (() => {
         });
         lastUpdateDropdown.addEventListener('change', event => {
             filterValues.enteredBy = event.target.value;
+            filterValues.userName = event.target.options[event.target.selectedIndex].innerHTML;
         });
         payeeDropdown.addEventListener('change', event => {
             filterValues.payee = event.target.value;
@@ -466,7 +477,7 @@ const ConsumerFinances = (() => {
             text: employee.userName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
-        dropdown.populate("lastUpdateDropdown", data, filterValues.userId);
+        dropdown.populate("lastUpdateDropdown", data, filterValues.enteredBy); 
     }
 
     async function filterPopupDoneBtn() {

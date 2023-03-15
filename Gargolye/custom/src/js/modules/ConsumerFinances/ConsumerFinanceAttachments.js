@@ -341,15 +341,11 @@ const consumerFinanceAttachment = (() => {
             regId: regID,
         };
         const res = await ConsumerFinancesAjax.getCFAttachmentsList(retData);
-        res.forEach(attachment => {
-            let attArray = [];
-            if (attachments.has(attachment.regId)) {
-                attArray = attachments.get(attachment.regId);
-            }
-            attArray.push(attachment);
-            attachments.set(attachment.regId, attArray);
+        let attArray = [];
+        res.forEach(attachment => {           
+            attArray.push(attachment); 
         });
-        return attachments;
+        return attArray;
     }
 
     return {

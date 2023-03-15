@@ -20,12 +20,12 @@ namespace Anywhere.service.Data.ConsumerFinances
         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
 
         //data for OOD Entries Listing on OOD Module Landing Page
-        public string getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, DistributedTransaction transaction)
+        public string getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("getAccountTransectionEntries ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[11];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[12];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerIds", DbType.String, consumerIds);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@activityStartDate", DbType.String, activityStartDate);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@activityEndDate", DbType.String, activityEndDate);
@@ -37,9 +37,9 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@checkNo", DbType.String, checkNo);
                 args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@balance", DbType.String, balance);
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@enteredBy", DbType.String, enteredBy);
-
+                args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@isattachment", DbType.String, isattachment);
                 // returns the workflow document descriptions for the given workflowId
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinancesEntries(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinancesEntries(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -264,23 +264,23 @@ namespace Anywhere.service.Data.ConsumerFinances
                 throw ex;
             }
         }
-
-        public string getCFAttachmentsList(string token, string regId , DistributedTransaction transaction)
+       
+        public string getCFAttachmentsList(DistributedTransaction transaction, string regId) 
         {
+            List<string> list = new List<string>();
+            list.Add(regId);
             try
             {
-                logger.debug("getCFAttachmentsList");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
-                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerID", DbType.String, regId);
-
-                // returns the employerId  that was just inserted
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinanceAttachmentsList(?)", args, ref transaction).ToString();
+                logger.debug("getConsumerFinanceAttachmentsList");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinanceAttachmentsList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_getConsumerFinanceAttachmentsList(" + regId + ")");
+                logger.error("WFDG", ex.Message + "ANYW_getConsumerFinanceAttachmentsList()");
                 throw ex;
             }
+
         }
 
 
