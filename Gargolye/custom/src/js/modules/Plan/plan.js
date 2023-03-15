@@ -1748,18 +1748,23 @@ const plan = (function () {
 
     let currentPlanId;
     let workflowId;
+    let insertedSSA;
     const workflowIds = [];
 
     if (planType === 'a') {
       const planYearStartDate = planDates.getPlanYearStartDate();
       const planYearReviewDate = planDates.getPlanReviewDate();
 
-      currentPlanId = await planAjax.insertAnnualPlan({
+      let returnString = await planAjax.insertAnnualPlan({
         token: $.session.Token,
         consumerId: selectedConsumer.id,
         planYearStart: UTIL.formatDateFromDateObj(planYearStartDate),
         reviewDate: UTIL.formatDateFromDateObj(planYearReviewDate),
       });
+
+      returnString = returnString.split(',');
+      currentPlanId = returnString[0];
+      insertedSSA = returnString[1];
     } else {
       const EffectiveStartDate = planDates.getEffectiveStartDate();
       const esDate = UTIL.formatDateFromDateObj(EffectiveStartDate);
@@ -1818,7 +1823,7 @@ const plan = (function () {
     planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
 
     const consumer = getSelectedConsumerName(selectedConsumer);
-    showAddedToTeamMemberPopup(consumer, '');
+    if (planType === 'a') showAddedToTeamMemberPopup(consumer, insertedSSA);
 
     setTimeout(() => {
       POPUP.hide(addedMemberPopup);
@@ -1959,8 +1964,11 @@ const plan = (function () {
     const message1 = `${consumer} has been added as a Team Member to this plan.`;
     const message2 = `${ssa} has been added as a Team Member to this plan.`;
 
-    addedMemberPopup.innerText = message1;
-    addedMemberPopup.innerText = message2;
+    if (ssa) {
+      addedMemberPopup.innerHTML += `<p>${message1}</p><p>${message2}</p>`;
+    } else {
+      addedMemberPopup.innerHTML += `<p>${message1}</p>`;
+    }
 
     POPUP.show(addedMemberPopup);
   }
