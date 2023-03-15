@@ -344,6 +344,39 @@ let OODMonthlySummariesTable; // To be added in future release
 
     }
 
+    function displaynoReferenceNumberPopup() {
+
+      // no reference Numbers
+			let noReferenceNumberPopup = POPUP.build({
+				header: "No Reference Numbers Found",
+				hideX: true,
+				id: "noReferenceNumberPopup"
+			});   
+
+			let OKBtn = button.build({
+				text: 'Ok',
+				style: 'secondary',
+				type: 'contained',
+				callback: function () {
+				  POPUP.hide(noReferenceNumberPopup);
+				 // overlay.hide();
+
+				},
+			  });
+
+			  let btnWrap = document.createElement("div");
+			  let warningMessage = document.createElement('p');
+			  warningMessage.innerHTML = 'There are no reference numbers for this consumer and date combination. Please change the Month/Year to see a list of valid reference numbers or contact your Advisor Administrator to enter an OOD Authorization for the selected consumer.';
+			  btnWrap.classList.add("btnWrap");
+			  btnWrap.appendChild(OKBtn);    
+			  //noServicesPopup.appendChild(consumerServicesDropdown);
+			  noReferenceNumberPopup.appendChild(warningMessage);
+			  noReferenceNumberPopup.appendChild(btnWrap);
+			 	overlay.show();
+			  POPUP.show(noReferenceNumberPopup);
+
+    }
+
     async function populateReferenceNumberDropdown() { 
  
       setReviewStartandEndDates();
