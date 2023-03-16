@@ -2695,9 +2695,9 @@ namespace Anywhere
             return Ow.getActiveServiceCodes(token, serviceCodeType);
         }
 
-        public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate)
+        public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string serviceType)
         {
-            return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate);
+            return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate, serviceType);
         }
 
         public OODWorker.ServiceCode[] getConsumerServiceCodes(string consumerId, string serviceDate, string token)
@@ -2791,14 +2791,14 @@ namespace Anywhere
             return Ow.getForm8MonthlySummary(token, emReviewId);
         }
 
-        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId)
+        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId)
         {
-            return Odg.updateForm8MonthlySummary(token, consumerId, emReviewId, emReviewDate, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId);
+            return Odg.updateForm8MonthlySummary(token, consumerId, emReviewId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId);
         }
 
-        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId)
+        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId)
         {
-            return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emNextScheduledReview, emSummaryIndivSelfAssessment,emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
+            return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment,emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
         }
 
 

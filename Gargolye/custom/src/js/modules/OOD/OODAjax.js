@@ -270,7 +270,7 @@ var OODAjax = (function () {
     }
   }
   
-  async function getConsumerReferenceNumbersAsync(consumerIds, startDate, endDate) {
+  async function getConsumerReferenceNumbersAsync(consumerIds, startDate, endDate, serviceType) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -288,6 +288,7 @@ var OODAjax = (function () {
           consumerIds: consumerIds,
           startDate: startDate,
           endDate: endDate,
+          serviceType: serviceType,
           
         }),
         contentType: 'application/json; charset=utf-8',
@@ -801,6 +802,7 @@ var OODAjax = (function () {
         consumerId: data.consumerId, 
         emReviewId: data.emReviewId,
         emReviewDate: data.emReviewDate,
+        emReferenceNumber: data.emReferenceNumber,
         emNextScheduledReview: data.emNextScheduledReview,
         emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
         emSummaryIndivEmployerAssessment: data.emSummaryIndivEmployerAssessment,
@@ -827,6 +829,7 @@ var OODAjax = (function () {
       token: $.session.Token, 
       consumerId: data.consumerId, 
       emReviewDate: data.emReviewDate,
+      emReferenceNumber: data.emReferenceNumber,
       emNextScheduledReview: data.emNextScheduledReview,
       emSummaryIndivSelfAssessment: data.emSummaryIndivSelfAssessment,
       emSummaryIndivEmployerAssessment: data.emSummaryIndivEmployerAssessment,
