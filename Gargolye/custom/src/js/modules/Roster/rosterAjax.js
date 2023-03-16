@@ -300,7 +300,7 @@ var rosterAjax = (function () {
       });
 
       return {
-        ...data.getPlanAndWorkFlowAttachmentsResult,
+        ...data.updateDemogrphicsRecordResult,
       };
     } catch (error) {
       console.log(error);
