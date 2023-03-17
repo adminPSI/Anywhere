@@ -195,7 +195,7 @@ var ConsumerFinancesAjax = (function () {
     }
 
     async function insertAccountAsync(
-        date, amount, amountType, AccountID, payee, CategoryID, subCategory, checkNo, description, attachment, receipt, BtnName, regId
+        date, amount, amountType, AccountID, payee, CategoryID, subCategory, checkNo, description, attachmentID, attachmentDesc, receipt, BtnName, regId
     ) {
         try { 
             const result = await $.ajax({
@@ -220,7 +220,8 @@ var ConsumerFinancesAjax = (function () {
                     subCategory: subCategory,
                     checkNo: checkNo,
                     description: description,
-                    attachment: attachment,
+                    attachmentId: attachmentID,
+                    attachmentDesc: attachmentDesc,
                     receipt: receipt,  
                     userId: $.session.UserId,
                     eventType: BtnName,
