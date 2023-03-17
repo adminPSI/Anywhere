@@ -105,7 +105,7 @@ let OODMonthlySummariesTable; // To be added in future release
         var LineBr = document.createElement('br');
 
      const heading = document.createElement('h2');
-     heading.innerHTML = 'Community Based Assessment -- OOD Form 8 Monthly Summary';
+     heading.innerHTML = 'Community Based Assessment - OOD Form 8 Monthly Summary';
      heading.classList.add('OODsectionHeading');
 
      container.appendChild(myconsumer);
