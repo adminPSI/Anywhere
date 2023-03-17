@@ -319,5 +319,6 @@ var rosterAjax = (function () {
     updatePortrait,
     getConsumerRelationships,
     getPSIUserOptionList,
+    updateConsumerDemographics,
   };
 })();

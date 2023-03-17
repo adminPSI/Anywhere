@@ -95,6 +95,7 @@ const demographics = (function () {
     // EMAIL
     if (name === 'email') {
       input.type = 'email';
+      input.pattern = '[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$';
       return;
     }
     // NUMBER
@@ -269,6 +270,7 @@ const demographics = (function () {
       label.innerText = formatLabelText(name);
       const input = document.createElement('input');
       input.id = name;
+      input.value = value;
       input.placeholder = value ? value : '';
       setInputType(input, name);
       const saveIcon = document.createElement('span');
@@ -280,13 +282,21 @@ const demographics = (function () {
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
         // save value
-        await rosterAjax.updateDemographicsValue({
+        const success = await rosterAjax.updateConsumerDemographics({
           field: name,
           newValue: e.target.value,
           consumerId,
+          applicationName: $.session.applicationName,
         });
         // show save icon
-        saveIcon.innerHTML = icons['checkmark'];
+        if (success) {
+          saveIcon.innerHTML = icons['checkmark'];
+          saveIcon.classList.add('success');
+          viewElement.innerHTML = formatViewInnerHTML(name, e.target.value);
+        } else {
+          saveIcon.innerHTML = icons['error'];
+          saveIcon.classList.add('error');
+        }
       });
 
       editElement.appendChild(label);
@@ -405,7 +415,7 @@ const demographics = (function () {
   }
 
   function populateDemographicsSection(section, data, consumerID) {
-    consumerID = consumerID;
+    consumerId = consumerID;
     demoData = formatDataForDisplay(data);
     isGK = $.session.applicationName === 'Gatekeeper';
 
