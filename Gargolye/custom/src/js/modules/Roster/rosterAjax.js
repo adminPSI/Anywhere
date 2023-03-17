@@ -300,7 +300,7 @@ var rosterAjax = (function () {
       });
 
       return {
-        ...data.updateDemogrphicsRecordResult,
+        ...data.updateDemographicsRecordResult,
       };
     } catch (error) {
       console.log(error);
