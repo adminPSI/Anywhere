@@ -33,6 +33,7 @@ using Anywhere.service.Data.eSignature___OneSpan;
 using System.Management.Automation.Language;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.ConsumerFinances;
+using Anywhere.service.Data.ConsumerDemographics;
 using OneSpanSign.Sdk;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 
@@ -623,6 +624,14 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/GetConsumerRelationshipsJSON/")]
         RosterWorker.ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/updateDemographicsRecord/")]
+        string updateDemographicsRecord(string consumerId, string field, string newValue, string applicationName);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
