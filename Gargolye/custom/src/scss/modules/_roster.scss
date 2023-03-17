@@ -413,6 +413,10 @@
         .edit {
           display: flex;
           flex-flow: row wrap;
+
+          &.invalid {
+            color: $red;
+          }
         }
         .view {
           display: none;

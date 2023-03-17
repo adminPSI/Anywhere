@@ -106,6 +106,7 @@ const demographics = (function () {
       name === 'residentNumber'
     ) {
       input.type = 'number';
+      input.pattern = '/^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/im';
     }
     // TEL
     if (
@@ -270,11 +271,41 @@ const demographics = (function () {
       label.innerText = formatLabelText(name);
       const input = document.createElement('input');
       input.id = name;
-      input.value = value;
+      input.value = value ? value : '';
       input.placeholder = value ? value : '';
       setInputType(input, name);
       const saveIcon = document.createElement('span');
       saveIcon.classList.add('saveIcon');
+
+      input.addEventListener('change', e => {
+        if (name === 'email') {
+          const validateEmail = email => {
+            return email.match(
+              /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            );
+          };
+
+          if (!validateEmail(e.target.value)) {
+            editElement.classList.add('invalid');
+          } else {
+            editElement.classList.remove('invalid');
+          }
+        }
+        if (
+          name === 'primaryPhone' ||
+          name === 'secondaryPhone' ||
+          name === 'cellPhone' ||
+          name === 'organizationPhone'
+        ) {
+          var phone = e.target.value;
+          var phoneNum = phone.replace(/[^\d]/g, '');
+          if (phoneNum.length > 6 && phoneNum.length < 11) {
+            editElement.classList.remove('invalid');
+          } else {
+            editElement.classList.add('invalid');
+          }
+        }
+      });
 
       input.addEventListener('focusout', async e => {
         console.log('focusout from input');
