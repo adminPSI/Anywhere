@@ -386,7 +386,6 @@ const ConsumerFinances = (() => {
     }
 
     function setIsAttachedChkBox(input) { 
-        debugger 
         if (input.checked) {
             filterValues.isattachment = 'Yes';
         } else {
