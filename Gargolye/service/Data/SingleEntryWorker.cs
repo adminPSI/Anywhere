@@ -252,6 +252,35 @@ namespace Anywhere.service.Data
             return consumersPresentObj;
         }
 
+        public string adminUpdateSingleEntryStatus(string token, string singleEntryIdString, string newStatus, string userID, string rejectionReason)
+        {
+            // Update the AA_Single_Entry table
+            dg.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
+
+            // If string has more than one id, the string will be split into an array containing each id
+            string[] singleEntryIdArr = singleEntryIdString.Split(',');
+            char newStatusRejected = 'R';
+
+            // Looks for rejection status and sends out notification 
+            if (newStatus == newStatusRejected.ToString())
+            {
+                foreach (var singleEntryId in singleEntryIdArr)
+                {
+                    try
+                    {
+                        // Converts the id into a double to be used in procedure
+                        double singleEntryIdDouble = double.Parse(singleEntryId);
+                        dg.timeEntryRejectionNotification(token, singleEntryId);
+                    }
+                    catch (Exception ex)
+                    {
+                        return "failed";
+                    }
+                }
+            }
+            return "success";
+        }
+
         public SingleEntryEvvReasonCodes[] getSingleEntryEvvReasonCodesJSON(string token)
         {
             string evvReasonCodeString = dg.getSingleEntryEVVReasonCodeJSON(token);

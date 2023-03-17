@@ -15,6 +15,7 @@ const NewEntryCF = (() => {
 
     let attachmentArray = [];
     let attachmentId = [];
+    let attachmentDesc = [];
     let categoryID;
     let Description;
     let BtnName;
@@ -26,22 +27,23 @@ const NewEntryCF = (() => {
         buildNewEntryForm();
     }
 
-    async function buildNewEntryForm(registerId, attachment, attachmentID) {      
-        if (attachment != undefined) {
-            attachmentArray = attachment; 
-            var count = 0;
-            attachment.forEach(att => { 
-                const Data = {
-                    attachmentID: attachmentId[0],
-                    description: att.description,
-                };             
-                attachmentId.push(Data);
-                count++;                
-            });  
+    async function buildNewEntryForm(registerId, attachment, attachmentID) {
+        if (attachment) {
+            attachmentArray = attachment;
+            attachmentId = attachmentID;
+
+            attachment.forEach(att => {
+                attachmentDesc.push(att.description);
+            });
+        }
+        else {
+            attachmentArray = [];
+            attachmentId = []; 
+            attachmentDesc = [];
         }
 
-        if (registerId != undefined) {           
-            attachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId); 
+        if (registerId) {
+            attachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
 
             BtnName = 'UPDATE'
             regId = registerId;
@@ -52,14 +54,15 @@ const NewEntryCF = (() => {
             account = getAccountEntriesByIdResult[0].account;
             payee = getAccountEntriesByIdResult[0].payee;
             category = getAccountEntriesByIdResult[0].category;
-            subCategory = getAccountEntriesByIdResult.subCategory;
+            subCategory = getAccountEntriesByIdResult[0].subCategory; 
             checkNo = getAccountEntriesByIdResult[0].checkno;
             description = getAccountEntriesByIdResult[0].description;
-            attachment = '';
             receipt = getAccountEntriesByIdResult[0].receipt;
             accountID = getAccountEntriesByIdResult[0].accountID;
+            accountType = getAccountEntriesByIdResult[0].accountType;
         }
         else {
+            regId = 0;        
             BtnName = 'SAVE'
             date = UTIL.getTodaysDate();
             amount = '';
@@ -179,13 +182,13 @@ const NewEntryCF = (() => {
             id: `expenseRadio`,
             text: "Expense",
             name: "amountType",
-            isChecked: true,
+            isChecked: accountType == 'D' ? false : true,
         });
         depositRadio = input.buildRadio({
             id: `depositRadio`,
             text: "Deposit",
             name: "amountType",
-            isChecked: false,
+            isChecked: accountType == 'D' ? true : false, 
         });
 
         const radioDiv = document.createElement("div");
@@ -200,9 +203,9 @@ const NewEntryCF = (() => {
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
-        
 
-        if (registerId != undefined) {
+
+        if (registerId) {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_DELETE_BTN);
         }
@@ -210,7 +213,7 @@ const NewEntryCF = (() => {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_CANCEL_BTN);
         }
-        
+
 
         var dropWrap = document.createElement('div');
         dropWrap.classList.add('vehicleInspectionDTWrap');
@@ -256,15 +259,15 @@ const NewEntryCF = (() => {
         addRightBody.appendChild(questionAttachment.attachmentButton);
 
         addRightBody.appendChild(newReceiptInput);
-        if (registerId != undefined) {
+        if (registerId ) {
             addRightBody.appendChild(btnWrap);
-            NEW_CANCEL_BTN.style.width = '100%'; 
+            NEW_CANCEL_BTN.style.width = '100%';
             addRightBody.appendChild(NEW_CANCEL_BTN);
         }
         else {
-            addRightBody.appendChild(btnWrap); 
+            addRightBody.appendChild(btnWrap);
         }
-        
+
         column2.appendChild(addRightCard);
 
         DOM.ACTIONCENTER.appendChild(column1);
@@ -381,14 +384,14 @@ const NewEntryCF = (() => {
     async function saveNewAccount() {
         const amountType = document.getElementById("expenseRadio").checked ? "E" : "D";
         if (attachmentArray == undefined || attachmentArray.length == 0) {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, null, receipt, BtnName, regId);
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, null,null, receipt, BtnName, regId);
             const { insertAccountResult } = result;
             if (insertAccountResult.registerId != null) {
                 ConsumerFinances.loadConsumerFinanceLanding();
             }
         }
         else {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, attachmentId, receipt, BtnName, regId);
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId);
             const { insertAccountResult } = result;
 
             if (insertAccountResult.registerId != null) {

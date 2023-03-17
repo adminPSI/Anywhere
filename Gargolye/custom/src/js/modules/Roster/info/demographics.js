@@ -95,6 +95,7 @@ const demographics = (function () {
     // EMAIL
     if (name === 'email') {
       input.type = 'email';
+      input.pattern = '[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$';
       return;
     }
     // NUMBER
@@ -105,6 +106,7 @@ const demographics = (function () {
       name === 'residentNumber'
     ) {
       input.type = 'number';
+      input.pattern = '/^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/im';
     }
     // TEL
     if (
@@ -264,15 +266,51 @@ const demographics = (function () {
       editElement = document.createElement('div');
       editElement.classList.add('edit');
 
+      if (!value || value === ' ') {
+        value = '';
+      } else {
+        if (name.includes('Phone')) {
+          value = value.replace(' ', '');
+        }
+      }
+
       const label = document.createElement('label');
       label.setAttribute('for', name);
       label.innerText = formatLabelText(name);
       const input = document.createElement('input');
       input.id = name;
+      input.value = value ? value : '';
       input.placeholder = value ? value : '';
       setInputType(input, name);
       const saveIcon = document.createElement('span');
       saveIcon.classList.add('saveIcon');
+
+      input.addEventListener('keyup', e => {
+        if (name === 'email') {
+          const validateEmail = email => {
+            return email.match(
+              /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            );
+          };
+
+          if (!validateEmail(e.target.value)) {
+            editElement.classList.add('invalid');
+          } else {
+            editElement.classList.remove('invalid');
+          }
+        }
+        if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
+          const validatePhone = phone => {
+            return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
+            //return phone.replace(/[^0-9.]/g, '').length === 10;
+          };
+          if (!validatePhone(e.target.value)) {
+            editElement.classList.add('invalid');
+          } else {
+            editElement.classList.remove('invalid');
+          }
+        }
+      });
 
       input.addEventListener('focusout', async e => {
         console.log('focusout from input');
@@ -280,10 +318,21 @@ const demographics = (function () {
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
         // save value
-        // await rosterAjax.updateDemographicsValue({token: $.session.token, consumerId: '', fieldName: name, newValue: e.target.value})
-        // await new Promise(resolve => setTimeout(resolve, 50000));
+        const success = await rosterAjax.updateConsumerDemographics({
+          field: name,
+          newValue: e.target.value,
+          consumerId,
+          applicationName: $.session.applicationName,
+        });
         // show save icon
-        saveIcon.innerHTML = icons['checkmark'];
+        if (success) {
+          saveIcon.innerHTML = icons['checkmark'];
+          saveIcon.classList.add('success');
+          viewElement.innerHTML = formatViewInnerHTML(name, e.target.value);
+        } else {
+          saveIcon.innerHTML = icons['error'];
+          saveIcon.classList.add('error');
+        }
       });
 
       editElement.appendChild(label);
@@ -401,7 +450,8 @@ const demographics = (function () {
     });
   }
 
-  function populateDemographicsSection(section, data) {
+  function populateDemographicsSection(section, data, consumerID) {
+    consumerId = consumerID;
     demoData = formatDataForDisplay(data);
     isGK = $.session.applicationName === 'Gatekeeper';
 

@@ -413,6 +413,13 @@
         .edit {
           display: flex;
           flex-flow: row wrap;
+
+          &.invalid {
+            color: $red;
+            input {
+              border-color: $red;
+            }
+          }
         }
         .view {
           display: none;
@@ -436,9 +443,15 @@
         width: calc(100% - 26px);
       }
       .saveIcon {
-        color: $secondary;
         width: 24px;
         display: inline-flex;
+
+        &.success {
+          color: $secondary;
+        }
+        &.error {
+          color: $red;
+        }
 
         .spinner__small {
           display: flex;

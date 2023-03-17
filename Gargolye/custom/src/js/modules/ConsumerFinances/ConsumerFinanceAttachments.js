@@ -334,8 +334,6 @@ const consumerFinanceAttachment = (() => {
     }
 
     async function getConsumerFinanceAttachments(regID) { 
-        attachments = new Map();
-
         const retData = {
             token: $.session.Token, 
             regId: regID,
@@ -345,7 +343,7 @@ const consumerFinanceAttachment = (() => {
         res.forEach(attachment => {           
             attArray.push(attachment); 
         });
-        return attArray;
+        return attArray; 
     }
 
     return {

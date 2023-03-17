@@ -34,6 +34,7 @@ using Anywhere.service.Data.AssessmentReOrderRows;
 using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.SimpleMar;
+using Anywhere.service.Data.ConsumerDemographics;
 using Newtonsoft.Json.Linq;
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.DocumentConversion;
@@ -103,6 +104,7 @@ namespace Anywhere
         DisplayPlanReportAndAttachments dpra = new DisplayPlanReportAndAttachments();
         ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
         ConsumerFinancesWorker cf = new ConsumerFinancesWorker();
+        DemographicsWoker cdw = new DemographicsWoker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -538,6 +540,11 @@ namespace Anywhere
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
         }
 
+        public string updateDemographicsRecord(string consumerId, string field, string newValue, string applicationName)
+        {
+            return cdw.updateDemographicsRecord(consumerId, field, newValue, applicationName);
+        }
+
         public string setupPasswordResetEmail(string userName)
         {
             return dg.setupPasswordResetEmail(userName);
@@ -886,11 +893,11 @@ namespace Anywhere
         {
             return singleEntryWorker.getAdminSingleEntryLocationsJSON(token);
         }
-        
+
 
         public string adminUpdateSingleEntryStatus(string token, string singleEntryIdString, string newStatus, string userID, string rejectionReason)
         {
-            return dg.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
+            return singleEntryWorker.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
         }
 
         public string changeFromPSI(string token, string userID)
@@ -3062,45 +3069,59 @@ namespace Anywhere
             return dg.resetPassword(userId, hash, newPassword, changingToHashPassword);
         }
 
-        public ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate ,string activityEndDate, string accountName, string payee, string category, string amount, string checkNo, string balance, string enteredBy)
+        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment)
         {
-            return cf.getAccountTransectionEntries(token,consumerIds, activityStartDate , activityEndDate, accountName, payee, category, amount, checkNo, balance, enteredBy);
+            return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment);
         }
 
-        public ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token)
+        public ActiveAccount[] getActiveAccount(string token)
         {
             return cf.getActiveAccount(token);
         }
 
-        public ConsumerFinancesWorker.Payees[] getPayees(string token ,string userId)
+        public Payees[] getPayees(string token, string userId)
         {
             return cf.getPayees(token, userId);
         }
 
-        public ConsumerFinancesWorker.Category[] getCatogories(string token,string categoryID)
+        public Category[] getCatogories(string token, string categoryID)
         {
             return cf.getCatogories(token, categoryID);
         }
 
-        public ConsumerFinancesWorker.SubCategory[] getSubCatogories(string token, string categoryID)
+        public SubCategory[] getSubCatogories(string token, string categoryID)
         {
             return cf.getSubCatogories(token, categoryID);
         }
 
-        public ConsumerFinancesWorker.ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId)
+        public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId)
         {
             return cf.insertPayee(token, payeeName, address1, address2, city, state, zipcode, userId);
         }
 
-        public ConsumerFinancesWorker.AccountRegister insertAccount(string token, string date, string amount,string amountType, string account, string payee, string category,string subCategory, string checkNo, string description, string attachmentType, string attachment, string receipt, string userId, string eventType, string regId)
+        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId)
         {
-            return cf.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentType, attachment, receipt, userId, eventType, regId);
+            return cf.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, userId, eventType, regId);
         }
 
-
-        public ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId)    
+        public ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId)
         {
             return cf.getAccountEntriesById(token, registerId);
+        }
+
+        public string deleteConsumerFinanceAccount(string token, string registerId)
+        {
+            return cf.deleteConsumerFinanceAccount(token, registerId);
+        }
+
+        public string addCFAttachment(string token, string attachmentType, string attachment)
+        {
+            return cf.addCFAttachment(token, attachmentType, attachment);
+        }
+
+        public ConsumerFinancesWorker.CFAttachmentsList[] getCFAttachmentsList(string token, string regId)
+        {
+            return cf.getCFAttachmentsList(token, regId);
         }
 
     }

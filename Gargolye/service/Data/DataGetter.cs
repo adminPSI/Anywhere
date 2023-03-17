@@ -1708,6 +1708,24 @@ namespace Anywhere.Data
             }
         }
 
+        public string timeEntryRejectionNotification(string token, string singleEntryId) {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("timeEntryRejectionNotification ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(singleEntryId);
+            string text = "CALL DBA.ANYW_TimeEntryRejectionNotification(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("701", ex.Message + "ANYW_TimeEntryRejectionNotification(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "701: Error logger.error(\"701\", ex.Message + \"ANYW_TimeEntryRejectionNotification(\" + string.Join(\",\", list.Select(x => string.Format(\"'{0}'\", x)).ToList()) + \")\");\r\n";
+            }
+        }
+
         public string getClockedInDayServicesAtLocationCounts(string token, string locationId)
         {
             if (tokenValidator(token) == false) return null;
