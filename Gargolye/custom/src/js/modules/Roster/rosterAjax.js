@@ -293,7 +293,7 @@ var rosterAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/updateDemogrphicsRecord/',
+          '/updateDemographicsRecord/',
         data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
