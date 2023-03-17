@@ -384,30 +384,30 @@ namespace Anywhere.service.Data
         //    return sr.ReadToEnd;
         //}
 
-        //public long UpdateRecord(string QueryString)
-        //{
-        //    long functionReturnValue = 0;
-        //    try
-        //    {
-        //        functionReturnValue = 0;
-        //        using (SAConnection connection = new SAConnection(gSAConnString))
-        //        {
-        //            using (SACommand SqlCommand = new SACommand(QueryString, connection))
-        //            {
-        //                SqlCommand.CommandTimeout = 0;
-        //                connection.Open();
-        //                functionReturnValue = SqlCommand.ExecuteNonQuery();
-        //                return functionReturnValue;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new System.Exception(ex.Message.ToString + Constants.vbCrLf + ex.Source + ex.StackTrace);
-        //        return -999;
-        //    }
-        //    return functionReturnValue;
-        //}
+        public long UpdateRecord(string QueryString)
+        {
+            long functionReturnValue = 0;
+            try
+            {
+                functionReturnValue = 0;
+                using (SAConnection connection = new SAConnection(gSAConnString))
+                {
+                    using (SACommand SqlCommand = new SACommand(QueryString, connection))
+                    {
+                        SqlCommand.CommandTimeout = 0;
+                        connection.Open();
+                        functionReturnValue = SqlCommand.ExecuteNonQuery();
+                        return functionReturnValue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //throw new System.Exception(ex.Message.ToString + Constants.vbCrLf + ex.Source + ex.StackTrace);
+                return -999;
+            }
+            return functionReturnValue;
+        }
 
         //public string WriteDataStream(string FileName)
         //{
