@@ -416,6 +416,9 @@
 
           &.invalid {
             color: $red;
+            input {
+              border-color: $red;
+            }
           }
         }
         .view {

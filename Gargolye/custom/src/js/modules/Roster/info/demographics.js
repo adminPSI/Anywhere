@@ -266,6 +266,14 @@ const demographics = (function () {
       editElement = document.createElement('div');
       editElement.classList.add('edit');
 
+      if (!value || value === ' ') {
+        value = '';
+      } else {
+        if (name.includes('Phone')) {
+          value = value.replace(' ', '');
+        }
+      }
+
       const label = document.createElement('label');
       label.setAttribute('for', name);
       label.innerText = formatLabelText(name);
@@ -277,7 +285,7 @@ const demographics = (function () {
       const saveIcon = document.createElement('span');
       saveIcon.classList.add('saveIcon');
 
-      input.addEventListener('change', e => {
+      input.addEventListener('keyup', e => {
         if (name === 'email') {
           const validateEmail = email => {
             return email.match(
@@ -291,18 +299,15 @@ const demographics = (function () {
             editElement.classList.remove('invalid');
           }
         }
-        if (
-          name === 'primaryPhone' ||
-          name === 'secondaryPhone' ||
-          name === 'cellPhone' ||
-          name === 'organizationPhone'
-        ) {
-          var phone = e.target.value;
-          var phoneNum = phone.replace(/[^\d]/g, '');
-          if (phoneNum.length > 6 && phoneNum.length < 11) {
-            editElement.classList.remove('invalid');
-          } else {
+        if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
+          const validatePhone = phone => {
+            return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
+            //return phone.replace(/[^0-9.]/g, '').length === 10;
+          };
+          if (!validatePhone(e.target.value)) {
             editElement.classList.add('invalid');
+          } else {
+            editElement.classList.remove('invalid');
           }
         }
       });
