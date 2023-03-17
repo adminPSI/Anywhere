@@ -34,6 +34,7 @@ using Anywhere.service.Data.AssessmentReOrderRows;
 using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.SimpleMar;
+using Anywhere.service.Data.ConsumerDemographics;
 using Newtonsoft.Json.Linq;
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.DocumentConversion;
@@ -103,6 +104,7 @@ namespace Anywhere
         DisplayPlanReportAndAttachments dpra = new DisplayPlanReportAndAttachments();
         ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
         ConsumerFinancesWorker cf = new ConsumerFinancesWorker();
+        DemographicsWoker cdw = new DemographicsWoker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -536,6 +538,11 @@ namespace Anywhere
         public RosterWorker.ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
+        }
+
+        public string updateDemographicsRecord(string consumerId, string field, string newValue, string applicationName)
+        {
+            return cdw.updateDemographicsRecord(consumerId, field, newValue, applicationName);
         }
 
         public string setupPasswordResetEmail(string userName)
