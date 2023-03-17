@@ -893,11 +893,11 @@ namespace Anywhere
         {
             return singleEntryWorker.getAdminSingleEntryLocationsJSON(token);
         }
-        
+
 
         public string adminUpdateSingleEntryStatus(string token, string singleEntryIdString, string newStatus, string userID, string rejectionReason)
         {
-            return dg.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
+            return singleEntryWorker.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
         }
 
         public string changeFromPSI(string token, string userID)
