@@ -1740,7 +1740,7 @@ const plan = (function () {
   function getSelectedConsumerName(selectedConsumer) {
     const last = selectedConsumer.card.querySelector('.name_last');
     const first = selectedConsumer.card.querySelector('.name_first');
-    return `${first} ${last}`;
+    return `${first.innerText} ${last.innerText}`;
   }
   async function createNewPlan(selectedConsumer, processId, selectedWorkflows) {
     const EffectiveEndDate = planDates.getEffectiveEndDate();
@@ -1820,15 +1820,18 @@ const plan = (function () {
     planActiveStatus = true;
     revisionNumber = undefined;
 
+    if (planType === 'a') {
+      const consumer = getSelectedConsumerName(selectedConsumer);
+      showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
+        POPUP.hide(addedMemberPopup);
+        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+        buildPlanPage();
+      });
+      return;
+    }
+
     planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
-
-    const consumer = getSelectedConsumerName(selectedConsumer);
-    if (planType === 'a') showAddedToTeamMemberPopup(consumer, insertedSSA);
-
-    setTimeout(() => {
-      POPUP.hide(addedMemberPopup);
-      buildPlanPage();
-    }, 2000);
+    buildPlanPage();
   }
 
   function buildPreviousPlansTable() {
@@ -1956,19 +1959,26 @@ const plan = (function () {
 
     POPUP.show(warningPopup);
   }
-  function showAddedToTeamMemberPopup(consumer, ssa) {
+  function showAddedToTeamMemberPopup(consumer, ssa, callback) {
     addedMemberPopup = POPUP.build({
       id: 'importRelationshipPopup',
+      hideX: true,
     });
 
-    const message1 = `${consumer} has been added as a Team Member to this plan.`;
-    const message2 = `${ssa} has been added as a Team Member to this plan.`;
-
     if (ssa) {
-      addedMemberPopup.innerHTML += `<p>${message1}</p><p>${message2}</p>`;
+      addedMemberPopup.innerHTML += `<p>${consumer} and ${ssa} have been added as a Team Member to this plan.</p>`;
     } else {
-      addedMemberPopup.innerHTML += `<p>${message1}</p>`;
+      addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>`;
     }
+
+    const okButton = button.build({
+      text: 'Ok',
+      style: 'secondary',
+      type: 'contained',
+      callback: callback,
+    });
+
+    addedMemberPopup.appendChild(okButton);
 
     POPUP.show(addedMemberPopup);
   }

@@ -245,19 +245,21 @@ namespace Anywhere.service.Data
             [DataMember(Order = 2)]
             public string emReviewDate { get; set; }
             [DataMember(Order = 3)]
+            public string emReferenceNumber { get; set; }
+            [DataMember(Order = 4)]
             public string emNextScheduledReview { get; set; }
 
-            [DataMember(Order = 4)]
-            public string emSummaryIndivSelfAssessment { get; set; }
             [DataMember(Order = 5)]
-            public string emSummaryIndivEmployerAssessment { get; set; }
+            public string emSummaryIndivSelfAssessment { get; set; }
             [DataMember(Order = 6)]
+            public string emSummaryIndivEmployerAssessment { get; set; }
+            [DataMember(Order = 7)]
             public string emSummaryIndivProviderAssessment { get; set; }
 
-            [DataMember(Order = 7)]
+            [DataMember(Order = 8)]
             public string emSupportandTransition { get; set; }
 
-            [DataMember(Order = 8)]
+            [DataMember(Order = 9)]
             public string emReviewVTS { get; set; }
 
             
@@ -459,7 +461,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate)
+        public ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string serviceType)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -467,7 +469,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    ReferenceNumber[] referenceNumbers = js.Deserialize<ReferenceNumber[]>(Odg.getConsumerReferenceNumbers(consumerIds, startDate, endDate, transaction));
+                    ReferenceNumber[] referenceNumbers = js.Deserialize<ReferenceNumber[]>(Odg.getConsumerReferenceNumbers(consumerIds, startDate, endDate, serviceType, transaction));
                     return referenceNumbers;
                 }
                 catch (Exception ex)

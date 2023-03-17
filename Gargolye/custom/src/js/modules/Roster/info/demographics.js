@@ -280,8 +280,11 @@ const demographics = (function () {
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
         // save value
-        // await rosterAjax.updateDemographicsValue({token: $.session.token, consumerId: '', fieldName: name, newValue: e.target.value})
-        // await new Promise(resolve => setTimeout(resolve, 50000));
+        await rosterAjax.updateDemographicsValue({
+          field: name,
+          newValue: e.target.value,
+          consumerId,
+        });
         // show save icon
         saveIcon.innerHTML = icons['checkmark'];
       });
@@ -401,7 +404,8 @@ const demographics = (function () {
     });
   }
 
-  function populateDemographicsSection(section, data) {
+  function populateDemographicsSection(section, data, consumerID) {
+    consumerID = consumerID;
     demoData = formatDataForDisplay(data);
     isGK = $.session.applicationName === 'Gatekeeper';
 

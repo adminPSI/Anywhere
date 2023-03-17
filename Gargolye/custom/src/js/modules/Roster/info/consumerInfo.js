@@ -870,7 +870,7 @@ var consumerInfo = (function () {
         case 'Demographics': {
           targetSection = consumerInfoCard.querySelector('.demographicsSection');
           rosterAjax.getConsumerDemographics(consumerId, function (results) {
-            demographics.populate(targetSection, results[0]);
+            demographics.populate(targetSection, results[0], consumerId);
           });
           break;
         }

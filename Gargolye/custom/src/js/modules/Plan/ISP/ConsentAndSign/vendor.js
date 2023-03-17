@@ -312,8 +312,13 @@ const csVendor = (() => {
           }
 
           const vendorRel = getSelectedVendorRel(vendorData, selectedMemberData.name)
-          selectedMemberData.buildingNumber = vendorRel.vendorAddress;
-          selectedMemberData.vendorId = vendorRel.vendorId;
+          if (selectedMemberData.name === '') {
+            selectedMemberData.buildingNumber = '';
+            selectedMemberData.vendorId = '';
+          } else {
+            selectedMemberData.buildingNumber = vendorRel.vendorAddress;
+            selectedMemberData.vendorId = vendorRel.vendorId;
+          }
 
           buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber.substring(0, 4);
           buildingNumberInput.classList.add('disabled');
