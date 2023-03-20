@@ -51,7 +51,7 @@ var timeEntry = (function () {
           showMultipleEntriesPopup('update');
         }
         if (!$.session.singleEntrycrossMidnight && updateorsave === 'update') {
-          updateEntry();
+          updateEntry('', '', '', saveAndSubmit);
         }
       },
     });
