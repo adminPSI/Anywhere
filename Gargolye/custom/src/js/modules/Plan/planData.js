@@ -230,7 +230,7 @@ const planData = (() => {
         },
         { value: '45', text: 'Waiver Facility Licensee Only', showWith: ['8'] },
         { value: '46', text: 'Waiver Nursing Delegation (WND)', showWith: ['1', '2', '3', '8'] },
-        { value: '47', text: 'Other (please specify)', showWith: ['5', '6', '8'] },
+        // { value: '47', text: 'Other (please specify)', showWith: ['5', '6', '8'] },
         { value: '48', text: 'Self Directed Transportation', showWith: ['1', '2', '3'] },
         { value: '49', text: 'Adult Day Support - Both', showWith: ['1', '2', '3', '6', '7', '8'] },
         {
