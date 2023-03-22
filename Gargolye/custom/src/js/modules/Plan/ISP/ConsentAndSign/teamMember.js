@@ -974,6 +974,7 @@ const csTeamMember = (() => {
         // show guardan DDL only if it's not there
         if (!showStateGuardians) {
           showStateGuardians = true;
+         populateGuardiansDropDown();
           teamMemberPopup.insertBefore(stateGuardianDropdown, nameInput);
           if (selectedStateGuardian === '') stateGuardianDropdown.classList.add('error');
         }
@@ -1217,7 +1218,10 @@ const csTeamMember = (() => {
 
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
-    populateGuardiansDropDown();
+    
+    if (showStateGuardians) {
+      populateGuardiansDropDown();
+    }
 
     POPUP.show(teamMemberPopup);
 
