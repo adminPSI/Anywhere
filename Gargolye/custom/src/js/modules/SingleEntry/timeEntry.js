@@ -45,7 +45,7 @@ var timeEntry = (function () {
           showMultipleEntriesPopup();
         }
         if (!$.session.singleEntrycrossMidnight && updateorsave === 'save') {
-          getEntryData(('', saveAndSubmit));
+          getEntryData('', saveAndSubmit);
         }
         if ($.session.singleEntrycrossMidnight && updateorsave === 'update') {
           showMultipleEntriesPopup('update');
