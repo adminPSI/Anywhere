@@ -1311,9 +1311,9 @@ namespace Anywhere
             return dg.updateIncidentTrackingDaysBack(token, updatedReviewDays);
         }
 
-        public string sendITNotification(string token, string notificationType, string employeeId)
+        public string sendITNotification(string token, string notificationType, string employeeId, string incidentTypeDesc, string incidentDate, string incidentTime, string subcategoryId)
         {
-            return iTW.SendITNotification(token, notificationType, employeeId);
+            return iTW.SendITNotification(token, notificationType, employeeId, incidentTypeDesc,incidentDate, incidentTime, subcategoryId);
         }
 
         public IncidentTrackingWorker.IncidentTrackingReviewLocations[] getLocationsIncidentTrackingReviewPage(string token)
@@ -1331,14 +1331,14 @@ namespace Anywhere
             return iTW.GetIncidentEditReviewDataAllObjects(token, incidentId);
         }
 
-        public List<string> saveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate,
+        public List<string> saveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate, string incidentTypeDesc,
                                     string reportedTime, string subcategoryId, string locationDetailId, string serviceLocationId, string summary, string note, string prevention, string contributingFactor,//end of main table data
                                     string consumerIdString, string includeInCount, string involvementId, string consumerIncidentLocationIdString, string consumerInvolvedIdString, //end of consumers
                                     string employeeIdString, string notifyEmployeeString, string employeeInvolvementIdString, //end of employees
                                     string othersInvolvedNameString, string othersInvolvedCompanyString, string othersInvolvedAddress1String, string othersInvolvedAddress2String, string othersInvolvedCityString, string othersInvolvedStateString,
                                     string othersInvolvedZipCodeString, string othersInvolvedPhoneString, string othersInvolvedInvolvementTypeIdString, string othersInvolvedInvolvementDescriptionString, string updateIncidentId, string saveUpdate)
         {
-            return iTW.SaveUpdateITIncident(token, incidentTypeId, incidentDate, incidentTime, reportedDate,
+            return iTW.SaveUpdateITIncident(token, incidentTypeId, incidentDate, incidentTime, reportedDate, incidentTypeDesc,
                                     reportedTime, subcategoryId, locationDetailId, serviceLocationId, summary, note, prevention, contributingFactor,//end of main table data
                                     consumerIdString, includeInCount, involvementId, consumerIncidentLocationIdString, consumerInvolvedIdString, //end of consumers
                                     employeeIdString, notifyEmployeeString, employeeInvolvementIdString,//end of employees

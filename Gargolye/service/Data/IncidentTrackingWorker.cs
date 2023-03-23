@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 
 namespace Anywhere.service.Data
 {
@@ -113,7 +114,7 @@ namespace Anywhere.service.Data
         }
 
         //Save incident
-        public List<string> SaveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate,
+        public List<string> SaveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate, string incidentTypeDesc,
                                     string reportedTime, string subcategoryId, string locationDetailId, string serviceLocation, string summary, string note, string prevention, string contributingFactor,//end of main table data
                                     string consumerIdString, string includeInCount, string involvementId, string consumerIncidentLocationIdString, string consumerInvolvedIdString, //end of consumers
                                     string employeeIdString, string notifyEmployeeString, string employeeInvolvementIdString, //end of employees
@@ -136,7 +137,7 @@ namespace Anywhere.service.Data
                 othersInvolvedCityString, othersInvolvedStateString, othersInvolvedZipCodeString, othersInvolvedPhoneString, othersInvolvedInvolvementTypeIdString);
                 if(notifyS.Equals("Y"))
                 {
-                    autoNotifySupervisors(token, incidentDate, "Insert", consumerIncidentLocationIdString, employeeIdString, notifyEmployeeString);
+                    autoNotifySupervisors(token, incidentDate, "Insert", consumerIncidentLocationIdString, employeeIdString, notifyEmployeeString, incidentTime, subcategoryId, incidentTypeDesc);
                 }
             }
             else
@@ -148,14 +149,14 @@ namespace Anywhere.service.Data
                                                 othersInvolvedCityString, othersInvolvedStateString, othersInvolvedZipCodeString, othersInvolvedPhoneString, othersInvolvedInvolvementTypeIdString);
                 if (notifyS.Equals("Y"))
                 {
-                    autoNotifySupervisors(token, incidentDate, "Update", consumerIncidentLocationIdString, employeeIdString, notifyEmployeeString);
+                    autoNotifySupervisors(token, incidentDate, "Update", consumerIncidentLocationIdString, employeeIdString, notifyEmployeeString, incidentTime, subcategoryId, incidentTypeDesc);
                 }
             }
-
             return consumerIdAndInvolvedId;
         }
 
-        public void autoNotifySupervisors(string token, string incidentDate, string saveUpdate, string locationIdString, string employeeIdString, string notifyEmployeeString)
+        public void autoNotifySupervisors(string token, string incidentDate, string saveUpdate, string locationIdString, string employeeIdString, string notifyEmployeeString, 
+                                            string incidentTime, string subcategoryId, string  incidentTypeDesc)
         {
             string supervisorIds = "";
             string[] locationIds = locationIdString.Split('|');
@@ -183,7 +184,7 @@ namespace Anywhere.service.Data
                 }
                 else
                 {
-                    dg.sendITNotification(token, saveUpdate, id.employeeId.ToString());
+                    dg.sendITNotification(token, saveUpdate, id.employeeId.ToString(), incidentTypeDesc,  incidentDate,  incidentTime,  subcategoryId);
                 }                
             }
         }
@@ -264,9 +265,9 @@ namespace Anywhere.service.Data
             return "Success";
         }
 
-        public string SendITNotification(string token, string notificationType, string employeeId)
+        public string SendITNotification(string token, string notificationType, string employeeId, string incidentTypeDesc, string incidentDate, string incidentTime, string subcategoryId)
         {
-            dg.sendITNotification(token, notificationType, employeeId);
+            dg.sendITNotification( token,  notificationType,  employeeId,  incidentTypeDesc,  incidentDate,  incidentTime,  subcategoryId);
             return "success";
         }
 
