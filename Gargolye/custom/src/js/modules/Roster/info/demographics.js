@@ -145,7 +145,7 @@ const demographics = (function () {
     // Contact Info
     const primaryPhone = formatPhoneNumber(data.primaryphone);
     const secondaryPhone = formatPhoneNumber(data.secondaryphone);
-    let cellPhone = data.cellPhone ? data.cellphone.trim() : undefined;
+    let cellPhone = data.cellphone ? data.cellphone.trim() : undefined;
     cellPhone = cellPhone !== '%' ? UTIL.formatPhoneNumber(cellPhone) : '';
     const email = data.email;
 
