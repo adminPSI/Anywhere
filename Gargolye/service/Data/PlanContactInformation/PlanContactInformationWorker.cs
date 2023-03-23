@@ -56,6 +56,9 @@ namespace Anywhere.service.Data.PlanContactInformation
             public string phone { get; set; }
             public string email { get; set; }
             public string rowOrder { get; set; }
+            public string phone2 { get; set; }
+            public string phoneExt { get; set; }
+            public string phone2Ext { get; set; }
         }
 
         public ImportantPlaces[] getPlanContactImportantPlaces(string token, string contactId)
@@ -130,10 +133,10 @@ namespace Anywhere.service.Data.PlanContactInformation
             public string fundingSource { get; set; }
         }
 
-        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email)
+        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
         {
             string ciString = "";
-            ciString = pcidg.insertPlanContactImportantPeople(token, contactId, type, name, relationship, address, phone, email);
+            ciString = pcidg.insertPlanContactImportantPeople(token, contactId, type, name, relationship, address, phone, email,  phone2,  phoneExt,  phone2Ext);
             ImportantPersonId[] ciObj = js.Deserialize<ImportantPersonId[]>(ciString);
             return ciObj[0].importantPersonId.ToString();
         }
@@ -152,9 +155,9 @@ namespace Anywhere.service.Data.PlanContactInformation
             return ciObj[0].importantPlacesId.ToString();
         }
 
-        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email)
+        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
         {
-            pcidg.updatePlanContactImportantPeople(token, importantPersonId, type, name, relationship, address, phone, email);
+            pcidg.updatePlanContactImportantPeople(token, importantPersonId, type, name, relationship, address, phone, email,  phone2,  phoneExt,  phone2Ext);
             return "Sucess";
         }        
         public string updatePlanContactImportantGroup(string token, string importantGroupId, string status, string name, string address, string phone, string meetingInfo, string whoHelps)
@@ -253,7 +256,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             ImportantPeople[] importantPeopleObj = js.Deserialize<ImportantPeople[]>(importantPeopleString);
             for (int i = 0; i < importantPeopleObj.Length; i++)
             {
-                pcidg.insertPlanContactImportantPeople(token, newContactId, importantPeopleObj[i].type, importantPeopleObj[i].name, importantPeopleObj[i].relationship, importantPeopleObj[i].address, importantPeopleObj[i].phone, importantPeopleObj[i].email);
+                pcidg.insertPlanContactImportantPeople(token, newContactId, importantPeopleObj[i].type, importantPeopleObj[i].name, importantPeopleObj[i].relationship, importantPeopleObj[i].address, importantPeopleObj[i].phone, importantPeopleObj[i].email, importantPeopleObj[i].phone2, importantPeopleObj[i].phoneExt, importantPeopleObj[i].phone2Ext);
             }
             //IMPORTANT GROUPS
             string importantGroupString = pcidg.getPlanContactImportantGroups(token, ciObj[0].contactId);

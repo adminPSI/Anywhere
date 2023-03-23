@@ -2507,9 +2507,9 @@ namespace Anywhere
             return pciw.getPlanContactFundingSources(assessmentId);
         }
 
-        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email)
+        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
         {
-            return pciw.insertPlanContactImportantPeople(token, contactId, type, name, relationship, address, phone, email);
+            return pciw.insertPlanContactImportantPeople(token, contactId, type, name, relationship, address, phone, email,  phone2,  phoneExt,  phone2Ext);
         }
 
         public string insertPlanContactImportantGroup(string token, string contactId, string status, string name, string address, string phone, string meetingInfo, string whoHelps)
@@ -2521,9 +2521,9 @@ namespace Anywhere
         {
             return pciw.insertPlanContactImportantPlaces(token, contactId, type, name, address, phone, schedule, acuity);
         }                
-        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email)
+        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
         {
-            return pciw.updatePlanContactImportantPeople(token, importantPersonId, type, name, relationship, address, phone, email);
+            return pciw.updatePlanContactImportantPeople(token, importantPersonId, type, name, relationship, address, phone, email,  phone2,  phoneExt,  phone2Ext);
         }
 
         public string updatePlanContactImportantGroup(string token, string importantGroupId, string status, string name, string address, string phone, string meetingInfo, string whoHelps)
