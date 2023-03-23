@@ -3860,7 +3860,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string sendITNotification(string token, string notificationType, string employeeId)
+        public string sendITNotification(string token, string notificationType, string employeeId, string incidentTypeDesc, string incidentDate, string incidentTime, string subcategoryId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("sendITNotification ");
@@ -3868,6 +3868,10 @@ namespace Anywhere.Data
             list.Add(token);
             list.Add(notificationType);
             list.Add(employeeId);
+            list.Add(incidentTypeDesc);
+            list.Add(incidentDate);
+            list.Add(incidentTime);
+            list.Add(subcategoryId);
             string text = "CALL DBA.ANYW_IncidentTracking_SendITNotification(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
