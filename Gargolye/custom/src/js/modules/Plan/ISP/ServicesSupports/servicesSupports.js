@@ -1832,7 +1832,11 @@ const servicesSupports = (() => {
     if (servicesSupportsData && servicesSupportsData.paidSupport) {
       const tableData = servicesSupportsData.paidSupport
         .sort((a, b) => {
-          return a.rowOrder < b.rowOrder ? -1 : a.rowOrder > b.rowOrder ? 1 : 0;
+          return parseInt(a.rowOrder) < parseInt(b.rowOrder)
+            ? -1
+            : parseInt(a.rowOrder) > parseInt(b.rowOrder)
+            ? 1
+            : 0;
         })
         .map(ps => {
           const { tableValues, psData } = mapPaidSupportDataForTable(ps);
@@ -2359,7 +2363,11 @@ const servicesSupports = (() => {
     if (servicesSupportsData && servicesSupportsData.additionalSupport) {
       const tableData = servicesSupportsData.additionalSupport
         .sort((a, b) => {
-          return a.rowOrder < b.rowOrder ? -1 : a.rowOrder > b.rowOrder ? 1 : 0;
+          return parseInt(a.rowOrder) < parseInt(b.rowOrder)
+            ? -1
+            : parseInt(a.rowOrder) > parseInt(b.rowOrder)
+            ? 1
+            : 0;
         })
         .map(as => {
           const { tableValues, asData } = mapAdditionalSupportDataForTable(as);
@@ -2720,7 +2728,11 @@ const servicesSupports = (() => {
     if (servicesSupportsData && servicesSupportsData.professionalReferral) {
       const tableData = servicesSupportsData.professionalReferral
         .sort((a, b) => {
-          return a.rowOrder < b.rowOrder ? -1 : a.rowOrder > b.rowOrder ? 1 : 0;
+          return parseInt(a.rowOrder) < parseInt(b.rowOrder)
+            ? -1
+            : parseInt(a.rowOrder) > parseInt(b.rowOrder)
+            ? 1
+            : 0;
         })
         .map(pr => {
           const { tableValues, prData } = mapProfessionalReferralDataForTable(pr);
