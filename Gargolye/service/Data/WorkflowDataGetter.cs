@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -416,7 +415,7 @@ namespace Anywhere.service.Data
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@workflowTemplateID", DbType.String, workflowTemplateID);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@WFID", DbType.String, WFID);
-                
+
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_insertWFResponsiblePartyRelationships(?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
@@ -447,24 +446,24 @@ namespace Anywhere.service.Data
 
         public string getResponsiblePartyIDforThisStep(string responsiblePartyType, string WFID, DistributedTransaction transaction)
         {
-          
-                try
-                {
-                    logger.debug("getResponsiblePartyIDforThisStep ");
-                    System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
-                    args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@ResponsiblePartyType", DbType.String, responsiblePartyType);
-                    args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@WFID", DbType.String, WFID);
+
+            try
+            {
+                logger.debug("getResponsiblePartyIDforThisStep ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@ResponsiblePartyType", DbType.String, responsiblePartyType);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@WFID", DbType.String, WFID);
                 // returns the responsible Party ID 
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_getResponsiblePartyIDforThisStep(?,?)", args, ref transaction);
                 return convertToJSON(returnMsg);
 
-                }
-                catch (Exception ex)
-                {
-                    logger.error("WFDG", ex.Message + "ANYW_WF_getResponsiblePartyIDforThisStep(" + responsiblePartyType + "," + WFID + ")");
-                    throw ex;
-                }
-            
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_WF_getResponsiblePartyIDforThisStep(" + responsiblePartyType + "," + WFID + ")");
+                throw ex;
+            }
+
         }
 
         public string getResponsiblePartyIDforThisEditStep(string StepId, DistributedTransaction transaction)
@@ -489,28 +488,28 @@ namespace Anywhere.service.Data
         }
 
         public string getWFResponsibleParties(string token, string workflowId)
-        {      
-                logger.debug("getWFResponsibleParties ");
-                List<string> list = new List<string>();
-                list.Add(token);
-                list.Add(workflowId);
-                string text = "CALL DBA.ANYW_WF_getWFResponsibleParties(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
-                try
-                {
+        {
+            logger.debug("getWFResponsibleParties ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(workflowId);
+            string text = "CALL DBA.ANYW_WF_getWFResponsibleParties(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
                 return executeDataBaseCallJSON(text);
-                }
-                catch (Exception ex)
-                {
-                    logger.error("501", ex.Message + "DBA.ANYW_WF_getWFResponsibleParties(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                    return "501: error DBA.ANYW_WF_getWFResponsibleParties";
-                }
+            }
+            catch (Exception ex)
+            {
+                logger.error("501", ex.Message + "DBA.ANYW_WF_getWFResponsibleParties(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "501: error DBA.ANYW_WF_getWFResponsibleParties";
+            }
 
-                // return convertToJSON(returnMsg);    
+            // return convertToJSON(returnMsg);    
         }
 
         public string getWFwithMissingResponsibleParties(string token, string workflowIds, DistributedTransaction transaction)
         {
-            
+
             try
             {
                 logger.debug("getWFwithMissingResponsibleParties ");
@@ -525,7 +524,7 @@ namespace Anywhere.service.Data
             {
                 logger.error("WFDG", ex.Message + "ANYW_WF_getWFwithMissingResponsibleParties(" + workflowIds + ")");
                 return "501: error DBA.ANYW_WF_getWFwithMissingResponsibleParties";
-            } 
+            }
         }
 
 
@@ -898,7 +897,7 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_WF_UpdateWorkflowStepDocumentsenttoDODD(" + workflowstepdocId + "," + senttoDODD +  ")");
+                logger.error("WFDG", ex.Message + "ANYW_WF_UpdateWorkflowStepDocumentsenttoDODD(" + workflowstepdocId + "," + senttoDODD + ")");
                 throw ex;
             }
         }
@@ -1089,7 +1088,7 @@ namespace Anywhere.service.Data
 
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_processWorkflowStepEvent(?, ?, ?, ?)", args, ref transaction);
                 return convertToJSON(returnMsg);
-            
+
             }
             catch (Exception ex)
             {
@@ -1099,13 +1098,13 @@ namespace Anywhere.service.Data
 
         }
 
-        public string sendNotification(string eventType, string workFlowId, string stepId, string To_Option, string To_Addresses, string CC_Option, string CC_Addresses, string BCC_Option, string BCC_Addresses, string From_Option, string From_Address, string Subject, string Body , DistributedTransaction transaction)
+        public string sendNotification(string eventType, string workFlowId, string stepId, string To_Option, string To_Addresses, string CC_Option, string CC_Addresses, string BCC_Option, string BCC_Addresses, string From_Option, string From_Address, string Subject, string Body, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("sendNotification ");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[13];
-               // args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@eventId", DbType.String, eventId);
+                // args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@eventId", DbType.String, eventId);
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@eventType", DbType.String, eventType);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@workFlowId", DbType.String, workFlowId);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
@@ -1128,7 +1127,7 @@ namespace Anywhere.service.Data
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_WF_SendNotification");
-                return "[]" ;
+                return "[]";
             }
 
         }
@@ -1140,7 +1139,7 @@ namespace Anywhere.service.Data
                 logger.debug("ANYW_ISP_getPlanfromWorkFlowId ");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@WFId", DbType.String, workflowId);
-               
+
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_getPlanfromWorkFlowId(?)", args, ref transaction);
                 return convertToJSON(returnMsg);
 

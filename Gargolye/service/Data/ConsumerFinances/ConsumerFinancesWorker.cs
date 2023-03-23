@@ -1,21 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Anywhere.Data;
+using System;
 using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
 using System.ServiceModel.Web;
-using System.IO;
-using Anywhere.Data;
-using static Anywhere.service.Data.OODWorker;
-using OneSpanSign.Sdk;
-using static System.Windows.Forms.AxHost;
-using System.Reflection.Emit;
-using pdftron.PDF;
-using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
-using System.Security.Principal;
-using static Anywhere.service.Data.ResetPassword.ResetPasswordWorker;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {

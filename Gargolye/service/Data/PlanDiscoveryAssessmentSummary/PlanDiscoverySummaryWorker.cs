@@ -1,9 +1,5 @@
-﻿using Anywhere.service.Data.PlanOutcomes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.ServiceModel.Web;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanDiscoveryAssessmentSummary
@@ -41,13 +37,14 @@ namespace Anywhere.service.Data.PlanDiscoveryAssessmentSummary
                     var i = 0;
                     foreach (long questionId in anywQuestionIds)
                     {
-                        testc =  dg.insertAssessmentSummaryAnswer(anywAssessmentId, questionId, answerRow[i], answers[i], userId);
+                        testc = dg.insertAssessmentSummaryAnswer(anywAssessmentId, questionId, answerRow[i], answers[i], userId);
                         SummaryAnswer[] singAnswerObj = js.Deserialize<SummaryAnswer[]>(testc);
-                        if(i == 0)
+                        if (i == 0)
                         {
                             savedAnswerObj.questionIdOne = questionId.ToString();
                             savedAnswerObj.answerIdOne = singAnswerObj[0].consumerAssessmentAnswerId;
-                        } else if(i == 1)
+                        }
+                        else if (i == 1)
                         {
                             savedAnswerObj.questionIdTwo = questionId.ToString();
                             savedAnswerObj.answerIdTwo = singAnswerObj[0].consumerAssessmentAnswerId;
@@ -56,12 +53,13 @@ namespace Anywhere.service.Data.PlanDiscoveryAssessmentSummary
                         {
                             savedAnswerObj.questionIdThree = questionId.ToString();
                             savedAnswerObj.answerIdThree = singAnswerObj[0].consumerAssessmentAnswerId;
-                        } else
+                        }
+                        else
                         {
                             savedAnswerObj.questionIdFour = questionId.ToString();
                             savedAnswerObj.answerIdFour = singAnswerObj[0].consumerAssessmentAnswerId;
                         }
-                        
+
                         i++;
                     }
 

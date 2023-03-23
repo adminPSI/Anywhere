@@ -1,8 +1,4 @@
 using Anywhere.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -50,7 +46,7 @@ namespace Anywhere.service.Data
             ConsumerRelationships[] consumerRelObj = js.Deserialize<ConsumerRelationships[]>(consumerRelString);
             return consumerRelObj;
         }
-        
+
         public ConsumerPlanYearInfo getConsumerPlanYearInfo(string token, string consumerId)
         {
             string consumerPlanYearInfoString = dg.getConsumerPlanYearInfo(token, consumerId);
@@ -62,7 +58,7 @@ namespace Anywhere.service.Data
         {
             public string isAbsent { get; set; }
         }
-                
+
         public class AddCustomGroup
         {
             public string CustomGroupID { get; set; }

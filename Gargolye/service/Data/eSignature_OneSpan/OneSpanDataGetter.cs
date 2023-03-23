@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Anywhere.Log;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Odbc;
-using System.Configuration;
-using Anywhere.Log;
-using System.Web.Script.Serialization;
-using System.Collections.Generic;
-using System;
 using System.Linq;
-using System.IO;
-using Anywhere.Data;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.eSignature_OneSpan
 {
@@ -19,7 +16,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
 
         public string OneSpanGetSignatures(string token, long assessmentId)
         {
-            
+
             logger.debug("OneSpanGetSignatures ");
             List<string> list = new List<string>();
             list.Add(token);
@@ -217,7 +214,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
         }
 
         public Boolean validateToken(string token)
-        {            
+        {
             try
             {
                 logger.debug("validateToken ");

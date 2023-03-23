@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.VisualBasic;
-using System.Collections;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Data;
-using System.Diagnostics;
-using System.Text;
 using System.IO;
-using System.Net;
-using System.Net.Mail;
-using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Anywhere.service.Data
 {
@@ -66,7 +58,7 @@ namespace Anywhere.service.Data
         }
 
         //This converts Dataset to XML String Using Memory Stream
-       // [System.Runtime.CompilerServices.Extension()]
+        // [System.Runtime.CompilerServices.Extension()]
         public string ToXMLString(DataSet DS)
         {
 
@@ -146,7 +138,7 @@ namespace Anywhere.service.Data
                 {
                     zipStream.Read(buffer, 0, buffer.Length);
                 }
-                                                   //MAT
+                //MAT
                 return ToStringUsingMS(buffer);//buffer.ToStringUsingMS();
             }
         }
@@ -154,7 +146,7 @@ namespace Anywhere.service.Data
         public decimal Round(ref decimal X, byte Factor)
         {
             //return Conversion.Fix(Convert.ToDecimal(Convert.ToString(X) * (Math.Pow(10, Factor))) + 0.5 * System.Math.Sign(X)) / (Math.Pow(10, Factor));
-            return ( ((decimal)X * (decimal)(Math.Pow(10, Factor)) + ((decimal)0.5 * System.Math.Sign(X))) / (decimal)(Math.Pow(10, Factor)) );
+            return (((decimal)X * (decimal)(Math.Pow(10, Factor)) + ((decimal)0.5 * System.Math.Sign(X))) / (decimal)(Math.Pow(10, Factor)));
         }
 
         public string returnStringCleanUp(string jobsResultString)

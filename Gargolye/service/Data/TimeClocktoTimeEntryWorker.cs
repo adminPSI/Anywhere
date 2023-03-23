@@ -5,7 +5,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.Odbc;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -33,8 +32,8 @@ namespace Anywhere.service.Data
             logger.debug("updateTimeEntryMatchTimeClock");
             List<string> list = new List<string>();
             list.Add(setTime);
-            list.Add(actionType);   
-            list.Add(locationId);           
+            list.Add(actionType);
+            list.Add(locationId);
             string text = "CALL DBA.ANYW_Dashboard_UpdateTimeEntryMatchTimeClock(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

@@ -1,21 +1,13 @@
+using Anywhere.Log;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Data;
-using System.Data.Common;
-using System.Data.Odbc;
-using System.Data.SqlClient;
 using System.Configuration;
-using Anywhere.Log;
-using System.Drawing;
+using System.Data;
+using System.Data.Odbc;
 using System.IO;
-using System.Text;
-using System.Web.Script.Serialization;
+using System.Linq;
 using System.Text.RegularExpressions;
-using static Anywhere.service.Data.AnywhereWorker;
-using System.Management.Automation.Language;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.Data
 {
@@ -42,7 +34,7 @@ namespace Anywhere.Data
                 logger.error("500", ex.Message + ex.InnerException.ToString() + " validateToken('" + token + "')", token);
                 return false;
             }
-            
+
         }
 
         /// <summary>
@@ -136,10 +128,13 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             logger.debug("GetCustomGroups");
 
-            try{
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_Roster_GetConsumerGroups(" + locationId + ",'" + token + "');", "groups", "group");
 
-            } catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 logger.error("503", ex.Message + " DBA.ANYW_Roster_GetConsumerGroups(" + locationId + ",'" + token + "')", token);
                 return "503: Error getting Custom Groups";
             }
@@ -175,10 +170,13 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             logger.debug("getConsumersByGroup");
 
-            try{
+            try
+            {
 
                 return executeDataBaseCall("CALL DBA.ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "');", "c", "c");
-            } catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 logger.error("504", ex.Message + " ANYW_Roster_GetConsumersByGroup('" + groupCode + "'," + retrieveId + ",'" + token + "','" + serviceDate + "','" + daysBackDate + "')", token);
                 return "504: Error getting Custom Groups";
             }
@@ -215,9 +213,12 @@ namespace Anywhere.Data
         public string addConsumerToGroup(string groupId, string consumerId)
         {
             logger.debug("AddConsumerToGroup");
-            try{
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_Roster_AddConsumerToGroup(" + groupId + "," + consumerId + ");", "results", "result");
-            } catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 logger.error("505", ex.Message + " ANYW_Roster_AddConsumerToGroup(" + groupId + "," + consumerId + ")");
                 return "505: Error Adding Consumer to Group";
             }
@@ -243,9 +244,12 @@ namespace Anywhere.Data
         {
             logger.debug("RemoveConsumerFromGroup");
 
-            try{
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_Roster_RemoveConsumerFromGroup(" + groupId + "," + consumerId + ");", "results", "result");
-            } catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 logger.error("506", ex.Message + " ANYW_Roster_RemoveConsumerFromGroup(" + groupId + "," + consumerId + ")");
                 return "506: Error Removing Consumer to Group";
             }
@@ -261,9 +265,12 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("AddCustomGroup");
-            try{
+            try
+            {
                 return executeDataBaseCallJSON("CALL DBA.ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "');");
-            } catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 logger.error("507", ex.Message + " ANYW_Roster_AddCustomGroup('" + groupName + "','" + locationId + "','" + token + "')", token);
                 return "507: Error Adding Custom to Group";
             }
@@ -273,9 +280,12 @@ namespace Anywhere.Data
         {
             logger.debug("RemoveCustomGroup");
 
-            try{
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_Roster_RemoveCustomGroup('" + groupId + "');", "results", "groupId");
-            } catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 logger.error("508", ex.Message + " ANYW_Roster_RemoveCustomGroup('" + groupId + "')");
                 return "508: Error Removing Custom to Group";
             }
@@ -286,10 +296,13 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             if (consumerIdStringValidator(consumerIds) == false) return null;
             logger.debug("addDayServiceActivityMassClockInConsumer");
-            
-            try{
+
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_DayService_MassClockInConsumer('" + token + "','" + consumerIds + "','" + serviceDate + "','" + locationId + "','" + startTime + "');", "results", "dayrow");
-            } catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 logger.error("509", ex.Message + " ANYW_DayService_MassClockInConsumer('" + token + "','" + consumerIds + "','" + serviceDate + "','" + locationId + "','" + startTime + "')", token);
                 return "509: Error with Mass Clock in";
             }
@@ -305,9 +318,9 @@ namespace Anywhere.Data
                 return executeDataBaseCallJSON("CALL DBA.ANYW_DayService_GetConsumerActivity('" + token + "','" + peopleList + "','" + serviceDate + "','" + locationId + "','" + groupCode + "','" + retrieveId + "' );");
             }
             catch (Exception ex)
-            {                
+            {
                 logger.error("510", ex.Message + " ANYW_DayService_GetConsumerActivity('" + token + "','" + peopleList + "','" + serviceDate + "','" + locationId + "','" + groupCode + "')", token);
-                return "510: Error Getting Consumer Day Service Activity";                
+                return "510: Error Getting Consumer Day Service Activity";
             }
         }
 
@@ -331,8 +344,9 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             if (consumerIdStringValidator(consumerIds) == false) return null;
             logger.debug("addDayServiceActivityMassClockOutConsumer");
-            
-            try{
+
+            try
+            {
                 return executeDataBaseCall("CALL DBA.DBA.ANYW_DayService_MassClockOutConsumer('" + token + "','" + consumerIds + "','" + serviceDate + "','" + locationId + "','" + stopTime + "');", "results", "dayrow");
             }
             catch (Exception ex)
@@ -348,7 +362,8 @@ namespace Anywhere.Data
             if (consumerIdStringValidator(consumerIds) == false) return null;
             logger.debug("updateDayServiceActivity");
 
-            try{
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_DayService_MassUpdateConsumerActivity('" + token + "','" + consumerIds + "','" + serviceDate + "','" + locationId + "','" + inputType + "','" + inputTime + "','" + dayServiceType + "','" + selectedGroupId + "');", "results", "dayrow");
             }
             catch (Exception ex)
@@ -366,7 +381,9 @@ namespace Anywhere.Data
             try
             {
                 return executeDataBaseCall("CALL DBA.ANYW_DayService_MassDeleteConsumerActivity('" + consumerIds + "','" + serviceDate + "','" + locationID + "');", "results", "dayrow");
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 logger.error("514", ex.Message + " ANYW_DayService_MassDeleteConsumerActivity('" + consumerIds + "','" + serviceDate + "','" + locationID + "')");
                 return "514: Error deleteDayServiceMassDeleteConsumerActivity";
             }
@@ -406,8 +423,9 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getUserByToken");
-            
-            try{
+
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_GetUserNameFromToken('" + token + "');", "results", "user");
             }
             catch (Exception ex)
@@ -422,7 +440,8 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             //logger.debug("tokenCheck");
 
-            try {
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_TokenCheck('" + token + "');", "results", "user");
             }
             catch (Exception ex)
@@ -455,7 +474,7 @@ namespace Anywhere.Data
 
             try
             {
-             return executeDataBaseCall("CALL DBA.ANYW_Home_ClockOutStaff('" + token + "');", "results", "result");
+                return executeDataBaseCall("CALL DBA.ANYW_Home_ClockOutStaff('" + token + "');", "results", "result");
             }
             catch (Exception ex)
             {
@@ -468,7 +487,8 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getStaffActivity");
-            try {
+            try
+            {
                 return executeDataBaseCallJSON("CALL DBA.ANYW_Home_GetStaffActivity('" + token + "','" + serviceDate + "');");
             }
             catch (Exception ex)
@@ -504,8 +524,9 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updateStaffClockTime");
-            
-            try{
+
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_Home_EditClockTime('" + token + "','" + serviceDate + "','" + orginalTime + "','" + newTime + "','" + isClockIn + "','" + checkedAgainstTime + "','" + location + "');", "results", "result");
             }
             catch (Exception ex)
@@ -520,7 +541,8 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             logger.debug("saveGoal " + activityId);
 
-            try{
+            try
+            {
                 return executeDataBaseCall("CALL DBA.ANYW_GoalsAndServices_SaveGoal('" + token + "','" + objectiveId + "','" + activityId + "','" + date + "','" + success + "','" + goalnote + "','" + promptType + "','" + promptNumber + "','" + locationId + "','" + locationSecondaryId + "','" + goalStartTime + "','" + goalEndTime + "','" + goalCILevel + "');", "results", "result");
             }
             catch (Exception ex)
@@ -597,7 +619,7 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("UserIdsWithGoals");
-            
+
             try
             {
                 return executeDataBaseCallJSON("CALL DBA.ANYW_GoalsAndServices_GetUserIdsWithGoals('" + token + "');");
@@ -640,7 +662,7 @@ namespace Anywhere.Data
                 return "528: Error getting user ids by date";
             }
         }
-        
+
         //New
         public string getGoalsByDateNew(string consumerId, string goalDate)
         {
@@ -1708,7 +1730,8 @@ namespace Anywhere.Data
             }
         }
 
-        public string timeEntryRejectionNotification(string token, string singleEntryId) {
+        public string timeEntryRejectionNotification(string token, string singleEntryId)
+        {
             if (tokenValidator(token) == false) return null;
             logger.debug("timeEntryRejectionNotification ");
             List<string> list = new List<string>();
@@ -1812,7 +1835,7 @@ namespace Anywhere.Data
                 logger.error("576", ex.Message + " ANYW_Intellivue_GetURL('" + token + "')", token);
                 return "576: Error getting intellivue url";
             }
-        }        
+        }
 
         public string getClockedInConsumerNamesDayServicesJSON(string token, string locationId)
         {
@@ -1877,7 +1900,7 @@ namespace Anywhere.Data
                 return "580: Error checking single entry overlap";
             }
         }
-        
+
         //New for above
         public string getDashboardDayServicesLocationsJSON(string token)
         {
@@ -2540,7 +2563,7 @@ namespace Anywhere.Data
             logger.debug("getConsumersWithUnreadNotesByEmployeeAndLocation " + token + " " + locationId);
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocation('" + token + "', '" + locationId + "');");              
+                return executeDataBaseCallJSON("CALL DBA.ANYW_ConsumerNotes_SelectConsumersWithUnreadNotesByEmployeeAndLocation('" + token + "', '" + locationId + "');");
             }
             catch (Exception ex)
             {
@@ -2881,7 +2904,7 @@ namespace Anywhere.Data
                 return "632: error ANYW_Dashboard_GetSchedulingPeriodsDetails";
             }
         }
-        
+
         public string getSingleEntryUsersWCJSON(string token, string seDate)
         {
             if (tokenValidator(token) == false) return null;
@@ -2958,7 +2981,7 @@ namespace Anywhere.Data
             }
         }
 
-        
+
         public string getPSIUserOptionListJSON(string token)
         {
             if (tokenValidator(token) == false) return null;
@@ -3454,7 +3477,7 @@ namespace Anywhere.Data
                 logger.error("656", ex.Message + " ANYW_Intellivue_GetAppIdURL('" + token + "')", token);
                 return "656: Error getting intellivue url";
             }
-        }        
+        }
 
 
         public string GetAttachmentExtension(string attachmentId)
@@ -3707,7 +3730,7 @@ namespace Anywhere.Data
                 //logger.error("515", ex.Message, token); //this could make a forever loop. 
                 return "515: Error with Get User";
             }
-        }        
+        }
 
         public string populateConsumerSchedule(string token, string locationId, string consumerId)
         {
@@ -3937,7 +3960,7 @@ namespace Anywhere.Data
                 return "676: error updateIncidentTrackingDaysBack";
             }
         }
-        
+
         public string getITReviewTableData(string token, string locationId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
@@ -4401,7 +4424,7 @@ namespace Anywhere.Data
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(shiftDate);
-            list.Add(locationId);            
+            list.Add(locationId);
             string text = "CALL DBA.ANYW_Scheduling_GetCallOffDropdownEmployees(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -4482,7 +4505,7 @@ namespace Anywhere.Data
             logger.debug("requestDaysOffSchedulingNotification");
             List<string> list = new List<string>();
             list.Add(token);
-            list.Add(personId);;
+            list.Add(personId); ;
             list.Add(employeeNotifiedId);
             string text = "CALL DBA.ANYW_Scheduling_RequestDaysOffSchedulingNotification(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
@@ -4556,7 +4579,7 @@ namespace Anywhere.Data
             }
         }
 
-        public string getCurrentUserApprovedShifts(string token,string personId)
+        public string getCurrentUserApprovedShifts(string token, string personId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getCurrentUserApprovedShifts ");
@@ -4866,33 +4889,33 @@ namespace Anywhere.Data
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getLocationsAndResidencesJSON ");
-          List<string> list = new List<string>();
-          list.Add(token);
-          string text = "CALL DBA.ANYW_SingleEntry_GetLocationsAndResidences(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
-          try
-          {
-            return executeDataBaseCallJSON(text);
-          }
-          catch (Exception ex)
-          {
-            logger.error("713", ex.Message + "ANYW_SingleEntry_GetLocationsAndResidences(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-            return "713: error ANYW_SingleEntry_GetLocationsAndResidences";
-          }
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_SingleEntry_GetLocationsAndResidences(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("713", ex.Message + "ANYW_SingleEntry_GetLocationsAndResidences(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "713: error ANYW_SingleEntry_GetLocationsAndResidences";
+            }
         }
 
         public string getSuccessSymbolLookup(string token)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getLocations");
-          try
-          {
-            return executeDataBaseCall("CALL DBA.ANYW_Outcomes_SuccessSymbolLookup('" + token + "');", "locations", "location");
-          }
-          catch (Exception ex)
-          {
-            logger.error("714", ex.Message + ex.InnerException.ToString() + " ANYW_Outcomes_SuccessSymbolLookup('" + token + "')", token);
-            return "714: Error getting Locations";
-          }
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Outcomes_SuccessSymbolLookup('" + token + "');", "locations", "location");
+            }
+            catch (Exception ex)
+            {
+                logger.error("714", ex.Message + ex.InnerException.ToString() + " ANYW_Outcomes_SuccessSymbolLookup('" + token + "')", token);
+                return "714: Error getting Locations";
+            }
         }
 
         public string getCustomPhrases(string token, string showAll)
@@ -5423,7 +5446,7 @@ namespace Anywhere.Data
                 return "738: error ANYW_IncidentTracking_SaveUpdateITConsumerInjuries";
             }
         }
-        
+
         // NEW - Incident Tracking Update Incident View By User
         public string updateIncidentViewByUser(string token, string incidentId, string userId)
         {
@@ -5600,7 +5623,7 @@ namespace Anywhere.Data
             string text = "CALL DBA.ANYW_Test_GetPDF(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
-               
+
                 return executeSQLReturnMemoryStream(text);
             }
             catch (Exception ex)
@@ -5666,7 +5689,7 @@ namespace Anywhere.Data
             string waitFor = "WAITFOR DELAY";
             string dropTable = "DROP TABLE";
             string deleteFrom = "DELETE FROM";
-            if(uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom))
+            if (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom))
             {
                 return false;
             }
@@ -5674,7 +5697,7 @@ namespace Anywhere.Data
             {
                 return true;
             }
-            
+
         }
         /// <summary>
         /// Overload executeDataBaseCall to in case default tage names are acceptable
@@ -5768,12 +5791,13 @@ namespace Anywhere.Data
             OdbcCommand cmd;
             OdbcDataReader rdr = null;
             string result = "[";
-                        
+
             List<string> arr = new List<string>();
 
             try
-            {                
-                if(connectString.ToUpper().IndexOf("UID") == -1) {
+            {
+                if (connectString.ToUpper().IndexOf("UID") == -1)
+                {
                     connectString = connectString + "UID=anywhereuser;PWD=anywhere4u;";
                 }
 
@@ -6042,9 +6066,9 @@ namespace Anywhere.Data
                     //while (retval == bufferSize)
                     //{
                     //    memorystream.Write(outByte);
-                        
+
                     //}
-                    
+
                     /*
                     logger.debug("Attachment result.Read done");
                     var fileLength = result.GetBytes(0, 0, null, 0, int.MaxValue);

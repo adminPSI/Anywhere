@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using iAnywhere.Data.SQLAnywhere;
 using Microsoft.VisualBasic;
-using System.Data.OleDb;
-using System.Collections;
+using System;
 using System.Data;
-using System.Diagnostics;
-using iAnywhere.Data.SQLAnywhere;
 using System.Data.SqlClient;
-using System.Security.Cryptography;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace Anywhere.service.Data
 {
@@ -32,7 +26,7 @@ namespace Anywhere.service.Data
 
                     DA.Fill(DS, strTableName);
                     DS.Tables[0].PrimaryKey = new DataColumn[] { DS.Tables[0].Columns[0] };
-                    
+
 
                     if (connection.State == ConnectionState.Open)
                         connection.Close();
@@ -182,7 +176,7 @@ namespace Anywhere.service.Data
                     DR.Read();//MAT below
                     //functionReturnValue = DR.GetValue(0).ToString();
                     functionReturnValue = DR.GetValue(0).ToString();
-                    
+
                     DR.Close();
 
                     if (SqlCommand.Connection.State == ConnectionState.Open)
@@ -468,7 +462,7 @@ namespace Anywhere.service.Data
                     if ((!object.ReferenceEquals(SqlCommand.ExecuteScalar(), System.DBNull.Value)))
                         //functionReturnValue = SqlCommand.ExecuteScalar;
                         //MAT
-                        functionReturnValue = Convert.ToDecimal(SqlCommand.ExecuteScalar());                     
+                        functionReturnValue = Convert.ToDecimal(SqlCommand.ExecuteScalar());
 
                     if (connection.State == ConnectionState.Open)
                         connection.Close();
@@ -623,20 +617,20 @@ namespace Anywhere.service.Data
             using (Aes encryptor = Aes.Create())
             {
                 Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(mencryptionKey, new byte[] {
-			0x49,
-			0x76,
-			0x61,
-			0x6e,
-			0x20,
-			0x4d,
-			0x65,
-			0x64,
-			0x76,
-			0x65,
-			0x64,
-			0x65,
-			0x76
-		});
+            0x49,
+            0x76,
+            0x61,
+            0x6e,
+            0x20,
+            0x4d,
+            0x65,
+            0x64,
+            0x76,
+            0x65,
+            0x64,
+            0x65,
+            0x76
+        });
                 encryptor.Key = pdb.GetBytes(32);
                 encryptor.IV = pdb.GetBytes(16);
                 using (MemoryStream ms = new MemoryStream())
@@ -659,20 +653,20 @@ namespace Anywhere.service.Data
             using (Aes encryptor = Aes.Create())
             {
                 Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(mencryptionKey, new byte[] {
-			0x49,
-			0x76,
-			0x61,
-			0x6e,
-			0x20,
-			0x4d,
-			0x65,
-			0x64,
-			0x76,
-			0x65,
-			0x64,
-			0x65,
-			0x76
-		});
+            0x49,
+            0x76,
+            0x61,
+            0x6e,
+            0x20,
+            0x4d,
+            0x65,
+            0x64,
+            0x76,
+            0x65,
+            0x64,
+            0x65,
+            0x76
+        });
                 encryptor.Key = pdb.GetBytes(32);
                 encryptor.IV = pdb.GetBytes(16);
                 using (MemoryStream ms = new MemoryStream())

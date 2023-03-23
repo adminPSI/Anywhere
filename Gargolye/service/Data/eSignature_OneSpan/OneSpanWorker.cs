@@ -1,33 +1,14 @@
 ﻿using Anywhere.service.Data.eSignature_OneSpan;
-using Anywhere.service.Data.PlanInformedConsent;
-using CrystalDecisions.CrystalReports.ViewerObjectModel;
-using iTextSharp.text;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using OneSpanSign.Sdk;
 using OneSpanSign.Sdk.Builder;
-using OneSpanSign.Sdk.Services;
-using Org.BouncyCastle.Cms;
-using Org.BouncyCastle.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.IO.Packaging;
 using System.Linq;
-using System.Management.Automation.Language;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Script.Serialization;
-using System.Web.UI.MobileControls;
-using System.Web.UI.MobileControls.Adapters;
-using System.Windows.Forms;
 
 
 namespace Anywhere.service.Data.eSignature___OneSpan
@@ -182,7 +163,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             return textAreaInput;
         }
 
-        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string[] names, string[]signatureTypes, PackageBuilder package, MemoryStream ms)
+        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string[] names, string[] signatureTypes, PackageBuilder package, MemoryStream ms)
         {
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Plan Report")
                                 .FromStream(ms, DocumentType.PDF)
@@ -225,7 +206,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 string anchor = names[i] + " /";
                 string dateAnchor = names[i] + " Date";
 
-                if ( signer.Title == "Guardian" || signer.Title == "Person Supported" || signer.Title == "Parent/Guardian")
+                if (signer.Title == "Guardian" || signer.Title == "Person Supported" || signer.Title == "Parent/Guardian")
                 {
                     Signature sig1 = SignatureBuilder.SignatureFor(signer.Email)
                                         .WithName(signer.Email)
@@ -309,7 +290,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     document.WithSignature(sig1);
                 }
 
-                i++;                
+                i++;
             }
 
             return sendToOneSpan(token, assessmentID, package, document);
@@ -401,11 +382,12 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                             if (fieldId == "dissentAreaDisagree" || fieldId == "dissentHowToAddress")
                             {
                                 fieldDictionary.Add(fieldId, fieldSummary.FieldValue);
-                            } else
+                            }
+                            else
                             {
                                 fieldDictionary.Add(fieldId, fieldSummary.FieldName);
                             }
-                            
+
                         }
 
                         if (fieldId == "Date_Signed")

@@ -1,13 +1,12 @@
-﻿using System.Web;
+﻿using Anywhere.Log;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Odbc;
-using System.Configuration;
-using Anywhere.Log;
-using System.Web.Script.Serialization;
-using System.Collections.Generic;
-using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -190,7 +189,7 @@ namespace Anywhere.service.Data
                 logger.error("ADG", ex.Message + "ANYW_ISP_getConsumerPlans(" + consumerId + ")");
                 throw ex;
             }
-        }        
+        }
         public string getMostRecentConsumerPlanId(string consumerId, string assessmentVersionId, DistributedTransaction transaction)
         {
             try
@@ -346,7 +345,7 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
-        public string getConsumerAssessment(string consumerPlanId, string copy,  DistributedTransaction transaction)
+        public string getConsumerAssessment(string consumerPlanId, string copy, DistributedTransaction transaction)
         {
             try
             {
@@ -445,7 +444,7 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
-                       
+
         public string getCurrentAssessmentVersionId(string assessmentVersionId, string effectiveStartDate, DistributedTransaction transaction)
         {
             try
@@ -646,12 +645,12 @@ namespace Anywhere.service.Data
 
         public string updatePlanAttachmentsenttoDODD(string attachmentId, string senttoDODD)
         {
-          
+
             logger.debug("updatePlanAttachmentsenttoDODD");
             List<string> list = new List<string>();
             list.Add(attachmentId);
             list.Add(senttoDODD);
-         
+
             string text = "CALL DBA.ANYW_ISP_UpdatePlanAttachmentsenttoDODD(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -728,7 +727,7 @@ namespace Anywhere.service.Data
         }
 
         public string carryOverApplicable(string consumerPlanId, string priorPlanId, string effectiveStart)
-        {            
+        {
             logger.debug("getPlanAttachmentsList");
             List<string> list = new List<string>();
             list.Add(consumerPlanId);

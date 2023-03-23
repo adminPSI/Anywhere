@@ -2,14 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
     public class SingleEntryWorker
     {
-        DataGetter dg = new DataGetter(); 
+        DataGetter dg = new DataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
         public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
@@ -202,7 +201,7 @@ namespace Anywhere.service.Data
             SingleEntryByDate[] seByDateObj = js.Deserialize<SingleEntryByDate[]>(seByDateString);
             return seByDateObj;
         }
-                                 
+
         public SingleEntryById[] getSingleEntryByIdJSON(string token, string singleEntryId)
         {
             string seByIdString = dg.getSingleEntryByIdJSON(token, singleEntryId);
@@ -309,19 +308,19 @@ namespace Anywhere.service.Data
         }
 
         public LocationsAndResidences[] getLocationsAndResidencesJSON(string token)
-    {
-      string locationsAndResidencesString = dg.getLocationsAndResidencesJSON(token);
-      LocationsAndResidences[] locationsAndResidencesObj = js.Deserialize<LocationsAndResidences[]>(locationsAndResidencesString);
-      return locationsAndResidencesObj;
-    }
+        {
+            string locationsAndResidencesString = dg.getLocationsAndResidencesJSON(token);
+            LocationsAndResidences[] locationsAndResidencesObj = js.Deserialize<LocationsAndResidences[]>(locationsAndResidencesString);
+            return locationsAndResidencesObj;
+        }
 
-    public class LocationsAndResidences
-    {
-      public string locationId { get; set; }
-      public string residence { get; set; }
-    }
+        public class LocationsAndResidences
+        {
+            public string locationId { get; set; }
+            public string residence { get; set; }
+        }
 
-    public class RequiredSingleEntryFields
+        public class RequiredSingleEntryFields
         {
             public string destinationrequired { get; set; }
             public string noterequired { get; set; }
@@ -331,7 +330,7 @@ namespace Anywhere.service.Data
             public string reconfigimportfile { get; set; }
             public string use5characterworkcode { get; set; }
             public string licenseplaterequired { get; set; }
-        }        
+        }
 
         public class WorkCodes
         {
@@ -340,7 +339,7 @@ namespace Anywhere.service.Data
             public string billable { get; set; }
             public string keyTimes { get; set; }
             public string serviceType { get; set; }
-        }        
+        }
 
         public class SingleEntryLocations
         {
@@ -354,7 +353,7 @@ namespace Anywhere.service.Data
         public class SingleEntryUsersByLocation
         {
             public string consumer_id { get; set; }
-        }        
+        }
 
         public class SingleEntryByDate
         {
@@ -381,7 +380,7 @@ namespace Anywhere.service.Data
             public string approved_time { get; set; }
             public string submit_date { get; set; }
             public string rejected_time { get; set; }
-        }        
+        }
 
         public class SingleEntryById
         {
@@ -448,30 +447,30 @@ namespace Anywhere.service.Data
             public string rejectedUser { get; set; }
             public string submittedUser { get; set; }
             public string keyTimes { get; set; }
-        }        
+        }
 
         public class AdminSELocations
         {
             public string locationID { get; set; }
             public string shortDescription { get; set; }
-        }        
+        }
 
         public class SingleEntrySupervisors
         {
             public string person_id { get; set; }
             public string first_name { get; set; }
             public string last_name { get; set; }
-        }        
+        }
 
         public class SingleEntryUsersWC
         {
             public string consumer_id { get; set; }
-        }        
+        }
 
         public class seOverlapCheck
         {
             public string single_entry_id { get; set; }
-        }        
+        }
 
         public class SingleEntryConsumersPresent
         {

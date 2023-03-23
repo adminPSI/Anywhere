@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Anywhere.Data;
-using System.Web.Script.Serialization;
-using System.Text;
-using System.Security.Cryptography;
-using System.Management.Automation.Language;
-using Microsoft.Expression.Interactivity.Media;
+﻿using Anywhere.Data;
 using Anywhere.service.Data.PlanInformedConsent;
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -56,7 +54,7 @@ namespace Anywhere.service.Data
             string companyWorkWeekStart = dg.getCompanyWorkWeekStartFromDB(token);
             StartDayOfWeek[] startDay = js.Deserialize<StartDayOfWeek[]>(companyWorkWeekStart);
             //string workWeekStart = startDay[0].Day_of_Week.ToString();
-            string workWeekStart = startDay.Length != 0 ? startDay[0].Day_of_Week.ToString() : "S"; 
+            string workWeekStart = startDay.Length != 0 ? startDay[0].Day_of_Week.ToString() : "S";
             int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
             DateTime weekStart = DateTime.Today.AddDays(-ded);
             return weekStart;
@@ -510,28 +508,37 @@ namespace Anywhere.service.Data
         {
             //Check login type
             //return dg.getLogIn(userId, hash);
-            string loginType =  dg.checkLoginType();
+            string loginType = dg.checkLoginType();
             LoginType[] loginTypeObj = js.Deserialize<LoginType[]>(loginType);
             string type = loginTypeObj[0].setting_value.ToString();
-            if(type.Equals("Y") && userId.ToUpper() != "PSI"){
+            if (type.Equals("Y") && userId.ToUpper() != "PSI")
+            {
                 //check code against DB to see if expired
-                if(deviceId.Equals("")){
+                if (deviceId.Equals(""))
+                {
                     return aAuth.generateAuthentication(userId, hash);
-                }else{
+                }
+                else
+                {
                     string expired = aDG.checkDeviceAuthentication(userId, deviceId);
-                    DeviceExpired[]  expiredObj = js.Deserialize<DeviceExpired[]>(expired);
+                    DeviceExpired[] expiredObj = js.Deserialize<DeviceExpired[]>(expired);
                     string isExpired = expiredObj[0].deviceGUID.ToString();
-                    if(isExpired.Equals("Y")){
+                    if (isExpired.Equals("Y"))
+                    {
                         return aAuth.generateAuthentication(userId, hash);
-                    }else if(isExpired.Equals("Invalid username"))
+                    }
+                    else if (isExpired.Equals("Invalid username"))
                     {
                         return "Invalid Username";
                     }
-                    else{
+                    else
+                    {
                         return dg.getLogIn(userId, hash);
                     }
-                }                
-            }else{
+                }
+            }
+            else
+            {
                 return dg.getLogIn(userId, hash);
             }
         }

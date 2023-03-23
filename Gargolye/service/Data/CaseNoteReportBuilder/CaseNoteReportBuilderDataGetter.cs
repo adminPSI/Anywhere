@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.CaseNoteReportBuilder
@@ -55,7 +54,7 @@ namespace Anywhere.service.Data.CaseNoteReportBuilder
             }
         }
 
-        public string generateCaseNoteTimeReport(string token, string category, string title, string reportServerList, string source, string userId, string billerId, string consumerId, string billingCode, 
+        public string generateCaseNoteTimeReport(string token, string category, string title, string reportServerList, string source, string userId, string billerId, string consumerId, string billingCode,
                                              string filterSyntax, string serviceStartDate, string serviceEndDate)
         {
             if (tokenValidator(token) == false) return null;

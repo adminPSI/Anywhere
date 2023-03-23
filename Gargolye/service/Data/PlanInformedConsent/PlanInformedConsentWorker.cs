@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanInformedConsent
@@ -29,7 +26,7 @@ namespace Anywhere.service.Data.PlanInformedConsent
             public string rmOtherWayHelpGood { get; set; }
             public string rmOtherWayHelpBad { get; set; }
             public string rmWhatCouldHappenGood { get; set; }
-            public string rmWhatCouldHappenBad { get; set; }            
+            public string rmWhatCouldHappenBad { get; set; }
         }
 
         public InformedConsentSSAs[] getPlanInformedConsentSSAs(string token)
@@ -95,7 +92,7 @@ namespace Anywhere.service.Data.PlanInformedConsent
             InformedConsent[] icObj = js.Deserialize<InformedConsent[]>(icString);
             string hcrDate = "";
             int i = icObj.Length;
-            if(icObj.Length > 0)
+            if (icObj.Length > 0)
             {
                 if (icObj[0].rmHRCDate != "")
                 {
@@ -105,7 +102,7 @@ namespace Anywhere.service.Data.PlanInformedConsent
 
                 picdg.insertForCarryOverInformedConsent(token, newPlanId, icObj[0].rmIdentified, hcrDate, icObj[0].rmKeepSelfSafe, icObj[0].rmFadeRestriction, icObj[0].rmOtherWayHelpGood,
                     icObj[0].rmOtherWayHelpBad, icObj[0].rmWhatCouldHappenGood, icObj[0].rmWhatCouldHappenBad, revision);
-            }           
+            }
 
         }
     }

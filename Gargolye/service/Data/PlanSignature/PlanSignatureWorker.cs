@@ -1,15 +1,7 @@
-﻿using System;
+﻿using PSIOISP;
+using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Management.Automation;
-using System.Management.Automation.Language;
-using System.Runtime.InteropServices;
-using System.Web;
 using System.Web.Script.Serialization;
-using Anywhere.service.Data.PlanInformedConsent;
-using PSIOISP;
 
 namespace Anywhere.service.Data.PlanSignature
 {
@@ -41,7 +33,7 @@ namespace Anywhere.service.Data.PlanSignature
         {
             string teamMemberString = psdg.getTeamMemberBySalesForceId(salesForceId);
             PlanSignatures[] teamMemberObj = js.Deserialize<PlanSignatures[]>(teamMemberString);
-            
+
             return teamMemberObj;
         }
 
@@ -108,7 +100,7 @@ namespace Anywhere.service.Data.PlanSignature
 
             try
             {
-                if(consumerId != peopleId)
+                if (consumerId != peopleId)
                 {
                     ISPDTData isp = new ISPDTData();
                     string sFS = isp.AddFamilyMemberToIndividal(consumerId, peopleId);
@@ -121,7 +113,7 @@ namespace Anywhere.service.Data.PlanSignature
                 {
                     return "";
                 }
-                
+
 
             }
             catch (Exception ex)
@@ -175,8 +167,9 @@ namespace Anywhere.service.Data.PlanSignature
                 {
                     pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), sigObj[0].signatureId);
                 }
-                return sigObj;            
-            } else
+                return sigObj;
+            }
+            else
             {
                 //if(peopleId != "" && createRelationship == "F")
                 //{
@@ -238,7 +231,7 @@ namespace Anywhere.service.Data.PlanSignature
                     pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), sigObj[0].signatureId);
                 }
                 return sigObj;
-            } 
+            }
         }
 
         public class NewPeopleId
@@ -258,11 +251,11 @@ namespace Anywhere.service.Data.PlanSignature
 
         public TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
         {
-           
+
             ISPDTData ispDT = new ISPDTData();
 
             string theGuardians = ispDT.IndividualGuardians(peopleId);
-            
+
             TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
 
             return stateGuardianObject;
@@ -299,7 +292,7 @@ namespace Anywhere.service.Data.PlanSignature
 
             var assignConsumersResult = js.Serialize(processedConsumers);
 
-           // TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
+            // TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
 
             return assignConsumersResult;
 
@@ -400,33 +393,34 @@ namespace Anywhere.service.Data.PlanSignature
                 //}
 
                 return psdg.updateVendor(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, vendorId);
-            } else
+            }
+            else
             {
                 string newSalesForceId = "";
                 if (salesForceId == "" || salesForceId == null)
                 {
                     newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(contactId));
-                if (newSalesForceId != null)
-                {
-                    salesForceId = newSalesForceId.ToString();
-                }
-                }
-                    if (buildingNumber == null) buildingNumber = "";
-                    if (dateOfBirth == null || dateOfBirth == "") dateOfBirth = "";
-                    if (hasWetSignature)
-            
+                    if (newSalesForceId != null)
                     {
-                        pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), signatureId);
+                        salesForceId = newSalesForceId.ToString();
                     }
-                    //if (signature != "")
-                    //{
-                    //    dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
-                    //}
+                }
+                if (buildingNumber == null) buildingNumber = "";
+                if (dateOfBirth == null || dateOfBirth == "") dateOfBirth = "";
+                if (hasWetSignature)
 
-                    return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, vendorId);
+                {
+                    pdg.addPlanAttachment(token, long.Parse(assessmentId), description, attachmentType, attachment, section, long.Parse(questionId), signatureId);
+                }
+                //if (signature != "")
+                //{
+                //    dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
+                //}
+
+                return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, vendorId);
             }
 
-                
+
         }
         public string deletePlanSignature(string token, string signatureId)
         {
