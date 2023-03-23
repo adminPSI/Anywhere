@@ -1903,7 +1903,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/saveUpdateITIncident/")]
-        List<string> saveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate,
+        List<string> saveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate, string incidentTypeDesc,
                                     string reportedTime, string subcategoryId, string locationDetailId, string serviceLocationId, string summary, string note, string prevention, string contributingFactor, //end of main table data
                                     string consumerIdString, string includeInCount, string involvementId, string consumerIncidentLocationIdString, string consumerInvolvedIdString,//end of consumers
                                     string employeeIdString, string notifyEmployeeString, string employeeInvolvementIdString,//end of employees
@@ -1915,7 +1915,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/sendITNotification/")]
-        string sendITNotification(string token, string notificationType, string employeeId);
+        string sendITNotification(string token, string notificationType, string employeeId, string incidentTypeDesc, string incidentDate, string incidentTime, string subcategoryId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

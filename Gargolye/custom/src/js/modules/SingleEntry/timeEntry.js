@@ -24,6 +24,11 @@ var timeEntry = (function () {
     useFiveCharWorkCode: '',
   };
 
+  let overlapLocationsPopup;
+  let overlapLocationsDropdown;
+  let overlapLocationsDoneBtn;
+  let locationId = '';
+
   // Save, Update, Delete
   //------------------------------------
   function showOverlapPopup(updateorsave = 'save') {
@@ -277,17 +282,125 @@ var timeEntry = (function () {
         });
       } else {
         singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
-          successfulSave.show('SAVED');
-          setTimeout(function () {
-            successfulSave.hide();
-            timeEntryCard.clearAllGlobalVariables();
-            roster2.clearActiveConsumers();
-            newTimeEntry.init();
-          }, 1000);
+    
+          if (results.length > 1) {
+            displayOverlapLocationsPopup(results);
+         
+          } else if (results.length = 1) {
+              successfulSave.show('SAVED');
+              setTimeout(function () {
+              successfulSave.hide();
+              timeEntryCard.clearAllGlobalVariables();
+              roster2.clearActiveConsumers();
+              newTimeEntry.init();
+                  }, 1000);
+          } else {
+            alert("There was a problem with Save process. Entry was not saved.");
+          }
         });
+        
       }
     }
   }
+
+  function displayOverlapLocationsPopup(results) {
+
+    overlapLocationsPopup = POPUP.build( {
+        header: "Consumer Name Last Name, First Name format) has two locations for this date. Please select the location where these services are being provided.",
+        hideX: false,
+        id: "overlapLocationsPopup"
+      });
+
+    overlapLocationsDropdown = dropdown.build({
+      label: "Locations",
+      dropdownId: "overlapLocationsDropdown",
+    });   
+
+    overlapLocationsDoneBtn = button.build({
+      id: "overlapLocationsDoneBtn",
+      text: "done",
+      type: "contained",
+      style: "secondary",
+      classNames: 'disabled',
+      callback: () => {    
+        var saveData = timeEntryCard.getSaveUpdateData();
+        if (locationId !== '') {
+        saveData.locationId = locationId;
+        
+         singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
+              successfulSave.show('SAVED');
+              setTimeout(function () {
+                successfulSave.hide();
+                timeEntryCard.clearAllGlobalVariables();
+                roster2.clearActiveConsumers();
+                newTimeEntry.init(true);
+              }, 1000);
+            });
+          }
+      }
+    });
+    this.doneButton = overlapLocationsDoneBtn;
+
+    let cancelBtn = button.build({
+      id: "overlapLocationsCancelBtn",
+      text: "cancel",
+      type: "outlined",
+      style: "secondary",
+       callback: () => {
+        locationId = '';
+        POPUP.hide(overlapLocationsPopup);  
+       }
+    });
+
+    let btnWrap = document.createElement("div");
+			btnWrap.classList.add("btnWrap");
+			btnWrap.appendChild(overlapLocationsDoneBtn);
+			btnWrap.appendChild(cancelBtn);        
+			overlapLocationsPopup.appendChild(overlapLocationsDropdown);
+			overlapLocationsPopup.appendChild(btnWrap);
+
+      populateOverlapLocationsDropdown(results);       
+
+      overlapLocationsDropdown.addEventListener('change', event => {
+				var selectedOption = event.target.options[event.target.selectedIndex];
+			 
+				  if (selectedOption.value !== "SELECT") {
+            locationId = selectedOption.value;
+            overlapLocationsDropdownRequired();
+
+          } 
+					
+        });
+        
+       overlapLocationsDropdownRequired();
+
+        POPUP.show(overlapLocationsPopup);
+
+        function overlapLocationsDropdownRequired() {
+          if (!locationId || locationId === '') {
+            overlapLocationsDropdown.classList.add('error');
+            overlapLocationsDoneBtn.classList.add('disabled');
+      
+            } else {
+              overlapLocationsDropdown.classList.remove('error');
+            overlapLocationsDoneBtn.classList.remove('disabled');
+            }
+        }
+
+      }
+
+      function populateOverlapLocationsDropdown(results) {
+
+        let data = results.map((location) => ({
+          id: location.locationId,   // replace with selectedConsumerServiceType to get T1 and T2 info
+          value: location.locationId, 
+          text: location.locationName,
+        })); 
+        data.unshift({ id: '', value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
+        dropdown.populate(overlapLocationsDropdown, data);  
+
+      }
+
 
   function updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndSubmitBool) {
     saveAndSubmit = saveAndSubmitBool;
