@@ -104,6 +104,8 @@ var consumerFollowUp = (function () {
       callback: () => {
         deleteConsumerFollowUpData();
         POPUP.hide(deleteWarningPopup);
+        incidentCard.checkEntireIncidentCardforErrors();
+
       },
     });
     var noBtn = button.build({

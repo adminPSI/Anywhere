@@ -359,9 +359,9 @@
           successfulSave.hide();
           if (callback) callback(res);
           notifyArr.forEach((notify, index) => {
-              if (notify === 'Y') {
-                  sendNotification(notificationType, employeeIdArr[index], incidentData);
-            }
+           if (notify === 'Y') {
+              sendNotification(notificationType, employeeIdArr[index], incidentData);
+           }
           });
         }, 1000);
         //for loop' if notify emp is y call procedure with person id of employee with checked box

@@ -109,6 +109,7 @@ var consumerInjuries = (function () {
       callback: () => {
         deleteConsumerInjuryData();
         POPUP.hide(deleteWarningPopup);
+        incidentCard.checkEntireIncidentCardforErrors();
       },
     });
     var noBtn = button.build({

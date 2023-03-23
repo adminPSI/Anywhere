@@ -98,6 +98,7 @@ var consumerReview = (function () {
       callback: () => {
         deleteConsumerReviewData();
         POPUP.hide(deleteWarningPopup);
+        incidentCard.checkEntireIncidentCardforErrors();
       },
     });
     var noBtn = button.build({

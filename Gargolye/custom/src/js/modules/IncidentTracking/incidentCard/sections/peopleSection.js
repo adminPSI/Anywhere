@@ -142,6 +142,7 @@ var itPeopleSection = (function () {
         var parent = otherPeopleRow.parentElement;
         parent.removeChild(otherPeopleRow);
         displayCount();
+        incidentCard.checkEntireIncidentCardforErrors();
       },
     });
 

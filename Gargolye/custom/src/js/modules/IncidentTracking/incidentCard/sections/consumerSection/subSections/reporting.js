@@ -104,6 +104,7 @@ var consumerReporting = (function () {
       callback: () => {
         deleteConsumerReportingData();
         POPUP.hide(deleteWarningPopup);
+        incidentCard.checkEntireIncidentCardforErrors();
       },
     });
     var noBtn = button.build({

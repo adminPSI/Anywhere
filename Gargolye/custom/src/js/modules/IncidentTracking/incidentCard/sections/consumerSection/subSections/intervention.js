@@ -165,6 +165,7 @@ var consumerIntervention = (function () {
       callback: () => {
         deleteConsumerInterventionData();
         POPUP.hide(deleteWarningPopup);
+        incidentCard.checkEntireIncidentCardforErrors();
       },
     });
     var noBtn = button.build({
