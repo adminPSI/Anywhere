@@ -1,4 +1,4 @@
-var documentationTimer = (function() {
+var documentationTimer = (function () {
   var runningTime = 0;
   var saveTime;
   var inactTime;
@@ -19,7 +19,7 @@ var documentationTimer = (function() {
     timer = null;
   }
 
-  var inactivityTime = function() {
+  var inactivityTime = function () {
     inactTime = setTimeout(inactiveAlert, 120000);
   };
 
@@ -27,31 +27,28 @@ var documentationTimer = (function() {
     //Speech to text, check if speech to text is listening, and reset inactivity if it is
     if (document.querySelector('.stt_listening')) {
       resetInactivityTimer();
-      return
+      return;
     }
     clearTimeout(inactTime);
     clearInterval(timer);
-    var answer = confirm(
-      "Your documentation time has been paused. Continue timing?"
-    );
+    var answer = confirm('Your documentation time has been paused. Continue timing?');
     if (answer) {
       resetInactivityTimer();
-      const start = Date.now() - (runningTime * 1000);
-      timer = setInterval(function() {
+      const start = Date.now() - runningTime * 1000;
+      timer = setInterval(function () {
         const deltaMS = Date.now() - start; // milliseconds elapsed since start
         const deltaS = Math.floor(deltaMS / 1000);
         runningTime = deltaS;
-        // console.log(runningTime)
-        const newMinutes = Math.round(Math.floor(runningTime/30) / 2)
+        const newMinutes = Math.round(Math.floor(runningTime / 30) / 2);
         if (newMinutes !== minutes) {
           minutes = newMinutes;
-          const minArea = document.getElementById("docTimeMinutesDisplay");
+          const minArea = document.getElementById('docTimeMinutesDisplay');
           minArea.value = minutes;
         }
-    }, 1000);
+      }, 1000);
     } else {
       // pauseTimer
-      note.getTimeFromInactivity(stopTimer())
+      note.getTimeFromInactivity(stopTimer());
     }
   }
 
@@ -64,12 +61,12 @@ var documentationTimer = (function() {
     if (timerRunning) {
       clearTimer();
     } else {
-      docTimerMutationObserver()
+      docTimerMutationObserver();
     }
-    let start
+    let start;
     timerRunning = true;
-    startBtn = document.getElementById("cnTimerStart");
-    startBtn.dataset.toggled = "true";
+    startBtn = document.getElementById('cnTimerStart');
+    startBtn.dataset.toggled = 'true';
     if (prevTime) {
       const prevTimeMS = parseInt(prevTime) * 1000; // convert to ms
       start = Date.now() - prevTimeMS;
@@ -77,17 +74,16 @@ var documentationTimer = (function() {
       start = Date.now();
     }
     inactivityTime();
-    timer = setInterval(function() {
-        const deltaMS = Date.now() - start; // milliseconds elapsed since startm
-        const deltaS = Math.floor(deltaMS / 1000);
-        runningTime = deltaS;
-        // console.log(runningTime)
-        const newMinutes = Math.round(Math.floor(runningTime/30) / 2)
-        if (newMinutes !== minutes) {
-          minutes = newMinutes;
-          const minArea = document.getElementById("docTimeMinutesDisplay");
-          minArea.value = minutes;
-        }
+    timer = setInterval(function () {
+      const deltaMS = Date.now() - start; // milliseconds elapsed since startm
+      const deltaS = Math.floor(deltaMS / 1000);
+      runningTime = deltaS;
+      const newMinutes = Math.round(Math.floor(runningTime / 30) / 2);
+      if (newMinutes !== minutes) {
+        minutes = newMinutes;
+        const minArea = document.getElementById('docTimeMinutesDisplay');
+        minArea.value = minutes;
+      }
     }, 1000);
     window.onload = resetInactivityTimer;
     document.onmousemove = resetInactivityTimer;
@@ -124,39 +120,39 @@ var documentationTimer = (function() {
   function stopTimer() {
     if (docTimerMutationObserver.disconnect) docTimerMutationObserver.disconnect();
     timerRunning = false;
-    startBtn = document.getElementById("cnTimerStart");
-    startBtn.dataset.toggled = "false";
+    startBtn = document.getElementById('cnTimerStart');
+    startBtn.dataset.toggled = 'false';
     saveTime = runningTime;
     clearTimer();
     return saveTime;
   }
 
   function docTimerMutationObserver() {
-    const observNode = document.getElementById("actioncenter");
+    const observNode = document.getElementById('actioncenter');
     const config = { attributes: true };
-    const callback = function(mutationList, observer) {
+    const callback = function (mutationList, observer) {
       for (let mutation of mutationList) {
         if (mutation.type === 'attributes') {
-          if (mutation.attributeName === "data-active-section") {
+          if (mutation.attributeName === 'data-active-section') {
             observer.disconnect();
             clearTimer();
             timerRunning = false;
           }
         }
       }
-    }
+    };
     const observer = new MutationObserver(callback);
-    
+
     function disconnect() {
       observer.disconnect();
     }
-    
-    observer.observe(observNode, config)
+
+    observer.observe(observNode, config);
     docTimerMutationObserver.disconnect = disconnect;
   }
 
   return {
     startTimer: startPercisionTimer,
-    stopTimer
+    stopTimer,
   };
 })();

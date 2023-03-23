@@ -2,11 +2,13 @@ const communityBasedAssessmentSummaryForm = (() => {
 
   // Inputs
   let monthYearDropdown;
+  let referenceNumberDropdown;
   let nextScheduledReviewInput;
   let selfAssessmentInput;
   let referralQuestionsInput;
   let employerAssessmentInput;
   let providerAssessmentInput;
+  let supportAndTransitionInput;
   let reviewVTSDropdown;
 
   // values
@@ -14,11 +16,13 @@ const communityBasedAssessmentSummaryForm = (() => {
   let emReviewId;
   let emReviewDate;         // monthYearDropdown
   let emReviewDateDBValue;  // monthYearDropdown  
+  let emReferenceNumber;    // referenceNumberDropdown
   let emNextScheduledReview;  //  nextScheduledReviewInput
-  let emSelfAssessment;   //  selfAssessmentInput
+  let emSummaryIndivSelfAssessment;   //  selfAssessmentInput
   let emReferralQuestions;  //referralQuestionsInput
-  let emEmployerAssessment;  // employerAssessmentInput
-  let emProviderAssessment;  // providerAssessmentInput
+  let emSummaryIndivEmployerAssessment;  // employerAssessmentInput
+  let emSummaryIndivProviderAssessment;  // providerAssessmentInput
+  let emSupportandTransition;  //supportAndTransitionInput
   let emReviewVTS;   // reviewVTSDropdown
 
   // buttons
@@ -36,6 +40,7 @@ let reviewStartDate;
 let reviewEndDate;
 
 let formReadOnly = false;
+const SERVICETYPE = 'T2';  // Form 8
 
 let OODMonthlySummariesTable; // To be added in future release
 
@@ -55,23 +60,27 @@ let OODMonthlySummariesTable; // To be added in future release
             userId = $.session.UserId;
             emReviewId = emReviewData.emReviewId;
             emReviewDate = getShortDate(emReviewData.emReviewDate);  
-            emReviewDateDBValue = new Date(emReviewData.emReviewDate);    // TODO JOE: EM_Review.EM_Review_Date                     
-            emNextScheduledReview = emReviewData.emNextScheduledReview; // TODO JOE: EM_Review.EM_Review_Next_date
-            emSelfAssessment = emReviewData.emEmploymentGoal;  //TODO JOE -- EM_Review.EM_Sum_Ind_Self_Assess
-            emEmployerAssessment = emReviewData.emIndivInputonSearch; //TODO JOE -- EM_Review.EM_Sum_Employer.Assess
-           // emProviderAssessment = emReviewData.emIndivInputonSearch; //TODO JOE -- EM_Review.EM_Sum_Provider_Assess
-            emReviewVTS = emReviewData.emPotentialIssueswithProgress; //TODO JOE -- em_review.vts_review column *********** as Y or N ***************
+            emReviewDateDBValue = new Date(emReviewData.emReviewDate);    
+            emReferenceNumber = emReviewData.emReferenceNumber;                
+            emNextScheduledReview = emReviewData.emNextScheduledReview; 
+            emSummaryIndivSelfAssessment = emReviewData.emSummaryIndivSelfAssessment;  
+            emSummaryIndivEmployerAssessment = emReviewData.emSummaryIndivEmployerAssessment; 
+           emSummaryIndivProviderAssessment = emReviewData.emSummaryIndivProviderAssessment; 
+           emSupportandTransition = emReviewData.emSupportandTransition;
+           emReviewVTS = emReviewData.emReviewVTS;
 
           } else {
             userId = $.session.UserId;
             serviceId = selectedServiceId;
             emReviewId = '0';
             emReviewDate = ('0' + (todaysdate.getMonth() + 1)).slice(-2) + '/' + todaysdate.getFullYear();   
-            emReviewDateDBValue = new Date(todaysdate.getFullYear(), todaysdate.getMonth(), 1);                          
+            emReviewDateDBValue = new Date(todaysdate.getFullYear(), todaysdate.getMonth(), 1);      
+            emReferenceNumber = '';                    
             emNextScheduledReview = '';
-            emSelfAssessment = '';
-            emEmployerAssessment = '';
-            emProviderAssessment = '';
+            emSummaryIndivSelfAssessment = '';
+            emSummaryIndivEmployerAssessment = '';
+            emSummaryIndivProviderAssessment = '';
+            emSupportandTransition = '';
             emReviewVTS = '';
             
           }
@@ -96,7 +105,7 @@ let OODMonthlySummariesTable; // To be added in future release
         var LineBr = document.createElement('br');
 
      const heading = document.createElement('h2');
-     heading.innerHTML = 'Community Based Assessment -- OOD Form 8 Monthly Summary';
+     heading.innerHTML = 'Community Based Assessment - OOD Form 8 Monthly Summary';
      heading.classList.add('OODsectionHeading');
 
      container.appendChild(myconsumer);
@@ -116,6 +125,14 @@ let OODMonthlySummariesTable; // To be added in future release
       //readonly: true,
     });
 
+    referenceNumberDropdown = dropdown.build({
+      label: 'Reference Number',
+      dropdownId: "referenceNumberDropdown",
+      value: emReferenceNumber,
+      readonly: formReadOnly,
+      // readonly: (userId !== currentRecordUserId) ? true : false,
+    });
+
     nextScheduledReviewInput = input.build({
 			type: 'date',
 			label: 'Next Scheduled Review',
@@ -132,7 +149,7 @@ let OODMonthlySummariesTable; // To be added in future release
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
-      value: emSelfAssessment,
+      value: emSummaryIndivSelfAssessment,
       readonly: formReadOnly,
       // charLimit: 256,
      // forceCharLimit: true,
@@ -145,7 +162,7 @@ let OODMonthlySummariesTable; // To be added in future release
         type: 'textarea',
         style: 'secondary',
         classNames: 'autosize',
-        value: emEmployerAssessment,
+        value: emSummaryIndivEmployerAssessment,
         readonly: formReadOnly,
       });
     //  employerAssessmentInput.classList.add('introTextArea');
@@ -156,10 +173,19 @@ let OODMonthlySummariesTable; // To be added in future release
         type: 'textarea',
         style: 'secondary',
         classNames: 'autosize',
-        value: emProviderAssessment,
+        value: emSummaryIndivProviderAssessment,
         readonly: formReadOnly,
       });
     //  providerAssessmentInput.classList.add('introTextArea');
+
+    supportAndTransitionInput = input.build({
+      label: `Support and Transition Plan. `,
+      type: 'textarea',
+      style: 'secondary',
+      classNames: 'autosize',
+      value: emSupportandTransition,
+      readonly: formReadOnly,
+    });
 
       // reviewVTS textarea
     reviewVTSDropdown = dropdown.build({
@@ -229,6 +255,7 @@ let OODMonthlySummariesTable; // To be added in future release
       inputContainer1.classList.add('ood_form8monthlysummary_inputContainer1');
 
       inputContainer1.appendChild(monthYearDropdown);
+      inputContainer1.appendChild(referenceNumberDropdown);
       // inputContainer1.appendChild(referenceNumberDropdown);
 
       //inputContainer1.appendChild(nextScheduledReviewInput);
@@ -244,6 +271,7 @@ let OODMonthlySummariesTable; // To be added in future release
      container.appendChild(selfAssessmentInput);    
      container.appendChild(employerAssessmentInput);
      container.appendChild(providerAssessmentInput);
+     container.appendChild(supportAndTransitionInput);   
      container.appendChild(reviewVTSDropdown);
 
 
@@ -289,6 +317,7 @@ let OODMonthlySummariesTable; // To be added in future release
      DOM.autosizeTextarea();
 
      populateStaticDropDowns();
+     populateReferenceNumberDropdown();
 
      checkRequiredFields(); 
 
@@ -314,6 +343,74 @@ let OODMonthlySummariesTable; // To be added in future release
       reviewEndDate = thisYear + '-' + thisMonth + '-' + daysinMonth;
 
     }
+
+    function displaynoReferenceNumberPopup() {
+
+      // no reference Numbers
+			let noReferenceNumberPopup = POPUP.build({
+				header: "No Reference Numbers Found",
+				hideX: true,
+				id: "noReferenceNumberPopup"
+			});   
+
+			let OKBtn = button.build({
+				text: 'Ok',
+				style: 'secondary',
+				type: 'contained',
+				callback: function () {
+				  POPUP.hide(noReferenceNumberPopup);
+				 // overlay.hide();
+
+				},
+			  });
+
+			  let btnWrap = document.createElement("div");
+			  let warningMessage = document.createElement('p');
+			  warningMessage.innerHTML = 'There are no reference numbers for this consumer and date combination. Please change the Month/Year to see a list of valid reference numbers or contact your Advisor Administrator to enter an OOD Authorization for the selected consumer.';
+			  btnWrap.classList.add("btnWrap");
+			  btnWrap.appendChild(OKBtn);    
+			  //noServicesPopup.appendChild(consumerServicesDropdown);
+			  noReferenceNumberPopup.appendChild(warningMessage);
+			  noReferenceNumberPopup.appendChild(btnWrap);
+			 	overlay.show();
+			  POPUP.show(noReferenceNumberPopup);
+
+    }
+
+    async function populateReferenceNumberDropdown() { 
+ 
+      setReviewStartandEndDates();
+
+        const {
+          getConsumerReferenceNumbersResult: referencenumbers,
+        } = await OODAjax.getConsumerReferenceNumbersAsync(consumerId, reviewStartDate, reviewEndDate, SERVICETYPE);
+      // const templates = WorkflowViewerComponent.getTemplates();
+      let data = referencenumbers.map((referencenumber) => ({
+        id: referencenumber.referenceNumber, 
+        value: referencenumber.referenceNumber, 
+        text: referencenumber.referenceNumber,
+      })); 
+
+      
+      if (data.length == 0) {
+          displaynoReferenceNumberPopup();
+      } 
+
+      // if creating a new record and there is only one referenceNumber in the data, then automatically select it in the DDL
+      if (emReferenceNumber == '' && data.length == 1) {
+        emReferenceNumber = data[0].value;
+      }
+
+      if (!emReferenceNumber || emReferenceNumber === '') {
+        referenceNumberDropdown.classList.add('error');
+      } else {
+        referenceNumberDropdown.classList.remove('error');
+      }
+
+      data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
+      dropdown.populate("referenceNumberDropdown", data, emReferenceNumber); 
+
+  }
 
     // for monthYearDropdown DDL
     function populateStaticDropDowns() {
@@ -356,6 +453,12 @@ let OODMonthlySummariesTable; // To be added in future release
         monthYearDropdown.classList.remove('error');
       }
 
+      if (!emReferenceNumber || emReferenceNumber === '') {
+        referenceNumberDropdown.classList.add('error');
+      } else {
+        referenceNumberDropdown.classList.remove('error');
+      }
+
       if (!emNextScheduledReview || emNextScheduledReview === '') {
         nextScheduledReviewInput.classList.add('error');
       } else {
@@ -383,6 +486,13 @@ let OODMonthlySummariesTable; // To be added in future release
         providerAssessmentInput.classList.add('error');
       } else {
         providerAssessmentInput.classList.remove('error');
+      }
+
+      var supportAndTransitionInpt = supportAndTransitionInput.querySelector('textarea');
+      if (supportAndTransitionInpt.value === '') {
+        supportAndTransitionInput.classList.add('error');
+      } else {
+        supportAndTransitionInput.classList.remove('error');
       }
 
       // var reviewVTSInpt = reviewVTSInput.querySelector('textarea');
@@ -449,8 +559,22 @@ let OODMonthlySummariesTable; // To be added in future release
           emReviewDate = selectedOption.value;
         }
 
+        emReferenceNumber = '';
+        populateReferenceNumberDropdown();
         checkRequiredFields();
       });
+
+      referenceNumberDropdown.addEventListener('change', event => {
+        var selectedOption = event.target.options[event.target.selectedIndex];
+         
+        if (selectedOption.value == "SELECT") {
+          emReferenceNumber = '';
+        } else {
+          emReferenceNumber = selectedOption.value;
+        }
+        checkRequiredFields();
+      });
+
 
       nextScheduledReviewInput.addEventListener('change', event => {
         emNextScheduledReview = event.target.value;
@@ -460,19 +584,24 @@ let OODMonthlySummariesTable; // To be added in future release
       });
 
       selfAssessmentInput.addEventListener('input', event => {
-        emSelfAssessment = event.target.value;
+        emSummaryIndivSelfAssessment = event.target.value;
       checkRequiredFields();
     });
 
 
     employerAssessmentInput.addEventListener('input', event => {
-      emEmployerAssessment = event.target.value;
+      emSummaryIndivEmployerAssessment = event.target.value;
       checkRequiredFields();
     });
 
     // provider
     providerAssessmentInput.addEventListener('input', event => {
-      emProviderAssessment = event.target.value;
+      emSummaryIndivProviderAssessment = event.target.value;
+      checkRequiredFields();
+    });
+
+    supportAndTransitionInput.addEventListener('input', event => {
+      emSupportandTransition = event.target.value;
       checkRequiredFields();
     });
 
@@ -552,16 +681,19 @@ let OODMonthlySummariesTable; // To be added in future release
               consumerId,
               emReviewId,
               emReviewDate: emReviewDateDBValue.getFullYear() + '-' + (emReviewDateDBValue.getMonth() +1).toString().padStart(2, "0") + '-' + '01', 
+              emReferenceNumber,
              // emReviewDate: UTIL.formatDateToIso(emReviewDateDBValue.split(' ')[0]), 
              emNextScheduledReview: UTIL.formatDateToIso(emNextScheduledReview.split(' ')[0]),
-             emSelfAssessment,
-             emEmployerAssessment,
-             emProviderAssessment,
-              emReviewVTS,
-              userId,
+             emSummaryIndivSelfAssessment,
+             emSummaryIndivEmployerAssessment,
+             emSummaryIndivProviderAssessment,
+             emSupportandTransition,
+             emReviewVTS,
+             userId,
+             
             };
             // TODO JOE: need new C# and SP for Form 8
-            OODAjax.updateForm4MonthlySummary(data, function(results) {
+            OODAjax.updateForm8MonthlySummary(data, function(results) {
               successfulSave.show();
                 setTimeout(function() {
                   successfulSave.hide();
@@ -586,16 +718,19 @@ let OODMonthlySummariesTable; // To be added in future release
               emReviewId,
               emReviewDate: emReviewDateDBValue.getFullYear() + '-' + (emReviewDateDBValue.getMonth() +1).toString().padStart(2, "0") + '-' + '01', 
              // emNextScheduledReview: emNextScheduledReviewDBValue.getFullYear() + '-' + (emNextScheduledReviewDBValue.getMonth()).toString().padStart(2, "0") + '-' + '01',
+             emReferenceNumber,
              emNextScheduledReview: UTIL.formatDateToIso(emNextScheduledReview.split(' ')[0]),
-             emSelfAssessment,
-             emEmployerAssessment,
-             emProviderAssessment,
-              emReviewVTS,
-              userId,
-              serviceId,
+             emSummaryIndivSelfAssessment,
+             emSummaryIndivEmployerAssessment,
+             emSummaryIndivProviderAssessment,
+             emSupportandTransition,
+             emReviewVTS,
+             userId,
+             serviceId,
+           
             };
             // TODO JOE: need new C# and SP for Form 8
-            OODAjax.insertForm4MonthlySummary(data, function(results) {
+            OODAjax.insertForm8MonthlySummary(data, function(results) {
               successfulSave.show();
               if (saveType == 'saveandNew') {
                 setTimeout(function() {
@@ -627,8 +762,8 @@ let OODMonthlySummariesTable; // To be added in future release
               icon: 'checkmark',
               callback: async function() {
                         POPUP.hide(deletepopup);
-                         let result = await OODAjax.deleteForm4MonthlySummaryAsync(emReviewId);  
-                         if (result.deleteForm4MonthlySummaryResult === "1"){
+                         let result = await OODAjax.deleteFormMonthlySummaryAsync(emReviewId);  
+                         if (result.deleteFormMonthlySummaryResult === "1"){
                               OOD.loadOODLanding();                
                          }
               },

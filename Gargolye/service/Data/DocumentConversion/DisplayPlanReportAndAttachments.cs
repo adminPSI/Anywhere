@@ -8,7 +8,7 @@ using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
-using static PSIOISP.Deserialize;
+using PSIOISP;
 using System.Web.Services.Description;
 using pdftron.PDF;
 using pdftron.Filters;
@@ -21,6 +21,7 @@ using pdftron;
 using System.Management.Automation.Language;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 using iTextSharp.text.pdf.qrcode;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -35,6 +36,7 @@ namespace Anywhere.service.Data.DocumentConversion
         JavaScriptSerializer js = new JavaScriptSerializer();
         GetReportsStreams grs = new GetReportsStreams();
         PDFGenerator.Data obj = new PDFGenerator.Data();
+        
       //  PDFDoc doc = new PDFDoc();
 
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
@@ -68,6 +70,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 foreach (PlanAttachments wfa in planAttachmentsObj)
@@ -79,6 +82,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 //string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
@@ -90,9 +94,103 @@ namespace Anywhere.service.Data.DocumentConversion
                 return null;
             }
         }
-
-        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, string doddFlag)
+        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
+            string sendtoDODDResult = string.Empty; 
+
+            try
+            {
+                var psiOispDT = new PSIOISP.ISPDTData();
+                WorkflowDataGetter wfdg = new WorkflowDataGetter();
+                PlanDataGetter pdg = new PlanDataGetter();
+                string sendPlanResult;
+                //string noAttachmentsMessage = string.Empty;
+
+                long lngPlanId = long.Parse(planId);
+                long lngConsumerId = long.Parse(consumerId);
+
+                // send Plan to DODD
+                // success -- "ISP Successfully Uploaded."
+                sendtoDODDResult = psiOispDT.UploadISP(lngConsumerId, lngPlanId);
+
+                if (sendtoDODDResult == "Error uploading ISP, Please try again." || sendtoDODDResult == "")
+                {
+                    return "Error uploading ISP. Please try again.";
+                }
+
+                if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                {
+                    long wfAttachId;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string wfAttachmentId in wfAttachmentIds)
+                    {
+                        //Type cast wfAttachmentId from string to long
+                        wfAttachId = long.Parse(wfAttachmentId);
+
+                        // success -- Successful
+                        sendtoDODDResult = psiOispDT.Attachment(wfAttachId, true);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Workflow Attachment. Please try again.";
+                        }
+
+                    }
+                }
+                if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
+                {
+                    long sigAttachId;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string sigAttachmentId in sigAttachmentIds)
+                    {
+                        //Type cast sigAttachmentId from string to long
+                        sigAttachId = long.Parse(sigAttachmentId);
+
+                        sendtoDODDResult = psiOispDT.Attachment(sigAttachId, false);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Signature Attachment. Please try again.";
+                        }
+
+                    }
+                }
+                if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
+                {
+                    long planAttachId;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string planAttachmentId in planAttachmentIds)
+                    {
+                        //Type cast planAttachmentId from string to long
+                        planAttachId = long.Parse(planAttachmentId);
+
+                        sendtoDODDResult = psiOispDT.Attachment(planAttachId, false);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Plan Attachment. Please try again.";
+                        }
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return "There was failure in the send process. Please contact your adminitrator.";        
+            }
+
+            if (wfAttachmentIds.Length == 0 && sigAttachmentIds.Length == 0 && planAttachmentIds.Length == 0)
+            {
+                return "Successfully sent Plan to DODD.";
+            } else
+            {
+                return "Successfully sent Plan and selected Attachments to DODD.";
+            }
+            
+           // }
+
+        }
+
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        {
+           
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
@@ -111,6 +209,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 MemoryStream assessment = new MemoryStream();
                 MemoryStream intro = new MemoryStream();
                 MemoryStream plan = new MemoryStream();
+               
                 foreach (ReportSectionOrder ord in order)
                 {
                     if (true == true)
@@ -226,9 +325,8 @@ namespace Anywhere.service.Data.DocumentConversion
                         
 
                     }
-                }
+                 }
 
-                
                 byte[] introReport = StreamExtensions.ToByteArray(intro);
                 intro.Close();
                 intro.Flush();
@@ -241,7 +339,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 plan.Close();
                 intro.Flush();
                 plan.Dispose();
-                //NATHAN TODO Add if to show where to send
+
                 if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                 {
                     wfAttRep = wfAttReport(wfAttachmentIds);
@@ -255,8 +353,6 @@ namespace Anywhere.service.Data.DocumentConversion
                     planAttRep = planAttReport(planAttachmentIds);
                 }
                 
-                
-
                 foreach (ReportSectionOrder ord in order)
                 {
                     if(ord.setting_value == "1")
@@ -1056,7 +1152,8 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
-
+            public string workflowstepdocId { get; set; }
+            
         }
 
         public class PlanAttachments
@@ -1068,6 +1165,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
+            public string workflowstepdocId { get; set; }
         }
 
         public class WorkFlowAttachments
@@ -1079,6 +1177,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
+            public string workflowstepdocId { get; set; }
         }
 
         public class POrWFAttachment

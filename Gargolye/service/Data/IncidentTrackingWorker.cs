@@ -449,6 +449,13 @@ namespace Anywhere.service.Data
             }
             return "success";
         }
+        
+        // NEW - Incident Tracking Update Incident View By User
+        public string updateIncidentViewByUser(string token, string incidentId, string userId)
+        {
+            dg.updateIncidentViewByUser(token, incidentId, userId);
+            return "success";
+        }
 
         public class ReportingCategories
         {
@@ -580,6 +587,8 @@ namespace Anywhere.service.Data
             public string consumerName { get; set; }
             public string incidentCategory { get; set; }
             public string incidentDate { get; set; }
+            public string viewedOn { get; set; }
+            public string originallyEnteredBy { get; set; }
         }
         
         public class IncidentTrackingReviewTableData
@@ -595,6 +604,8 @@ namespace Anywhere.service.Data
             public string supervisorId { get; set; }
             public string includeInCount { get; set; }
             public string incidentTime { get; set; }            
+            public string viewedOn { get; set; }
+            public string originallyEnteredBy { get; set; }
         }
         
         public class IncidentTrackingReviewLocations

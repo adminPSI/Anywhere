@@ -13,6 +13,13 @@ const servicesSupports = (() => {
   let additionalSupportsTable;
   let professionalReferralsTable;
 
+  let enableMultiEdit = false;
+  let selectedPaidSupportIds = [];
+  let selectedPaidSupportRows = [];
+  let multiEditBtn;
+  let multiEditUpdateBtn;
+  let multiEditCancelBtn;
+
   let fundingSourceDropdownSelectedText;
   let servicesDropdownSelectedText;
   let servicesOtherDropdownSelectedText;
@@ -222,12 +229,6 @@ const servicesSupports = (() => {
       const tableBody = paidSupportsTable.querySelector('.table__body');
       const tableRows = [...tableBody.querySelectorAll('.table__row')];
       return tableRows.length;
-      // if (tableRows.length > 0) {
-      //   return tableRows.reduce((acc, row) => {
-      //     acc = acc + 1;
-      //     return acc;
-      //   }, 0);
-      // } else return 0;
     }
   }
   function getNumberOfAdditionalSupports(sectionId) {
@@ -252,8 +253,6 @@ const servicesSupports = (() => {
 
       return acc;
     }, []);
-
-    console.log(selectedVendors);
   }
   function getSelectedVendors() {
     return selectedVendors;
@@ -365,77 +364,79 @@ const servicesSupports = (() => {
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
-  async function populateServiceVendorsDropdown(dropdownEle, defaultValue) {
+  async function populateServiceVendorsDropdown(dropdownEle, defaultValue, ignoreGuardClauses) {
     // const data = dropdownData.serviceVendors.map(dd => {
     //   return {
     //     value: dd.vendorId,
     //     text: dd.vendorName,
     //   };
     // });
+    // let data = vendorNumbers.map(vendorNumber => ({
+    //   value: vendorNumber.vendorId,
+    //   text: vendorNumber.vendorName,
+    // }));
 
-    // handles populating provider DDL when: 1. a service has just been selected 2. a service already exists for an existing record
-    // Guard clause -- if no fundingSource selected , therefore no data in serviceVEndorDropDown
-    if (!fundingSourceDropdownSelectedText || fundingSourceDropdownSelectedText == '') {
-      const thisVendorDropDownData = [].map(dd => {
-        return {
-          value: dd.vendorId,
-          text: dd.vendorName,
-        };
-      });
+    if (!ignoreGuardClauses) {
+      // handles populating provider DDL when: 1. a service has just been selected 2. a service already exists for an existing record
+      // Guard clause -- if no fundingSource selected , therefore no data in serviceVEndorDropDown
+      if (!fundingSourceDropdownSelectedText || fundingSourceDropdownSelectedText == '') {
+        const thisVendorDropDownData = [].map(dd => {
+          return {
+            value: dd.vendorId,
+            text: dd.vendorName,
+          };
+        });
 
-      //if there's no default value, and only one option, make that option the default
-      if (!defaultValue) {
-        if (thisVendorDropDownData.length === 1) {
-          defaultValue = thisVendorDropDownData[0].value;
-          saveUpdateProvider = defaultValue;
-          dropdownEle.classList.remove('error');
+        //if there's no default value, and only one option, make that option the default
+        if (!defaultValue) {
+          if (thisVendorDropDownData.length === 1) {
+            defaultValue = thisVendorDropDownData[0].value;
+            saveUpdateProvider = defaultValue;
+            dropdownEle.classList.remove('error');
+          }
         }
+
+        thisVendorDropDownData.unshift({ value: '%', text: '' });
+        dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
+
+        return;
       }
 
-      thisVendorDropDownData.unshift({ value: '%', text: '' });
-      dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
+      // Guard clause --if HCBS/ICF fundingSource selected but no service selected, therefore no data in serviceVEndorDropDown
+      if (
+        (fundingSourceDropdownSelectedText.includes('HCBS') ||
+          fundingSourceDropdownSelectedText.includes('ICF')) &&
+        servicesDropdownSelectedText == '%'
+      ) {
+        const thisVendorDropDownData = [].map(dd => {
+          return {
+            value: dd.vendorId,
+            text: dd.vendorName,
+          };
+        });
 
-      return;
-    }
-
-    // Guard clause --if HCBS/ICF fundingSource selected but no service selected, therefore no data in serviceVEndorDropDown
-    if (
-      (fundingSourceDropdownSelectedText.includes('HCBS') ||
-        fundingSourceDropdownSelectedText.includes('ICF')) &&
-      servicesDropdownSelectedText == '%'
-    ) {
-      const thisVendorDropDownData = [].map(dd => {
-        return {
-          value: dd.vendorId,
-          text: dd.vendorName,
-        };
-      });
-
-      //if there's no default value, and only one option, make that option the default
-      if (!defaultValue) {
-        if (thisVendorDropDownData.length === 1) {
-          defaultValue = thisVendorDropDownData[0].value;
-          saveUpdateProvider = defaultValue;
-          dropdownEle.classList.remove('error');
+        //if there's no default value, and only one option, make that option the default
+        if (!defaultValue) {
+          if (thisVendorDropDownData.length === 1) {
+            defaultValue = thisVendorDropDownData[0].value;
+            saveUpdateProvider = defaultValue;
+            dropdownEle.classList.remove('error');
+          }
         }
+
+        thisVendorDropDownData.unshift({ value: '%', text: '' });
+        dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
+
+        return;
       }
-
-      thisVendorDropDownData.unshift({ value: '%', text: '' });
-      dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
-
-      return;
     }
+
     // if guard clauses are not used (see above), then repopulate serviceVEndorDropDown
     const { getPaidSupportsVendorsResult: vendorNumbers } =
       await servicesSupportsAjax.getPaidSupportsVendors(
         fundingSourceDropdownSelectedText,
         servicesDropdownSelectedText,
       );
-
-    let data = vendorNumbers.map(vendorNumber => ({
-      value: vendorNumber.vendorId,
-      text: vendorNumber.vendorName,
-    }));
 
     const selectedVendorIds = getSelectedVendorIds();
 
@@ -581,13 +582,38 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddPaidSupportPopup({
-              popupData: psData,
-              isNew: false,
-              fromAssessment: false,
-              isCopy: false,
-              charLimits,
-            });
+            if (!enableMultiEdit) {
+              showAddPaidSupportPopup({
+                popupData: psData,
+                isNew: false,
+                fromAssessment: false,
+                isCopy: false,
+                charLimits,
+              });
+              return;
+            }
+
+            const isSelected = event.target.classList.contains('selected');
+
+            if (isSelected) {
+              event.target.classList.remove('selected');
+              selectedPaidSupportIds = selectedPaidSupportIds.filter(
+                sr => sr !== psData.paidSupportsId,
+              );
+              selectedPaidSupportRows = selectedPaidSupportRows.filter(
+                sr => sr.paidSupportsId !== psData.paidSupportsId,
+              );
+            } else {
+              event.target.classList.add('selected');
+              selectedPaidSupportIds.push(psData.paidSupportsId);
+              selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
+            }
+
+            if (selectedPaidSupportIds.length === 0) {
+              multiEditUpdateBtn.classList.add('disabled');
+            } else {
+              multiEditUpdateBtn.classList.remove('disabled');
+            }
           },
           onCopyClick: () => {
             if (isReadOnly) return;
@@ -645,13 +671,38 @@ const servicesSupports = (() => {
           id: rowId,
           values: tableValues,
           onClick: () => {
-            showAddPaidSupportPopup({
-              popupData: psData,
-              isNew: false,
-              fromAssessment: false,
-              isCopy: false,
-              charLimits,
-            });
+            if (!enableMultiEdit) {
+              showAddPaidSupportPopup({
+                popupData: psData,
+                isNew: false,
+                fromAssessment: false,
+                isCopy: false,
+                charLimits,
+              });
+              return;
+            }
+
+            const isSelected = event.target.classList.contains('selected');
+
+            if (isSelected) {
+              event.target.classList.remove('selected');
+              selectedPaidSupportIds = selectedPaidSupportIds.filter(
+                sr => sr !== psData.paidSupportsId,
+              );
+              selectedPaidSupportRows = selectedPaidSupportRows.filter(
+                sr => sr.paidSupportsId !== psData.paidSupportsId,
+              );
+            } else {
+              event.target.classList.add('selected');
+              selectedPaidSupportIds.push(psData.paidSupportsId);
+              selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
+            }
+
+            if (selectedPaidSupportIds.length === 0) {
+              multiEditUpdateBtn.classList.add('disabled');
+            } else {
+              multiEditUpdateBtn.classList.remove('disabled');
+            }
           },
           onCopyClick: () => {
             if (isReadOnly) return;
@@ -697,7 +748,280 @@ const servicesSupports = (() => {
     const numPaidSupports = getNumberOfPaidSupports();
     planSummary.checkForPaidSupports(numPaidSupports);
   }
+  function updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData) {
+    selectedPaidSupportRows.forEach(row => {
+      const { rowNode, ...tableData } = row;
+
+      if (multiSaveUpdateData.beginDate !== '') {
+        tableData.beginDate = multiSaveUpdateData.beginDate;
+      }
+      if (multiSaveUpdateData.endDate !== '') {
+        tableData.endDate = multiSaveUpdateData.endDate;
+      }
+      // if (multiSaveUpdateData.providerId !== '0') {
+      //   tableData.providerId = multiSaveUpdateData.providerId;
+      // }
+
+      const { tableValues, psData } = mapPaidSupportDataForTable({
+        ...tableData,
+      });
+      const rowId = `ps${psData.paidSupportsId}`;
+
+      // if (multiSaveUpdateData.providerId !== '0') {
+      //   tableValues.providerName = multiSaveUpdateData.providerName;
+      //   psData.providerName = multiSaveUpdateData.providerName;
+      // }
+
+      table.updateRows(
+        paidSupportsTable,
+        [
+          {
+            id: rowId,
+            values: tableValues,
+            onClick: event => {
+              if (!enableMultiEdit) {
+                showAddPaidSupportPopup({
+                  popupData: psData,
+                  isNew: false,
+                  fromAssessment: false,
+                  isCopy: false,
+                  charLimits,
+                });
+                return;
+              }
+
+              const isSelected = event.target.classList.contains('selected');
+
+              if (isSelected) {
+                event.target.classList.remove('selected');
+                selectedPaidSupportIds = selectedPaidSupportIds.filter(
+                  sr => sr !== psData.paidSupportsId,
+                );
+                selectedPaidSupportRows = selectedPaidSupportRows.filter(
+                  sr => sr.paidSupportsId !== psData.paidSupportsId,
+                );
+              } else {
+                event.target.classList.add('selected');
+                selectedPaidSupportIds.push(psData.paidSupportsId);
+                selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
+              }
+
+              if (selectedPaidSupportIds.length === 0) {
+                multiEditUpdateBtn.classList.add('disabled');
+              } else {
+                multiEditUpdateBtn.classList.remove('disabled');
+              }
+            },
+            onCopyClick: () => {
+              if (isReadOnly) return;
+              const copiedData = { ...psData, paidSupportsId: '' };
+              showAddPaidSupportPopup({
+                popupData: copiedData,
+                isNew: true,
+                fromAssessment: false,
+                isCopy: true,
+                charLimits,
+              });
+            },
+          },
+        ],
+        isSortable,
+      );
+
+      selectedVendors = selectedVendors.filter(vendor => vendor.rowOrder !== psData.rowOrder);
+      selectedVendors.push({
+        providerId: psData.providerId,
+        row: psData.rowOrder,
+      });
+    });
+  }
   //-- Markup ---------
+  function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
+    if (
+      multiSaveUpdateData.beginDate !== '' ||
+      multiSaveUpdateData.endDate !== '' ||
+      multiSaveUpdateData.providerId !== ''
+    ) {
+      updateBtn.classList.remove('disabled');
+      return;
+    }
+
+    updateBtn.classList.remove('disabled');
+  }
+  function showMultiEditPopup() {
+    let multiSaveUpdateData = {
+      beginDate: '',
+      endDate: '',
+      providerId: '',
+      providerName: '',
+    };
+
+    const multiEditPopup = POPUP.build({
+      header: 'Update Paid Supports',
+      classNames: 'multiEditPopup',
+      hideX: true,
+    });
+
+    const message = document.createElement('p');
+    message.classList.add('popupMessage');
+    message.innerText = `Fields left blank will not be updated`;
+
+    // const providerNameDropdown = dropdown.build({
+    //   dropdownId: 'providerNameDropdownPS',
+    //   label: 'Provider Name',
+    //   style: 'secondary',
+    //   callback: (e, selectedOption) => {
+    //     multiSaveUpdateData.providerId = selectedOption.value;
+    //     multiSaveUpdateData.providerName = selectedOption.innerText;
+    //     toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+    //   },
+    // });
+    const beginDateInput = input.build({
+      label: 'Begin Date',
+      type: 'date',
+      style: 'secondary',
+      // value: multiSaveUpdateData.beginDate,
+      callback: e => {
+        multiSaveUpdateData.beginDate = e.target.value;
+        toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+      },
+    });
+    const endDateInput = input.build({
+      label: 'End Date',
+      type: 'date',
+      style: 'secondary',
+      // value: multiSaveUpdateData.endDate,
+      callback: e => {
+        multiSaveUpdateData.endDate = e.target.value;
+        toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+      },
+    });
+
+    const wrap = document.createElement('div');
+    wrap.classList.add('btnWrap');
+
+    const updateBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'disabled',
+      callback: async () => {
+        await servicesSupportsAjax.updateMultiPaidSupports({
+          token: $.session.Token,
+          beginDate:
+            multiSaveUpdateData.beginDate !== '' ? multiSaveUpdateData.beginDate : '1900-01-01',
+          endDate: multiSaveUpdateData.endDate !== '' ? multiSaveUpdateData.endDate : '1900-01-01',
+          providerId: multiSaveUpdateData.providerId !== '' ? multiSaveUpdateData.providerId : '0',
+          paidSupportsId: selectedPaidSupportIds.join(','),
+        });
+
+        multiEditUpdateBtn.classList.add('disabled');
+        multiEditUpdateBtn.classList.add('hidden');
+        multiEditCancelBtn.classList.add('hidden');
+
+        multiEditBtn.classList.toggle('enabled');
+
+        var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+        highlightedRows.forEach(row => row.classList.remove('selected'));
+
+        updatePaidSupportsRowFromMultiEdit(multiSaveUpdateData);
+        selectedPaidSupportIds = [];
+        selectedPaidSupportRows = [];
+
+        POPUP.hide(multiEditPopup);
+
+        enableMultiEdit = false;
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        POPUP.hide(multiEditPopup);
+      },
+    });
+
+    wrap.appendChild(updateBtn);
+    wrap.appendChild(cancelBtn);
+
+    multiEditPopup.appendChild(message);
+    multiEditPopup.appendChild(beginDateInput);
+    multiEditPopup.appendChild(endDateInput);
+    // multiEditPopup.appendChild(providerNameDropdown);
+    multiEditPopup.appendChild(wrap);
+
+    // populateServiceVendorsDropdown(providerNameDropdown, '', true);
+
+    POPUP.show(multiEditPopup);
+  }
+  function buildMultiRowEdit() {
+    const wrap = document.createElement('div');
+    wrap.classList.add('mutliEditBtnWrap');
+
+    multiEditBtn = button.build({
+      text: 'Multi Select Supports',
+      icon: 'multiSelect',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'multiEditBtn',
+      callback: () => {
+        enableMultiEdit = !enableMultiEdit;
+
+        multiEditBtn.classList.toggle('enabled');
+
+        if (enableMultiEdit) {
+          selectedPaidSupportIds = [];
+          selectedPaidSupportRows = [];
+          multiEditUpdateBtn.classList.remove('hidden');
+          multiEditCancelBtn.classList.remove('hidden');
+        } else {
+          selectedPaidSupportIds = [];
+          selectedPaidSupportRows = [];
+          multiEditUpdateBtn.classList.add('disabled');
+          multiEditUpdateBtn.classList.add('hidden');
+          multiEditCancelBtn.classList.add('hidden');
+          var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+          highlightedRows.forEach(row => row.classList.remove('selected'));
+        }
+      },
+    });
+
+    multiEditUpdateBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'disabled',
+      callback: () => {
+        showMultiEditPopup();
+      },
+    });
+    multiEditCancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        enableMultiEdit = false;
+        multiEditBtn.classList.toggle('enabled');
+        multiEditUpdateBtn.classList.add('disabled');
+        multiEditUpdateBtn.classList.add('hidden');
+        multiEditCancelBtn.classList.add('hidden');
+
+        selectedPaidSupportIds = [];
+        selectedPaidSupportRows = [];
+        var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+        highlightedRows.forEach(row => row.classList.remove('selected'));
+      },
+    });
+    multiEditUpdateBtn.classList.add('hidden');
+    multiEditCancelBtn.classList.add('hidden');
+
+    wrap.appendChild(multiEditBtn);
+    wrap.appendChild(multiEditUpdateBtn);
+    wrap.appendChild(multiEditCancelBtn);
+
+    return wrap;
+  }
   function togglePaidSupportDoneBtn() {
     const inputsWithErrors = document.querySelector('.paidSupportPopup .error');
     const doneBtn = document.querySelector('.paidSupportPopup .doneBtn');
@@ -1486,14 +1810,23 @@ const servicesSupports = (() => {
       },
     });
 
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
     const addRowBtn = button.build({
       text: 'Add Paid Support',
       style: 'secondary',
       type: 'contained',
       callback: () => addPaidSupportRow(),
     });
+    addRowBtn.classList.add('addRowBtnPaidSupports');
+
+    // multi edit section
+    mutliEditBtnWrap = buildMultiRowEdit();
+
     if (isReadOnly) {
       addRowBtn.classList.add('disabled');
+      multiEditBtn.classList.add('disabled');
     }
 
     if (servicesSupportsData && servicesSupportsData.paidSupport) {
@@ -1509,17 +1842,43 @@ const servicesSupports = (() => {
             id: rowId,
             values: tableValues,
             attributes: [{ key: 'sectionId', value: psData.assessmentAreaId }],
-            onClick: () => {
-              showAddPaidSupportPopup({
-                popupData: psData,
-                isNew: false,
-                fromAssessment: false,
-                isCopy: false,
-                charLimits,
-              });
+            onClick: event => {
+              if (!enableMultiEdit) {
+                showAddPaidSupportPopup({
+                  popupData: psData,
+                  isNew: false,
+                  fromAssessment: false,
+                  isCopy: false,
+                  charLimits,
+                });
+                return;
+              }
+
+              const isSelected = event.target.classList.contains('selected');
+
+              if (isSelected) {
+                event.target.classList.remove('selected');
+                selectedPaidSupportIds = selectedPaidSupportIds.filter(
+                  sr => sr !== psData.paidSupportsId,
+                );
+                selectedPaidSupportRows = selectedPaidSupportRows.filter(
+                  sr => sr.paidSupportsId !== psData.paidSupportsId,
+                );
+              } else {
+                event.target.classList.add('selected');
+                selectedPaidSupportIds.push(psData.paidSupportsId);
+                selectedPaidSupportRows.push({ ...psData, rowNode: event.target });
+              }
+
+              if (selectedPaidSupportIds.length === 0) {
+                multiEditUpdateBtn.classList.add('disabled');
+              } else {
+                multiEditUpdateBtn.classList.remove('disabled');
+              }
             },
             onCopyClick: () => {
-              if (isReadOnly) return;
+              if (isReadOnly || enableMultiEdit) return;
+
               const copiedData = { ...psData, paidSupportsId: '' };
               showAddPaidSupportPopup({
                 popupData: copiedData,
@@ -1535,8 +1894,11 @@ const servicesSupports = (() => {
       table.populate(paidSupportsTable, tableData, isSortable, isReadOnly);
     }
 
+    btnWrap.appendChild(addRowBtn);
+    btnWrap.appendChild(mutliEditBtnWrap);
+
     paidSupportsDiv.appendChild(paidSupportsTable);
-    paidSupportsDiv.appendChild(addRowBtn);
+    paidSupportsDiv.appendChild(btnWrap);
 
     return paidSupportsDiv;
   }
@@ -2563,6 +2925,7 @@ const servicesSupports = (() => {
     servicesSupportsData = data;
     dropdownData = planData.getDropdownData();
     charLimits = planData.getISPCharacterLimits('servicesSupports');
+    enableMultiEdit = false;
 
     if (!$.session.planUpdate) {
       isSortable = false;

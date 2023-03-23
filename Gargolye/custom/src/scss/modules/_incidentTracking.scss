@@ -3,13 +3,17 @@
 #incidentOverviewTable {
   .table__header-row,
   .table__row {
+    &[data-viewed='true'] {
+      font-weight: $bold;
+      // color: $font-dark;
+      // background: $secondary;
+    }
     > div {
       margin: 0 5px 0 0;
     }
     > div:last-child {
       margin: 0;
     }
-    
     > div:nth-child(1) {// location
       flex-grow: 1;
       flex-basis: 100px;

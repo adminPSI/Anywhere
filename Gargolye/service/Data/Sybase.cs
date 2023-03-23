@@ -10,6 +10,7 @@ using System.IO;
 using iAnywhere.Data.SQLAnywhere;
 using System.Configuration;
 using Anywhere.Log;
+using System.Data.Odbc;
 
 namespace Anywhere.service.Data
 {
@@ -384,30 +385,34 @@ namespace Anywhere.service.Data
         //    return sr.ReadToEnd;
         //}
 
-        //public long UpdateRecord(string QueryString)
-        //{
-        //    long functionReturnValue = 0;
-        //    try
-        //    {
-        //        functionReturnValue = 0;
-        //        using (SAConnection connection = new SAConnection(gSAConnString))
-        //        {
-        //            using (SACommand SqlCommand = new SACommand(QueryString, connection))
-        //            {
-        //                SqlCommand.CommandTimeout = 0;
-        //                connection.Open();
-        //                functionReturnValue = SqlCommand.ExecuteNonQuery();
-        //                return functionReturnValue;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new System.Exception(ex.Message.ToString + Constants.vbCrLf + ex.Source + ex.StackTrace);
-        //        return -999;
-        //    }
-        //    return functionReturnValue;
-        //}
+        public long UpdateRecord(string QueryString)
+        {
+            long functionReturnValue = 0;
+            if (gSAConnString.ToUpper().IndexOf("UID") == -1)
+                {
+                    gSAConnString = gSAConnString + "UID=anywhereuser;PWD=anywhere4u;";
+                }
+            try
+            {
+                functionReturnValue = 0;
+                using (OdbcConnection connection = new OdbcConnection(gSAConnString))
+                {
+                    using (OdbcCommand odbcCommand = new OdbcCommand(QueryString, connection))
+                    {
+                        odbcCommand.CommandTimeout = 0;
+                        connection.Open();
+                        functionReturnValue = odbcCommand.ExecuteNonQuery();
+                        return functionReturnValue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //throw new System.Exception(ex.Message.ToString + Constants.vbCrLf + ex.Source + ex.StackTrace);
+                return -999;
+            }
+            return functionReturnValue;
+        }
 
         //public string WriteDataStream(string FileName)
         //{

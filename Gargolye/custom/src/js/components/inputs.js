@@ -343,10 +343,69 @@ const input = (function () {
     return radio;
   }
 
+  function disableInputField(element) {
+    let inputEle;
+
+    switch (element.nodeName) {
+      case 'INPUT':
+      case 'TEXTAREA':
+      case 'SELECT': {
+        inputEle = element;
+      }
+      default: {
+        element.classList.add('disabled');
+
+        inputEle = element.querySelector('input');
+        if (!inputEle) inputEle = element.querySelector('textarea');
+        if (!inputEle) inputEle = element.querySelector('select');
+      }
+    }
+
+    if (inputEle.type !== 'radio') {
+      inputEle.setAttribute('tabindex', '-1');
+      return;
+    }
+
+    const radios = [...element.querySelectorAll('input')];
+    radios.forEach(radio => {
+      radio.setAttribute('tabindex', '-1');
+    });
+  }
+  function enableInputField(element) {
+    let inputEle;
+
+    switch (element.nodeName) {
+      case 'INPUT':
+      case 'TEXTAREA':
+      case 'SELECT': {
+        inputEle = element;
+      }
+      default: {
+        element.classList.remove('disabled');
+
+        inputEle = element.querySelector('input');
+        if (!inputEle) inputEle = element.querySelector('textarea');
+        if (!inputEle) inputEle = element.querySelector('select');
+      }
+    }
+
+    if (inputEle.type !== 'radio') {
+      inputEle.removeAttribute('tabindex', '-1');
+      return;
+    }
+
+    const radios = [...element.querySelectorAll('input')];
+    radios.forEach(radio => {
+      radio.removeAttribute('tabindex', '-1');
+    });
+  }
+
   return {
     build,
     buildCheckbox,
     buildNativeCheckbox,
     buildRadio,
+    disableInputField,
+    enableInputField,
   };
 })();

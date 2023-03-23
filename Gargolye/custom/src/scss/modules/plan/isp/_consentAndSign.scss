@@ -1,5 +1,34 @@
 // Team Member Table
 #signaturesTable {
+  &.sortableTable {
+    .table__row {
+      // Column Widths
+      > div:nth-child(2) {
+        flex-basis: 90px; // Team Member
+      }
+      > div:nth-child(3) {
+        // Name
+        flex-basis: 80px;
+        max-width: 212px;
+        word-break: break-all;
+      }
+      > div:nth-child(4) {
+        // Participated
+        display: none;
+        flex-basis: 80px;
+      }
+      > div:nth-child(5) {
+        // signature type
+        flex-basis: 40px;
+      }
+      @media screen and (min-width: 560px) {
+        > div:nth-child(4) {
+          // signature type
+          display: block;
+        }
+      }
+    }
+  }
   .table__row {
     // cursor: pointer;
     > div {
@@ -11,38 +40,52 @@
     }
 
     // Column Widths
-    > div:nth-child(2) {
+    > div:nth-child(1) {
       flex-basis: 90px; // Team Member
     }
-    > div:nth-child(3) {
+    > div:nth-child(2) {
       // Name
       flex-basis: 80px;
+      max-width: 212px;
+      word-break: break-all;
     }
-    > div:nth-child(4) {
+    > div:nth-child(3) {
       // Participated
       display: none;
       flex-basis: 80px;
     }
-    > div:nth-child(5) {
+    > div:nth-child(4) {
       // signature type
       flex-basis: 40px;
     }
     @media screen and (min-width: 560px) {
-      > div:nth-child(4) {
+      > div:nth-child(3) {
         // signature type
         display: block;
       }
     }
   }
-
   .table__row[data-signed='false'] {
     background: $bg-warning;
+  }
+  .table__row[data-hideicon] {
+    .endIcon svg {
+      cursor: none;
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 
   margin-bottom: 20px;
 }
 #sig_addMember {
-  margin: 10px 0;
+  margin: 10px 5px 0px 0px;
+}
+#sig_assignCaseLoad {
+  margin: 10px 5px 0px 0px;
+}
+#sig_addVendor {
+  margin: 10px 5px 0px 0px;
 }
 // Popup Globals
 #sig_mainPopup,
@@ -215,11 +258,28 @@
       }
     }
   }
+  .innerWrap {
+    align-items: center;
+    display: flex;
+
+    .input-field {
+      margin: 0;
+    }
+
+    .attachmentInput {
+      width: 45%;
+    }
+
+    .attachmentInput,
+    .signAttachmentDesc {
+      margin-right: 10px;
+    }
+  }
 }
 
 // Import Popups
 #importRelationshipPopup,
-#importSalesforcePopup, 
+#importSalesforcePopup,
 #guardianPopup {
   .message {
     font-weight: 500;
@@ -261,4 +321,79 @@
 .signAttachmentDesc {
   cursor: pointer;
   margin: 0 0 20px;
+}
+
+// assignCaseLoad
+.assignCaseLoadPopup {
+  .popupMessage {
+    margin: 0 0 10px;
+    font-style: italic;
+  }
+  .peopleListWrap {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    margin: 0 0 15px;
+  }
+  .assignCaseLoadPeopleList {
+    flex-basis: 100%;
+    margin: 0 0 10px;
+
+    > p {
+      font-weight: $bold;
+      margin: 0 0 5px;
+    }
+
+    div {
+      max-height: 200px;
+      overflow-x: hidden;
+      overflow-y: scroll;
+
+      p {
+        cursor: pointer;
+        padding: 2px 0px 2px 4px;
+
+        &.selected {
+          background: $secondary;
+        }
+      }
+    }
+  }
+  .btnWrap {
+    margin: 0;
+  }
+}
+.confirmCaseLoadPopup {
+  min-height: 300px;
+
+  .popupMessage {
+    margin: 0 0 10px;
+
+    span {
+      font-weight: $normal;
+    }
+  }
+  .assignedConsumerList {
+    margin: 0 0 10px;
+
+    p {
+      font-weight: 500;
+      margin: 0 0 5px;
+
+      span {
+        display: block;
+        font-weight: 400;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .assignCaseLoadPopup {
+    max-width: 800px;
+    
+    .assignCaseLoadPeopleList {
+      flex-basis: 49%;
+    }
+  }
 }

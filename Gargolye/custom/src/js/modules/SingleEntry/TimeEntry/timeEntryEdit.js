@@ -27,11 +27,11 @@ var editTimeEntry = (function () {
     if (seActivityElement && typeof seActivityElement === 'object')
       timeCard.querySelector('.card__body').appendChild(seActivityElement);
 
-      timeEntryCard.populate();
+    timeEntryCard.populate();
 
-      //resize rejection reason box
-      const tx = document.getElementById("rejectionReason");
-      tx.setAttribute("style", "height:" + (tx.scrollHeight) + "px;overflow-y:hidden;");
+    //resize rejection reason box
+    const tx = document.getElementById('rejectionReason');
+    if (tx) tx.setAttribute('style', 'height:' + tx.scrollHeight + 'px;overflow-y:hidden;');
   }
 
   function init(data) {

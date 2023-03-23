@@ -247,6 +247,8 @@ namespace Anywhere.service.Data
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorPlanId", DbType.String, priorPlanId);
                 // returns the consumerPlanId of the consumer plan that was just inserted
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerPlan(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                //System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerPlan(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
+                //return convertToJSON(returnMsg);
             }
             catch (Exception ex)
             {
@@ -641,6 +643,27 @@ namespace Anywhere.service.Data
                 return "539.2: error ANYW_ISP_AddPlanAttachment";
             }
         }
+
+        public string updatePlanAttachmentsenttoDODD(string attachmentId, string senttoDODD)
+        {
+          
+            logger.debug("updatePlanAttachmentsenttoDODD");
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            list.Add(senttoDODD);
+         
+            string text = "CALL DBA.ANYW_ISP_UpdatePlanAttachmentsenttoDODD(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("539.2", ex.Message + "ANYW_ISP_UpdatePlanAttachmentsenttoDODD(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "539.2: error ANYW_ISP_UpdatePlanAttachmentsenttoDODD";
+            }
+        }
+
 
         public string deletePlanAttachment(string token, long planId, string attachmentId)
         {

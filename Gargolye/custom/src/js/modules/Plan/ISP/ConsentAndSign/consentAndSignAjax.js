@@ -73,6 +73,31 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
+
+  async function getAllActiveVendors(retrieveData) {
+    // string token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getAllActiveVendors/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getAllActiveVendorsResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async function GetSalesForceId() {
     // token, signatureId
     const retrieveData = {
@@ -141,8 +166,8 @@ const consentAndSignAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/getStateGuardiansforConsumer/',
-       data: JSON.stringify(peopleIdData),
-       //data: '{"peopleId":"' + peopleId + '"}',
+        data: JSON.stringify(peopleIdData),
+        //data: '{"peopleId":"' + peopleId + '"}',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
@@ -152,7 +177,58 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
-  
+
+  async function assignStateCaseManagertoConsumers(peopleIdData) {
+    //cosumerId as a string in retrieveData
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/assignStateCaseManagertoConsumers/',
+        data: JSON.stringify(peopleIdData),
+        //data: '{"peopleId":"' + peopleId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.assignStateCaseManagertoConsumersResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getTeamMemberBySalesForceId(retrieveData) {
+    // string salesForceId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getTeamMemberBySalesForceId/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getTeamMemberBySalesForceIdResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async function getConsumerOrganizationId(retrieveData) {
     //peopleId
     try {
@@ -178,6 +254,56 @@ const consentAndSignAjax = (() => {
     }
   }
 
+  async function getCaseManagersfromOptionsTable(retrieveData) {
+    // string token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getCaseManagersfromOptionsTable/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getCaseManagersfromOptionsTableResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getConsumerswithSaleforceIds(retrieveData) {
+    // string token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerswithSaleforceIds/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getConsumerswithSaleforceIdsResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // INSERT
   //-------------------------------------
   async function insertTeamMember(retrieveData) {
@@ -189,7 +315,7 @@ const consentAndSignAjax = (() => {
     // contactId, peopleId, buildingNumber, dateOfBirth, planYearStart, planYearEnd
     // csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput
     // csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology,
-    // useExisting, relationshipImport, consumerId, createRelationship
+    // useExisting, relationshipImport, consumerId, createRelationship, isVeendor(bool)
     try {
       const data = await $.ajax({
         type: 'POST',
@@ -239,15 +365,15 @@ const consentAndSignAjax = (() => {
     //  );
     //}
 
-      try {
-          var binary = '';
-          var bytes = new Uint8Array(retrieveData.attachment);
-          var len = bytes.byteLength;
-          for (var i = 0; i < len; i++) {
-              binary += String.fromCharCode(bytes[i]);
-          }
-          let abString = window.btoa(binary);
-          retrieveData.attachment = abString;
+    try {
+      var binary = '';
+      var bytes = new Uint8Array(retrieveData.attachment);
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      let abString = window.btoa(binary);
+      retrieveData.attachment = abString;
 
       const data = await $.ajax({
         type: 'POST',
@@ -375,7 +501,6 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
-
   async function validateConsumerForSalesForceId(retrieveData) {
     //cosumerId as a string in retrieveData
     try {
@@ -401,13 +526,14 @@ const consentAndSignAjax = (() => {
     }
   }
 
-
-
   return {
     getConsentAndSignData,
     getPlanInformedConsentSSAs,
     getPlanInformedConsentVendors,
+    getTeamMemberBySalesForceId,
     getConsumerOrganizationId,
+    getCaseManagersfromOptionsTable,
+    getConsumerswithSaleforceIds,
     updateTeamMember,
     updatePlanConsentStatements,
     updateTableRowOrder,
@@ -418,5 +544,7 @@ const consentAndSignAjax = (() => {
     setSalesForceIdForTeamMemberUpdate,
     validateConsumerForSalesForceId,
     getStateGuardiansforConsumer,
+    assignStateCaseManagertoConsumers,
+    getAllActiveVendors
   };
 })();

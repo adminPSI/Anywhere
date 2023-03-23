@@ -111,6 +111,7 @@ namespace Anywhere.service.Data
                     }
                 }
 
+
                 //if (row["question_set_type"].ToString()  == "LIST")
                 //{
                 sb.Clear();
@@ -131,8 +132,55 @@ namespace Anywhere.service.Data
                         {
                             row["question_set_order"] = Convert.ToInt16(row["question_set_order"]) + 1;
                         }
-            }
 
+                string fs = string.Empty;
+                if (row["question_text"].ToString() == "Does this risk require supervision?")
+                {
+                    if (row["answer"].ToString() != string.Empty)
+                    {
+                        switch (row["answer"].ToString())
+                        {
+                            case "1":
+                                {
+                                    fs = "No paid supports";
+                                    break;
+                                }
+
+                            case "2":
+                                {
+                                    fs = "General";
+                                    break;
+                                }
+
+                            case "3":
+                                {
+                                    fs = "Auditory";
+                                    break;
+                                }
+
+                            case "4":
+                                {
+                                    fs = "Visual";
+                                    break;
+                                }
+
+                            case "5":
+                                {
+                                    fs = "Close and Constant";
+                                    break;
+                                }
+
+                            case "6":
+                                {
+                                    fs = "Technology";
+                                    break;
+                                }
+                        }
+
+                        row["answer"] = fs;
+                    }
+                }
+            }
             DataRow rowNew = dt.NewRow();
             rowNew["section_order"] = "5";
             rowNew["subsection_order"] = "4";
@@ -470,7 +518,7 @@ namespace Anywhere.service.Data
             sb.Append("SELECT ISP_Consumer_Signature_ID, ISP_Consumer_Plan_ID, Team_Member, Name, Relationship, Participated, ");
             sb.Append("Signature, Date_Signed, Dissent_Area_Disagree, Dissent_How_To_Address, Dissent_Date, dba.ANYW_ISP_Signatures.User_ID, ");
             sb.Append("dba.ANYW_ISP_Signatures.Last_Update, Signature_Order, ");
-            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2 ");
+            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type ");
             sb.Append("FROM dba.ANYW_ISP_Signatures ");
             sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
@@ -728,7 +776,6 @@ namespace Anywhere.service.Data
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             if (dt.Rows.Count > 0)
             {
-
                 DataRow row = dt.Rows[0];
                 if (row["Use_Consumer_Plan_Image"].ToString() == "1")
                 {
@@ -800,6 +847,7 @@ namespace Anywhere.service.Data
             }
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
+
         }
 
 

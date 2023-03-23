@@ -831,6 +831,39 @@ namespace Anywhere.Data
             }
         }
 
+        public string getCaseManagersfromOptionsTable(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("GetCaseManagersfromOptionsTable");
+            string text = "CALL DBA.ANYW_ISP_GetCaseManagersfromOptionsTable()";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("5APICDG", ex.Message + "ANYW_ISP_GetCaseManagersfromOptionsTable()");
+                return "5APICDG: error ANYW_ISP_GetCaseManagersfromOptionsTable()";
+            }
+        }
+
+        public string getConsumerswithSaleforceIds(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getConsumerswithSaleforceIds");
+            string text = "CALL DBA.ANYW_ISP_GetConsumerswithSaleforceIds()";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("5APICDG", ex.Message + "ANYW_ISP_GetConsumerswithSaleforceIds()");
+                return "5APICDG: error ANYW_ISP_GetConsumerswithSaleforceIds";
+            }
+        }
+
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             if (tokenValidator(token) == false) return null;
@@ -1672,6 +1705,24 @@ namespace Anywhere.Data
             {
                 logger.error("572", ex.Message + ex.InnerException.ToString() + " ANYW_SingleEntry_GetRequiredFields('" + token + "')", token);
                 return "572: Error getting required single entry fields";
+            }
+        }
+
+        public string timeEntryRejectionNotification(string token, string singleEntryId) {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("timeEntryRejectionNotification ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(singleEntryId);
+            string text = "CALL DBA.ANYW_TimeEntryRejectionNotification(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("701", ex.Message + "ANYW_TimeEntryRejectionNotification(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "701: Error logger.error(\"701\", ex.Message + \"ANYW_TimeEntryRejectionNotification(\" + string.Join(\",\", list.Select(x => string.Format(\"'{0}'\", x)).ToList()) + \")\");\r\n";
             }
         }
 
@@ -4619,7 +4670,7 @@ namespace Anywhere.Data
             catch (Exception ex)
             {
                 logger.error("703", ex.Message + "ANYW_Scheduling_ApproveDenyDaysOffRequest(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "703: error ANYW_Scheduling_ApproveDenyCallOffRequest";
+                return ex.Message;
             }
         }
 
@@ -5368,6 +5419,27 @@ namespace Anywhere.Data
                 return "738: error ANYW_IncidentTracking_SaveUpdateITConsumerInjuries";
             }
         }
+        
+        // NEW - Incident Tracking Update Incident View By User
+        public string updateIncidentViewByUser(string token, string incidentId, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateIncidentViewByUser ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(incidentId);
+            list.Add(userId);
+            string text = "CALL DBA.ANYW_IncidentTracking_UpdateIncidentViewByUser(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_IncidentTracking_UpdateIncidentViewByUser");
+                return "734: error ANYW_IncidentTracking_UpdateIncidentViewByUser";
+            }
+        }
 
         public string getConsumerPlanYearInfo(string token, string consumerId)
         {
@@ -6005,6 +6077,21 @@ namespace Anywhere.Data
             }
             logger.debug("Attachment done");
             return memorystream;
+        }
+
+        public string resetPassword(string userId, string hash, string newPassword, string changingToHashPassword)
+        {
+            logger.trace("101", "resetPassword:" + userId);
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_ResetPassword('" + userId + "','" + hash + "','" + newPassword + "','" + changingToHashPassword + "');", "results", "permissions");
+            }
+            catch (Exception ex)
+            {
+                logger.error("515", ex.Message + " ANYW_ResetPassword('" + userId + "','" + hash + "')");
+                return "515: " + ex.Message;
+            }
         }
 
     }

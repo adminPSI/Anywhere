@@ -210,6 +210,32 @@ namespace Anywhere.service.Data
 
         }
 
+        public string checkFormsLock(string formId, string userId)
+        {
+            PDFGenerator.Data obj = new PDFGenerator.Data();
+            connectionString = connectionString + "UID=anywhereuser;PWD=anywhere4u;";
+            long formIdLong = long.Parse(formId);
+
+            string formsLockReturn = obj.FormsLockCount(connectionString, formIdLong);
+
+            if (formsLockReturn == "")
+            {
+                obj.FormsLockAdd(connectionString, formIdLong, userId);
+            }
+
+            return formsLockReturn;
+        }
+
+        public void removeFormsLock(string formId, string userId)
+        {
+            PDFGenerator.Data obj = new PDFGenerator.Data();
+            connectionString = connectionString + "UID=anywhereuser;PWD=anywhere4u;";
+            long formIdLong = long.Parse(formId);
+
+            obj.FormsLockRemove(connectionString, formIdLong, userId);
+        }
+
+
 
         public class consumerForm
         {

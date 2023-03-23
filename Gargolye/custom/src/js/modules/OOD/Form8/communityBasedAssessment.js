@@ -5,6 +5,7 @@ const communityBasedAssessmentForm = (() => {
   let startTimeInput;
   let endTimeInput;
   let SAMLevelDropdown;
+  let positionDropdown;
   let contactMethodDropdown;
   let behavioralIndicatorsDropdown; 
   let jobTaskQualityIndicatorsDropdown; 
@@ -26,15 +27,14 @@ let serviceDate;
 let startTime;
 let endTime;
 let SAMLevel;
-let contactType;
-let jobSeekerPresent;
-let outcome;
-let TSCNotified;
-let jobTaskQuantityIndicator;
+let position;
+let contactMethod;
+let behavioralIndicators;
+let jobTaskQualityIndicators;
+let jobTaskQuantityIndicators;
 let narrative;
-let intervention;
-let behavioralIndicator;
-let jobTaskQualityIndicator;
+let interventions;
+
 
 //Case Note Data
 let caseManagerId;
@@ -46,7 +46,7 @@ let formReadOnly = false;
 
 let currentEntryUserId;
 
-  async function init(caseNoteData, currentConsumer, selectedConsumerServiceId, selectedConsumerReferenceNumber, currentRecordUserId, selectedServiceDate, clickSource = 'OODGrid') {
+  async function init(caseNoteData, currentConsumer, selectedConsumerServiceId, selectedConsumerServiceName, selectedConsumerReferenceNumber, currentRecordUserId, selectedServiceDate, clickSource = 'OODGrid') {
 
     DOM.clearActionCenter();
     document.querySelectorAll('.consumerListBtn').forEach(e => e.remove());
@@ -62,33 +62,33 @@ let currentEntryUserId;
       startTime = caseNoteData[0].startTime; //TODO JOE: Case_Notes.Start_Time
       endTime = caseNoteData[0].endTime; //TODO JOE: Case_Notes.End_Time
       SAMLevel = caseNoteData[0].SAMLevel; //TODO JOE: Case_Notes.Service_Area_Modifier (populates with N/A, 1, 2, or 3)
-      // employer = caseNoteData[0].employer;
-      contactType = caseNoteData[0].contactType; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.contact_method
-      jobTaskQuantityIndicator = caseNoteData[0].bilingualSupplement; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.quantity_indicators
-      narrative = caseNoteData[0].notes; //TODO JOE: emp_ood.narrative
-      intervention = caseNoteData[0].notes; //TODO JOE: emp_ood.interventions
-      behavioralIndicator = caseNoteData[0].application;  //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.behavioral_indicators
-      jobTaskQualityIndicator = caseNoteData[0].interview; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.quality_indicators
+      position = caseNoteData[0].position;
+      contactMethod = caseNoteData[0].contactMethod; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.contact_method
+      jobTaskQuantityIndicators = caseNoteData[0].jobTaskQuantityIndicators; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.quantity_indicators
+      narrative = caseNoteData[0].narrative; //TODO JOE: emp_ood.narrative
+      interventions = caseNoteData[0].interventions; //TODO JOE: emp_ood.interventions
+      behavioralIndicators = caseNoteData[0].behavioralIndicators;  //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.behavioral_indicators
+      jobTaskQualityIndicators = caseNoteData[0].jobTaskQualityIndicators; //TODO JOE: Corresponding Code_Table.Code will save to emp_ood.quality_indicators
  
      } else {
 
       caseManagerId = $.session.PeopleId;
       userId = $.session.UserId;
       serviceId = selectedConsumerServiceId;
-      referenceNumber = selectedConsumerReferenceNumber;
       caseNoteId = '0';
       serviceDate = selectedServiceDate;
       //serviceDate = UTIL.getTodaysDate();
+      referenceNumber = selectedConsumerReferenceNumber;
       startTime = '';
       endTime = '';
       SAMLevel = '';
-      // employer = '';
-      contactType = '';
-      jobTaskQuantityIndicator = '';
+      position = '';
+      contactMethod = '';
+      jobTaskQuantityIndicators = '';
       narrative = '';
-      intervention = '';
-      behavioralIndicator = '';
-      jobTaskQualityIndicator = '';
+      interventions = '';
+      behavioralIndicators = '';
+      jobTaskQualityIndicators = '';
 
      }
 
@@ -141,17 +141,26 @@ let currentEntryUserId;
         // type: 'email',
       });
 
+      positionDropdown = dropdown.build({
+        label: 'Position',
+        dropdownId: "positionDropdown",
+        value: position,
+        readonly: formReadOnly,
+        //readonly: true,
+        // type: 'email',
+      });
+
     contactMethodDropdown = dropdown.build({
       label: "Contact Method",
       dropdownId: "contactMethodDropdown",
-      value: contactType,
+      value: contactMethod,
       readonly: formReadOnly,
     });  
 
     behavioralIndicatorsDropdown = dropdown.build({
       label: 'Behavioral Indicators (Work Days)',
       dropdownId: "behavioralIndicatorsDropdown",
-      value: behavioralIndicator,
+      value: behavioralIndicators,
       readonly: formReadOnly,
       //readonly: true,
       // type: 'email',
@@ -160,7 +169,7 @@ let currentEntryUserId;
     jobTaskQualityIndicatorsDropdown = dropdown.build({
       label: 'Job Task Quality Indicators (Work Days)',
       dropdownId: "jobTaskQualityIndicatorsDropdown",
-      value: jobTaskQualityIndicator,
+      value: jobTaskQualityIndicators,
       readonly: formReadOnly,
       //readonly: true,
       // type: 'email',
@@ -169,7 +178,7 @@ let currentEntryUserId;
     jobTaskQuantityIndicatorsDropdown = dropdown.build({
       label: 'Job Task Quantity Indicators (Work Days)',
       dropdownId: "jobTaskQuantityIndicatorsDropdown",
-      value: jobTaskQuantityIndicator,
+      value: jobTaskQuantityIndicators,
       readonly: formReadOnly,
       //readonly: true,
       // type: 'email',
@@ -187,7 +196,7 @@ let currentEntryUserId;
 
     interventionsInput = input.build({
       label: 'Interventions',
-      value: intervention,
+      value: interventions,
       type: 'textarea',
       classNames: 'autosize',
       readonly: formReadOnly,
@@ -256,7 +265,7 @@ let currentEntryUserId;
      var LineBr = document.createElement('br');
 
      const heading = document.createElement('h2');
-     heading.innerHTML = 'Community Based Assessment - OOD Form 8';
+     heading.innerHTML = `${selectedConsumerServiceName} - OOD Form 8`;
      heading.classList.add('OODsectionHeading');
 
      container.appendChild(myconsumer);
@@ -273,6 +282,7 @@ let currentEntryUserId;
      
     const inputContainer1 = document.createElement('div');
     inputContainer1.classList.add('ood_form4monthlyplacement_inputContainer1'); // new _OOD.scss setting  -- ood_form8monthlyplacement_inputContainer1
+    inputContainer1.appendChild(positionDropdown);
     inputContainer1.appendChild(SAMLevelDropdown);
     inputContainer1.appendChild(contactMethodDropdown);
     
@@ -319,8 +329,10 @@ let currentEntryUserId;
       container.appendChild(btnRow);
 
       populateStaticDropDowns();
-      populateContactTypeDropdown();
-      populateOutcomeDropdown();
+      populateContactMethodDropdown();
+      populatePositionDropdown();
+      populateIndicatorsDropdown();
+     // populateOutcomeDropdown();
       
 
     DOM.ACTIONCENTER.appendChild(container);
@@ -333,48 +345,94 @@ let currentEntryUserId;
     // TODO JOE: Double check that AJAX pulls correct data
     // Contact Method -  Contact Method dropdown should be a list of values (code_table.caption) 
     // where code_table.table_id = employment_code and code_table.field_id = contactmethod
-	  async function populateContactTypeDropdown() { 
+	  async function populateContactMethodDropdown() { 
 		
       const {
-        getContactTypesResult: contactTypes,
-      } = await OODAjax.getContactTypesAsync();
+        getContactMethodsResult: contactMethods,
+      } = await OODAjax.getContactMethodsAsync();
       // const templates = WorkflowViewerComponent.getTemplates();
-      let data = contactTypes.map((contactType) => ({
-        id: contactType.contactCode, 
-        value: contactType.contactCode, 
-        text: contactType.contactCaption,
+      let data = contactMethods.map((contactMethod) => ({
+        id: contactMethod.code, 
+        value: contactMethod.code, 
+        text: contactMethod.caption,
       })); 
 
-      const index = data.findIndex((x) => x.id == contactType);
+      const index = data.findIndex((x) => x.id == contactMethod);
 						if (index === -1) {
 							// case note contactType not in the contactTypes DDL
 						}
 
       data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
-      dropdown.populate("contactMethodDropdown", data, contactType);        
+      dropdown.populate("contactMethodDropdown", data, contactMethod);        
     }
-    // TODO JOE: Look into whether this AJAX needs to change or not
-    // THis DDL may not be needed? 
-    async function populateOutcomeDropdown() { 
+
+    async function populatePositionDropdown() { 
 		
       const {
-        getOutcomesResult: outcomes,
-      } = await OODAjax.getOutcomesAsync();
+        getPositionsResult: positions,
+      } = await OODAjax.getPositionsAsync(consumerId);
       // const templates = WorkflowViewerComponent.getTemplates();
-      let data = outcomes.map((outcome) => ({
-        id: outcome.outcomeCode, 
-        value: outcome.outcomeCode, 
-        text: outcome.outcomeCaption,
+      let data = positions.map((position) => ({
+        id: position.code, 
+        value: position.code, 
+        text: position.caption,
       })); 
 
-      const index = data.findIndex((x) => x.id == outcome);
+      const index = data.findIndex((x) => x.id == position);
 						if (index === -1) {
-							// case note outcome not in the outcomes DDL
+							// case note contactType not in the contactTypes DDL
 						}
 
       data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
-      dropdown.populate("outcomeDropdown", data, outcome);        
+      dropdown.populate("positionDropdown", data, position);        
     }
+
+    async function populateIndicatorsDropdown() { 
+		
+      const {
+        getIndicatorsResult: indicators,
+      } = await OODAjax.getIndicatorsAsync();
+      // const templates = WorkflowViewerComponent.getTemplates();
+      let data = indicators.map((indicator) => ({
+        id: indicator.code, 
+        value: indicator.code, 
+        text: indicator.caption,
+      })); 
+
+      const index = data.findIndex((x) => x.id == position);
+						if (index === -1) {
+							// case note contactType not in the contactTypes DDL
+						}
+
+      data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
+      dropdown.populate("behavioralIndicatorsDropdown", data, behavioralIndicators);      
+      dropdown.populate('jobTaskQualityIndicatorsDropdown', data, jobTaskQualityIndicators); 
+     dropdown.populate('jobTaskQuantityIndicatorsDropdown', data, jobTaskQuantityIndicators);  
+    }
+
+
+    // TODO JOE: Look into whether this AJAX needs to change or not
+    // THis DDL may not be needed? 
+    // async function populateOutcomeDropdown() { 
+		
+    //   const {
+    //     getOutcomesResult: outcomes,
+    //   } = await OODAjax.getOutcomesAsync();
+    //   // const templates = WorkflowViewerComponent.getTemplates();
+    //   let data = outcomes.map((outcome) => ({
+    //     id: outcome.outcomeCode, 
+    //     value: outcome.outcomeCode, 
+    //     text: outcome.outcomeCaption,
+    //   })); 
+
+    //   const index = data.findIndex((x) => x.id == outcome);
+		// 				if (index === -1) {
+		// 					// case note outcome not in the outcomes DDL
+		// 				}
+
+    //   data.unshift({ id: null, value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
+    //   dropdown.populate("outcomeDropdown", data, outcome);        
+    // }
 
   function populateStaticDropDowns() {
     const SAMLevelDropdownData = [
@@ -395,15 +453,15 @@ let currentEntryUserId;
     // TODO JOE: Double check that DDL is properly populated -- not yes/no for Form 8 
     // Behavioral Indicators (Work Days) dropdown should be a list of
     // values (code_table.caption) where code_table.table_id = employment_code and code_table.field_id = Lichert Scale 2
-   dropdown.populate(behavioralIndicatorsDropdown, yesNoDropdownData, behavioralIndicator); 
+  // dropdown.populate(behavioralIndicatorsDropdown, yesNoDropdownData, behavioralIndicators); 
    // TODO JOE: Double check that DDL is properly populated -- not yes/no for Form 8 
     // Job Task Quality Indicators -Job Task Quality Indicators (Work Days) dropdown should
     // be a list of values (code_table.caption) where code_table.table_id = employment_code and code_table.field_id = Lichert Scale 2
-   dropdown.populate(jobTaskQualityIndicatorsDropdown, yesNoDropdownData, jobTaskQualityIndicator); 
+  // dropdown.populate(jobTaskQualityIndicatorsDropdown, yesNoDropdownData, jobTaskQualityIndicators); 
    // TODO JOE: Double check that DDL is properly populated -- not yes/no for Form 8 
     // Job Task Quantity Indicators -Job Task Quantity Indicators (Work Days) dropdown  
     // should be a list of values (code_table.caption) where code_table.table_id = employment_code and code_table.field_id = Lichert Scale 2
-    dropdown.populate(jobTaskQuantityIndicatorsDropdown, yesNoDropdownData, jobTaskQuantityIndicator);
+    // dropdown.populate(jobTaskQuantityIndicatorsDropdown, yesNoDropdownData, jobTaskQuantityIndicators);
   }
 
   function checkRequiredFields() {
@@ -415,26 +473,35 @@ let currentEntryUserId;
       SAMLevelDropdown.classList.remove('error');
      // return 'success';
     }
+    
+    if (!position || position === '') {
+      positionDropdown.classList.add('error');
+      //return 'error';
+    } else {
+      positionDropdown.classList.remove('error');
+     // return 'success';
+    }
 
-    if (!contactType || contactType === '') {
+
+    if (!contactMethod || contactMethod === '') {
       contactMethodDropdown.classList.add('error');
     } else {
       contactMethodDropdown.classList.remove('error');
     }
 
-    if (!behavioralIndicator || behavioralIndicator === '') {
+    if (!behavioralIndicators || behavioralIndicators === '') {
       behavioralIndicatorsDropdown.classList.add('error');
     } else {
       behavioralIndicatorsDropdown.classList.remove('error');
     }
 
-    if (!jobTaskQualityIndicator || jobTaskQualityIndicator === '') {
+    if (!jobTaskQualityIndicators || jobTaskQualityIndicators === '') {
       jobTaskQualityIndicatorsDropdown.classList.add('error');
     } else {
       jobTaskQualityIndicatorsDropdown.classList.remove('error');
     }
 
-    if (!jobTaskQuantityIndicator || jobTaskQuantityIndicator === '') {
+    if (!jobTaskQuantityIndicators || jobTaskQuantityIndicators === '') {
       jobTaskQuantityIndicatorsDropdown.classList.add('error');
     } else {
       jobTaskQuantityIndicatorsDropdown.classList.remove('error');
@@ -609,13 +676,24 @@ function validateStartEndTimes(validateTime) {
       checkRequiredFields();
     });
 
+    positionDropdown.addEventListener('change', event => {
+      var selectedOption = event.target.options[event.target.selectedIndex];
+       
+      if (selectedOption.value == "SELECT") {
+          position = '';
+      } else {
+        position = selectedOption.value;
+      }
+      checkRequiredFields();
+    });
+
     contactMethodDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
        
       if (selectedOption.value == "SELECT") {
-        contactType = '';
+        contactMethod = '';
       } else {
-        contactType = selectedOption.value;
+        contactMethod = selectedOption.value;
       }
       checkRequiredFields();
     });
@@ -624,9 +702,9 @@ function validateStartEndTimes(validateTime) {
       var selectedOption = event.target.options[event.target.selectedIndex];
        
       if (selectedOption.value == "SELECT") {
-        behavioralIndicator = '';
+        behavioralIndicators = '';
       } else {
-        behavioralIndicator = selectedOption.value;
+        behavioralIndicators = selectedOption.value;
       }
       checkRequiredFields();
     });
@@ -635,9 +713,9 @@ function validateStartEndTimes(validateTime) {
       var selectedOption = event.target.options[event.target.selectedIndex];
        
       if (selectedOption.value == "SELECT") {
-        jobTaskQualityIndicator = '';
+        jobTaskQualityIndicators = '';
       } else {
-        jobTaskQualityIndicator = selectedOption.value;
+        jobTaskQualityIndicators = selectedOption.value;
       }
       checkRequiredFields();
     });
@@ -646,9 +724,9 @@ function validateStartEndTimes(validateTime) {
       var selectedOption = event.target.options[event.target.selectedIndex];
        
       if (selectedOption.value == "SELECT") {
-        jobTaskQuantityIndicator = '';
+        jobTaskQuantityIndicators = '';
       } else {
-        jobTaskQuantityIndicator = selectedOption.value;
+        jobTaskQuantityIndicators = selectedOption.value;
       }
       checkRequiredFields();
     });
@@ -686,7 +764,7 @@ function validateStartEndTimes(validateTime) {
     });
 
     interventionsInput.addEventListener('input', event => {
-      intervention = event.target.value;
+      interventions = event.target.value;
       checkRequiredFields();
     });
 
@@ -732,16 +810,17 @@ function validateStartEndTimes(validateTime) {
         startTime,
         endTime,
         SAMLevel,
-        employer,
-        contactType,
-        jobTaskQuantityIndicator,
+        position,
+        contactMethod,
+        behavioralIndicators,
+        jobTaskQualityIndicators,
+        jobTaskQuantityIndicators,
         narrative,
+        interventions,
         userId,
-        behavioralIndicator, 
-        jobTaskQualityIndicator,
       };
     // TODO JOE: This AJAX needs to change 
-      OODAjax.updateForm4MonthlyPlacementEditData(data, function(results) {
+      OODAjax.updateForm8CommunityBasedAssessment(data, function(results) {
         successfulSave.show();
           setTimeout(function() {
             successfulSave.hide();
@@ -760,19 +839,20 @@ function validateStartEndTimes(validateTime) {
         startTime,
         endTime,
         SAMLevel,
-        employer,
-        contactType,
-        jobTaskQuantityIndicator,
+        position,
+        contactMethod,
+        behavioralIndicators,
+        jobTaskQualityIndicators,
+        jobTaskQuantityIndicators,
         narrative,
-        caseManagerId,
+        interventions,
         userId,
         serviceId,
         referenceNumber,
-        behavioralIndicator, 
-        jobTaskQualityIndicator,
+        caseManagerId,
       };
       // TODO JOE: This AJAX needs to change 
-      OODAjax.insertForm4MonthlyPlacementEditData(data, function(results) {
+      OODAjax.insertForm8CommunityBasedAssessment(data, function(results) {
         successfulSave.show();
         if (saveType == 'saveandNew') {
           setTimeout(function() {
@@ -805,8 +885,8 @@ function validateStartEndTimes(validateTime) {
         icon: 'checkmark',
         callback: async function() {
                   POPUP.hide(deletepopup);
-                   let result = await OODAjax.deleteForm4MonthlyPlacementEditDataAsync(caseNoteId);  
-                   if (result.deleteForm4MonthlyPlacementEditDataResult === "1"){
+                   let result = await OODAjax.deleteOODFormEntryAsync(caseNoteId);  
+                   if (result.deleteOODFormEntryResult === "1"){
                         OOD.loadOODLanding();                
                    }
         },

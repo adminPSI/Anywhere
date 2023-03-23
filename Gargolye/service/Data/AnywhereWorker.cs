@@ -6,6 +6,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Management.Automation.Language;
 using Microsoft.Expression.Interactivity.Media;
+using Anywhere.service.Data.PlanInformedConsent;
 
 namespace Anywhere.service.Data
 {
@@ -54,7 +55,8 @@ namespace Anywhere.service.Data
         {
             string companyWorkWeekStart = dg.getCompanyWorkWeekStartFromDB(token);
             StartDayOfWeek[] startDay = js.Deserialize<StartDayOfWeek[]>(companyWorkWeekStart);
-            string workWeekStart = startDay[0].Day_of_Week.ToString();
+            //string workWeekStart = startDay[0].Day_of_Week.ToString();
+            string workWeekStart = startDay.Length != 0 ? startDay[0].Day_of_Week.ToString() : "S"; 
             int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
             DateTime weekStart = DateTime.Today.AddDays(-ded);
             return weekStart;
@@ -339,6 +341,7 @@ namespace Anywhere.service.Data
             public string SD { get; set; }
             public string conL { get; set; }
             public string MN { get; set; }
+            public string residentNumber { get; set; }
         }
 
         public RosterLocations[] getLocationsJSON(string token)
@@ -382,6 +385,7 @@ namespace Anywhere.service.Data
             public string emarPermission { get; set; }
             public string formsPermission { get; set; }
             public string OODPermission { get; set; }
+            public string resetPassword { get; set; }
             public string workshopPermission { get; set; }
             public string anywhereSchedulingPermission { get; set; }
             public string anywherePlanPermission { get; set; }
@@ -408,6 +412,8 @@ namespace Anywhere.service.Data
             public string incidentTrackingPopulateIncidentDate { get; set; }
             public string incidentTrackingPopulateReportedTime { get; set; }
             public string incidentTrackingPopulateReportedDate { get; set; }
+            public string incidentTrackingShowCauseAndContributingFactors { get; set; }
+            public string incidentTrackingShowPreventionPlan { get; set; }
             public string schedulingPermission { get; set; }
             public string singleEntryApproveEnabled { get; set; }
             public string seShowConsumerSignature { get; set; }
@@ -421,6 +427,8 @@ namespace Anywhere.service.Data
             public string azureSttApi { get; set; }
             public string reportSeconds { get; set; }
             public string planPeopleId { get; set; }
+            public string adminPermission { get; set; }
+            public string oneSpan { get; set; }
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
@@ -456,6 +464,24 @@ namespace Anywhere.service.Data
             OrganiztionId[] oidObj = js.Deserialize<OrganiztionId[]>(oidString);
             return oidObj;
         }
+
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getCaseManagersfromOptionsTable(string token)
+        {
+            string caseManagersString = dg.getCaseManagersfromOptionsTable(token);
+            PlanInformedConsentWorker.InformedConsentSSAs[] caseManagerObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(caseManagersString);
+            return caseManagerObj;
+        }
+
+
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
+        {
+            string consumersString = dg.getConsumerswithSaleforceIds(token);
+            PlanInformedConsentWorker.InformedConsentSSAs[] consumersObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(consumersString);
+            return consumersObj;
+        }
+
+
+
 
         public class OrganiztionId
         {

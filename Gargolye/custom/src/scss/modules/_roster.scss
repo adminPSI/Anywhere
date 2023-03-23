@@ -391,21 +391,132 @@
   }
 }
 .demographicsSection {
-  div > div {
-    margin: 0 0 20px;
-    &:last-child {
-      margin: 0;
+  .inputGroupWrap {
+    margin: 0 0 15px 0;
+
+    h3 {
+      width: 100%;
+      margin: 0 0 8px;
+      font-weight: 600;
     }
-  }
-  h3 {
-    margin: 0 0 8px;
-  }
-  p {
-    margin: 0 0 6px;
-  }
-  .mail {
-    display: flex;
-    flex-flow: row nowrap;
+
+    .inputGroup {
+      cursor: pointer;
+      margin: 0 0 10px 0;
+
+      &.unEditabled {
+        pointer-events: none;
+        cursor: default;
+      }
+
+      &.editMode {
+        .edit {
+          display: flex;
+          flex-flow: row wrap;
+
+          &.invalid {
+            color: $red;
+            input {
+              border-color: $red;
+            }
+          }
+        }
+        .view {
+          display: none;
+        }
+      }
+
+      p {
+        pointer-events: none;
+        span {
+          font-weight: 500;
+        }
+      }
+      label {
+        width: 100%;
+      }
+      input {
+        border: 1px solid black;
+        border-radius: 4px;
+        padding: 5px 3px;
+        margin: 0 2px 0 0;
+        width: calc(100% - 26px);
+      }
+      .saveIcon {
+        width: 24px;
+        display: inline-flex;
+
+        &.success {
+          color: $secondary;
+        }
+        &.error {
+          color: $red;
+        }
+
+        .spinner__small {
+          display: flex;
+          align-items: center;
+        }
+        .spinner__bar {
+          height: 24px;
+          width: 24px;
+          border-width: 5px;
+        }
+
+        &.hidden {
+          visibility: hidden;
+          pointer-events: none;
+        }
+      }
+
+      .edit {
+        display: none;
+      }
+    }
+
+    &.address {
+      display: flex;
+      flex-flow: row wrap;
+
+      &.editMode {
+        .inputGroup {
+          .edit {
+            display: flex;
+            flex-flow: row wrap;
+          }
+          .view {
+            display: none;
+          }
+          &.city,
+          &.state,
+          &.zip {
+            margin: 0 5px 10px 0;
+            max-width: 31%;
+            flex-grow: 1;
+          }
+          &.state {
+            max-width: 76px;
+          }
+          &.zip {
+            max-width: 120px;
+          }
+        }
+      }
+
+      .inputGroup {
+        margin: 0;
+
+        &.address {
+          width: 100%;
+          margin: 0 0 10px 0;
+        }
+        &.city,
+        &.state,
+        &.zip {
+          margin: 0 5px 0 0;
+        }
+      }
+    }
   }
 }
 .relationshipsSection {

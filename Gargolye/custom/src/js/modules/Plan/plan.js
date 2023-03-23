@@ -5,12 +5,14 @@ const plan = (function () {
   let landingPage;
   let overviewTable;
   let newPlanBtn;
+  let assignCaseLoadBtn;
   // new plan setup
   let planSetupPage;
   let setupWrap;
   let prevPlanTable;
   let datesBoxDiv;
   let doneBtn;
+  let addedMemberPopup;
   // main plan page
   let planHeader;
   let planHeaderButtons;
@@ -24,7 +26,10 @@ const plan = (function () {
   let addWorkflowScreen;
   let reportsScreen;
   let reportsAttachmentScreen;
+  let DODDScreen;
   let sendToDODDScreen;
+  let changePlanTypeScreen;
+  let generalInfoBar;
 
   // DATA
   // -----------------
@@ -44,9 +49,12 @@ const plan = (function () {
   // more popup
   let selectedWorkflows;
   let addWorkflowDoneBtn;
-  let planAttWrap;
-  let workflowAttWrap;
-  let signatureAttWrap;
+  let planAttBody;
+  let workflowAttBody;
+  let signatureAttBody;
+  let DODDplanAttBody;
+  let DODDsignAttBody;
+  let DODDworkflowAttBody;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -334,7 +342,7 @@ const plan = (function () {
     ];
     dropdown.populate(statusDropdown, dropdownData, planStatus);
     statusDropdown.addEventListener('change', e => {
-      var selectedOption = event.target.options[event.target.selectedIndex];
+      var selectedOption = e.target.options[e.target.selectedIndex];
       newStatus = selectedOption.value;
       if (newStatus === planStatus) {
         updateBtn.classList.add('disabled');
@@ -690,11 +698,11 @@ const plan = (function () {
     attachHeading.innerText = `Please select the attachment(s) that should be included with the report.`;
     attachmentsWrap.appendChild(attachHeading);
 
-    planAttWrap = document.createElement('div');
+    const planAttWrap = document.createElement('div');
     planAttWrap.classList.add('planAttWrap');
-    workflowAttWrap = document.createElement('div');
+    const workflowAttWrap = document.createElement('div');
     workflowAttWrap.classList.add('workflowAttWrap');
-    signatureAttWrap = document.createElement('div');
+    const signatureAttWrap = document.createElement('div');
     signatureAttWrap.classList.add('signatureAttWrap');
     attachmentsWrap.appendChild(planAttWrap);
     attachmentsWrap.appendChild(workflowAttWrap);
@@ -710,6 +718,13 @@ const plan = (function () {
     workflowAttWrap.appendChild(workflowHeading);
     signatureAttWrap.appendChild(signHeading);
 
+    planAttBody = document.createElement('div');
+    signatureAttBody = document.createElement('div');
+    workflowAttBody = document.createElement('div');
+    planAttWrap.appendChild(planAttBody);
+    signatureAttWrap.appendChild(signatureAttBody);
+    workflowAttWrap.appendChild(workflowAttBody);
+
     screen.appendChild(attachmentsWrap);
 
     return screen;
@@ -721,15 +736,174 @@ const plan = (function () {
 
     return screen;
   }
-  function buildSendToDODDScreen() {
+  function buildDODDScreen() {
     const screen = document.createElement('div');
     screen.id = 'DODDScreen';
     screen.classList.add('screen');
 
+    //const message = document.createElement('p');
+    //message.classList.add('doddMessage');
+    //screen.appendChild(message);
+
+    const attachmentsWrap = document.createElement('div');
+    attachmentsWrap.classList.add('attachmentsWrap');
+    const attachHeading = document.createElement('p');
+    attachHeading.classList.add('attachmentsHeading');
+    attachHeading.innerText = `Please select the attachment(s) that should be sent to DODD with the plan.`;
+    attachmentsWrap.appendChild(attachHeading);
+
+    const DODDplanAttWrap = document.createElement('div');
+    DODDplanAttWrap.classList.add('planAttWrap');
+    const DODDsignatureAttWrap = document.createElement('div');
+    DODDsignatureAttWrap.classList.add('signatureAttWrap');
+    const DODDworkflowAttWrap = document.createElement('div');
+    DODDworkflowAttWrap.classList.add('workflowAttWrap');
+    attachmentsWrap.appendChild(DODDplanAttWrap);
+    attachmentsWrap.appendChild(DODDsignatureAttWrap);
+    attachmentsWrap.appendChild(DODDworkflowAttWrap);
+
+    const planHeading = document.createElement('h2');
+    const signHeading = document.createElement('h2');
+    const workflowHeading = document.createElement('h2');
+    planHeading.innerText = 'Plan and Assessment Attachments';
+    signHeading.innerText = 'Signature Attachments';
+    workflowHeading.innerText = 'Workflow Attachments';
+    DODDplanAttWrap.appendChild(planHeading);
+    DODDsignatureAttWrap.appendChild(signHeading);
+    DODDworkflowAttWrap.appendChild(workflowHeading);
+
+    DODDplanAttBody = document.createElement('div');
+    DODDsignAttBody = document.createElement('div');
+    DODDworkflowAttBody = document.createElement('div');
+    DODDplanAttWrap.appendChild(DODDplanAttBody);
+    DODDsignatureAttWrap.appendChild(DODDsignAttBody);
+    DODDworkflowAttWrap.appendChild(DODDworkflowAttBody);
+
+    screen.appendChild(attachmentsWrap);
+
+    return screen;
+  }
+  function buildSendToDODDScreen() {
+    const screen = document.createElement('div');
+    screen.id = 'sendToDODDScreen';
+    screen.classList.add('screen');
+
     const message = document.createElement('p');
     message.classList.add('doddMessage');
-
     screen.appendChild(message);
+
+    return screen;
+  }
+  function buildChangePlanTypeScreen() {
+    let newType;
+
+    const screen = document.createElement('div');
+    screen.id = 'changePlanTypeScreen';
+    screen.classList.add('screen');
+
+    // current type
+    const currentType = document.createElement('div');
+    currentType.classList.add('currentType');
+    currentType.innerHTML = `
+      <p>Current Type:</p> ${planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'}
+    `;
+
+    // dropdown
+    const typeDropdown = dropdown.build({
+      className: `typeDropdown`,
+      label: 'Type',
+      style: 'secondary',
+    });
+    dropdown.populate(
+      typeDropdown,
+      [
+        { value: 'a', text: 'Annual' },
+        { value: 'r', text: 'Revision' },
+      ],
+      planType,
+    );
+    typeDropdown.addEventListener('change', event => {
+      var selectedOption = event.target.options[event.target.selectedIndex];
+      newType = selectedOption.value;
+      if (newType === planType) {
+        updateBtn.classList.add('disabled');
+      } else {
+        updateBtn.classList.remove('disabled');
+      }
+    });
+
+    // btns
+    const updateBtn = button.build({
+      text: 'Update',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        const success = await planAjax.updatePlanType({
+          token: $.session.Token,
+          consumerPlanId: planId,
+          planType: newType.toUpperCase(),
+        });
+
+        if (success === 'Success') {
+          planType = newType;
+          currentType.innerHTML = `<p>Current Type:</p> ${
+            planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'
+          }`;
+        }
+
+        const message =
+          success === 'Success' ? 'Type successfully updated.' : 'Type was not able to be updated.';
+        const successDiv = successfulSave.get(message, true);
+        if (success !== 'Success') successDiv.classList.add('error');
+
+        currentType.style.display = 'none';
+        typeDropdown.style.display = 'none';
+        btnWrap.style.display = 'none';
+        screen.appendChild(successDiv);
+
+        setTimeout(() => {
+          screen.removeChild(successDiv);
+
+          currentType.removeAttribute('style');
+          typeDropdown.removeAttribute('style');
+          btnWrap.removeAttribute('style');
+
+          refreshMoreMenu();
+          screen.classList.remove('visible');
+          morePopupMenu.classList.add('visible');
+
+          if (success === 'Success') {
+            refreshGeneralInfo();
+            assessmentCard.refreshAssessmentCard({
+              planStatus,
+              planId,
+              isActive: planActiveStatus,
+            });
+            ISP.refreshISP(planId);
+          }
+        }, 1000);
+      },
+    });
+    updateBtn.classList.add('disabled');
+    const cancelBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        screen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+      },
+    });
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    btnWrap.appendChild(updateBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    screen.appendChild(currentType);
+    screen.appendChild(typeDropdown);
+    screen.appendChild(btnWrap);
 
     return screen;
   }
@@ -742,10 +916,27 @@ const plan = (function () {
 
     return idArray;
   }
+
+  function getwfstepdocIds(attachments) {
+    const idArray = [];
+
+    for (const prop in attachments) {
+      idArray.push(attachments[prop].workflowstepdocId);
+    }
+
+    return idArray;
+  }
+
   async function runReportScreen(extraSpace) {
     const selectedAttachmentsPlan = {};
     const selectedAttachmentsWorkflow = {};
     const selectedAttachmentsSignature = {};
+
+    // clear out body before each run to prevent dups
+    planAttBody.innerHTML = '';
+    workflowAttBody.innerHTML = '';
+    signatureAttBody.innerHTML = '';
+
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,
@@ -787,11 +978,11 @@ const plan = (function () {
         });
 
         if (a.sigAttachmentId) {
-          signatureAttWrap.appendChild(attachment);
+          signatureAttBody.appendChild(attachment);
         } else if (a.whereFrom === 'Plan') {
-          planAttWrap.appendChild(attachment);
+          planAttBody.appendChild(attachment);
         } else {
-          workflowAttWrap.appendChild(attachment);
+          workflowAttBody.appendChild(attachment);
         }
 
         index++;
@@ -806,7 +997,9 @@ const plan = (function () {
         let isSuccess;
         // build & show spinner
         const spinner = PROGRESS.SPINNER.get('Building Report...');
-        reportsScreen.innerHTML = '';
+        const screenInner = reportsScreen.querySelector('.attachmentsWrap');
+        reportsScreen.removeChild(doneBtn);
+        reportsScreen.removeChild(screenInner);
         reportsScreen.appendChild(spinner);
         // generate report
         if (
@@ -817,31 +1010,34 @@ const plan = (function () {
           const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
           const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
           const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-            isSuccess = assessment.generateReportWithAttachments(
+          isSuccess = assessment.generateReportWithAttachments(
             planId,
             '1',
             extraSpace,
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
+            'false',
           );
         } else {
           //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
-            const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
-            const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
-            const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-            isSuccess = assessment.generateReportWithAttachments(
-                planId,
-                '1',
-                extraSpace,
-                planAttachmentIds,
-                wfAttachmentIds,
-                sigAttachmentIds,
-            );
+          const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+          const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+          const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+          isSuccess = assessment.generateReportWithAttachments(
+            planId,
+            '1',
+            extraSpace,
+            planAttachmentIds,
+            wfAttachmentIds,
+            sigAttachmentIds,
+            'false',
+          );
         }
 
         // remove spinner
         reportsScreen.removeChild(spinner);
+        reportsScreen.appendChild(screenInner);
         reportsScreen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
       },
@@ -849,78 +1045,158 @@ const plan = (function () {
 
     reportsScreen.appendChild(doneBtn);
   }
-  async function runDODDScreen() {
-    // build & show spinner
-    const spinner = PROGRESS.SPINNER.get('Sending Plan to DODD...');
-    sendToDODDScreen.appendChild(spinner);
-    // send report
-    const success = await planAjax.uploadPlanToDODD({
-      consumerId: selectedConsumer.id,
-      planId,
+
+  async function runDODDScreen(extraSpace) {
+    const selectedAttachmentsPlan = {};
+    const selectedAttachmentsWorkflow = {};
+    const selectedAttachmentsSignature = {};
+
+    // clear out body before each run to prevent dups
+    DODDplanAttBody.innerHTML = '';
+    DODDsignAttBody.innerHTML = '';
+    DODDworkflowAttBody.innerHTML = '';
+
+    // Show Attachements
+    const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+      token: $.session.Token,
+      assessmentId: planId, //TODO
     });
-    // remove spinner
-    sendToDODDScreen.removeChild(spinner);
-    // display message & btn
-    const message = document.querySelector('#DODDScreen p');
-    const okBtn = button.build({
-      id: 'sendToDODDbtn',
+
+    let index = 0;
+
+    if (attachments) {
+      for (const prop in attachments) {
+        attachments[prop].order = index;
+        const a = attachments[prop];
+        const attachment = document.createElement('div');
+        attachment.classList.add('attachment');
+        const description = document.createElement('p');
+        description.innerText = a.description;
+        attachment.appendChild(description);
+        // attachment.setAttribute('data-WF-stepdocId', a.workflowstepdocId);
+        //  attachment.setAttribute('data-attachmentId', a.attachmentId);
+
+        attachment.addEventListener('click', () => {
+          if (!attachment.classList.contains('selected')) {
+            attachment.classList.add('selected');
+            if (a.sigAttachmentId) {
+              selectedAttachmentsSignature[a.order] = { ...a };
+            } else if (a.whereFrom === 'Plan') {
+              selectedAttachmentsPlan[a.order] = { ...a };
+            } else {
+              selectedAttachmentsWorkflow[a.order] = { ...a };
+            }
+          } else {
+            attachment.classList.remove('selected');
+            if (a.sigAttachmentId) {
+              delete selectedAttachmentsSignature[a.order];
+            } else if (a.whereFrom === 'Plan') {
+              delete selectedAttachmentsPlan[a.order];
+            } else {
+              delete selectedAttachmentsWorkflow[a.order];
+            }
+          }
+        });
+
+        if (a.sigAttachmentId) {
+          DODDsignAttBody.appendChild(attachment);
+        } else if (a.whereFrom === 'Plan') {
+          DODDplanAttBody.appendChild(attachment);
+        } else {
+          DODDworkflowAttBody.appendChild(attachment);
+        }
+
+        index++;
+      }
+    }
+
+    const doneBtn = button.build({
+      text: 'Send To DODD',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        //Send plan to DODD
+        // runSendToDODDScreen();
+
+        //Send the selected plan attachments to DODD by calling the same function the report uses
+        let sendSuccess;
+        // build & show spinner
+        const spinner = PROGRESS.SPINNER.get('Sending to DODD...');
+        const screenInner = DODDScreen.querySelector('.attachmentsWrap');
+        DODDScreen.removeChild(doneBtn);
+        DODDScreen.removeChild(screenInner);
+        DODDScreen.appendChild(spinner);
+        // generate report
+        // if (
+        //   Object.keys(selectedAttachmentsPlan).length > 0 ||
+        //   Object.keys(selectedAttachmentsWorkflow).length > 0 ||
+        //   Object.keys(selectedAttachmentsSignature).length > 0
+        // ) {
+        const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+        const wfAttachmentIds = getwfstepdocIds(selectedAttachmentsWorkflow);
+        const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+        try {
+          // await needed to allow spinner to spin while request is being made
+          // try catch added to prevent code from stopping on ajax error
+          sendSuccess = await assessmentAjax.sendSelectedAttachmentsToDODD({
+            token: $.session.Token,
+            planAttachmentIds: planAttachmentIds,
+            wfAttachmentIds: wfAttachmentIds,
+            sigAttachmentIds: sigAttachmentIds,
+            planId: planId,
+            consumerId: selectedConsumer.id,
+          });
+        } catch (error) {
+          console.log(error.statusText);
+        }
+        //* if we need to upload to dodd after sending attachments
+        //* below was old code from old sendToDODD screen
+        // const success = await planAjax.uploadPlanToDODD({
+        //   consumerId: selectedConsumer.id,
+        //   planId,
+        // });
+        // }
+
+        sendtoDODDAlert(sendSuccess);
+
+        DODDScreen.removeChild(spinner);
+        DODDScreen.appendChild(screenInner);
+        DODDScreen.classList.remove('visible');
+        morePopupMenu.classList.add('visible');
+
+        //TODO set date_sent_to_dodd column when the attachment is successfully uploaded to DODD
+      },
+    });
+
+    DODDScreen.appendChild(doneBtn);
+  }
+
+  function sendtoDODDAlert(sendtoDODDResponse) {
+    var alertPopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+    });
+    var alertbtnWrap = document.createElement('div');
+    alertbtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
       text: 'OK',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        message.innerText = '';
-        sendToDODDScreen.removeChild(okBtn);
-        morePopup.classList.remove('error');
-        sendToDODDScreen.classList.remove('visible');
-        morePopupMenu.classList.add('visible');
-      },
-    });
-    message.innerText = success;
-    sendToDODDScreen.appendChild(okBtn);
-    return;
-
-    // TODO: 2022.5
-    const title = document.createElement('p');
-    title.innerText = 'Select An SSA';
-
-    const ssaDropdown = dropdown.build({
-      label: 'Case Manager',
-      style: 'secondary',
-      className: 'ssaDropdownDOOD',
-      callback: async e => {
-        // TODO: Project Ticket #92768
-        // build & show spinner
-        const spinner = PROGRESS.SPINNER.get('Sending Plan to DODD...');
-        sendToDODDScreen.appendChild(spinner);
-        // send report
-        const success = await planAjax.uploadPlanToDODD({
-          consumerId: selectedConsumer.id,
-          planId,
-        });
-        // remove spinner
-        sendToDODDScreen.removeChild(spinner);
-        // display message & btn
-        const okBtn = button.build({
-          id: 'sendToDODDbtn',
-          text: 'OK',
-          style: 'secondary',
-          type: 'contained',
-          callback: () => {
-            message.innerText = '';
-            sendToDODDScreen.removeChild(okBtn);
-            morePopup.classList.remove('error');
-            sendToDODDScreen.classList.remove('visible');
-            morePopupMenu.classList.add('visible');
-          },
-        });
-        message.innerText = success;
-        sendToDODDScreen.appendChild(okBtn);
+      icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(alertPopup);
+        overlay.show();
       },
     });
 
-    sendToDODDScreen.appendChild(title);
-    sendToDODDScreen.appendChild(ssaDropdown);
+    alertbtnWrap.appendChild(alertokBtn);
+    var alertMessage = document.createElement('p');
+    alertMessage.innerHTML = sendtoDODDResponse;
+    alertPopup.appendChild(alertMessage);
+    alertPopup.appendChild(alertbtnWrap);
+    POPUP.show(alertPopup);
   }
+
   function buildMorePopupMenu() {
     const morepopupmenu = document.createElement('div');
     morepopupmenu.classList.add('moreMenuPopup__menu', 'visible');
@@ -995,6 +1271,12 @@ const plan = (function () {
           ? ['reactivateBtn']
           : ['reactivateBtn', 'disabled'],
     });
+    const changeTypeBtn = button.build({
+      text: 'Change Plan Type',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['planTypeBtn'],
+    });
 
     //morepopupmenu.appendChild(addWorkflowBtn);
     morepopupmenu.appendChild(reportBtn);
@@ -1006,6 +1288,7 @@ const plan = (function () {
     morepopupmenu.appendChild(statusBtn);
     morepopupmenu.appendChild(deleteBtn);
     morepopupmenu.appendChild(reactivateBtn);
+    morepopupmenu.appendChild(changeTypeBtn);
 
     morepopupmenu.addEventListener('click', async e => {
       e.target.classList.add('disabled');
@@ -1025,16 +1308,19 @@ const plan = (function () {
             token: $.session.Token,
             assessmentId: '19',
           };
-          const planWFAttachList = await planAjax.getPlanAndWorkFlowAttachments(retrieveData);
           break;
         }
         case sendtoPortalBtn: {
           assessment.transeferPlanReportToONET(planId, '1');
           break;
         }
-          case sendToDODDBtn: {
-        //Nathan TODO call ajax
+        case sendToDODDBtn: {
+          //Nathan TODO call ajax
           targetScreen = 'DODDScreen';
+          retrieveData = {
+            token: $.session.Token,
+            assessmentId: '19',
+          };
           break;
         }
         case editDatesBtn: {
@@ -1053,6 +1339,9 @@ const plan = (function () {
           targetScreen = 'reactivateScreen';
           break;
         }
+        case changeTypeBtn: {
+          targetScreen = 'changePlanTypeScreen';
+        }
         default: {
           break;
         }
@@ -1066,7 +1355,9 @@ const plan = (function () {
       }
 
       if (targetScreen === 'DODDScreen') {
-        runDODDScreen();
+        const extraSpace = e.target === sendToDODDBtn ? 'false' : 'true';
+        //  DODDScreen = buildDODDScreen();
+        runDODDScreen(extraSpace);
       }
 
       if (targetScreen === 'reportsScreen') {
@@ -1093,7 +1384,8 @@ const plan = (function () {
     addWorkflowScreen = buildAddWorkflowScreen();
     reportsScreen = buildReportsScreen();
     reportsAttachmentScreen = buildReportsAttachmentsScreen();
-    sendToDODDScreen = buildSendToDODDScreen();
+    DODDScreen = buildDODDScreen();
+    changePlanTypeScreen = buildChangePlanTypeScreen();
 
     menuInnerWrap.appendChild(morePopupMenu);
     menuInnerWrap.appendChild(editDatesScreen);
@@ -1103,7 +1395,8 @@ const plan = (function () {
     menuInnerWrap.appendChild(addWorkflowScreen);
     menuInnerWrap.appendChild(reportsScreen);
     menuInnerWrap.appendChild(reportsAttachmentScreen);
-    menuInnerWrap.appendChild(sendToDODDScreen);
+    menuInnerWrap.appendChild(DODDScreen);
+    menuInnerWrap.appendChild(changePlanTypeScreen);
 
     morePopup.appendChild(menuInnerWrap);
 
@@ -1162,7 +1455,7 @@ const plan = (function () {
       splitFormatedDate4[2]
     }/${splitFormatedDate4[0].substring(2)}`;
 
-    const generalInfoBar = document.createElement('div');
+    generalInfoBar = document.createElement('div');
     generalInfoBar.classList.add('generalInfo');
 
     const consumerName = `<p>${getConsumerNameFromCard(selectedConsumer.card)}</p>`;
@@ -1196,7 +1489,7 @@ const plan = (function () {
 
         if ($.loadedAppPage === 'planAssessment') {
           $.loadedAppPage = '';
-          assessment.showSaveWarning(loadLandingPage);
+          assessment.autoSaveAssessment(loadLandingPage);
         } else {
           loadLandingPage();
         }
@@ -1283,7 +1576,7 @@ const plan = (function () {
           } else if (targetTabIndex === '1') {
             TABS.toggleNavStatus(tabs, 'disable');
             if ($.loadedAppPage === 'planAssessment') {
-              assessment.showSaveWarning(async () => {
+              assessment.autoSaveAssessment(async () => {
                 $.loadedAppPage = 'planISP';
                 await ISP.refreshISP(planId);
                 TABS.toggleNavStatus(tabs, 'enable');
@@ -1298,7 +1591,7 @@ const plan = (function () {
           } else if (targetTabIndex === '2') {
             TABS.toggleNavStatus(tabs, 'disable');
             if ($.loadedAppPage === 'planAssessment') {
-              assessment.showSaveWarning(async () => {
+              assessment.autoSaveAssessment(async () => {
                 $.loadedAppPage = 'planWorkflow';
                 const workflowLoadingBar = PROGRESS.SPINNER.get('Loading ISP...');
                 workflowWrap.innerHTML = '';
@@ -1444,24 +1737,34 @@ const plan = (function () {
     };
     planWorkflow.showWorkflowListPopup(wfvData, workflowCallback);
   }
+  function getSelectedConsumerName(selectedConsumer) {
+    const last = selectedConsumer.card.querySelector('.name_last');
+    const first = selectedConsumer.card.querySelector('.name_first');
+    return `${first.innerText} ${last.innerText}`;
+  }
   async function createNewPlan(selectedConsumer, processId, selectedWorkflows) {
     const EffectiveEndDate = planDates.getEffectiveEndDate();
     let edDate = UTIL.formatDateFromDateObj(EffectiveEndDate);
 
     let currentPlanId;
     let workflowId;
+    let insertedSSA;
     const workflowIds = [];
 
     if (planType === 'a') {
       const planYearStartDate = planDates.getPlanYearStartDate();
       const planYearReviewDate = planDates.getPlanReviewDate();
 
-      currentPlanId = await planAjax.insertAnnualPlan({
+      let returnString = await planAjax.insertAnnualPlan({
         token: $.session.Token,
         consumerId: selectedConsumer.id,
         planYearStart: UTIL.formatDateFromDateObj(planYearStartDate),
         reviewDate: UTIL.formatDateFromDateObj(planYearReviewDate),
       });
+
+      returnString = returnString.split(',');
+      currentPlanId = returnString[0];
+      insertedSSA = returnString[1];
     } else {
       const EffectiveStartDate = planDates.getEffectiveStartDate();
       const esDate = UTIL.formatDateFromDateObj(EffectiveStartDate);
@@ -1517,8 +1820,17 @@ const plan = (function () {
     planActiveStatus = true;
     revisionNumber = undefined;
 
-    planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+    if (planType === 'a') {
+      const consumer = getSelectedConsumerName(selectedConsumer);
+      showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
+        POPUP.hide(addedMemberPopup);
+        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+        buildPlanPage();
+      });
+      return;
+    }
 
+    planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
     buildPlanPage();
   }
 
@@ -1632,7 +1944,7 @@ const plan = (function () {
 
   // Plan Landing Page
   //---------------------------------------------
-  function showInvalidSalesForceWarningPop() {
+  function showInvalidSalesForceWarningPopup() {
     const warningPopup = POPUP.build({
       id: 'importRelationshipPopup',
       // closeCallback: () => {
@@ -1647,6 +1959,30 @@ const plan = (function () {
 
     POPUP.show(warningPopup);
   }
+  function showAddedToTeamMemberPopup(consumer, ssa, callback) {
+    addedMemberPopup = POPUP.build({
+      id: 'importRelationshipPopup',
+      hideX: true,
+    });
+
+    if (ssa) {
+      addedMemberPopup.innerHTML += `<p>${consumer} and ${ssa} have been added as a Team Member to this plan.</p>`;
+    } else {
+      addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>`;
+    }
+
+    const okButton = button.build({
+      text: 'Ok',
+      style: 'secondary',
+      type: 'contained',
+      callback: callback,
+    });
+
+    addedMemberPopup.appendChild(okButton);
+
+    POPUP.show(addedMemberPopup);
+  }
+
   function buildNewPlanBtn() {
     return button.build({
       text: 'Add New Plan',
@@ -1655,7 +1991,6 @@ const plan = (function () {
       classNames: !$.session.planUpdate ? ['disabled'] : ['newPlanBtn'],
       callback: async () => {
         if (newPlanBtn.innerText === 'ADD NEW PLAN') {
-          // PROGRESS__BTN.init();
           PROGRESS__BTN.SPINNER.show(newPlanBtn);
 
           if ($.session.areInSalesForce) {
@@ -1665,7 +2000,7 @@ const plan = (function () {
             });
             if (!isValidSalesforce) {
               PROGRESS__BTN.SPINNER.hide(newPlanBtn);
-              showInvalidSalesForceWarningPop();
+              showInvalidSalesForceWarningPopup();
               return;
             }
           }
@@ -1677,15 +2012,36 @@ const plan = (function () {
 
           PROGRESS__BTN.SPINNER.hide(newPlanBtn);
           newPlanBtn.innerText = 'Back';
+
+          if (assignCaseLoadBtn) {
+            assignCaseLoadBtn.style.display = 'none';
+          }
         } else {
           landingPage.removeChild(planSetupPage);
           landingPage.appendChild(overviewTable);
 
           newPlanBtn.innerText = 'Add New Plan';
+          if (assignCaseLoadBtn) {
+            assignCaseLoadBtn.style.display = 'block';
+          }
         }
       },
     });
   }
+
+  function buildAssignCaseloadBtn() {
+    return button.build({
+      id: 'assign-case-load-btn',
+      text: $.session.applicationName === 'Gatekeeper' ? 'ASSIGN CASE LOAD' : 'ASSIGN QIDP',
+      style: 'secondary',
+      type: 'contained',
+      classNames: !$.session.planUpdate ? ['disabled'] : ['newPlanBtn'],
+      callback: () => {
+        csAssignCaseload.showAssignCaseLoadPopup();
+      },
+    });
+  }
+
   function buildConsumerCard() {
     selectedConsumer.card.classList.remove('highlighted');
 
@@ -1752,9 +2108,16 @@ const plan = (function () {
 
     const consumerCard = buildConsumerCard();
     newPlanBtn = buildNewPlanBtn();
+    assignCaseLoadBtn = buildAssignCaseloadBtn();
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('topOutcomeWrap');
+
+    btnWrap.appendChild(newPlanBtn);
+    if ($.session.planAssignCaseload) btnWrap.appendChild(assignCaseLoadBtn);
 
     landingPage.appendChild(consumerCard);
-    landingPage.appendChild(newPlanBtn);
+    landingPage.appendChild(btnWrap);
     DOM.ACTIONCENTER.appendChild(landingPage);
 
     const spinner = PROGRESS.SPINNER.get('Gathering Plans...');

@@ -35,24 +35,33 @@ const assessmentAjax = (function () {
       dataType: 'json',
     });
   }
-  //function getPlanAssessmentReportWithAttachments(retrieveData) {
-  //    //token, userId, assessmentID, versionID, extraSpace, isp(boolean)
-  //    return $.ajax({
-  //        type: 'POST',
-  //        url:
-  //            $.webServer.protocol +
-  //            '://' +
-  //            $.webServer.address +
-  //            ':' +
-  //            $.webServer.port +
-  //            '/' +
-  //            $.webServer.serviceName +
-  //            '/addSelectedAttachmentsToReport/',
-  //        data: JSON.stringify(retrieveData),
-  //        contentType: 'application/json; charset=utf-8',
-  //        dataType: 'json',
-  //    });
-  //}
+
+  async function sendSelectedAttachmentsToDODD(retrieveData) {
+     //token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds
+     try {
+      const data = await $.ajax({
+         type: 'POST',
+         url:
+             $.webServer.protocol +
+             '://' +
+             $.webServer.address +
+             ':' +
+             $.webServer.port +
+             '/' +
+             $.webServer.serviceName +
+             '/sendSelectedAttachmentsToDODD/',
+         data: JSON.stringify(retrieveData),
+         contentType: 'application/json; charset=utf-8',
+         dataType: 'json',
+     });
+
+     return data.sendSelectedAttachmentsToDODDResult;
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
   function getPlanAssessmentReportWithAttachments(retrieveData, callback) {
     var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/addSelectedAttachmentsToReport/`;
     var successFunction = function (resp) {
@@ -74,10 +83,6 @@ const assessmentAjax = (function () {
     userIdInput.setAttribute('name', 'userId');
     userIdInput.setAttribute('value', retrieveData.userId);
       userIdInput.id = 'userId';
-      var doddFlagInput = document.createElement('input');
-      userIdInput.setAttribute('name', 'doddFlag');
-      userIdInput.setAttribute('value', retrieveData.doddFlag);
-      doddFlagInput.id = 'doddFlag';
     var assessmentIDInput = document.createElement('input');
     assessmentIDInput.setAttribute('name', 'assessmentID');
     assessmentIDInput.setAttribute('value', retrieveData.assessmentID);
@@ -106,11 +111,10 @@ const assessmentAjax = (function () {
       sigAttachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
       sigAttachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
       sigAttachmentIdsInput.id = 'sigAttachmentIds';
-      //TODO add new flag same as variables above
+  
 
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);
-    form.appendChild(doddFlagInput);
     form.appendChild(assessmentIDInput);
     form.appendChild(versionIDInput);
     form.appendChild(extraSpaceInput);
@@ -309,5 +313,6 @@ const assessmentAjax = (function () {
     transferPlanReportToONET,
     updateAssessmentAnswerRowOrder,
     getPlanAssessmentReportWithAttachments,
+    sendSelectedAttachmentsToDODD,
   };
 })();

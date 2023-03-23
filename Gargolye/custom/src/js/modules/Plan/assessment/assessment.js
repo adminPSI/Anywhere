@@ -284,6 +284,38 @@ const assessment = (function () {
 
     POPUP.show(savePopup);
   }
+  // BELOW IS NOW AUTOSAVE
+  async function autoSaveAssessment(continueCallback) {
+    const isActive = plan.getPlanActiveStatus();
+    const status = plan.getPlanStatus();
+
+    if (!$.session.planUpdate || !isActive || status === 'C') {
+      continueCallback();
+      return;
+    }
+
+    const savePopup = POPUP.build({
+      classNames: 'saveWarningPopup',
+      hideX: true,
+    });
+    const saveBar = PROGRESS.SPINNER.get('Saving Assessment...');
+    savePopup.appendChild(saveBar);
+    POPUP.show(savePopup);
+
+    const answersArray = mainAssessment.getAnswers();
+    const success = await assessment.updateAnswers(answersArray);
+    savePopup.removeChild(saveBar);
+
+    if (success !== undefined && success !== null && success !== 'error') {
+      const successDiv = successfulSave.get('Assessment Saved', true);
+      savePopup.appendChild(successDiv);
+
+      setTimeout(() => {
+        POPUP.hide(savePopup);
+        continueCallback();
+      }, 1500);
+    }
+  }
 
   // Data
   //------------------------------------
@@ -378,6 +410,7 @@ const assessment = (function () {
     planAttachmentIds,
     wfAttachmentIds,
     sigAttachmentIds,
+    DODDFlag,
   ) {
     assessmentAjax.getPlanAssessmentReportWithAttachments(//Testgd
       {
@@ -390,6 +423,7 @@ const assessment = (function () {
         planAttachmentIds,
         wfAttachmentIds,
         sigAttachmentIds,
+        DODDFlag,
       },
       () => {
         const arr = success._buffer;
@@ -519,6 +553,7 @@ const assessment = (function () {
     deleteGridRows,
     transeferPlanReportToONET,
     showSaveWarning,
+    autoSaveAssessment,
     // applicable stuff
     showApplicableWarningMessage,
     toggleIsSectionApplicable,

@@ -20,7 +20,7 @@ namespace Anywhere.service.Data
     namespace Plan
     {
         public class AnywherePlanWorker
-        { 
+        {
             PlanDataGetter adg = new PlanDataGetter();
             WorkflowDataGetter wdg = new WorkflowDataGetter();
             JavaScriptSerializer js = new JavaScriptSerializer();
@@ -57,7 +57,7 @@ namespace Anywhere.service.Data
             {
                 public string planAttachmentId { get; set; }
                 public string attachmentId { get; set; }
-                public string questionId{ get; set; }
+                public string questionId { get; set; }
                 public string description { get; set; }
             }
 
@@ -88,6 +88,7 @@ namespace Anywhere.service.Data
             public class ConsumerPlan
             {
                 public string consumerPlanId { get; set; }
+                public string cQFullName { get; set; }
                 public string consumerId { get; set; }
                 public string planYearStart { get; set; }
                 public string planYearEnd { get; set; }
@@ -184,7 +185,7 @@ namespace Anywhere.service.Data
                         String assessmentId = "1";
                         String priorPlanIdForApplicable = "0";
                         ConsumerPlan[] existingPlans = js.Deserialize<ConsumerPlan[]>(adg.getConsumerPlans(consumerId, transaction));
-                        
+
                         ConsumerPlanValidator.validateAnnualPlanYearStartDate(planYearStart, existingPlans);
 
                         // look for most recent plan with this assessment for this consumer
@@ -194,13 +195,14 @@ namespace Anywhere.service.Data
                         String planYearEnd = annualPlanYearStart.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd");
                         String effectiveStart = planYearStart;
                         String effectiveEnd = planYearEnd;
-                        
+
                         // insert the consumer plan
                         String active = "1";
                         String planType = PlanType.Annual;
                         String revisionNumber = "0";
-                        String consumerPlanId = adg.insertConsumerPlan(consumerId, planYearStart, planYearEnd, effectiveStart, effectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorPlanIdForApplicable, priorConsumerPlanId, transaction);
-
+                        String inputString = adg.insertConsumerPlan(consumerId, planYearStart, planYearEnd, effectiveStart, effectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorPlanIdForApplicable, priorConsumerPlanId, transaction);
+                        String[] splitString = inputString.Split(',');
+                        String consumerPlanId = splitString[0];
                         // always use the latest assessment version
                         String targetAssessmentVersionId = adg.getCurrentAssessmentVersionId(assessmentId, effectiveStart, transaction);
                         if (targetAssessmentVersionId == null) throw new Exception("Unable to find latest assessment");
@@ -209,10 +211,10 @@ namespace Anywhere.service.Data
                         aW.insertAssessmentAnswers(consumerPlanId, priorConsumerPlanId, targetAssessmentVersionId, userId, effectiveStart, effectiveEnd, "false", transaction, token);
 
                         //   execute any Actions associated with 'Plan Inserted' event -- EventId = 29 (Annual)
-                       // string eventId = "29";
-                       // executeWorkflowActions(token, eventId, consumerPlanId);
+                        // string eventId = "29";
+                        // executeWorkflowActions(token, eventId, consumerPlanId);
 
-                        return consumerPlanId;
+                        return inputString;
                     }
                     catch (Exception ex)
                     {
@@ -233,7 +235,7 @@ namespace Anywhere.service.Data
                 thisEvent.eventType = "plan";
                 thisEvent.eventTypeId = consumerPlanId;
                 string processingCompleted = wfWorker.processWorkflowStepEvent(token, thisEvent);
-        }
+            }
 
             public string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string newEffectiveStart, string newEffectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion)
             {
@@ -271,8 +273,9 @@ namespace Anywhere.service.Data
                         //DateTime revDate = Convert.ToDateTime(existingPlan.reviewDate);
                         //var revDate = DateTime.Parse(existingPlan.reviewDate);
                         //var reviewDate = revDate.ToString("yyyy-MM-dd");
-                        String consumerPlanId = adg.insertConsumerPlan(existingPlan.consumerId, existingPlan.planYearStart, existingPlan.planYearEnd, newEffectiveStart, newEffectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorConsumerPlanId, priorConsumerPlanId, transaction);
-
+                        String inputString = adg.insertConsumerPlan(existingPlan.consumerId, existingPlan.planYearStart, existingPlan.planYearEnd, newEffectiveStart, newEffectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorConsumerPlanId, priorConsumerPlanId, transaction);
+                        String[] splitString = inputString.Split(',');
+                        String consumerPlanId = splitString[0];
                         // determine whether to use the existing assessment version or the lastest assessment version
                         String assessmentId = "1";
                         String targetAssessmentVersionId = adg.getCurrentAssessmentVersionId(assessmentId, newEffectiveStart, transaction);
@@ -286,10 +289,10 @@ namespace Anywhere.service.Data
                         adg.updateConsumerPlanSetInactive(priorConsumerPlanId, transaction);
 
                         //   execute any Actions associated with 'Plan Inserted' event -- EventId = 30 (Revision)
-                       // string eventId = "30";
-                       // executeWorkflowActions(token, eventId, consumerPlanId);
+                        // string eventId = "30";
+                        // executeWorkflowActions(token, eventId, consumerPlanId);
 
-                        return consumerPlanId;
+                        return inputString;
                     }
                     catch (Exception ex)
                     {
@@ -305,7 +308,7 @@ namespace Anywhere.service.Data
                 AddAttachment[] attachmentsObj = js.Deserialize<AddAttachment[]>(attachmentsString);
                 return attachmentsObj;
             }
-            
+
 
             public AttachmentList[] getPlanAttachmentsList(string token, long planId, string section)
             {
@@ -410,7 +413,7 @@ namespace Anywhere.service.Data
                         executeWorkflowActions(token, eventId, consumerPlanId);
                         eventId = "20";
                         executeWorkflowActions(token, eventId, consumerPlanId);
-                       
+
                         return rowsUpdated;
                     }
                     catch (Exception ex)
@@ -458,8 +461,8 @@ namespace Anywhere.service.Data
                         DateTime dtplanYearStart = Convert.ToDateTime(plan.planYearStart);
                         DateTime dtplanYearEnd = Convert.ToDateTime(plan.planYearEnd);
 
-                        String planYearStart = dtplanYearStart.ToString("yyyy-MM-dd"); 
-                        String planYearEnd = dtplanYearEnd.ToString("yyyy-MM-dd"); 
+                        String planYearStart = dtplanYearStart.ToString("yyyy-MM-dd");
+                        String planYearEnd = dtplanYearEnd.ToString("yyyy-MM-dd");
                         String effectiveStart = dtEffectiveStart.ToString("yyyy-MM-dd");
                         String effectiveEnd = dtEffectiveEnd.ToString("yyyy-MM-dd");
 
@@ -553,7 +556,7 @@ namespace Anywhere.service.Data
                                 break;
                             case "R":
                                 workflowProcessId = 3;
-                                break;                            
+                                break;
                         }
 
                         if (workflowProcessId > 0)
@@ -578,7 +581,7 @@ namespace Anywhere.service.Data
 
                         if (deletedPlans == 0) throw new Exception("plan was not deleted");
 
-                       
+
 
                         // all rows were deleted
                         return "success";
@@ -741,21 +744,21 @@ namespace Anywhere.service.Data
                 public void insertAssessmentAnswers(string consumerPlanId, string priorConsumerPlanId, string targetAssessmentVersionId, string userId, string effectiveStart, string effectiveEnd, string revision, DistributedTransaction dbTransaction, string token)
                 {
                     List<ConsumerAssessment> priorAssessmentQuestionsAndAnswers = js.Deserialize<List<ConsumerAssessment>>(adg.getConsumerAssessment(priorConsumerPlanId, "YES", dbTransaction));
-                    if(priorConsumerPlanId != null)
+                    if (priorConsumerPlanId != null)
                     {
                         pow.carryOverOutcomesToNewPlan(consumerPlanId, priorConsumerPlanId, targetAssessmentVersionId, token);
-                        ssW.carryOverServicesToNewPlan(consumerPlanId, priorConsumerPlanId, effectiveStart, effectiveEnd, targetAssessmentVersionId, token);                       
+                        ssW.carryOverServicesToNewPlan(consumerPlanId, priorConsumerPlanId, effectiveStart, effectiveEnd, targetAssessmentVersionId, token);
                         pciw.carryOverContactToNewPlan(consumerPlanId, priorConsumerPlanId, token);
                         psw.carryOverTeamMembersToNewPlan(consumerPlanId, priorConsumerPlanId, token);
                         picw.carryOverInformedConsentToNewPlan(consumerPlanId, priorConsumerPlanId, token, revision);
                         adg.carryOverApplicable(consumerPlanId, priorConsumerPlanId, effectiveStart);
-                       // piw.carryOverPlanIntroduction(consumerPlanId, priorConsumerPlanId, token);
+                        // piw.carryOverPlanIntroduction(consumerPlanId, priorConsumerPlanId, token);
                         carryOverPlanAttachments(token, long.Parse(consumerPlanId), long.Parse(priorConsumerPlanId));
                     }
 
 
-                    if(priorConsumerPlanId == null)
-                   // if (true == true)
+                    if (priorConsumerPlanId == null)
+                    // if (true == true)
                     {
                         QuestionSet[] questionSets = js.Deserialize<QuestionSet[]>(adg.getQuestionSets(targetAssessmentVersionId, dbTransaction));
                         foreach (QuestionSet qset in questionSets)

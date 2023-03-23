@@ -2,7 +2,7 @@
   'use-strict';
   //Incident Save
   //Send incident notification
-  function sendNotification(notificationType, employeeId) {
+  function sendNotification(notificationType, employeeId, data) {
     // notificationType either Insert or Update
     $.ajax({
       type: 'POST',
@@ -21,7 +21,15 @@
         '","notificationType":"' +
         notificationType +
         '","employeeId":"' +
-        employeeId +
+          employeeId +
+          '","incidentTypeDesc":"' +
+          data.incidentTypeDesc +
+          '","incidentDate":"' +
+          data.incidentDate +
+          '","incidentTime":"' +
+          data.incidentTime +
+          '","subcategoryId":"' +
+          data.subcategoryId +
         '"}',
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
@@ -351,9 +359,9 @@
           successfulSave.hide();
           if (callback) callback(res);
           notifyArr.forEach((notify, index) => {
-            if (notify === 'Y') {
-              sendNotification(notificationType, employeeIdArr[index]);
-            }
+           if (notify === 'Y') {
+              sendNotification(notificationType, employeeIdArr[index], incidentData);
+           }
           });
         }, 1000);
         //for loop' if notify emp is y call procedure with person id of employee with checked box

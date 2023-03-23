@@ -1,0 +1,663 @@
+const NewEntryCF = (() => {
+    // dropdown and inputs declaration
+    let newDateInput;
+    let newAmountInput;
+    let newAccountDropdown;
+    let newPayeeDropdown;
+    let ADD_NEW_PAYEE_BTN;
+    let newCategoryDropdown;
+    let newSubCategoryDropdown;
+    let newCheckNoInput;
+    let newDescriptionInput;
+    let newReceiptInput;
+    let NEW_SAVE_BTN;
+    let NEW_CANCEL_BTN;
+
+    let attachmentArray = [];
+    let attachmentId = [];
+    let attachmentDesc = [];
+    let categoryID;
+    let Description;
+    let BtnName;
+    let regId;
+
+    let inputElement;
+
+    async function init() {
+        buildNewEntryForm();
+    }
+
+    async function buildNewEntryForm(registerId, attachment, attachmentID) {
+        if (attachment) {
+            attachmentArray = attachment;
+            attachmentId = attachmentID;
+
+            attachment.forEach(att => {
+                attachmentDesc.push(att.description);
+            });
+        }
+        else {
+            attachmentArray = [];
+            attachmentId = []; 
+            attachmentDesc = [];
+        }
+
+        if (registerId) {
+            attachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
+
+            BtnName = 'UPDATE'
+            regId = registerId;
+            const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
+            const { getAccountEntriesByIdResult } = result;
+            date = UTIL.getTodaysDate();//UTIL.formatDateFromIso(getAccountEntriesByIdResult[0].activityDate);
+            amount = getAccountEntriesByIdResult[0].amount;
+            account = getAccountEntriesByIdResult[0].account;
+            payee = getAccountEntriesByIdResult[0].payee;
+            category = getAccountEntriesByIdResult[0].category;
+            subCategory = getAccountEntriesByIdResult[0].subCategory; 
+            checkNo = getAccountEntriesByIdResult[0].checkno;
+            description = getAccountEntriesByIdResult[0].description;
+            receipt = getAccountEntriesByIdResult[0].receipt;
+            accountID = getAccountEntriesByIdResult[0].accountID;
+            accountType = getAccountEntriesByIdResult[0].accountType;
+        }
+        else {
+            regId = 0;        
+            BtnName = 'SAVE'
+            date = UTIL.getTodaysDate();
+            amount = '';
+            account = '';
+            payee = '';
+            category = '';
+            subCategory = '';
+            checkNo = '';
+            description = '';
+            attachment = '';
+            receipt = '';
+            accountID = '';
+        }
+        DOM.clearActionCenter();
+
+        const column1 = document.createElement('div')
+        const column2 = document.createElement('div')
+        column1.classList.add('col-1')
+        column2.classList.add('col-2')
+
+
+
+        newDateInput = input.build({
+            id: 'newDateInput',
+            type: 'date',
+            label: 'Date',
+            style: 'secondary',
+            value: (date) ? date : '',
+        });
+
+        newAmountInput = input.build({
+            id: 'newAmountInput',
+            type: 'number',
+            label: 'Amount',
+            style: 'secondary',
+            value: (amount) ? amount : '',
+        });
+
+        newAccountDropdown = dropdown.build({
+            id: 'newAccountDropdown',
+            label: "Account",
+            dropdownId: "newAccountDropdown",
+            value: (account) ? account : '',
+        });
+
+        newPayeeDropdown = dropdown.build({
+            id: 'newPayeeDropdown',
+            label: "Payee",
+            dropdownId: "newPayeeDropdown",
+            value: (payee) ? payee : '',
+        });
+
+        ADD_NEW_PAYEE_BTN = button.build({
+            text: 'ADD NEW PAYEE',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => buildNewPayeePopUp()
+        });
+
+        newCategoryDropdown = dropdown.build({
+            id: 'newCategoryDropdown',
+            label: "Category",
+            dropdownId: "newCategoryDropdown",
+            value: (category) ? category : '',
+        });
+
+        newSubCategoryDropdown = dropdown.build({
+            id: 'newSubCategoryDropdown',
+            label: "Sub Category",
+            dropdownId: "newSubCategoryDropdown",
+            value: (subCategory) ? subCategory : '',
+        });
+
+        newCheckNoInput = input.build({
+            type: 'text',
+            label: 'Check No.',
+            style: 'secondary',
+            value: (checkNo) ? checkNo : '',
+        });
+
+        newDescriptionInput = input.build({
+            type: 'textarea',
+            label: 'Description',
+            style: 'secondary',
+            value: (description) ? description : '',
+        });
+
+        newReceiptInput = input.build({
+            type: 'text',
+            label: 'Receipt',
+            style: 'secondary',
+            value: (receipt) ? receipt : '',
+        });
+
+        NEW_SAVE_BTN = button.build({
+            text: BtnName,
+            style: 'secondary',
+            type: 'contained',
+            callback: () => saveNewAccount()
+        });
+        NEW_CANCEL_BTN = button.build({
+            text: 'Cancel',
+            style: 'secondary',
+            type: 'outlined',
+            callback: async () => { ConsumerFinances.loadConsumerFinanceLanding() },
+        });
+
+        NEW_DELETE_BTN = button.build({
+            text: 'Delete',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => deleteAccount()
+        });
+
+        // Billing Radios //
+        expenseRadio = input.buildRadio({
+            id: `expenseRadio`,
+            text: "Expense",
+            name: "amountType",
+            isChecked: accountType == 'D' ? false : true,
+        });
+        depositRadio = input.buildRadio({
+            id: `depositRadio`,
+            text: "Deposit",
+            name: "amountType",
+            isChecked: accountType == 'D' ? true : false, 
+        });
+
+        const radioDiv = document.createElement("div");
+        radioDiv.classList.add("addRouteRadioDiv");
+        radioDiv.appendChild(expenseRadio);
+        radioDiv.appendChild(depositRadio);
+        /////////////////
+
+        var space = document.createElement('h3');
+        space.innerHTML = '';
+        var LineBr = document.createElement('br');
+
+        var btnWrap = document.createElement('div');
+        btnWrap.classList.add('btnWrap');
+
+
+        if (registerId) {
+            btnWrap.appendChild(NEW_SAVE_BTN);
+            btnWrap.appendChild(NEW_DELETE_BTN);
+        }
+        else {
+            btnWrap.appendChild(NEW_SAVE_BTN);
+            btnWrap.appendChild(NEW_CANCEL_BTN);
+        }
+
+
+        var dropWrap = document.createElement('div');
+        dropWrap.classList.add('vehicleInspectionDTWrap');
+        dropWrap.appendChild(newDateInput);
+        dropWrap.appendChild(newAmountInput);
+
+        var radioWrap = document.createElement('div');
+        radioWrap.classList.add('vehicleInspectionDTWrap');
+        radioWrap.appendChild(space);
+        radioWrap.appendChild(radioDiv);
+
+        // New Entry  Card//
+        const addNewCard = document.createElement("div");
+        addNewCard.classList.add("card");
+        const addNewCardBody = document.createElement("div");
+        addNewCardBody.classList.add("card__body");
+        addNewCard.innerHTML = `<div class="card__header">New Entry</div>`;
+        addNewCard.appendChild(addNewCardBody)
+
+        column1.appendChild(addNewCard)
+        addNewCardBody.appendChild(LineBr);
+        addNewCardBody.appendChild(dropWrap);
+        addNewCardBody.appendChild(radioWrap);
+        addNewCardBody.appendChild(LineBr);
+        addNewCardBody.appendChild(newAccountDropdown);
+        addNewCardBody.appendChild(newPayeeDropdown);
+        addNewCardBody.appendChild(ADD_NEW_PAYEE_BTN);
+        addNewCardBody.appendChild(newCategoryDropdown);
+        addNewCardBody.appendChild(newSubCategoryDropdown);
+        addNewCardBody.appendChild(newCheckNoInput);
+
+        const addRightCard = document.createElement("div");
+        const addRightHeader = document.createElement("div");
+        const addRightBody = document.createElement("div");
+        addRightCard.classList.add("card");
+        addRightHeader.classList.add("card__header");
+        addRightBody.classList.add("card__body");
+        addRightBody.id = 'consumerOnRouteSection';
+        addRightCard.appendChild(addRightBody);
+
+        addRightBody.appendChild(newDescriptionInput);
+        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId);
+        addRightBody.appendChild(questionAttachment.attachmentButton);
+
+        addRightBody.appendChild(newReceiptInput);
+        if (registerId ) {
+            addRightBody.appendChild(btnWrap);
+            NEW_CANCEL_BTN.style.width = '100%';
+            addRightBody.appendChild(NEW_CANCEL_BTN);
+        }
+        else {
+            addRightBody.appendChild(btnWrap);
+        }
+
+        column2.appendChild(addRightCard);
+
+        DOM.ACTIONCENTER.appendChild(column1);
+        DOM.ACTIONCENTER.appendChild(column2);
+        eventListeners();
+
+        populateAccountDropdown();
+        populatePayeeDropdown();
+        populateCategoryDropdown(categoryID);
+        populateSubCategoryDropdown(categoryID);
+        checkRequiredFieldsOfNewEntry();
+    }
+
+    function checkRequiredFieldsOfNewEntry() {
+        var date = newDateInput.querySelector('#newDateInput');
+        var amount = newAmountInput.querySelector('#newAmountInput');
+        var account = newAccountDropdown.querySelector('#newAccountDropdown');
+        var payee = newPayeeDropdown.querySelector('#newPayeeDropdown');
+        var category = newCategoryDropdown.querySelector('#newCategoryDropdown');
+        var subCategory = newSubCategoryDropdown.querySelector('#newSubCategoryDropdown');
+
+        if (date.value === '') {
+            newDateInput.classList.add('error');
+        } else {
+            newDateInput.classList.remove('error');
+        }
+
+        if (amount.value === '') {
+            newAmountInput.classList.add('error');
+        } else {
+            newAmountInput.classList.remove('error');
+        }
+
+        if (account.value === '') {
+            newAccountDropdown.classList.add('error');
+        } else {
+            newAccountDropdown.classList.remove('error');
+        }
+
+        if (payee.value === '') {
+            newPayeeDropdown.classList.add('error');
+        } else {
+            newPayeeDropdown.classList.remove('error');
+        }
+
+        if (category.value === '') {
+            newCategoryDropdown.classList.add('error');
+        } else {
+            newCategoryDropdown.classList.remove('error');
+        }
+        if (subCategory.value === '') {
+            newSubCategoryDropdown.classList.add('error');
+        } else {
+            newSubCategoryDropdown.classList.remove('error');
+        }
+
+        setBtnStatusOfNewEntry();
+    }
+
+    function setBtnStatusOfNewEntry() {
+        var hasErrors = [].slice.call(document.querySelectorAll('.error'));
+        if (hasErrors.length !== 0) {
+            NEW_SAVE_BTN.classList.add('disabled');
+            return;
+        } else {
+            NEW_SAVE_BTN.classList.remove('disabled');
+        }
+
+    }
+
+    function eventListeners() {
+        newDateInput.addEventListener('input', event => {
+            date = event.target.value;
+            checkRequiredFieldsOfNewEntry();
+
+        });
+        newAmountInput.addEventListener('input', event => {
+            amount = event.target.value;
+            checkRequiredFieldsOfNewEntry();
+
+        });
+        newPayeeDropdown.addEventListener('change', event => {
+            /* categoryID = event.target.value;*/
+            payee = event.target.options[event.target.selectedIndex].text;
+            checkRequiredFieldsOfNewEntry();
+        });
+        newAccountDropdown.addEventListener('change', event => {
+            accountID = event.target.options[event.target.selectedIndex].id;
+            account = event.target.options[event.target.selectedIndex].text;
+            checkRequiredFieldsOfNewEntry();
+        });
+        newCategoryDropdown.addEventListener('change', event => {
+            categoryID = event.target.options[event.target.selectedIndex].id;
+            category = event.target.options[event.target.selectedIndex].text;
+            checkRequiredFieldsOfNewEntry();
+        });
+        newSubCategoryDropdown.addEventListener('change', event => {
+            categoryID = event.target.options[event.target.selectedIndex].id;
+            subCategory = event.target.options[event.target.selectedIndex].text;
+            checkRequiredFieldsOfNewEntry();
+        });
+        newCheckNoInput.addEventListener('input', event => {
+            checkNo = event.target.value;
+        });
+        newDescriptionInput.addEventListener('input', event => {
+            description = event.target.value;
+        });
+        newReceiptInput.addEventListener('input', event => {
+            receipt = event.target.value;
+        });
+
+    }
+
+    async function saveNewAccount() {
+        const amountType = document.getElementById("expenseRadio").checked ? "E" : "D";
+        if (attachmentArray == undefined || attachmentArray.length == 0) {
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, null,null, receipt, BtnName, regId);
+            const { insertAccountResult } = result;
+            if (insertAccountResult.registerId != null) {
+                ConsumerFinances.loadConsumerFinanceLanding();
+            }
+        }
+        else {
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId);
+            const { insertAccountResult } = result;
+
+            if (insertAccountResult.registerId != null) {
+                ConsumerFinances.loadConsumerFinanceLanding();
+            }
+        }
+    }
+
+    async function deleteAccount() {
+        await ConsumerFinancesAjax.deleteConsumerFinanceAccountAsync(regId);
+        ConsumerFinances.loadConsumerFinanceLanding();
+    }
+
+    // Populate the Account DDL 
+    async function populateAccountDropdown() {
+        const {
+            getActiveAccountResult: accounts,
+        } = await ConsumerFinancesAjax.getActiveAccountAsync();
+        let data = accounts.map((account) => ({
+            id: account.accountId,
+            value: account.accountName,
+            text: account.accountName
+        }));
+        data.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("newAccountDropdown", data, account);
+    }
+
+    async function populatePayeeDropdown() {
+        const {
+            getPayeesResult: Payees,
+        } = await ConsumerFinancesAjax.getPayeesAsync();
+        let data = Payees.map((payees) => ({
+            id: payees.CategoryID,
+            value: payees.Description,
+            text: payees.Description
+        }));
+        data.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("newPayeeDropdown", data, payee);
+    }
+
+    async function populateCategoryDropdown(categoryID) {
+        const {
+            getCatogoriesResult: Category,
+        } = await ConsumerFinancesAjax.getCategoriesAsync(categoryID);
+        let data = Category.map((category) => ({
+            id: category.CategoryID,
+            value: category.CategoryDescription,
+            text: category.CategoryDescription
+        }));
+        data.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("newCategoryDropdown", data, category);
+    }
+
+    async function populateSubCategoryDropdown(categoryID) {
+        const {
+            getSubCatogoriesResult: SubCategory,
+        } = await ConsumerFinancesAjax.getSubCategoriesAsync(categoryID);
+        let data = SubCategory.map((subCategory) => ({
+            id: subCategory.CategoryID,
+            value: subCategory.SubCategoryDescription,
+            text: subCategory.SubCategoryDescription
+        }));
+        data.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("newSubCategoryDropdown", data, subCategory);
+        checkRequiredFieldsOfNewEntry();
+    }
+
+
+    // build payee pop-up used for adding payee information
+    async function buildNewPayeePopUp() {
+
+        payeeId = '';
+        payeeName = '';
+        payeeaddress1 = '';
+        payeeaddress2 = '';
+        payeecity = '';
+        payeestate = 'OH';
+        payeezipcode = '';
+
+
+        let addPayeePopup = POPUP.build({
+            header: "Add payee",
+            hideX: true,
+            id: "addPayeePopup"
+        });
+
+        payeeInput = input.build({
+            id: 'payeeInput',
+            label: 'Name',
+            value: (payeeName) ? payeeName : '',
+        });
+
+        address1Input = input.build({
+            id: 'address1Input',
+            label: 'Address 1',
+            value: (payeeaddress1) ? payeeaddress1 : '',
+
+        });
+
+        address2Input = input.build({
+            label: 'Address 2',
+            value: (payeeaddress2) ? payeeaddress2 : '',
+        });
+
+        cityInput = input.build({
+            id: 'cityInput',
+            label: 'City',
+            value: (payeecity) ? payeecity : '',
+        });
+
+        stateInput = input.build({
+            id: 'stateInput',
+            label: 'State',
+            attributes: [{ key: 'maxlength', value: '2' }],
+            value: (payeestate) ? payeestate : '',
+
+        });
+
+        zipcodeInput = input.build({
+            id: 'zipcodeInput',
+            label: 'Zip Code',
+            type: 'text',
+            style: 'secondary',
+            classNames: ['zip'],
+            attributes: [{ key: 'maxlength', value: '9' }],
+            value: (payeezipcode) ? payeezipcode : '',
+        });
+
+        saveBtn = button.build({
+            id: "addpayeeSaveBtn",
+            text: "save",
+            type: "contained",
+            style: "secondary",
+            classNames: 'disabled',
+            callback: () => addPayeePopupDoneBtn()
+        });
+
+        cancelBtn = button.build({
+            id: "addpayeeCancelBtn",
+            text: "cancel",
+            type: "outlined",
+            style: "secondary",
+            callback: () => POPUP.hide(addPayeePopup)
+        });
+
+        let btnWrap = document.createElement("div");
+        btnWrap.classList.add("btnWrap");
+        btnWrap.appendChild(saveBtn);
+        btnWrap.appendChild(cancelBtn);
+
+        addPayeePopup.appendChild(payeeInput);
+        addPayeePopup.appendChild(address1Input);
+        addPayeePopup.appendChild(address2Input);
+        addPayeePopup.appendChild(cityInput);
+        addPayeePopup.appendChild(stateInput);
+        addPayeePopup.appendChild(zipcodeInput);
+        addPayeePopup.appendChild(btnWrap);
+
+        popUpEventHandlers();
+
+        POPUP.show(addPayeePopup);
+
+        checkRequiredFields();
+
+    }
+
+    function popUpEventHandlers() {
+
+        payeeInput.addEventListener('input', event => {
+            payeeName = event.target.value;
+            checkRequiredFields();
+
+        });
+
+        address1Input.addEventListener('input', event => {
+            payeeaddress1 = event.target.value;
+            checkRequiredFields();
+        });
+
+        address2Input.addEventListener('input', event => {
+            payeeaddress2 = event.target.value;
+            checkRequiredFields();
+        });
+
+        cityInput.addEventListener('input', event => {
+            payeecity = event.target.value;
+            checkRequiredFields();
+        });
+
+        stateInput.addEventListener('input', event => {
+            payeestate = event.target.value;
+            checkRequiredFields();
+        });
+
+        zipcodeInput.addEventListener('input', event => {
+            payeezipcode = event.target.value;
+            checkRequiredFields();
+        });
+
+    }
+
+    function checkRequiredFields() {
+
+        var payee = payeeInput.querySelector('#payeeInput');
+        var address1 = address1Input.querySelector('#address1Input');
+        var city = cityInput.querySelector('#cityInput');
+        var state = stateInput.querySelector('#stateInput');
+        var zipcode = zipcodeInput.querySelector('#zipcodeInput');
+
+        if (payee.value === '') {
+            payeeInput.classList.add('errorPopup');
+        } else {
+            payeeInput.classList.remove('errorPopup');
+        }
+
+        if (address1.value === '') {
+            address1Input.classList.add('errorPopup');
+        } else {
+            address1Input.classList.remove('errorPopup');
+        }
+
+        if (city.value === '') {
+            cityInput.classList.add('errorPopup');
+        } else {
+            cityInput.classList.remove('errorPopup');
+        }
+
+        if (state.value === '') {
+            stateInput.classList.add('errorPopup');
+        } else {
+            stateInput.classList.remove('errorPopup');
+        }
+
+        if (zipcode.value === '') {
+            zipcodeInput.classList.add('errorPopup');
+        } else {
+            zipcodeInput.classList.remove('errorPopup');
+        }
+
+        setBtnStatus();
+    }
+
+    function setBtnStatus() {
+        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup'));
+        if (hasErrors.length !== 0) {
+            saveBtn.classList.add('disabled');
+            return;
+        } else {
+            saveBtn.classList.remove('disabled');
+        }
+
+    }
+
+    async function addPayeePopupDoneBtn() {
+        const result = await ConsumerFinancesAjax.insertPayeeAsync(payeeName, payeeaddress1, payeeaddress2, payeecity, payeestate, payeezipcode);
+        const { insertPayeeResult } = result;
+        let regionID = insertPayeeResult.RegionID;
+        POPUP.hide(addPayeePopup);
+        populatePayeeDropdown();
+    }
+
+    return {
+        init,
+        buildNewEntryForm,
+        populatePayeeDropdown,
+        populateCategoryDropdown,
+        populateAccountDropdown,
+    };
+})(); 

@@ -99,6 +99,9 @@ const csSignature = (() => {
     signatureWrap.appendChild(signatureTitle);
 
     if (selectedMemberData.description) {
+      const innerWrap = document.createElement('div');
+      innerWrap.classList.add('innerWrap');
+
       const attachmentDesc = document.createElement('p');
       attachmentDesc.innerText = selectedMemberData.description;
       attachmentDesc.classList.add('signAttachmentDesc');
@@ -138,14 +141,36 @@ const csSignature = (() => {
         form.submit();
         form.remove();
       });
+      innerWrap.appendChild(attachmentDesc);
 
-      signatureWrap.appendChild(attachmentDesc);
+      // signature date
+      let signDate = UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned));
+      const date = input.build({
+        type: 'date',
+        label: 'Signature Date',
+        style: 'secondary',
+        value: signDate,
+        classNames: 'disabled',
+      });
+      if (
+        selectedMemberData.signatureType === 'In-Person' ||
+        selectedMemberData.signatureType === '2'
+      ) {
+        innerWrap.appendChild(date);
+      }
+
+      signatureWrap.appendChild(innerWrap);
       return signatureWrap;
     } else if (
       selectedMemberData.signatureType === 'In-Person' ||
       selectedMemberData.signatureType === '2'
     ) {
       selectedMemberData.hasWetSignature = false;
+
+      const innerWrap = document.createElement('div');
+      innerWrap.classList.add('innerWrap');
+
+      // signature attachment
       const attachmentInput = document.createElement('input');
       attachmentInput.type = 'file';
       attachmentInput.classList.add('input-field__input', 'attachmentInput');
@@ -169,7 +194,36 @@ const csSignature = (() => {
         await Promise.all([attPromise]);
       });
 
-      signatureWrap.appendChild(attachmentInput);
+      // signature date
+      let signDate = selectedMemberData.dateSigned
+        ? UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned))
+        : null;
+      const date = input.build({
+        type: 'date',
+        label: 'Signature Date',
+        style: 'secondary',
+        value: signDate ? signDate : '',
+        callback: e => {
+          selectedMemberData.dateSigned = e.target.value;
+
+          if (!selectedMemberData.dateSigned) {
+            date.classList.add('error');
+          } else {
+            date.classList.remove('error');
+          }
+
+          checkSignautrePopupForErrors();
+        },
+      });
+
+      if (!signDate) {
+        date.classList.add('error');
+      }
+
+      innerWrap.appendChild(attachmentInput);
+      innerWrap.appendChild(date);
+
+      signatureWrap.appendChild(innerWrap);
 
       return signatureWrap;
     } else {
@@ -195,12 +249,6 @@ const csSignature = (() => {
       sigCanvas.classList.add('evvCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
-      // sigCanvas.addEventListener('touchend', () => {
-      //   console.log('touchend');
-      // });
-      // sigCanvas.addEventListener('mouseup', () => {
-      //   console.log('mouseup');
-      // });
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;
@@ -503,7 +551,6 @@ const csSignature = (() => {
     //* PROMPT
     //*------------------------------
     const prompt = document.createElement('p');
-    //prompt.innerText = `By signing below, I agree that this plan reflects actions, services, and supports as requested by the person listed. As a provider, I agree to the services listed in this plan for which I am named a responsible party. I understand that I may revoke my consent at any time verbally or in writing in accordance with DODD Rules.`;
     prompt.innerText = `I agree this plan reflects actions, services, and supports requested by me and may be sent to those providing services to me.`;
 
     prompt.style.marginBottom = '14px';
@@ -535,7 +582,7 @@ const csSignature = (() => {
           if (!selectedMemberData.description || selectedMemberData.description === '') {
             saveFromSignature();
           } else {
-            showWarningPopup(sigPadData);
+            showWarningPopup();
           }
         } else {
           if (sigPadData === emptySignatureDataURL || sigPadData === '') {

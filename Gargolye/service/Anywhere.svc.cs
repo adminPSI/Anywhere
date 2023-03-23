@@ -34,6 +34,7 @@ using Anywhere.service.Data.AssessmentReOrderRows;
 using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.SimpleMar;
+using Anywhere.service.Data.ConsumerDemographics;
 using Newtonsoft.Json.Linq;
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.DocumentConversion;
@@ -43,6 +44,10 @@ using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttach
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
 using static Anywhere.service.Data.AnywhereWorker;
+using Anywhere.service.Data.ResetPassword;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
+using Anywhere.service.Data.ConsumerFinances;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 
 namespace Anywhere
 {
@@ -97,8 +102,9 @@ namespace Anywhere
         CaseNoteReportBuilderWorker cnReportWorker = new CaseNoteReportBuilderWorker();
         SignInUser siu = new SignInUser();
         DisplayPlanReportAndAttachments dpra = new DisplayPlanReportAndAttachments();
-        
-
+        ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
+        ConsumerFinancesWorker cf = new ConsumerFinancesWorker();
+        DemographicsWoker cdw = new DemographicsWoker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -405,6 +411,17 @@ namespace Anywhere
             return anywhereWorker.getConsumerOrganizationId(peopleId);
         }
 
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getCaseManagersfromOptionsTable(string token)
+        {
+            return anywhereWorker.getCaseManagersfromOptionsTable(token);
+        }
+
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
+        {
+            return anywhereWorker.getConsumerswithSaleforceIds(token);
+        }
+
+
         public string updateCaseNotesReviewDays(string token, string updatedReviewDays)
         {
             return dg.updateCaseNotesReviewDays(token, updatedReviewDays);
@@ -521,6 +538,11 @@ namespace Anywhere
         public RosterWorker.ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
+        }
+
+        public string updateDemographicsRecord(string consumerId, string field, string newValue, string applicationName)
+        {
+            return cdw.updateDemographicsRecord(consumerId, field, newValue, applicationName);
         }
 
         public string setupPasswordResetEmail(string userName)
@@ -871,11 +893,11 @@ namespace Anywhere
         {
             return singleEntryWorker.getAdminSingleEntryLocationsJSON(token);
         }
-        
+
 
         public string adminUpdateSingleEntryStatus(string token, string singleEntryIdString, string newStatus, string userID, string rejectionReason)
         {
-            return dg.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
+            return singleEntryWorker.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
         }
 
         public string changeFromPSI(string token, string userID)
@@ -1553,6 +1575,12 @@ namespace Anywhere
             return iTW.saveUpdateITConsumerReviews(token, itConsumerReviewIdArray, consumerInvolvedId, reviewedByArray, reviewedDateArray, noteArray);
         }
 
+        // NEW - Incident Tracking Update Incident View By User
+        public string updateIncidentViewByUser(string token, string incidentId, string userId)
+        {
+            return iTW.updateIncidentViewByUser(token, incidentId, userId);
+        }
+
         //Incident Tracking Consumer Injuries specific alters
         public string itDeleteConsumerInjuries(string token, string itConsumerInjuryId)
         {
@@ -1632,6 +1660,11 @@ namespace Anywhere
         public AnywhereAssessmentWorker.ServiceVendors[] getPaidSupportsVendors(string fundingSourceName, string serviceName, string areInSalesForce)
         {
             return aAW.getPaidSupportsVendors(fundingSourceName, serviceName, areInSalesForce);
+        }
+
+        public AnywhereAssessmentWorker.ActiveVendors[] getAllActiveVendors(string token)
+        {
+            return aAW.getAllActiveVendors(token);
         }
 
 
@@ -2288,6 +2321,10 @@ namespace Anywhere
         {
             return ssw.updatePaidSupports(token, paidSupportsId, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, serviceNameOther);
         }
+        public string updateMultiPaidSupports(string token, string paidSupportsId, string providerId, string beginDate, string endDate)
+        {
+            return ssw.updateMultiPaidSupports(token, paidSupportsId, providerId, beginDate, endDate);
+        }
 
         public string insertPaidSupports(string token, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
         {
@@ -2358,6 +2395,11 @@ namespace Anywhere
             return psw.getSignatures(token, assessmentId);
         }
 
+        public PlanSignatureWorker.PlanSignatures[] getTeamMemberBySalesForceId(string salesForceId)
+        {
+            return psw.getTeamMemberBySalesForceId(salesForceId);
+        }
+
         public PlanSignatureWorker.TeamMemberFromState[] getTeamMemberListFromState(long peopleId)
         {
             return psw.getTeamMemberListFromState(peopleId);
@@ -2366,6 +2408,11 @@ namespace Anywhere
         public PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
         {
             return psw.getStateGuardiansforConsumer(peopleId);
+        }
+
+        public string assignStateCaseManagertoConsumers(string caseManagerId, PlanSignatureWorker.AssignStateConsumer[] consumers)
+        {
+            return psw.assignStateCaseManagertoConsumers(caseManagerId, consumers);
         }
 
         public string setSalesForceIdForTeamMemberUpdate(string peopleId, string salesForceId)
@@ -2407,18 +2454,18 @@ namespace Anywhere
         public PlanSignatureWorker.SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
-               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType)
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId)
         {
             return psw.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact, 
                                 csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
                                 csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, consumerId, createRelationship, salesforceId,
-                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType);
+                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType, vendorId);
         }
         public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
-                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType)
+                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId)
         {
             return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, consumerId,
-                                         hasWetSignature,  description,  attachmentType,  attachment,  section,  questionId, assessmentId,signatureType);
+                                         hasWetSignature,  description,  attachmentType,  attachment,  section,  questionId, assessmentId,signatureType, dateSigned, vendorId);
         }
         public string updatePlanSignatureOrder(long assessmentId, long signatureId, int newPos)
         {
@@ -2598,6 +2645,16 @@ namespace Anywhere
             return fw.getConsumerForms(token, userId, consumerId, hasAssignedFormTypes);
         }
 
+        public string checkFormsLock(string formId, string userId)
+        {
+            return fw.checkFormsLock(formId, userId);
+        }
+
+        public void removeFormsLock(string formId, string userId)
+        {
+            fw.removeFormsLock(formId, userId);
+        }
+
         //OOD Module
 
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
@@ -2645,9 +2702,9 @@ namespace Anywhere
             return Ow.getActiveServiceCodes(token, serviceCodeType);
         }
 
-        public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate)
+        public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string serviceType)
         {
-            return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate);
+            return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate, serviceType);
         }
 
         public OODWorker.ServiceCode[] getConsumerServiceCodes(string consumerId, string serviceDate, string token)
@@ -2665,6 +2722,22 @@ namespace Anywhere
             return Ow.getOutcomes(token);
         }
 
+        public OODWorker.OODDDLItem[] getContactMethods(string token)
+        {
+            return Ow.getContactMethods(token);
+        }
+
+        public OODWorker.OODDDLItem[] getIndicators(string token)
+        {
+            return Ow.getIndicators(token);
+        }
+
+        public OODWorker.OODDDLItem[] getPositions(string consumerId, string token)
+        {
+            return Ow.getPositions(consumerId, token);
+        }
+
+
         public OODWorker.Form4MonthlyPlacementEditData[] getForm4MonthlyPlacementEditDataJSON(string token, string caseNoteId)
         {
             return Ow.getForm4MonthlyPlacementEditDataJSON(token, caseNoteId);
@@ -2680,9 +2753,9 @@ namespace Anywhere
             return Odg.insertForm4MonthlyPlacementEditData(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, employer, contactType, jobSeekerPresent, outcome, TSCNotified, bilingualSupplement, notes, caseManagerId, userId, serviceId, referenceNumber, application, interview);
         }
 
-        public string deleteForm4MonthlyPlacementEditData(string token, string caseNoteId)
+        public string deleteOODFormEntry(string token, string caseNoteId)
         {
-            return Ow.deleteForm4MonthlyPlacementEditData(token, caseNoteId);
+            return Ow.deleteOODFormEntry(token, caseNoteId);
         }
 
         public OODWorker.Form4MonthlySummary[] getForm4MonthlySummaryJSON(string token, string emReviewId)
@@ -2700,10 +2773,41 @@ namespace Anywhere
             return Odg.insertForm4MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emEmploymentGoal, emReferralQuestions, emIndivInputonSearch, emPotentialIssueswithProgress, emPlanGoalsNextMonth, emNumberofConsumerContacts, emNumberEmployerContactsbyConsumer, emNumberEmployerContactsbyStaff, emNumberMonthsJobDevelopment, userId, serviceId);
         }
 
-        public string deleteForm4MonthlySummary(string token, string emReviewId)
+        public string deleteFormMonthlySummary(string token, string emReviewId)
         {
-            return Ow.deleteForm4MonthlySummary(token, emReviewId);
+            return Ow.deleteFormMonthlySummary(token, emReviewId);
         }
+
+        public OODWorker.Form8CommunityBasedAssessment[] getForm8CommunityBasedAssessment(string token, string caseNoteId)
+        {
+            return Ow.getForm8CommunityBasedAssessment(token, caseNoteId);
+        }
+
+        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
+        {
+            return Odg.updateForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, position, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId);
+        }
+
+        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            return Odg.insertForm8CommunityBasedAssessment(token, consumerId, caseNoteId, serviceDate, startTime, endTime, SAMLevel, position, contactMethod, behavioralIndicators, jobTaskQualityIndicators, jobTaskQuantityIndicators, narrative, interventions, userId, serviceId, referenceNumber, caseManagerId);
+        }
+
+        public OODWorker.Form8MonthlySummary[] getForm8MonthlySummary(string token, string emReviewId)
+        {
+            return Ow.getForm8MonthlySummary(token, emReviewId);
+        }
+
+        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId)
+        {
+            return Odg.updateForm8MonthlySummary(token, consumerId, emReviewId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId);
+        }
+
+        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId)
+        {
+            return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment,emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
+        }
+
 
         //Case note reporting
         public CaseNoteReportBuilderWorker.ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,
@@ -2724,7 +2828,11 @@ namespace Anywhere
             return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
         }
 
-        public void addSelectedAttachmentsToReport(System.IO.Stream testInput)
+        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
+        {
+            return dpra.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
+        }
+            public void addSelectedAttachmentsToReport(System.IO.Stream testInput)
         {
             string token;
             string userId;
@@ -2741,12 +2849,11 @@ namespace Anywhere
             string fullInput = reader.ReadToEnd();
             token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
             userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
-            //Nathan add new variable here. Make sure to increment first number in brackets at end
-            doddFlag = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
-            assessmentID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
-            versionID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
-            extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
-            isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            assessmentID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            versionID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+
             string[] words = fullInput.Split('&');
             var index = Array.FindIndex(words, row => row.Contains("planAttachmentIds"));
             string attId = words[index];
@@ -2766,7 +2873,7 @@ namespace Anywhere
             attIdThree = attIdThree.Replace("%2C", ",");
             sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp), doddFlag);
+            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp));
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
@@ -2786,24 +2893,23 @@ namespace Anywhere
             cnReportWorker.viewCaseNoteReport(token, reportScheduleId);
         }
 
-
-        public string oneSpanBuildSigners(string token, string packageName, string documentName, string filePath, string[] emails, string[] names)
+        public string oneSpanGetSignedDocuments(string token, string packageId, string assessmentID)
         {
             //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "", "686614946776981", "1", "false", true);
-            return osw.oneSpanBuildSigners(packageName, documentName, filePath, emails, names, null);
+            return osw.oneSpanGetSignedDocuments(token, packageId, assessmentID);
         }
 
-        public string oneSpanGetSignedDocuments(string token, string packageId)
+        public OneSpanWorker.DocumentStatus[] oneSpanCheckDocumentStatus(string token, string assessmentId)
         {
-            //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "", "686614946776981", "1", "false", true);
-            return osw.oneSpanGetSignedDocuments(packageId);
+            return osw.oneSpanCheckDocumentStatus(token, assessmentId);
         }
 
-        //public string oneSpanBuildSigners(string token, string userId, string assessmentID, string versionID, bool isp)
-        //{
-        //    MemoryStream ms = getPlanAssessmentReport(token, userId, assessmentID, versionID, "false", isp);
-        //    return osw.oneSpanBuildSigners(ms);
-        //}
+        public string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp)
+        {
+            //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "crystal", "466", "1", "false", true);
+            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp);
+            return osw.oneSpanBuildSigners(token, assessmentID, ms);
+        }
 
         //Defaults
         public DefaultsWorker.InvalidDefaults[] getInvalidDefaults(string token)
@@ -2941,6 +3047,81 @@ namespace Anywhere
                 return false;
             }
             return true;
+        }
+
+        public ResetPasswordWorker.ActiveInactiveUser[] getActiveInactiveUserDateJSON(string token, string isActive)
+        {
+            return resetPasswordWorker.getActiveInactiveUserDateJSON(token, isActive);
+        }
+
+        public string updateActiveInactiveUserDateJSON(string token, string isActive ,string userId)
+        {
+            return resetPasswordWorker.updateActiveInactiveUserDateJSON(token, isActive , userId);
+        }
+
+        public string getUserCredDateJSON(string token, string userId)
+        {
+            return dg.getUserCredJSON(userId);
+        }
+
+        public string resetPassword(string userId, string hash, string newPassword, string changingToHashPassword)
+        {
+            return dg.resetPassword(userId, hash, newPassword, changingToHashPassword);
+        }
+
+        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment)
+        {
+            return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment);
+        }
+
+        public ActiveAccount[] getActiveAccount(string token)
+        {
+            return cf.getActiveAccount(token);
+        }
+
+        public Payees[] getPayees(string token, string userId)
+        {
+            return cf.getPayees(token, userId);
+        }
+
+        public Category[] getCatogories(string token, string categoryID)
+        {
+            return cf.getCatogories(token, categoryID);
+        }
+
+        public SubCategory[] getSubCatogories(string token, string categoryID)
+        {
+            return cf.getSubCatogories(token, categoryID);
+        }
+
+        public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId)
+        {
+            return cf.insertPayee(token, payeeName, address1, address2, city, state, zipcode, userId);
+        }
+
+        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId)
+        {
+            return cf.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, userId, eventType, regId);
+        }
+
+        public ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId)
+        {
+            return cf.getAccountEntriesById(token, registerId);
+        }
+
+        public string deleteConsumerFinanceAccount(string token, string registerId)
+        {
+            return cf.deleteConsumerFinanceAccount(token, registerId);
+        }
+
+        public string addCFAttachment(string token, string attachmentType, string attachment)
+        {
+            return cf.addCFAttachment(token, attachmentType, attachment);
+        }
+
+        public ConsumerFinancesWorker.CFAttachmentsList[] getCFAttachmentsList(string token, string regId)
+        {
+            return cf.getCFAttachmentsList(token, regId);
         }
 
     }

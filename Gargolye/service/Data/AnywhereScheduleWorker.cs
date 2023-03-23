@@ -1,11 +1,15 @@
 ﻿using Anywhere.Data;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using System.Windows.Input;
+using System.Xml;
 
 namespace Anywhere.service.Data
 {
@@ -220,22 +224,37 @@ namespace Anywhere.service.Data
         public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision)
         {
             string[] dateArr = daysOffIdString.Split(',');
+            string response = string.Empty;
+            Boolean returnOverlapMessage = false;
 
             foreach (var dayOffId in dateArr)
             {
-                dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
+                response = dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
                 ////Notification
                 //dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
 
+                if (response.Contains("is not unique: Primary key value"))
+                {
+                    returnOverlapMessage = true;
+                } else
+                {
+                    dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
+                }
             }
+
             //Notification
-            foreach (var dayOffId in dateArr)
-            {
-                dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
-                break;
+            //foreach (var dayOffId in dateArr)
+            //{
+            //    dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
+            //    break;
+            //}
+
+            if (returnOverlapMessage) {
+                return "OverlapFound.";
+            } else { 
+                return "Success";
             }
             
-            return "Success";
         }
 
         public class AllScheduleData

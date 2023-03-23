@@ -9,7 +9,7 @@ namespace Anywhere.service.Data
 {
     public class SingleEntryWorker
     {
-        DataGetter dg = new DataGetter();
+        DataGetter dg = new DataGetter(); 
         JavaScriptSerializer js = new JavaScriptSerializer();
 
         public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
@@ -252,6 +252,35 @@ namespace Anywhere.service.Data
             return consumersPresentObj;
         }
 
+        public string adminUpdateSingleEntryStatus(string token, string singleEntryIdString, string newStatus, string userID, string rejectionReason)
+        {
+            // Update the AA_Single_Entry table
+            dg.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
+
+            // If string has more than one id, the string will be split into an array containing each id
+            string[] singleEntryIdArr = singleEntryIdString.Split(',');
+            char newStatusRejected = 'R';
+
+            // Looks for rejection status and sends out notification 
+            if (newStatus == newStatusRejected.ToString())
+            {
+                foreach (var singleEntryId in singleEntryIdArr)
+                {
+                    try
+                    {
+                        // Converts the id into a double to be used in procedure
+                        double singleEntryIdDouble = double.Parse(singleEntryId);
+                        dg.timeEntryRejectionNotification(token, singleEntryId);
+                    }
+                    catch (Exception ex)
+                    {
+                        return "failed";
+                    }
+                }
+            }
+            return "success";
+        }
+
         public SingleEntryEvvReasonCodes[] getSingleEntryEvvReasonCodesJSON(string token)
         {
             string evvReasonCodeString = dg.getSingleEntryEVVReasonCodeJSON(token);
@@ -346,6 +375,12 @@ namespace Anywhere.service.Data
             public string Transportation_Units { get; set; }
             public string Number_Consumers_Present { get; set; }
             public string destination { get; set; }
+            public string approvedUser { get; set; }
+            public string rejectedUser { get; set; }
+            public string submittedUser { get; set; }
+            public string approved_time { get; set; }
+            public string submit_date { get; set; }
+            public string rejected_time { get; set; }
         }        
 
         public class SingleEntryById
@@ -379,6 +414,12 @@ namespace Anywhere.service.Data
             public string licensePlateNumber { get; set; }
             public string community { get; set; }
             public string rejectionReason { get; set; }
+            public string approvedUser { get; set; }
+            public string rejectedUser { get; set; }
+            public string submittedUser { get; set; }
+            public string approved_time { get; set; }
+            public string submit_date { get; set; }
+            public string rejected_time { get; set; }
         }
 
         public class SEFilteredListResults
@@ -406,6 +447,7 @@ namespace Anywhere.service.Data
             public string approvedUser { get; set; }
             public string rejectedUser { get; set; }
             public string submittedUser { get; set; }
+            public string keyTimes { get; set; }
         }        
 
         public class AdminSELocations

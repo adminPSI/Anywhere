@@ -137,7 +137,7 @@ $.session.dsLocationHistoryValue = 0;
 $.session.initialTimeOut = '';
 $.session.initialTimeIn = '';
 $.session.singleLoadedConsumerId = '';
-$.session.passwordSpecialCharacters = '';
+$.session.passwordSpecialCharacters = '!#$%*-?@_+'; 
 $.session.daysBackGoalsEdit = '';
 $.session.singleLoadedConsumerName = '';
 $.session.serviceStartDate = '';
@@ -155,6 +155,7 @@ $.session.singleEntryPermission = '';
 $.session.workshopPermission = '';
 $.session.workshopPermission = '';
 $.session.intellivuePermission = '';
+$.session.passwordResetPermission = '';
 // $.session.formsPermission = '';
 // $.session.OODPermission = '';
 $.session.selectedConsumerIdForGoalsDateBack = '';
@@ -237,6 +238,7 @@ $.session.hideAllScheduleButton = false;
 $.session.planUpdate = false;
 $.session.planView = false;
 $.session.planInsertNewTeamMember = false;
+$.session.planAssignCaseload = false;
 $.session.planSignatureUpdateDOB = false;
 $.session.planSignatureUpdateBuildingNumber = false;
 // Transportation
@@ -265,7 +267,7 @@ $.session.OODView = false;
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
-$.session.version = '2022.5';
+$.session.version = '2023.1';
 //State Abbreviation
 $.session.stateAbbreviation = '';
 // temp holder for the device GUID when logging in
@@ -539,6 +541,9 @@ function setSessionVariables() {
       if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
         $.session.planInsertNewTeamMember = true;
       }
+      if (tmpPerm == 'Assign Case Load' || $.session.isPSI == true) {
+        $.session.planAssignCaseload = true;
+      }
       if (tmpPerm == 'Update DOB' || $.session.isPSI == true) {
         $.session.planSignatureUpdateDOB = true;
       }
@@ -739,7 +744,7 @@ function checkforErrors(xmlReturn) {
 
 function setCookieOnFail(xmlReturn) {
   if ($.loadedApp === 'plan' && $.loadedAppPage === 'planAssessment') {
-    assessment.showSaveWarning(() => {
+    assessment.autoSaveAssessment(() => {
       createCookie('psi', xmlReturn, 1);
       $.session.Token = '';
       if (xmlReturn.indexOf('Password has expired') > -1) {
@@ -1556,6 +1561,11 @@ function disableModules() {
     //Leave module on
   } else {
     $('#OODsettingsdiv').css('display', 'none');
+  }
+  if ($.session.passwordResetPermission = 'Anywhere') {//
+      //Leave module on
+  } else {
+      $('#Adminsettingdiv').css('display', 'none');
   }
   if ($.session.UserId === 'ash' || $.session.anywherePlanPermission == 'Anywhere_Plan') {
     //Leave module on

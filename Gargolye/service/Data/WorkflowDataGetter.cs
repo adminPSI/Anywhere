@@ -885,6 +885,24 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string updateWorkflowStepDocumentsenttoDODD(string workflowstepdocId, string senttoDODD)
+        {
+            try
+            {
+                logger.debug("updateWorkflowStepDocument ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@workflowstepdocId", DbType.String, workflowstepdocId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@senttoDODD", DbType.String, senttoDODD);
+                // returns the documentId of the document that was just inserted
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_UpdateWorkflowStepDocumentsenttoDODD(?, ?)", args).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_WF_UpdateWorkflowStepDocumentsenttoDODD(" + workflowstepdocId + "," + senttoDODD +  ")");
+                throw ex;
+            }
+        }
+
         public string insertWorkflowStepEvent(string stepId, string eventId, string eventParameter, string eventDescription, DistributedTransaction transaction)
         {
             try

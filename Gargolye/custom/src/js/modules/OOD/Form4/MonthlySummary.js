@@ -46,6 +46,7 @@ let reviewStartDate;
 let reviewEndDate;
 
 let formReadOnly = false;
+const SERVICETYPE = 'T1'; // Form 4
 
 let OODMonthlySummariesTable; // To be added in future release
 
@@ -425,7 +426,7 @@ let OODMonthlySummariesTable; // To be added in future release
 
           const {
             getConsumerReferenceNumbersResult: referencenumbers,
-          } = await OODAjax.getConsumerReferenceNumbersAsync(consumerId, reviewStartDate, reviewEndDate);
+          } = await OODAjax.getConsumerReferenceNumbersAsync(consumerId, reviewStartDate, reviewEndDate, SERVICETYPE);
         // const templates = WorkflowViewerComponent.getTemplates();
         let data = referencenumbers.map((referencenumber) => ({
           id: referencenumber.referenceNumber, 
@@ -883,8 +884,8 @@ let OODMonthlySummariesTable; // To be added in future release
               icon: 'checkmark',
               callback: async function() {
                         POPUP.hide(deletepopup);
-                         let result = await OODAjax.deleteForm4MonthlySummaryAsync(emReviewId);  
-                         if (result.deleteForm4MonthlySummaryResult === "1"){
+                         let result = await OODAjax.deleteFormMonthlySummaryAsync(emReviewId);  
+                         if (result.deleteFormMonthlySummaryResult === "1"){
                               OOD.loadOODLanding();                
                          }
               },

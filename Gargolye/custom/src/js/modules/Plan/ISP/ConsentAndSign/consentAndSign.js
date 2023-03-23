@@ -5,6 +5,7 @@ const planConsentAndSign = (() => {
   let effStartDate;
   let effEndDate;
   // DATA
+  let vendorData;
   let teamMemberData;
   let paidSupportProviders;
   let providerDropdownData;
@@ -61,6 +62,9 @@ const planConsentAndSign = (() => {
       ? true
       : false;
   }
+  function isTeamMemberGuardian(teamMember) {
+    return teamMember === 'Parent/Guardian' || teamMember === 'Guardian' ? true : false;
+  }
   function getNames() {
     return names;
   }
@@ -85,6 +89,7 @@ const planConsentAndSign = (() => {
       // sign/disent
       signature: selectedMemberData.signature,
       signatureType: selectedMemberData.signatureType,
+      dateSigned: selectedMemberData.dateSigned,
       dissentAreaDisagree: selectedMemberData.dissentAreaDisagree,
       dissentHowToAddress: selectedMemberData.dissentHowToAddress,
       // consent
@@ -102,7 +107,7 @@ const planConsentAndSign = (() => {
       csTechnology: selectedMemberData.csTechnology,
       // new
       contactId: selectedMemberData.contactId,
-      salesforceId: !selectedMemberData.salesforceId ? '' : selectedMemberData.salesforceId,
+      salesforceId: !selectedMemberData.salesForceId ? '' : selectedMemberData.salesForceId,
       peopleId: selectedMemberData.peopleId,
       buildingNumber: selectedMemberData.buildingNumber,
       dateOfBirth: UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateOfBirth)),
@@ -119,9 +124,13 @@ const planConsentAndSign = (() => {
       // ignore
       section: '',
       questionId: '0',
+      vendorId: selectedMemberData.vendorId,
     };
 
     let stuff = await consentAndSignAjax.insertTeamMember(data);
+
+    // triggers event listener for one span button
+    oneSpan.fireDataUpdateEvent(planId);
 
     // if first insert set global values
     const isMemberConsentable = isTeamMemberConsentable(selectedMemberData.teamMember);
@@ -170,6 +179,7 @@ const planConsentAndSign = (() => {
       signatureId: selectedMemberData.signatureId,
       signature: selectedMemberData.signature,
       signatureType: selectedMemberData.signatureType,
+      dateSigned: selectedMemberData.dateSigned,
       dissentAreaDisagree: selectedMemberData.dissentAreaDisagree,
       dissentHowToAddress: selectedMemberData.dissentHowToAddress,
       // new
@@ -191,7 +201,15 @@ const planConsentAndSign = (() => {
       // ignore
       section: '',
       questionId: '0',
+      vendorId: selectedMemberData.vendorId,
     };
+
+    // Gets the connection between the selected vendor name and the correct vendorId
+    const vendorRel = csVendor.getSelectedVendorRel(vendorData, data.name);
+    if (vendorRel !== undefined) {
+      data.vendorId = vendorRel.vendorId;
+    }
+    
     const data2 = {
       token: $.session.Token,
       signatureId: selectedMemberData.signatureId,
@@ -211,6 +229,9 @@ const planConsentAndSign = (() => {
     };
     await consentAndSignAjax.updateTeamMember(data);
     await consentAndSignAjax.updatePlanConsentStatements(data2);
+
+    // triggers event listener for one span button
+    oneSpan.fireDataUpdateEvent(planId);
 
     const isMemberConsentable = isTeamMemberConsentable(selectedMemberData.teamMember);
     if (teamMemberData.length > 1) {
@@ -247,6 +268,9 @@ const planConsentAndSign = (() => {
         token: $.session.Token,
         signatureId: id,
       });
+
+      // triggers event listener for one span button
+    oneSpan.fireDataUpdateEvent(planId);
 
       if (res === '[]') {
         pendingSave.fulfill('Deleted');
@@ -361,6 +385,7 @@ const planConsentAndSign = (() => {
 
     dropdown.populate(ssaDropdown, csChangeMindQuestionDropdownData, csChangeMindSSAPeopleId);
   }
+
   function populateDropdownVendor(vendorDropdown, csContactProviderVendorId) {
     //* VENDOR DROPDOWN
     const contactQuestionDropdownData = getVendorDropdownData();
@@ -433,6 +458,7 @@ const planConsentAndSign = (() => {
       token: $.session.Token,
       peopleid: selectedConsumer.id,
     });
+    // this is where the DDL gets its data -- people, user permissions, etc tables
     ssaDropdownData = await consentAndSignAjax.getPlanInformedConsentSSAs({
       token: $.session.Token,
     });
@@ -680,6 +706,7 @@ const planConsentAndSign = (() => {
     if (teamMemberData) {
       const tableData = teamMemberData.map(m => {
         const isSigned = m.dateSigned !== '';
+
         const teamMember = m.teamMember;
         const name = contactInformation.cleanName({
           lastName: m.lastName,
@@ -694,19 +721,26 @@ const planConsentAndSign = (() => {
         const tableOBJ = {
           values: [teamMember, name, participated, signatureType],
           id: `sig-${m.signatureId}`,
-          attributes: [{ key: 'data-signed', value: isSigned }],
-          onClick: e => {
-            csTeamMember.showPopup({
+          endIcon: icons.edit,
+          onClick: async e => {
+            if (m.teamMember.slice(-6) === 'Vendor') {
+              await csVendor.showPopup({
+                isNewMember: false,
+                isReadOnly: readOnly,
+                memberData: m,
+                vendorData: vendorData
+              });
+            } else {
+              await csTeamMember.showPopup({
               isNewMember: false,
               isReadOnly: readOnly,
               memberData: m,
             });
+            }
           },
         };
 
         if (signatureType !== 'No Signature Required') {
-          // show icon
-          tableOBJ.endIcon = icons.edit;
           // set icon callback
           tableOBJ.endIconCallback = e => {
             csSignature.showPopup({
@@ -715,6 +749,13 @@ const planConsentAndSign = (() => {
               memberData: m,
             });
           };
+          // set isSigned to true
+          tableOBJ.attributes = [{ key: 'data-signed', value: isSigned }];
+        } else {
+          tableOBJ.attributes = [
+            { key: 'data-signed', value: true },
+            { key: 'data-hideicon', value: true },
+          ];
         }
 
         return tableOBJ;
@@ -785,15 +826,95 @@ const planConsentAndSign = (() => {
             planYearStart: '',
             planYearEnd: '',
           },
+          currentTeamMemberData: teamMemberData,
         });
       },
     });
-    tableWrap.appendChild(addMemberBtn);
+
+    const addVendorBtn = button.build({
+      id: 'sig_addVendor',
+      text: 'ADD VENDOR',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        csVendor.showPopup({
+          isNewMember: true,
+          isReadOnly: readOnly,
+          memberData: {
+            teamMember: '',
+            name: '',
+            lastName: '',
+            participated: '',
+            // sign/disent
+            signature: '',
+            signatureType: '',
+            dissentAreaDisagree: '',
+            dissentHowToAddress: '',
+            dateSigned: '',
+            dissentDate: '',
+            // consent
+            csAgreeToPlan: '',
+            csChangeMind: '',
+            csChangeMindSSAPeopleId: csSSAPeopleIdGlobal,
+            csContact: '',
+            csContactInput: csContactInputGlobal,
+            csContactProviderVendorId: csrVendorIdGlobal,
+            csDueProcess: '',
+            csFCOPExplained: '',
+            csResidentialOptions: '',
+            csRightsReviewed: '',
+            csSupportsHealthNeeds: '',
+            csTechnology: '',
+            // new
+            contactId: '',
+            peopleId: '',
+            buildingNumber: '',
+            dateOfBirth: '',
+            planYearStart: '',
+            planYearEnd: '',
+          },
+          currentTeamMemberData: teamMemberData,
+          vendorData: vendorData
+        });
+      },
+    });
+
+    let sendDocumentToOneSpanBtn;
+    if($.session.oneSpan) {
+      sendDocumentToOneSpanBtn = oneSpan.buildSendDocumentToOneSpanBtn(planId);
+      
+    //initial check for digital signers to remove disabled class from one span button
+    teamMemberData.forEach(member => {
+      if (member.signatureType === '1') {
+        sendDocumentToOneSpanBtn.classList.remove('disabled');
+      }
+    })
+
+    // Checks for any changes in the team members and the signature type 
+    document.addEventListener("data-update", function(event) {
+      oneSpan.shouldBeDisabled(sendDocumentToOneSpanBtn, event.detail.data);
+    })
+    }
+    
+
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('topOutcomeWrap');
+
+    btnWrap.appendChild(addMemberBtn);
+    btnWrap.appendChild(addVendorBtn);
+
+    if($.session.oneSpan) {
+      btnWrap.appendChild(sendDocumentToOneSpanBtn);
+    }
+    
+
+    tableWrap.appendChild(btnWrap);
     tableWrap.appendChild(teamMemberTable);
 
     if (readOnly) {
       teamMemberTable.classList.add('disableDrag');
       addMemberBtn.classList.add('disabled');
+      addVendorBtn.classList.add('disabled');
     }
 
     // build it
@@ -821,6 +942,25 @@ const planConsentAndSign = (() => {
     });
   }
 
+  async function checkOneSpan() {
+    // Checks for new signed values or completed documents to retrieve
+      oneSpanDocumentStatus = await oneSpanAjax.oneSpanCheckDocumentStatus({
+        token: $.session.Token,
+        assessmentId: planId
+      });
+    
+    // Retrieves signers values and downloads document if all digital signers have signed
+      if (oneSpanDocumentStatus[0].signedStatus !== "") {
+        const oneSpanRetrieveData = {
+          token: $.session.Token,
+          packageId: oneSpanDocumentStatus[0].packageId,
+          assessmentID: planId
+        }
+      
+        await oneSpanAjax.oneSpanGetSignedDocuments(oneSpanRetrieveData);
+      }
+    }
+
   async function init(data) {
     planId = data.planId;
     readOnly = data.readOnly;
@@ -829,9 +969,15 @@ const planConsentAndSign = (() => {
     effEndDate = planDates.getEffectiveEndDate();
     selectedConsumer = plan.getSelectedConsumer();
 
+    await checkOneSpan();
+
     teamMemberData = await consentAndSignAjax.getConsentAndSignData({
       token: $.session.Token,
       assessmentId: planId,
+    });
+
+    vendorData = await consentAndSignAjax.getAllActiveVendors({
+      token: $.session.Token,
     });
 
     if (teamMemberData && teamMemberData.length !== 0) {
@@ -865,6 +1011,7 @@ const planConsentAndSign = (() => {
     getConsentGlobalValues,
     planStatusChange,
     isTeamMemberConsentable,
+    isTeamMemberGuardian,
     getTeamMembersHowTheyExistOnPlanNowWhileWeWaitOnDamnStateToMakeUpTheirMinds,
     getNames,
     getTeamMemberData,

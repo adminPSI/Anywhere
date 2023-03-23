@@ -147,214 +147,298 @@
   }
 }
 .moreMenuPopup {
-  &.error {
-    background: $bg-warning;
-  }
-
-  .closePopupBtn {
-    top: 12px;
-    right: 12px;
-  }
-  &__innerWrap {
-    display: flex;
-    flex-flow: row nowrap;
-    overflow: hidden;
-  }
-  &__menu {
-    flex-shrink: 0;
-    transform: translateX(-100%) !important;
-    width: 100%;
-    padding: 10px 0 0;
-
-    &.visible {
-      transform: translateX(0%) !important;
+    &.error {
+        background: $bg-warning;
     }
-  }
 
-  .screen {
-    flex-shrink: 0;
-    max-height: 500px;
-    overflow: auto;
-    padding: 10px 0 0 0;
-    width: 100%;
+    .closePopupBtn {
+        top: 12px;
+        right: 12px;
+    }
 
-    .successfulSavePopup {
-      &.error {
-        svg {
-          color: $font-error;
+    &__innerWrap {
+        display: flex;
+        flex-flow: row nowrap;
+        overflow: hidden;
+    }
+
+    &__menu {
+        flex-shrink: 0;
+        transform: translateX(-100%) !important;
+        width: 100%;
+        padding: 10px 0 0;
+
+        &.visible {
+            transform: translateX(0%) !important;
         }
-      }
-    }
-  }
-
-  #editDatesScreen {
-    transform: translateX(10%);
-    &.visible {
-      transform: translateX(-100%);
-    }
-  }
-  #updateStatusScreen {
-    .currentStatus {
-      display: flex;
-      margin: 0 0 20px;
-
-      p:first-child {
-        font-weight: $bold;
-        margin: 0 8px 0 0;
-      }
-    }
-    .btnWrap {
-      justify-content: space-between;
-
-      .btn {
-        flex-grow: 1;
-        width: auto;
-        max-width: 49%;
-        margin: 0;
-      }
-    }
-    &.visible {
-      transform: translateX(-200%);
-    }
-  }
-  #deleteScreen {
-    &.visible {
-      transform: translateX(-300%);
     }
 
-    .successDiv {
-      text-align: center;
+    .screen {
+        flex-shrink: 0;
+        max-height: 500px;
+        overflow: auto;
+        padding: 10px 0 0 0;
+        width: 100%;
 
-      p {
-        font-weight: $normal;
-      }
-
-      svg {
-        color: $secondary;
-        margin: 0 0 20px;
-        width: 100px;
-      }
+        .successfulSavePopup {
+            &.error {
+                svg {
+                    color: $font-error;
+                }
+            }
+        }
     }
 
-    .warningMessage {
-      color: $font-error;
-      font-weight: $bold;
-      margin: 0 0 20px;
-    }
-  }
-  #reactivateScreen {
-    &.visible {
-      transform: translateX(-400%);
+    #editDatesScreen {
+        transform: translateX(10%);
+
+        &.visible {
+            transform: translateX(-100%);
+        }
     }
 
-    .warningMessage {
-      color: $font-error;
-      font-weight: $bold;
-      margin: 0 0 20px;
-    }
-  }
-  #addWorkflowScreen {
-    &.visible {
-      transform: translateX(-500%);
-    }
+    #updateStatusScreen {
+        .currentStatus {
+            display: flex;
+            margin: 0 0 20px;
 
-    h2 {
-      margin: 0 0 10px;
-    }
+            p:first-child {
+                font-weight: $bold;
+                margin: 0 8px 0 0;
+            }
+        }
 
-    .workflowList {
-      margin: 0 0 10px;
-      max-height: 210px;
-      overflow: auto;
-    }
+        .btnWrap {
+            justify-content: space-between;
 
-    .workflowListItem {
-      border-bottom: 1px solid $black;
-      cursor: pointer;
-      padding: 8px 4px;
-      overflow: hidden;
+            .btn {
+                flex-grow: 1;
+                width: auto;
+                max-width: 49%;
+                margin: 0;
+            }
+        }
 
-      &.selected {
-        background: $green;
-      }
-
-      h4,
-      p {
-        pointer-events: none;
-      }
-
-      p {
-        white-space: nowrap;
-      }
-    }
-  }
-
-  #reportsScreen {
-    overflow: hidden;
-
-    &.visible {
-      transform: translateX(-600%);
+        &.visible {
+            transform: translateX(-200%);
+        }
     }
 
-    .attachmentsWrap {
-      margin: 0 0 15px;
-      max-height: 400px;
-      overflow-y: scroll;
+    #deleteScreen {
+        &.visible {
+            transform: translateX(-300%);
+        }
 
-      .attachmentsHeading {
-        margin: 0 0 10px;
-      }
+        .successDiv {
+            text-align: center;
 
-      .planAttWrap, .workflowAttWrap, .signatureAttWrap {
+            p {
+                font-weight: $normal;
+            }
+
+            svg {
+                color: $secondary;
+                margin: 0 0 20px;
+                width: 100px;
+            }
+        }
+
+        .warningMessage {
+            color: $font-error;
+            font-weight: $bold;
+            margin: 0 0 20px;
+        }
+    }
+
+    #reactivateScreen {
+        &.visible {
+            transform: translateX(-400%);
+        }
+
+        .warningMessage {
+            color: $font-error;
+            font-weight: $bold;
+            margin: 0 0 20px;
+        }
+    }
+
+    #addWorkflowScreen {
+        &.visible {
+            transform: translateX(-500%);
+        }
+
         h2 {
-          margin: 0 0 10px;
+            margin: 0 0 10px;
         }
-        .attachment {
-          cursor: pointer;
-          padding: 5px;
-          margin: 0 0 5px;
 
-          &.selected {
-            background: $secondary;
-          }
+        .workflowList {
+            margin: 0 0 10px;
+            max-height: 210px;
+            overflow: auto;
         }
-      }
+
+        .workflowListItem {
+            border-bottom: 1px solid $black;
+            cursor: pointer;
+            padding: 8px 4px;
+            overflow: hidden;
+
+            &.selected {
+                background: $green;
+            }
+
+            h4,
+            p {
+                pointer-events: none;
+            }
+
+            p {
+                white-space: nowrap;
+            }
+        }
     }
 
-    // success/error message
-    .warningMessage {
-      margin-bottom: 10px;
-      text-align: center;
-      font-weight: $normal;
+    #reportsScreen {
+        overflow: hidden;
 
-      p:first-child {
-        color: $font-error;
-        margin-bottom: 10px;
-      }
-      p:last-child {
-        color: $font-dark;
-      }
-    }
-    .okBtn {
-      width: 100%;
-    }
-  }
-  #DODDScreen {
-    p {
-      font-size: 22px;
-      font-weight: bold;
-      text-align: center;
-      margin: 30px 0;
-    }
-    &.visible {
-      transform: translateX(-800%);
-    }
-  }
+        &.visible {
+            transform: translateX(-600%);
+        }
 
-  .btn {
-    width: 100%;
-    margin: 0 0 10px;
-  }
+        .attachmentsWrap {
+            margin: 0 0 15px;
+            max-height: 400px;
+            overflow-y: scroll;
+
+            .attachmentsHeading {
+                margin: 0 0 10px;
+            }
+
+            .planAttWrap,
+            .workflowAttWrap,
+            .signatureAttWrap {
+                h2 {
+                    margin: 0 0 10px;
+                }
+
+                .attachment {
+                    cursor: pointer;
+                    padding: 5px;
+                    margin: 0 0 5px;
+
+                    &.selected {
+                        background: $secondary;
+                    }
+                }
+            }
+        }
+        // success/error message
+        .warningMessage {
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: $normal;
+
+            p:first-child {
+                color: $font-error;
+                margin-bottom: 10px;
+            }
+
+            p:last-child {
+                color: $font-dark;
+            }
+        }
+
+        .okBtn {
+            width: 100%;
+        }
+    }
+
+    #DODDScreen {
+        overflow: hidden;
+
+        &.visible {
+            transform: translateX(-800%);
+        }
+
+        .attachmentsWrap {
+            margin: 0 0 15px;
+            max-height: 400px;
+            overflow-y: scroll;
+
+            .attachmentsHeading {
+                margin: 0 0 10px;
+            }
+
+            .planAttWrap, .workflowAttWrap, .signatureAttWrap {
+                h2 {
+                    margin: 0 0 10px;
+                }
+
+                .attachment {
+                    cursor: pointer;
+                    padding: 5px;
+                    margin: 0 0 5px;
+
+                    &.selected {
+                        background: $secondary;
+                    }
+                }
+            }
+        }
+        // success/error message
+        .warningMessage {
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: $normal;
+
+            p:first-child {
+                color: $font-error;
+                margin-bottom: 10px;
+            }
+
+            p:last-child {
+                color: $font-dark;
+            }
+        }
+
+        .okBtn {
+            width: 100%;
+        }
+    }
+
+    #sendToDODDScreen {
+        p {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        &.visible {
+            transform: translateX(-800%);
+        }
+    }
+
+    #changePlanTypeScreen {
+        .currentType {
+            display: flex;
+            margin: 0 0 20px;
+
+            p:first-child {
+                font-weight: $bold;
+                margin: 0 8px 0 0;
+            }
+        }
+
+        &.visible {
+            transform: translateX(-900%);
+        }
+    }
+
+    .btn {
+        width: 100%;
+        margin: 0 0 10px;
+    }
 }
 .assessment {
   &__section {
@@ -460,6 +544,9 @@
   }
 }
 .saveWarningPopup {
+  height: 300px;
+  padding: 0px 10px;
+
   h3 {
     margin: 0 0 10px;
   }
@@ -643,9 +730,28 @@
   }
 
   .radioWrap {
-    display: inline-block;
+    display: flex;
+    align-items: center;
     padding: 5px;
     margin-left: 10px;
+
+    svg {
+      width: 36px;
+    }
+    .radio {
+      margin: 0 10px 0 0;
+  
+      &:last-child {
+        margin: 0;
+      }
+  
+      input {
+        margin: 0 6px 0 0;
+      }
+      span {
+        text-transform: capitalize;
+      }
+    }
   }
 
   &__text {
@@ -671,22 +777,6 @@
     &.hasAttachments {
       background-color: $secondary;
       pointer-events: all !important;
-    }
-  }
-}
-.radioWrap {
-  .radio {
-    margin: 0 10px 0 0;
-
-    &:last-child {
-      margin: 0;
-    }
-
-    input {
-      margin: 0 6px 0 0;
-    }
-    span {
-      text-transform: capitalize;
     }
   }
 }

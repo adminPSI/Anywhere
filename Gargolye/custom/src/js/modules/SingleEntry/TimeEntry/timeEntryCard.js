@@ -110,24 +110,9 @@ var timeEntryCard = (function () {
     var targetAction = target.dataset.actionNav;
 
     switch (targetAction) {
-      // case 'rosterDone': {
-      // 	roster.selectedConsumersToEnabledList();
-      // 	if (isNew) {
-      // 		newTimeEntry.loadPage();
-      // 	} else {
-      // 		editTimeEntry.loadPage();
-      // 	}
-      // 	break;
-      // }
-      // case 'rosterCancel': {
-      // 	timeEntry.init();
-      // 	break;
-      // }
       case 'miniRosterDone': {
         DOM.toggleNavLayout();
-        // var selectedConsumers = roster.getSelectedConsumers();
         const selectedConsumers = roster2.getActiveConsumers();
-        // roster.selectedConsumersToActiveList();
         moveConsumersToTimeCard(selectedConsumers);
         break;
       }
@@ -1171,11 +1156,7 @@ var timeEntryCard = (function () {
         totalHoursInput.classList.remove('error');
       } else {
         if (keyStartStop === 'Y') {
-          if (timeOverlap) {
-            // startTimeInput.classList.add('error');
-            // endTimeInput.classList.add('error');
-            // errorPopup('This is time wraps and will result in two Time Entry rows.');
-          } else {
+          if (!timeOverlap) {
             endTimeInput.classList.remove('error');
           }
 
@@ -1194,26 +1175,22 @@ var timeEntryCard = (function () {
               isBillable === 'Y' &&
               entryDate === todaysDate &&
               checkTimeForAfterNow(endInput.value)
-            )
+            ) {
               endTimeInput.classList.add('error');
+            }
           } else if (isEdit && evvReasonCode === '') {
-            if (isBillable === 'Y' && entryDate > todaysDate) endTimeInput.classList.add('error');
+            if (isBillable === 'Y' && entryDate > todaysDate) {
+              endTimeInput.classList.add('error');
+            }
           } else {
             if (
               isBillable === 'Y' &&
               entryDate === todaysDate &&
               $.session.singleEntrycrossMidnight
-            )
+            ) {
               endTimeInput.classList.add('error');
+            }
           }
-
-          // if (isEdit && $.session.singleEntrycrossMidnight) endTimeInput.classList.add('error');
-
-          // if (isEndTimeValid && isEndTimeValid !== undefined) {
-          //   endTimeInput.classList.remove('error');
-          // } else {
-          //   endTimeInput.classList.add('error');
-          // }
           totalHoursInput.classList.remove('error');
         } else {
           if (hoursInput.value === '' || hoursInput.value < 0) {
@@ -1316,17 +1293,32 @@ var timeEntryCard = (function () {
       if ($.session.SingleEntryEditTimeEntry && status === 'A') {
         saveBtn.classList.remove('disabled');
         deleteBtn.classList.remove('disabled');
+        saveAndSumbitBtn.classList.remove('disabled');
+
         if (hasErrors.length !== 0) {
           saveBtn.classList.add('disabled');
           deleteBtn.classList.add('disabled');
+          saveAndSumbitBtn.classList.add('disabled');
         }
       } else {
         saveBtn.classList.add('disabled');
         deleteBtn.classList.add('disabled');
+        saveAndSumbitBtn.classList.add('disabled');
       }
     } else {
       saveBtn.classList.remove('disabled');
       deleteBtn.classList.remove('disabled');
+      if (keyStartStop === 'Y') {
+        // if 'Y' then end time is enabled and we need to check for it
+        if (endTime) {
+          saveAndSumbitBtn.classList.remove('disabled');
+        } else {
+          saveAndSumbitBtn.classList.add('disabled');
+        }
+      } else {
+        // no check needed, done by hasErrors
+        saveAndSumbitBtn.classList.remove('disabled');
+      }
     }
   }
   function checkPermissions() {
@@ -1382,10 +1374,11 @@ var timeEntryCard = (function () {
       ) {
         saveBtn.classList.add('disabled');
         deleteBtn.classList.add('disabled');
-        //saveOrUpdate.classList.add('disabled');
+        saveAndSumbitBtn.classList.add('disabled');
       } else {
         saveBtn.classList.remove('disabled');
         deleteBtn.classList.remove('disabled');
+        saveAndSumbitBtn.classList.remove('disabled');
       }
     }
 
@@ -1472,17 +1465,6 @@ var timeEntryCard = (function () {
       checkPermissions();
       UTIL.getGeoLocation(setStartTimeLocation);
     });
-    // startTimeInput.addEventListener('focusout', event => {
-    //   if ($.session.singleEntry15minDoc === 'Y' && startTime !== `${nowHour}:${nowMinutes}`) {
-    // 		var min = parseInt(startTime.split(':')[1]);
-    // 		if (min % 15 !== 0) {
-    // 			errorPopup('This is not a valid time, you must document to the nearest quarter hour.');
-    // 			event.target.value = '';
-    // 			startTime = '0';
-    // 		}
-    //   }
-    // 	UTIL.getGeoLocation(setStartTimeLocation);
-    // })
     endTimeInput.addEventListener('click', event => {
       setEndTimeOnClick(event);
     });
@@ -1522,7 +1504,6 @@ var timeEntryCard = (function () {
 
       // 9:30:00 !== 9:30
       if (systemDefaultForCheckEnd !== endTime) {
-        console.log('Prev End Time: ' + origEndTime + ' New End Time:' + endTime);
         defaultEndTimeChanged = true;
         reasonRequired = true; // for evv
       } else {
@@ -1555,6 +1536,22 @@ var timeEntryCard = (function () {
       if (saveOrUpdate === 'Save') timeEntry.getEntryData(keyStartStop);
       if (saveOrUpdate === 'Update') timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop);
     });
+    saveAndSumbitBtn.addEventListener('click', event => {
+      // Save entry first
+      event.target.classList.add('disabled');
+      saveBtn.classList.add('disabled');
+      saveOrUpdate = event.target.dataset.insertType;
+
+      const saveAndUpdate = true;
+
+      if (saveOrUpdate === 'Save') timeEntry.getEntryData(keyStartStop, saveAndUpdate);
+      if (saveOrUpdate === 'Update')
+        timeEntry.updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndUpdate);
+
+      // TODO, make global so access from timeentry.js
+      // event.target.classList.remove('disabled');
+      // saveBtn.classList.remove('disabled');
+    });
     cancelBtn.addEventListener('click', () => {
       if (isAdminEdit) {
         timeApproval.refreshPage(payPeriod);
@@ -1563,6 +1560,10 @@ var timeEntryCard = (function () {
       }
       clearAllGlobalVariables();
     });
+  }
+  function enableSaveButtons() {
+    saveBtn.classList.remove('disabled');
+    saveAndSumbitBtn.classList.remove('disabled');
   }
 
   async function customRosterApplyFilterEvent() {
@@ -1763,6 +1764,7 @@ var timeEntryCard = (function () {
     if (isCardDisabled) {
       card.classList.add('disabled');
       saveBtn.classList.add('disabled');
+      saveAndSumbitBtn.classList.add('disabled');
       deleteBtn.classList.add('disabled');
       roster2.toggleMiniRosterBtnVisible(false);
       workCodeDropdown.classList.add('disabled');
@@ -2131,6 +2133,13 @@ var timeEntryCard = (function () {
       classNames: ['disabled'],
       attributes: [{ key: 'data-insert-type', value: saveOrUpdate }],
     });
+    saveAndSumbitBtn = button.build({
+      text: `${saveOrUpdate} and submit`,
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['disabled'],
+      attributes: [{ key: 'data-insert-type', value: saveOrUpdate }],
+    });
     deleteBtn = button.build({
       text: 'Delete',
       style: 'secondary',
@@ -2147,6 +2156,7 @@ var timeEntryCard = (function () {
     btnWrap.classList.add('timeCard__actions');
 
     btnWrap.appendChild(saveBtn);
+    btnWrap.appendChild(saveAndSumbitBtn);
     if (isEdit) btnWrap.appendChild(deleteBtn);
     btnWrap.appendChild(cancelBtn);
 
@@ -2217,5 +2227,6 @@ var timeEntryCard = (function () {
     moveConsumersToTimeCard,
     handleActionNavEvent,
     clearAllGlobalVariables,
+    enableSaveButtons,
   };
 })();

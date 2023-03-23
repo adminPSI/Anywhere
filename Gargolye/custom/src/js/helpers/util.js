@@ -702,7 +702,7 @@ const UTIL = (function () {
    * Highlights the module in the hamburger menu or side menu, signifying the module is active.
    * @param {string} appName Proper module name
    */
-  function toggleMenuItemHighlight(appName) {
+    function toggleMenuItemHighlight(appName) { 
     var current = document.querySelector('.menu__button.active');
     var target;
 
@@ -775,6 +775,14 @@ const UTIL = (function () {
       }
       case 'OOD': {
         target = document.getElementById('OODsettingsdiv');
+        break;
+      }
+      case 'resetPassword': {
+            target = document.getElementById('Adminsettingdiv'); 
+        break;
+      }
+        case 'ConsumerFinances': {
+            target = document.getElementById('consumerfinancessettingsdiv');
         break;
       }
       default: {
