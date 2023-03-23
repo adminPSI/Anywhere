@@ -7,6 +7,9 @@ const isp_ci_importantPeople = (() => {
   let relationshipInput;
   let addressInput;
   let phoneInput;
+  let phoneInput2;
+  let phoneExt;
+  let phoneExt2;
   let emailInput;
   let typeDropdown;
   let saveBtn;
@@ -163,6 +166,11 @@ const isp_ci_importantPeople = (() => {
       const phoneVal = contactInformation.formatPhone(
         document.getElementById('isp-ciip-phoneInput').value,
       ).val;
+      const phoneVal2 = contactInformation.formatPhone(
+        document.getElementById('isp-ciip-phoneInput2').value,
+      ).val;
+      const extVal = document.getElementById('isp-ciip-extinput').value;
+      const extVal2 = document.getElementById('isp-ciip-extinput2').value;
       const emailVal = document.getElementById('isp-ciip-emailInput').value;
 
       if (isNew) {
@@ -176,6 +184,9 @@ const isp_ci_importantPeople = (() => {
           relationship: relationshipVal,
           address: addressVal,
           phone: phoneVal,
+          phone2: phoneVal2,
+          phoneExt: extVal,
+          phoneExt2: extVal2,
           email: emailVal,
         };
         const importantPersonId = await contactInformationAjax.insertPlanContactImportantPeople(
@@ -206,6 +217,9 @@ const isp_ci_importantPeople = (() => {
           relationship: UTIL.removeUnsavableNoteText(relationshipVal),
           address: UTIL.removeUnsavableNoteText(addressVal),
           phone: UTIL.removeUnsavableNoteText(phoneVal),
+          phone2: UTIL.removeUnsavableNoteText(phoneVal2),
+          phoneExt: extVal,
+          phoneExt2: extVal2,
           email: emailVal,
         };
         await contactInformationAjax.updatePlanContactImportantPeople(data);
@@ -304,14 +318,6 @@ const isp_ci_importantPeople = (() => {
     });
     if (popupData.name === '') nameInput.classList.add('error');
 
-    // relationshipInput = input.build({
-    //   label: 'Relationship',
-    //   value: popupData.relationship,
-    //   id: `isp-ciip-relationshipInput`,
-    //   readonly: readOnly,
-    // });
-    // if (popupData.relationship === '') relationshipInput.classList.add('error');
-
     addressInput = input.build({
       label: 'Address',
       value: popupData.address,
@@ -336,6 +342,35 @@ const isp_ci_importantPeople = (() => {
     });
     if (popupData.phone === '') phoneInput.classList.add('error');
 
+    phoneInput2 = input.build({
+      label: 'Phone 2',
+      value: UTIL.formatPhoneNumber(popupData.phone2),
+      id: `isp-ciip-phoneInput2`,
+      readonly: readOnly,
+      type: 'tel',
+      attributes: [
+        { key: 'maxlength', value: '12' },
+        { key: 'pattern', value: '[0-9]{3}-[0-9]{3}-[0-9]{4}' },
+        { key: 'placeholder', value: '888-888-8888' },
+      ],
+    });
+
+    phoneExt = input.build({
+      label: 'Ext.',
+      value: popupData.phoneExt,
+      readonly: readOnly,
+      type: 'number',
+      id: 'isp-ciip-extinput',
+    });
+
+    phoneExt2 = input.build({
+      label: 'Ext.',
+      value: popupData.phoneExt2,
+      readonly: readOnly,
+      type: 'number',
+      id: 'isp-ciip-extinput2',
+    });
+
     emailInput = input.build({
       label: 'Email',
       value: popupData.email,
@@ -345,6 +380,15 @@ const isp_ci_importantPeople = (() => {
     });
     if (popupData.email === '') emailInput.classList.add('error');
 
+    // Wrap up Phones w/Ext.
+    const phoneWrap = document.createElement('div');
+    const phoneWrap2 = document.createElement('div');
+    phoneWrap.appendChild(phoneInput);
+    phoneWrap.appendChild(phoneExt);
+    phoneWrap2.appendChild(phoneInput2);
+    phoneWrap2.appendChild(phoneExt2);
+
+    // Action Buttons
     saveBtn = button.build({
       text: 'save',
       style: 'secondary',
@@ -410,7 +454,8 @@ const isp_ci_importantPeople = (() => {
     // popup.appendChild(relationshipInput);
     popup.appendChild(addressInput);
     popup.appendChild(emailInput);
-    popup.appendChild(phoneInput);
+    popup.appendChild(phoneWrap);
+    popup.appendChild(phoneWrap2);
     popup.appendChild(btnWrap);
     if (!isNew && !readOnly) popup.appendChild(btnWrap2);
 
@@ -431,6 +476,13 @@ const isp_ci_importantPeople = (() => {
         phoneInput.classList.add('error');
       }
       checkForErrors();
+    });
+
+    phoneInput2.addEventListener('input', event => {
+      if (event.target.value !== '' && contactInformation.validatePhone(event.target.value)) {
+        const phnDisp = contactInformation.formatPhone(event.target.value).disp;
+        event.target.value = phnDisp;
+      }
     });
     typeDropdown.addEventListener('change', event => {
       if (event.target.value === '') {
