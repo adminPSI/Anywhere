@@ -24,10 +24,14 @@ var timeEntry = (function () {
     useFiveCharWorkCode: '',
   };
 
+  // overlapping locations variables
   let overlapLocationsPopup;
   let overlapLocationsDropdown;
   let overlapLocationsDoneBtn;
   let locationId = '';
+  let duplicateconsumerIds;
+  let consumerswithUniqueLocations;
+  let consumerswithMultipleLocations;
 
   // Save, Update, Delete
   //------------------------------------
@@ -283,9 +287,11 @@ var timeEntry = (function () {
       } else {
         singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
     
-          if (results.length > 1) {
-            displayOverlapLocationsPopup(results);
-         
+          if (results.length > 1) { 
+            
+              getConsumerswithOverlappingLocations(results);
+              if (consumerswithMultipleLocations.length > 1) displayOverlapLocationsPopup();
+          
           } else if (results.length = 1) {
               successfulSave.show('SAVED');
               setTimeout(function () {
@@ -303,10 +309,30 @@ var timeEntry = (function () {
     }
   }
 
-  function displayOverlapLocationsPopup(results) {
+  function getConsumerswithOverlappingLocations(consumerlocatons) {
 
+       // get lookup list of objects that have the same consumerId (ie, consumers with overlappng locations)
+       duplicateconsumerIds = consumerlocatons.reduce((a, e) => {
+        a[e.consumerId] = ++a[e.consumerId] || 0;
+        return a;
+        }, {});
+
+        // this is a list for OISP Sinopoli -- 4225 of non-overlapping locations 
+        consumerswithUniqueLocations = consumerlocatons.filter(e => !duplicateconsumerIds[e.consumerId]);
+
+         // this is a list for OISP Tenebruso -- 4219 of overlapping locations 
+        // she is the only one with multiple locations in the returned list of consumers/locations -- two selected consumers  
+        //TODO JOE -- what if there is more than one consumer with overlapping locations 
+        consumerswithMultipleLocations = consumerlocatons.filter(e => duplicateconsumerIds[e.consumerId]);
+  }
+
+  function displayOverlapLocationsPopup() {
+
+    //  getConsumerswithOverlappingLocations(results);
+
+    // build overlapLocation Popup
     overlapLocationsPopup = POPUP.build( {
-        header: "Consumer Name Last Name, First Name format) has two locations for this date. Please select the location where these services are being provided.",
+        header: `Overlapped locations for a selected consumer.`,
         hideX: false,
         id: "overlapLocationsPopup"
       });
@@ -323,10 +349,10 @@ var timeEntry = (function () {
       style: "secondary",
       classNames: 'disabled',
       callback: () => {    
+        // save Entry with a selected Location from the overlapLocationsDropdown
         var saveData = timeEntryCard.getSaveUpdateData();
         if (locationId !== '') {
         saveData.locationId = locationId;
-        
          singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
               successfulSave.show('SAVED');
               setTimeout(function () {
@@ -352,14 +378,42 @@ var timeEntry = (function () {
        }
     });
 
+   // if submission included consumers with both unique and overlapping locations -- this section processes/Saves the entries with consumers with non-overlapping location  
+   // TODO JOE:  What if one of these fails  -- need to track results of each Save and display the results on the Overlap Popup 
+   let savedEntriesMessage = document.createElement('p');
+
+   if (consumerswithUniqueLocations.length > 0) {
+    consumerswithUniqueLocations.forEach(function (location) {
+      var locationid = location.locationId
+      var saveData = timeEntryCard.getSaveUpdateData();
+      saveData.locationId = locationid;
+      
+      singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
+          // TODO JOE: need to attach the Save results to each consumer and then display on POPUP -- see below
+          });
+    }); 
+      // display on the Overlap popup a list of the Consumers whose Entries were saved (with the results of each save)  -- see abov
+      savedEntriesMessage.innerHTML = `The following consumer(s) have had their time entry(ies) saved.<br>`;
+      consumerswithUniqueLocations.forEach(function (obj) { 
+        savedEntriesMessage.innerHTML = savedEntriesMessage.innerHTML + ` -- ` + obj.consumerName + `<br>` 
+      });
+      savedEntriesMessage.innerHTML = savedEntriesMessage.innerHTML + `<br>` 
+   }
+
+   // for consumer with overlapping locations -- display consumerName 
+    let overlappedLocationsEntriesMessage = document.createElement('p');
+	  overlappedLocationsEntriesMessage.innerHTML = `Consumer ${consumerswithMultipleLocations[0].consumerName} has two locations for this date. Please select the location where these services are being provided. <br>`;
+
     let btnWrap = document.createElement("div");
 			btnWrap.classList.add("btnWrap");
 			btnWrap.appendChild(overlapLocationsDoneBtn);
 			btnWrap.appendChild(cancelBtn);        
+      if (consumerswithUniqueLocations.length > 0) overlapLocationsPopup.appendChild(savedEntriesMessage);
+      overlapLocationsPopup.appendChild(overlappedLocationsEntriesMessage);
 			overlapLocationsPopup.appendChild(overlapLocationsDropdown);
 			overlapLocationsPopup.appendChild(btnWrap);
 
-      populateOverlapLocationsDropdown(results);       
+      populateOverlapLocationsDropdown();       
 
       overlapLocationsDropdown.addEventListener('change', event => {
 				var selectedOption = event.target.options[event.target.selectedIndex];
@@ -372,7 +426,7 @@ var timeEntry = (function () {
 					
         });
         
-       overlapLocationsDropdownRequired();
+        overlapLocationsDropdownRequired();
 
         POPUP.show(overlapLocationsPopup);
 
@@ -389,12 +443,12 @@ var timeEntry = (function () {
 
       }
 
-      function populateOverlapLocationsDropdown(results) {
+      function populateOverlapLocationsDropdown() {
 
-        let data = results.map((location) => ({
-          id: location.locationId,   // replace with selectedConsumerServiceType to get T1 and T2 info
+        let data = consumerswithMultipleLocations.map((location) => ({
+          id: location.consumerId,   
           value: location.locationId, 
-          text: location.locationName,
+          text: location.consumerName + " -- " + location.locationName,
         })); 
         data.unshift({ id: '', value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
         dropdown.populate(overlapLocationsDropdown, data);  
