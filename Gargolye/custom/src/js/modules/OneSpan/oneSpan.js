@@ -85,7 +85,6 @@ const oneSpan = (() => {
           }, 700);
         } else {
           pendingSave.reject('Failed to send, please try again.');
-          console.error(res);
           setTimeout(() => {
             const failPopup = document.querySelector('.failSavePopup');
             DOM.ACTIONCENTER.removeChild(failPopup);
