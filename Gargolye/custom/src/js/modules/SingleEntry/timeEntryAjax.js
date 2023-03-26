@@ -232,6 +232,23 @@ var singleEntryAjax = (function() {
 			},
 		});
 	}
+
+	// called for when there is no locationId and has consumers
+	// if a selected consumer has overlapping locations, this function returns all selected consumers and their locations to be processed
+	function getSelectedConsumerLocations(insertData, callback) {
+		$.ajax({
+			type: 'POST',
+			url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getSelectedConsumerLocations/',
+			data: JSON.stringify(insertData),
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json',
+			success: function(response, status, xhr) {
+				var results = response.getSelectedConsumerLocationsResult;
+				callback(results);
+			},
+		});
+	}
+
 	// called when saving new entry
 	function singleEntryOverlapCheck(overlapData, callback) {
 		$.ajax({
@@ -510,6 +527,7 @@ var singleEntryAjax = (function() {
 		getSingleEntryById,
 		insertSingleEntryNew,
 		preInsertSingleEntry,
+		getSelectedConsumerLocations,
 		singleEntryOverlapCheck,
 		updateSingleEntryStatus,
 		updateSingleEntry,

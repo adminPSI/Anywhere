@@ -11,7 +11,42 @@ namespace Anywhere.service.Data
         DataGetter dg = new DataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
-        public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
+        public ConsumerAndLocation[] getSelectedConsumerLocations(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
+        {
+            
+            List<string> consumerIdList = new List<string>();
+            List<string> locationIdList = new List<string>();
+            int consumerCount = 0;
+            string locIdString = dg.getConsumerLocationForSingleEntry(token, dateOfService, consumerId);
+            ConsumerAndLocation[] consumerAndLocations = js.Deserialize<ConsumerAndLocation[]>(locIdString);
+            for (int i = 0; i < consumerAndLocations.GetLength(0); i++)
+            {
+                consumerIdList.Add(consumerAndLocations[i].consumerId.ToString());
+                locationIdList.Add(consumerAndLocations[i].locationId.ToString());
+            }
+
+            //var duplicateConsumerLocations = consumerAndLocations
+            //.GroupBy(x => x.consumerName) // items with same shorName are grouped to gether
+            // .Where(x => x.Count() > 1) // filter groups where they have more than one memeber
+            //.Select(x => x.Key) // select shortName from these groups
+            //.ToList(); // convert it to a list
+
+            if (consumerIdList.Count != consumerIdList.Distinct().Count())
+            {
+                //If there is more than one loction for any of the selected consumers, send the list of all selected consumers/locations for "location overlap processing"
+                return consumerAndLocations;
+            } else
+            {
+                // if no overlap locations for any consumers, send back an empty list of consumers/locations to indicate no "location overlap processing" required 
+                ConsumerAndLocation[] emptyconsumerAndLocations = new ConsumerAndLocation[0];
+                return emptyconsumerAndLocations;
+
+            }
+                
+        }
+
+
+            public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
         {
             List<string> consumerIdList = new List<string>();
             List<string> locationIdList = new List<string>();
