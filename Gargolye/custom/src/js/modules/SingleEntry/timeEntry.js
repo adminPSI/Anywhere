@@ -524,9 +524,26 @@ var timeEntry = (function () {
             if (item.locationId === seletedOverlapLocationId)
             {
               foundlocation = true
+              let saveData = timeEntryCard.getSaveUpdateData();
+              consumerData = {
+                token:$.session.Token,
+                singleEntryId: item.singleEntryId,
+                consumerId: selectedOverlapConsumerId,
+                deviceType: saveData.deviceType,
+                evvReason: saveData.evvReason
+              }
               // Single Entry Record already exists for this location 
               // INSERT INTO into consumersPresent (singleEntryId amd ConsumerID and devices)
-              // **** TODO JOE -- NEED TO CREATE UPDATECONSUMERS PRESENT ****
+              singleEntryAjax.insertConsumerforSavedSingleEntry(consumerData, function (res) {
+                POPUP.hide(overlapLocationsPopup); 
+                successfulSave.show('SAVED');
+                setTimeout(function () {
+                successfulSave.hide();
+                timeEntryCard.clearAllGlobalVariables();
+                roster2.clearActiveConsumers();
+                newTimeEntry.init();
+                    }, 1000);
+              });
             } 
           });
 

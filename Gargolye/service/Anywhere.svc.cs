@@ -1439,6 +1439,10 @@ namespace Anywhere
         {
             return singleEntryWorker.singleEntrySaveSignatureAndNote(token, singleEntryId, consumerId, note, signatureImage);
         }
+        public string insertConsumerforSavedSingleEntry(string token, string singleEntryId, string consumerId, string deviceType, string evvReason)
+        {
+            return singleEntryWorker.insertConsumerforSavedSingleEntry(token, singleEntryId, consumerId, deviceType, evvReason);
+        }
 
         public SingleEntryWorker.SignatureAndNote[] getSpecificConsumerSignatureAndNote(string token, string singleEntryId, string consumerId)
         {

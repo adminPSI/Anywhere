@@ -4621,6 +4621,29 @@ namespace Anywhere.Data
             }
         }
 
+        public string insertConsumerforSavedSingleEntry(string token, string singleEntryId, string consumerId, string deviceType, string evvReason)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertConsumerforSavedSingleEntry ");
+            List<string> list = new List<string>();
+            // list.Add(token);
+            list.Add(singleEntryId);
+            list.Add(consumerId);
+            list.Add(deviceType);
+            list.Add(evvReason);
+            string text = "CALL DBA.ANYW_SingleEntry_SetConsumersPresent(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("699", ex.Message + "ANYW_SingleEntry_SetConsumersPresent(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "699: error ANYW_SingleEntry_SaveSignatureAndNote";
+            }
+        }
+
+
         public string getSpecificConsumerSignatureAndNote(string token, string singleEntryId, string consumerId)
         {
             if (tokenValidator(token) == false) return null;

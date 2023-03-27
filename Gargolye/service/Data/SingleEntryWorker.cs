@@ -109,6 +109,11 @@ namespace Anywhere.service.Data
             return dg.singleEntrySaveSignatureAndNote(token, singleEntryId, consumerId, note, signatureImage);
         }
 
+        public string insertConsumerforSavedSingleEntry(string token, string singleEntryId, string consumerId, string deviceType, string evvReason)
+        {
+            return dg.insertConsumerforSavedSingleEntry(token, singleEntryId, consumerId, deviceType, evvReason);
+        }
+
         public SignatureAndNote[] getSpecificConsumerSignatureAndNote(string token, string singleEntryId, string consumerId)
         {
             string signatureAndNote = dg.getSpecificConsumerSignatureAndNote(token, singleEntryId, consumerId);
