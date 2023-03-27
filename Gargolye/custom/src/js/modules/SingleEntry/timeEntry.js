@@ -927,7 +927,12 @@ var timeEntry = (function () {
   //------------------------------------
   function loadNewTimeEntryPage() {
     if ($.session.singleEntryLocationRequired === 'Y') {
+      // If location settings are required, check location settings
       checkLocationServicesEnabled(); 
+    } else {
+      // If location settings are not required, resume normal funcionality
+      $.session.singleEntrycrossMidnight = false;
+      newTimeEntry.init();
     }
   }
   function loadTimeEntryReviewPage() {
