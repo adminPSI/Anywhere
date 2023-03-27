@@ -860,11 +860,75 @@ var timeEntry = (function () {
     }
   }
 
+  function checkLocationServicesEnabled() {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          // if location services are on, continue with normal functionality
+          $.session.singleEntrycrossMidnight = false;
+          newTimeEntry.init();
+        },
+        function(error) {
+          // If location services are off, show popup
+          const locationsWarningpopup = POPUP.build({
+            id: 'warningPopup',
+            hideX: false,
+            classNames: 'warning',
+          });
+      
+          const okBtn = button.build({
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained',
+            callback: function () {
+              POPUP.hide(locationsWarningpopup);
+            },
+          });
+          const btnWrap = document.createElement('div');
+          btnWrap.classList.add('btnWrap');
+          btnWrap.appendChild(okBtn);
+      
+          const warningMessage = document.createElement('p');
+          warningMessage.innerHTML = "Location services must be enabled on this device to save a new time entry record.  Please contact your company's IT team for assistance.";
+          locationsWarningpopup.appendChild(warningMessage);
+          locationsWarningpopup.appendChild(btnWrap);
+          POPUP.show(locationsWarningpopup);
+        }
+      );
+    } else {
+      // If location services are not supported, show popup
+      const locationsWarningpopup = POPUP.build({
+        id: 'warningPopup',
+        hideX: false,
+        classNames: 'warning',
+      });
+  
+      const okBtn = button.build({
+        text: 'OK',
+        style: 'secondary',
+        type: 'contained',
+        callback: function () {
+          POPUP.hide(locationsWarningpopup);
+        },
+      });
+      const btnWrap = document.createElement('div');
+      btnWrap.classList.add('btnWrap');
+      btnWrap.appendChild(okBtn);
+  
+      const warningMessage = document.createElement('p');
+      warningMessage.innerHTML = "Location services must be enabled on this device to save a new time entry record.  Please contact your company's IT team for assistance.";
+      locationsWarningpopup.appendChild(warningMessage);
+      locationsWarningpopup.appendChild(btnWrap);
+      POPUP.show(locationsWarningpopup);
+    }
+  }
+
   // Landing Page
   //------------------------------------
   function loadNewTimeEntryPage() {
-    $.session.singleEntrycrossMidnight = false;
-    newTimeEntry.init();
+    if ($.session.singleEntryLocationRequired === 'Y') {
+      checkLocationServicesEnabled(); 
+    }
   }
   function loadTimeEntryReviewPage() {
     $.session.singleEntrycrossMidnight = false;
