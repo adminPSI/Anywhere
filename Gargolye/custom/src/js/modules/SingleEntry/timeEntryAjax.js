@@ -187,8 +187,8 @@ var singleEntryAjax = (function() {
 		});
 	}
 	// called when saving new entry, after overlap check has ran
-	function insertSingleEntryNew(data, callback) {
-		$.ajax({
+	async function insertSingleEntryNew(data, callback) {
+		await $.ajax({
 			type: 'POST',
 			url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertSingleEntry/',
 			data: JSON.stringify(data),
