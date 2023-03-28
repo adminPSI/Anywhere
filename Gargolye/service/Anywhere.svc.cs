@@ -1439,6 +1439,10 @@ namespace Anywhere
         {
             return singleEntryWorker.singleEntrySaveSignatureAndNote(token, singleEntryId, consumerId, note, signatureImage);
         }
+        public string insertConsumerforSavedSingleEntry(string token, string singleEntryId, string consumerId, string deviceType, string evvReason)
+        {
+            return singleEntryWorker.insertConsumerforSavedSingleEntry(token, singleEntryId, consumerId, deviceType, evvReason);
+        }
 
         public SingleEntryWorker.SignatureAndNote[] getSpecificConsumerSignatureAndNote(string token, string singleEntryId, string consumerId)
         {
@@ -3083,9 +3087,9 @@ namespace Anywhere
             return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment);
         }
 
-        public ActiveAccount[] getActiveAccount(string token)
+        public ActiveAccount[] getActiveAccount(string token, string consumerId)
         {
-            return cf.getActiveAccount(token);
+            return cf.getActiveAccount(token, consumerId);
         }
 
         public Payees[] getPayees(string token, string userId)
@@ -3131,6 +3135,11 @@ namespace Anywhere
         public ConsumerFinancesWorker.CFAttachmentsList[] getCFAttachmentsList(string token, string regId)
         {
             return cf.getCFAttachmentsList(token, regId);
+        }
+
+        public ConsumerName[] getConsumerNameByID(string token, string consumersId)
+        {
+            return cf.getConsumerNameByID(token, consumersId);
         }
 
     }

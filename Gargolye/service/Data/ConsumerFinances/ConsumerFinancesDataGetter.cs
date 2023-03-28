@@ -42,13 +42,15 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
         // Active Employee data for OOD Entries Listing Filter
-        public string getActiveAccount(DistributedTransaction transaction)
+        public string getActiveAccount(DistributedTransaction transaction, string consumerId)
         {
-
             try
             {
                 logger.debug("getActiveAccount");
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getActiveAccounts()", ref transaction);
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getActiveAccounts(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -60,11 +62,12 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         public string getPayees(DistributedTransaction transaction, string UserId)
         {
-
             try
             {
                 logger.debug("getPayees");
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getPayees()", ref transaction);
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, UserId);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getPayees(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -273,6 +276,26 @@ namespace Anywhere.service.Data.ConsumerFinances
                 throw ex;
             }
 
+        }
+
+        public string getConsumerNameByID(string token, string consumersId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getAccountEntriesById ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumersId", DbType.String, consumersId);
+
+
+                // returns the workflow document descriptions for the given workflowId
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerNameById(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getConsumerFinancesEntryById(" + consumersId + ")");
+                throw ex;
+            }
         }
 
 

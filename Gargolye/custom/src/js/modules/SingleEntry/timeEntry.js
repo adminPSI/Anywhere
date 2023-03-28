@@ -357,6 +357,8 @@ var timeEntry = (function () {
         // she is the only one with multiple locations in the returned list of consumers/locations -- two selected consumers  
         //TODO JOE -- what if there is more than one consumer with overlapping locations 
         consumerswithMultipleLocations = consumerlocatons.filter(e => duplicateconsumerIds[e.consumerId]);
+
+
   }
 
   function displayOverlapLocationsPopup(results) {
@@ -384,7 +386,8 @@ var timeEntry = (function () {
       style: "secondary",
       classNames: 'disabled',
       callback: () => {    
-        saveSingleEntrywithLocationOverlaps();
+
+       var listofSingleEntryIdsSaved = saveSingleEntrywithLocationOverlaps();
       }
     });
     this.doneButton = overlapLocationsDoneBtn;
@@ -509,24 +512,41 @@ var timeEntry = (function () {
               saveData = timeEntryCard.getSaveUpdateData();
               saveData.locationId = item.locationId;
               saveData.consumerId = item.consumerId;
-              let singleentryid2;
+              let singleentryid;
               await singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
-                singleentryid2 = results[1].slice(0,-2);
+                singleentryid = results[1].slice(0,-2);
               
             });
-            savedLocationsSingleEntryPairs.push({locationId: saveData.locationId, singleEntryId: singleentryid2});
+            savedLocationsSingleEntryPairs.push({locationId: saveData.locationId, singleEntryId: singleentryid});
           }
       }
-        // Saves of non-overlapping locations happened above, therefore take into account already saved locations when saving the overlap location entity 
+        // 3. Saves of non-overlapping locations happened above, therefore take into account already saved locations when saving the overlap location entity 
         if (savedLocationsSingleEntryPairs.length > 0) {
           let foundlocation = false;
           savedLocationsSingleEntryPairs.forEach(function (item) {   
             if (item.locationId === seletedOverlapLocationId)
             {
               foundlocation = true
+              let saveData = timeEntryCard.getSaveUpdateData();
+              consumerData = {
+                token:$.session.Token,
+                singleEntryId: item.singleEntryId,
+                consumerId: selectedOverlapConsumerId,
+                deviceType: saveData.deviceType,
+                evvReason: saveData.evvReason
+              }
               // Single Entry Record already exists for this location 
-              // INSERT INTO into consumersPresent (singleEntryId amd ConsumerID and devices)
-              // **** TODO JOE -- NEED TO CREATE UPDATECONSUMERS PRESENT ****
+              // C. INSERT INTO into consumersPresent (singleEntryId amd ConsumerID and devices)
+              singleEntryAjax.insertConsumerforSavedSingleEntry(consumerData, function (res) {
+                POPUP.hide(overlapLocationsPopup); 
+                successfulSave.show('SAVED');
+                setTimeout(function () {
+                successfulSave.hide();
+                timeEntryCard.clearAllGlobalVariables();
+                roster2.clearActiveConsumers();
+                newTimeEntry.init();
+                    }, 1000);
+              });
             } 
           });
 
@@ -538,11 +558,12 @@ var timeEntry = (function () {
         }
 
       async function saveOverlapLocationasSingleEntry() {
-
+              let singleentryid;
               saveData = timeEntryCard.getSaveUpdateData();
               saveData.locationId = seletedOverlapLocationId;
               saveData.consumerId = selectedOverlapConsumerId;
               await singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
+                singleentryid = results[1].slice(0,-2);
                 POPUP.hide(overlapLocationsPopup); 
                 successfulSave.show('SAVED');
                 setTimeout(function () {
@@ -554,7 +575,10 @@ var timeEntry = (function () {
 
             });
 
+            savedLocationsSingleEntryPairs.push({locationId: saveData.locationId, singleEntryId: singleentryid});
+
       }
+    return savedLocationsSingleEntryPairs;
 
     }
       

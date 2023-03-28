@@ -203,6 +203,26 @@ var singleEntryAjax = (function() {
 			},
 		});
 	}
+
+	function insertConsumerforSavedSingleEntry(consumerData, callback) {
+		$.ajax({
+			type: "POST",
+			url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
+				"/" + $.webServer.serviceName + "/insertConsumerforSavedSingleEntry/",
+			data: JSON.stringify(consumerData),
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (response, status, xhr) {
+				var res = JSON.stringify(response);
+				//clearSavedSignaturesAndNotes();
+				callback(res);
+			},
+			error: function (xhr, status, error) {
+				//callback(error, null);
+			},
+		});
+	  }
+
 	// only called for when there is no locationId and has consumers
 	function preInsertSingleEntry(insertData, callback) {
 		$.ajax({
@@ -526,6 +546,7 @@ var singleEntryAjax = (function() {
 		getSingleEntryByDate,
 		getSingleEntryById,
 		insertSingleEntryNew,
+		insertConsumerforSavedSingleEntry,
 		preInsertSingleEntry,
 		getSelectedConsumerLocations,
 		singleEntryOverlapCheck,
