@@ -330,6 +330,13 @@ namespace Anywhere.service.Data
             return consumerFollowUpsData;
         }
 
+        public ConsumerBehaviors[] getitConsumerBehaviors(string token, string consumerId, string incidentId)
+        {
+            string consumerBehaviorsString = dg.getitConsumerBehaviors(token, consumerId, incidentId);
+            ConsumerBehaviors[] consumerBehaviorsData = js.Deserialize<ConsumerBehaviors[]>(consumerBehaviorsString);
+            return consumerBehaviorsData;
+        }
+
         public ConsumerReporting[] getitConsumerReporting(string token, string consumerId, string incidentId)
         {
             string consumerReportingString = dg.getitConsumerReporting(token, consumerId, incidentId);
@@ -342,6 +349,13 @@ namespace Anywhere.service.Data
             string followUpTypesString = dg.getitConsumerFollowUpTypes(token);
             ConsumerFollowUpTypes[] followUpTypesData = js.Deserialize<ConsumerFollowUpTypes[]>(followUpTypesString);
             return followUpTypesData;
+        }
+
+        public ConsumerBehaviorTypes[] getitConsumerBehaviorTypes(string token)
+        {
+            string behaviorTypesString = dg.getitConsumerBehaviorTypes(token);
+            ConsumerBehaviorTypes[] behaviorTypesData = js.Deserialize<ConsumerBehaviorTypes[]>(behaviorTypesString);
+            return behaviorTypesData;
         }
 
         public ReportingCategories[] getitReportingCategories(string token)
@@ -365,6 +379,25 @@ namespace Anywhere.service.Data
             foreach (string followUpTypeId in followUpTypeIdArray)
             {
                 dg.saveUpdateITConsumerFollowUp(token, consumerFollowUpIdArray[i], consumerInvolvedId, followUpTypeId, personResponsibleArray[i], dueDateArray[i], completedDateArray[i], notesArray[i]);
+                i++;
+            }
+            return "Success";
+        }
+
+        //Consumer Behavior Alter Specific Calls
+        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        {
+            dg.itDeleteConsumerBehavior(token, itConsumerFollowUpId);
+            return "success";
+        }
+
+        public string saveUpdateITConsumerBehavior(string token, List<String> consumerFollowUpIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray,
+                                                    List<String> endTimeArray, List<String> occurrencesArray)
+        {
+            int i = 0;
+            foreach (string behaviorTypeId in behaviorTypeIdArray)
+            {
+                dg.saveUpdateITConsumerBehavior(token, consumerFollowUpIdArray[i], consumerInvolvedId, behaviorTypeId, startTimeArray[i], endTimeArray[i], occurrencesArray[i]);
                 i++;
             }
             return "Success";
@@ -468,6 +501,12 @@ namespace Anywhere.service.Data
             public string followUpTypeName { get; set; }
         }
 
+        public class ConsumerBehaviorTypes
+        {
+            public string itBehaviorTypeId { get; set; }
+            public string behaviorTypeName { get; set; }
+        }
+
         public class ConsumerReporting
         {
             public string itConsumerReportId { get; set; }
@@ -492,6 +531,17 @@ namespace Anywhere.service.Data
             public string lastUpdatedBy { get; set; }
             public string lastUpdatedOn { get; set; }
             public string notes { get; set; }
+        }
+
+        public class ConsumerBehaviors
+        {
+            public string itConsumerBehaviorId { get; set; }
+            public string behaviorTypeId { get; set; }
+            public string startTime { get; set; }
+            public string endTime { get; set; }
+            public string occurrences { get; set; }
+            public string lastUpdatedBy { get; set; }
+            public string lastUpdatedOn { get; set; }
         }
 
         public class ConsumerReviews
