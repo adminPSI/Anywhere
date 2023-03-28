@@ -363,33 +363,41 @@ var timeEntry = (function () {
     );
   }
 
-  function buildOverlapLocations(consumer, index, thingForUniqueDropdownData) {
+  function checkOverlapPopupForErrors() {
+    const erros = [...overlapLocationsPopup.querySelectorAll('.error')];
+
+    if (erros.length > 0) {
+      overlapLocationsDoneBtn.classList.add('disabled');
+    } else {
+      overlapLocationsDoneBtn.classList.remove('disabled');
+    }
+  }
+
+  function buildOverlapLocations(consumer, index) {
     const wrap = document.createElement('div');
 
     const overlappedLocationsEntriesMessage = document.createElement('p');
-    overlappedLocationsEntriesMessage.innerHTML = `Consumer ${consumer.name} has two locations for this date. Please select the location where these services are being provided. <br>`;
+    overlappedLocationsEntriesMessage.innerHTML = `Consumer ${consumer.consumerName} has two locations for this date. Please select the location where these services are being provided. <br>`;
 
     const overlapLocationsDropdown = dropdown.build({
       label: 'Locations',
       dropdownId: `overlapLocationsDropdown${index}`,
     });
+    overlapLocationsDropdown.classList.add('error');
     overlapLocationsDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
 
-      if (selectedOption.value !== 'SELECT') {
-        const seletedOverlapLocId = selectedOption.value;
-        selectedOverlapLocIds[consumer.consumerId] = seletedOverlapLocId;
-        // selectedOverlapConsumerId
-        if (!seletedOverlapLocId || seletedOverlapLocId === '') {
-          overlapLocationsDropdown.classList.add('error');
-          overlapLocationsDoneBtn.classList.add('disabled');
-        } else {
-          overlapLocationsDropdown.classList.remove('error');
-          overlapLocationsDoneBtn.classList.remove('disabled');
-        }
+      const seletedOverlapLocId = selectedOption.value;
+      selectedOverlapLocIds[consumer.consumerId] = seletedOverlapLocId;
+      // selectedOverlapConsumerId
+      if (!seletedOverlapLocId || seletedOverlapLocId === 'SELECT') {
+        overlapLocationsDropdown.classList.add('error');
+      } else {
+        overlapLocationsDropdown.classList.remove('error');
       }
+      checkOverlapPopupForErrors();
     });
-    populateOverlapLocationsDropdown(thingForUniqueDropdownData);
+    populateOverlapLocationsDropdown(overlapLocationsDropdown);
 
     wrap.appendChild(overlappedLocationsEntriesMessage);
     wrap.appendChild(overlapLocationsDropdown);
@@ -411,7 +419,7 @@ var timeEntry = (function () {
 
     //TEMP ASH
     consumerswithMultipleLocations.forEach((c, index) => {
-      const markup = buildOverlapLocations(c, index, thingForUniqueDropdownData);
+      const markup = buildOverlapLocations(c, index);
       overlapLocationsPopup.appendChild(markup);
     });
     // END TEMP ASH
@@ -496,14 +504,14 @@ var timeEntry = (function () {
     // }
   }
 
-  function populateOverlapLocationsDropdown() {
+  function populateOverlapLocationsDropdown(locDrop) {
     let data = consumerswithMultipleLocations.map(location => ({
       id: location.consumerId,
       value: location.locationId,
       text: location.consumerName + ' -- ' + location.locationName,
     }));
     data.unshift({ id: '', value: 'SELECT', text: 'SELECT' }); //ADD Blank value
-    dropdown.populate(overlapLocationsDropdown, data);
+    dropdown.populate(locDrop, data);
   }
 
   async function saveSingleEntrywithLocationOverlaps() {
