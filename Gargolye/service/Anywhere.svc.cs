@@ -3062,9 +3062,9 @@ namespace Anywhere
             return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment);
         }
 
-        public ActiveAccount[] getActiveAccount(string token)
+        public ActiveAccount[] getActiveAccount(string token, string consumerId)
         {
-            return cf.getActiveAccount(token);
+            return cf.getActiveAccount(token, consumerId);
         }
 
         public Payees[] getPayees(string token, string userId)
@@ -3110,6 +3110,11 @@ namespace Anywhere
         public ConsumerFinancesWorker.CFAttachmentsList[] getCFAttachmentsList(string token, string regId)
         {
             return cf.getCFAttachmentsList(token, regId);
+        }
+
+        public ConsumerName[] getConsumerNameByID(string token, string consumersId)
+        {
+            return cf.getConsumerNameByID(token, consumersId);
         }
 
     }

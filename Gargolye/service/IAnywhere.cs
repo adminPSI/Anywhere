@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 
 namespace Anywhere
@@ -4140,7 +4141,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getActiveAccount/")]
-        ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token);
+        ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token, string consumerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4215,6 +4216,15 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getCFAttachmentsList/")]
         ConsumerFinancesWorker.CFAttachmentsList[] getCFAttachmentsList(string token, string regId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getConsumerNameByID/")]
+        ConsumerFinancesWorker.ConsumerName[] getConsumerNameByID(string token, string consumerId);
+
     }
 
 
