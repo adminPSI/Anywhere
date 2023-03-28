@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Net;
-using System.IO;
-using System.IO.Compression;
+﻿using Anywhere.Data;
+using Anywhere.Log;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
-using Anywhere.Log;
-using System.Web.Configuration;
+using System;
 using System.Configuration;
 using System.Globalization;
-using Anywhere.Data;
+using System.IO;
+using System.Net;
+using System.Web.Configuration;
 
 
 namespace Anywhere.anypatch
@@ -34,7 +30,7 @@ namespace Anywhere.anypatch
 
         public AnyTime()
         {
-            
+
         }
 
         public void patchIt()
@@ -83,7 +79,7 @@ namespace Anywhere.anypatch
                 logger.error("ANYTIME6", ex.Message);
                 throw ex;
             }
-            
+
             return false;
         }
 
@@ -174,7 +170,7 @@ namespace Anywhere.anypatch
             }
             catch (Exception ex)
             {
-                logger.error("ANYTIME8", "CurrVer=" + shortCurrentVersion + " webVer=" + shortVersionFromweb  + " |"+ ex.Message);
+                logger.error("ANYTIME8", "CurrVer=" + shortCurrentVersion + " webVer=" + shortVersionFromweb + " |" + ex.Message);
                 throw ex;
             }
         }
@@ -259,7 +255,9 @@ namespace Anywhere.anypatch
                         StreamUtils.Copy(zipStream, streamWriter, buffer);
                     }
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 logger.error("ANYTIME5", ex.Message);
                 throw ex;
             }
@@ -274,8 +272,8 @@ namespace Anywhere.anypatch
 
         }
 
- 
-        
+
+
 
     }
 }

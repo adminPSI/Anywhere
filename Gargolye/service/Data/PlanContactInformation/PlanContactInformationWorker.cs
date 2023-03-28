@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Script.Serialization;
+﻿using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanContactInformation
 {
@@ -136,7 +132,7 @@ namespace Anywhere.service.Data.PlanContactInformation
         public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
         {
             string ciString = "";
-            ciString = pcidg.insertPlanContactImportantPeople(token, contactId, type, name, relationship, address, phone, email,  phone2,  phoneExt,  phone2Ext);
+            ciString = pcidg.insertPlanContactImportantPeople(token, contactId, type, name, relationship, address, phone, email, phone2, phoneExt, phone2Ext);
             ImportantPersonId[] ciObj = js.Deserialize<ImportantPersonId[]>(ciString);
             return ciObj[0].importantPersonId.ToString();
         }
@@ -157,14 +153,14 @@ namespace Anywhere.service.Data.PlanContactInformation
 
         public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
         {
-            pcidg.updatePlanContactImportantPeople(token, importantPersonId, type, name, relationship, address, phone, email,  phone2,  phoneExt,  phone2Ext);
+            pcidg.updatePlanContactImportantPeople(token, importantPersonId, type, name, relationship, address, phone, email, phone2, phoneExt, phone2Ext);
             return "Sucess";
-        }        
+        }
         public string updatePlanContactImportantGroup(string token, string importantGroupId, string status, string name, string address, string phone, string meetingInfo, string whoHelps)
         {
             pcidg.updatePlanContactImportantGroup(token, importantGroupId, status, name, address, phone, meetingInfo, whoHelps);
             return "Sucess";
-        }        
+        }
         public string updatePlanContactImportantPlaces(string token, string importantPlacesId, string type, string name, string address, string phone, string schedule, string acuity)
         {
             pcidg.updatePlanContactImportantPlaces(token, importantPlacesId, type, name, address, phone, schedule, acuity);
@@ -178,7 +174,7 @@ namespace Anywhere.service.Data.PlanContactInformation
 
         public string updatePlanContactImportantOrder(long contactId, long importantId, int newPos, int oldPos, int type)
         {
-           return pcidg.updatePlanContactImportantOrder(contactId, importantId, newPos, oldPos, type);
+            return pcidg.updatePlanContactImportantOrder(contactId, importantId, newPos, oldPos, type);
         }
 
         public string deletePlanContactImportant(string token, string importantId, string type)
@@ -237,7 +233,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             public string phone { get; set; }
             public string relationship { get; set; }
             public string contactId { get; set; }
-        }        
+        }
 
         public void carryOverContactToNewPlan(string consumerPlanId, string priorConsumerPlanId, string token)
         {

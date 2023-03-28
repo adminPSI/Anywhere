@@ -1,16 +1,10 @@
+using Anywhere.Data;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using Anywhere.Data;
-using System.Web.Script.Serialization;
-using System.IdentityModel;
-using System.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security;
 using System.Security.Claims;
+using System.Text;
 
 namespace Anywhere.service.Data
 {
@@ -18,9 +12,10 @@ namespace Anywhere.service.Data
     {
         DataGetter dg = new DataGetter();
         AnywhereWorker anywhereWorker = new AnywhereWorker();
-        public string Main(string anywhereToken) {
+        public string Main(string anywhereToken)
+        {
             string finalURL = "";
-            
+
             bool isTokenValid = anywhereWorker.ValidateToken(anywhereToken);
             if (isTokenValid)
             {
@@ -59,14 +54,14 @@ namespace Anywhere.service.Data
             string plainTextSecurityKey = getSharedSecret();
             string username = getUserName(token);
             string issuer = getCompanyAsIssuer();
-            
+
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(plainTextSecurityKey));
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
             DateTime now = DateTime.Now.AddMinutes(-10);
             DateTime then = DateTime.Now.AddHours(3);
             SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor()
             {
-                Subject = new ClaimsIdentity(new List<Claim>() 
+                Subject = new ClaimsIdentity(new List<Claim>()
                     {
                         new Claim("sub", username),
                     }, "Custom"),
@@ -92,7 +87,7 @@ namespace Anywhere.service.Data
             return dg.GetCaraSolvaCompanyName();
             //string issuer = "Primary Solutions Anywhere";
             //string issuer = "";
-            
+
             //return issuer;
         }
 
@@ -111,5 +106,5 @@ namespace Anywhere.service.Data
             }
             return userName;
         }
-	}
+    }
 }

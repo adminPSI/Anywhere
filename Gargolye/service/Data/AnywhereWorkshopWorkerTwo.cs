@@ -1,10 +1,5 @@
-﻿using System;
+﻿using Anywhere.Data;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Web;
-using Anywhere.Data;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -18,7 +13,7 @@ namespace Anywhere.service.Data
         public BatchID[] PreBatchLoad(string token, string absenceDate)
         {
             string allBatchIDs = dg.WorkshopPreBatchLoad(token, absenceDate);
-            BatchID[] batches = js.Deserialize<BatchID[]>(allBatchIDs);            
+            BatchID[] batches = js.Deserialize<BatchID[]>(allBatchIDs);
             return batches;
         }
 
@@ -44,8 +39,9 @@ namespace Anywhere.service.Data
         }
 
         public GridData[] getWorkshopFilterListData(string token, string selectedDate, string consumerIds, string locationId, string jobStepId, string application, string batchId)
-        {            
-            if(application == "Advisor"){      //                  
+        {
+            if (application == "Advisor")
+            {      //                  
 
                 consumerIds = dg.getEmployeeIdForAdvisor(token, consumerIds);
                 consumerIds = consumerIds.Replace("<><><LIST(p.id)>", "").Replace("</LIST(p.id)></></>", "");
@@ -60,7 +56,7 @@ namespace Anywhere.service.Data
             List<string> overlapIds = new List<string>();
             string[] conIds = consumerIds.Split('|');
             consumerIds = "";
-            
+
             foreach (string consumerId in conIds)
             {
                 string overlapData = dg.getWorkshopOverlapCheck(token, consumerId, locationId, selectedDate, time, startOrEnd, supervisorId, jobStepId);
@@ -70,7 +66,7 @@ namespace Anywhere.service.Data
                 {
                     test = id[0].ErrorCode.ToString();
                 }
-                 
+
                 if (!test.Equals(""))
                 {
                     overlapIds.Add(test);
@@ -96,7 +92,7 @@ namespace Anywhere.service.Data
                     WorkshopClockOut(token, consumerIds, time, supervisorId, selectedDate, jobStepId);
                 }
             }
-                       
+
             return overlapIds;
         }
 
@@ -110,7 +106,7 @@ namespace Anywhere.service.Data
             //string jobStep = subStrings[2];
 
             return dg.workshopPreClockIn(token, selectedDate, locationId, supervisorId, startTime, consumerIds, jobStepId, jobActType, batchId);
-                            
+
         }
 
         public string WorkshopClockOut(string token, string consumerIds, string endTime, string supervisorId, string selectedDate, string jobStepId)
@@ -125,7 +121,8 @@ namespace Anywhere.service.Data
             if (overlap != "")
             {
                 return "Start Overlap";
-            }else
+            }
+            else
             {
                 return dg.UpdateWorkshopClockIn(token, jobActivityId, timeEntered);
             }
@@ -138,9 +135,11 @@ namespace Anywhere.service.Data
             if (overlap != "")
             {
                 return "End Overlap";
-            }else{
+            }
+            else
+            {
                 return dg.ClockoutWorkshopSingle(token, jobActivityId, timeEntered);
-            }            
+            }
         }
 
         public string DeleteWorkshopEntry(string token, string jobActivityId)
@@ -180,7 +179,7 @@ namespace Anywhere.service.Data
         public class Supervisor
         {
             public int id { get; set; }
-            public string name { get; set; }           
+            public string name { get; set; }
         }
 
         public class JobCode
@@ -204,7 +203,7 @@ namespace Anywhere.service.Data
             public string jobcode { get; set; }
             public string hours { get; set; }
             public string quantity { get; set; }
-            public string supervisor { get; set; } 
+            public string supervisor { get; set; }
             public string consumerid { get; set; }
         }
 

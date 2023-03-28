@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Configuration;
+using System.IO;
 using System.Net;
 using System.Text;
-using System.IO;
-using System.Configuration;
 
 namespace Anywhere.service.Com
 {
@@ -41,7 +38,9 @@ namespace Anywhere.service.Com
                 WebResponse res = req.GetResponse();
                 StreamReader sr = new StreamReader(res.GetResponseStream());
                 string returnvalue = sr.ReadToEnd();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 logger.Error(ex.StackTrace);
             }
 

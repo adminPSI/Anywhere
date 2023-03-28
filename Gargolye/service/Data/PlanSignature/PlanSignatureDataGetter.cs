@@ -6,8 +6,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
-using System.Management.Automation;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanSignature
@@ -38,7 +36,7 @@ namespace Anywhere.service.Data.PlanSignature
 
         public string getTeamMemberBySalesForceId(string salesForceId)
         {
-            
+
             List<string> list = new List<string>();
             list.Add(salesForceId);
             string text = "CALL DBA.ANYW_ISP_GetTeamMemberBySalesForceId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
@@ -55,7 +53,7 @@ namespace Anywhere.service.Data.PlanSignature
 
 
         public string insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
-               string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, 
+               string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType, string vendorId)
         {
             if (tokenValidator(token) == false) return null;
@@ -250,7 +248,7 @@ namespace Anywhere.service.Data.PlanSignature
             }
         }
 
-        public string createRelationship(string token, string planYearStart, string planYearEnd, string consumerId, string  peopleId, string salesForceId)
+        public string createRelationship(string token, string planYearStart, string planYearEnd, string consumerId, string peopleId, string salesForceId)
         {
             logger.debug("checkPeopleExist ");
             if (tokenValidator(token) == false) return null;

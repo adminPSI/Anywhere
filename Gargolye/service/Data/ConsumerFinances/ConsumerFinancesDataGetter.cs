@@ -1,15 +1,8 @@
 ﻿using Anywhere.Log;
 using System;
-using System.Data;
-using System.Data.Odbc;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Web;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
-using OneSpanSign.Sdk;
-using static System.Windows.Forms.AxHost;
-using System.Reflection.Emit;
-using System.Diagnostics;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {

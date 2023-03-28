@@ -1,8 +1,4 @@
-﻿using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanServicesAndSupports
@@ -138,10 +134,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
         public string updateAdditionalSupportsRowOrder(string token, long assessmentId, long addSupportId, int newPos, int oldPos)
         {
             return dg.updateAdditionalSupportsRowOrder(token, assessmentId, addSupportId, newPos, oldPos);
-        }        
+        }
 
         public void carryOverServicesToNewPlan(string consumerPlanId, string priorConsumerPlanId, string effectiveStart, string effectiveend, string targetAssessmentVersionId, string token)
-        {            
+        {
             long priorPlanId = long.Parse(priorConsumerPlanId);
             long newPlanId = long.Parse(consumerPlanId);
             string beginDate = "";
@@ -283,7 +279,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             public string icfRate { get; set; }
             public string complexRate { get; set; }
             public string developmentalRate { get; set; }
-            public string childIntensiveRate { get; set; }            
+            public string childIntensiveRate { get; set; }
         }
 
         public class AdditionalSupports

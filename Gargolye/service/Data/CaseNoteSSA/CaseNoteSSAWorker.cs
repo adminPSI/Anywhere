@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Script.Serialization;
+﻿using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.CaseNoteSSA
 {
@@ -21,7 +17,7 @@ namespace Anywhere.service.Data.CaseNoteSSA
         public BillingCodes[] getSSABillCodesFromService(string token, string serviceName, string personApproved)
         {
             string details = dg.getSSABillCodesFromService(token, serviceName, personApproved);
-            BillingCodes[] detailsObj = js.Deserialize<BillingCodes[]>(details);            
+            BillingCodes[] detailsObj = js.Deserialize<BillingCodes[]>(details);
             return detailsObj;
         }
 
@@ -31,7 +27,7 @@ namespace Anywhere.service.Data.CaseNoteSSA
             public string serviceCode { get; set; }
             public string fullName { get; set; }
             public string noteType { get; set; }
-            
+
         }
 
         public class ServiceOptions

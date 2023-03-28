@@ -1,14 +1,8 @@
 ﻿using Anywhere.Log;
 using System;
-using System.Data;
-using System.Data.Odbc;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Web;
-using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
-using System.Web.Services.Description;
-using PDFGenerator;
 
 namespace Anywhere.service.Data
 {
@@ -16,10 +10,10 @@ namespace Anywhere.service.Data
     {
         private static Loger logger = new Loger();
         Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
-         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
+        Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
 
         //data for OOD Entries Listing on OOD Module Landing Page
-        public string getOODEntries(string consumerIds, string serviceStartDate, string serviceEndDate, string userId,  string serviceCode, string referenceNumber, DistributedTransaction transaction)
+        public string getOODEntries(string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber, DistributedTransaction transaction)
         {
             try
             {
@@ -31,7 +25,7 @@ namespace Anywhere.service.Data
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@serviceCode", DbType.String, serviceCode);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@referenceNumber", DbType.String, referenceNumber);
-                
+
                 // returns the workflow document descriptions for the given workflowId
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getOODEntries(?, ?, ?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
@@ -167,7 +161,7 @@ namespace Anywhere.service.Data
 
         public string getEmployerJSON(string token, string employerId)
         {
-           if (tokenValidator(token) == false) return null;
+            if (tokenValidator(token) == false) return null;
 
             logger.debug("getEmployer" + token);
             try
@@ -254,7 +248,7 @@ namespace Anywhere.service.Data
             try
             {
                 logger.debug("getContactTypes ");
-               
+
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getContactTypes()", ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
@@ -395,7 +389,7 @@ namespace Anywhere.service.Data
 
         public string insertForm4MonthlyPlacementEditData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string employer, string contactType, string jobSeekerPresent, string outcome, string TSCNotified, string bilingualSupplement, string notes, string caseManagerId, string userId, string serviceId, string referenceNumber, string application, string interview)
         {
-             if (tokenValidator(token) == false) return null;
+            if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
             logger.debug("insertForm4MonthlyPlacementEditData" + token);
 
@@ -470,9 +464,9 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm4MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emEmploymentGoal, string emReferralQuestions, string emIndivInputonSearch, string emPotentialIssueswithProgress, string emPlanGoalsNextMonth, string emNumberofConsumerContacts, string emNumberEmployerContactsbyConsumer, string emNumberEmployerContactsbyStaff, string emNumberMonthsJobDevelopment, string userId)   
+        public string updateForm4MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emEmploymentGoal, string emReferralQuestions, string emIndivInputonSearch, string emPotentialIssueswithProgress, string emPlanGoalsNextMonth, string emNumberofConsumerContacts, string emNumberEmployerContactsbyConsumer, string emNumberEmployerContactsbyStaff, string emNumberMonthsJobDevelopment, string userId)
         {
-             if (tokenValidator(token) == false) return null;
+            if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
             logger.debug("updateForm4MonthlySummary" + token);
 
@@ -508,7 +502,7 @@ namespace Anywhere.service.Data
 
         public string insertForm4MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emEmploymentGoal, string emReferralQuestions, string emIndivInputonSearch, string emPotentialIssueswithProgress, string emPlanGoalsNextMonth, string emNumberofConsumerContacts, string emNumberEmployerContactsbyConsumer, string emNumberEmployerContactsbyStaff, string emNumberMonthsJobDevelopment, string userId, string serviceId)
         {
-             if (tokenValidator(token) == false) return null;
+            if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
             logger.debug("insertForm4MonthlySummary" + token);
 

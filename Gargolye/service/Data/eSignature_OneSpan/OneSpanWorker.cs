@@ -1,33 +1,14 @@
 ﻿using Anywhere.service.Data.eSignature_OneSpan;
-using Anywhere.service.Data.PlanInformedConsent;
-using CrystalDecisions.CrystalReports.ViewerObjectModel;
-using iTextSharp.text;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using OneSpanSign.Sdk;
 using OneSpanSign.Sdk.Builder;
-using OneSpanSign.Sdk.Services;
-using Org.BouncyCastle.Cms;
-using Org.BouncyCastle.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.IO.Packaging;
 using System.Linq;
-using System.Management.Automation.Language;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Script.Serialization;
-using System.Web.UI.MobileControls;
-using System.Web.UI.MobileControls.Adapters;
-using System.Windows.Forms;
 
 
 namespace Anywhere.service.Data.eSignature___OneSpan
@@ -58,8 +39,9 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
 
-                string[] emails = { "erickbey1@outlook.com", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
+                string[] emails = { "erickbey1@outlook.com", "erickbey10@gmail.com", "erickbey10@yahoo.com", "erick.bey@primarysolutions.net"};
 
+                // Create a list for each category for signers
                 List<string> emailsList = new List<string>();
                 List<string> namesList = new List<string>();
                 List<string> memberTypesList = new List<string>();
@@ -133,7 +115,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         public Field createRadioButton(string answerType, string groupName, string idName, int i, string anchorText, int occurence)
         {
             // The i parameter allows fieldIds to have the same names to be grabbed later on when checking for values
-            // The occurence parameter moves the radio button field to the next iteration of questions within the generated document
+            // The occurence parameter moves the radio button field to the next set of radio buttons within the generated document
             int xOffset = 717;
             int yOffset = 3;
 
@@ -162,33 +144,44 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             return oneSpanRadioButton;
         }
 
-        public Field createTextAreaField(string idName, int i, string anchorText)
+        public Field createTextAreaField(string idName, int i, string anchorText, int pageLocation)
         {
+            int textAreaXOffset = -80;
+            int textAreaWidth = 360;
+
+            // Change size and x position if the text area is for "How to address"
+            if (anchorText == "How to address")
+            {
+                textAreaXOffset = -60;
+                textAreaWidth = 225;
+            }
+
+            // Set character limit
             FieldValidator characterLimit = FieldValidatorBuilder.Basic()
                 .MaxLength(2500)
                 .Build();
 
             Field textAreaInput = FieldBuilder.TextArea()
                 .WithId(idName + i)
-                .WithFontSize(12)
+                .WithFontSize(10)
                 .WithValidation(characterLimit)
                 .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchorText)
                                                                         .AtPosition(TextAnchorPosition.TOPLEFT)
-                                                                        .WithSize(50, 50)
+                                                                        .WithSize(textAreaWidth, 40)
                                                                         .WithCharacter(0)
-                                                                        .WithOffset(0, 50))
-                .Build();
-
+                                                                        .WithOffset(textAreaXOffset, pageLocation))
+            .Build();
             return textAreaInput;
         }
 
-        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string[] names, string[]signatureTypes, PackageBuilder package, MemoryStream ms)
+        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string[] names, string[] signatureTypes, PackageBuilder package, MemoryStream ms)
         {
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Plan Report")
                                 .FromStream(ms, DocumentType.PDF)
                                 .WithId("Plan_Report")
                                 .EnableExtraction();
 
+            // array of names used in FieldId and DB
             string[] groupNames = {
                     "csChangeMind",
                     "csContact",
@@ -201,6 +194,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     "csResidentialOptions"
                 };
 
+            // array of unique text for anchoring radio buttons
             string[] descriptionAnchor = {
                     "I understand that I can change my mind at any time",
                     "I understand I can contact someone at",
@@ -215,8 +209,11 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
             int occurence = 0;
             int i = 0;
+            int dissentingOpinionLocation = 45;
+
             foreach (Signer signer in allSigners)
             {
+                // If not a digital signer type, skip to next signer
                 if (signatureTypes[i] != "1")
                 {
                     i++;
@@ -225,10 +222,13 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 string anchor = names[i] + " /";
                 string dateAnchor = names[i] + " Date";
 
-                if ( signer.Title == "Guardian" || signer.Title == "Person Supported" || signer.Title == "Parent/Guardian")
+                // If the team member type is "Guardian", "Person Supported", or "Parent/Guardian", create radio button fields
+                if (signer.Title == "Guardian" || signer.Title == "Person Supported" || signer.Title == "Parent/Guardian")
                 {
                     Signature sig1 = SignatureBuilder.SignatureFor(signer.Email)
                                         .WithName(signer.Email)
+
+                                        // Create radio field section
                                         .WithField(createRadioButton("Y", groupNames[0], "csChangeMind-yes", i, descriptionAnchor[0], occurence))
                                         .WithField(createRadioButton("N", groupNames[0], "csChangeMind-no", i, descriptionAnchor[0], occurence))
 
@@ -260,10 +260,11 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                         .WithField(createRadioButton("N", groupNames[8], "csResidentialOptions-No", i, descriptionAnchor[8], occurence))
                                         .WithField(createRadioButton("N/A", groupNames[8], "csResidentialOptions", i, descriptionAnchor[8], occurence))
 
-                                        //TODO: ADD IN THE TEXTAREA FIELDS
-                                        .WithField(createTextAreaField("dissentAreaDisagree-", i, "Areas team members disagree"))
-                                        .WithField(createTextAreaField("dissentHowToAddress-", i, "How to address"))
+                                        // Creates dissenting opinion text area fields
+                                        .WithField(createTextAreaField("dissentAreaDisagree-", i, "Areas team members disagree", dissentingOpinionLocation))
+                                        .WithField(createTextAreaField("dissentHowToAddress-", i, "How to address", dissentingOpinionLocation))
 
+                                        // Creates signature and date signature fields
                                         .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
@@ -276,7 +277,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                                                                             .AtPosition(TextAnchorPosition.BOTTOMLEFT)
                                                                                             .WithSize(75, 40)
                                                                                             .WithCharacter(4)
-                                                                                            .WithOffset(725, 0)
+                                                                                            .WithOffset(725, 8)
                                                                                             .WithOccurrence(0)))
                                             .Build();
                     occurence += 1;
@@ -287,10 +288,12 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 {
                     Signature sig1 = SignatureBuilder.SignatureFor(signer.Email)
                                         .WithName(signer.Email)
-                                           //TODO: ADD IN THE TEXTAREA FIELDS
-                                           .WithField(createTextAreaField("dissentAreaDisagree-", i, "Areas team members disagree"))
-                                           .WithField(createTextAreaField("dissentHowToAddress-", i, "How to address"))
 
+                                           // Creates dissenting opinion text area fields
+                                           .WithField(createTextAreaField("dissentAreaDisagree-", i, "Areas team members disagree", dissentingOpinionLocation))
+                                           .WithField(createTextAreaField("dissentHowToAddress-", i, "How to address", dissentingOpinionLocation))
+
+                                           // Creates signature and date signature fields
                                            .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
@@ -309,7 +312,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     document.WithSignature(sig1);
                 }
 
-                i++;                
+                i++;
+                dissentingOpinionLocation += 40;
             }
 
             return sendToOneSpan(token, assessmentID, package, document);
@@ -365,6 +369,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
             SigningStatus signingStatus = ossClient.GetSigningStatus(currentPackageId, null, null);
 
+            // If all signers have signed the document, update the DB 
             if (signingStatus.ToString().Equals("COMPLETE"))
             {
                 string signedStatus = signingStatus.ToString();
@@ -373,7 +378,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 osdg.OneSpanUpdateDocumentSignedStatus(token, assessmentID, signedStatus);
             }
 
-            // Code below sets the values from the documents radio buttons and assigns them to fieldIds using the fieldName as the value. This is all grouped by each signers signatureID so we can send each signers values to be updated in the DB
+            // Sets the values from the documents radio buttons and assigns them to fieldIds using the fieldName as the value. This is all grouped by each signers signatureID so we can send each signers values to be updated in the DB
             List<FieldSummary> fieldSummaries = ossClient.FieldSummaryService.GetFieldSummary(new PackageId(packageId));
 
             var fieldIds = new List<string> { "csChangeMind", "csChangeMindSSAPeopleId", "csContact", "csContactProviderVendorId", "csContactInput", "csRightsReviewed", "csAgreeToPlan", "csFCOPExplained", "csDueProcess", "csResidentialOptions", "csSupportsHealthNeeds", "csTechnology", "dissentAreaDisagree", "dissentHowToAddress" };
@@ -401,11 +406,12 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                             if (fieldId == "dissentAreaDisagree" || fieldId == "dissentHowToAddress")
                             {
                                 fieldDictionary.Add(fieldId, fieldSummary.FieldValue);
-                            } else
+                            }
+                            else
                             {
                                 fieldDictionary.Add(fieldId, fieldSummary.FieldName);
                             }
-                            
+
                         }
 
                         if (fieldId == "Date_Signed")

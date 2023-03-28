@@ -24,11 +24,18 @@ var timeEntry = (function () {
     useFiveCharWorkCode: '',
   };
 
+  // overlapping locations variables
   let overlapLocationsPopup;
   let overlapLocationsDropdown;
   let overlapLocationsDoneBtn;
-  let locationId = '';
-
+  //let locationId = '';
+  let duplicateconsumerIds;
+  let consumerswithUniqueLocations;
+  let consumerswithMultipleLocations;
+  let overlapconsumerlocationdata;
+  let seletedOverlapLocationId = '';
+  let selectedOverlapConsumerId; 
+ 
   // Save, Update, Delete
   //------------------------------------
   function showOverlapPopup(updateorsave = 'save') {
@@ -221,6 +228,7 @@ var timeEntry = (function () {
   }
 
   function saveEntryData(saveData) {
+    var test = saveData;
     if (saveData.locationId !== '' || saveData.consumerId === '') {
       if (saveAndSubmit) {
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
@@ -256,7 +264,7 @@ var timeEntry = (function () {
           }, 1000);
         });
       }
-    } else {
+    } else {   // if (saveData.locationId !== '' || saveData.consumerId === '')
       if (saveAndSubmit) {
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
@@ -280,33 +288,86 @@ var timeEntry = (function () {
             });
           });
         });
-      } else {
-        singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
+      } else {  // Just the save BTN -- if (saveData.locationId !== '' || saveData.consumerId === '')
+
+        // 1. Grab the consumer/location data
+        singleEntryAjax.getSelectedConsumerLocations(saveData, function (results) { 
+          overlapconsumerlocationdata = results; 
+       // });
+        // no location overlaps for any selected consumer
+        if (overlapconsumerlocationdata.length === 0) 
+        {
+          singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
+            successfulSave.show('SAVED');
+            setTimeout(function () {
+            successfulSave.hide();
+            timeEntryCard.clearAllGlobalVariables();
+            roster2.clearActiveConsumers();
+            newTimeEntry.init();
+                }, 1000);
+              });   
+        } else {   // location overlaps exist for a selected consumer
+          displayOverlapLocationsPopup(results);
+        }
+
+        // 2. Determine if there are overlap locations
+        // 2.5 -- From Popup, user pick the location from the DDL -- now you have a location and consumer paired
+        // 3. If overlaps -- With Non-overlaps -- assemble the list of consumers/locations -- groupedby location
+        // 4. If overlaps -- call InsertNewEntry in a foreach for each location (could be mulitple consumers for a location)
+        // 5. If overlaps -- You need the resulting pairing of locations/SingleEntryIds/consumer
+        // 6. If overlaps -- foreach the pairing of locations -- if you have match between 2.5 and 5. -- then do insert into consumersPresent (singleEntryId amd ConsumerID and devices)
+        // 6. If overlaps -- foreach the pairing of locations -- if NO match between 2.5 and 5. -- then do insert into AA_SingleEntry (saveData + saveData.LocationsId)
+        // 7. No overlaps -- call singleEntryAjax.preInsertSingleEntry(saveData, function (results)
+
+        // singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
     
-          if (results.length > 1) {
-            displayOverlapLocationsPopup(results);
-         
-          } else if (results.length = 1) {
-              successfulSave.show('SAVED');
-              setTimeout(function () {
-              successfulSave.hide();
-              timeEntryCard.clearAllGlobalVariables();
-              roster2.clearActiveConsumers();
-              newTimeEntry.init();
-                  }, 1000);
-          } else {
-            alert("There was a problem with Save process. Entry was not saved.");
-          }
-        });
+        //   getConsumerswithOverlappingLocations(results);
+        //  if (consumerswithMultipleLocations.length > 1) { 
+            
+              
+        //     displayOverlapLocationsPopup();
+          
+        //   } else  {
+        //       successfulSave.show('SAVED');
+        //       setTimeout(function () {
+        //       successfulSave.hide();
+        //       timeEntryCard.clearAllGlobalVariables();
+        //       roster2.clearActiveConsumers();
+        //       newTimeEntry.init();
+        //           }, 1000);
+        //   } 
+         });
         
       }
     }
   }
 
+  function getConsumerswithOverlappingLocations(consumerlocatons) {
+
+       // get lookup list of objects that have the same consumerId (ie, consumers with overlappng locations)
+       duplicateconsumerIds = consumerlocatons.reduce((a, e) => {
+        a[e.consumerId] = ++a[e.consumerId] || 0;
+        return a;
+        }, {});
+
+        // this is a list for OISP Sinopoli -- 4225 of non-overlapping locations 
+        consumerswithUniqueLocations = consumerlocatons.filter(e => !duplicateconsumerIds[e.consumerId]);
+
+         // this is a list for OISP Tenebruso -- 4219 of overlapping locations 
+        // she is the only one with multiple locations in the returned list of consumers/locations -- two selected consumers  
+        //TODO JOE -- what if there is more than one consumer with overlapping locations 
+        consumerswithMultipleLocations = consumerlocatons.filter(e => duplicateconsumerIds[e.consumerId]);
+  }
+
   function displayOverlapLocationsPopup(results) {
 
+    getConsumerswithOverlappingLocations(results);
+
+   // seletedOverlapLocationId
+
+    // build overlapLocation Popup
     overlapLocationsPopup = POPUP.build( {
-        header: "Consumer Name Last Name, First Name format) has two locations for this date. Please select the location where these services are being provided.",
+        header: `Overlapped locations for a selected consumer.`,
         hideX: false,
         id: "overlapLocationsPopup"
       });
@@ -323,20 +384,7 @@ var timeEntry = (function () {
       style: "secondary",
       classNames: 'disabled',
       callback: () => {    
-        var saveData = timeEntryCard.getSaveUpdateData();
-        if (locationId !== '') {
-        saveData.locationId = locationId;
-        
-         singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
-              successfulSave.show('SAVED');
-              setTimeout(function () {
-                successfulSave.hide();
-                timeEntryCard.clearAllGlobalVariables();
-                roster2.clearActiveConsumers();
-                newTimeEntry.init(true);
-              }, 1000);
-            });
-          }
+        saveSingleEntrywithLocationOverlaps();
       }
     });
     this.doneButton = overlapLocationsDoneBtn;
@@ -347,37 +395,45 @@ var timeEntry = (function () {
       type: "outlined",
       style: "secondary",
        callback: () => {
-        locationId = '';
+        seletedOverlapLocationId = '';
+        selectedOverlapConsumerId = '';
         POPUP.hide(overlapLocationsPopup);  
        }
     });
 
+   // for consumer with overlapping locations -- display consumerName 
+    let overlappedLocationsEntriesMessage = document.createElement('p');
+	  overlappedLocationsEntriesMessage.innerHTML = `Consumer ${consumerswithMultipleLocations[0].consumerName} has two locations for this date. Please select the location where these services are being provided. <br>`;
+    selectedOverlapConsumerId = consumerswithMultipleLocations[0].consumerId;
     let btnWrap = document.createElement("div");
 			btnWrap.classList.add("btnWrap");
 			btnWrap.appendChild(overlapLocationsDoneBtn);
 			btnWrap.appendChild(cancelBtn);        
+     // if (consumerswithUniqueLocations.length > 0) overlapLocationsPopup.appendChild(savedEntriesMessage);
+      overlapLocationsPopup.appendChild(overlappedLocationsEntriesMessage);
 			overlapLocationsPopup.appendChild(overlapLocationsDropdown);
 			overlapLocationsPopup.appendChild(btnWrap);
 
-      populateOverlapLocationsDropdown(results);       
+      populateOverlapLocationsDropdown();       
 
       overlapLocationsDropdown.addEventListener('change', event => {
 				var selectedOption = event.target.options[event.target.selectedIndex];
 			 
 				  if (selectedOption.value !== "SELECT") {
-            locationId = selectedOption.value;
+            seletedOverlapLocationId = selectedOption.value;
+            // selectedOverlapConsumerId
             overlapLocationsDropdownRequired();
 
           } 
 					
         });
         
-       overlapLocationsDropdownRequired();
+        overlapLocationsDropdownRequired();
 
         POPUP.show(overlapLocationsPopup);
 
         function overlapLocationsDropdownRequired() {
-          if (!locationId || locationId === '') {
+          if (!seletedOverlapLocationId || seletedOverlapLocationId === '') {
             overlapLocationsDropdown.classList.add('error');
             overlapLocationsDoneBtn.classList.add('disabled');
       
@@ -389,19 +445,119 @@ var timeEntry = (function () {
 
       }
 
-      function populateOverlapLocationsDropdown(results) {
+      function populateOverlapLocationsDropdown() {
 
-        let data = results.map((location) => ({
-          id: location.locationId,   // replace with selectedConsumerServiceType to get T1 and T2 info
+        let data = consumerswithMultipleLocations.map((location) => ({
+          id: location.consumerId,   
           value: location.locationId, 
-          text: location.locationName,
+          text: location.consumerName + " -- " + location.locationName,
         })); 
         data.unshift({ id: '', value: 'SELECT', text: 'SELECT' }); //ADD Blank value         
         dropdown.populate(overlapLocationsDropdown, data);  
 
       }
+ 
+      async function saveSingleEntrywithLocationOverlaps() {
 
+        let savedLocationsSingleEntryPairs = [];
 
+        // looking through the consumers with non-overlapping locationsIds (consumerswithUniqueLocations)
+        //  and finding the consumers with the same locationId (duplocationIds)
+        var duplocationIds = consumerswithUniqueLocations.reduce((a, e) => {
+          a[e.locationId] = ++a[e.locationId] || 0;
+          return a;
+          }, {});
+
+          // 1. filtering the consumers with non-overlapping locationsIds (consumerswithUniqueLocations)
+          // getting the subset list of consumers that share a locationId -- final result being a list of consumerIds for the shared locationId
+          // TODO JOE -- what if you have more than one set of duplicate locations IDs 
+         var nonoverlapconsumerswithsamelocation;
+         nonoverlapconsumerswithsamelocation = consumerswithUniqueLocations.filter(e => duplocationIds[e.locationId]);
+
+         if (nonoverlapconsumerswithsamelocation.length > 0) {
+              var strConsumerIds = '';
+              var locationid;
+              nonoverlapconsumerswithsamelocation.forEach(function (item) {
+                  strConsumerIds = strConsumerIds  + item.consumerId + ','; 
+                  locationid = item.locationId;
+              });
+
+              strConsumerIds = strConsumerIds.slice(0, -1);
+
+              saveData = timeEntryCard.getSaveUpdateData();
+              saveData.locationId = locationid;
+              saveData.consumerId = strConsumerIds;
+
+              // A. saving the SingleEntry that has multiple consumers who share a single location
+              // SAVED -- one record in the SingleEntr Table and multiple records in the AA_Consumers_Present table
+              let singleentryid;
+               await singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
+                singleentryid = results[1].slice(0,-2);                 
+                });
+                savedLocationsSingleEntryPairs.push({locationId: saveData.locationId, singleEntryId: singleentryid});
+        }
+
+          // 2. filtering Entries that are non-overlapping (consumerswithUniqueLocations) and have a unique location per unique consumer
+         var nonoverlapconsumerswithUniqueLocations;
+        nonoverlapconsumerswithUniqueLocations = consumerswithUniqueLocations.filter(e => !duplocationIds[e.locationId]);
+
+          // B. saving the SingleEntry that has a single location with an associated single consumer
+         // SAVED -- one record in the SingleEntr Table and assocciated single record in the AA_Consumers_Present table
+      if (nonoverlapconsumerswithUniqueLocations.length > 0) {
+         for (const item of nonoverlapconsumerswithUniqueLocations) {
+
+              saveData = timeEntryCard.getSaveUpdateData();
+              saveData.locationId = item.locationId;
+              saveData.consumerId = item.consumerId;
+              let singleentryid2;
+              await singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
+                singleentryid2 = results[1].slice(0,-2);
+              
+            });
+            savedLocationsSingleEntryPairs.push({locationId: saveData.locationId, singleEntryId: singleentryid2});
+          }
+      }
+        // Saves of non-overlapping locations happened above, therefore take into account already saved locations when saving the overlap location entity 
+        if (savedLocationsSingleEntryPairs.length > 0) {
+          let foundlocation = false;
+          savedLocationsSingleEntryPairs.forEach(function (item) {   
+            if (item.locationId === seletedOverlapLocationId)
+            {
+              foundlocation = true
+              // Single Entry Record already exists for this location 
+              // INSERT INTO into consumersPresent (singleEntryId amd ConsumerID and devices)
+              // **** TODO JOE -- NEED TO CREATE UPDATECONSUMERS PRESENT ****
+            } 
+          });
+
+            if (!foundlocation) saveOverlapLocationasSingleEntry();
+
+        } else {  // Single Entry Record DOES NOT exist for this location 
+              
+          saveOverlapLocationasSingleEntry();
+        }
+
+      async function saveOverlapLocationasSingleEntry() {
+
+              saveData = timeEntryCard.getSaveUpdateData();
+              saveData.locationId = seletedOverlapLocationId;
+              saveData.consumerId = selectedOverlapConsumerId;
+              await singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
+                POPUP.hide(overlapLocationsPopup); 
+                successfulSave.show('SAVED');
+                setTimeout(function () {
+                successfulSave.hide();
+                timeEntryCard.clearAllGlobalVariables();
+                roster2.clearActiveConsumers();
+                newTimeEntry.init();
+                    }, 1000);
+
+            });
+
+      }
+
+    }
+      
   function updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndSubmitBool) {
     saveAndSubmit = saveAndSubmitBool;
 
@@ -766,11 +922,80 @@ var timeEntry = (function () {
     }
   }
 
+  function checkLocationServicesEnabled() {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          // if location services are on, continue with normal functionality
+          $.session.singleEntrycrossMidnight = false;
+          newTimeEntry.init();
+        },
+        function(error) {
+          // If location services are off, show popup
+          const locationsWarningpopup = POPUP.build({
+            id: 'warningPopup',
+            hideX: false,
+            classNames: 'warning',
+          });
+      
+          const okBtn = button.build({
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained',
+            callback: function () {
+              POPUP.hide(locationsWarningpopup);
+            },
+          });
+          const btnWrap = document.createElement('div');
+          btnWrap.classList.add('btnWrap');
+          btnWrap.appendChild(okBtn);
+      
+          const warningMessage = document.createElement('p');
+          warningMessage.innerHTML = "Location services must be enabled on this device to save a new time entry record.  Please contact your company's IT team for assistance.";
+          locationsWarningpopup.appendChild(warningMessage);
+          locationsWarningpopup.appendChild(btnWrap);
+          POPUP.show(locationsWarningpopup);
+        }
+      );
+    } else {
+      // If location services are not supported, show popup
+      const locationsWarningpopup = POPUP.build({
+        id: 'warningPopup',
+        hideX: false,
+        classNames: 'warning',
+      });
+  
+      const okBtn = button.build({
+        text: 'OK',
+        style: 'secondary',
+        type: 'contained',
+        callback: function () {
+          POPUP.hide(locationsWarningpopup);
+        },
+      });
+      const btnWrap = document.createElement('div');
+      btnWrap.classList.add('btnWrap');
+      btnWrap.appendChild(okBtn);
+  
+      const warningMessage = document.createElement('p');
+      warningMessage.innerHTML = "Location services must be enabled on this device to save a new time entry record.  Please contact your company's IT team for assistance.";
+      locationsWarningpopup.appendChild(warningMessage);
+      locationsWarningpopup.appendChild(btnWrap);
+      POPUP.show(locationsWarningpopup);
+    }
+  }
+
   // Landing Page
   //------------------------------------
   function loadNewTimeEntryPage() {
-    $.session.singleEntrycrossMidnight = false;
-    newTimeEntry.init();
+    if ($.session.singleEntryLocationRequired === 'Y') {
+      // If location settings are required, check location settings
+      checkLocationServicesEnabled(); 
+    } else {
+      // If location settings are not required, resume normal funcionality
+      $.session.singleEntrycrossMidnight = false;
+      newTimeEntry.init();
+    }
   }
   function loadTimeEntryReviewPage() {
     $.session.singleEntrycrossMidnight = false;

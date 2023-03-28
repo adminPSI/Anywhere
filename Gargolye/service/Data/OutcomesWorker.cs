@@ -1,8 +1,4 @@
 using Anywhere.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -83,13 +79,14 @@ namespace Anywhere.service.Data
         }
         public SuccessSymbolLookup[] getSuccessSymbolLookup(string token)
         {
-          string successSymbolString = dg.getSuccessSymbolLookup(token);
-          SuccessSymbolLookup[] successSymbolObj = js.Deserialize<SuccessSymbolLookup[]>(successSymbolString);
-          return successSymbolObj;
+            string successSymbolString = dg.getSuccessSymbolLookup(token);
+            SuccessSymbolLookup[] successSymbolObj = js.Deserialize<SuccessSymbolLookup[]>(successSymbolString);
+            return successSymbolObj;
         }
-        public class SuccessSymbolLookup{
-          public string objectiveId { get; set; }
-          public string objSymbol { get; set; }
+        public class SuccessSymbolLookup
+        {
+            public string objectiveId { get; set; }
+            public string objSymbol { get; set; }
         }
         //New
         public class ConsumerGoalsData
@@ -207,40 +204,40 @@ namespace Anywhere.service.Data
             public string location_code { get; set; }
             public string Locations_Secondary_ID { get; set; }
             public string secondary_location { get; set; }
-        }      
-        
+        }
+
         public class UserIdsWithGoals
         {
             public string ID { get; set; }
-        }         
-        
+        }
+
         public class UserIdsWithGoalsByDate
         {
             public string id { get; set; }
-        }      
-        
+        }
+
         public class DaysBackForEditingGoals
         {
             public string setting_value { get; set; }
             public string outcomes_use_consumer_location { get; set; }
             public string consumer_location { get; set; }
         }
-        
+
         public class RemainingDailyGoals
         {
             public string ID { get; set; }
         }
-        
+
         public class CommunityIntegrationLevel
         {
             public string captionname { get; set; }
             public string code { get; set; }
         }
-        
+
         public class CIRequired
         {
             public string Setting_Value { get; set; }
-        }          
+        }
 
         public class GoalIDByPermission
         {

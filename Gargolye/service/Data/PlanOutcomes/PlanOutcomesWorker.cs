@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanOutcomes
@@ -16,12 +13,12 @@ namespace Anywhere.service.Data.PlanOutcomes
             string progressSummaryId = "";
             progressSummaryId = pdg.insertPlanOutcomeProgressSummary(token, planId, progressSummary);
             OutcomeId[] outcomeIdObj = js.Deserialize<OutcomeId[]>(progressSummaryId);
-            
+
             return progressSummaryId;
         }
 
         public string updatePlanOutcomeProgressSummary(string token, long progressSummaryId, string progressSummary)
-        {            
+        {
             pdg.updatePlanOutcomeProgressSummary(token, progressSummaryId, progressSummary);
 
             return "";
@@ -46,7 +43,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             string outcomeId = "";
             outcomeId = pdg.insertPlanOutcomesOutcome(token, assessmentId, outcome, details, history, sectionId, outcomeOrder, summaryOfProgress, status, carryOverReason);
             OutcomeId[] outcomeIdObj = js.Deserialize<OutcomeId[]>(outcomeId);
-            
+
             return outcomeIdObj[0].outcomeId.ToString();
         }
 
@@ -110,7 +107,7 @@ namespace Anywhere.service.Data.PlanOutcomes
 
             //allIds.experienceId = experienceIdObj[0].experienceId.ToString();
             //allIds.responsibleId = responsibilityIds;
-            return experienceIdObj[0].experienceId.ToString(); 
+            return experienceIdObj[0].experienceId.ToString();
             //return allIds;
         }
 
@@ -145,20 +142,20 @@ namespace Anywhere.service.Data.PlanOutcomes
         {
             var j = 0;
             string reviewId = "";
-            
+
             reviewId = pdg.insertPlanOutcomesReview(outcomeId, whatWillHappen[j], whenToCheckIn[j], whoReview[j], reviewOrder[j], contactId[j].ToString());
             ReviewId[] reviewIdObj = js.Deserialize<ReviewId[]>(reviewId);
-           
+
             return reviewIdObj[0].reviewId.ToString();
         }
 
         public string updatePlanOutcome(string token, string assessmentId, string outcomeId, string outcome, string details, string history, string sectionId, string summaryOfProgress, int status, string carryOverReason)
         {
-            
+
             pdg.updatePlanOutcomesOutcome(token, assessmentId, outcomeId, outcome, details, history, sectionId, summaryOfProgress, status, carryOverReason);
             //Insert Experience
             var i = 0;
-            
+
             return "Sucess";
         }
 
@@ -166,9 +163,9 @@ namespace Anywhere.service.Data.PlanOutcomes
         {
             var i = 0;
             var j = 0;
-            
+
             pdg.updatePlanOutcomesExperience(outcomeId, experienceIds[i], howHappened[i], whatHappened[i]);
-            if(responsibilityIds!= null)
+            if (responsibilityIds != null)
             {
                 foreach (long responsibilityId in responsibilityIds)
                 {
@@ -176,7 +173,7 @@ namespace Anywhere.service.Data.PlanOutcomes
                     j++;
                 }
             }
-            
+
 
             return "Sucess";
         }
@@ -184,16 +181,16 @@ namespace Anywhere.service.Data.PlanOutcomes
         public string updatePlanOutcomesReview(long outcomeId, string[] reviewIds, string[] whatWillHappen, string[] whenToCheckIn, string[] whoReview, long[] contactId)
         {
             var j = 0;
-            
+
             pdg.updatePlanOutcomesReview(outcomeId, reviewIds[j], whatWillHappen[j], whenToCheckIn[j], whoReview[j], contactId[j]);
-              
+
             return "Sucess";
         }
 
         public string updatePlanOutcomesExperienceOrder(string token, long outcomeId, long experienceId, int newPos, int oldPos)
         {
             pdg.updatePlanOutcomesExperienceOrder(token, outcomeId, experienceId, newPos, oldPos);
-            
+
             return "Sucess";
         }
 
@@ -233,7 +230,7 @@ namespace Anywhere.service.Data.PlanOutcomes
                 string experienceResponsibilityString = pdg.getPlanExperienceResponsibility(planOutcomesExperiencesObj[j].experienceId);
                 PlanOutcomeExperienceResponsibilities[] experienceResponsibilityObj = js.Deserialize<PlanOutcomeExperienceResponsibilities[]>(experienceResponsibilityString);
                 planOutcomesExperiencesObj[j].planExperienceResponsibilities = experienceResponsibilityObj;
-            }            
+            }
             //get review
             string planOutcomesReviewString = pdg.getPlanReviews(token, assessmentId);
             PlanOutcomesReviews[] planOutcomesReviewObj = js.Deserialize<PlanOutcomesReviews[]>(planOutcomesReviewString);
@@ -256,9 +253,9 @@ namespace Anywhere.service.Data.PlanOutcomes
             string outcomeId = "";
             int outcomeStatus = 0;
             PlanTotalOutcome outcomes = getPlanSpecificOutcomes("token", priorConsumerPlanId, int.Parse(targetAssessmentVersionId));
-            for(int i = 0; i < outcomes.planOutcome.Length; i++)
+            for (int i = 0; i < outcomes.planOutcome.Length; i++)
             {
-                if(outcomes.planOutcome[i].status == 1.ToString())
+                if (outcomes.planOutcome[i].status == 1.ToString())
                 {
                     //do nothing, it is completed
                 }
@@ -332,13 +329,13 @@ namespace Anywhere.service.Data.PlanOutcomes
                         }
                     }
                 }
-                                
+
             }
             if (outcomes.planProgressSummary.Length > 0)
             {
                 progressSummaryId = pdg.insertPlanOutcomeProgressSummary(token, long.Parse(consumerPlanId), outcomes.planProgressSummary[0].progressSummary);
             }
-                
+
         }
 
         public string removeUnsavableNoteText(string note)
@@ -363,7 +360,7 @@ namespace Anywhere.service.Data.PlanOutcomes
         }
 
         public class PlanTotalOutcome
-        {            
+        {
             public PlanOutcomes[] planOutcome { get; set; }
             public PlanOutcomesExperiences[] planOutcomeExperiences { get; set; }
             public PlanOutcomesReviews[] planReviews { get; set; }
@@ -413,7 +410,7 @@ namespace Anywhere.service.Data.PlanOutcomes
 
         public class PlanOutcomesReviews
         {
-            public string outcomeId {get; set;}
+            public string outcomeId { get; set; }
             public string outcomeReviewId { get; set; }
             public string whatWillHappen { get; set; }
             public string whenToCheckIn { get; set; }

@@ -1,24 +1,11 @@
-﻿using System;
+﻿using Anywhere.Log;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Data;
-using System.Data.Common;
-using System.Data.Odbc;
-using System.Data.SqlClient;
 using System.Configuration;
-using Anywhere.Log;
-using System.Drawing;
-using System.IO;
-using System.Text;
+using System.Data;
+using System.Data.Odbc;
+using System.Linq;
 using System.Web.Script.Serialization;
-using System.Text.RegularExpressions;
-using static Anywhere.service.Data.AnywhereWorker;
-using System.Management.Automation.Language;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
-using static Anywhere.service.Data.AnywhereAbsentWorker;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace Anywhere.service.Data.ResetPassword
 {
@@ -28,7 +15,7 @@ namespace Anywhere.service.Data.ResetPassword
         //private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(typeof(DataGetter));
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
-  
+
 
         public string getActiveInactiveUserDateJSON(string token, string isInactiveUser)
         {
