@@ -2211,6 +2211,14 @@ namespace Anywhere
                 BodyStyle = WebMessageBodyStyle.Wrapped,
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getitConsumerBehaviorTypes/")]
+        IncidentTrackingWorker.ConsumerBehaviorTypes[] getitConsumerBehaviorTypes(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getitReportingCategories/")]
         IncidentTrackingWorker.ReportingCategories[] getitReportingCategories(string token);
 
@@ -2251,6 +2259,14 @@ namespace Anywhere
                 BodyStyle = WebMessageBodyStyle.Wrapped,
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getitConsumerBehaviors/")]
+        IncidentTrackingWorker.ConsumerBehaviors[] getitConsumerBehaviors(string token, string consumerId, string incidentId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getitConsumerReporting/")]
         IncidentTrackingWorker.ConsumerReporting[] getitConsumerReporting(string token, string consumerId, string incidentId);
 
@@ -2271,6 +2287,24 @@ namespace Anywhere
             UriTemplate = "/saveUpdateITConsumerFollowUp/")]
         string saveUpdateITConsumerFollowUp(string token, List<String> consumerFollowUpIdArray, string consumerInvolvedId, List<String> followUpTypeIdArray, List<String> personResponsibleArray,
                                                     List<String> dueDateArray, List<String> completedDateArray, List<String> notesArray);
+
+        //Incident Tracking Consumer Behavior specific alters
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/itDeleteConsumerBehavior/")]
+        string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/saveUpdateITConsumerBehavior/")]
+        string saveUpdateITConsumerBehavior(string token, List<String> consumerFollowUpIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray,
+                                                    List<String> endTimeArray, List<String> occurrencesArray);
 
         //Incident Tracking Consumer Reporting specific alters
         [OperationContract]

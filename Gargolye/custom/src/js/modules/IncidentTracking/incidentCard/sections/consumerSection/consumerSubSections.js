@@ -1,5 +1,5 @@
-var consumerSubSections = (function() {
-	// DOM
+var consumerSubSections = (function () {
+  // DOM
   //---------------------
   var sectionsContainer;
   var sectionsTopBar;
@@ -12,19 +12,21 @@ var consumerSubSections = (function() {
   var involvementSection;
   var reportingSection;
   var reviewSection;
-	// DATA
+  var behaviorSection;
+  // DATA
   //---------------------
   // var consumersInvolved;
   var sections = [
     { id: 0, name: 'Remove Consumer' },
-    { id: 1, name: 'Follow Up' },
-    { id: 2, name: 'Injuries' },
-    { id: 3, name: 'Intervention' },
-    { id: 4, name: 'Involvement' },
-    { id: 5, name: 'Reporting' },
-    { id: 6, name: 'Review' }
+    { id: 1, name: 'Behavior Details' },
+    { id: 2, name: 'Follow Up' },
+    { id: 3, name: 'Injuries' },
+    { id: 4, name: 'Intervention' },
+    { id: 5, name: 'Involvement' },
+    { id: 6, name: 'Reporting' },
+    { id: 7, name: 'Review' },
   ];
-	// Values
+  // Values
   //---------------------
   var selectedConsumerId;
 
@@ -36,10 +38,10 @@ var consumerSubSections = (function() {
     if (visibleSection) {
       var visibleSectionHome = visibleSection.querySelector('.consumerSections__section__home');
       if (visibleSectionHome) {
-        visibleSectionHome.classList.remove('hidden');// reshow home page
+        visibleSectionHome.classList.remove('hidden'); // reshow home page
       }
-      visibleSection.classList.remove('visible');// hide section
-      sectionsMenu.classList.add('visible');// show menu
+      visibleSection.classList.remove('visible'); // hide section
+      sectionsMenu.classList.add('visible'); // show menu
     } else {
       incidentCard.toggleActionBtns(false);
       itConsumerSection.showConsumersWrap();
@@ -58,7 +60,7 @@ var consumerSubSections = (function() {
   function showSection(sectionName) {
     var targetSection;
 
-    switch(sectionName) {
+    switch (sectionName) {
       case 'Follow Up': {
         targetSection = followUpSection;
         break;
@@ -83,6 +85,10 @@ var consumerSubSections = (function() {
         targetSection = reviewSection;
         break;
       }
+      case 'Behavior Details': {
+        targetSection = behaviorSection;
+        break;
+      }
     }
 
     sectionsMenu.classList.remove('visible');
@@ -95,7 +101,7 @@ var consumerSubSections = (function() {
     incidentId = incident.getIncidentId();
 
     if (incidentId) {
-      switch(sectionName) {
+      switch (sectionName) {
         case 'Follow Up': {
           incidentTrackingAjax.getitConsumerFollowUps(selectedConsumerId, incidentId, res => {
             consumerFollowUp.populate(res, selectedConsumerId);
@@ -130,9 +136,16 @@ var consumerSubSections = (function() {
           });
           break;
         }
+        case 'Behavior Details': {
+          incidentTrackingAjax.getitConsumerBehavior(selectedConsumerId, incidentId, res => {
+            console.log(res);
+            consumerBehavior.populate(res, selectedConsumerId);
+          });
+          break;
+        }
       }
     } else {
-      switch(sectionName) {
+      switch (sectionName) {
         case 'Follow Up': {
           consumerFollowUp.populate(null, selectedConsumerId);
           break;
@@ -157,6 +170,10 @@ var consumerSubSections = (function() {
           consumerReview.populate(null, selectedConsumerId);
           break;
         }
+        case 'Behavior Details': {
+          consumerBehavior.populate(null, selectedConsumerId);
+          break;
+        }
       }
     }
   }
@@ -166,18 +183,18 @@ var consumerSubSections = (function() {
   function buildTopBar() {
     var topBar = document.createElement('div');
     topBar.classList.add('topBar');
-    
-		backBtn = button.build({
-			text: 'Back',
-			style: 'secondary',
-			type: 'text',
-			icon: 'arrowBack',
-			classNames: ['backBtn'],
-			callback: handleBackButtonClick,
-		});
-    
-		topBar.appendChild(backBtn);
-    
+
+    backBtn = button.build({
+      text: 'Back',
+      style: 'secondary',
+      type: 'text',
+      icon: 'arrowBack',
+      classNames: ['backBtn'],
+      callback: handleBackButtonClick,
+    });
+
+    topBar.appendChild(backBtn);
+
     return topBar;
   }
 
@@ -202,7 +219,7 @@ var consumerSubSections = (function() {
 
     sections.forEach(sec => {
       var sectionItem = document.createElement('div');
-      sectionItem.classList.add('menuItem')
+      sectionItem.classList.add('menuItem');
       sectionItem.innerHTML = sec.name;
       sectionItem.setAttribute('data-sectionId', sec.id);
       if (sec.name === 'Remove Consumer') sectionItem.classList.add('removeConsumer');
@@ -232,7 +249,7 @@ var consumerSubSections = (function() {
     sectionsTopBar = buildTopBar();
 
     var sectionsInner = document.createElement('div');
-    sectionsInner.classList.add('consumerSections__inner')
+    sectionsInner.classList.add('consumerSections__inner');
 
     sectionsMenu = buildMenu();
     followUpSection = consumerFollowUp.build();
@@ -241,8 +258,10 @@ var consumerSubSections = (function() {
     involvementSection = consumerInvolvement.build(consumersInvolvedData);
     reportingSection = consumerReporting.build();
     reviewSection = consumerReview.build();
+    behaviorSection = consumerBehavior.build();
 
     sectionsInner.appendChild(sectionsMenu);
+    sectionsInner.appendChild(behaviorSection);
     sectionsInner.appendChild(followUpSection);
     sectionsInner.appendChild(injuriesSection);
     sectionsInner.appendChild(interventionSection);
@@ -261,6 +280,6 @@ var consumerSubSections = (function() {
     showMenu,
     showSectionMenu,
     showBackBtn,
-    hideBackBtn
-  }
+    hideBackBtn,
+  };
 })();

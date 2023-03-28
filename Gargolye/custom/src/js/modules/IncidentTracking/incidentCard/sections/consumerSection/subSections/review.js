@@ -244,6 +244,7 @@ var consumerReview = (function () {
     var opts = {
       label: 'Reviewed By',
       style: 'secondary',
+      classNames: $.session.incidentTrackingReviewedBy ? 'reviewedBy' : ['reviewedBy', 'disabled'],
     };
 
     if (isEdit && formReadOnly) {
@@ -261,7 +262,11 @@ var consumerReview = (function () {
 
     data.unshift({ value: '%', text: '' });
 
-    dropdown.populate(rbDrop, data, reviewedById);
+    if ($.session.incidentTrackingReviewedBy) {
+      dropdown.populate(rbDrop, data, reviewedById);
+    } else {
+      dropdown.populate(rbDrop, data, $.session.PeopleId);
+    }
 
     return rbDrop;
   }
