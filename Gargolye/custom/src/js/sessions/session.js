@@ -137,7 +137,7 @@ $.session.dsLocationHistoryValue = 0;
 $.session.initialTimeOut = '';
 $.session.initialTimeIn = '';
 $.session.singleLoadedConsumerId = '';
-$.session.passwordSpecialCharacters = '!#$%*-?@_+'; 
+$.session.passwordSpecialCharacters = '!#$%*-?@_+';
 $.session.daysBackGoalsEdit = '';
 $.session.singleLoadedConsumerName = '';
 $.session.serviceStartDate = '';
@@ -196,6 +196,7 @@ $.session.singleEntryGottenById = false;
 $.session.singleEntrycrossMidnight = false;
 //Incident Tracking
 $.session.incidentTrackingView = false;
+$.session.incidentTrackingReviewedBy = false;
 $.session.incidentTrackingUpdate = false;
 $.session.incidentTrackingInsert = false;
 $.session.incidentTrackingDelete = false;
@@ -236,6 +237,7 @@ $.session.schedRequestOpenShifts = 'N';
 $.session.hideAllScheduleButton = false;
 //Plan
 $.session.planUpdate = false;
+$.session.planDelete = false;
 $.session.planView = false;
 $.session.planInsertNewTeamMember = false;
 $.session.planAssignCaseload = false;
@@ -476,6 +478,7 @@ function setSessionVariables() {
       }
     }
     //Demographics
+    //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Demographics') {
       if (tmpPerm == 'View') {
         $.session.DemographicsView = true;
@@ -508,6 +511,7 @@ function setSessionVariables() {
     }
 
     //Incident Tracking Permissons
+    //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Incident Tracking') {
       if (tmpPerm == 'View Case Load') {
         $.session.incidentTrackingViewCaseLoad = true;
@@ -524,6 +528,9 @@ function setSessionVariables() {
       if (tmpPerm == 'View') {
         $.session.incidentTrackingView = true;
       }
+      if (tmpPerm == 'reviewedBy') {
+        $.session.incidentTrackingReviewedBy = true;
+      }
     }
 
     //Anywhere Plan
@@ -531,6 +538,10 @@ function setSessionVariables() {
       //plansettingsdiv
       if (tmpPerm == 'Update' || $.session.isPSI == true) {
         $.session.planUpdate = true;
+      }
+      if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+        //TODO: ash - TJ sec keys
+        $.session.planDelete = true;
       }
       if (tmpPerm == 'View' || $.session.isPSI == true) {
         $.session.planView = true;
@@ -1562,10 +1573,11 @@ function disableModules() {
   } else {
     $('#OODsettingsdiv').css('display', 'none');
   }
-  if ($.session.passwordResetPermission = 'Anywhere') {//
-      //Leave module on
+  if (($.session.passwordResetPermission = 'Anywhere')) {
+    //
+    //Leave module on
   } else {
-      $('#Adminsettingdiv').css('display', 'none');
+    $('#Adminsettingdiv').css('display', 'none');
   }
   if ($.session.UserId === 'ash' || $.session.anywherePlanPermission == 'Anywhere_Plan') {
     //Leave module on

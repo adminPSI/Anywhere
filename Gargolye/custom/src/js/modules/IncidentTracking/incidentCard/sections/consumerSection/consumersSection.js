@@ -1,26 +1,27 @@
-var itConsumerSection = (function() {
-	// DOM
+var itConsumerSection = (function () {
+  // DOM
   //---------------------
   var section;
   var sectionBody;
   var consumerError;
   var consumersWrap;
   var consumerSections;
-	// DATA
+  // DATA
   //---------------------
   var activeConsumers = [];
   var consumersInvolved;
   var consumerInvolvedIdArray;
-	// Values
+  // Values
   //---------------------
 
-  function clearData(){
+  function clearData() {
     consumerFollowUp.clearData();
     consumerInjuries.clearData();
     consumerIntervention.clearData();
     consumerInvolvement.clearData();
     consumerReporting.clearData();
     consumerReview.clearData();
+    consumerBehavior.clearData();
     activeConsumers = [];
   }
   function deleteConsumerData(consumerId) {
@@ -30,6 +31,7 @@ var itConsumerSection = (function() {
     consumerInvolvement.deleteConsumerData(consumerId);
     consumerReporting.deleteConsumerData(consumerId);
     consumerReview.deleteConsumerData(consumerId);
+    consumerBehavior.deleteConsumerData(consumerId);
   }
 
   function getConsumersInvolved() {
@@ -48,7 +50,7 @@ var itConsumerSection = (function() {
   function displayCount() {
     var count = activeConsumers.length;
     var countHolder = section.querySelector('span[data-count="consumers"]');
-		countHolder.innerHTML = `( ${count} )`;
+    countHolder.innerHTML = `( ${count} )`;
   }
   function checkForRequiredConsumer() {
     if (activeConsumers.length === 0) {
@@ -57,7 +59,7 @@ var itConsumerSection = (function() {
       consumerSections.classList.remove('visible');
 
       incidentCard.toggleSave(true);
-			return;
+      return;
     }
 
     consumerError.classList.add('hidden');
@@ -68,13 +70,12 @@ var itConsumerSection = (function() {
     consumerCards.forEach(card => card.classList.remove('error'));
 
     var cardHasErrors = itDetailsSection.checkRequiredFields();
-    
+
     if (cardHasErrors) {
       incidentCard.toggleSave(true);
     } else {
       incidentCard.toggleSave(false);
     }
-   
   }
   function showConsumerError(consumerIdArray) {
     incidentCard.toggleSave(true);
@@ -105,10 +106,10 @@ var itConsumerSection = (function() {
 
     consumers.forEach(consumer => {
       //If consumer is already on the selected consumer list ignore
-			if (activeConsumers.filter(actConsumer => actConsumer.id === consumer.id).length > 0) return
-			consumer.card.classList.remove('highlighted');
-			var clone = consumer.card.cloneNode(true);
-			var card = buildConsumer(clone);
+      if (activeConsumers.filter(actConsumer => actConsumer.id === consumer.id).length > 0) return;
+      consumer.card.classList.remove('highlighted');
+      var clone = consumer.card.cloneNode(true);
+      var card = buildConsumer(clone);
       consumersWrap.appendChild(card);
       var initPromise = consumerInvolvement.initConsumerData(consumer.id);
       initPromises.push(initPromise);
@@ -131,14 +132,15 @@ var itConsumerSection = (function() {
     } else {
       incidentCard.toggleSave(false);
     }
-
   }
   function removeConsumerFromConsumersInvolved(selectedConsumerId) {
-    var consumerCard = document.querySelector(`[data-consumer-id="${selectedConsumerId}"]`).parentElement;
+    var consumerCard = document.querySelector(
+      `[data-consumer-id="${selectedConsumerId}"]`,
+    ).parentElement;
     consumersWrap.removeChild(consumerCard);
 
     consumerSections.classList.remove('visible');
-    
+
     incidentCard.toggleActionBtns(false);
 
     roster2.removeConsumerFromActiveConsumers(selectedConsumerId);
@@ -149,35 +151,34 @@ var itConsumerSection = (function() {
     checkForRequiredConsumer();
     consumerInvolvement.checkRequiredFields();
     displayCount();
-    roster2.toggleMiniRosterBtnVisible(true)
+    roster2.toggleMiniRosterBtnVisible(true);
 
     // Event when you remove a consumer
     // 1. Ensure that at least one consumer is selected
     // 2. Ensure that all required fields are filled in on the  details section
     var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
     //var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
-   // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
+    // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
 
     if (detailSectionHasErrors || activeConsumers.length === 0) {
       incidentCard.toggleSave(true);
     } else {
       incidentCard.toggleSave(false);
     }
-
   }
-  
+
   // Populate
   //-----------------------------------------------
   function populateConsumersWrap() {
     consumerInvolvedIdArray = [];
 
     consumersInvolved.forEach(c => {
-      consumerInvolvedIdArray.push({id: c.consumerId, involvedId: c.consumerInvolvedId});
+      consumerInvolvedIdArray.push({ id: c.consumerId, involvedId: c.consumerInvolvedId });
       // build consumer card
       var consumer = roster2.buildConsumerCard({
         FN: c.firstName,
         LN: c.lastName,
-        id: c.consumerId
+        id: c.consumerId,
       });
       // build incident card
       var card = buildConsumer(consumer);
@@ -197,38 +198,40 @@ var itConsumerSection = (function() {
 
   // Consumer Card
   //-----------------------------------------------
-	function buildConsumer(consumerCard) {
+  function buildConsumer(consumerCard) {
     function checkInvolvedRequirements() {
-      const locationId = consumerInvolvement.involvementDataLookup(consumerCard.dataset.consumerId).locationId;
+      const locationId = consumerInvolvement.involvementDataLookup(
+        consumerCard.dataset.consumerId,
+      ).locationId;
       const involvementSec = document.querySelector("[data-sectionid='4']");
-      if (locationId === "" || consumerInvolvement.checkOneHasPPI() === false) {
+      if (locationId === '' || consumerInvolvement.checkOneHasPPI() === false) {
         involvementSec.classList.add('sectionError');
       } else {
         involvementSec.classList.remove('sectionError');
       }
-    }    
-		consumerCard.classList.remove('highlighted');
+    }
+    consumerCard.classList.remove('highlighted');
 
-		var cardWrap = document.createElement('div');
-		cardWrap.classList.add('incidentCard__consumer');
-    
-		// build card
-		cardWrap.appendChild(consumerCard);
+    var cardWrap = document.createElement('div');
+    cardWrap.classList.add('incidentCard__consumer');
 
-		// card event
-		cardWrap.addEventListener('click', function() {
-			if (event.target === consumerCard) {
+    // build card
+    cardWrap.appendChild(consumerCard);
+
+    // card event
+    cardWrap.addEventListener('click', function () {
+      if (event.target === consumerCard) {
         incidentCard.toggleActionBtns(true);
         consumersWrap.classList.remove('visible');
         consumerSections.classList.add('visible');
         consumerSubSections.showMenu(consumerCard);
-        checkInvolvedRequirements()
+        checkInvolvedRequirements();
         if (document.querySelector('.consumerListBtn')) roster2.toggleMiniRosterBtnVisible(false);
-			}
-		});
+      }
+    });
 
-		return cardWrap;
-	}
+    return cardWrap;
+  }
 
   // Section
   //-----------------------------------------------
@@ -236,22 +239,22 @@ var itConsumerSection = (function() {
     var opts = options;
     consumersInvolved = consumersInvolvedData;
 
-		section = document.createElement('div');
-		section.classList.add('incidentSection', 'visible');
-		section.setAttribute('data-card-page', 'consumers');
-		section.setAttribute('data-page-num', opts.pageNumber);
+    section = document.createElement('div');
+    section.classList.add('incidentSection', 'visible');
+    section.setAttribute('data-card-page', 'consumers');
+    section.setAttribute('data-page-num', opts.pageNumber);
 
-		var heading = document.createElement('div');
+    var heading = document.createElement('div');
     heading.classList.add('incidentSection__header');
-		heading.innerHTML = `<h3>Consumers Involved <span data-count="consumers"></span></h3>`;
+    heading.innerHTML = `<h3>Consumers Involved <span data-count="consumers"></span></h3>`;
 
-		sectionBody = document.createElement('div');
+    sectionBody = document.createElement('div');
     sectionBody.classList.add('incidentSection__body');
-    
-		consumerError = document.createElement('p');
-		consumerError.classList.add('consumerError');
+
+    consumerError = document.createElement('p');
+    consumerError.classList.add('consumerError');
     consumerError.innerHTML = 'You must select at least one consumer';
-    
+
     consumersWrap = document.createElement('div');
     consumersWrap.classList.add('consumersWrap');
 
@@ -260,7 +263,7 @@ var itConsumerSection = (function() {
     sectionBody.appendChild(consumerError);
     sectionBody.appendChild(consumersWrap);
     sectionBody.appendChild(consumerSections);
-    
+
     section.appendChild(heading);
     section.appendChild(sectionBody);
 
@@ -269,10 +272,10 @@ var itConsumerSection = (function() {
     } else {
       consumerInvolvedIdArray = undefined;
     }
-    
+
     return section;
   }
-  
+
   return {
     build: buildSection,
     addConsumers: moveConsumersToConsumersInvolved,
@@ -283,5 +286,5 @@ var itConsumerSection = (function() {
     removeConsumerErrors,
     showConsumerError,
     clearData,
-  }
+  };
 })();

@@ -1499,6 +1499,11 @@ namespace Anywhere
             return iTW.getitConsumerFollowUpTypes(token);
         }
 
+        public IncidentTrackingWorker.ConsumerBehaviorTypes[] getitConsumerBehaviorTypes(string token)
+        {
+            return iTW.getitConsumerBehaviorTypes(token);
+        }
+
         public IncidentTrackingWorker.ReportingCategories[] getitReportingCategories(string token)
         {
             return iTW.getitReportingCategories(token);
@@ -1524,6 +1529,11 @@ namespace Anywhere
             return iTW.getitConsumerFollowUps(token, consumerId, incidentId);
         }
 
+        public IncidentTrackingWorker.ConsumerBehaviors[] getitConsumerBehaviors(string token, string consumerId, string incidentId)
+        {
+            return iTW.getitConsumerBehaviors(token, consumerId, incidentId);
+        }
+
         public IncidentTrackingWorker.ConsumerReporting[] getitConsumerReporting(string token, string consumerId, string incidentId)
         {
             return iTW.getitConsumerReporting(token, consumerId, incidentId);
@@ -1540,6 +1550,17 @@ namespace Anywhere
         {
             return iTW.saveUpdateITConsumerFollowUp(token, consumerFollowUpIdArray, consumerInvolvedId, followUpTypeIdArray, personResponsibleArray,
                                                      dueDateArray, completedDateArray, notesArray);
+        }
+
+        //Incident Tracking Consumer Behavior specific alters
+        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        {
+            return iTW.itDeleteConsumerFollowUp(token, itConsumerFollowUpId);
+        }
+
+        public string saveUpdateITConsumerBehavior(string token, List<String> consumerBehaviorIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray, List<String> endTimeArray, List<String> occurrencesArray)
+        {
+            return iTW.saveUpdateITConsumerBehavior(token, consumerBehaviorIdArray, consumerInvolvedId, behaviorTypeIdArray, startTimeArray, endTimeArray, occurrencesArray);
         }
 
         //Incident Tracking Consumer Reporting specific alters
@@ -3066,9 +3087,9 @@ namespace Anywhere
             return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment);
         }
 
-        public ActiveAccount[] getActiveAccount(string token)
+        public ActiveAccount[] getActiveAccount(string token, string consumerId)
         {
-            return cf.getActiveAccount(token);
+            return cf.getActiveAccount(token, consumerId);
         }
 
         public Payees[] getPayees(string token, string userId)
@@ -3114,6 +3135,11 @@ namespace Anywhere
         public ConsumerFinancesWorker.CFAttachmentsList[] getCFAttachmentsList(string token, string regId)
         {
             return cf.getCFAttachmentsList(token, regId);
+        }
+
+        public ConsumerName[] getConsumerNameByID(string token, string consumersId)
+        {
+            return cf.getConsumerNameByID(token, consumersId);
         }
 
     }

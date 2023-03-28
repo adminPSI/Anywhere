@@ -5188,6 +5188,26 @@ namespace Anywhere.Data
             }
         }
 
+        public string getitConsumerBehaviors(string token, string consumerID, string incidentId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getitConsumerBehaviors ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerID);
+            list.Add(incidentId);
+            string text = "CALL DBA.ANYW_IncidentTracking_GetConsumerBehaviors(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("727", ex.Message + "ANYW_IncidentTracking_GetConsumerBehaviors(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "727: error ANYW_IncidentTracking_GetConsumerBehaviors";
+            }
+        }
+
         public string getitConsumerReporting(string token, string consumerID, string incidentId)
         {
             if (tokenValidator(token) == false) return null;
@@ -5220,6 +5240,21 @@ namespace Anywhere.Data
             {
                 logger.error("729", ex.Message + " ANYW_IncidentTracking_GetFollowUpTypesDropdown('" + token + "')");
                 return "729: getitConsumerFollowUpTypes";
+            }
+        }
+
+        public string getitConsumerBehaviorTypes(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getitConsumerBehaviorTypes" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_IncidentTracking_GetBehaviorTypesDropdown('" + token + "')");
+            }
+            catch (Exception ex)
+            {
+                logger.error("729", ex.Message + " ANYW_IncidentTracking_GetBehaviorTypesDropdown('" + token + "')");
+                return "729: getitConsumerBehaviorTypes";
             }
         }
 
@@ -5281,6 +5316,51 @@ namespace Anywhere.Data
             {
                 logger.error("730", ex.Message + "ANYW_IncidentTracking_SaveUpdateITConsumerFollowUp(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "730: error ANYW_IncidentTracking_SaveUpdateITConsumerFollowUp";
+            }
+        }
+
+        //Incident Tracking Consumer Behavior Alter Specific Calls
+        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("itDeleteConsumerBehavior ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(itConsumerFollowUpId);
+            string text = "CALL DBA.ANYW_IncidentTracking_DeleteConsumerBehavior(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("729", ex.Message + "ANYW_IncidentTracking_DeleteConsumerBehavior(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "729: error ANYW_IncidentTracking_DeleteConsumerBehavior";
+            }
+        }
+
+        public string saveUpdateITConsumerBehavior(string token, string consumerFollowUpId, string consumerInvolvedId, string behaviorTypeId, string startTime,
+                                                     string endTime, string occurrences)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("saveUpdateITConsumerBehavior");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerFollowUpId);
+            list.Add(consumerInvolvedId);
+            list.Add(behaviorTypeId);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(occurrences);
+            string text = "CALL DBA.ANYW_IncidentTracking_SaveUpdateITConsumerBehavior(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("730", ex.Message + "ANYW_IncidentTracking_SaveUpdateITConsumerBehavior(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "730: error ANYW_IncidentTracking_SaveUpdateITConsumerBehavior";
             }
         }
 

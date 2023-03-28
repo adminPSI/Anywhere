@@ -2,6 +2,7 @@ const demographics = (function () {
   let demoData;
   let sectionInner;
   let unEditabled = [
+    'pathToEmployment',
     'county',
     'organization',
     'organizationAddress',
@@ -31,6 +32,16 @@ const demographics = (function () {
     }
   }
 
+  function formatMaritalStatus(status) {
+    switch (status) {
+      case 'M':
+        return 'Married';
+      case 'S':
+        return 'Single';
+      case 'U':
+        return 'Unkown';
+    }
+  }
   function formatPhoneNumber(number) {
     if (!number) return;
     const splitNumber = number.split('%');
@@ -57,31 +68,6 @@ const demographics = (function () {
     }
 
     return formatDOB;
-  }
-  function formatLabelText(text) {
-    const splitText = text
-      .match(/([A-Z]?[^A-Z]*)/g)
-      .slice(0, -1)
-      .map(t => UTIL.capitalize(t));
-    return splitText.join(' ');
-  }
-  function formatViewInnerHTML(name, value) {
-    if (!value) value = '';
-
-    switch (name) {
-      case 'city': {
-        return `${value}, `;
-      }
-      case 'addressOne':
-      case 'addressTwo':
-      case 'state':
-      case 'zip': {
-        return value;
-      }
-      default: {
-        return `<span>${formatLabelText(name)}:</span> ${value}`;
-      }
-    }
   }
   function formatOrganizationAddress(add1, add2, city, zip) {
     return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''} ${zip ? zip : ''}`;
@@ -131,8 +117,35 @@ const demographics = (function () {
     }
     return age;
   }
+  function formatLabelText(text) {
+    const splitText = text
+      .match(/([A-Z]?[^A-Z]*)/g)
+      .slice(0, -1)
+      .map(t => UTIL.capitalize(t));
+    return splitText.join(' ');
+  }
+  function formatViewInnerHTML(name, value) {
+    if (!value) value = '';
+
+    switch (name) {
+      case 'city': {
+        return `${value}, `;
+      }
+      case 'addressOne':
+      case 'addressTwo':
+      case 'state':
+      case 'zip':
+      case 'pathToEmployment': {
+        return value;
+      }
+      default: {
+        return `<span>${formatLabelText(name)}:</span> ${value}`;
+      }
+    }
+  }
 
   function formatDataForDisplay(data) {
+    console.table(data);
     const pathToEmployment = data.pathToEmployment;
 
     // Address
@@ -151,12 +164,13 @@ const demographics = (function () {
 
     // Additional Info
     const dateOfBirth = formatDOB(data.DOB);
+    const socialSecurityNumber = data.SSN;
     const medicaidNumber = data.MedicaidNumber;
     const medicareNumber = data.MedicareNumber;
     const residentNumber = data.ResidentNumber;
 
     // Organization Info
-    const county = data.county;
+    const county = data.County;
     const organization = data.orgName;
     const organizationAddress = formatOrganizationAddress(
       data.orgAdd1,
@@ -171,7 +185,7 @@ const demographics = (function () {
     const generation = data.generation;
     const age = getAgeFromDOB(data.DOB);
     const race = data.race;
-    const maritalStatus = data.maritalStatus;
+    const maritalStatus = formatMaritalStatus(data.maritalStatus);
     const gender = data.gender;
     const primaryLanguage = data.language;
     const educationLevel = data.educationLevel;
@@ -199,6 +213,7 @@ const demographics = (function () {
         medicaidNumber,
         medicareNumber,
         residentNumber,
+        ssn: socialSecurityNumber,
       },
       // Organization Info
       organization: {
@@ -348,6 +363,13 @@ const demographics = (function () {
     return { inputGroup, viewEle: viewElement };
   }
 
+  function buildPathToEmployment() {
+    const groupWrap = buildInputGroupWrap('Path To Employment');
+    const { inputGroup } = buildInputGroup('pathToEmployment', demoData.pathToEmployment);
+    groupWrap.appendChild(inputGroup);
+
+    return groupWrap;
+  }
   function buildAddressInfo() {
     const groupWrap = buildInputGroupWrap('Address');
 
@@ -374,8 +396,6 @@ const demographics = (function () {
       }
       const propValue = demoData.contact[prop];
       const { inputGroup } = buildInputGroup(prop, propValue);
-      // set label for view elements
-
       // append
       groupWrap.appendChild(inputGroup);
     }
@@ -384,6 +404,7 @@ const demographics = (function () {
   }
   function buildAdditionalInfo() {
     const groupWrap = buildInputGroupWrap('Additional Info');
+    const viewElements = {};
 
     for (const prop in demoData.additional) {
       // GK Only Check
@@ -391,11 +412,39 @@ const demographics = (function () {
         if (gkOnly.includes(prop)) continue;
       }
       const propValue = demoData.additional[prop];
-      const { inputGroup } = buildInputGroup(prop, propValue);
+      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
+
+      // cache view ele
+      viewElements[prop] = viewEle;
 
       // append
       groupWrap.appendChild(inputGroup);
     }
+
+    console.log(viewElements);
+
+    const showDetailsoBtn = button.build({
+      text: 'Show Details',
+      style: 'secondary',
+      type: 'outlined',
+    });
+    groupWrap.appendChild(showDetailsoBtn);
+
+    // TODO: refactor below code *also show details button need changed to naked style
+    showDetailsoBtn.addEventListener('click', function (e) {
+      if (e.target.value === 'Show Details') {
+        e.target.value = 'Hide Details';
+
+        document.getElementById('DOB').textContent = `DOB: ${formatDOB}`;
+        document.getElementById('SSN').textContent = `SSN: ${demoData.SSN}`;
+        document.getElementById('Medicaid').textContent = `Medicaid: ${demoData.MedicaidNumber}`;
+      } else {
+        e.target.value = 'Show Details';
+        document.getElementById('DOB').textContent = 'DOB:';
+        document.getElementById('SSN').textContent = 'SSN:';
+        document.getElementById('Medicaid').textContent = 'Medicaid:';
+      }
+    });
 
     return groupWrap;
   }
@@ -432,22 +481,6 @@ const demographics = (function () {
     }
 
     return groupWrap;
-
-    // TODO: refactor below code *also show details button need changed to naked style
-    document.getElementById('infoButton').addEventListener('click', function (e) {
-      if (e.target.value === 'Show Details') {
-        e.target.value = 'Hide Details';
-
-        document.getElementById('DOB').textContent = `DOB: ${formatDOB}`;
-        document.getElementById('SSN').textContent = `SSN: ${demoData.SSN}`;
-        document.getElementById('Medicaid').textContent = `Medicaid: ${demoData.MedicaidNumber}`;
-      } else {
-        e.target.value = 'Show Details';
-        document.getElementById('DOB').textContent = 'DOB:';
-        document.getElementById('SSN').textContent = 'SSN:';
-        document.getElementById('Medicaid').textContent = 'Medicaid:';
-      }
-    });
   }
 
   function populateDemographicsSection(section, data, consumerID) {
@@ -458,12 +491,14 @@ const demographics = (function () {
     sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
 
+    const pathToEmployment = buildPathToEmployment();
     const addressInfo = buildAddressInfo();
     const contactInfo = buildContactInfo();
     const additionalInfo = buildAdditionalInfo();
     const organizationInfo = buildOrganizationInfo();
     const demographicInfo = buildDemographicInfo();
 
+    sectionInner.appendChild(pathToEmployment);
     sectionInner.appendChild(addressInfo);
     sectionInner.appendChild(contactInfo);
     sectionInner.appendChild(additionalInfo);

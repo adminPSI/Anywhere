@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 
 namespace Anywhere
@@ -2215,6 +2216,14 @@ namespace Anywhere
                 BodyStyle = WebMessageBodyStyle.Wrapped,
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getitConsumerBehaviorTypes/")]
+        IncidentTrackingWorker.ConsumerBehaviorTypes[] getitConsumerBehaviorTypes(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getitReportingCategories/")]
         IncidentTrackingWorker.ReportingCategories[] getitReportingCategories(string token);
 
@@ -2255,6 +2264,14 @@ namespace Anywhere
                 BodyStyle = WebMessageBodyStyle.Wrapped,
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getitConsumerBehaviors/")]
+        IncidentTrackingWorker.ConsumerBehaviors[] getitConsumerBehaviors(string token, string consumerId, string incidentId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getitConsumerReporting/")]
         IncidentTrackingWorker.ConsumerReporting[] getitConsumerReporting(string token, string consumerId, string incidentId);
 
@@ -2275,6 +2292,24 @@ namespace Anywhere
             UriTemplate = "/saveUpdateITConsumerFollowUp/")]
         string saveUpdateITConsumerFollowUp(string token, List<String> consumerFollowUpIdArray, string consumerInvolvedId, List<String> followUpTypeIdArray, List<String> personResponsibleArray,
                                                     List<String> dueDateArray, List<String> completedDateArray, List<String> notesArray);
+
+        //Incident Tracking Consumer Behavior specific alters
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/itDeleteConsumerBehavior/")]
+        string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/saveUpdateITConsumerBehavior/")]
+        string saveUpdateITConsumerBehavior(string token, List<String> consumerFollowUpIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray,
+                                                    List<String> endTimeArray, List<String> occurrencesArray);
 
         //Incident Tracking Consumer Reporting specific alters
         [OperationContract]
@@ -4149,7 +4184,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getActiveAccount/")]
-        ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token);
+        ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token, string consumerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4224,6 +4259,15 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getCFAttachmentsList/")]
         ConsumerFinancesWorker.CFAttachmentsList[] getCFAttachmentsList(string token, string regId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getConsumerNameByID/")]
+        ConsumerFinancesWorker.ConsumerName[] getConsumerNameByID(string token, string consumerId);
+
     }
 
 

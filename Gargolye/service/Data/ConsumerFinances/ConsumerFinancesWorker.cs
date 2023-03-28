@@ -125,6 +125,13 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
+        public class ConsumerName
+        {
+            [DataMember(Order = 0)]
+            public string FullName { get; set; }
+
+        }
+
 
         public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment)
         {
@@ -146,7 +153,7 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
-        public ActiveAccount[] getActiveAccount(string token)
+        public ActiveAccount[] getActiveAccount(string token, string consumerId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -154,7 +161,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getActiveAccount(transaction));
+                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getActiveAccount(transaction, consumerId));
                     return accounts;
                 }
                 catch (Exception ex)
@@ -375,6 +382,25 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     CFAttachmentsList[] attachmentsList = js.Deserialize<CFAttachmentsList[]>(Odg.getCFAttachmentsList(transaction, regId));
                     return attachmentsList;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ConsumerName[] getConsumerNameByID(string token, string consumersId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    ConsumerName[] consumerName = js.Deserialize<ConsumerName[]>(Odg.getConsumerNameByID(token, consumersId, transaction));
+
+                    return consumerName;
+
                 }
                 catch (Exception ex)
                 {

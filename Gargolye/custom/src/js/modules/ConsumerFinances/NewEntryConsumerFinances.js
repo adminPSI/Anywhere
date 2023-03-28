@@ -49,8 +49,8 @@ const NewEntryCF = (() => {
             regId = registerId;
             const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
             const { getAccountEntriesByIdResult } = result;
-            date = UTIL.getTodaysDate();//UTIL.formatDateFromIso(getAccountEntriesByIdResult[0].activityDate);
-            amount = getAccountEntriesByIdResult[0].amount;
+            date = moment(getAccountEntriesByIdResult[0].activityDate).format('YYYY-MM-DD');
+            amount = getAccountEntriesByIdResult[0].amount; 
             account = getAccountEntriesByIdResult[0].account;
             payee = getAccountEntriesByIdResult[0].payee;
             category = getAccountEntriesByIdResult[0].category;
@@ -75,6 +75,7 @@ const NewEntryCF = (() => {
             attachment = '';
             receipt = '';
             accountID = '';
+            accountType = 'E';
         }
         DOM.clearActionCenter();
 
@@ -182,7 +183,7 @@ const NewEntryCF = (() => {
             id: `expenseRadio`,
             text: "Expense",
             name: "amountType",
-            isChecked: accountType == 'D' ? false : true,
+            isChecked: accountType == 'D' ? false : true, 
         });
         depositRadio = input.buildRadio({
             id: `depositRadio`,
@@ -213,7 +214,6 @@ const NewEntryCF = (() => {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_CANCEL_BTN);
         }
-
 
         var dropWrap = document.createElement('div');
         dropWrap.classList.add('vehicleInspectionDTWrap');
@@ -323,7 +323,6 @@ const NewEntryCF = (() => {
         } else {
             newSubCategoryDropdown.classList.remove('error');
         }
-
         setBtnStatusOfNewEntry();
     }
 
@@ -335,19 +334,16 @@ const NewEntryCF = (() => {
         } else {
             NEW_SAVE_BTN.classList.remove('disabled');
         }
-
     }
 
     function eventListeners() {
         newDateInput.addEventListener('input', event => {
             date = event.target.value;
             checkRequiredFieldsOfNewEntry();
-
         });
         newAmountInput.addEventListener('input', event => {
             amount = event.target.value;
             checkRequiredFieldsOfNewEntry();
-
         });
         newPayeeDropdown.addEventListener('change', event => {
             /* categoryID = event.target.value;*/
@@ -378,21 +374,20 @@ const NewEntryCF = (() => {
         newReceiptInput.addEventListener('input', event => {
             receipt = event.target.value;
         });
-
     }
 
     async function saveNewAccount() {
         const amountType = document.getElementById("expenseRadio").checked ? "E" : "D";
         if (attachmentArray == undefined || attachmentArray.length == 0) {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, null,null, receipt, BtnName, regId);
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, null,null, receipt, BtnName, regId);
             const { insertAccountResult } = result;
             if (insertAccountResult.registerId != null) {
                 ConsumerFinances.loadConsumerFinanceLanding();
             }
         }
         else {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId);
-            const { insertAccountResult } = result;
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId);
+            const { insertAccountResult } = result; 
 
             if (insertAccountResult.registerId != null) {
                 ConsumerFinances.loadConsumerFinanceLanding();
@@ -409,7 +404,7 @@ const NewEntryCF = (() => {
     async function populateAccountDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync();
+        } = await ConsumerFinancesAjax.getActiveAccountAsync('0'); 
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
