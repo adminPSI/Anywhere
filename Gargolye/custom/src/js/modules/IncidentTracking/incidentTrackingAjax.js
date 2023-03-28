@@ -666,7 +666,6 @@
       },
     });
   }
-  //TODO: ash - c# and SQL
   function getitConsumerBehavior(consumerId, incidentId, callback) {
     $.ajax({
       type: 'POST',
@@ -975,7 +974,6 @@
     });
   }
   //Consumer Behavior Alters
-  //TODO: ash - c# and SQL
   function itDeleteConsumerBehavior(itConsumerBehaviorId, callback) {
     $.ajax({
       type: 'POST',
@@ -998,7 +996,6 @@
       },
     });
   }
-  //TODO: ash - c# and SQL
   function saveUpdateITConsumerBehaviors(data, callback) {
     // data = {
     // 	token: $.session.Token,

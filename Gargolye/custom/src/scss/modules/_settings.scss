@@ -3,6 +3,7 @@
     margin-bottom: 8px;
   }
 }
+
 .settingMenuCard {
   margin-bottom: 5px;
   background: #fff;
@@ -39,58 +40,43 @@
     .rllCheckbox {
       padding-bottom: 10px;
     }
-    // > div {
-    //   margin-left: 10px;
-    //   margin-right: 10px;
-    // }
   }
 }
 
-.submenu.util-menu__widgetSettings {
+// Widget Settings
+
+.util-menu__widgetSettings {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
-  .widgetSettingsSaveBtn {
-    margin-top: -10px;
-    width: 100%;
-    transition-duration: .18s;
-    transition-timing-function: linear;
-    background: $bg-dark;
-    &.saved {
-      background: $bg-dark2;
+
+  .widgetWrap {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .widgetHeader {
+    align-items: center;
+    background: $bg-dark2;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+
+    .checkbox-mtd:before {
+      background-color: $white;
     }
   }
 
+  .widgetBody {
+    transform: translateY(-100%);
+    transition: all 200ms linear;
+    max-height: 0px;
 
-  .cnProductivity {
-    .group1 {
-      display: flex;
-      margin-top: 10px;
-      > div {
-        flex-grow: 1;
-        &:first-child {
-          max-width: 110px;
-        }
-        &:last-child {
-          margin-left: 10px;
-        }
-      }
-    }
-    .group2 {
-      width: 250px;
-      margin-top: 10px;
+    &.active {
+      transform: translateY(0);
+      max-height: fit-content;
     }
   }
-  .cnCaseLoad {
-    .settingsCheckBox {
-      margin-bottom: 10px;
-    }
-  }
-  #productivityThresholdPercentage,
-  #cnProductivityDaysBack,
-  #cnProductivityWorkHoursPerDay {
-    text-align: right;
-  }
-
-
 }
-

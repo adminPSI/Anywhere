@@ -1,78 +1,493 @@
-const widgetSettings = (function() {
-  //order in sections[] determines display order
-  const sections = [
-    {
-      heading: "Case Note Productivity",
-      id: 'CN_Productivity',
-      application: 'Gatekeeper'
-    },
-    {
-      heading: "My Case Load",
-      id: 'CN_CaseLoad',
-      application: 'Gatekeeper'
-    },
-    {
-      heading: "Plan To-Do List",
-      id: 'WF_Plan',
-      application: 'Gatekeeper'
-    },
-    {
-      heading: "Rejected Case Notes",
-      id: 'CN_Rejected',
-      application: 'Gatekeeper'
-    },
-    
-  ];
+const widgetSettings = (function () {
+  let widgetSettingsPage;
 
-  function buildWidgetSection(section) {
-    const settingSection = document.createElement("div");
-    const settingSectionHeader = document.createElement("h3");
-    settingSection.classList.add("settingMenuCard");
-    settingSectionHeader.classList.add("header");
-    settingSectionHeader.innerText = section.heading;
-    settingSection.id = section.id
-    settingSection.appendChild(settingSectionHeader);
-    return settingSection
+  const sections = {
+    1001: { name: 'Custom Links', settings: {}, showHide: '', gkOnly: false },
+    1002: {
+      name: 'Absent Consumers',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    1003: {
+      name: 'Location Progress Notes',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    1004: {
+      name: 'Consumer Progress Notes',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    1005: {
+      name: 'Day Service Time Clock',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    1006: { name: 'Hours Worked', settings: {}, showHide: '', gkOnly: false },
+    1007: {
+      name: 'Daily Services',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    1008: { name: 'Day Services', settings: {}, showHide: '', gkOnly: false },
+    1009: {
+      name: 'My Unapproved Time Entries',
+      settings: {},
+      showHide: '',
+      gkOnly: true,
+    },
+    1010: {
+      name: 'Time Entry Review',
+      settings: {},
+      showHide: '',
+      gkOnly: true,
+    },
+    1011: { name: 'My Schedule', settings: {}, showHide: '', gkOnly: true },
+    1012: {
+      name: 'Incident Tracking',
+      settings: {},
+      showHide: '',
+      gkOnly: true,
+    },
+    // pre existing, need new ids, idk what that'll do to existing data?
+    1013: {
+      name: 'Case Note Productivity',
+      settings: { productivityThreshold: 60, daysBack: 7, workHoursPerDay: 7 },
+      showHide: '',
+      gkOnly: true,
+      build: () => {
+        const widgetBody = document.createElement('div');
+
+        const group1 = document.createElement('div');
+        group1.classList.add('group1');
+        const group2 = document.createElement('div');
+        group2.classList.add('group2');
+        const percentSymb = document.createElement('p');
+        percentSymb.innerText = '%';
+        percentSymb.style.color = 'black';
+        percentSymb.style.position = 'absolute';
+        percentSymb.style.marginLeft = '252px';
+        percentSymb.style.marginTop = '-99px';
+
+        // build inputs
+        const daysBackInput = input.build({
+          id: 'cnProductivityDaysBack',
+          label: 'Days Back',
+          type: 'number',
+          style: 'secondary',
+          value: this.settings.daysBack,
+          attributes: [
+            { key: 'min', value: '1' },
+            { key: 'max', value: '14' },
+            {
+              key: 'onkeypress',
+              value: 'return event.charCode >= 48 && event.charCode <= 57',
+            },
+          ],
+        });
+        const productivityThresholdPercentage = input.build({
+          id: 'productivityThresholdPercentage',
+          label: 'Productivity Threshold',
+          type: 'number',
+          style: 'secondary',
+          value: this.settings.productivityThreshold,
+          attributes: [
+            { key: 'min', value: '0' },
+            { key: 'max', value: '100' },
+            {
+              key: 'onkeypress',
+              value: 'return event.charCode >= 48 && event.charCode <= 57',
+            },
+          ],
+        });
+        const workHoursPerDay = input.build({
+          id: 'cnProductivityWorkHoursPerDay',
+          label: 'Work Hours/Day',
+          type: 'number',
+          style: 'secondary',
+          value: this.settings.workHoursPerDay,
+          attributes: [
+            { key: 'min', value: '1' },
+            { key: 'max', value: '24' },
+          ],
+        });
+        const saveBtn = button.build({
+          id: 'cnProductivitySave',
+          text: 'Save',
+          type: 'contained',
+          style: 'secondary',
+          classNames: ['widgetSettingsSaveBtn'],
+          callback: async () => {
+            const newDaysBack = parseInt(daysBackInput.firstElementChild.value);
+            const newProductivity = parseInt(
+              productivityThresholdPercentage.firstElementChild.value,
+            );
+            const newWorkHours = parseFloat(workHoursPerDay.firstElementChild.value);
+            if (newDaysBack >= 1 && newDaysBack <= 14) {
+              this.settings.daysBack = newDaysBack;
+            }
+            if (newProductivity >= 0 && newProductivity <= 100) {
+              this.settings.productivityThreshold = newProductivity;
+            }
+            if (newWorkHours >= 0.1 && newWorkHours <= 24) {
+              this.settings.workHoursPerDay = newWorkHours;
+            }
+            // config string to json
+            const configString = JSON.stringify(this.settings);
+
+            // style saved button
+            saveBtn.innerText = 'saved';
+            saveBtn.classList.add('saved');
+            setTimeout(() => {
+              saveBtn.classList.remove('saved');
+              saveBtn.innerText = 'save';
+            }, 1600);
+
+            // update settings
+            await widgetSettingsAjax.setWidgetSettingConfig(1, configString, this.showHide);
+            dashboard.refreshWidgetSettings();
+          },
+        });
+
+        group1.appendChild(daysBackInput);
+        group1.appendChild(workHoursPerDay);
+        group2.appendChild(productivityThresholdPercentage);
+
+        widgetBody.appendChild(group1);
+        widgetBody.appendChild(group2);
+        widgetBody.appendChild(saveBtn);
+
+        return widgetBody;
+      },
+    },
+    1014: {
+      name: 'My Case Load',
+      settings: {
+        viewNotesDaysBack: 30,
+        lastNoteEnteredDaysBack: 30,
+        viewEnteredByOtherUsers: 'N',
+      },
+      showHide: '',
+      gkOnly: true,
+      build: () => {
+        const widgetBody = document.createElement('div');
+
+        const viewNotesByOtherUsersCheckBox = input.buildCheckbox({
+          text: 'View Notes Entered by Other Users',
+          style: 'secondary',
+          isChecked: this.settings.viewEnteredByOtherUsers === 'Y' ? true : false,
+        });
+        viewNotesByOtherUsersCheckBox.classList.add('settingsCheckBox');
+        viewNotesByOtherUsersCheckBox.addEventListener('change', event => {
+          if (event.target.checked && $.session.CaseNotesViewEntered) {
+            this.settings.viewEnteredByOtherUsers = 'Y';
+          } else {
+            this.settings.viewEnteredByOtherUsers = 'N';
+          }
+        });
+
+        const lastNoteDaysBackInput = input.build({
+          id: 'cnCaseLoadLastNoteDaysBack',
+          label: 'Last Note Entered Days Back',
+          type: 'number',
+          style: 'secondary',
+          value: this.settings.lastNoteEnteredDaysBack,
+          attributes: [
+            { key: 'min', value: '1' },
+            { key: 'max', value: '60' },
+            {
+              key: 'onkeypress',
+              value: 'return event.charCode >= 48 && event.charCode <= 57',
+            },
+          ],
+        });
+        const reviewNotesDaysBackInput = input.build({
+          id: 'cnCaseLoadLastNoteDaysBack',
+          label: 'Review Notes Days Back',
+          type: 'number',
+          style: 'secondary',
+          value: this.settings.viewNotesDaysBack,
+          attributes: [
+            { key: 'min', value: '1' },
+            { key: 'max', value: '60' },
+            {
+              key: 'onkeypress',
+              value: 'return event.charCode >= 48 && event.charCode <= 57',
+            },
+          ],
+        });
+
+        const saveBtn = button.build({
+          id: 'cnCaseLoadSave',
+          text: 'Save',
+          type: 'contained',
+          style: 'secondary',
+          classNames: ['widgetSettingsSaveBtn'],
+          callback: async () => {
+            // get input field values
+            const newViewNotesDaysBack = parseInt(reviewNotesDaysBackInput.firstElementChild.value);
+            const newLastNoteEnteredDaysBack = parseInt(
+              lastNoteDaysBackInput.firstElementChild.value,
+            );
+            let newViewEnteredByOthers = 'N';
+            if ($.session.CaseNotesViewEntered) {
+              newViewEnteredByOthers = viewNotesEnteredByOtherUsersCheckBox.firstElementChild
+                .checked
+                ? 'Y'
+                : 'N';
+            }
+
+            if (newViewNotesDaysBack >= 1 && newViewNotesDaysBack <= 60) {
+              this.settings.viewNotesDaysBack = newViewNotesDaysBack;
+            }
+            if (newLastNoteEnteredDaysBack >= 1 && newLastNoteEnteredDaysBack <= 60) {
+              this.settings.lastNoteEnteredDaysBack = newLastNoteEnteredDaysBack;
+            }
+
+            this.settings.viewEnteredByOtherUsers = newViewEnteredByOthers;
+
+            // config string to json
+            const configString = JSON.stringify(this.settings);
+
+            // style saved button
+            saveBtn.innerText = 'saved';
+            saveBtn.classList.add('saved');
+            setTimeout(() => {
+              saveBtn.classList.remove('saved');
+              saveBtn.innerText = 'save';
+            }, 1600);
+
+            // update settings
+            await widgetSettingsAjax.setWidgetSettingConfig(2, configString, this.showHide);
+            dashboard.refreshWidgetSettings();
+          },
+        });
+
+        if ($.session.CaseNotesViewEntered) {
+          widgetBody.appendChild(viewNotesEnteredByOtherUsersCheckBox);
+        } else {
+          this.settings.viewEnteredByOtherUsers = 'N';
+        }
+
+        widgetBody.appendChild(viewNotesByOtherUsersCheckBox);
+        widgetBody.appendChild(lastNoteDaysBackInput);
+        widgetBody.appendChild(reviewNotesDaysBackInput);
+        widgetBody.appendChild(saveBtn);
+
+        return widgetBody;
+      },
+    },
+    1015: {
+      name: 'Plan To-Do List',
+      settings: { dueDate: 'today' },
+      showHide: '',
+      gkOnly: true,
+      build: () => {
+        const widgetBody = document.createElement('div');
+
+        const dueDateDropdown = dropdown.build({
+          label: 'Due Date',
+          style: 'secondary',
+          dropdownId: 'dueDateDropdown',
+        });
+        dueDateDropdown.addEventListener('change', e => {
+          this.settings.dueDate = e.target.value;
+        });
+        dropdown.populate(
+          dueDateDropdown,
+          [
+            { id: 1, value: 'today', text: 'Today' },
+            { id: 2, value: 'next 7 days', text: 'Next 7 Days' },
+            { id: 3, value: 'next 30 days', text: 'Next 30 Days' },
+            { id: 4, value: 'prior 7 days', text: 'Prior 7 Days' },
+            { id: 5, value: 'prior 30 days', text: 'Prior 30 Days' },
+          ],
+          this.settings.dueDate,
+        );
+
+        const saveBtn = button.build({
+          id: 'wfPlanSave',
+          text: 'Save',
+          type: 'contained',
+          style: 'secondary',
+          classNames: ['widgetSettingsSaveBtn'],
+          callback: async () => {
+            // config string to json
+            const configString = JSON.stringify(this.settings);
+
+            // style saved button
+            saveBtn.innerText = 'saved';
+            saveBtn.classList.add('saved');
+            setTimeout(() => {
+              saveBtn.classList.remove('saved');
+              saveBtn.innerText = 'save';
+            }, 1600);
+
+            // update settings
+            await widgetSettingsAjax.setWidgetSettingConfig(4, configString, this.showHide);
+            dashboard.refreshWidgetSettings();
+          },
+        });
+
+        widgetBody.appendChild(dueDateDropdown);
+        widgetBody.appendChild(saveBtn);
+
+        return widgetBody;
+      },
+    },
+    1016: {
+      name: 'Rejected Case Notes',
+      settings: { daysBack: 60 },
+      showHide: '',
+      gkOnly: true,
+      build: () => {
+        console.log(this);
+        const widgetBody = document.createElement('div');
+
+        const daysBackInput = input.build({
+          id: 'cnRejectedDaysBack',
+          label: 'Rejected Notes Days Back',
+          type: 'number',
+          style: 'secondary',
+          value: this.settings.daysBack,
+          attributes: [
+            { key: 'min', value: '1' },
+            { key: 'max', value: '60' },
+            {
+              key: 'onkeypress',
+              value: 'return event.charCode >= 48 && event.charCode <= 57',
+            },
+          ],
+        });
+        const saveBtn = button.build({
+          id: 'cnRejectedSave',
+          text: 'Save',
+          type: 'contained',
+          style: 'secondary',
+          classNames: ['widgetSettingsSaveBtn'],
+          callback: async () => {
+            console.log(this);
+            // get input field values
+            const newDaysBack = parseInt(daysBackInput.firstElementChild.value);
+            if (newDaysBack >= 1 && newDaysBack <= 60) {
+              this.settings.daysBack = newDaysBack;
+            }
+
+            // config string to json
+            const configString = JSON.stringify(this.settings);
+
+            // style saved button
+            saveBtn.innerText = 'saved';
+            saveBtn.classList.add('saved');
+            setTimeout(() => {
+              saveBtn.classList.remove('saved');
+              saveBtn.innerText = 'save';
+            }, 1600);
+
+            // update settings
+            await widgetSettingsAjax.setWidgetSettingConfig(3, configString, this.showHide);
+            dashboard.refreshWidgetSettings();
+          },
+        });
+
+        widgetBody.appendChild(daysBackInput);
+        widgetBody.appendChild(saveBtn);
+
+        return widgetBody;
+      },
+    },
+  };
+
+  function setWidgetSettings(widgetId) {
+    let settings = dashboard.getWidgetSettings(widgetId);
+
+    if (settings.widgetConfig !== null) {
+      sections[widgetId].settings = { ...settings.widgetConfig };
+    }
+  }
+
+  function buildWidgetBodyInnerHTML(sec) {
+    setWidgetSettings(sec);
+    const settingHTML = sections[sec].build();
+    return settingHTML;
+  }
+
+  function populatePage() {
+    for (sec in sections) {
+      if ($.session.applicationName === 'Advisor' && sections[sec].gkOnly) return;
+
+      const sectionWrap = document.createElement('div');
+      sectionWrap.classList.add('widgetWrap');
+
+      const sectionHeader = document.createElement('div');
+      sectionHeader.classList.add('widgetHeader');
+
+      const sectionBody = document.createElement('div');
+      sectionBody.classList.add('widgetBody');
+
+      const title = document.createElement('p');
+      title.innerText = sections[sec].name;
+
+      const checkbox = input.buildCheckbox({
+        text: 'Show',
+        isChecked: true,
+      });
+      checkbox.addEventListener('change', e => {
+        sections[sec].showHide = e.target.checked ? 'Y' : 'N';
+      });
+
+      sectionHeader.appendChild(title);
+      sectionHeader.appendChild(checkbox);
+
+      sectionBody.appendChild(buildWidgetBodyInnerHTML(sec));
+
+      sectionWrap.appendChild(sectionHeader);
+      sectionWrap.appendChild(sectionBody);
+
+      widgetSettingsPage.appendChild(sectionWrap);
+
+      sectionHeader.addEventListener('click', e => {
+        if (sectionBody.classList.contains('active')) {
+          sectionBody.classList.remove('active');
+        } else {
+          const currAct = widgetSettingsPage.querySelector('.active');
+          if (currAct) currAct.classList.remove('active');
+          sectionBody.classList.add('active');
+        }
+      });
+    }
   }
 
   function buildPage() {
-    const widgetSettingsPage = document.querySelector(
-      ".util-menu__widgetSettings"
-    );
-    widgetSettingsPage.innerHTML = "";
+    widgetSettingsPage = document.querySelector('.util-menu__widgetSettings');
+    widgetSettingsPage.innerHTML = '';
 
-    const currMenu = document.createElement("p");
-    currMenu.innerText = "Widget Settings";
-    currMenu.classList.add("menuTopDisplay");
+    const currMenu = document.createElement('p');
+    currMenu.innerText = 'Widget Settings';
+    currMenu.classList.add('menuTopDisplay');
 
     const backButton = button.build({
-      text: "Back",
-      icon: "arrowBack",
-      type: "text",
-      attributes: [{ key: "data-action", value: "back" }]
+      text: 'Back',
+      icon: 'arrowBack',
+      type: 'text',
+      attributes: [{ key: 'data-action', value: 'back' }],
     });
 
     widgetSettingsPage.appendChild(currMenu);
     widgetSettingsPage.appendChild(backButton);
-    // Create each setting section outline. 
-    sections.forEach(section => {
-      if (section.application === $.session.applicationName || section.application === 'All') {
-        const sectionSection = buildWidgetSection(section)
-        widgetSettingsPage.appendChild(sectionSection)  
-      }
-    });
-
-    //Populate each section with specific inputs/data
-    if ($.session.applicationName === 'Gatekeeper') cnProductivitySettings.buildCNProductivity();
-    if ($.session.applicationName === 'Gatekeeper') cnCaseLoadSettings.buildCNCaseLoadSettings();
-    if ($.session.applicationName === 'Gatekeeper') wfPlanSettings.buildWfPlanSettings();
-    if ($.session.applicationName === 'Gatekeeper') cnRejectedSettings.buildCNRejectedSettings();
   }
 
   function init() {
     buildPage();
+    populatePage();
   }
+
   return {
-    init
+    init,
   };
 })();
