@@ -136,13 +136,13 @@ var consumerSubSections = (function () {
           });
           break;
         }
-        case 'Behavior Details': {
-          incidentTrackingAjax.getitConsumerBehavior(selectedConsumerId, incidentId, res => {
-            console.log(res);
-            consumerBehavior.populate(res, selectedConsumerId);
-          });
-          break;
-        }
+        // case 'Behavior Details': {
+        //   incidentTrackingAjax.getitConsumerBehavior(selectedConsumerId, incidentId, res => {
+        //     console.log(res);
+        //     consumerBehavior.populate(res, selectedConsumerId);
+        //   });
+        //   break;
+        // }
       }
     } else {
       switch (sectionName) {
@@ -170,10 +170,10 @@ var consumerSubSections = (function () {
           consumerReview.populate(null, selectedConsumerId);
           break;
         }
-        case 'Behavior Details': {
-          consumerBehavior.populate(null, selectedConsumerId);
-          break;
-        }
+        // case 'Behavior Details': {
+        //   consumerBehavior.populate(null, selectedConsumerId);
+        //   break;
+        // }
       }
     }
   }
@@ -258,10 +258,10 @@ var consumerSubSections = (function () {
     involvementSection = consumerInvolvement.build(consumersInvolvedData);
     reportingSection = consumerReporting.build();
     reviewSection = consumerReview.build();
-    behaviorSection = consumerBehavior.build();
+    // behaviorSection = consumerBehavior.build();
 
     sectionsInner.appendChild(sectionsMenu);
-    sectionsInner.appendChild(behaviorSection);
+    // sectionsInner.appendChild(behaviorSection);
     sectionsInner.appendChild(followUpSection);
     sectionsInner.appendChild(injuriesSection);
     sectionsInner.appendChild(interventionSection);

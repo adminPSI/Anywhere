@@ -2,60 +2,9 @@ const widgetSettings = (function () {
   let widgetSettingsPage;
 
   const sections = {
-    1001: { name: 'Custom Links', settings: {}, showHide: '', gkOnly: false },
-    1002: {
-      name: 'Absent Consumers',
-      settings: {},
-      showHide: '',
-      gkOnly: false,
-    },
-    1003: {
-      name: 'Location Progress Notes',
-      settings: {},
-      showHide: '',
-      gkOnly: false,
-    },
-    1004: {
-      name: 'Consumer Progress Notes',
-      settings: {},
-      showHide: '',
-      gkOnly: false,
-    },
-    1005: {
-      name: 'Day Service Time Clock',
-      settings: {},
-      showHide: '',
-      gkOnly: false,
-    },
-    1006: { name: 'Hours Worked', settings: {}, showHide: '', gkOnly: false },
-    1007: {
-      name: 'Daily Services',
-      settings: {},
-      showHide: '',
-      gkOnly: false,
-    },
-    1008: { name: 'Day Services', settings: {}, showHide: '', gkOnly: false },
-    1009: {
-      name: 'My Unapproved Time Entries',
-      settings: {},
-      showHide: '',
-      gkOnly: true,
-    },
-    1010: {
-      name: 'Time Entry Review',
-      settings: {},
-      showHide: '',
-      gkOnly: true,
-    },
-    1011: { name: 'My Schedule', settings: {}, showHide: '', gkOnly: true },
-    1012: {
-      name: 'Incident Tracking',
-      settings: {},
-      showHide: '',
-      gkOnly: true,
-    },
     // pre existing, need new ids, idk what that'll do to existing data?
-    1013: {
+    1: {
+      //1
       name: 'Case Note Productivity',
       settings: { productivityThreshold: 60, daysBack: 7, workHoursPerDay: 7 },
       showHide: '',
@@ -165,7 +114,8 @@ const widgetSettings = (function () {
         return widgetBody;
       },
     },
-    1014: {
+    2: {
+      //2
       name: 'My Case Load',
       settings: {
         viewNotesDaysBack: 30,
@@ -282,7 +232,8 @@ const widgetSettings = (function () {
         return widgetBody;
       },
     },
-    1015: {
+    3: {
+      //4
       name: 'Plan To-Do List',
       settings: { dueDate: 'today' },
       showHide: '',
@@ -340,7 +291,8 @@ const widgetSettings = (function () {
         return widgetBody;
       },
     },
-    1016: {
+    4: {
+      //3
       name: 'Rejected Case Notes',
       settings: { daysBack: 60 },
       showHide: '',
@@ -400,6 +352,59 @@ const widgetSettings = (function () {
 
         return widgetBody;
       },
+    },
+    // new widgets
+    5: { name: 'Custom Links', settings: {}, showHide: '', gkOnly: false },
+    6: {
+      name: 'Absent Consumers',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    7: {
+      name: 'Location Progress Notes',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    8: {
+      name: 'Consumer Progress Notes',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    9: {
+      name: 'Day Service Time Clock',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    10: { name: 'Hours Worked', settings: {}, showHide: '', gkOnly: false },
+    11: {
+      name: 'Daily Services',
+      settings: {},
+      showHide: '',
+      gkOnly: false,
+    },
+    12: { name: 'Day Services', settings: {}, showHide: '', gkOnly: false },
+    13: {
+      name: 'My Unapproved Time Entries',
+      settings: {},
+      showHide: '',
+      gkOnly: true,
+    },
+    14: {
+      name: 'Time Entry Review',
+      settings: {},
+      showHide: '',
+      gkOnly: true,
+    },
+    15: { name: 'My Schedule', settings: {}, showHide: '', gkOnly: true },
+    16: {
+      name: 'Incident Tracking',
+      settings: {},
+      showHide: '',
+      gkOnly: true,
     },
   };
 
