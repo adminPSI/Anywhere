@@ -103,6 +103,40 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
+        public string getCFAttachmentFileName(string attachmentId)
+        {
+            logger.debug("GetIndividualAttachment " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_getCFAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallRaw(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640.1", ex.Message + "ANYW_getCFAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "640.1: error ANYW_getCFAttachmentFileName";
+            }
+        }
+
+        public MemoryStream GetCFAttachmentData(string attachmentId)
+        {
+            logger.debug("GetAttachmentData " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_GetCFAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeSQLReturnMemoryStream(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640", ex.Message + "ANYW_GetCFAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
+            }
+        }
+
         public string getReportSectionOrder()
         {
             try

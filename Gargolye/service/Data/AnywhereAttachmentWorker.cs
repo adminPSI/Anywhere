@@ -176,6 +176,30 @@ namespace Anywhere.service.Data
             }
         }
 
+        public void viewCFAttachment(string token, string attachmentId, string section)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
+                char value = '-';
+                bool guid = attachmentId.Contains(value);
+               
+                try
+                {
+                    attachment.filename = aadg.getCFAttachmentFileName(attachmentId);
+                    attachment.data = aadg.GetCFAttachmentData(attachmentId);//reused
+                }
+                catch (Exception ex)
+                {
+
+                }               
+            }
+            displayAttachment(attachment);
+        }
+
         public class Attachments
         {
             public string filename { get; set; }

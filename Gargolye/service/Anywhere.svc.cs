@@ -3142,5 +3142,24 @@ namespace Anywhere
             return cf.getConsumerNameByID(token, consumersId);
         }
 
+        public string deleteCFAttachment(string token, string attachmentId)
+        {
+            return cf.deleteCFAttachment(token, attachmentId);
+        }
+
+        public void viewCFAttachment(System.IO.Stream testInput)
+        {
+            string token;
+            string attachmentId;
+            string section;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            section = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            anywhereAttachmentWorker.viewCFAttachment(token, attachmentId, section);
+        }
+
     }
 }
