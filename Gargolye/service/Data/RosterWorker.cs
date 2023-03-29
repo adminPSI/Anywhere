@@ -117,6 +117,7 @@ namespace Anywhere.service.Data
             public string generation { get; set; }
             public string maritalStatus { get; set; }
             public string educationLevel { get; set; }
+            public string orgState { get; set; }
         }
         public class ConsumerRelationships
         {
