@@ -56,7 +56,7 @@ const consumerFinanceAttachment = (() => {
                 attachmentsForQuestion.forEach(attachment => {
                     const fileContainer = document.createElement('div');
                     fileContainer.classList.add('reviewAttachmentContainer');
-                    fileContainer.setAttribute('id', attachment.planAttachmentId);
+                    fileContainer.setAttribute('id', attachment.attachmentID); 
                     fileContainer.setAttribute('delete', false);
                     const removeAttachmentBtn = button.build({
                         style: 'secondary',
@@ -70,7 +70,7 @@ const consumerFinanceAttachment = (() => {
                     fileContainer.appendChild(file);
                     file.addEventListener('click', event => {
                         const attachmentId = event.target.parentElement.id;
-                        planAjax.viewPlanAttachment(attachmentId, '');
+                        ConsumerFinancesAjax.viewCFAttachment(attachmentId, '');
                     });
                     reviewAttachmentList.appendChild(fileContainer);
                 });
@@ -166,7 +166,7 @@ const consumerFinanceAttachment = (() => {
                 }
                 // DELETE ATTACHMENTS
                 attachmentsToDelete.forEach(attachment => {
-                    ConsumerFinancesAjax.deleteCFAttachment(assessmentId, attachment);
+                    ConsumerFinancesAjax.deleteCFAttachment(attachment);                 
                 });
 
                 // ADD ATTACHMENTS
@@ -202,6 +202,9 @@ const consumerFinanceAttachment = (() => {
 
                 await Promise.all(attachmentProms);
                 await saveAttachmentsToDB();
+
+                POPUP.hide(popup);
+                NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded) 
             }
             //===========================================
             //===========================================
@@ -286,7 +289,7 @@ const consumerFinanceAttachment = (() => {
                 btnWrap.appendChild(saveBtn);
             }
 
-            btnWrap.appendChild(cancelBtn);
+            btnWrap.appendChild(cancelBtn); 
             popup.appendChild(btnWrap);
 
             if (attachmentsForQuestion.length > 0) populateExistingAttachments();

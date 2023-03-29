@@ -1,4 +1,5 @@
 ﻿using Anywhere.Log;
+using OneSpanSign.Sdk;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,7 +13,6 @@ namespace Anywhere.service.Data.ConsumerFinances
         Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
 
-        //data for OOD Entries Listing on OOD Module Landing Page
         public string getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, DistributedTransaction transaction)
         {
             try
@@ -31,7 +31,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@balance", DbType.String, balance);
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@enteredBy", DbType.String, enteredBy);
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@isattachment", DbType.String, isattachment);
-                // returns the workflow document descriptions for the given workflowId
+
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinancesEntries(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
@@ -41,7 +41,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 throw ex;
             }
         }
-        // Active Employee data for OOD Entries Listing Filter
+
         public string getActiveAccount(DistributedTransaction transaction, string consumerId)
         {
             try
@@ -127,7 +127,6 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@zipcode", DbType.String, zipcode);
                 args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
 
-                // returns the employerId  that was just inserted
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertPayee(?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
@@ -156,9 +155,6 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@regId", DbType.String, regId);
 
-
-
-                // returns the employerId  that was just inserted
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updateAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
@@ -187,7 +183,6 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@receipt", DbType.String, receipt);
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
 
-                // returns the employerId  that was just inserted
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
@@ -209,8 +204,6 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@description", DbType.String, description);
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
 
-
-                // returns the employerId  that was just inserted
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertAccountRegisterAttachments(?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
@@ -229,8 +222,6 @@ namespace Anywhere.service.Data.ConsumerFinances
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerId", DbType.String, registerId);
 
-
-                // returns the workflow document descriptions for the given workflowId
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinancesEntryById(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
@@ -249,7 +240,6 @@ namespace Anywhere.service.Data.ConsumerFinances
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerId", DbType.String, registerId);
 
-                // returns the workflow document descriptions for the given workflowId
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deleteConsumerFinancesAccount(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
@@ -286,14 +276,30 @@ namespace Anywhere.service.Data.ConsumerFinances
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumersId", DbType.String, consumersId);
 
-
-                // returns the workflow document descriptions for the given workflowId
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerNameById(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_getConsumerFinancesEntryById(" + consumersId + ")");
+                throw ex;
+            }
+        }
+
+        public string deleteCFAttachment(string token, string attachmentId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("deleteCFAttachment");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@attachmentId", DbType.String, attachmentId);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deleteCFAttachment(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_deleteCFAttachment(" + attachmentId + ")");
                 throw ex;
             }
         }
