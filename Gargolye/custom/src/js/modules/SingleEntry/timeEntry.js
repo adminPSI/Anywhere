@@ -35,6 +35,7 @@ var timeEntry = (function () {
   let overlapconsumerlocationdata;
   let selectedOverlapLocIds = {};
   let overlapSavedLocationsSingleEntryPairs = [];
+  
   //let seletedOverlapLocationId = '';
   //let selectedOverlapConsumerId;
 
@@ -414,18 +415,20 @@ var timeEntry = (function () {
       type: 'contained',
       style: 'secondary',
       classNames: 'disabled',
-      callback: () => {
-        // // temp ash
-        // const arrayForSave = [];
-        // for (prop in selectedOverlapLocIds) {
-        //   const consumerId = prop;
-        //   const overlapLocId = selectedOverlapLocIds[prop];
-        //   // save person
-        //   `${consumerId}/${overlapLocId}`;
-        // }
-        // // end temp ash
-        var listofSingleEntryIdsSaved = saveSingleEntrywithLocationOverlaps();
+      callback: async () => {
+     
+        var listofSingleEntryIdsSaved = await saveSingleEntrywithLocationOverlaps();
         var test = listofSingleEntryIdsSaved;
+        
+        POPUP.hide(overlapLocationsPopup);
+        successfulSave.show('SAVED');
+        setTimeout(function () {
+          successfulSave.hide();
+          timeEntryCard.clearAllGlobalVariables();
+          roster2.clearActiveConsumers();
+          newTimeEntry.init();
+        }, 1000);
+
       },
     });
     this.doneButton = overlapLocationsDoneBtn;
@@ -501,6 +504,7 @@ var timeEntry = (function () {
 
   async function saveSingleEntrywithLocationOverlaps() {
     let savedLocationsSingleEntryPairs = [];
+    
 
     // looking through the consumers with non-overlapping locationsIds (consumerswithUniqueLocations)
     //  and finding the consumers with the same locationId (duplocationIds)
@@ -591,59 +595,47 @@ var timeEntry = (function () {
               // Single Entry Record already exists for this location
               // C. INSERT INTO into consumersPresent (singleEntryId amd ConsumerID and devices)
               await singleEntryAjax.insertConsumerforSavedSingleEntry(consumerData, function (res) {
-                POPUP.hide(overlapLocationsPopup);
-                successfulSave.show('SAVED');
-                setTimeout(function () {
-                  successfulSave.hide();
-                  timeEntryCard.clearAllGlobalVariables();
-                  roster2.clearActiveConsumers();
-                  newTimeEntry.init();
-                }, 1000);
+             
               });
             }
           } //  end for -- all the saved Single Entries (all the non-overlapping location saves) 
-          if (!foundlocation) saveOverlapLocationasSingleEntry();
+          if (!foundlocation) await saveOverlapLocationasSingleEntry();
       } //  end for -- the selected locations for the overlapping locations
    
     } else {
       // Single Entry Record DOES NOT exist for this location
-      saveOverlapLocationasSingleEntry();
+      await saveOverlapLocationasSingleEntry();
     }
-
-    async function saveOverlapLocationasSingleEntry() {
-      
-      saveData = timeEntryCard.getSaveUpdateData();
-      // cycle through the selected locations for each of the consumers that have an overlapping location
-         for (prop in selectedOverlapLocIds) {
-              let singleentryid;
-              const seletedOverlapLocationId = selectedOverlapLocIds[prop];
-              const selectedOverlapConsumerId = prop;
-              saveData.locationId = seletedOverlapLocationId;
-              saveData.consumerId = selectedOverlapConsumerId;
+   
+        async function saveOverlapLocationasSingleEntry() {
+          
+          saveData = timeEntryCard.getSaveUpdateData();
+          // cycle through the selected locations for each of the consumers that have an overlapping location
+            for (prop in selectedOverlapLocIds) {
+                  let singleentryid;
+                  const seletedOverlapLocationId = selectedOverlapLocIds[prop];
+                  const selectedOverlapConsumerId = prop;
+                  saveData.locationId = seletedOverlapLocationId;
+                  saveData.consumerId = selectedOverlapConsumerId;
+                
+              await singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
+                singleentryid = results[1].slice(0, -2);
+                overlapSavedLocationsSingleEntryPairs.push({
+                  locationId: saveData.locationId,
+                  singleEntryId: singleentryid,
+              });
+              
+            });
             
-          await singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
-            singleentryid = results[1].slice(0, -2);
-            POPUP.hide(overlapLocationsPopup);
-            successfulSave.show('SAVED');
-            setTimeout(function () {
-              successfulSave.hide();
-              timeEntryCard.clearAllGlobalVariables();
-              roster2.clearActiveConsumers();
-              newTimeEntry.init();
-            }, 1000);
-          });
+      
+        }
+        } // end of nested function -- async function saveOverlapLocationasSingleEntry()
 
-          overlapSavedLocationsSingleEntryPairs.push({
-            locationId: saveData.locationId,
-            singleEntryId: singleentryid,
-          });
-    }
-    } // end of nested function -- async function saveOverlapLocationasSingleEntry()
-    if (overlapSavedLocationsSingleEntryPairs.length > 0) {
-      savedLocationsSingleEntryPairs.push(...overlapSavedLocationsSingleEntryPairs)
-    } 
-    return savedLocationsSingleEntryPairs;
+    var concatsavedLocationsSingleEntryPairs = savedLocationsSingleEntryPairs.concat(overlapSavedLocationsSingleEntryPairs);
+    return concatsavedLocationsSingleEntryPairs;
   } // end of containing function -- function populateOverlapLocationsDropdown(locDrop, consumer)
+
+
 
   function updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndSubmitBool) {
     saveAndSubmit = saveAndSubmitBool;
