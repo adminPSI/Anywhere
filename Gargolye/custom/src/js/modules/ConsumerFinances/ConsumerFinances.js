@@ -233,7 +233,7 @@ const ConsumerFinances = (() => {
 
     // build the display of the current Filter Settings (next to the Filter button) 
     function buildFilteredBy() {
-        var filteredBy = document.querySelector('.widgetFilteredBy');
+        var filteredBy = document.querySelector('.widgetFilteredBy'); 
 
         if (!filteredBy) {
             filteredBy = document.createElement('div');

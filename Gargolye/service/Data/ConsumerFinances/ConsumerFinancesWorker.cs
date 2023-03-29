@@ -410,5 +410,22 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
+        public string deleteCFAttachment(string token, string attachmentId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    return Odg.deleteCFAttachment(token, attachmentId, transaction);
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
     }
 }

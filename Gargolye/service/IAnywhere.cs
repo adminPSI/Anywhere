@@ -4268,6 +4268,21 @@ namespace Anywhere
                 UriTemplate = "/getConsumerNameByID/")]
         ConsumerFinancesWorker.ConsumerName[] getConsumerNameByID(string token, string consumerId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/deleteCFAttachment/")]
+        string deleteCFAttachment(string token, string attachmentId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "/viewCFAttachment/")]
+        //void viewCaseNoteAttachment(string attachmentId);
+        void viewCFAttachment(System.IO.Stream testInput);
+
     }
 
 
