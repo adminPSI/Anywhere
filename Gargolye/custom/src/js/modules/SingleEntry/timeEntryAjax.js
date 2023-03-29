@@ -204,8 +204,8 @@ var singleEntryAjax = (function() {
 		});
 	}
 
-	function insertConsumerforSavedSingleEntry(consumerData, callback) {
-		$.ajax({
+	async function insertConsumerforSavedSingleEntry(consumerData, callback) {
+		await  $.ajax({
 			type: "POST",
 			url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
 				"/" + $.webServer.serviceName + "/insertConsumerforSavedSingleEntry/",
