@@ -447,6 +447,130 @@ var incidentOverview = (function () {
       filterData.categoryName = 'All Categories';
     }
   }
+  // Incident Overview Email Button and Popup
+  async function showPopup(consumerName) {
+    //*--------------------------------------
+    //* POPUP
+    //*--------------------------------------
+    const incidentEmailPopup = POPUP.build({
+      header: consumerName,
+      id: 'sig_mainPopup',
+    });
+
+
+    //* INPUTS
+    //*------------------------------
+    const toAddress = input.build({
+      label: 'Email To Addresses:',
+      callbackType: 'input',
+      id: 'toAddress',
+      callback: event => {
+        const inputField = document.getElementById('toAddress');
+        if (inputField.value === '') {
+          sendBtn.classList.add('disabled');
+        } else {
+          sendBtn.classList.remove('disabled');
+        }
+      },
+    });
+
+    const ccAddress = input.build({
+      label: 'Email Cc Addresses:',
+      callbackType: 'input',
+      callback: event => {
+        
+      },
+    });
+
+    const bccAddress = input.build({
+      label: 'Email Bcc Addresses:',
+      callbackType: 'input',
+      callback: event => {
+        
+      },
+    });
+
+    const emailSubject = input.build({
+      label: 'Email Subject:',
+      callbackType: 'input',
+      value: 'Incidents [Composite] by Consumer, Date',
+      callback: event => {
+        
+      },
+    });
+
+    const emailBody = input.build({
+      label: 'Email Body:',
+      callbackType: 'input',
+      type: 'textarea',
+      classNames: 'autosize',
+      callback: event => {
+        
+      },
+    });
+
+    // Enabling/Disabling send button if toAddress field is filled in or not
+    function enableDisableSendBtn() {
+      if (toAddress === '') {
+        sendBtn.classList.add('disabled');
+      } else {
+        sendBtn.classList.remove('disabled');
+      }
+    }
+
+    //* BUTTONS
+    //*------------------------------
+    const sendBtn = button.build({
+      id: 'incidentEmailSendBtn',
+      text: 'send',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        // TODO: add in email functionality
+
+        POPUP.hide(incidentEmailPopup);
+      }
+    });
+
+    const cancelBtn = button.build({
+      id: 'incidentEmailPopup_cancel',
+      text: 'cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        POPUP.hide(incidentEmailPopup);
+      }
+    });
+
+    //* Add elements to popup
+    //*------------------------------
+    incidentEmailPopup.appendChild(toAddress);
+    incidentEmailPopup.appendChild(ccAddress);
+    incidentEmailPopup.appendChild(bccAddress);
+    incidentEmailPopup.appendChild(emailSubject);
+    incidentEmailPopup.appendChild(emailBody);
+
+    const mainWrap = document.createElement('div');
+    const btnWrap2 = document.createElement('div');
+    btnWrap2.classList.add('btnWrap');
+    btnWrap2.appendChild(sendBtn);
+    sendBtn.classList.add('disabled');
+    btnWrap2.appendChild(cancelBtn);
+    mainWrap.appendChild(btnWrap2);
+    incidentEmailPopup.appendChild(mainWrap);
+
+    POPUP.show(incidentEmailPopup);
+  }
+  
+  const incidentEmailBtn = button.build({
+    text: 'EMAIL',
+    style: 'secondary',
+    type: 'contained',
+    callback: function() {
+      showPopup();
+    }
+  });
+  
 
   // OVERVIEW TABLE
   //------------------------------------
@@ -511,6 +635,7 @@ var incidentOverview = (function () {
         },
       };
     });
+
 
     data.sort(function (a, b) {
       var dateOne = UTIL.formatDateToIso(a.values[2]);
