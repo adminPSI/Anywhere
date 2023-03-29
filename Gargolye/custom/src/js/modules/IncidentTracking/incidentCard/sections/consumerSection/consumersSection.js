@@ -21,7 +21,7 @@ var itConsumerSection = (function () {
     consumerInvolvement.clearData();
     consumerReporting.clearData();
     consumerReview.clearData();
-    consumerBehavior.clearData();
+    // consumerBehavior.clearData();
     activeConsumers = [];
   }
   function deleteConsumerData(consumerId) {
@@ -31,7 +31,7 @@ var itConsumerSection = (function () {
     consumerInvolvement.deleteConsumerData(consumerId);
     consumerReporting.deleteConsumerData(consumerId);
     consumerReview.deleteConsumerData(consumerId);
-    consumerBehavior.deleteConsumerData(consumerId);
+    // consumerBehavior.deleteConsumerData(consumerId);
   }
 
   function getConsumersInvolved() {

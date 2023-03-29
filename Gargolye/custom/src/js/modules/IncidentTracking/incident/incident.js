@@ -321,14 +321,14 @@ var incident = (function () {
     var interventionsData = consumerIntervention.getData();
     var reviewData = consumerReview.getData();
     var reportData = consumerReporting.getData();
-    var behaviorData = consumerBehavior.getData();
+    //var behaviorData = consumerBehavior.getData();
 
     var fupPromises = saveConsumerFollowUps(followUpData);
     var injPromises = saveConsumerInjuries(injuryData);
     var intPromises = saveConsumerInterventions(interventionsData);
     var revPromises = saveConsumerReviews(reviewData);
     var repPromises = saveConsumerReports(reportData);
-    var behavPromises = saveConsumerBehaviors(behaviorData);
+    //var behavPromises = saveConsumerBehaviors(behaviorData);
 
     var consumerDataSavePromises = [
       ...fupPromises,
@@ -336,7 +336,7 @@ var incident = (function () {
       ...intPromises,
       ...revPromises,
       ...repPromises,
-      ...behavPromises,
+      //...behavPromises,
     ];
 
     Promise.all(consumerDataSavePromises).then(() => {
@@ -690,7 +690,7 @@ var incident = (function () {
     var interventionDeletes = consumerIntervention.getDeleteData();
     var reviewDeletes = consumerReview.getDeleteData();
     var reportDeletes = consumerReporting.getDeleteData();
-    var behaviorDeletes = consumerBehavior.getDeleteData();
+    //var behaviorDeletes = consumerBehavior.getDeleteData();
 
     if (followUpDeletes) {
       var fuKeys = Object.keys(followUpDeletes);
