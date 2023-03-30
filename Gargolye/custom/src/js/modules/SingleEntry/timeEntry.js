@@ -573,7 +573,7 @@ var timeEntry = (function () {
     }
     // 3. Saves of non-overlapping locations happened in 1A and 2B; therefore take into account already saved locations when saving the overlap location entity
     // if any non-overlapping locations were saved, then we need to determine how to save the overlapping locations
-    if (savedLocationsSingleEntryPairs.length > 0 || overlapSavedLocationsSingleEntryPairs.length > 0) {
+    if (savedLocationsSingleEntryPairs.length > 0 || overlapSavedLocationsSingleEntryPairs.length > 0 || Object.values(selectedOverlapLocIds).length !== 0) {
       
       // loop through all the selected locations for the overlapping locations 
       for (prop in selectedOverlapLocIds) {
