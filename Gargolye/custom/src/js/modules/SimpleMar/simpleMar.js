@@ -1,18 +1,23 @@
 ﻿var simpleMar = (function () {
+  let simpleMarModuleButton;
+
   function showEMARfailurePopup() {
     const signOnFailerPop = POPUP.build({
       id: 'warningPopup',
-      classNames: 'warning',
+      classNames: ['emarSignOnFailerPop', 'warning'],
       hideX: true,
     });
 
     const message = document.createElement('p');
-    message.innerText = 'Single sing-on failed. Please contact your system administrator.';
+    message.innerText = 'Single sign-on failed. Please contact your system administrator.';
 
     const okBtn = button.build({
       text: 'Ok',
+      style: 'secondary',
+      type: 'contained',
       callback: e => {
         POPUP.hide(signOnFailerPop);
+        simpleMarModuleButton.classList.remove('disabled');
       },
     });
 
@@ -23,8 +28,12 @@
   }
 
   async function simpleMarLogin() {
+    simpleMarModuleButton = document.getElementById('emarButton');
+    simpleMarModuleButton.classList.add('disabled');
+
     try {
-      await simpleMarAjax.simpleMarLogin();
+      const success = await simpleMarAjax.simpleMarLogin();
+      simpleMarModuleButton.classList.remove('disabled');
     } catch (error) {
       showEMARfailurePopup();
     }
@@ -32,5 +41,6 @@
 
   return {
     simpleMarLogin,
+    showEMARfailurePopup,
   };
 })();
