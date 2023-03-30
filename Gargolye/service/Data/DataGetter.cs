@@ -4336,6 +4336,28 @@ namespace Anywhere.Data
             }
         }
 
+        public string generateIncidentTrackingReport(string token, string category, string title, string reportServerList, string incidentId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("generateIncidentTrackingReport ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(incidentId);
+            string text = "CALL DBA.ANYW_IncidentTracking_GenerateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1CNR", ex.Message + "ANYW_IncidentTracking_GenerateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1CNR: error ANYW_IncidentTracking_GenerateReport";
+            }
+        }
+
         //Scheduling
         public string getSchedulesForSchedulingModule(string token, string locationId, string personId)
         {

@@ -1049,6 +1049,39 @@
     }
   }
 
+  // Generate Incident Tracking Report
+  function generateIncidentTrackingReport(incidentId, callback) {
+    if (filterValues.billCodeText == null || filterValues.billCodeText == undefined) {
+      filterValues.billCodeText = 'All';
+    }
+    data = {
+      token: $.session.Token,
+      incidentId: incidentId
+    };
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/generateIncidentTrackingReport/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.generateIncidentTrackingReportResult;
+        callback(res);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+
   return {
     sendNotification,
     getInvolvementTypeData,
@@ -1089,5 +1122,6 @@
     itDeleteConsumerBehavior,
     saveUpdateITConsumerBehaviors,
     updateIncidentViewByUser,
+    generateIncidentTrackingReport
   };
 })();
