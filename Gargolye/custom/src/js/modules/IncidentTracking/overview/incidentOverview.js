@@ -509,7 +509,7 @@ var incidentOverview = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        incidentTrackingAjax.generateIncidentTrackingReport(incidentId);
+        incidentTrackingAjax.generateIncidentTrackingReport(incidentId, checkIfITReportIsReadyInterval());
         POPUP.hide(incidentEmailPopup);
       }
     });
@@ -548,11 +548,34 @@ var incidentOverview = (function () {
     text: 'EMAIL',
     style: 'secondary',
     type: 'contained',
-    callback: function() {
+    callback: function(event) {
       showIncidentEmailPopup(incidentId);
     }
   });
-  
+
+  // Repeatedly checks to see if the report is ready
+  function checkIfITReportIsReadyInterval(res) {
+    seconds = parseInt($.session.reportSeconds);
+    intSeconds = seconds * 1000;
+    interval = setInterval(async () => {
+      await checkITReportExists(res);
+    }, intSeconds);
+  }
+
+  async function checkITReportExists(res) {
+    await incidentTrackingAjax.checkIfCNReportExists(res, callITReport);
+  }
+
+  // Retrieves the report when it is ready
+  function callITReport(res, reportScheduleId) {
+    if (res.indexOf('1') === -1) {
+      //do nothing
+    } else {
+      incidentTrackingAjax.viewIncidentTrackingReport(reportScheduleId);
+      clearInterval(interval);
+      reportRunning = false;
+    }
+  }
 
   // OVERVIEW TABLE
   //------------------------------------
@@ -617,7 +640,6 @@ var incidentOverview = (function () {
         },
       };
     });
-
 
     data.sort(function (a, b) {
       var dateOne = UTIL.formatDateToIso(a.values[2]);

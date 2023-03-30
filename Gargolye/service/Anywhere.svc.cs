@@ -1349,6 +1349,10 @@ namespace Anywhere
             return iTW.generateIncidentTrackingReport(token, incidentId);
         }
 
+        public string checkIfITReportExists(string token, string reportScheduleId)
+        {
+            return iTW.checkIfITReportExists(token, reportScheduleId);
+        }
 
         //public AnywhereWorker.ConsumerTableLocation[] getConsumerTableConsumerLocation(string token, string consumerId)
         //{

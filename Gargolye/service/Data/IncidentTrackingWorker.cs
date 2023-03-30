@@ -502,6 +502,11 @@ namespace Anywhere.service.Data
             return reportScheduleId;
         }
 
+        public string checkIfITReportExists(string token, string reportScheduleId)
+        {
+            return dg.checkIfITReportExists(token, reportScheduleId);
+        }
+
         public class ReportingCategories
         {
             public string itReportingCategoryId { get; set; }
