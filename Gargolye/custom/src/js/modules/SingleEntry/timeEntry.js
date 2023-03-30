@@ -631,7 +631,7 @@ var timeEntry = (function () {
         } // end if/else -- overlapSavedLocationsSingleEntryPairs.length > 0    
  
             // if the location has NOT already been Saved, so just save the overlapping location
-            if (!foundlocation) await saveOverlapLocationasSingleEntry();
+            if (!foundlocation) await saveOverlapLocationasSingleEntry(prop);
 
       } //  end for -- the selected locations for the overlapping locations
    
@@ -641,11 +641,11 @@ var timeEntry = (function () {
       await saveOverlapLocationasSingleEntry();
     }
         // nested function -- handles each new Single Entry Insert
-        async function saveOverlapLocationasSingleEntry() {
+        async function saveOverlapLocationasSingleEntry(prop) {
           
           saveData = timeEntryCard.getSaveUpdateData();
           // cycle through the selected locations for each of the consumers that have an overlapping location
-            for (prop in selectedOverlapLocIds) {
+            //for (prop in selectedOverlapLocIds) {
                   let singleentryid;
                   const seletedOverlapLocationId = selectedOverlapLocIds[prop];
                   const selectedOverlapConsumerId = prop;
@@ -662,7 +662,7 @@ var timeEntry = (function () {
             });
             
       
-        }
+       //  }
         } // end of nested function -- async function saveOverlapLocationasSingleEntry()
 
     // put together full list of new Single Entry Inserts
