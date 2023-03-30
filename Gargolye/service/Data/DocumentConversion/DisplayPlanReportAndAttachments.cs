@@ -176,7 +176,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan)
         {
 
             var current = System.Web.HttpContext.Current;
@@ -215,7 +215,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
 
                             }
                         }
@@ -233,7 +233,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
 
                             }
                         }
@@ -251,7 +251,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
 
                             }
                         }
@@ -269,7 +269,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
 
 
                             }
@@ -288,7 +288,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
 
                             }
                         }
@@ -306,7 +306,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
 
                             }
                         }

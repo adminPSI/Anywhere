@@ -191,7 +191,7 @@ const csTeamMember = (() => {
   async function saveTeamMember() {
     if (
       selectedMemberData.teamMember === 'Guardian' ||
-      selectedMemberData.teamMember === 'Parent/Guardian'
+        selectedMemberData.teamMember === 'Parent/Guardian' && $.session.areInSalesForce === true
     ) {
       var continueGuardianSave = await continueSaveofGuardianTeamMember();
       if (!continueGuardianSave) return;
@@ -970,7 +970,7 @@ const csTeamMember = (() => {
     }
 
     function insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian) {
-      if (isSelectedTeamMemberGuardian) {
+      if (isSelectedTeamMemberGuardian && $.session.areInSalesForce === true) {
         // show guardan DDL only if it's not there
         if (!showStateGuardians) {
           showStateGuardians = true;

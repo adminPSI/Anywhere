@@ -448,12 +448,12 @@ var incidentOverview = (function () {
     }
   }
   // Incident Overview Email Button and Popup
-  async function showPopup(consumerName) {
+  async function showIncidentEmailPopup(incidentId) {
     //*--------------------------------------
     //* POPUP
     //*--------------------------------------
     const incidentEmailPopup = POPUP.build({
-      header: consumerName,
+      header: 'Email Report',
       id: 'sig_mainPopup',
     });
 
@@ -465,6 +465,7 @@ var incidentOverview = (function () {
       callbackType: 'input',
       id: 'toAddress',
       callback: event => {
+        // If the toAddresses field is blank, disable the send button
         const inputField = document.getElementById('toAddress');
         if (inputField.value === '') {
           sendBtn.classList.add('disabled');
@@ -477,26 +478,19 @@ var incidentOverview = (function () {
     const ccAddress = input.build({
       label: 'Email Cc Addresses:',
       callbackType: 'input',
-      callback: event => {
-        
-      },
+
     });
 
     const bccAddress = input.build({
       label: 'Email Bcc Addresses:',
       callbackType: 'input',
-      callback: event => {
-        
-      },
+
     });
 
     const emailSubject = input.build({
       label: 'Email Subject:',
       callbackType: 'input',
       value: 'Incidents [Composite] by Consumer, Date',
-      callback: event => {
-        
-      },
     });
 
     const emailBody = input.build({
@@ -504,19 +498,8 @@ var incidentOverview = (function () {
       callbackType: 'input',
       type: 'textarea',
       classNames: 'autosize',
-      callback: event => {
-        
-      },
-    });
 
-    // Enabling/Disabling send button if toAddress field is filled in or not
-    function enableDisableSendBtn() {
-      if (toAddress === '') {
-        sendBtn.classList.add('disabled');
-      } else {
-        sendBtn.classList.remove('disabled');
-      }
-    }
+    });
 
     //* BUTTONS
     //*------------------------------
@@ -526,8 +509,7 @@ var incidentOverview = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        // TODO: add in email functionality
-
+        incidentTrackingAjax.generateIncidentTrackingReport(incidentId);
         POPUP.hide(incidentEmailPopup);
       }
     });
@@ -567,7 +549,7 @@ var incidentOverview = (function () {
     style: 'secondary',
     type: 'contained',
     callback: function() {
-      showPopup();
+      showIncidentEmailPopup(incidentId);
     }
   });
   
