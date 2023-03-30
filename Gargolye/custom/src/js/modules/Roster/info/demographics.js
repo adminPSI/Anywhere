@@ -70,7 +70,9 @@ const demographics = (function () {
     return formatDOB;
   }
   function formatOrganizationAddress(add1, add2, city, zip) {
-    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''} ${zip ? zip : ''}`;
+    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''} ${
+      zip ? zip : ''
+    }`;
   }
   function setInputType(input, name) {
     // DATE
@@ -177,6 +179,7 @@ const demographics = (function () {
       data.orgAdd2,
       data.city,
       data.orgZipCode,
+      data.orgState,
     );
     const organizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
 
@@ -238,7 +241,7 @@ const demographics = (function () {
 
   function buildInputGroupWrap(title) {
     const wrap = document.createElement('div');
-    wrap.classList.add('inputGroupWrap', `${title.split(' ')[0].toLowerCase()}`);
+    wrap.classList.add('inputGroupWrap', `${title.replaceAll(' ', '').toLowerCase()}`);
 
     const heading = document.createElement('h3');
     heading.innerText = title;
@@ -414,6 +417,16 @@ const demographics = (function () {
       const propValue = demoData.additional[prop];
       const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
 
+      if (
+        prop === 'ssn' ||
+        prop === 'dateOfBirth' ||
+        prop === 'medicaidNumber' ||
+        prop === 'medicareNumber' ||
+        prop === 'residentNumber'
+      ) {
+        viewEle.classList.add('hidden');
+      }
+
       // cache view ele
       viewElements[prop] = viewEle;
 
@@ -430,19 +443,31 @@ const demographics = (function () {
     });
     groupWrap.appendChild(showDetailsoBtn);
 
-    // TODO: refactor below code *also show details button need changed to naked style
     showDetailsoBtn.addEventListener('click', function (e) {
-      if (e.target.value === 'Show Details') {
-        e.target.value = 'Hide Details';
+      if (e.target.innerText.toLowerCase() === 'show details') {
+        e.target.innerText = 'Hide Details';
 
-        document.getElementById('DOB').textContent = `DOB: ${formatDOB}`;
-        document.getElementById('SSN').textContent = `SSN: ${demoData.SSN}`;
-        document.getElementById('Medicaid').textContent = `Medicaid: ${demoData.MedicaidNumber}`;
+        if ($.session.DemographicsViewDOB) {
+          viewElements['dateOfBirth'].classList.remove('hidden');
+        }
+        if ($.session.DemographicsViewMedicaid) {
+          viewElements['medicaidNumber'].classList.remove('hidden');
+        }
+        if ($.session.DemographicsViewMedicare) {
+          viewElements['medicareNumber'].classList.remove('hidden');
+        }
+        if ($.session.DemographicsViewResident) {
+          viewElements['residentNumber'].classList.remove('hidden');
+        }
+        viewElements['ssn'].classList.remove('hidden');
       } else {
-        e.target.value = 'Show Details';
-        document.getElementById('DOB').textContent = 'DOB:';
-        document.getElementById('SSN').textContent = 'SSN:';
-        document.getElementById('Medicaid').textContent = 'Medicaid:';
+        e.target.innerText = 'Show Details';
+
+        viewElements['dateOfBirth'].classList.add('hidden');
+        viewElements['medicaidNumber'].classList.add('hidden');
+        viewElements['medicareNumber'].classList.add('hidden');
+        viewElements['residentNumber'].classList.add('hidden');
+        viewElements['ssn'].classList.add('hidden');
       }
     });
 

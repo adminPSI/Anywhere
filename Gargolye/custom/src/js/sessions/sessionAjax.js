@@ -863,7 +863,7 @@ function getDefaultAnywhereSettings() {
     success: function (response, status, xhr) {
       res = response.getDefaultAnywhereSettingsJSONResult;
       res = res[0];
-
+ 
       $.session.anAdmin = res.admistrator;
       $.session.defaultCaseNoteReviewDays = res.setting_value === '' ? '7' : res.setting_value;
       $.session.defaultProgressNoteReviewDays =
@@ -918,8 +918,10 @@ function getDefaultAnywhereSettings() {
       $.session.singleEntryShowTransportation = res.seShowTransportation;
       $.session.schedAllowCallOffRequests = res.allowCallOffRequests;
       $.session.schedRequestOpenShifts = res.requestOpenShifts;
-      $.session.oneSpan = res.oneSpan;
+        $.session.oneSpan = res.oneSpan;
 
+        $.session.anywhereResetPasswordPermission = res.anywhereResetPasswordPermission;
+        $.session.anywhereConsumerFinancesPermission = res.anywhereConsumerFinancesPermission;
       //Default Work
       //.session.
       $.session.defaultRosterLocation = res.defaultrosterlocation;

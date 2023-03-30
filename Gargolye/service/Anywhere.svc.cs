@@ -3109,6 +3109,11 @@ namespace Anywhere
             return cf.getSubCatogories(token, categoryID);
         }
 
+        public CategorySubCategory[] getCategoriesSubCategoriesByPayee(string token, string categoryID)
+        {
+            return cf.getCategoriesSubCategoriesByPayee(token, categoryID);
+        }
+
         public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId)
         {
             return cf.insertPayee(token, payeeName, address1, address2, city, state, zipcode, userId);

@@ -20,6 +20,9 @@ const NewEntryCF = (() => {
     let Description;
     let BtnName;
     let regId;
+    let IsDisabledBtn = false;
+    let lastUpdateBy;
+    let IsReconciled = 'N';
 
     let inputElement;
 
@@ -28,6 +31,7 @@ const NewEntryCF = (() => {
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
+
         if (attachment) {
             attachmentArray = attachment;
             attachmentId = attachmentID;
@@ -38,7 +42,7 @@ const NewEntryCF = (() => {
         }
         else {
             attachmentArray = [];
-            attachmentId = []; 
+            attachmentId = [];
             attachmentDesc = [];
         }
 
@@ -50,19 +54,21 @@ const NewEntryCF = (() => {
             const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
             const { getAccountEntriesByIdResult } = result;
             date = moment(getAccountEntriesByIdResult[0].activityDate).format('YYYY-MM-DD');
-            amount = getAccountEntriesByIdResult[0].amount; 
+            amount = getAccountEntriesByIdResult[0].amount;
             account = getAccountEntriesByIdResult[0].account;
             payee = getAccountEntriesByIdResult[0].payee;
             category = getAccountEntriesByIdResult[0].category;
-            subCategory = getAccountEntriesByIdResult[0].subCategory; 
+            subCategory = getAccountEntriesByIdResult[0].subCategory;
             checkNo = getAccountEntriesByIdResult[0].checkno;
             description = getAccountEntriesByIdResult[0].description;
             receipt = getAccountEntriesByIdResult[0].receipt;
             accountID = getAccountEntriesByIdResult[0].accountID;
             accountType = getAccountEntriesByIdResult[0].accountType;
+            IsReconciled = getAccountEntriesByIdResult[0].reconciled;   
+            lastUpdateBy = getAccountEntriesByIdResult[0].lastUpdateBy;
         }
         else {
-            regId = 0;        
+            regId = 0;
             BtnName = 'SAVE'
             date = UTIL.getTodaysDate();
             amount = '';
@@ -76,6 +82,8 @@ const NewEntryCF = (() => {
             receipt = '';
             accountID = '';
             accountType = 'E';
+            IsReconciled = 'N';
+            IsDisabledBtn = false; 
         }
         DOM.clearActionCenter();
 
@@ -183,13 +191,13 @@ const NewEntryCF = (() => {
             id: `expenseRadio`,
             text: "Expense",
             name: "amountType",
-            isChecked: accountType == 'D' ? false : true, 
+            isChecked: accountType == 'D' ? false : true,
         });
         depositRadio = input.buildRadio({
             id: `depositRadio`,
             text: "Deposit",
             name: "amountType",
-            isChecked: accountType == 'D' ? true : false, 
+            isChecked: accountType == 'D' ? true : false,
         });
 
         const radioDiv = document.createElement("div");
@@ -198,7 +206,7 @@ const NewEntryCF = (() => {
         radioDiv.appendChild(depositRadio);
         /////////////////
 
-        var space = document.createElement('h3');
+        var space = document.createElement('h3'); 
         space.innerHTML = '';
         var LineBr = document.createElement('br');
 
@@ -209,6 +217,7 @@ const NewEntryCF = (() => {
         if (registerId) {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_DELETE_BTN);
+            enableDisabledInputs(); 
         }
         else {
             btnWrap.appendChild(NEW_SAVE_BTN);
@@ -255,11 +264,11 @@ const NewEntryCF = (() => {
         addRightCard.appendChild(addRightBody);
 
         addRightBody.appendChild(newDescriptionInput);
-        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId);
+        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId ,IsDisabledBtn);
         addRightBody.appendChild(questionAttachment.attachmentButton);
 
         addRightBody.appendChild(newReceiptInput);
-        if (registerId ) {
+        if (registerId) {
             addRightBody.appendChild(btnWrap);
             NEW_CANCEL_BTN.style.width = '100%';
             addRightBody.appendChild(NEW_CANCEL_BTN);
@@ -279,6 +288,43 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(categoryID);
         checkRequiredFieldsOfNewEntry();
+    }
+
+    function enableDisabledInputs() {
+        if (IsReconciled == 'Y' && (!$.session.CFUpdate && (!$.session.CFEditAccountEntries && lastUpdateBy != $.session.UserId))) {
+            NEW_SAVE_BTN.classList.add('disabled');
+            newDateInput.classList.add('disabled');
+            newAmountInput.classList.add('disabled');
+            newAccountDropdown.classList.add('disabled');
+            newPayeeDropdown.classList.add('disabled');
+            ADD_NEW_PAYEE_BTN.classList.add('disabled');
+            newCategoryDropdown.classList.add('disabled');
+            newSubCategoryDropdown.classList.add('disabled');
+            newCheckNoInput.classList.add('disabled');
+            newDescriptionInput.classList.add('disabled');
+            newReceiptInput.classList.add('disabled');
+            NEW_DELETE_BTN.classList.add('disabled');
+            expenseRadio.classList.add('disabled');
+            depositRadio.classList.add('disabled');
+            IsDisabledBtn = true;
+        } else {
+            NEW_SAVE_BTN.classList.remove('disabled');
+            newDateInput.classList.remove('disabled');
+            newAmountInput.classList.remove('disabled');
+            newAccountDropdown.classList.remove('disabled');
+            newPayeeDropdown.classList.remove('disabled');
+            ADD_NEW_PAYEE_BTN.classList.remove('disabled');
+            newCategoryDropdown.classList.remove('disabled');
+            newSubCategoryDropdown.classList.remove('disabled');
+            newCheckNoInput.classList.remove('disabled');
+            newDescriptionInput.classList.remove('disabled');
+            newReceiptInput.classList.remove('disabled');
+            NEW_DELETE_BTN.classList.remove('disabled');
+            expenseRadio.classList.remove('disabled');
+            depositRadio.classList.remove('disabled'); 
+            IsDisabledBtn = false;
+        }
+
     }
 
     function checkRequiredFieldsOfNewEntry() {
@@ -323,7 +369,10 @@ const NewEntryCF = (() => {
         } else {
             newSubCategoryDropdown.classList.remove('error');
         }
-        setBtnStatusOfNewEntry();
+
+        if (IsReconciled == 'N') {
+            setBtnStatusOfNewEntry();
+        }
     }
 
     function setBtnStatusOfNewEntry() {
@@ -346,7 +395,8 @@ const NewEntryCF = (() => {
             checkRequiredFieldsOfNewEntry();
         });
         newPayeeDropdown.addEventListener('change', event => {
-            /* categoryID = event.target.value;*/
+            categoryID = event.target.options[event.target.selectedIndex].id;
+            getCategorySubCategorybyPayee(categoryID);
             payee = event.target.options[event.target.selectedIndex].text;
             checkRequiredFieldsOfNewEntry();
         });
@@ -379,7 +429,7 @@ const NewEntryCF = (() => {
     async function saveNewAccount() {
         const amountType = document.getElementById("expenseRadio").checked ? "E" : "D";
         if (attachmentArray == undefined || attachmentArray.length == 0) {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, null,null, receipt, BtnName, regId);
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, null, null, receipt, BtnName, regId);
             const { insertAccountResult } = result;
             if (insertAccountResult.registerId != null) {
                 ConsumerFinances.loadConsumerFinanceLanding();
@@ -387,7 +437,7 @@ const NewEntryCF = (() => {
         }
         else {
             const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId);
-            const { insertAccountResult } = result; 
+            const { insertAccountResult } = result;
 
             if (insertAccountResult.registerId != null) {
                 ConsumerFinances.loadConsumerFinanceLanding();
@@ -400,11 +450,23 @@ const NewEntryCF = (() => {
         ConsumerFinances.loadConsumerFinanceLanding();
     }
 
+    async function getCategorySubCategorybyPayee(categoryID) {
+        const {
+            getCategoriesSubCategoriesByPayeeResult: CategoriesSubCategory,
+        } = await ConsumerFinancesAjax.getCategoriesSubCategoriesByPayeeAsync(categoryID);
+
+        category = CategoriesSubCategory[0].CategoryDescription;
+        subCategory = CategoriesSubCategory[0].SubCategoryDescription;
+        populateCategoryDropdown(categoryID);
+        populateSubCategoryDropdown(categoryID);
+        checkRequiredFieldsOfNewEntry();
+    }
+
     // Populate the Account DDL 
     async function populateAccountDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync('0'); 
+        } = await ConsumerFinancesAjax.getActiveAccountAsync($.session.consumerId); 
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
