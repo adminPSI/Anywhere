@@ -291,7 +291,6 @@ const NewEntryCF = (() => {
     }
 
     function enableDisabledInputs() {
-        debugger;
         if (IsReconciled == 'Y' && (!$.session.CFUpdate && (!$.session.CFEditAccountEntries && lastUpdateBy != $.session.UserId))) {
             NEW_SAVE_BTN.classList.add('disabled');
             newDateInput.classList.add('disabled');
@@ -467,7 +466,7 @@ const NewEntryCF = (() => {
     async function populateAccountDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync('0');
+        } = await ConsumerFinancesAjax.getActiveAccountAsync($.session.consumerId); 
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,

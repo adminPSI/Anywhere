@@ -453,7 +453,7 @@ var ConsumerFinancesAjax = (function () {
         var successFunction = function (resp) {
             var res = JSON.stringify(response);
         };
-        debugger; 
+
         var form = document.createElement('form');
         form.setAttribute('action', action);
         form.setAttribute('method', 'POST');

@@ -52,12 +52,15 @@ const ConsumerFinances = (() => {
         var LineBr = document.createElement('br');
 
         selectedConsumersId = selectedConsumers[0].id;
+        $.session.consumerId = selectedConsumersId;
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
                 token: $.session.Token,
                 consumerId :selectedConsumersId, 
             })
-        ).getConsumerNameByIDResult; 
+        ).getConsumerNameByIDResult;
+
+
 
         selectedConsumersName = name[0].FullName;
         const topButton = buildHeaderButton(selectedConsumers[0]);
