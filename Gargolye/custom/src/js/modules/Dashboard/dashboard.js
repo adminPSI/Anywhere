@@ -175,12 +175,7 @@
   }
   function buildFilterPopup() {
     var filterPopup = document.createElement('div');
-    filterPopup.classList.add(
-      'widget__filters',
-      'popup',
-      'popup--static',
-      'popup--filter',
-    );
+    filterPopup.classList.add('widget__filters', 'popup', 'popup--static', 'popup--filter');
     filterPopup.setAttribute('data-popup', 'true');
 
     return filterPopup;
@@ -273,8 +268,7 @@
   function initHoursWorkedWidget() {
     if (
       $.session.SEViewAdminWidget === true ||
-      ($.session.DayServiceUpdate &&
-        $.session.dayServicesPermission === 'Anywhere_DayServices')
+      ($.session.DayServiceUpdate && $.session.dayServicesPermission === 'Anywhere_DayServices')
     ) {
       (function loadHoursWorkedWidget() {
         var div = document.createElement('div');
@@ -327,10 +321,7 @@
     }
   }
   function initClockedInWidget() {
-    if (
-      $.session.DayServiceView &&
-      $.session.dayServicesPermission === 'Anywhere_DayServices'
-    ) {
+    if ($.session.DayServiceView && $.session.dayServicesPermission === 'Anywhere_DayServices') {
       (function loadDayServicesWidget() {
         var div = document.createElement('div');
         div.id = 'dashdsclockedin';
@@ -485,7 +476,6 @@
     // Check for invalid defaults while widgets load in background
     defaults.getInvalidDefaultLocations();
 
-
     // The order of the function calls below determines the order of widgets
     initLinksAndMessagesWidget(); // System Messages & Custom Links
     initAbsentWidget(); // Absent Consumers
@@ -513,17 +503,13 @@
   }
 
   function getWidgetSettings(widgetId) {
-    const settingForWidget = widgetSettings.filter(
-      widget => widget.widgetId === widgetId,
-    )[0];
+    const settingForWidget = widgetSettings.filter(widget => widget.widgetId === widgetId)[0];
     if (settingForWidget) {
       return {
         widgetId: settingForWidget.widgetId,
         showHide: settingForWidget.showHide,
         widgetConfig:
-          settingForWidget.widgetConfig === ''
-            ? null
-            : JSON.parse(settingForWidget.widgetConfig),
+          settingForWidget.widgetConfig === '' ? null : JSON.parse(settingForWidget.widgetConfig),
         widgetName: settingForWidget.widgetName,
       };
     } else {
@@ -537,13 +523,17 @@
   }
 
   async function refreshWidgetSettings() {
-    widgetSettings = (await widgetSettingsAjax.getWidgetSettings())
-      .getUserWidgetSettingsResult;
+    widgetSettings = (await widgetSettingsAjax.getWidgetSettings()).getUserWidgetSettingsResult;
   }
 
   async function preLoadWidget() {
-    widgetSettings = (await widgetSettingsAjax.getWidgetSettings())
-      .getUserWidgetSettingsResult;
+    widgetSettings = (await widgetSettingsAjax.getWidgetSettings()).getUserWidgetSettingsResult;
+
+    console.clear();
+    widgetSettings.sort((a, b) => (a.widgetName > b.widgetName ? 1 : -1));
+    widgetSettings.forEach(s => {
+      console.log(`${s.widgetName}: ${s.widgetId}`);
+    });
 
     function getSetting(widgetId) {
       return widgetSettings.filter(widget => {

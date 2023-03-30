@@ -9,8 +9,10 @@ const widgetSettings = (function () {
       settings: { productivityThreshold: 60, daysBack: 7, workHoursPerDay: 7 },
       showHide: '',
       gkOnly: true,
-      build: () => {
+      build: function () {
+        const that = this;
         const widgetBody = document.createElement('div');
+        widgetBody.classList.add('widgetBody__Inner');
 
         const group1 = document.createElement('div');
         group1.classList.add('group1');
@@ -29,7 +31,7 @@ const widgetSettings = (function () {
           label: 'Days Back',
           type: 'number',
           style: 'secondary',
-          value: this.settings.daysBack,
+          value: that.settings.daysBack,
           attributes: [
             { key: 'min', value: '1' },
             { key: 'max', value: '14' },
@@ -44,7 +46,7 @@ const widgetSettings = (function () {
           label: 'Productivity Threshold',
           type: 'number',
           style: 'secondary',
-          value: this.settings.productivityThreshold,
+          value: that.settings.productivityThreshold,
           attributes: [
             { key: 'min', value: '0' },
             { key: 'max', value: '100' },
@@ -59,7 +61,7 @@ const widgetSettings = (function () {
           label: 'Work Hours/Day',
           type: 'number',
           style: 'secondary',
-          value: this.settings.workHoursPerDay,
+          value: that.settings.workHoursPerDay,
           attributes: [
             { key: 'min', value: '1' },
             { key: 'max', value: '24' },
@@ -78,16 +80,16 @@ const widgetSettings = (function () {
             );
             const newWorkHours = parseFloat(workHoursPerDay.firstElementChild.value);
             if (newDaysBack >= 1 && newDaysBack <= 14) {
-              this.settings.daysBack = newDaysBack;
+              that.settings.daysBack = newDaysBack;
             }
             if (newProductivity >= 0 && newProductivity <= 100) {
-              this.settings.productivityThreshold = newProductivity;
+              that.settings.productivityThreshold = newProductivity;
             }
             if (newWorkHours >= 0.1 && newWorkHours <= 24) {
-              this.settings.workHoursPerDay = newWorkHours;
+              that.settings.workHoursPerDay = newWorkHours;
             }
             // config string to json
-            const configString = JSON.stringify(this.settings);
+            const configString = JSON.stringify(that.settings);
 
             // style saved button
             saveBtn.innerText = 'saved';
@@ -98,7 +100,7 @@ const widgetSettings = (function () {
             }, 1600);
 
             // update settings
-            await widgetSettingsAjax.setWidgetSettingConfig(1, configString, this.showHide);
+            await widgetSettingsAjax.setWidgetSettingConfig(1, configString, that.showHide);
             dashboard.refreshWidgetSettings();
           },
         });
@@ -124,20 +126,22 @@ const widgetSettings = (function () {
       },
       showHide: '',
       gkOnly: true,
-      build: () => {
+      build: function () {
+        const that = this;
         const widgetBody = document.createElement('div');
+        widgetBody.classList.add('widgetBody__Inner');
 
         const viewNotesByOtherUsersCheckBox = input.buildCheckbox({
           text: 'View Notes Entered by Other Users',
           style: 'secondary',
-          isChecked: this.settings.viewEnteredByOtherUsers === 'Y' ? true : false,
+          isChecked: that.settings.viewEnteredByOtherUsers === 'Y' ? true : false,
         });
         viewNotesByOtherUsersCheckBox.classList.add('settingsCheckBox');
         viewNotesByOtherUsersCheckBox.addEventListener('change', event => {
           if (event.target.checked && $.session.CaseNotesViewEntered) {
-            this.settings.viewEnteredByOtherUsers = 'Y';
+            that.settings.viewEnteredByOtherUsers = 'Y';
           } else {
-            this.settings.viewEnteredByOtherUsers = 'N';
+            that.settings.viewEnteredByOtherUsers = 'N';
           }
         });
 
@@ -146,7 +150,7 @@ const widgetSettings = (function () {
           label: 'Last Note Entered Days Back',
           type: 'number',
           style: 'secondary',
-          value: this.settings.lastNoteEnteredDaysBack,
+          value: that.settings.lastNoteEnteredDaysBack,
           attributes: [
             { key: 'min', value: '1' },
             { key: 'max', value: '60' },
@@ -161,7 +165,7 @@ const widgetSettings = (function () {
           label: 'Review Notes Days Back',
           type: 'number',
           style: 'secondary',
-          value: this.settings.viewNotesDaysBack,
+          value: that.settings.viewNotesDaysBack,
           attributes: [
             { key: 'min', value: '1' },
             { key: 'max', value: '60' },
@@ -193,16 +197,16 @@ const widgetSettings = (function () {
             }
 
             if (newViewNotesDaysBack >= 1 && newViewNotesDaysBack <= 60) {
-              this.settings.viewNotesDaysBack = newViewNotesDaysBack;
+              that.settings.viewNotesDaysBack = newViewNotesDaysBack;
             }
             if (newLastNoteEnteredDaysBack >= 1 && newLastNoteEnteredDaysBack <= 60) {
-              this.settings.lastNoteEnteredDaysBack = newLastNoteEnteredDaysBack;
+              that.settings.lastNoteEnteredDaysBack = newLastNoteEnteredDaysBack;
             }
 
-            this.settings.viewEnteredByOtherUsers = newViewEnteredByOthers;
+            that.settings.viewEnteredByOtherUsers = newViewEnteredByOthers;
 
             // config string to json
-            const configString = JSON.stringify(this.settings);
+            const configString = JSON.stringify(that.settings);
 
             // style saved button
             saveBtn.innerText = 'saved';
@@ -213,7 +217,7 @@ const widgetSettings = (function () {
             }, 1600);
 
             // update settings
-            await widgetSettingsAjax.setWidgetSettingConfig(2, configString, this.showHide);
+            await widgetSettingsAjax.setWidgetSettingConfig(2, configString, that.showHide);
             dashboard.refreshWidgetSettings();
           },
         });
@@ -238,8 +242,10 @@ const widgetSettings = (function () {
       settings: { dueDate: 'today' },
       showHide: '',
       gkOnly: true,
-      build: () => {
+      build: function () {
+        const that = this;
         const widgetBody = document.createElement('div');
+        widgetBody.classList.add('widgetBody__Inner');
 
         const dueDateDropdown = dropdown.build({
           label: 'Due Date',
@@ -247,7 +253,7 @@ const widgetSettings = (function () {
           dropdownId: 'dueDateDropdown',
         });
         dueDateDropdown.addEventListener('change', e => {
-          this.settings.dueDate = e.target.value;
+          that.settings.dueDate = e.target.value;
         });
         dropdown.populate(
           dueDateDropdown,
@@ -258,7 +264,7 @@ const widgetSettings = (function () {
             { id: 4, value: 'prior 7 days', text: 'Prior 7 Days' },
             { id: 5, value: 'prior 30 days', text: 'Prior 30 Days' },
           ],
-          this.settings.dueDate,
+          that.settings.dueDate,
         );
 
         const saveBtn = button.build({
@@ -269,7 +275,7 @@ const widgetSettings = (function () {
           classNames: ['widgetSettingsSaveBtn'],
           callback: async () => {
             // config string to json
-            const configString = JSON.stringify(this.settings);
+            const configString = JSON.stringify(that.settings);
 
             // style saved button
             saveBtn.innerText = 'saved';
@@ -280,7 +286,7 @@ const widgetSettings = (function () {
             }, 1600);
 
             // update settings
-            await widgetSettingsAjax.setWidgetSettingConfig(4, configString, this.showHide);
+            await widgetSettingsAjax.setWidgetSettingConfig(4, configString, that.showHide);
             dashboard.refreshWidgetSettings();
           },
         });
@@ -297,16 +303,17 @@ const widgetSettings = (function () {
       settings: { daysBack: 60 },
       showHide: '',
       gkOnly: true,
-      build: () => {
-        console.log(this);
+      build: function () {
+        const that = this;
         const widgetBody = document.createElement('div');
+        widgetBody.classList.add('widgetBody__Inner');
 
         const daysBackInput = input.build({
           id: 'cnRejectedDaysBack',
           label: 'Rejected Notes Days Back',
           type: 'number',
           style: 'secondary',
-          value: this.settings.daysBack,
+          value: that.settings.daysBack,
           attributes: [
             { key: 'min', value: '1' },
             { key: 'max', value: '60' },
@@ -323,15 +330,15 @@ const widgetSettings = (function () {
           style: 'secondary',
           classNames: ['widgetSettingsSaveBtn'],
           callback: async () => {
-            console.log(this);
+            console.log(that);
             // get input field values
             const newDaysBack = parseInt(daysBackInput.firstElementChild.value);
             if (newDaysBack >= 1 && newDaysBack <= 60) {
-              this.settings.daysBack = newDaysBack;
+              that.settings.daysBack = newDaysBack;
             }
 
             // config string to json
-            const configString = JSON.stringify(this.settings);
+            const configString = JSON.stringify(that.settings);
 
             // style saved button
             saveBtn.innerText = 'saved';
@@ -342,7 +349,7 @@ const widgetSettings = (function () {
             }, 1600);
 
             // update settings
-            await widgetSettingsAjax.setWidgetSettingConfig(3, configString, this.showHide);
+            await widgetSettingsAjax.setWidgetSettingConfig(3, configString, that.showHide);
             dashboard.refreshWidgetSettings();
           },
         });
@@ -440,7 +447,7 @@ const widgetSettings = (function () {
 
       const checkbox = input.buildCheckbox({
         text: 'Show',
-        isChecked: true,
+        isChecked: sections[sec].showHide,
       });
       checkbox.addEventListener('change', e => {
         sections[sec].showHide = e.target.checked ? 'Y' : 'N';
@@ -449,7 +456,9 @@ const widgetSettings = (function () {
       sectionHeader.appendChild(title);
       sectionHeader.appendChild(checkbox);
 
-      sectionBody.appendChild(buildWidgetBodyInnerHTML(sec));
+      if (sections[sec].build) {
+        sectionBody.appendChild(buildWidgetBodyInnerHTML(sec));
+      }
 
       sectionWrap.appendChild(sectionHeader);
       sectionWrap.appendChild(sectionBody);

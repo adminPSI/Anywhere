@@ -113,6 +113,24 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
+        public string  getCategoriesSubCategoriesByPayee(DistributedTransaction transaction, string categoryID)
+        {
+            List<string> list = new List<string>();
+            list.Add(categoryID);
+            try
+            {
+                logger.debug("getSubCatogories");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getCategoriesSubCategoriesByPayee(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getCategoriesSubCategoriesByPayee()");
+                throw ex;
+            }
+
+        }
+
         public string insertPayee(string payeeName, string address1, string address2, string city, string state, string zipcode, string userId, DistributedTransaction transaction)
         {
             try

@@ -1,6 +1,7 @@
 const consumerFinanceAttachment = (() => {
     let attachments;
     let registerID;
+    let IsDisabledBtn;
 
     /** Class for attachments in Plan Module */
     class ConsumerFinanceAttachment {
@@ -10,9 +11,10 @@ const consumerFinanceAttachment = (() => {
          * @param {string} regId question ID the attachment button is assoicated with
          * @param {string} assessmentId Assessment ID
          */
-        constructor(header, regId) {
+        constructor(header, regId, IsDisabled) {
             this.attachmentsForQuestion = header;
             this.regId = regId;
+            this.IsDisabledBtn = IsDisabled;
         }
 
         buildAttachmentButton() {
@@ -257,6 +259,18 @@ const consumerFinanceAttachment = (() => {
                     POPUP.hide(popup);
                 },
             });
+
+            if (this.IsDisabledBtn == true) { 
+                removeAttachmentBtn.classList.add('disabled'); 
+                saveBtn.classList.add('disabled');
+                addAttachmentBtn.classList.add('disabled');
+            }
+            else {
+                removeAttachmentBtn.classList.remove('disabled');
+                saveBtn.classList.remove('disabled');
+                addAttachmentBtn.classList.remove('disabled');  
+            }
+
             const reviewAttachmentList = document.createElement('div');
             reviewAttachmentList.classList.add('reviewAttachmentList');
             const newAttachmentList = document.createElement('div');
