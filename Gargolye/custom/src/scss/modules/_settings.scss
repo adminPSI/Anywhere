@@ -65,14 +65,31 @@
     cursor: pointer;
 
     .checkbox-mtd:before {
-      background-color: $white;
+      background-color: $btn-light;
     }
   }
 
   .widgetBody {
+    background-color: $btn-light;
     transform: translateY(-100%);
     transition: all 200ms linear;
     max-height: 0px;
+
+    .widgetBody__Inner {
+      padding: 20px 5px 10px;
+
+      .settingsCheckBox {
+        margin: 0 0 20px;
+        
+        span {
+          font-size: 14px;
+        }
+      }
+
+      button {
+        margin: 0 0 5px;
+      }
+    }
 
     &.active {
       transform: translateY(0);

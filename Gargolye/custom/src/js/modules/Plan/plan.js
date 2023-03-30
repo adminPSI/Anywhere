@@ -1253,7 +1253,6 @@ const plan = (function () {
       classNames:
         planActiveStatus && $.session.planUpdate ? ['statusBtn'] : ['statusBtn', 'disabled'],
     });
-    //TODO: ash - TJ sec key
     const deleteBtn = button.build({
       text: 'Delete Plan',
       style: 'secondary',
