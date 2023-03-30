@@ -4121,7 +4121,7 @@ namespace Anywhere
        ResponseFormat = WebMessageFormat.Json,
        RequestFormat = WebMessageFormat.Json,
        UriTemplate = "/oneSpanBuildSigners/")]
-        string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp);
+        string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp, bool oneSpan);
         //string token, string packageName, string documentName, string filePath, string[] emails, string[] names, string[] memberTypes, string[] signatureIds
 
         [WebInvoke(Method = "POST",
