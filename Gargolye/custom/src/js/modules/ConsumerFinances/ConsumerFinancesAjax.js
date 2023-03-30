@@ -154,6 +154,32 @@ var ConsumerFinancesAjax = (function () {
         }
     }
 
+    async function getCategoriesSubCategoriesByPayeeAsync(CategoryID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getCategoriesSubCategoriesByPayee/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    categoryID: CategoryID,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     async function insertPayeeAsync(
         payeeName,
         payeeaddress1,
@@ -464,6 +490,7 @@ var ConsumerFinancesAjax = (function () {
         getPayeesAsync,
         getCategoriesAsync,
         getSubCategoriesAsync,
+        getCategoriesSubCategoriesByPayeeAsync,
         insertPayeeAsync,
         insertAccountAsync,
         getAccountEntriesByIDAsync,

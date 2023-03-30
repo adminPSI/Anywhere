@@ -4210,6 +4210,13 @@ namespace Anywhere
              UriTemplate = "/getSubCatogories/")]
         ConsumerFinancesWorker.SubCategory[] getSubCatogories(string token, string categoryID);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getCategoriesSubCategoriesByPayee/")]
+        ConsumerFinancesWorker.CategorySubCategory[] getCategoriesSubCategoriesByPayee(string token, string categoryID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

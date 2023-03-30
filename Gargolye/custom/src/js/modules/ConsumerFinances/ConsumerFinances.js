@@ -126,7 +126,7 @@ const ConsumerFinances = (() => {
     }
 
     function handleAccountTableEvents(registerId) {
-        NewEntryCF.buildNewEntryForm(registerId)
+        NewEntryCF.buildNewEntryForm(registerId); 
     }
 
     // build display of Account and button

@@ -158,6 +158,8 @@ $.session.intellivuePermission = '';
 $.session.passwordResetPermission = '';
 // $.session.formsPermission = '';
 // $.session.OODPermission = '';
+$.session.anywhereResetPasswordPermission = '';
+$.session.anywhereConsumerFinancesPermission = '';
 $.session.selectedConsumerIdForGoalsDateBack = '';
 $.session.caseNoteEdit = false;
 $.session.consumerIdToEdit = '';
@@ -265,6 +267,14 @@ $.session.OODDelete = false;
 $.session.OODInsert = false;
 $.session.OODUpdate = false;
 $.session.OODView = false;
+
+// Consumer Finance
+$.session.CFDelete = false;
+$.session.CFInsert = false;
+$.session.CFUpdate = false;
+$.session.CFView = false;
+$.session.CFADDPayee = false;
+$.session.CFEditAccountEntries = false;
 
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
@@ -638,7 +648,30 @@ function setSessionVariables() {
       if (tmpPerm == 'Insert' || $.session.isPSI == true) {
         $.session.OODInsert = true;
       }
-    }
+      }
+
+      // Consumer Finance
+      if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
+          if (tmpPerm == 'Update' || $.session.isPSI == true) {
+              $.session.CFUpdate = true;
+          }
+          if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+              $.session.CFDelete = true;
+          }
+          if (tmpPerm == 'View' || $.session.isPSI == true) {
+              $.session.CFView = true;
+          }
+          if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+              $.session.CFInsert = true;
+          }
+          if (tmpPerm == 'Add Payee' || $.session.isPSI == true) {
+              $.session.CFADDPayee = true;
+          }
+          if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
+              $.session.CFEditAccountEntries = true; 
+          }
+      }
+
 
     if (tmpWindow == 'Anywhere User Home') {
       if (tmpPerm == 'Deny Staff TimeClock Change') {
@@ -1583,7 +1616,19 @@ function disableModules() {
     //Leave module on
   } else {
     $('#plansettingsdiv').css('display', 'none');
-  }
+    }
+
+    if ($.session.anywhereResetPasswordPermission == 'Anywhere_Administration') {
+        //Leave module on
+    } else {
+        $('#Adminsettingdiv').css('display', 'none');
+    }
+
+    if ($.session.anywhereConsumerFinancesPermission == 'Anywhere_Consumer_Finances') {
+        //Leave module on
+    } else {
+        $('#consumerfinancessettingsdiv').css('display', 'none');
+    }
 }
 
 function setUpAdminPermissions() {

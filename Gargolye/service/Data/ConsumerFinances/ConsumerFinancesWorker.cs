@@ -47,6 +47,11 @@ namespace Anywhere.service.Data.ConsumerFinances
             [DataMember(Order = 14)]
             public string accountID { get; set; }
 
+            [DataMember(Order = 15)]
+            public string reconciled { get; set; }
+            [DataMember(Order = 16)]
+            public string lastUpdateBy { get; set; }
+
         }
 
         [DataContract]
@@ -84,6 +89,16 @@ namespace Anywhere.service.Data.ConsumerFinances
         {
             [DataMember(Order = 0)]
             public string CategoryID { get; set; }
+            [DataMember(Order = 1)]
+            public string SubCategoryDescription { get; set; }
+
+        }
+
+        [DataContract]
+        public class CategorySubCategory
+        {
+            [DataMember(Order = 0)]
+            public string CategoryDescription { get; set; }
             [DataMember(Order = 1)]
             public string SubCategoryDescription { get; set; }
 
@@ -220,6 +235,25 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     SubCategory[] subCategory = js.Deserialize<SubCategory[]>(Odg.getSubCatogories(transaction, categoryID));
                     return subCategory;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public CategorySubCategory[] getCategoriesSubCategoriesByPayee(string token, string categoryID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    CategorySubCategory[] categorySubCategory = js.Deserialize<CategorySubCategory[]>(Odg.getCategoriesSubCategoriesByPayee(transaction, categoryID));
+                    return categorySubCategory;
                 }
                 catch (Exception ex)
                 {

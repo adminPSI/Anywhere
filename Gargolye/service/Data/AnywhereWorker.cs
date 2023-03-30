@@ -427,6 +427,9 @@ namespace Anywhere.service.Data
             public string planPeopleId { get; set; }
             public string adminPermission { get; set; }
             public string oneSpan { get; set; }
+            public string anywhereResetPasswordPermission { get; set; }
+            public string anywhereConsumerFinancesPermission { get; set; }
+
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
