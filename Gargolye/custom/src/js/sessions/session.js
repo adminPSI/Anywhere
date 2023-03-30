@@ -15,6 +15,11 @@ $.session.DemographicsRelationshipsView = false;
 $.session.DemographicsPictureUpdate = false;
 $.session.DemographicsNotesView = false;
 $.session.DemographicsViewAttachments = false;
+$.session.viewLocationSchedulesKey = false;
+$.session.DemographicsViewDOB = false;
+$.session.DemographicsViewMedicaid = false;
+$.session.DemographicsViewMedicare = false;
+$.session.DemographicsViewResident = false;
 $.session.GoalsView = false;
 $.session.GoalsUpdate = false;
 $.session.CaseNotesView = false;
@@ -517,11 +522,21 @@ function setSessionVariables() {
       if (tmpPerm == 'View Location Schedule') {
         $.session.viewLocationSchedulesKey = true;
       }
-      //$.session.DemographicsNotesView = true; //remove before committing
+      if (tmpPerm == 'View DOB') {
+        $.session.DemographicsViewDOB = true;
+      }
+      if (tmpPerm == 'View Medicaid Number') {
+        $.session.DemographicsViewMedicaid = true;
+      }
+      if (tmpPerm == 'View Medicare Number') {
+        $.session.DemographicsViewMedicare = true;
+      }
+      if (tmpPerm == 'View Resident Number') {
+        $.session.DemographicsViewResident = true;
+      }
     }
 
     //Incident Tracking Permissons
-    //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Incident Tracking') {
       if (tmpPerm == 'View Case Load') {
         $.session.incidentTrackingViewCaseLoad = true;
@@ -538,7 +553,7 @@ function setSessionVariables() {
       if (tmpPerm == 'View') {
         $.session.incidentTrackingView = true;
       }
-      if (tmpPerm == 'reviewedBy') {
+      if (tmpPerm == 'Reviewed By User') {
         $.session.incidentTrackingReviewedBy = true;
       }
     }
@@ -549,8 +564,7 @@ function setSessionVariables() {
       if (tmpPerm == 'Update' || $.session.isPSI == true) {
         $.session.planUpdate = true;
       }
-      if (tmpPerm == 'Delete' || $.session.isPSI == true) {
-        //TODO: ash - TJ sec keys
+      if (tmpPerm == 'Delete Plan' || $.session.isPSI == true) {
         $.session.planDelete = true;
       }
       if (tmpPerm == 'View' || $.session.isPSI == true) {

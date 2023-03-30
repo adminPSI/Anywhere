@@ -409,6 +409,21 @@
         cursor: default;
       }
 
+      &.ssn,
+      .medicare,
+      .medicaid,
+      .date {
+        .view {
+          &.hidden {
+            visibility: hidden;
+
+            span {
+              visibility: visible;
+            }
+          }
+        }
+      }
+
       &.editMode {
         .edit {
           display: flex;
