@@ -626,14 +626,17 @@ var timeEntry = (function () {
              
               });
             }   // end if (item.locationId === seletedOverlapLocationId)
-          } //  end for -- all the saved Single Entries (all the non-overlapping location saves) 
-        } // end if -- overlapSavedLocationsSingleEntryPairs.length > 0
 
-          // if the location has NOT already been Saved, so just save the overlapping location
-          if (!foundlocation) await saveOverlapLocationasSingleEntry();
+          } //  end for -- all the saved Single Entries (all the non-overlapping location saves) 
+        } // end if/else -- overlapSavedLocationsSingleEntryPairs.length > 0    
+ 
+            // if the location has NOT already been Saved, so just save the overlapping location
+            if (!foundlocation) await saveOverlapLocationasSingleEntry();
+
       } //  end for -- the selected locations for the overlapping locations
    
-    } else {  // there were NO locations saved, so just save the overlapping location
+    } else {  // there were NO locations saved, so just save the overlapping location 
+      // (savedLocationsSingleEntryPairs.length > 0 || overlapSavedLocationsSingleEntryPairs.length > 0)
       // Single Entry Record DOES NOT exist for this location
       await saveOverlapLocationasSingleEntry();
     }
