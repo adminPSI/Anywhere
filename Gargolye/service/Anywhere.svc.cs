@@ -1344,6 +1344,12 @@ namespace Anywhere
             return dg.deleteAnywhereITIncident(token, incidentId);
         }
 
+        public IncidentTrackingWorker.ReportScheduleId[] generateIncidentTrackingReport(string token, string incidentId)
+        {
+            return iTW.generateIncidentTrackingReport(token, incidentId);
+        }
+
+
         //public AnywhereWorker.ConsumerTableLocation[] getConsumerTableConsumerLocation(string token, string consumerId)
         //{
         //    return anywhereWorker.getConsumerTableConsumerLocation(token, consumerId);

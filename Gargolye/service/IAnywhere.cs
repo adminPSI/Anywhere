@@ -1953,6 +1953,14 @@ namespace Anywhere
              UriTemplate = "/deleteAnywhereITIncident/")]
         string deleteAnywhereITIncident(string token, string incidentId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/generateIncidentTrackingReport/")]
+        IncidentTrackingWorker.ReportScheduleId[] generateIncidentTrackingReport(string token, string incidentId);
+
         //[OperationContract]
         //[WebInvoke(Method = "POST",
         //     BodyStyle = WebMessageBodyStyle.Wrapped,
