@@ -509,7 +509,7 @@ var incidentOverview = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        incidentTrackingAjax.generateIncidentTrackingReport(incidentId, checkIfITReportIsReadyInterval());
+        incidentTrackingAjax.generateIncidentTrackingReport(incidentId, checkIfITReportIsReadyInterval);
         POPUP.hide(incidentEmailPopup);
       }
     });
@@ -554,7 +554,7 @@ var incidentOverview = (function () {
   }
 
   async function checkITReportExists(res) {
-    await incidentTrackingAjax.checkIfCNReportExists(res, callITReport);
+    await incidentTrackingAjax.checkIfITReportExists(res, callITReport);
   }
 
   // Retrieves the report when it is ready

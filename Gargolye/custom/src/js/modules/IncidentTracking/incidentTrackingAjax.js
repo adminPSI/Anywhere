@@ -1050,7 +1050,7 @@
   }
 
   // Generate Incident Tracking Report
-  function generateIncidentTrackingReport(incidentId) {
+  function generateIncidentTrackingReport(incidentId, callback) {
     data = {
       token: $.session.Token,
       incidentId: incidentId
