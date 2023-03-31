@@ -448,12 +448,12 @@ var incidentOverview = (function () {
     }
   }
   // Incident Overview Email Button and Popup
-  async function showPopup(consumerName) {
+  async function showIncidentEmailPopup(incidentId) {
     //*--------------------------------------
     //* POPUP
     //*--------------------------------------
     const incidentEmailPopup = POPUP.build({
-      header: consumerName,
+      header: 'Email Report',
       id: 'sig_mainPopup',
     });
 
@@ -465,6 +465,7 @@ var incidentOverview = (function () {
       callbackType: 'input',
       id: 'toAddress',
       callback: event => {
+        // If the toAddresses field is blank, disable the send button
         const inputField = document.getElementById('toAddress');
         if (inputField.value === '') {
           sendBtn.classList.add('disabled');
@@ -477,26 +478,19 @@ var incidentOverview = (function () {
     const ccAddress = input.build({
       label: 'Email Cc Addresses:',
       callbackType: 'input',
-      callback: event => {
-        
-      },
+
     });
 
     const bccAddress = input.build({
       label: 'Email Bcc Addresses:',
       callbackType: 'input',
-      callback: event => {
-        
-      },
+
     });
 
     const emailSubject = input.build({
       label: 'Email Subject:',
       callbackType: 'input',
       value: 'Incidents [Composite] by Consumer, Date',
-      callback: event => {
-        
-      },
     });
 
     const emailBody = input.build({
@@ -504,19 +498,8 @@ var incidentOverview = (function () {
       callbackType: 'input',
       type: 'textarea',
       classNames: 'autosize',
-      callback: event => {
-        
-      },
-    });
 
-    // Enabling/Disabling send button if toAddress field is filled in or not
-    function enableDisableSendBtn() {
-      if (toAddress === '') {
-        sendBtn.classList.add('disabled');
-      } else {
-        sendBtn.classList.remove('disabled');
-      }
-    }
+    });
 
     //* BUTTONS
     //*------------------------------
@@ -526,8 +509,7 @@ var incidentOverview = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        // TODO: add in email functionality
-
+        incidentTrackingAjax.generateIncidentTrackingReport(incidentId, checkIfITReportIsReadyInterval());
         POPUP.hide(incidentEmailPopup);
       }
     });
@@ -566,11 +548,34 @@ var incidentOverview = (function () {
     text: 'EMAIL',
     style: 'secondary',
     type: 'contained',
-    callback: function() {
-      showPopup();
+    callback: function(event) {
+      showIncidentEmailPopup(incidentId);
     }
   });
-  
+
+  // Repeatedly checks to see if the report is ready
+  function checkIfITReportIsReadyInterval(res) {
+    seconds = parseInt($.session.reportSeconds);
+    intSeconds = seconds * 1000;
+    interval = setInterval(async () => {
+      await checkITReportExists(res);
+    }, intSeconds);
+  }
+
+  async function checkITReportExists(res) {
+    await incidentTrackingAjax.checkIfCNReportExists(res, callITReport);
+  }
+
+  // Retrieves the report when it is ready
+  function callITReport(res, reportScheduleId) {
+    if (res.indexOf('1') === -1) {
+      //do nothing
+    } else {
+      incidentTrackingAjax.viewIncidentTrackingReport(reportScheduleId);
+      clearInterval(interval);
+      reportRunning = false;
+    }
+  }
 
   // OVERVIEW TABLE
   //------------------------------------
@@ -635,7 +640,6 @@ var incidentOverview = (function () {
         },
       };
     });
-
 
     data.sort(function (a, b) {
       var dateOne = UTIL.formatDateToIso(a.values[2]);

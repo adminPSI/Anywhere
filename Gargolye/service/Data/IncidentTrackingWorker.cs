@@ -489,6 +489,24 @@ namespace Anywhere.service.Data
             return "success";
         }
 
+        public ReportScheduleId[] generateIncidentTrackingReport(string token, string incidentId)
+        {
+            string category = "Incident Tracking";
+            string title = "Incidents [Composite] by Consumer, Date";
+            string reportServerList = "Primary";
+            string result = "";
+
+            result = dg.generateIncidentTrackingReport(token, category, title, reportServerList, incidentId);
+
+            ReportScheduleId[] reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+            return reportScheduleId;
+        }
+
+        public string checkIfITReportExists(string token, string reportScheduleId)
+        {
+            return dg.checkIfITReportExists(token, reportScheduleId);
+        }
+
         public class ReportingCategories
         {
             public string itReportingCategoryId { get; set; }
@@ -744,6 +762,11 @@ namespace Anywhere.service.Data
             public string phone { get; set; }
             public string involvementTypeId { get; set; }
             public string involvementDescription { get; set; }
+        }
+
+        public class ReportScheduleId
+        {
+            public string reportScheduleId { get; set; }
         }
 
     }

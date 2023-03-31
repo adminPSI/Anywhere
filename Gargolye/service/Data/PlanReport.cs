@@ -206,7 +206,7 @@ namespace Anywhere.service.Data
             //return msa2;
         }
 
-        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -273,7 +273,7 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("TeamMembers").SetDataSource(ars.ISPTeamMembers(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("TeamMembers2").SetDataSource(ars.ISPTeamMembers2(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
-            cr.OpenSubreport("Dissenting").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
+            cr.OpenSubreport("Dissenting").SetDataSource(ars.Dissenting(long.Parse(assessmentID), oneSpan));
             cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));
             cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(long.Parse(assessmentID)));

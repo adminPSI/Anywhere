@@ -1953,6 +1953,21 @@ namespace Anywhere
              UriTemplate = "/deleteAnywhereITIncident/")]
         string deleteAnywhereITIncident(string token, string incidentId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/generateIncidentTrackingReport/")]
+        IncidentTrackingWorker.ReportScheduleId[] generateIncidentTrackingReport(string token, string incidentId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/checkIfITReportExists/")]
+        string checkIfITReportExists(string token, string reportScheduleId);
+
         //[OperationContract]
         //[WebInvoke(Method = "POST",
         //     BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -4121,7 +4136,7 @@ namespace Anywhere
        ResponseFormat = WebMessageFormat.Json,
        RequestFormat = WebMessageFormat.Json,
        UriTemplate = "/oneSpanBuildSigners/")]
-        string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp);
+        string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp, bool oneSpan);
         //string token, string packageName, string documentName, string filePath, string[] emails, string[] names, string[] memberTypes, string[] signatureIds
 
         [WebInvoke(Method = "POST",
