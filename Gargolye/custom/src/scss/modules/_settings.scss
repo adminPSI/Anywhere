@@ -52,6 +52,8 @@
   .widgetWrap {
     overflow: hidden;
     position: relative;
+    margin: 0 0 10px;
+    border-radius: 4px;
   }
 
   .widgetHeader {
@@ -59,11 +61,14 @@
     background: $bg-dark2;
     display: flex;
     justify-content: space-between;
-    padding: 5px;
+    padding: 10px 5px 10px 10px;
     position: relative;
     z-index: 1;
     cursor: pointer;
 
+    .checkbox-mtd>span {
+      font-size: 14px
+    }
     .checkbox-mtd:before {
       background-color: $btn-light;
     }
@@ -74,6 +79,7 @@
     transform: translateY(-100%);
     transition: all 200ms linear;
     max-height: 0px;
+    opacity: 0;
 
     .widgetBody__Inner {
       padding: 20px 5px 10px;
@@ -94,6 +100,7 @@
     &.active {
       transform: translateY(0);
       max-height: fit-content;
+      opacity: 1;
     }
   }
 }

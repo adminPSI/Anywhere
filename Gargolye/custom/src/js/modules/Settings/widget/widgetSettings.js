@@ -434,6 +434,9 @@ const widgetSettings = (function () {
 
   function populatePage() {
     const appName = $.session.applicationName === 'Advisor' ? 'adv' : 'gk';
+    const widgetsContainer = document.createElement('div');
+    widgetsContainer.classList.add('widgetsContainer');
+
     for (const sec in sections) {
       if (!sections[sec].application.includes(appName)) {
         continue;
@@ -454,7 +457,7 @@ const widgetSettings = (function () {
       title.innerText = sections[sec].name;
 
       const checkbox = input.buildCheckbox({
-        text: 'Show',
+        text: 'show',
         isChecked: sections[sec].showHide === 'Y' ? true : false,
       });
       checkbox.addEventListener('change', async e => {
@@ -480,7 +483,7 @@ const widgetSettings = (function () {
       sectionWrap.appendChild(sectionHeader);
       sectionWrap.appendChild(sectionBody);
 
-      widgetSettingsPage.appendChild(sectionWrap);
+      widgetsContainer.appendChild(sectionWrap);
 
       sectionHeader.addEventListener('click', e => {
         if (sectionBody.classList.contains('active')) {
@@ -492,6 +495,8 @@ const widgetSettings = (function () {
         }
       });
     }
+
+    widgetSettingsPage.appendChild(widgetsContainer);
   }
 
   function buildPage() {
