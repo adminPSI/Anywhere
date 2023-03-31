@@ -615,6 +615,7 @@ var timeEntry = (function () {
               await singleEntryAjax.insertConsumerforSavedSingleEntry(consumerData, function (res) {
              
               });
+
             }   // end if (item.locationId === seletedOverlapLocationId)
           } //  end for -- all the saved Single Entries (all the non-overlapping location saves) 
 
@@ -647,8 +648,9 @@ var timeEntry = (function () {
             // if the location has NOT already been Saved, so just save the overlapping location
             if (!foundlocation) await saveOverlapLocationasSingleEntry(prop);
 
+     
       } //  end for -- the selected locations for the overlapping locations
-   
+ 
     } else {  // there were NO locations saved, so just save the overlapping location 
       // (savedLocationsSingleEntryPairs.length > 0 || overlapSavedLocationsSingleEntryPairs.length > 0)
       // Single Entry Record DOES NOT exist for this location
@@ -679,6 +681,7 @@ var timeEntry = (function () {
         } // end of nested function -- async function saveOverlapLocationasSingleEntry()
 
     // put together full list of new Single Entry Inserts
+    overlapSavedLocationsSingleEntryPairs = [];
     var concatsavedLocationsSingleEntryPairs = savedLocationsSingleEntryPairs.concat(overlapSavedLocationsSingleEntryPairs);
     return concatsavedLocationsSingleEntryPairs;
   } // end of Parent/containing function -- function populateOverlapLocationsDropdown(locDrop, consumer)
