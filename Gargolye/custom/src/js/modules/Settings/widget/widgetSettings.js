@@ -7,7 +7,7 @@ const widgetSettings = (function () {
       name: 'Case Note Productivity',
       settings: { productivityThreshold: 60, daysBack: 7, workHoursPerDay: 7 },
       showHide: '',
-      gkOnly: true,
+      application: 'gk',
       build: function () {
         const that = this;
         const saveID = 1;
@@ -124,7 +124,7 @@ const widgetSettings = (function () {
         viewEnteredByOtherUsers: 'N',
       },
       showHide: '',
-      gkOnly: true,
+      application: 'gk',
       build: function () {
         const saveID = 2;
         const that = this;
@@ -240,7 +240,7 @@ const widgetSettings = (function () {
       name: 'Rejected Case Notes',
       settings: { daysBack: 60 },
       showHide: '',
-      gkOnly: true,
+      application: 'gk',
       build: function () {
         const saveID = 3;
         const that = this;
@@ -303,7 +303,7 @@ const widgetSettings = (function () {
       name: 'Plan To-Do List',
       settings: { dueDate: 'today' },
       showHide: '',
-      gkOnly: true,
+      application: 'gk',
       build: function () {
         const saveID = 4;
         const that = this;
@@ -361,57 +361,57 @@ const widgetSettings = (function () {
       },
     },
     // new widgets
-    5: { name: 'Custom Links', settings: {}, showHide: '', gkOnly: false },
+    5: { name: 'Custom Links', settings: {}, showHide: '', application: 'gk,adv' },
     6: {
       name: 'Absent Consumers',
       settings: {},
       showHide: '',
-      gkOnly: false,
+      application: 'gk,adv',
     },
     7: {
       name: 'Location Progress Notes',
       settings: {},
       showHide: '',
-      gkOnly: false,
+      application: 'gk,adv',
     },
     8: {
       name: 'Consumer Progress Notes',
       settings: {},
       showHide: '',
-      gkOnly: false,
+      application: 'gk,adv',
     },
     9: {
       name: 'Day Service Time Clock',
       settings: {},
       showHide: '',
-      gkOnly: false,
+      application: 'gk,adv',
     },
-    10: { name: 'Hours Worked', settings: {}, showHide: '', gkOnly: false },
+    10: { name: 'Hours Worked', settings: {}, showHide: '', application: 'gk,adv' },
     11: {
       name: 'Daily Services',
       settings: {},
       showHide: '',
-      gkOnly: false,
+      application: 'gk,adv',
     },
-    12: { name: 'Day Services', settings: {}, showHide: '', gkOnly: false },
+    12: { name: 'Day Services', settings: {}, showHide: '', application: 'gk,adv' },
     13: {
       name: 'My Unapproved Time Entries',
       settings: {},
       showHide: '',
-      gkOnly: true,
+      application: 'adv',
     },
     14: {
       name: 'Time Entry Review',
       settings: {},
       showHide: '',
-      gkOnly: true,
+      application: 'adv',
     },
-    15: { name: 'My Schedule', settings: {}, showHide: '', gkOnly: true },
+    15: { name: 'My Schedule', settings: {}, showHide: '', application: 'adv' },
     16: {
       name: 'Incident Tracking',
       settings: {},
       showHide: '',
-      gkOnly: true,
+      application: 'adv',
     },
   };
 
@@ -433,9 +433,11 @@ const widgetSettings = (function () {
   }
 
   function populatePage() {
-    console.log(sections);
+    const appName = $.session.applicationName === 'Advisor' ? 'adv' : 'gk';
     for (const sec in sections) {
-      if ($.session.applicationName === 'Advisor' && sections[sec].gkOnly) return;
+      if (!sections[sec].application.includes(appName)) {
+        continue;
+      }
 
       setWidgetSettings(sec);
 

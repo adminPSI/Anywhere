@@ -528,8 +528,6 @@
 
   async function preLoadWidget() {
     widgetSettings = (await widgetSettingsAjax.getWidgetSettings()).getUserWidgetSettingsResult;
-    console.clear();
-    console.table(widgetSettings);
 
     function getSetting(widgetId) {
       return widgetSettings.filter(widget => {
