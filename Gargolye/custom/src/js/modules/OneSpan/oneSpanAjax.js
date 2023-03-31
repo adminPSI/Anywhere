@@ -2,7 +2,7 @@
 	'use-strict';
 
     async function oneSpanBuildSigners(retrieveData) {
-        //token, assessmentID, userID, versionID, extraSpace, isp
+        //token, assessmentID, userID, versionID, extraSpace, isp, oneSpan
         try {
             const data = await $.ajax({
                 type: 'POST',

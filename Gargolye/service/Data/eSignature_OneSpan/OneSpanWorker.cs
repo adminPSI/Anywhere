@@ -4,6 +4,7 @@ using OneSpanSign.Sdk;
 using OneSpanSign.Sdk.Builder;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,36 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
+        public void oneSpanAssignSender()
+        {
+            AccountMember member = AccountMemberBuilder.NewAccountMember("erickbey10@yahoo.com")
+                .WithFirstName("test")
+                .WithLastName("Smith")
+                .WithCompany("ABC Bank")
+                .WithTitle("CEO")
+                .WithStatus(SenderStatus.ACTIVE)
+                .Build();
+
+            ossClient.AccountService.InviteUser(member);
+        }
+
+        public void checkAccountUsers()
+        {
+            int i = 1;
+            IDictionary<string, Sender> accountMembers = ossClient.AccountService.GetSenders(Direction.ASCENDING, new PageRequest(i, 5));
+            while (accountMembers.Count != 0)
+            {
+                foreach (var s in accountMembers)
+                {
+                    string email = s.Key.ToString();
+                    string id = s.Value.Id;
+                    Debug.WriteLine(email + " " + id);
+                    i++;
+                }
+                accountMembers = ossClient.AccountService.GetSenders(Direction.ASCENDING, new PageRequest(i, 10));
+            }
+        }
+
 
         public string oneSpanBuildSigners(string token, string assessmentID, MemoryStream ms)
         {
@@ -39,7 +70,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
 
-                string[] emails = { "erickbey1@outlook.com", "erickbey10@gmail.com", "erickbey10@yahoo.com", "erick.bey@primarysolutions.net"};
+                string[] emails = { "erick.bey@primarysolutions.net", "erickbey1@outlook.com", "erickbey10@gmail.com" };
 
                 // Create a list for each category for signers
                 List<string> emailsList = new List<string>();
@@ -64,11 +95,15 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 string[] signatureIds = signatureIdsList.ToArray();
                 string[] signatureTypes = signatureTypeList.ToArray();
 
+                //oneSpanAssignSender();
+
+                //Sender retrievedSender = ossClient.AccountService.GetSender("senderId");
+
                 // Sets the senders info
                 string firstNameTest = "Your County Board";
                 string lastNameTest = "of DD";
                 SenderInfoBuilder sender = SenderInfoBuilder
-                    .NewSenderInfo("mike.taft@primarysolutions.net")
+                    .NewSenderInfo("erickbey10@yahoo.com")
                     .WithName(firstNameTest, lastNameTest);
 
                 // Sets default last name value if one is not provided
@@ -144,16 +179,26 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             return oneSpanRadioButton;
         }
 
-        public Field createTextAreaField(string idName, int i, string anchorText, int pageLocation)
+        public Field createTextAreaField(string idName, int i, string anchorText, string teamMemberType)
         {
-            int textAreaXOffset = -80;
+            int textAreaXOffset = 175;
             int textAreaWidth = 360;
+            int textAreaHeight = 40;
 
-            // Change size and x position if the text area is for "How to address"
-            if (anchorText == "How to address")
+            // Change size and xOffset for "How To Address" grid box
+            if (idName == "dissentHowToAddress-")
             {
-                textAreaXOffset = -60;
+                textAreaXOffset = 537;
                 textAreaWidth = 225;
+            }
+
+            // If the team member type is Parent, Day Provider, or Other, make the text area height smaller
+            if (teamMemberType == "Parent" || teamMemberType == "Day Provider" || teamMemberType == "Other") 
+            {
+                textAreaHeight = 20;
+            } else if (teamMemberType == "Home Provider Vendor")
+            {
+                textAreaHeight = 60;
             }
 
             // Set character limit
@@ -167,9 +212,10 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 .WithValidation(characterLimit)
                 .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchorText)
                                                                         .AtPosition(TextAnchorPosition.TOPLEFT)
-                                                                        .WithSize(textAreaWidth, 40)
+                                                                        .WithSize(textAreaWidth, textAreaHeight)
                                                                         .WithCharacter(0)
-                                                                        .WithOffset(textAreaXOffset, pageLocation))
+                                                                        .WithOccurrence(1)
+                                                                        .WithOffset(textAreaXOffset, 0))
             .Build();
             return textAreaInput;
         }
@@ -209,7 +255,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
             int occurence = 0;
             int i = 0;
-            int dissentingOpinionLocation = 45;
 
             foreach (Signer signer in allSigners)
             {
@@ -261,8 +306,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                         .WithField(createRadioButton("N/A", groupNames[8], "csResidentialOptions", i, descriptionAnchor[8], occurence))
 
                                         // Creates dissenting opinion text area fields
-                                        .WithField(createTextAreaField("dissentAreaDisagree-", i, "Areas team members disagree", dissentingOpinionLocation))
-                                        .WithField(createTextAreaField("dissentHowToAddress-", i, "How to address", dissentingOpinionLocation))
+                                        .WithField(createTextAreaField("dissentAreaDisagree-", i, anchor, signer.Title))
+                                        .WithField(createTextAreaField("dissentHowToAddress-", i, anchor, signer.Title))
 
                                         // Creates signature and date signature fields
                                         .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
@@ -290,8 +335,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                         .WithName(signer.Email)
 
                                            // Creates dissenting opinion text area fields
-                                           .WithField(createTextAreaField("dissentAreaDisagree-", i, "Areas team members disagree", dissentingOpinionLocation))
-                                           .WithField(createTextAreaField("dissentHowToAddress-", i, "How to address", dissentingOpinionLocation))
+                                           .WithField(createTextAreaField("dissentAreaDisagree-", i, anchor, signer.Title))
+                                           .WithField(createTextAreaField("dissentHowToAddress-", i, anchor, signer.Title))
 
                                            // Creates signature and date signature fields
                                            .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
@@ -313,7 +358,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 }
 
                 i++;
-                dissentingOpinionLocation += 40;
             }
 
             return sendToOneSpan(token, assessmentID, package, document);
