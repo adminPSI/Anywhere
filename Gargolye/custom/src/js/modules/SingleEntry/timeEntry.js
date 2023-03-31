@@ -34,7 +34,6 @@ var timeEntry = (function () {
   let consumerswithMultipleLocations;
   let overlapconsumerlocationdata;
   let selectedOverlapLocIds = {};
-  let overlapSavedLocationsSingleEntryPairs = [];
   
   //let seletedOverlapLocationId = '';
   //let selectedOverlapConsumerId;
@@ -429,6 +428,7 @@ var timeEntry = (function () {
           newTimeEntry.init();
         }, 1000);
 
+        selectedOverlapLocIds = {};
       },
     });
     this.doneButton = overlapLocationsDoneBtn;
@@ -504,6 +504,7 @@ var timeEntry = (function () {
 
   async function saveSingleEntrywithLocationOverlaps() {
     let savedLocationsSingleEntryPairs = [];
+    let overlapSavedLocationsSingleEntryPairs = [];
     
     // ****************// FIRST SAVE -- SAVING Consumers with NON-Overlapping Locations -- SAVED IN GROUPS OF CONSUMERS WHO SHARE A LOCATIONID
     // looking through the consumers with non-overlapping locationsIds (consumerswithUniqueLocations)
@@ -681,7 +682,6 @@ var timeEntry = (function () {
         } // end of nested function -- async function saveOverlapLocationasSingleEntry()
 
     // put together full list of new Single Entry Inserts
-    overlapSavedLocationsSingleEntryPairs = [];
     var concatsavedLocationsSingleEntryPairs = savedLocationsSingleEntryPairs.concat(overlapSavedLocationsSingleEntryPairs);
     return concatsavedLocationsSingleEntryPairs;
   } // end of Parent/containing function -- function populateOverlapLocationsDropdown(locDrop, consumer)
