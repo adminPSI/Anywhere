@@ -70,7 +70,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
 
-                string[] emails = { "erick.bey@primarysolutions.net", "erickbey1@outlook.com", "erickbey10@gmail.com" };
+                string[] emails = { "erick.bey@primarysolutions.net", "erickbey1@outlook.com", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
 
                 // Create a list for each category for signers
                 List<string> emailsList = new List<string>();
@@ -78,6 +78,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 List<string> memberTypesList = new List<string>();
                 List<string> signatureIdsList = new List<string>();
                 List<string> signatureTypeList = new List<string>();
+                List<string> dateSignedList = new List<string>();
 
                 // Seperates the signers info into lists
                 foreach (var item in result)
@@ -87,6 +88,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     memberTypesList.Add(item["teamMember"]);
                     signatureIdsList.Add(item["signatureId"]);
                     signatureTypeList.Add(item["signatureType"]);
+                    dateSignedList.Add(item["dateSigned"]);
                 }
 
                 // Converts the lists into arrays
@@ -94,6 +96,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 string[] memberTypes = memberTypesList.ToArray();
                 string[] signatureIds = signatureIdsList.ToArray();
                 string[] signatureTypes = signatureTypeList.ToArray();
+                string[] dateSigned = dateSignedList.ToArray();
 
                 //oneSpanAssignSender();
 
@@ -143,7 +146,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     lastName = "(No Last Name Provided)";
                 }
 
-                return createDocument(token, assessmentID, allSigners, names, signatureTypes, superPackage, ms);
+                return createDocument(token, assessmentID, allSigners, names, signatureTypes, dateSigned, superPackage, ms);
             }
         }
 
@@ -220,7 +223,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             return textAreaInput;
         }
 
-        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string[] names, string[] signatureTypes, PackageBuilder package, MemoryStream ms)
+        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string[] names, string[] signatureTypes, string[] dateSigned, PackageBuilder package, MemoryStream ms)
         {
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Plan Report")
                                 .FromStream(ms, DocumentType.PDF)
@@ -258,8 +261,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
             foreach (Signer signer in allSigners)
             {
-                // If not a digital signer type, skip to next signer
-                if (signatureTypes[i] != "1")
+                // If not a digital signer type or if signer has already signed, skip to next signer
+                if (signatureTypes[i] != "1" || dateSigned[i] != "")
                 {
                     i++;
                     continue;
