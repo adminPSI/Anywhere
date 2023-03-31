@@ -543,15 +543,6 @@ var incidentOverview = (function () {
 
     POPUP.show(incidentEmailPopup);
   }
-  
-  const incidentEmailBtn = button.build({
-    text: 'EMAIL',
-    style: 'secondary',
-    type: 'contained',
-    callback: function(event) {
-      showIncidentEmailPopup(incidentId);
-    }
-  });
 
   // Repeatedly checks to see if the report is ready
   function checkIfITReportIsReadyInterval(res) {
@@ -586,6 +577,7 @@ var incidentOverview = (function () {
       tableId: 'incidentOverviewTable',
       heading: 'Incident Overview',
       columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
+      endIcon: true
     };
 
     overviewTable = table.build(tableOptions);
@@ -625,10 +617,23 @@ var incidentOverview = (function () {
         showBold = true;
       }
 
+      var incidentEmailBtn = document.createElement('button');
+      incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
+      incidentEmailBtn.textContent = 'EMAIL';
+      incidentEmailBtn.style.zIndex = '9999';
+
       return {
         id: rowId,
         values: [location, enteredBy, date, time, category, consumersInvolved],
         attributes: [{ key: 'data-viewed', value: showBold }],
+        endIcon: incidentEmailBtn.outerHTML,
+        endIconCallback: e => {
+          e.stopPropagation();
+          var isParentRow = e.target.parentNode.classList.contains('table__row');
+          if (!isParentRow) return;
+
+          showIncidentEmailPopup(obj.incidentId);
+          },
         onClick: async event => {
           await incidentTrackingAjax.updateIncidentViewByUser({
             token: $.session.Token,
