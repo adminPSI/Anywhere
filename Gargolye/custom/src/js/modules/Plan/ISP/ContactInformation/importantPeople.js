@@ -9,7 +9,7 @@ const isp_ci_importantPeople = (() => {
   let phoneInput;
   let phoneInput2;
   let phoneExt;
-  let phoneExt2;
+  let phone2Ext;
   let emailInput;
   let typeDropdown;
   let saveBtn;
@@ -186,7 +186,7 @@ const isp_ci_importantPeople = (() => {
           phone: phoneVal,
           phone2: phoneVal2,
           phoneExt: extVal,
-          phoneExt2: extVal2,
+          phone2Ext: extVal2,
           email: emailVal,
         };
         const importantPersonId = await contactInformationAjax.insertPlanContactImportantPeople(
@@ -219,7 +219,7 @@ const isp_ci_importantPeople = (() => {
           phone: UTIL.removeUnsavableNoteText(phoneVal),
           phone2: UTIL.removeUnsavableNoteText(phoneVal2),
           phoneExt: extVal,
-          phoneExt2: extVal2,
+          phone2Ext: extVal2,
           email: emailVal,
         };
         await contactInformationAjax.updatePlanContactImportantPeople(data);
@@ -364,9 +364,9 @@ const isp_ci_importantPeople = (() => {
       attributes: [{ key: 'maxlength', value: '5' }],
     });
 
-    phoneExt2 = input.build({
+    phone2Ext = input.build({
       label: 'Ext.',
-      value: popupData.phoneExt2,
+      value: popupData.phone2Ext,
       readonly: readOnly,
       type: 'number',
       id: 'isp-ciip-extinput2',
@@ -388,7 +388,7 @@ const isp_ci_importantPeople = (() => {
     phoneWrap.appendChild(phoneInput);
     phoneWrap.appendChild(phoneExt);
     phoneWrap2.appendChild(phoneInput2);
-    phoneWrap2.appendChild(phoneExt2);
+    phoneWrap2.appendChild(phone2Ext);
 
     // Action Buttons
     saveBtn = button.build({
