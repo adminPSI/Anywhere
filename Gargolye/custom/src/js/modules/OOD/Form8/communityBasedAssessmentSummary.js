@@ -145,7 +145,7 @@ let OODMonthlySummariesTable; // To be added in future release
 
     // selfAssessmentInput textarea
     selfAssessmentInput = input.build({
-      label: `Summary of Individual's Self-Assessment. Likes and/or Dislikes of Work, concerns, etc. `,
+      //label: `Summary of Individual's Self-Assessment. Likes and/or Dislikes of Work, concerns, etc. `,
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -158,7 +158,7 @@ let OODMonthlySummariesTable; // To be added in future release
 
           // employerAssessment textarea
      employerAssessmentInput = input.build({
-        label: `Summary of Employer's Assessment of Individual, Performance or Soft Skill Concerns, etc. `,
+       // label: `Summary of Employer's Assessment of Individual, Performance or Soft Skill Concerns, etc. `,
         type: 'textarea',
         style: 'secondary',
         classNames: 'autosize',
@@ -169,7 +169,7 @@ let OODMonthlySummariesTable; // To be added in future release
   
       // providerAssessment textarea
       providerAssessmentInput = input.build({
-        label: `Summary of Provider's Assessment of Individual's Performance and Soft Skill Concerns. Recommendations of next steps or services. `,
+       // label: `Summary of Provider's Assessment of Individual's Performance and Soft Skill Concerns. Recommendations of next steps or services. `,
         type: 'textarea',
         style: 'secondary',
         classNames: 'autosize',
@@ -179,7 +179,7 @@ let OODMonthlySummariesTable; // To be added in future release
     //  providerAssessmentInput.classList.add('introTextArea');
 
     supportAndTransitionInput = input.build({
-      label: `Support and Transition Plan. `,
+      //label: `Support and Transition Plan. `,
       type: 'textarea',
       style: 'secondary',
       classNames: 'autosize',
@@ -189,7 +189,7 @@ let OODMonthlySummariesTable; // To be added in future release
 
       // reviewVTS textarea
     reviewVTSDropdown = dropdown.build({
-        label: `Has the Vocational Training Stipend (VTS) been reviewed with the individual? Does it only reflect the time the individual participated? Does the individual agree to the amount of the VTS?`,
+       // label: `Has the Vocational Training Stipend (VTS) been reviewed with the individual? Does it only reflect the time the individual participated? Does the individual agree to the amount of the VTS?`,
         dropdownId: "reviewVTSDropdown",
         value: emReviewVTS,
         readonly: formReadOnly,
@@ -268,10 +268,30 @@ let OODMonthlySummariesTable; // To be added in future release
 
       container.appendChild(inputContainer1);
 
+      const selfAssessmentLabel = document.createElement("p");
+      selfAssessmentLabel.innerHTML = `<span style="font-weight: 500; font-size: 14px">Summary of Individual's Self-Assessment. Likes and/or Dislikes of Work, concerns, etc.</span>`;
+
+      const employerAssessmentLabel = document.createElement("p");
+      employerAssessmentLabel.innerHTML = `<span style="font-weight: 500; font-size: 14px">Summary of Employer's Assessment of Individual, Performance or Soft Skill Concerns, etc.</span> `;
+
+      const providerAssessmentLabel = document.createElement("p");
+      providerAssessmentLabel.innerHTML = `<span style="font-weight: 500; font-size: 14px">Summary of Provider's Assessment of Individual's Performance and Soft Skill Concerns. Recommendations of next steps or services. </span>`;
+
+      const supportAndTransitionLabel = document.createElement("p");
+      supportAndTransitionLabel.innerHTML = `<span style="font-weight: 500; font-size: 14px">Support and Transition Plan. </span>`;
+
+      const reviewVTSDropdownLabel = document.createElement("p");
+      reviewVTSDropdownLabel.innerHTML = `<span style="font-weight: 500; font-size: 14px">Has the Vocational Training Stipend (VTS) been reviewed with the individual? Does it only reflect the time the individual participated? Does the individual agree to the amount of the VTS? </span>`;
+
+      container.appendChild(selfAssessmentLabel);     
      container.appendChild(selfAssessmentInput);    
+     container.appendChild(employerAssessmentLabel);
      container.appendChild(employerAssessmentInput);
+     container.appendChild(providerAssessmentLabel);
      container.appendChild(providerAssessmentInput);
+     container.appendChild(supportAndTransitionLabel);
      container.appendChild(supportAndTransitionInput);   
+     container.appendChild(reviewVTSDropdownLabel);
      container.appendChild(reviewVTSDropdown);
 
 
