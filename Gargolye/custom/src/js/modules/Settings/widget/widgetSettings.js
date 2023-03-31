@@ -4,13 +4,13 @@ const widgetSettings = (function () {
   const sections = {
     // pre existing, need new ids, idk what that'll do to existing data?
     1: {
-      //1
       name: 'Case Note Productivity',
       settings: { productivityThreshold: 60, daysBack: 7, workHoursPerDay: 7 },
       showHide: '',
       gkOnly: true,
       build: function () {
         const that = this;
+        const saveID = 1;
         const widgetBody = document.createElement('div');
         widgetBody.classList.add('widgetBody__Inner');
 
@@ -100,7 +100,7 @@ const widgetSettings = (function () {
             }, 1600);
 
             // update settings
-            await widgetSettingsAjax.setWidgetSettingConfig(1, configString, that.showHide);
+            await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
             dashboard.refreshWidgetSettings();
           },
         });
@@ -117,7 +117,6 @@ const widgetSettings = (function () {
       },
     },
     2: {
-      //2
       name: 'My Case Load',
       settings: {
         viewNotesDaysBack: 30,
@@ -127,6 +126,7 @@ const widgetSettings = (function () {
       showHide: '',
       gkOnly: true,
       build: function () {
+        const saveID = 2;
         const that = this;
         const widgetBody = document.createElement('div');
         widgetBody.classList.add('widgetBody__Inner');
@@ -217,7 +217,7 @@ const widgetSettings = (function () {
             }, 1600);
 
             // update settings
-            await widgetSettingsAjax.setWidgetSettingConfig(2, configString, that.showHide);
+            await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
             dashboard.refreshWidgetSettings();
           },
         });
@@ -237,73 +237,12 @@ const widgetSettings = (function () {
       },
     },
     3: {
-      //4
-      name: 'Plan To-Do List',
-      settings: { dueDate: 'today' },
-      showHide: '',
-      gkOnly: true,
-      build: function () {
-        const that = this;
-        const widgetBody = document.createElement('div');
-        widgetBody.classList.add('widgetBody__Inner');
-
-        const dueDateDropdown = dropdown.build({
-          label: 'Due Date',
-          style: 'secondary',
-          dropdownId: 'dueDateDropdown',
-        });
-        dueDateDropdown.addEventListener('change', e => {
-          that.settings.dueDate = e.target.value;
-        });
-        dropdown.populate(
-          dueDateDropdown,
-          [
-            { id: 1, value: 'today', text: 'Today' },
-            { id: 2, value: 'next 7 days', text: 'Next 7 Days' },
-            { id: 3, value: 'next 30 days', text: 'Next 30 Days' },
-            { id: 4, value: 'prior 7 days', text: 'Prior 7 Days' },
-            { id: 5, value: 'prior 30 days', text: 'Prior 30 Days' },
-          ],
-          that.settings.dueDate,
-        );
-
-        const saveBtn = button.build({
-          id: 'wfPlanSave',
-          text: 'Save',
-          type: 'contained',
-          style: 'secondary',
-          classNames: ['widgetSettingsSaveBtn'],
-          callback: async () => {
-            // config string to json
-            const configString = JSON.stringify(that.settings);
-
-            // style saved button
-            saveBtn.innerText = 'saved';
-            saveBtn.classList.add('saved');
-            setTimeout(() => {
-              saveBtn.classList.remove('saved');
-              saveBtn.innerText = 'save';
-            }, 1600);
-
-            // update settings
-            await widgetSettingsAjax.setWidgetSettingConfig(4, configString, that.showHide);
-            dashboard.refreshWidgetSettings();
-          },
-        });
-
-        widgetBody.appendChild(dueDateDropdown);
-        widgetBody.appendChild(saveBtn);
-
-        return widgetBody;
-      },
-    },
-    4: {
-      //3
       name: 'Rejected Case Notes',
       settings: { daysBack: 60 },
       showHide: '',
       gkOnly: true,
       build: function () {
+        const saveID = 3;
         const that = this;
         const widgetBody = document.createElement('div');
         widgetBody.classList.add('widgetBody__Inner');
@@ -349,12 +288,73 @@ const widgetSettings = (function () {
             }, 1600);
 
             // update settings
-            await widgetSettingsAjax.setWidgetSettingConfig(3, configString, that.showHide);
+            await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
             dashboard.refreshWidgetSettings();
           },
         });
 
         widgetBody.appendChild(daysBackInput);
+        widgetBody.appendChild(saveBtn);
+
+        return widgetBody;
+      },
+    },
+    4: {
+      name: 'Plan To-Do List',
+      settings: { dueDate: 'today' },
+      showHide: '',
+      gkOnly: true,
+      build: function () {
+        const saveID = 4;
+        const that = this;
+        const widgetBody = document.createElement('div');
+        widgetBody.classList.add('widgetBody__Inner');
+
+        const dueDateDropdown = dropdown.build({
+          label: 'Due Date',
+          style: 'secondary',
+          dropdownId: 'dueDateDropdown',
+        });
+        dueDateDropdown.addEventListener('change', e => {
+          that.settings.dueDate = e.target.value;
+        });
+        dropdown.populate(
+          dueDateDropdown,
+          [
+            { id: 1, value: 'today', text: 'Today' },
+            { id: 2, value: 'next 7 days', text: 'Next 7 Days' },
+            { id: 3, value: 'next 30 days', text: 'Next 30 Days' },
+            { id: 4, value: 'prior 7 days', text: 'Prior 7 Days' },
+            { id: 5, value: 'prior 30 days', text: 'Prior 30 Days' },
+          ],
+          that.settings.dueDate,
+        );
+
+        const saveBtn = button.build({
+          id: 'wfPlanSave',
+          text: 'Save',
+          type: 'contained',
+          style: 'secondary',
+          classNames: ['widgetSettingsSaveBtn'],
+          callback: async () => {
+            // config string to json
+            const configString = JSON.stringify(that.settings);
+
+            // style saved button
+            saveBtn.innerText = 'saved';
+            saveBtn.classList.add('saved');
+            setTimeout(() => {
+              saveBtn.classList.remove('saved');
+              saveBtn.innerText = 'save';
+            }, 1600);
+
+            // update settings
+            await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
+            dashboard.refreshWidgetSettings();
+          },
+        });
+
+        widgetBody.appendChild(dueDateDropdown);
         widgetBody.appendChild(saveBtn);
 
         return widgetBody;
@@ -421,17 +421,23 @@ const widgetSettings = (function () {
     if (settings.widgetConfig !== null) {
       sections[widgetId].settings = { ...settings.widgetConfig };
     }
+
+    sections[widgetId].showHide = settings.showHide;
+
+    console.log(sections[widgetId].showHide);
   }
 
   function buildWidgetBodyInnerHTML(sec) {
-    setWidgetSettings(sec);
     const settingHTML = sections[sec].build();
     return settingHTML;
   }
 
   function populatePage() {
-    for (sec in sections) {
+    console.log(sections);
+    for (const sec in sections) {
       if ($.session.applicationName === 'Advisor' && sections[sec].gkOnly) return;
+
+      setWidgetSettings(sec);
 
       const sectionWrap = document.createElement('div');
       sectionWrap.classList.add('widgetWrap');
@@ -447,10 +453,19 @@ const widgetSettings = (function () {
 
       const checkbox = input.buildCheckbox({
         text: 'Show',
-        isChecked: sections[sec].showHide,
+        isChecked: sections[sec].showHide === 'Y' ? true : false,
       });
-      checkbox.addEventListener('change', e => {
+      checkbox.addEventListener('change', async e => {
         sections[sec].showHide = e.target.checked ? 'Y' : 'N';
+
+        const configString = JSON.stringify(sections[sec].settings);
+        const sectionID = parseInt(sec);
+        await widgetSettingsAjax.setWidgetSettingConfig(
+          sectionID,
+          configString,
+          sections[sec].showHide,
+        );
+        dashboard.refreshWidgetSettings();
       });
 
       sectionHeader.appendChild(title);
