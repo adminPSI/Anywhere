@@ -361,6 +361,7 @@ const isp_ci_importantPeople = (() => {
       readonly: readOnly,
       type: 'number',
       id: 'isp-ciip-extinput',
+      attributes: [{ key: 'maxlength', value: '5' }],
     });
 
     phoneExt2 = input.build({
@@ -369,6 +370,7 @@ const isp_ci_importantPeople = (() => {
       readonly: readOnly,
       type: 'number',
       id: 'isp-ciip-extinput2',
+      attributes: [{ key: 'maxlength', value: '5' }],
     });
 
     emailInput = input.build({
