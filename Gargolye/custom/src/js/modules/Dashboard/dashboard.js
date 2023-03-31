@@ -529,12 +529,6 @@
   async function preLoadWidget() {
     widgetSettings = (await widgetSettingsAjax.getWidgetSettings()).getUserWidgetSettingsResult;
 
-    console.clear();
-    widgetSettings.sort((a, b) => (a.widgetName > b.widgetName ? 1 : -1));
-    widgetSettings.forEach(s => {
-      console.log(`${s.widgetName}: ${s.widgetId}`);
-    });
-
     function getSetting(widgetId) {
       return widgetSettings.filter(widget => {
         if (widget.widgetId === widgetId) return widget;

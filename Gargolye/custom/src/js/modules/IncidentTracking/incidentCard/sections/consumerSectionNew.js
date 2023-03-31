@@ -311,7 +311,7 @@ var consumerSubSections = (function () {
   // var consumersInvolved;
   var sections = [
     { id: 0, name: 'Remove Consumer' },
-    { id: 1, name: 'Behavior Details' },
+    //{ id: 1, name: 'Behavior Details' },
     { id: 2, name: 'Follow Up' },
     { id: 3, name: 'Injuries' },
     { id: 4, name: 'Intervention' },
@@ -378,10 +378,10 @@ var consumerSubSections = (function () {
         targetSection = reviewSection;
         break;
       }
-      case 'Behavior Details': {
-        targetSection = behaviorSection;
-        break;
-      }
+      // case 'Behavior Details': {
+      //   targetSection = behaviorSection;
+      //   break;
+      // }
     }
 
     sectionsMenu.classList.remove('visible');

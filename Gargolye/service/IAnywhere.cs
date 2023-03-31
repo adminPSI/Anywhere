@@ -1961,6 +1961,13 @@ namespace Anywhere
              UriTemplate = "/generateIncidentTrackingReport/")]
         IncidentTrackingWorker.ReportScheduleId[] generateIncidentTrackingReport(string token, string incidentId);
 
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/checkIfITReportExists/")]
+        string checkIfITReportExists(string token, string reportScheduleId);
+
         //[OperationContract]
         //[WebInvoke(Method = "POST",
         //     BodyStyle = WebMessageBodyStyle.Wrapped,

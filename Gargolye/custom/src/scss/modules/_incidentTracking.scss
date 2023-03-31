@@ -47,6 +47,12 @@
       flex-basis: 100px;
       max-width: 300px;
     }
+    > div.endIcon {
+      flex-basis: 75px;
+      margin-left: auto;
+      margin-right: 0;
+      max-width: 100px;
+    }
 
     @media screen and (min-width: 560px) {
       > div:nth-child(2),

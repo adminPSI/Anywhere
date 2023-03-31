@@ -250,7 +250,6 @@ const demographics = (function () {
 
     wrap.addEventListener('click', e => {
       if (e.target.classList.contains('inputGroup')) {
-        console.log('click from wrap');
         if (e.target.classList.contains('unEditabled')) return;
         clearCurrentEdit();
         // set target to edit mode
@@ -529,6 +528,12 @@ const demographics = (function () {
     sectionInner.appendChild(additionalInfo);
     sectionInner.appendChild(organizationInfo);
     sectionInner.appendChild(demographicInfo);
+
+    section.addEventListener('click', e => {
+      if (!e.target.classList.contains('inputGroup')) {
+        clearCurrentEdit();
+      }
+    });
   }
 
   return {

@@ -27,7 +27,7 @@ const NewEntryCF = (() => {
     let inputElement;
 
     async function init() {
-        buildNewEntryForm();
+        buildNewEntryForm();       
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
@@ -64,7 +64,7 @@ const NewEntryCF = (() => {
             receipt = getAccountEntriesByIdResult[0].receipt;
             accountID = getAccountEntriesByIdResult[0].accountID;
             accountType = getAccountEntriesByIdResult[0].accountType;
-            IsReconciled = getAccountEntriesByIdResult[0].reconciled;   
+            IsReconciled = getAccountEntriesByIdResult[0].reconciled;
             lastUpdateBy = getAccountEntriesByIdResult[0].lastUpdateBy;
         }
         else {
@@ -83,7 +83,7 @@ const NewEntryCF = (() => {
             accountID = '';
             accountType = 'E';
             IsReconciled = 'N';
-            IsDisabledBtn = false; 
+            IsDisabledBtn = false;
         }
         DOM.clearActionCenter();
 
@@ -206,7 +206,7 @@ const NewEntryCF = (() => {
         radioDiv.appendChild(depositRadio);
         /////////////////
 
-        var space = document.createElement('h3'); 
+        var space = document.createElement('h3');
         space.innerHTML = '';
         var LineBr = document.createElement('br');
 
@@ -217,7 +217,7 @@ const NewEntryCF = (() => {
         if (registerId) {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_DELETE_BTN);
-            enableDisabledInputs(); 
+            enableDisabledInputs();
         }
         else {
             btnWrap.appendChild(NEW_SAVE_BTN);
@@ -264,7 +264,7 @@ const NewEntryCF = (() => {
         addRightCard.appendChild(addRightBody);
 
         addRightBody.appendChild(newDescriptionInput);
-        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId ,IsDisabledBtn);
+        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId, IsDisabledBtn);
         addRightBody.appendChild(questionAttachment.attachmentButton);
 
         addRightBody.appendChild(newReceiptInput);
@@ -288,46 +288,96 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(categoryID);
         checkRequiredFieldsOfNewEntry();
+        disabledUpdateBtn();
     }
 
     function enableDisabledInputs() {
-        if (IsReconciled == 'Y' && (!$.session.CFUpdate && (!$.session.CFEditAccountEntries && lastUpdateBy != $.session.UserId))) {
-            NEW_SAVE_BTN.classList.add('disabled');
-            newDateInput.classList.add('disabled');
-            newAmountInput.classList.add('disabled');
-            newAccountDropdown.classList.add('disabled');
-            newPayeeDropdown.classList.add('disabled');
-            ADD_NEW_PAYEE_BTN.classList.add('disabled');
-            newCategoryDropdown.classList.add('disabled');
-            newSubCategoryDropdown.classList.add('disabled');
-            newCheckNoInput.classList.add('disabled');
-            newDescriptionInput.classList.add('disabled');
-            newReceiptInput.classList.add('disabled');
-            NEW_DELETE_BTN.classList.add('disabled');
-            expenseRadio.classList.add('disabled');
-            depositRadio.classList.add('disabled');
-            IsDisabledBtn = true;
-        } else {
-            NEW_SAVE_BTN.classList.remove('disabled');
-            newDateInput.classList.remove('disabled');
-            newAmountInput.classList.remove('disabled');
-            newAccountDropdown.classList.remove('disabled');
-            newPayeeDropdown.classList.remove('disabled');
-            ADD_NEW_PAYEE_BTN.classList.remove('disabled');
-            newCategoryDropdown.classList.remove('disabled');
-            newSubCategoryDropdown.classList.remove('disabled');
-            newCheckNoInput.classList.remove('disabled');
-            newDescriptionInput.classList.remove('disabled');
-            newReceiptInput.classList.remove('disabled');
-            NEW_DELETE_BTN.classList.remove('disabled');
-            expenseRadio.classList.remove('disabled');
-            depositRadio.classList.remove('disabled'); 
-            IsDisabledBtn = false;
-        }
 
+        if (IsReconciled == 'Y') {
+            DisabledAllInputs();
+        } else if (IsReconciled == 'N') {
+            if (!$.session.CFUpdate) {
+                DisabledAllInputs();
+            }
+            else if (!$.session.CFEditAccountEntries && lastUpdateBy != $.session.UserId) {
+                DisabledAllInputs();
+            }
+            else if (($.session.CFDelete || $.session.CFUpdate || $.session.CFView) && lastUpdateBy == $.session.UserId) {
+                EnabledAllInputs();
+                if (!$.session.CFDelete) {
+                    NEW_DELETE_BTN.classList.add('disabled');
+                }
+                if (!$.session.CFADDPayee) {
+                    ADD_NEW_PAYEE_BTN.classList.add('disabled');
+                }
+                if (!$.session.CFUpdate) {
+                    NEW_SAVE_BTN.classList.add('disabled');
+                }
+            }
+            else if ($.session.CFDelete || $.session.CFUpdate || $.session.CFView || $.session.CFEditAccountEntries) {
+                EnabledAllInputs();
+                if (!$.session.CFDelete) {
+                    NEW_DELETE_BTN.classList.add('disabled');
+                }
+                if (!$.session.CFADDPayee) {
+                    ADD_NEW_PAYEE_BTN.classList.add('disabled');
+                }
+                if (!$.session.CFUpdate) {
+                    NEW_SAVE_BTN.classList.add('disabled');
+                }
+            }
+            else {
+                DisabledAllInputs();
+            }
+        }
+        else {
+            DisabledAllInputs();
+        }
+        
     }
 
-    function checkRequiredFieldsOfNewEntry() {
+    function DisabledAllInputs() {
+        NEW_SAVE_BTN.classList.add('disabled');
+        newDateInput.classList.add('disabled');
+        newAmountInput.classList.add('disabled');
+        newAccountDropdown.classList.add('disabled');
+        newPayeeDropdown.classList.add('disabled');
+        ADD_NEW_PAYEE_BTN.classList.add('disabled');
+        newCategoryDropdown.classList.add('disabled');
+        newSubCategoryDropdown.classList.add('disabled');
+        newCheckNoInput.classList.add('disabled');
+        newDescriptionInput.classList.add('disabled');
+        newReceiptInput.classList.add('disabled');
+        NEW_DELETE_BTN.classList.add('disabled');
+        expenseRadio.classList.add('disabled');
+        depositRadio.classList.add('disabled');
+        IsDisabledBtn = true;
+    }
+
+    function EnabledAllInputs() {
+        NEW_SAVE_BTN.classList.remove('disabled');
+        newDateInput.classList.remove('disabled');
+        newAmountInput.classList.remove('disabled');
+        newAccountDropdown.classList.remove('disabled');
+        newPayeeDropdown.classList.remove('disabled');
+        ADD_NEW_PAYEE_BTN.classList.remove('disabled');
+        newCategoryDropdown.classList.remove('disabled');
+        newSubCategoryDropdown.classList.remove('disabled');
+        newCheckNoInput.classList.remove('disabled');
+        newDescriptionInput.classList.remove('disabled');
+        newReceiptInput.classList.remove('disabled');
+        NEW_DELETE_BTN.classList.remove('disabled');
+        expenseRadio.classList.remove('disabled');
+        depositRadio.classList.remove('disabled');
+        IsDisabledBtn = false;
+    }
+
+    function disabledUpdateBtn(){
+        //Disable the UPDATE button until the user makes a change to the record. 
+        NEW_SAVE_BTN.classList.add('disabled'); 
+    }
+
+    function checkRequiredFieldsOfNewEntry() { 
         var date = newDateInput.querySelector('#newDateInput');
         var amount = newAmountInput.querySelector('#newAmountInput');
         var account = newAccountDropdown.querySelector('#newAccountDropdown');
@@ -344,7 +394,7 @@ const NewEntryCF = (() => {
         if (amount.value === '') {
             newAmountInput.classList.add('error');
         } else {
-            newAmountInput.classList.remove('error');
+            newAmountInput.classList.remove('error'); 
         }
 
         if (account.value === '') {
@@ -460,13 +510,14 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(categoryID);
         checkRequiredFieldsOfNewEntry();
+        disabledUpdateBtn();
     }
 
     // Populate the Account DDL 
     async function populateAccountDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync($.session.consumerId); 
+        } = await ConsumerFinancesAjax.getActiveAccountAsync($.session.consumerId);
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
@@ -474,6 +525,8 @@ const NewEntryCF = (() => {
         }));
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
+        checkRequiredFieldsOfNewEntry();
+        disabledUpdateBtn();
     }
 
     async function populatePayeeDropdown() {
@@ -487,6 +540,8 @@ const NewEntryCF = (() => {
         }));
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newPayeeDropdown", data, payee);
+        checkRequiredFieldsOfNewEntry();
+        disabledUpdateBtn();
     }
 
     async function populateCategoryDropdown(categoryID) {
@@ -500,6 +555,8 @@ const NewEntryCF = (() => {
         }));
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
+        checkRequiredFieldsOfNewEntry();
+        disabledUpdateBtn();
     }
 
     async function populateSubCategoryDropdown(categoryID) {
@@ -514,6 +571,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
+        disabledUpdateBtn();  
     }
 
 

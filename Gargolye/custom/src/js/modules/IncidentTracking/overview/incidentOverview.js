@@ -509,7 +509,7 @@ var incidentOverview = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        incidentTrackingAjax.generateIncidentTrackingReport(incidentId);
+        incidentTrackingAjax.generateIncidentTrackingReport(incidentId, checkIfITReportIsReadyInterval);
         POPUP.hide(incidentEmailPopup);
       }
     });
@@ -543,16 +543,30 @@ var incidentOverview = (function () {
 
     POPUP.show(incidentEmailPopup);
   }
-  
-  const incidentEmailBtn = button.build({
-    text: 'EMAIL',
-    style: 'secondary',
-    type: 'contained',
-    callback: function() {
-      showIncidentEmailPopup(incidentId);
+
+  // Repeatedly checks to see if the report is ready
+  function checkIfITReportIsReadyInterval(res) {
+    seconds = parseInt($.session.reportSeconds);
+    intSeconds = seconds * 1000;
+    interval = setInterval(async () => {
+      await checkITReportExists(res);
+    }, intSeconds);
+  }
+
+  async function checkITReportExists(res) {
+    await incidentTrackingAjax.checkIfITReportExists(res, callITReport);
+  }
+
+  // Retrieves the report when it is ready
+  function callITReport(res, reportScheduleId) {
+    if (res.indexOf('1') === -1) {
+      //do nothing
+    } else {
+      incidentTrackingAjax.viewIncidentTrackingReport(reportScheduleId);
+      clearInterval(interval);
+      reportRunning = false;
     }
-  });
-  
+  }
 
   // OVERVIEW TABLE
   //------------------------------------
@@ -563,6 +577,7 @@ var incidentOverview = (function () {
       tableId: 'incidentOverviewTable',
       heading: 'Incident Overview',
       columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
+      endIcon: true
     };
 
     overviewTable = table.build(tableOptions);
@@ -602,10 +617,23 @@ var incidentOverview = (function () {
         showBold = true;
       }
 
+      var incidentEmailBtn = document.createElement('button');
+      incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
+      incidentEmailBtn.textContent = 'EMAIL';
+      incidentEmailBtn.style.zIndex = '9999';
+
       return {
         id: rowId,
         values: [location, enteredBy, date, time, category, consumersInvolved],
         attributes: [{ key: 'data-viewed', value: showBold }],
+        endIcon: incidentEmailBtn.outerHTML,
+        endIconCallback: e => {
+          e.stopPropagation();
+          var isParentRow = e.target.parentNode.classList.contains('table__row');
+          if (!isParentRow) return;
+
+          showIncidentEmailPopup(obj.incidentId);
+          },
         onClick: async event => {
           await incidentTrackingAjax.updateIncidentViewByUser({
             token: $.session.Token,
@@ -617,7 +645,6 @@ var incidentOverview = (function () {
         },
       };
     });
-
 
     data.sort(function (a, b) {
       var dateOne = UTIL.formatDateToIso(a.values[2]);
