@@ -365,7 +365,7 @@ var timeEntry = (function () {
     const wrap = document.createElement('div');
 
     const overlappedLocationsEntriesMessage = document.createElement('p');
-    overlappedLocationsEntriesMessage.innerHTML = `Consumer ${consumer.consumerName} has two locations for this date. Please select the location where these services are being provided. <br>`;
+    overlappedLocationsEntriesMessage.innerHTML = `<span style="font-weight: 500; font-size: 14px">${consumer.consumerName}</span><br>`;
 
     const overlapLocationsDropdown = dropdown.build({
       label: 'Locations',
@@ -403,10 +403,15 @@ var timeEntry = (function () {
 
     // build overlapLocation Popup
     overlapLocationsPopup = POPUP.build({
-      header: `Overlapped locations for a selected consumer.`,
+      header: `Overlapped locations for selected consumer(s).`,
       hideX: false,
       id: 'overlapLocationsPopup',
     });
+
+    let overlappedLocationsEntriesMessage = document.createElement('p');
+    overlappedLocationsEntriesMessage.innerHTML = `Consumers listed below have multiple locations for the selected date. For each consumer, please select the location where these services are being provided. <br><br>`;
+
+    overlapLocationsPopup.appendChild(overlappedLocationsEntriesMessage);
 
     let overlapConsumerlist = consumerswithMultipleLocations.map(item => ({ consumerId: item.consumerId, consumerName: item.consumerName})).
     filter((value, index, self) => self.indexOf(value) === index);
@@ -419,6 +424,7 @@ var timeEntry = (function () {
       const markup = buildOverlapLocationsDropdown(consumer, index);
       overlapLocationsPopup.appendChild(markup);
     });
+
 
     overlapLocationsDoneBtn = button.build({
       id: 'overlapLocationsDoneBtn',
@@ -493,9 +499,7 @@ var timeEntry = (function () {
     });
 
     // for consumer with overlapping locations -- display consumerName
-    // let overlappedLocationsEntriesMessage = document.createElement('p');
-    // overlappedLocationsEntriesMessage.innerHTML = `Consumer ${consumerswithMultipleLocations[0].consumerName} has two locations for this date. Please select the location where these services are being provided. <br>`;
-
+    
     // def keep below
     selectedOverlapConsumerId = consumerswithMultipleLocations[0].consumerId;
     let btnWrap = document.createElement('div');
@@ -541,7 +545,7 @@ var timeEntry = (function () {
     let data = thisconsumersLocations.map(location => ({
       id: location.consumerId,
       value: location.locationId,
-      text: location.consumerName + ' -- ' + location.locationName,
+      text: location.locationName,
     }));
     data.unshift({ id: '', value: 'SELECT', text: 'SELECT' }); //ADD Blank value
     dropdown.populate(locDrop, data);
