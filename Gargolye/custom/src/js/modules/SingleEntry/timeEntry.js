@@ -272,25 +272,37 @@ var timeEntry = (function () {
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
         showDeleteEntryWarningPopup(warningMessage, () => {
-          singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
-            const idArray = results.map(r => r.singleEntryId);
-            var updateObj = {
-              token: $.session.Token,
-              singleEntryIdString: idArray.join(','),
-              newStatus: 'S',
-            };
 
-            singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
-              successfulSave.show('SAVED & SUBMITTED');
-              setTimeout(function () {
-                successfulSave.hide();
-                timeEntryCard.clearAllGlobalVariables();
-                roster2.clearActiveConsumers();
-                newTimeEntry.init();
-              }, 1000);
-            });
-          });
-        });
+              // 1. Grab the consumer/location data
+            singleEntryAjax.getSelectedConsumerLocations(saveData, function (results) {
+              overlapconsumerlocationdata = results;
+              // no location overlaps for any selected consumer
+                  if (overlapconsumerlocationdata.length === 0) {
+                    singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
+                      const idArray = results.map(r => r.singleEntryId);
+                      var updateObj = {
+                        token: $.session.Token,
+                        singleEntryIdString: idArray.join(','),
+                        newStatus: 'S',
+                      };
+          
+                      singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
+                        successfulSave.show('SAVED & SUBMITTED');
+                        setTimeout(function () {
+                          successfulSave.hide();
+                          timeEntryCard.clearAllGlobalVariables();
+                          roster2.clearActiveConsumers();
+                          newTimeEntry.init();
+                        }, 1000);
+                      });  // end  -- singleEntryAjax.updateSingleEntryStatus
+                    }); // end -- singleEntryAjax.preInsertSingleEntry
+                  } else {
+                    // location overlaps exist for a selected consumer
+                    displayOverlapLocationsPopup(results);
+                  }
+            }); // end -- getSelectedConsumerLocations
+            }); // end -- showDeleteEntryWarningPopup
+
       } else {
         // Just the save BTN -- if (saveData.locationId !== '' || saveData.consumerId === '')
 
@@ -416,19 +428,52 @@ var timeEntry = (function () {
       classNames: 'disabled',
       callback: async () => {
      
+        if (saveAndSubmit) {  // SAve and Submit BTN clicked
+
+        //  var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+
+         // showDeleteEntryWarningPopup(warningMessage, async () => {
+            POPUP.hide(overlapLocationsPopup);
+            var listofSingleEntryIdsSaved = await saveSingleEntrywithLocationOverlaps();
+            var test = listofSingleEntryIdsSaved;
+            var updateObj = {
+              token: $.session.Token,
+              singleEntryIdString: listofSingleEntryIdsSaved.join(','),
+              newStatus: 'S',
+            };
+
+            singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
+              successfulSave.show('SAVED & SUBMITTED');
+              setTimeout(function () {
+                successfulSave.hide();
+                timeEntryCard.clearAllGlobalVariables();
+                roster2.clearActiveConsumers();
+                newTimeEntry.init(true);
+              }, 1000);
+  
+            }); // end -- singleEntryAjax.updateSingleEntryStatus
+
+         // }); //end -- showDeleteEntryWarningPopup
+
+          selectedOverlapLocIds = {};
+
+        } else {  // SAve BTN clicked
+
         var listofSingleEntryIdsSaved = await saveSingleEntrywithLocationOverlaps();
         var test = listofSingleEntryIdsSaved;
-        
-        POPUP.hide(overlapLocationsPopup);
-        successfulSave.show('SAVED');
-        setTimeout(function () {
-          successfulSave.hide();
-          timeEntryCard.clearAllGlobalVariables();
-          roster2.clearActiveConsumers();
-          newTimeEntry.init();
-        }, 1000);
 
-        selectedOverlapLocIds = {};
+            POPUP.hide(overlapLocationsPopup);
+            successfulSave.show('SAVED');
+            setTimeout(function () {
+              successfulSave.hide();
+              timeEntryCard.clearAllGlobalVariables();
+              roster2.clearActiveConsumers();
+              newTimeEntry.init();
+            }, 1000);
+
+            selectedOverlapLocIds = {};
+        }
+        
       },
     });
     this.doneButton = overlapLocationsDoneBtn;
@@ -683,7 +728,9 @@ var timeEntry = (function () {
 
     // put together full list of new Single Entry Inserts
     var concatsavedLocationsSingleEntryPairs = savedLocationsSingleEntryPairs.concat(overlapSavedLocationsSingleEntryPairs);
-    return concatsavedLocationsSingleEntryPairs;
+    // return concatsavedLocationsSingleEntryPairs;
+    const singleEntryIdArray = concatsavedLocationsSingleEntryPairs.map(r => r.singleEntryId);
+    return singleEntryIdArray;
   } // end of Parent/containing function -- function populateOverlapLocationsDropdown(locDrop, consumer)
 
   function updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndSubmitBool) {
