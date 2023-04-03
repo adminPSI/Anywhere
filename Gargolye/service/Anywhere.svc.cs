@@ -619,9 +619,9 @@ namespace Anywhere
             return dg.getSingleEntryRequiredFields(token);
         }
 
-        public SingleEntryWorker.WorkCodes[] getWorkCodesJSON(string token)
+        public SingleEntryWorker.WorkCodes[] getWorkCodesJSON(string token, string getAllWorkCodes)
         {
-            return singleEntryWorker.getWorkCodesJSON(token);
+            return singleEntryWorker.getWorkCodesJSON(token, getAllWorkCodes);
         }
 
         public SingleEntryWorker.SingleEntryPayPeriods[] getSingleEntryPayPeriodsJSON(string token)
