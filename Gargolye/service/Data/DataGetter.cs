@@ -4359,6 +4359,29 @@ namespace Anywhere.Data
             }
         }
 
+        public string sendIncidentTrackingReport(string token, string reportScheduleId, string toAddresses, string ccAddresses, string bccAddresses, string emailSubject, string emailBody)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ANYW_SendIncidentTrackingReport  ");
+            List<string> list = new List<string>();
+            list.Add(reportScheduleId);
+            list.Add(toAddresses);
+            list.Add(ccAddresses);
+            list.Add(bccAddresses);
+            list.Add(emailSubject);
+            list.Add(emailBody);
+            string text = "CALL DBA.ANYW_SendIncidentTrackingReport (" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_SendIncidentTrackingReport (" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_SendIncidentTrackingReport ";
+            }
+        }
+
         public string checkIfITReportExists(string token, string reportScheduleId)
         {
             if (tokenValidator(token) == false) return null;

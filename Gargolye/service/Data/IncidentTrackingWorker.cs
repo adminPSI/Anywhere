@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Automation.Runspaces;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 
@@ -505,6 +506,11 @@ namespace Anywhere.service.Data
         public string checkIfITReportExists(string token, string reportScheduleId)
         {
             return dg.checkIfITReportExists(token, reportScheduleId);
+        }
+
+        public string sendIncidentTrackingReport(string token, string reportScheduleId, string toAddresses, string ccAddresses, string bccAddresses, string emailSubject, string emailBody)
+        {
+            return dg.sendIncidentTrackingReport(token, reportScheduleId, toAddresses, ccAddresses, bccAddresses, emailSubject, emailBody);
         }
 
         public class ReportingCategories

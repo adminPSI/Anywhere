@@ -420,6 +420,7 @@ const assessment = (function () {
         versionID,
         extraSpace: extraSpace,
         isp: true,
+        oneSpan: false,
         planAttachmentIds,
         wfAttachmentIds,
         sigAttachmentIds,

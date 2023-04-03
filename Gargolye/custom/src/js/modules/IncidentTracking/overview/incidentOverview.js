@@ -1,6 +1,8 @@
 var incidentOverview = (function () {
   // DOM Elements
   var overviewTable;
+  //Incident Tracking Report Data
+  let incidentTrackingEmailData = {emailSubject: 'Incidents [Composite] by Consumer, Date'};
   //filters
   var filterPopup;
   var filterBtn;
@@ -472,19 +474,28 @@ var incidentOverview = (function () {
         } else {
           sendBtn.classList.remove('disabled');
         }
+
+        // set value of report email data to input value
+        incidentTrackingEmailData.toAddresses = event.target.value;
       },
     });
 
     const ccAddress = input.build({
       label: 'Email Cc Addresses:',
       callbackType: 'input',
-
+      callback: event => {
+        // set value of report email data to input value
+        incidentTrackingEmailData.ccAddresses = event.target.value;
+      },
     });
 
     const bccAddress = input.build({
       label: 'Email Bcc Addresses:',
       callbackType: 'input',
-
+      callback: event => {
+        // set value of report email data to input value
+        incidentTrackingEmailData.bccAddresses = event.target.value;
+      },
     });
 
     const emailSubject = input.build({
@@ -498,7 +509,10 @@ var incidentOverview = (function () {
       callbackType: 'input',
       type: 'textarea',
       classNames: 'autosize',
-
+      callback: event => {
+        // set value of report email data to input value
+        incidentTrackingEmailData.emailBody = event.target.value;
+      },
     });
 
     //* BUTTONS
@@ -562,7 +576,7 @@ var incidentOverview = (function () {
     if (res.indexOf('1') === -1) {
       //do nothing
     } else {
-      incidentTrackingAjax.viewIncidentTrackingReport(reportScheduleId);
+      incidentTrackingAjax.sendIncidentTrackingReport(reportScheduleId, incidentTrackingEmailData);
       clearInterval(interval);
       reportRunning = false;
     }
@@ -616,13 +630,20 @@ var incidentOverview = (function () {
       if (!orginUser && !viewedOn) {
         showBold = true;
       }
-
+      
       var incidentEmailBtn = document.createElement('button');
       incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
       incidentEmailBtn.textContent = 'EMAIL';
       incidentEmailBtn.style.zIndex = '9999';
 
-      return {
+      if (!$.session.incidentTrackingEmailIncident) {
+        return {
+          id: rowId,
+          values: [location, enteredBy, date, time, category, consumersInvolved],
+          attributes: [{ key: 'data-viewed', value: showBold }],
+        };
+      } else {
+        return {
         id: rowId,
         values: [location, enteredBy, date, time, category, consumersInvolved],
         attributes: [{ key: 'data-viewed', value: showBold }],
@@ -644,6 +665,7 @@ var incidentOverview = (function () {
           reviewIncident.init(event.target.id);
         },
       };
+      }      
     });
 
     data.sort(function (a, b) {
