@@ -410,9 +410,19 @@ var timeEntry = (function () {
     let overlapConsumerlist = consumerswithMultipleLocations.map(item => ({ consumerId: item.consumerId, consumerName: item.consumerName})).
     filter((value, index, self) => self.indexOf(value) === index);
 
+    // consumerNames in OverlapConsumerlist LastName, FirstName
+    for (const consumer of overlapConsumerlist) {
+      let firstName = consumer.consumerName.split(' ').slice(0, -1).join(' ');
+      let lastName = consumer.consumerName.split(' ').slice(-1).join(' ');
+        consumer.consumerName = lastName + ', ' + firstName;
+    }
+    // a single/unique record representing each consumer/location pair 
     overlapConsumerlist = overlapConsumerlist.filter((value, index, self) =>
     index === self.findIndex((t) => (
       t.consumerId === value.consumerId && t.consumerName === value.consumerName)));
+      //alphabatize
+      overlapConsumerlist = overlapConsumerlist.sort();
+
       // cycle through each consumer/location pair to build a dropdown for each unique pair
       overlapConsumerlist.forEach((consumer, index) => {
       const markup = buildOverlapLocationsDropdown(consumer, index);
@@ -482,6 +492,13 @@ var timeEntry = (function () {
         selectedOverlapLocIds = {};
         
         POPUP.hide(overlapLocationsPopup);
+        
+        if (saveAndSubmit) {
+          timeEntryCard.enableSaveButtons();
+        } else {
+          timeEntryCard.enableSaveButton();
+        }
+        
       },
     });
 

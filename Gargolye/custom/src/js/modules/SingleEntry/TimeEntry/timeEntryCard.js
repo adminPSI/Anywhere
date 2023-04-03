@@ -1566,6 +1566,10 @@ var timeEntryCard = (function () {
     saveAndSumbitBtn.classList.remove('disabled');
   }
 
+  function enableSaveButton() {
+    saveBtn.classList.remove('disabled');
+  }
+
   async function customRosterApplyFilterEvent() {
     if (isBillable === 'Y' && !$.session.singleEntryUseServiceLocations) {
       // check if residence === 'N'
@@ -2228,5 +2232,6 @@ var timeEntryCard = (function () {
     handleActionNavEvent,
     clearAllGlobalVariables,
     enableSaveButtons,
+    enableSaveButton,
   };
 })();
