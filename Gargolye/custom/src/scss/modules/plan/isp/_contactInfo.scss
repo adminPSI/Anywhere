@@ -8,6 +8,17 @@
       min-height: 100px;
     }
   }
+
+  .phoneWrap {
+    display: flex;
+
+    > div:first-child {
+      width: 80%;
+    }
+    > div:last-child {
+      width: 20%;
+    }
+  }
 }
 .isp_ciip_gkRelationships,
 .isp_ciip_gkSignautres {

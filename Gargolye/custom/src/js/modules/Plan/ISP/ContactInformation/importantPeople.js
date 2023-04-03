@@ -385,6 +385,8 @@ const isp_ci_importantPeople = (() => {
     // Wrap up Phones w/Ext.
     const phoneWrap = document.createElement('div');
     const phoneWrap2 = document.createElement('div');
+    phoneWrap.classList.add('phoneWrap');
+    phoneWrap2.classList.add('phoneWrap');
     phoneWrap.appendChild(phoneInput);
     phoneWrap.appendChild(phoneExt);
     phoneWrap2.appendChild(phoneInput2);
@@ -485,6 +487,14 @@ const isp_ci_importantPeople = (() => {
         const phnDisp = contactInformation.formatPhone(event.target.value).disp;
         event.target.value = phnDisp;
       }
+
+      if (event.target.value === '' || contactInformation.validatePhone(event.target.value)) {
+        phoneInput.classList.remove('error');
+      } else {
+        phoneInput.classList.add('error');
+      }
+
+      checkForErrors();
     });
     typeDropdown.addEventListener('change', event => {
       if (event.target.value === '') {
@@ -502,14 +512,6 @@ const isp_ci_importantPeople = (() => {
       }
       checkForErrors();
     });
-    // relationshipInput.addEventListener('input', event => {
-    //   if (event.target.value === '') {
-    //     relationshipInput.classList.add('error');
-    //   } else {
-    //     relationshipInput.classList.remove('error');
-    //   }
-    //   checkForErrors();
-    // });
     addressInput.addEventListener('input', event => {
       if (event.target.value === '') {
         addressInput.classList.add('error');
