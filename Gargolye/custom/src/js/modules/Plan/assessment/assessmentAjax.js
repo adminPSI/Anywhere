@@ -114,7 +114,6 @@ const assessmentAjax = (function () {
       sigAttachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
       sigAttachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
       sigAttachmentIdsInput.id = 'sigAttachmentIds';
-  
 
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);
@@ -122,6 +121,7 @@ const assessmentAjax = (function () {
     form.appendChild(versionIDInput);
     form.appendChild(extraSpaceInput);
     form.appendChild(ispInput);
+    form.appendChild(oneSpanInput);
     form.appendChild(planAttachmentIdsInput);
     form.appendChild(wfAttachmentIdsInput);
     form.appendChild(sigAttachmentIdsInput);
