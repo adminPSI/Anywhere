@@ -1354,6 +1354,11 @@ namespace Anywhere
             return iTW.checkIfITReportExists(token, reportScheduleId);
         }
 
+        public string sendIncidentTrackingReport(string token, string reportScheduleId, string toAddresses, string ccAddresses, string bccAddresses, string emailSubject, string emailBody)
+        {
+            return iTW.sendIncidentTrackingReport(token, reportScheduleId, toAddresses, ccAddresses, bccAddresses, emailSubject, emailBody);
+        }
+
         //public AnywhereWorker.ConsumerTableLocation[] getConsumerTableConsumerLocation(string token, string consumerId)
         //{
         //    return anywhereWorker.getConsumerTableConsumerLocation(token, consumerId);

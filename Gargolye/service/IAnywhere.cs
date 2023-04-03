@@ -1968,6 +1968,13 @@ namespace Anywhere
             UriTemplate = "/checkIfITReportExists/")]
         string checkIfITReportExists(string token, string reportScheduleId);
 
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/sendIncidentTrackingReport/")]
+        string sendIncidentTrackingReport(string token, string reportScheduleId, string toAddresses, string ccAddresses, string bccAddresses, string emailSubject, string emailBody);
+
         //[OperationContract]
         //[WebInvoke(Method = "POST",
         //     BodyStyle = WebMessageBodyStyle.Wrapped,
