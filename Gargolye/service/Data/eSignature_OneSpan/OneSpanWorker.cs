@@ -28,8 +28,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             AccountMember member = AccountMemberBuilder.NewAccountMember("erickbey10@yahoo.com")
                 .WithFirstName("test")
                 .WithLastName("Smith")
-                .WithCompany("ABC Bank")
-                .WithTitle("CEO")
                 .WithStatus(SenderStatus.ACTIVE)
                 .Build();
 
@@ -70,7 +68,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
 
-                string[] emails = { "erick.bey@primarysolutions.net", "erickbey1@outlook.com", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
+                //string[] emails = { "erickbey1@outlook.com", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
 
                 // Create a list for each category for signers
                 List<string> emailsList = new List<string>();
@@ -106,7 +104,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 string firstNameTest = "Your County Board";
                 string lastNameTest = "of DD";
                 SenderInfoBuilder sender = SenderInfoBuilder
-                    .NewSenderInfo("erickbey10@yahoo.com")
+                    .NewSenderInfo("erick.bey@primarysolutions.net")
                     .WithName(firstNameTest, lastNameTest);
 
                 // Sets default last name value if one is not provided
@@ -116,10 +114,10 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 int i = 0;
                 List<Signer> allSigners = new List<Signer>();
-                // TODO: change emails to emailList when pushing to unit
-                foreach (string email in emails)
+                foreach (string email in emailsList)
                 {
-                    if (signatureTypes[i] != "1")
+                    // Skips over non-digital signers, and people who have already signed
+                    if (signatureTypes[i] != "1" || dateSigned[i] != "")
                     {
                         i++;
                         continue;

@@ -1,6 +1,8 @@
 var incidentOverview = (function () {
   // DOM Elements
   var overviewTable;
+  //Incident Tracking Report Data
+  let incidentTrackingEmailData = {emailSubject: 'Incidents [Composite] by Consumer, Date'};
   //filters
   var filterPopup;
   var filterBtn;
@@ -472,19 +474,28 @@ var incidentOverview = (function () {
         } else {
           sendBtn.classList.remove('disabled');
         }
+
+        // set value of report email data to input value
+        incidentTrackingEmailData.toAddresses = event.target.value;
       },
     });
 
     const ccAddress = input.build({
       label: 'Email Cc Addresses:',
       callbackType: 'input',
-
+      callback: event => {
+        // set value of report email data to input value
+        incidentTrackingEmailData.ccAddresses = event.target.value;
+      },
     });
 
     const bccAddress = input.build({
       label: 'Email Bcc Addresses:',
       callbackType: 'input',
-
+      callback: event => {
+        // set value of report email data to input value
+        incidentTrackingEmailData.bccAddresses = event.target.value;
+      },
     });
 
     const emailSubject = input.build({
@@ -498,7 +509,10 @@ var incidentOverview = (function () {
       callbackType: 'input',
       type: 'textarea',
       classNames: 'autosize',
-
+      callback: event => {
+        // set value of report email data to input value
+        incidentTrackingEmailData.emailBody = event.target.value;
+      },
     });
 
     //* BUTTONS
@@ -509,7 +523,7 @@ var incidentOverview = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        incidentTrackingAjax.generateIncidentTrackingReport(incidentId, checkIfITReportIsReadyInterval());
+        incidentTrackingAjax.generateIncidentTrackingReport(incidentId, checkIfITReportIsReadyInterval);
         POPUP.hide(incidentEmailPopup);
       }
     });
@@ -554,7 +568,7 @@ var incidentOverview = (function () {
   }
 
   async function checkITReportExists(res) {
-    await incidentTrackingAjax.checkIfCNReportExists(res, callITReport);
+    await incidentTrackingAjax.checkIfITReportExists(res, callITReport);
   }
 
   // Retrieves the report when it is ready
@@ -562,7 +576,7 @@ var incidentOverview = (function () {
     if (res.indexOf('1') === -1) {
       //do nothing
     } else {
-      incidentTrackingAjax.viewIncidentTrackingReport(reportScheduleId);
+      incidentTrackingAjax.sendIncidentTrackingReport(reportScheduleId, incidentTrackingEmailData);
       clearInterval(interval);
       reportRunning = false;
     }

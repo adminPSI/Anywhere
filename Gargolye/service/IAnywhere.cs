@@ -764,7 +764,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getWorkCodesJSON/")]
-        SingleEntryWorker.WorkCodes[] getWorkCodesJSON(string token);
+        SingleEntryWorker.WorkCodes[] getWorkCodesJSON(string token, string getAllWorkCodes);
         //string getWorkCodes(string token);
 
         [OperationContract]
@@ -1967,6 +1967,13 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/checkIfITReportExists/")]
         string checkIfITReportExists(string token, string reportScheduleId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/sendIncidentTrackingReport/")]
+        string sendIncidentTrackingReport(string token, string reportScheduleId, string toAddresses, string ccAddresses, string bccAddresses, string emailSubject, string emailBody);
 
         //[OperationContract]
         //[WebInvoke(Method = "POST",

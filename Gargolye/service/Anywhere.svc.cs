@@ -619,9 +619,9 @@ namespace Anywhere
             return dg.getSingleEntryRequiredFields(token);
         }
 
-        public SingleEntryWorker.WorkCodes[] getWorkCodesJSON(string token)
+        public SingleEntryWorker.WorkCodes[] getWorkCodesJSON(string token, string getAllWorkCodes)
         {
-            return singleEntryWorker.getWorkCodesJSON(token);
+            return singleEntryWorker.getWorkCodesJSON(token, getAllWorkCodes);
         }
 
         public SingleEntryWorker.SingleEntryPayPeriods[] getSingleEntryPayPeriodsJSON(string token)
@@ -1352,6 +1352,11 @@ namespace Anywhere
         public string checkIfITReportExists(string token, string reportScheduleId)
         {
             return iTW.checkIfITReportExists(token, reportScheduleId);
+        }
+
+        public string sendIncidentTrackingReport(string token, string reportScheduleId, string toAddresses, string ccAddresses, string bccAddresses, string emailSubject, string emailBody)
+        {
+            return iTW.sendIncidentTrackingReport(token, reportScheduleId, toAddresses, ccAddresses, bccAddresses, emailSubject, emailBody);
         }
 
         //public AnywhereWorker.ConsumerTableLocation[] getConsumerTableConsumerLocation(string token, string consumerId)

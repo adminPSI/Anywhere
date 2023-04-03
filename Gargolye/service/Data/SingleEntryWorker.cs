@@ -214,9 +214,13 @@ namespace Anywhere.service.Data
         }
 
         //Gets SE work codes
-        public WorkCodes[] getWorkCodesJSON(string token)
+        public WorkCodes[] getWorkCodesJSON(string token, string getAllWorkCodes)
         {
-            string workCodesString = dg.getWorkCodesJSON(token);
+            if (getAllWorkCodes != "Y")
+            {
+                getAllWorkCodes = "N";
+            }
+            string workCodesString = dg.getWorkCodesJSON(token, getAllWorkCodes);
             WorkCodes[] workCodesObj = js.Deserialize<WorkCodes[]>(workCodesString);
             return workCodesObj;
         }
