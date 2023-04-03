@@ -1113,37 +1113,39 @@
     });
   }
 
-  function viewIncidentTrackingReport(reportScheduleId) {
+  // Send the report to designated emails
+  function sendIncidentTrackingReport(reportScheduleId, incidentTrackingEmailReportData) {
     data = {
+      token: $.session.Token,
       reportScheduleId: reportScheduleId,
+      toAddresses: incidentTrackingEmailReportData.toAddresses,
+      ccAddresses: incidentTrackingEmailReportData.ccAddresses,
+      bccAddresses: incidentTrackingEmailReportData.bccAddresses,
+      emailSubject: incidentTrackingEmailReportData.emailSubject,
+      emailBody: incidentTrackingEmailReportData.emailBody
     };
-    var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/viewIncidentTrackingReport/`;
-    var successFunction = function (resp) {
-      var res = JSON.stringify(response);
-    };
-
-    var form = document.createElement('form');
-    form.setAttribute('action', action);
-    form.setAttribute('method', 'POST');
-    form.setAttribute('target', '_blank');
-    form.setAttribute('enctype', 'application/json');
-    form.setAttribute('success', successFunction);
-    var tokenInput = document.createElement('input');
-    tokenInput.setAttribute('name', 'token');
-    tokenInput.setAttribute('value', $.session.Token);
-    tokenInput.id = 'token';
-    var attachmentInput = document.createElement('input');
-    attachmentInput.setAttribute('name', 'reportScheduleId');
-    attachmentInput.setAttribute('value', reportScheduleId);
-    attachmentInput.id = 'reportScheduleId';
-
-    form.appendChild(tokenInput);
-    form.appendChild(attachmentInput);
-    form.style.position = 'absolute';
-    form.style.opacity = '0';
-    document.body.appendChild(form);
-
-    form.submit();
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/sendIncidentTrackingReport/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.sendIncidentTrackingReportResult;
+        //callback(res, data.reportScheduleId);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
   }
 
   return {
@@ -1188,6 +1190,6 @@
     updateIncidentViewByUser,
     generateIncidentTrackingReport,
     checkIfITReportExists,
-    viewIncidentTrackingReport
+    sendIncidentTrackingReport
   };
 })();

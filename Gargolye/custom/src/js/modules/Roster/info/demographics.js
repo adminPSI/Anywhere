@@ -74,6 +74,15 @@ const demographics = (function () {
       zip ? zip : ''
     }`;
   }
+  function formatZipCode(zipCode) {
+    const zip = zipCode ? zipCode.trim() : zipCode;
+    if (zip.length <= 5) {
+      return zip;
+    } else {
+      return zip.slice(0, 5) + '-' + zip.slice(5);
+    }
+  }
+
   function setInputType(input, name) {
     // DATE
     if (name === 'dateOfBirth') {
@@ -147,7 +156,6 @@ const demographics = (function () {
   }
 
   function formatDataForDisplay(data) {
-    console.table(data);
     const pathToEmployment = data.pathToEmployment;
 
     // Address
@@ -155,7 +163,7 @@ const demographics = (function () {
     const addressTwo = data.addresstwo;
     const city = data.mailcity;
     const state = data.mailstate;
-    const zip = data.mailzipcode ? data.mailzipcode.trim() : data.mailzipcode;
+    const zip = formatZipCode(data.mailzipcode);
 
     // Contact Info
     const primaryPhone = formatPhoneNumber(data.primaryphone);
@@ -330,7 +338,6 @@ const demographics = (function () {
       });
 
       input.addEventListener('focusout', async e => {
-        console.log('focusout from input');
         // show spinner
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
@@ -432,8 +439,6 @@ const demographics = (function () {
       // append
       groupWrap.appendChild(inputGroup);
     }
-
-    console.log(viewElements);
 
     const showDetailsoBtn = button.build({
       text: 'Show Details',

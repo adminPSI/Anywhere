@@ -423,8 +423,6 @@ const widgetSettings = (function () {
     }
 
     sections[widgetId].showHide = settings.showHide;
-
-    console.log(sections[widgetId].showHide);
   }
 
   function buildWidgetBodyInnerHTML(sec) {
@@ -445,7 +443,10 @@ const widgetSettings = (function () {
       setWidgetSettings(sec);
 
       const sectionWrap = document.createElement('div');
-      sectionWrap.classList.add('widgetWrap');
+      sectionWrap.classList.add(
+        'widgetWrap',
+        `${sections[sec].name.replaceAll(' ', '').toLowerCase()}`,
+      );
 
       const sectionHeader = document.createElement('div');
       sectionHeader.classList.add('widgetHeader');
@@ -471,6 +472,10 @@ const widgetSettings = (function () {
           sections[sec].showHide,
         );
         dashboard.refreshWidgetSettings();
+
+        // update widget data-show attribute
+        const widget = document.querySelector(`[data-widgetId='${sec}']`);
+        widget.setAttribute('data-show', sections[sec].showHide);
       });
 
       sectionHeader.appendChild(title);
