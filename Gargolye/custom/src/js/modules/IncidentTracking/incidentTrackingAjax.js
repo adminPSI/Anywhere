@@ -357,12 +357,17 @@
         successfulSave.show();
         setTimeout(function () {
           successfulSave.hide();
-          if (callback) callback(res);
-          notifyArr.forEach((notify, index) => {
-            if (notify === 'Y') {
-              sendNotification(notificationType, employeeIdArr[index], incidentData);
+            for (let i = 0; i < notifyArr.length; i++) {
+                if (notifyArr[i] === 'Y') {
+                    sendNotification(notificationType, employeeIdArr[i], incidentData);
+                }
             }
-          });
+          //notifyArr.forEach((notify, index) => {
+          //  if (notify === 'Y') {
+          //    sendNotification(notificationType, employeeIdArr[index], incidentData);
+          //  }
+          //});
+          if (callback) callback(res);
         }, 1000);
         //for loop' if notify emp is y call procedure with person id of employee with checked box
       },
