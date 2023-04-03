@@ -1160,9 +1160,9 @@ var timeApproval = (function () {
   }
   // populate
   function populateTable(results) {
-    // var workCodes = timeEntry.getWorkCodes();
     totalHours = 0;
     var tableData = results.map(entry => {
+      console.log(entry);
       var entryId = entry.Single_Entry_ID;
       var status = statusLookup[entry.Anywhere_status];
       var employee = `${entry.lastname}, ${entry.firstname}`;
@@ -1179,13 +1179,6 @@ var timeApproval = (function () {
       let isValid;
 
       totalHours += hours;
-      // var workCodeData = workCodes.filter(wc => wc.workcodeid === entry.workCodeId);
-      // if (workCodeData[0] && workCodeData[0].keyTimes === 'Y') {
-      //   // end time required to be valid
-      //   isValid = entry.end_time === '' ? 'false' : 'true';
-      // } else {
-      //   isValid = 'true';
-      // }
       if (entry.keyTimes === 'Y') {
         // end time required to be valid
         isValid = entry.end_time === '' ? 'false' : 'true';

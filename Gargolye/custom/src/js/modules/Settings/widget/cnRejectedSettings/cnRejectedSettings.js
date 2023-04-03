@@ -100,6 +100,5 @@ const cnRejectedSettings = (function () {
 
   return {
     buildCNRejectedSettings,
-    buildWidgetBody,
   };
 })();
