@@ -2883,7 +2883,6 @@ namespace Anywhere
             extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             oneSpan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
-            oneSpan = "false";
 
             string[] words = fullInput.Split('&');
             var index = Array.FindIndex(words, row => row.Contains("planAttachmentIds"));
