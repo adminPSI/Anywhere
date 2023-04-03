@@ -764,7 +764,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getWorkCodesJSON/")]
-        SingleEntryWorker.WorkCodes[] getWorkCodesJSON(string token);
+        SingleEntryWorker.WorkCodes[] getWorkCodesJSON(string token, string getAllWorkCodes);
         //string getWorkCodes(string token);
 
         [OperationContract]

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereWorkshopWorkerTwo;
 
 namespace Anywhere.Data
 {
@@ -1461,13 +1462,13 @@ namespace Anywhere.Data
 
         }
 
-        public string getWorkCodesJSON(string token)
+        public string getWorkCodesJSON(string token, string getAllWorkCodes)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getWorkCodes" + token);
             try
             {
-                return executeDataBaseCallJSON("CALL DBA.ANYW_SingleEntry_GetWorkCodes('" + token + "');");
+                return executeDataBaseCallJSON("CALL DBA.ANYW_SingleEntry_GetWorkCodes('" + token + "','" + getAllWorkCodes + "');");
             }
             catch (Exception ex)
             {
