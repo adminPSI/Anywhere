@@ -496,6 +496,21 @@ const isp_ci_importantPeople = (() => {
 
       checkForErrors();
     });
+
+    phoneExt.addEventListener('input', event => {
+      if (event.target.value.length > 5) {
+        const value = event.target.value;
+        const slicedValue = value.slice(0, 5);
+        event.target.value = slicedValue;
+      }
+    });
+    phone2Ext.addEventListener('input', event => {
+      if (event.target.value.length > 5) {
+        const value = event.target.value;
+        const slicedValue = value.slice(0, 5);
+        event.target.value = slicedValue;
+      }
+    });
     typeDropdown.addEventListener('change', event => {
       if (event.target.value === '') {
         typeDropdown.classList.add('error');
