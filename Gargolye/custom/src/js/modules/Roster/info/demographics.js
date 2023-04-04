@@ -45,9 +45,12 @@ const demographics = (function () {
   function formatPhoneNumber(number) {
     if (!number) return;
     const splitNumber = number.split('%');
-    const phoneNumber = UTIL.formatPhoneNumber(splitNumber[0].trim());
-    const phoneType = splitNumber.length > 1 ? splitNumber[1] : '';
-    const phone = `${phoneNumber} ${phoneType}`;
+    const splitNumber2 = splitNumber[0].split('x');
+
+    const phoneNumber = UTIL.formatPhoneNumber(splitNumber2[0].trim());
+    const phoneExt = splitNumber2[1];
+
+    const phone = `${phoneNumber} (${phoneExt})`;
 
     return phone;
   }
@@ -325,11 +328,18 @@ const demographics = (function () {
           }
         }
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
+          const splitNumber = e.target.split(' ');
+          const phoneNumber = splitNumber[0];
+          let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+
           const validatePhone = phone => {
             return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
-            //return phone.replace(/[^0-9.]/g, '').length === 10;
           };
-          if (!validatePhone(e.target.value)) {
+
+          const isPhoneValid = validatePhone(phoneNumber);
+          const isExtValid = phoneExt.length <= 5 ? true : false;
+
+          if (!isPhoneValid || !isExtValid) {
             editElement.classList.add('invalid');
           } else {
             editElement.classList.remove('invalid');
@@ -338,9 +348,17 @@ const demographics = (function () {
       });
 
       input.addEventListener('focusout', async e => {
+        let saveValue = e.target.value;
         // show spinner
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
+        if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
+          const splitNumber = e.target.split(' ');
+          const phoneNumber = splitNumber[0];
+          let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+
+          saveValue = `${phoneNumber}x${phoneExt}`;
+        }
         // save value
         const success = await rosterAjax.updateConsumerDemographics({
           field: name,
@@ -535,7 +553,11 @@ const demographics = (function () {
     sectionInner.appendChild(demographicInfo);
 
     section.addEventListener('click', e => {
-      if (!e.target.classList.contains('inputGroup')) {
+      if (
+        !e.target.classList.contains('inputGroup') &&
+        e.target.nodeName !== 'INPUT' &&
+        e.target.nodeName !== 'LABLE'
+      ) {
         clearCurrentEdit();
       }
     });

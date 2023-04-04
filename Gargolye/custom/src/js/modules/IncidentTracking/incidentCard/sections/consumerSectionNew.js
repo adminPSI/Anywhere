@@ -3643,7 +3643,7 @@ var consumerReview = (function () {
 
     data.unshift({ value: '%', text: '' });
 
-    if ($.session.incidentTrackingReviewedBy) {
+    if (!$.session.incidentTrackingReviewedBy) {
       dropdown.populate(rbDrop, data, reviewedById);
     } else {
       dropdown.populate(rbDrop, data, $.session.PeopleId);
