@@ -213,6 +213,7 @@ $.session.incidentTrackingPopulateIncidentDate = '';
 $.session.incidentTrackingPopulateIncidentTime = '';
 $.session.incidentTrackingPopulateReportedDate = '';
 $.session.incidentTrackingPopulateReportedTime = '';
+$.session.incidentTrackingEmailIncident = '';
 /////////
 $.session.infalHasConnectionString = false;
 $.session.isPSI = false;
@@ -556,6 +557,9 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Reviewed By User') {
         $.session.incidentTrackingReviewedBy = true;
+      }
+      if (tmpPerm == 'Email Incident') {
+        $.session.incidentTrackingEmailIncident = true;
       }
     }
 

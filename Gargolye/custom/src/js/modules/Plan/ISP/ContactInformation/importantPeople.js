@@ -489,9 +489,9 @@ const isp_ci_importantPeople = (() => {
       }
 
       if (event.target.value === '' || contactInformation.validatePhone(event.target.value)) {
-        phoneInput.classList.remove('error');
+        phoneInput2.classList.remove('error');
       } else {
-        phoneInput.classList.add('error');
+        phoneInput2.classList.add('error');
       }
 
       checkForErrors();
