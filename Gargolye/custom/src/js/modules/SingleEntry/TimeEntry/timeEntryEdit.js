@@ -8,6 +8,7 @@ var editTimeEntry = (function () {
   var payPeriod;
   // Values
   var isAdminEdit;
+  var isOrginUser;
 
   function clearAllGlobalVariables() {
     timeEntryData = undefined;
@@ -27,7 +28,8 @@ var editTimeEntry = (function () {
     if (seActivityElement && typeof seActivityElement === 'object')
       timeCard.querySelector('.card__body').appendChild(seActivityElement);
 
-    timeEntryCard.populate();
+    var useAllWorkCodes = isAdminEdit && !isOrginUser ? true : false;
+    timeEntryCard.populate(useAllWorkCodes);
 
     //resize rejection reason box
     const tx = document.getElementById('rejectionReason');
@@ -46,6 +48,7 @@ var editTimeEntry = (function () {
     isAdminEdit = data.isAdminEdit;
     payPeriod = data.payPeriod;
     seActivityElement = data.recordActivityElement;
+    isOrginUser = data.isOrginUser ? true : false;
 
     loadPage();
   }
