@@ -190,8 +190,7 @@ const widgetSettings = (function () {
             );
             let newViewEnteredByOthers = 'N';
             if ($.session.CaseNotesViewEntered) {
-              newViewEnteredByOthers = viewNotesEnteredByOtherUsersCheckBox.firstElementChild
-                .checked
+              newViewEnteredByOthers = viewNotesByOtherUsersCheckBox.firstElementChild.checked
                 ? 'Y'
                 : 'N';
             }
@@ -223,7 +222,7 @@ const widgetSettings = (function () {
         });
 
         if ($.session.CaseNotesViewEntered) {
-          widgetBody.appendChild(viewNotesEnteredByOtherUsersCheckBox);
+          widgetBody.appendChild(viewNotesByOtherUsersCheckBox);
         } else {
           this.settings.viewEnteredByOtherUsers = 'N';
         }
