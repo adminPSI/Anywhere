@@ -630,13 +630,20 @@ var incidentOverview = (function () {
       if (!orginUser && !viewedOn) {
         showBold = true;
       }
-
+      
       var incidentEmailBtn = document.createElement('button');
       incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
       incidentEmailBtn.textContent = 'EMAIL';
       incidentEmailBtn.style.zIndex = '9999';
 
-      return {
+      if (!$.session.incidentTrackingEmailIncident) {
+        return {
+          id: rowId,
+          values: [location, enteredBy, date, time, category, consumersInvolved],
+          attributes: [{ key: 'data-viewed', value: showBold }],
+        };
+      } else {
+        return {
         id: rowId,
         values: [location, enteredBy, date, time, category, consumersInvolved],
         attributes: [{ key: 'data-viewed', value: showBold }],
@@ -658,6 +665,7 @@ var incidentOverview = (function () {
           reviewIncident.init(event.target.id);
         },
       };
+      }      
     });
 
     data.sort(function (a, b) {
