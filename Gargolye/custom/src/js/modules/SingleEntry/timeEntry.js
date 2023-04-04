@@ -421,7 +421,12 @@ var timeEntry = (function () {
     index === self.findIndex((t) => (
       t.consumerId === value.consumerId && t.consumerName === value.consumerName)));
       //alphabatize
-      overlapConsumerlist = overlapConsumerlist.sort();
+     // overlapConsumerlist = overlapConsumerlist.sort();
+      overlapConsumerlist.sort(function(a, b) {
+        var textA = a.consumerName.toUpperCase();
+        var textB = b.consumerName.toUpperCase();
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
 
       // cycle through each consumer/location pair to build a dropdown for each unique pair
       overlapConsumerlist.forEach((consumer, index) => {
