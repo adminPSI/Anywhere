@@ -393,7 +393,7 @@ var timeEntry = (function () {
 
     // build overlapLocation Popup
     overlapLocationsPopup = POPUP.build({
-      header: `Overlapped locations for selected consumer(s).`,
+      header: `Overlapping locations for selected consumer(s).`,
       hideX: false,
       id: 'overlapLocationsPopup',
     });
