@@ -1166,7 +1166,7 @@ var timeApproval = (function () {
   function populateTable(results) {
     totalHours = 0;
     var tableData = results.map(entry => {
-      var isOrginUser = $.session.UserId === entry.userId ? 'Y' : 'N';
+      var isOrginUser = $.session.UserId === entry.peopleId ? 'Y' : 'N';
 
       var entryId = entry.Single_Entry_ID;
       var status = statusLookup[entry.Anywhere_status];
