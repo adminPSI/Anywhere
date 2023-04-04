@@ -152,7 +152,7 @@ var singleEntryAjax = (function () {
       getAllWorkCodes: !getAllWorkCodes ? 'N' : getAllWorkCodes,
     };
     try {
-      $.ajax({
+      const data = await $.ajax({
         type: 'POST',
         url:
           $.webServer.protocol +
@@ -167,6 +167,8 @@ var singleEntryAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
+
+      return data.getWorkCodesJSONResult;
     } catch (error) {
       console.log(error.responseText);
     }

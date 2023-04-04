@@ -3625,7 +3625,7 @@ var consumerReview = (function () {
     var opts = {
       label: 'Reviewed By',
       style: 'secondary',
-      classNames: $.session.incidentTrackingReviewedBy ? 'reviewedBy' : ['reviewedBy', 'disabled'],
+      classNames: !$.session.incidentTrackingReviewedBy ? 'reviewedBy' : ['reviewedBy', 'disabled'],
     };
 
     if (isEdit && formReadOnly) {

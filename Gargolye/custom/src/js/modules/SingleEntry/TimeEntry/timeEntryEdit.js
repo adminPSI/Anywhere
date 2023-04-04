@@ -29,7 +29,7 @@ var editTimeEntry = (function () {
       timeCard.querySelector('.card__body').appendChild(seActivityElement);
 
     var useAllWorkCodes = isAdminEdit && !isOrginUser ? true : false;
-    timeEntryCard.populate(useAllWorkCodes);
+    await timeEntryCard.populate(useAllWorkCodes);
 
     //resize rejection reason box
     const tx = document.getElementById('rejectionReason');

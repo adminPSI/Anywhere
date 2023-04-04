@@ -9,7 +9,7 @@ var newTimeEntry = (function () {
     });
     DOM.ACTIONCENTER.appendChild(timeCard);
 
-    timeEntryCard.populate();
+    await timeEntryCard.populate();
   }
 
   function init() {

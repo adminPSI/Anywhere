@@ -50,7 +50,7 @@ const demographics = (function () {
     const phoneNumber = UTIL.formatPhoneNumber(splitNumber2[0].trim());
     const phoneExt = splitNumber2[1];
 
-    const phone = `${phoneNumber} (${phoneExt})`;
+    const phone = phoneExt ? `${phoneNumber} (${phoneExt})` : `${phoneNumber}`;
 
     return phone;
   }
@@ -328,7 +328,7 @@ const demographics = (function () {
           }
         }
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
-          const splitNumber = e.target.split(' ');
+          const splitNumber = e.target.value.split(' ');
           const phoneNumber = splitNumber[0];
           let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
@@ -353,7 +353,7 @@ const demographics = (function () {
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
-          const splitNumber = e.target.split(' ');
+          const splitNumber = e.target.value.split(' ');
           const phoneNumber = splitNumber[0];
           let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
