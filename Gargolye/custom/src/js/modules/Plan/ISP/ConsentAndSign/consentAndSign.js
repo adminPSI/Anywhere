@@ -882,6 +882,11 @@ const planConsentAndSign = (() => {
     let sendDocumentToOneSpanBtn;
     if($.session.oneSpan) {
       sendDocumentToOneSpanBtn = oneSpan.buildSendDocumentToOneSpanBtn(planId);
+
+      const planStatus = plan.getPlanStatus();
+      if (planStatus === 'C') {
+        sendDocumentToOneSpanBtn.classList.add('disabled');
+      }
       
     //initial check for digital signers to remove disabled class from one span button
     teamMemberData.forEach(member => {
@@ -915,6 +920,7 @@ const planConsentAndSign = (() => {
       teamMemberTable.classList.add('disableDrag');
       addMemberBtn.classList.add('disabled');
       addVendorBtn.classList.add('disabled');
+      sendDocumentToOneSpanBtn.classList.add('disabled');
     }
 
     // build it
