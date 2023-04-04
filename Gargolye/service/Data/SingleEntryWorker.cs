@@ -486,7 +486,7 @@ namespace Anywhere.service.Data
             public string firstname { get; set; }
             public string lastname { get; set; }
             public string userId { get; set; }
-            
+            public string peopleId { get; set; }
             public string latitude { get; set; }
             public string longitude { get; set; }
             public string approvedUser { get; set; }
