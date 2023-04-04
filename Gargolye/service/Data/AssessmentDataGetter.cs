@@ -363,6 +363,7 @@ namespace Anywhere.service.Data
         public string getConsumerRelationships(string token, long consumerId, string effectiveStartDate, string effectiveEndDate, string areInSalesForce, string planId)
         {
             if (tokenValidator(token) == false) return null;
+            planId = planId.TrimEnd(',');
             logger.debug("getConsumerRelationships ");
             List<string> list = new List<string>();
             //list.Add(token);
