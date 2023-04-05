@@ -591,13 +591,21 @@ var incidentOverview = (function () {
   function buildOverviewTable() {
     populateSelectedFilterValues();
 
-    var tableOptions = {
+    if (!$.session.incidentTrackingEmailIncident) {
+      var tableOptions = {
+        tableId: 'incidentOverviewTable',
+        heading: 'Incident Overview',
+        columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
+      };
+    } else {
+      var tableOptions = {
       tableId: 'incidentOverviewTable',
       heading: 'Incident Overview',
       columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
       endIcon: true
     };
-
+    }
+  
     overviewTable = table.build(tableOptions);
     DOM.ACTIONCENTER.appendChild(overviewTable);
   }
