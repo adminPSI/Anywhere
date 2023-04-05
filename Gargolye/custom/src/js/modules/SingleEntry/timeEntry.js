@@ -8,7 +8,6 @@ var timeEntry = (function () {
   var locations;
   var residenceLocations;
   var workCodes;
-  var workCodesAll;
   var evvReasonCodes;
   var crossmidnightisadminedit;
   var crossmidnightpayperiod;
@@ -394,7 +393,7 @@ var timeEntry = (function () {
 
     // build overlapLocation Popup
     overlapLocationsPopup = POPUP.build({
-      header: `Overlapped locations for selected consumer(s).`,
+      header: `Overlapping locations for selected consumer(s).`,
       hideX: false,
       id: 'overlapLocationsPopup',
     });
@@ -409,7 +408,13 @@ var timeEntry = (function () {
       .map(item => ({ consumerId: item.consumerId, consumerName: item.consumerName }))
       .filter((value, index, self) => self.indexOf(value) === index);
 
-<<<<<<< HEAD
+    // consumerNames in OverlapConsumerlist LastName, FirstName
+    for (const consumer of overlapConsumerlist) {
+      let firstName = consumer.consumerName.split(' ').slice(0, -1).join(' ');
+      let lastName = consumer.consumerName.split(' ').slice(-1).join(' ');
+      consumer.consumerName = lastName + ', ' + firstName;
+    }
+    // a single/unique record representing each consumer/location pair
     overlapConsumerlist = overlapConsumerlist.filter(
       (value, index, self) =>
         index ===
@@ -417,30 +422,16 @@ var timeEntry = (function () {
           t => t.consumerId === value.consumerId && t.consumerName === value.consumerName,
         ),
     );
-    // cycle through each consumer/location pair to build a dropdown for each unique pair
-    overlapConsumerlist.forEach((consumer, index) => {
-=======
-    // consumerNames in OverlapConsumerlist LastName, FirstName
-    for (const consumer of overlapConsumerlist) {
-      let firstName = consumer.consumerName.split(' ').slice(0, -1).join(' ');
-      let lastName = consumer.consumerName.split(' ').slice(-1).join(' ');
-        consumer.consumerName = lastName + ', ' + firstName;
-    }
-    // a single/unique record representing each consumer/location pair 
-    overlapConsumerlist = overlapConsumerlist.filter((value, index, self) =>
-    index === self.findIndex((t) => (
-      t.consumerId === value.consumerId && t.consumerName === value.consumerName)));
-      //alphabatize
-     // overlapConsumerlist = overlapConsumerlist.sort();
-      overlapConsumerlist.sort(function(a, b) {
-        var textA = a.consumerName.toUpperCase();
-        var textB = b.consumerName.toUpperCase();
-        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    //alphabatize
+    // overlapConsumerlist = overlapConsumerlist.sort();
+    overlapConsumerlist.sort(function (a, b) {
+      var textA = a.consumerName.toUpperCase();
+      var textB = b.consumerName.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
     });
 
-      // cycle through each consumer/location pair to build a dropdown for each unique pair
-      overlapConsumerlist.forEach((consumer, index) => {
->>>>>>> 720c966a0e7bdb059a0ee63926fcf56e3b9b228c
+    // cycle through each consumer/location pair to build a dropdown for each unique pair
+    overlapConsumerlist.forEach((consumer, index) => {
       const markup = buildOverlapLocationsDropdown(consumer, index);
       overlapLocationsPopup.appendChild(markup);
     });
@@ -505,13 +496,12 @@ var timeEntry = (function () {
         selectedOverlapLocIds = {};
 
         POPUP.hide(overlapLocationsPopup);
-        
+
         if (saveAndSubmit) {
           timeEntryCard.enableSaveButtons();
         } else {
           timeEntryCard.enableSaveButton();
         }
-        
       },
     });
 
@@ -987,11 +977,14 @@ var timeEntry = (function () {
     if (!residenceLocations) return [];
     return [...residenceLocations];
   }
-  function getWorkCodes() {
-    return [...workCodes];
-  }
-  function getAllWorkCodes() {
-    return [...workCodesAll];
+  async function getWorkCodes(useAllWorkCodes) {
+    if (!useAllWorkCodes) {
+      return [...workCodes];
+    }
+
+    const allWorkCodes = await singleEntryAjax.getWorkCodesAsync();
+
+    return [...allWorkCodes];
   }
   function getRequiredFields() {
     return UTIL.iterationCopy(requiredFields);
@@ -1037,14 +1030,6 @@ var timeEntry = (function () {
         });
       });
       promises.push(getWorkCodes);
-
-      const getAllWorkCodes = new Promise((resolve, reject) => {
-        singleEntryAjax.getWorkCodes(results => {
-          workCodesAll = results;
-          resolve('getWorkCodes DONE');
-        }, 'Y');
-      });
-      promises.push(getAllWorkCodes);
 
       const getLocationsAndResidences = new Promise((resolve, reject) => {
         singleEntryAjax.getLocationsAndResidences(results => {
@@ -1223,7 +1208,6 @@ var timeEntry = (function () {
     getLocations,
     getResidenceLocations,
     getWorkCodes,
-    getAllWorkCodes,
     getRequiredFields,
     getInitialData,
     getEvvReasonCodes,

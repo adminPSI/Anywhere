@@ -122,8 +122,7 @@ var singleEntryAjax = (function () {
       },
     });
   }
-  function getWorkCodes(callback, needAllCodes) {
-    if (needAllCodes === undefined) needAllCodes = false;
+  function getWorkCodes(callback) {
     $.ajax({
       type: 'POST',
       url:
@@ -135,7 +134,7 @@ var singleEntryAjax = (function () {
         '/' +
         $.webServer.serviceName +
         '/getWorkCodesJSON/',
-      data: '{"token":"' + $.session.Token + '", "needAllWorkcodes":"' + needAllCodes + '"}',
+      data: '{"token":"' + $.session.Token + '"}',
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
@@ -146,6 +145,33 @@ var singleEntryAjax = (function () {
         callback(null);
       },
     });
+  }
+  async function getWorkCodesAsync(getAllWorkCodes) {
+    const retrieveData = {
+      token: $.session.Token,
+      getAllWorkCodes: !getAllWorkCodes ? 'N' : getAllWorkCodes,
+    };
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getWorkCodesJSON/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getWorkCodesJSONResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
   }
   function getSingleEntryLocations(callback) {
     $.ajax({
@@ -784,6 +810,7 @@ var singleEntryAjax = (function () {
     getSingleEntryPayPeriods,
     getRequiredSingleEntryFields,
     getWorkCodes,
+    getWorkCodesAsync,
     getSingleEntryLocations,
     getSingleEntryUsersByLocation,
     getSingleEntryByDate,

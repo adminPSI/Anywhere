@@ -862,11 +862,12 @@ var timeApproval = (function () {
 
   // Time Entry Details Popup
   //------------------------------------
-  function getDataForTimeEntryEdit(status, entryId) {
+  function getDataForTimeEntryEdit(status, entryId, isOrginUser) {
     $.session.editSingleEntryCardStatus = status;
     singleEntryAjax.getSingleEntryById(entryId, results => {
       singleEntryAjax.getSingleEntryConsumersPresent(entryId, consumers => {
         editTimeEntry.init({
+          isOrginUser,
           entry: results,
           consumers: consumers,
           isAdminEdit: true,
@@ -886,6 +887,7 @@ var timeApproval = (function () {
     rowStartTime,
     rowEndTime,
     rowWorkCode,
+    isOrginUser,
   ) {
     selectedRows = [];
     selectedRows.push({ id: entryId, status: entryStatus });
@@ -905,7 +907,7 @@ var timeApproval = (function () {
       classNames: 'editEntryBtn',
       callback: function () {
         POPUP.hide(popup);
-        getDataForTimeEntryEdit(entryStatus, entryId);
+        getDataForTimeEntryEdit(entryStatus, entryId, isOrginUser);
       },
     });
     var approveBtn = button.build({
@@ -1109,7 +1111,7 @@ var timeApproval = (function () {
     }
   }
   // events
-  function handleReviewTableEvents() {
+  function handleReviewTableEvents(event) {
     var isRow = event.target.classList.contains('table__row');
     var isSelected = event.target.classList.contains('selected');
     var entryStatus = event.target.dataset.status;
@@ -1124,6 +1126,7 @@ var timeApproval = (function () {
 
     var consumersPresent = event.target.dataset.consumers;
     var isValid = event.target.dataset.valid === 'true' ? true : false;
+    var isOrginUser = event.target.dataset.valid === 'Y' ? true : false;
     if (!isRow) return; // if not row return
 
     if (enableMultiEdit && isValid) {
@@ -1155,6 +1158,7 @@ var timeApproval = (function () {
         rowStartTime,
         rowEndTime,
         rowWorkCode,
+        isOrginUser,
       );
     }
   }
@@ -1162,7 +1166,8 @@ var timeApproval = (function () {
   function populateTable(results) {
     totalHours = 0;
     var tableData = results.map(entry => {
-      console.log(entry);
+      var isOrginUser = $.session.UserId === entry.peopleId ? 'Y' : 'N';
+
       var entryId = entry.Single_Entry_ID;
       var status = statusLookup[entry.Anywhere_status];
       var employee = `${entry.lastname}, ${entry.firstname}`;
@@ -1209,6 +1214,7 @@ var timeApproval = (function () {
           { key: 'data-status', value: entry.Anywhere_status },
           { key: 'data-consumers', value: consumersPresent },
           { key: 'data-valid', value: isValid },
+          { key: 'data-origUser', value: isOrginUser },
         ],
       };
     });
@@ -1330,7 +1336,9 @@ var timeApproval = (function () {
         'Work Code',
         '',
       ],
-      callback: handleReviewTableEvents,
+      callback: e => {
+        handleReviewTableEvents(e);
+      },
     };
 
     return table.build(tableOptions);

@@ -204,7 +204,7 @@ var itConsumerSection = (function () {
         consumerCard.dataset.consumerId,
       ).locationId;
 
-      const involvementSec = document.querySelector("[data-sectionid='4']");
+      const involvementSec = document.querySelector("[data-sectionid='5']");
 
       if (locationId === '' || consumerInvolvement.checkOneHasPPI() === false) {
         involvementSec.classList.add('sectionError');
@@ -2567,7 +2567,7 @@ var consumerInvolvement = (function () {
         tmpLocationId = undefined;
 
         const locationId = involvementsData[selectedConsumerId].locationId;
-        const involvementSec = document.querySelector("[data-sectionid='4']");
+        const involvementSec = document.querySelector("[data-sectionid='5']");
         if (locationId === '' || consumerInvolvement.checkOneHasPPI() === false) {
           involvementSec.classList.add('sectionError');
         } else {
@@ -3625,7 +3625,7 @@ var consumerReview = (function () {
     var opts = {
       label: 'Reviewed By',
       style: 'secondary',
-      classNames: $.session.incidentTrackingReviewedBy ? 'reviewedBy' : ['reviewedBy', 'disabled'],
+      classNames: 'reviewedBy',
     };
 
     if (isEdit && formReadOnly) {
@@ -3643,10 +3643,11 @@ var consumerReview = (function () {
 
     data.unshift({ value: '%', text: '' });
 
-    if ($.session.incidentTrackingReviewedBy) {
+    if (!$.session.incidentTrackingReviewedBy) {
       dropdown.populate(rbDrop, data, reviewedById);
     } else {
       dropdown.populate(rbDrop, data, $.session.PeopleId);
+      rbDrop.classList.add('disabled');
     }
 
     return rbDrop;

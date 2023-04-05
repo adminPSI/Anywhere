@@ -1703,10 +1703,10 @@ var timeEntryCard = (function () {
     dropdownData.unshift({ value: '%', text: '' });
     dropdown.populate(reasonDropdown, dropdownData, evvReasonCode);
   }
-  function populateCard() {
+  async function populateCard(useAllWorkCodes) {
     payPeriodData = timeEntry.getPayPeriods(false);
     locationData = timeEntry.getLocations();
-    workCodeData = timeEntry.getWorkCodes();
+    workCodeData = await timeEntry.getWorkCodes(useAllWorkCodes);
     requiredFields = timeEntry.getRequiredFields();
     evvReasonCodeObj = timeEntry.getEvvReasonCodes();
 

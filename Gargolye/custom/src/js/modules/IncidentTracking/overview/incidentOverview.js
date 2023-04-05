@@ -641,6 +641,15 @@ var incidentOverview = (function () {
           id: rowId,
           values: [location, enteredBy, date, time, category, consumersInvolved],
           attributes: [{ key: 'data-viewed', value: showBold }],
+          onClick: async event => {
+            await incidentTrackingAjax.updateIncidentViewByUser({
+              token: $.session.Token,
+              incidentId: rowId,
+              userId: $.session.UserId,
+            });
+            DOM.scrollToTopOfPage();
+            reviewIncident.init(event.target.id);
+          },
         };
       } else {
         return {
