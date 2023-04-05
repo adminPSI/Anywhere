@@ -587,8 +587,8 @@ var timeEntryReview = (function () {
     }
   }
   // populate
-  function populateTable(results) {
-    var workCodes = timeEntry.getWorkCodes();
+  async function populateTable(results) {
+    var workCodes = await timeEntry.getWorkCodes();
 
     var tableData = results.map(td => {
       var entryId = td.Single_Entry_ID;
