@@ -502,6 +502,10 @@ var incidentOverview = (function () {
       label: 'Email Subject:',
       callbackType: 'input',
       value: 'Incidents [Composite] by Consumer, Date',
+      callback: event => {
+        // set value of report email data to input value
+        incidentTrackingEmailData.emailSubject = event.target.value;
+      },
     });
 
     const emailBody = input.build({
