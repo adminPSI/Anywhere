@@ -204,7 +204,7 @@ var itConsumerSection = (function () {
         consumerCard.dataset.consumerId,
       ).locationId;
 
-      const involvementSec = document.querySelector("[data-sectionid='4']");
+      const involvementSec = document.querySelector("[data-sectionid='5']");
 
       if (locationId === '' || consumerInvolvement.checkOneHasPPI() === false) {
         involvementSec.classList.add('sectionError');
