@@ -3575,11 +3575,20 @@ var consumerReview = (function () {
           reviewData[selectedConsumerId][selectedReviewId].updated = true;
         }
 
-        if (tmpReviewDate)
+        if (tmpReviewDate) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedDate = tmpReviewDate;
-        if (tmpReviewedBy)
+        }
+
+        if (tmpReviewedBy) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
-        if (tmpNote) reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
+        }
+        if ($.session.incidentTrackingReviewedBy) {
+          reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
+        }
+
+        if (tmpNote) {
+          reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
+        }
 
         selectedReviewId = undefined;
 

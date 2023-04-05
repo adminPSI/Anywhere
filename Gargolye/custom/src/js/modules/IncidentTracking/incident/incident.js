@@ -737,15 +737,15 @@ var incident = (function () {
         });
       });
     }
-    if (behaviorDeletes) {
-      var bhKeys = Object.keys(behaviorDeletes);
-      bhKeys.forEach(fuKey => {
-        var keys = Object.keys(behaviorDeletes[fuKey]);
-        keys.forEach(key => {
-          incidentTrackingAjax.itDeleteConsumerBehavior(key, () => {});
-        });
-      });
-    }
+    // if (behaviorDeletes) {
+    //   var bhKeys = Object.keys(behaviorDeletes);
+    //   bhKeys.forEach(fuKey => {
+    //     var keys = Object.keys(behaviorDeletes[fuKey]);
+    //     keys.forEach(key => {
+    //       incidentTrackingAjax.itDeleteConsumerBehavior(key, () => {});
+    //     });
+    //   });
+    // }
   }
 
   return {

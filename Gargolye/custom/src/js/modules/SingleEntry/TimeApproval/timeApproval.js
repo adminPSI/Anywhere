@@ -1439,7 +1439,7 @@ var timeApproval = (function () {
    * @param {string} endPeriod - M/D/Y End of the pay period
    * @param {string} dashStatus - Letter code of status of the time entry
    * */
-  function dashHandler(startPeriod, endPeriod, dashStatus) {
+  async function dashHandler(startPeriod, endPeriod, dashStatus) {
     payPeriodData = timeEntry.getPayPeriods(false);
     locationData = timeEntry.getLocations();
     let startDateIso = UTIL.formatDateToIso(startPeriod);
@@ -1447,7 +1447,7 @@ var timeApproval = (function () {
     startDate = startDateIso;
     endDate = endDateIso;
     status = dashStatus;
-    workCodeData = timeEntry.getWorkCodes();
+    workCodeData = await timeEntry.getWorkCodes();
 
     payPeriod = timeEntry.setSelectedPayPeriod(
       startDateIso,
@@ -1497,12 +1497,12 @@ var timeApproval = (function () {
     GOOGLE_MAP.initMap(10, center, markers);
   }
 
-  function refreshPage(payperiod) {
+  async function refreshPage(payperiod) {
     payPeriodData = timeEntry.getPayPeriods(false);
     payPeriod = payperiod ? payperiod : timeEntry.getCurrentPayPeriod(false);
     locationData = timeEntry.getLocations();
     setActiveModuleSectionAttribute('timeEntry-approval');
-    workCodeData = timeEntry.getWorkCodes();
+    workCodeData = await timeEntry.getWorkCodes();
 
     loadReviewPage();
   }
@@ -1516,7 +1516,7 @@ var timeApproval = (function () {
     POPUP.show(popup);
   }
 
-  function init() {
+  async function init() {
     //Removing Local Storage Key for showing Map. Map will now be defaulted to off,
     //end user will always need to click on show map button to load map.
     //this is to prevent over usage of google api.
@@ -1526,7 +1526,7 @@ var timeApproval = (function () {
     payPeriodData = timeEntry.getPayPeriods(false);
     payPeriod = timeEntry.getCurrentPayPeriod(false);
     locationData = timeEntry.getLocations();
-    workCodeData = timeEntry.getWorkCodes();
+    workCodeData = await timeEntry.getWorkCodes();
 
     //displayPayPeriodPopup();
     startDate = payPeriod.start;
