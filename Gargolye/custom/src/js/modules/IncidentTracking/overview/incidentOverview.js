@@ -583,6 +583,9 @@ var incidentOverview = (function () {
       incidentTrackingAjax.sendIncidentTrackingReport(reportScheduleId, incidentTrackingEmailData);
       clearInterval(interval);
       reportRunning = false;
+
+      // Reset values of email data
+      incidentTrackingEmailData = {emailSubject: 'Incidents [Composite] by Consumer, Date'}
     }
   }
 
