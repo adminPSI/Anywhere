@@ -149,7 +149,7 @@ var singleEntryAjax = (function () {
   async function getWorkCodesAsync(getAllWorkCodes) {
     const retrieveData = {
       token: $.session.Token,
-      getAllWorkCodes: !getAllWorkCodes ? 'N' : getAllWorkCodes,
+      getAllWorkCodes: !getAllWorkCodes ? 'N' : 'Y',
     };
     try {
       const data = await $.ajax({
@@ -167,6 +167,8 @@ var singleEntryAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
+
+      console.log(data.getWorkCodesJSONResult);
 
       return data.getWorkCodesJSONResult;
     } catch (error) {
@@ -803,6 +805,35 @@ var singleEntryAjax = (function () {
     });
   }
 
+  async function getEvvEligibilityAsync(consumerId, entryDate, callback) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSingleEntryEvvEligibilityJSON/',
+        data:
+          '{"token":"' +
+          $.session.Token +
+          '", "consumerId":"' +
+          consumerId +
+          '" , "entryDate":"' +
+          entryDate +
+          '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
   return {
     deleteSingleEntryRecord,
     getSingleEntryConsumersPresent,
@@ -836,5 +867,6 @@ var singleEntryAjax = (function () {
     getLocationsAndResidences,
     getEvvReasonCodes,
     getEvvEligibility,
+    getEvvEligibilityAsync,
   };
 })();
