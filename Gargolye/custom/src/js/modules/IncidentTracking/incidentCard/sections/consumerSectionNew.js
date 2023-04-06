@@ -3575,11 +3575,20 @@ var consumerReview = (function () {
           reviewData[selectedConsumerId][selectedReviewId].updated = true;
         }
 
-        if (tmpReviewDate)
+        if (tmpReviewDate) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedDate = tmpReviewDate;
-        if (tmpReviewedBy)
+        }
+
+        if (tmpReviewedBy) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
-        if (tmpNote) reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
+        }
+        if ($.session.incidentTrackingReviewedBy) {
+          reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
+        }
+
+        if (tmpNote) {
+          reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
+        }
 
         selectedReviewId = undefined;
 
@@ -3643,10 +3652,11 @@ var consumerReview = (function () {
 
     data.unshift({ value: '%', text: '' });
 
-    if (!$.session.incidentTrackingReviewedBy) {
+    if (!$.session.incidentTrackingReviewedBy || isEdit) {
       dropdown.populate(rbDrop, data, reviewedById);
     } else {
       dropdown.populate(rbDrop, data, $.session.PeopleId);
+
       rbDrop.classList.add('disabled');
     }
 

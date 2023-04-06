@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 
@@ -23,11 +24,27 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
-        public void oneSpanAssignSender()
+        public void oneSpanAssignSender(string token)
         {
-            AccountMember member = AccountMemberBuilder.NewAccountMember("erickbey10@yahoo.com")
-                .WithFirstName("test")
-                .WithLastName("Smith")
+            string firstName = "";
+            string lastName = "";
+            string emailAddress  = "";
+            // Retrieve current user first name, last name, email
+            string input = osdg.getSenderInfo(token);
+
+            List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
+
+            // Assign values for current user to variables for AccountMemberBuilder
+            foreach (Dictionary<string, string> dict in result)
+            {
+                lastName = dict["Last_Name"];
+                firstName = dict["First_Name"];
+                emailAddress = dict["Email_Address"];
+            }
+
+            AccountMember member = AccountMemberBuilder.NewAccountMember(emailAddress)
+                .WithFirstName(firstName)
+                .WithLastName(lastName)
                 .WithStatus(SenderStatus.ACTIVE)
                 .Build();
 
@@ -96,7 +113,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 string[] signatureTypes = signatureTypeList.ToArray();
                 string[] dateSigned = dateSignedList.ToArray();
 
-                //oneSpanAssignSender();
+                //oneSpanAssignSender(token);
 
                 //Sender retrievedSender = ossClient.AccountService.GetSender("senderId");
 

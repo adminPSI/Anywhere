@@ -172,7 +172,7 @@ const demographics = (function () {
     const primaryPhone = formatPhoneNumber(data.primaryphone);
     const secondaryPhone = formatPhoneNumber(data.secondaryphone);
     let cellPhone = data.cellphone ? data.cellphone.trim() : undefined;
-    cellPhone = cellPhone !== '%' ? UTIL.formatPhoneNumber(cellPhone) : '';
+    cellPhone = cellPhone !== '%' ? formatPhoneNumber(cellPhone) : '';
     const email = data.email;
 
     // Additional Info
@@ -362,7 +362,7 @@ const demographics = (function () {
         // save value
         const success = await rosterAjax.updateConsumerDemographics({
           field: name,
-          newValue: e.target.value,
+          newValue: saveValue,
           consumerId,
           applicationName: $.session.applicationName,
         });

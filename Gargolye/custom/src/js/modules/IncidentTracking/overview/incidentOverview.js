@@ -502,6 +502,10 @@ var incidentOverview = (function () {
       label: 'Email Subject:',
       callbackType: 'input',
       value: 'Incidents [Composite] by Consumer, Date',
+      callback: event => {
+        // set value of report email data to input value
+        incidentTrackingEmailData.emailSubject = event.target.value;
+      },
     });
 
     const emailBody = input.build({
@@ -579,6 +583,9 @@ var incidentOverview = (function () {
       incidentTrackingAjax.sendIncidentTrackingReport(reportScheduleId, incidentTrackingEmailData);
       clearInterval(interval);
       reportRunning = false;
+
+      // Reset values of email data
+      incidentTrackingEmailData = {emailSubject: 'Incidents [Composite] by Consumer, Date'}
     }
   }
 
@@ -587,13 +594,21 @@ var incidentOverview = (function () {
   function buildOverviewTable() {
     populateSelectedFilterValues();
 
-    var tableOptions = {
+    if (!$.session.incidentTrackingEmailIncident) {
+      var tableOptions = {
+        tableId: 'incidentOverviewTable',
+        heading: 'Incident Overview',
+        columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
+      };
+    } else {
+      var tableOptions = {
       tableId: 'incidentOverviewTable',
       heading: 'Incident Overview',
       columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
       endIcon: true
     };
-
+    }
+  
     overviewTable = table.build(tableOptions);
     DOM.ACTIONCENTER.appendChild(overviewTable);
   }
