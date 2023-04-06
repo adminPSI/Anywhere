@@ -652,7 +652,7 @@ var timeEntryCard = (function () {
   }
   function moveConsumersToTimeCard(consumers) {
     var consumerList = document.querySelector('.timeCard__consumers');
-    consumers.forEach(consumer => {
+    consumers.forEach(async consumer => {
       //If consumer is already on the selected consumer list ignore
       if (consumerIds.filter(id => id === consumer.id).length > 0) return;
       consumer.card.classList.remove('highlighted');
@@ -660,7 +660,7 @@ var timeEntryCard = (function () {
       var card = buildConsumerCard(clone, { consumerid: consumer.id });
       consumerList.appendChild(card);
       consumerIds.push(consumer.id);
-      evvCheckConsumerEligibility(consumer.id);
+      await evvCheckConsumerEligibility(consumer.id);
       numberOfConsumersPresent = consumerIds.length;
     });
     checkPermissions();
@@ -1840,7 +1840,7 @@ var timeEntryCard = (function () {
     }
   }
 
-  function evvCheckConsumerEligibility(id) {
+  async function evvCheckConsumerEligibility(id) {
     const eligibilityProm = new Promise((resolve, reject) => {
       singleEntryAjax.getEvvEligibility(id, entryDate, res => {
         if (res.length > 0) {
@@ -2098,7 +2098,7 @@ var timeEntryCard = (function () {
 
     return section;
   }
-  function buildConsumerSection(consumersPresent) {
+  async function buildConsumerSection(consumersPresent) {
     var section = document.createElement('div');
     section.classList.add('timeCard__consumers');
 
@@ -2110,7 +2110,7 @@ var timeEntryCard = (function () {
     roster2.clearActiveConsumers(); // clear any previous active consumers
 
     if (consumersPresent && consumersPresent.length > 0) {
-      consumersPresent.forEach(cp => {
+      consumersPresent.forEach(async cp => {
         var splitName = cp.consumername.split(',');
         var consumer = roster2.buildConsumerCard({
           FN: splitName[0],
@@ -2122,7 +2122,7 @@ var timeEntryCard = (function () {
         section.appendChild(card);
         consumerIds.push(cp.consumerid);
         numberOfConsumersPresent = consumerIds.length;
-        evvCheckConsumerEligibility(cp.consumerid);
+        await evvCheckConsumerEligibility(cp.consumerid);
       });
     }
 
@@ -2207,7 +2207,7 @@ var timeEntryCard = (function () {
     cardBody.classList.add('card__body');
 
     var timeEntrySection = buildTimeEntrySection();
-    var consumerSection = buildConsumerSection(consumersPresent);
+    var consumerSection = await buildConsumerSection(consumersPresent);
     var saveDeleteCancel = buildSaveDeleteCancelButtons();
 
     // build card body
