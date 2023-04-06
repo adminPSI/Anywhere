@@ -805,7 +805,7 @@ var singleEntryAjax = (function () {
     });
   }
 
-  async function getEvvEligibilityAsync(consumerId, entryDate, callback) {
+  async function getEvvEligibilityAsync(consumerId, entryDate) {
     try {
       const data = await $.ajax({
         type: 'POST',
@@ -829,6 +829,8 @@ var singleEntryAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
+
+      return data.getSingleEntryEvvEligibilityJSONResult;
     } catch (error) {
       console.log(error.responseText);
     }
