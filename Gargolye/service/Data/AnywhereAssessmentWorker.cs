@@ -184,6 +184,7 @@ namespace Anywhere.service.Data
 
         public ServiceAndsSupportData getServiceAndSupportsData(string token, string effectiveStartDate, string effectiveEndDate, long consumerId, string areInSalesForce, string planId)
         {
+            planId = planId.TrimEnd(',');
             //get assessment areas
             string assessmentAreas = adg.getAssessmentAreas(token);
             AssessmentAreas[] assessmentAreasObj = js.Deserialize<AssessmentAreas[]>(assessmentAreas);
