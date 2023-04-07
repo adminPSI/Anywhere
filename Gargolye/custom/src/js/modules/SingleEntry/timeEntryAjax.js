@@ -67,8 +67,10 @@ var singleEntryAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
+      var res = data.getSingleEntryConsumersPresentJSONResult;
+        callback(res);
 
-      return data.getSingleEntryConsumersPresentJSONResult;
+     //  return data.getSingleEntryConsumersPresentJSONResult;
     } catch (error) {
       console.log(error.responseText);
     }
