@@ -994,7 +994,7 @@ var timeEntry = (function () {
       return [...workCodes];
     }
 
-    const allWorkCodes = await singleEntryAjax.getWorkCodesAsync();
+    const allWorkCodes = await singleEntryAjax.getWorkCodesAsync(useAllWorkCodes);
 
     return [...allWorkCodes];
   }

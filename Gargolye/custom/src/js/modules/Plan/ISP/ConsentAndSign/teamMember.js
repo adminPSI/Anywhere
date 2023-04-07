@@ -190,8 +190,8 @@ const csTeamMember = (() => {
 
   async function saveTeamMember() {
     if (
-      selectedMemberData.teamMember === 'Guardian' ||
-        selectedMemberData.teamMember === 'Parent/Guardian' && $.session.areInSalesForce === true
+      (selectedMemberData.teamMember === 'Guardian' ||
+        selectedMemberData.teamMember === 'Parent/Guardian') && $.session.areInSalesForce === true
     ) {
       var continueGuardianSave = await continueSaveofGuardianTeamMember();
       if (!continueGuardianSave) return;
@@ -297,7 +297,7 @@ const csTeamMember = (() => {
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian
   async function continueSaveofGuardianTeamMember() {
     // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
-      if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId && $.session.areInSalesForce === true)) {
+      if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId) && $.session.areInSalesForce === true ) {
       alert(
         `This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`,
       );
@@ -305,7 +305,7 @@ const csTeamMember = (() => {
     }
 
     // A -- No State Guardian in Dropdown (stateGuardianDropdown) -- you can't save
-      if (!selectedStateGuardianSalesForceId && $.session.areInSalesForce === true) {
+      if (!selectedStateGuardianSalesForceId && $.session.areInSalesForce === true ) {
       alert(
         `A Guardian is not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
       );
@@ -327,7 +327,7 @@ const csTeamMember = (() => {
       selectedStateGuardianSalesForceId !== '' &&
       selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId &&
       DBteamMemberswithStateSalesForceId &&
-      DBteamMemberswithStateSalesForceId.length === 1
+        DBteamMemberswithStateSalesForceId.length === 1 && $.session.areInSalesForce === true
     ) {
       // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
       if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
