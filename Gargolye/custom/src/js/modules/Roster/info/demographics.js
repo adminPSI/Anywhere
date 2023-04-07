@@ -18,6 +18,32 @@ const demographics = (function () {
   ];
   let gkOnly = ['cellPhone', 'generation'];
 
+  /**
+   * @this {String}
+   * @param {string} string The String that gets changed
+   * @param {number} start Index at which to start changing the string.
+   * @param {string} newSubStr The String that is spliced in.
+   * @return {string} A new string with the spliced substring.
+   */
+  function stringAdd(string, start, newSubStr) {
+    return string.slice(0, start) + newSubStr + string.slice(start);
+  }
+
+  function setCaretPosition(elem, caretPos) {
+    if (elem != null) {
+      if (elem.createTextRange) {
+        var range = elem.createTextRange();
+        range.move('character', caretPos);
+        range.select();
+      } else {
+        if (elem.selectionStart) {
+          elem.focus();
+          elem.setSelectionRange(caretPos, caretPos);
+        } else elem.focus();
+      }
+    }
+  }
+
   function clearCurrentEdit() {
     // check for field in edit mode and switch to view
     const currentEdit = sectionInner.querySelector('.editMode');
@@ -328,18 +354,42 @@ const demographics = (function () {
           }
         }
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
-          const splitNumber = e.target.value.split(' ');
-          const phoneNumber = splitNumber[0];
-          let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+          let validPhone = false;
+          let value = e.target.value
+            .replace(/[^\w\s]/gi, '')
+            .replaceAll(' ', '')
+            .slice(0, 15);
 
-          const validatePhone = phone => {
-            return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
-          };
+          if (value.length > 15) return;
 
-          const isPhoneValid = validatePhone(phoneNumber);
-          const isExtValid = phoneExt.length <= 5 ? true : false;
+          let phoneNumber;
 
-          if (!isPhoneValid || !isExtValid) {
+          if (value.length >= 4 && value.length <= 6) {
+            phoneNumber = stringAdd(value, 3, '-');
+            e.target.value = phoneNumber;
+          }
+          if (value.length >= 7 && value.length <= 10) {
+            phoneNumber = stringAdd(value, 3, '-');
+            phoneNumber = stringAdd(phoneNumber, 7, '-');
+            e.target.value = phoneNumber;
+          }
+          if (value.length > 10) {
+            phoneNumber = stringAdd(value, 3, '-');
+            phoneNumber = stringAdd(phoneNumber, 7, '-');
+            phoneNumber = stringAdd(phoneNumber, 12, ' (');
+            phoneNumber = stringAdd(phoneNumber, phoneNumber.length + 1, ')');
+            e.target.value = phoneNumber;
+
+            setCaretPosition(e.target, phoneNumber.length - 1);
+
+            validPhone = true;
+          }
+
+          // const validatePhone = phone => {
+          //   return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
+          // };
+
+          if (!validPhone) {
             editElement.classList.add('invalid');
           } else {
             editElement.classList.remove('invalid');
@@ -348,13 +398,16 @@ const demographics = (function () {
       });
 
       input.addEventListener('focusout', async e => {
+        // check for invalid calss
+        if (e.target.parentElement.classList.contains('invalid')) return;
+
         let saveValue = e.target.value;
         // show spinner
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
           const splitNumber = e.target.value.split(' ');
-          const phoneNumber = splitNumber[0];
+          const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
           let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
           saveValue = `${phoneNumber}x${phoneExt}`;

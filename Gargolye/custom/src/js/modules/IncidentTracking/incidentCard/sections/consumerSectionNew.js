@@ -3652,10 +3652,14 @@ var consumerReview = (function () {
 
     data.unshift({ value: '%', text: '' });
 
-    if (!$.session.incidentTrackingReviewedBy || isEdit) {
+    if (!$.session.incidentTrackingReviewedBy) {
       dropdown.populate(rbDrop, data, reviewedById);
     } else {
-      dropdown.populate(rbDrop, data, $.session.PeopleId);
+      if (isEdit) {
+        dropdown.populate(rbDrop, data, reviewedById);
+      } else {
+        dropdown.populate(rbDrop, data, $.session.PeopleId);
+      }
 
       rbDrop.classList.add('disabled');
     }
