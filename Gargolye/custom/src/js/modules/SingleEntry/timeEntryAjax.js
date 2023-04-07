@@ -25,28 +25,30 @@ var singleEntryAjax = (function () {
     });
   }
   // gets consumers allowed on card
-  function getSingleEntryConsumersPresent(singleEntryId, callback) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getSingleEntryConsumersPresentJSON/',
-      data: '{"token":"' + $.session.Token + '", "singleEntryId":"' + singleEntryId + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getSingleEntryConsumersPresentJSONResult;
-        callback(res);
-      },
-      error: function (xhr, status, error) {},
-    });
+  async function getSingleEntryConsumersPresent(singleEntryId, callback) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSingleEntryConsumersPresentJSON/',
+          data: '{"token":"' + $.session.Token + '", "singleEntryId":"' + singleEntryId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getSingleEntryConsumersPresentJSON;
+    } catch (error) {
+      console.log(error.responseText);
+    }
   }
+
   function getSubEmployeeListAndCountInfo(supervisorId, callback) {
     $.ajax({
       type: 'POST',
