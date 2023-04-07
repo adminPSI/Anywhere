@@ -24,8 +24,9 @@ var singleEntryAjax = (function () {
       },
     });
   }
-  // gets consumers allowed on card
-  function getSingleEntryConsumersPresent(singleEntryId, callback) {
+
+   // gets consumers allowed on card
+   function getSingleEntryConsumersPresent(singleEntryId, callback) {
     $.ajax({
       type: 'POST',
       url:
@@ -47,6 +48,32 @@ var singleEntryAjax = (function () {
       error: function (xhr, status, error) {},
     });
   }
+
+  // gets consumers allowed on card
+  async function getSingleEntryConsumersPresentAsync(singleEntryId, callback) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSingleEntryConsumersPresentJSON/',
+          data: '{"token":"' + $.session.Token + '", "singleEntryId":"' + singleEntryId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getSingleEntryConsumersPresentJSONResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
   function getSubEmployeeListAndCountInfo(supervisorId, callback) {
     $.ajax({
       type: 'POST',
@@ -839,6 +866,7 @@ var singleEntryAjax = (function () {
   return {
     deleteSingleEntryRecord,
     getSingleEntryConsumersPresent,
+    getSingleEntryConsumersPresentAsync,
     getSubEmployeeListAndCountInfo,
     getSingleEntryPayPeriods,
     getRequiredSingleEntryFields,
