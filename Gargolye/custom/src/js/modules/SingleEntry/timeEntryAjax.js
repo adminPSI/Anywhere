@@ -24,8 +24,33 @@ var singleEntryAjax = (function () {
       },
     });
   }
+
+   // gets consumers allowed on card
+   function getSingleEntryConsumersPresent(singleEntryId, callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getSingleEntryConsumersPresentJSON/',
+      data: '{"token":"' + $.session.Token + '", "singleEntryId":"' + singleEntryId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getSingleEntryConsumersPresentJSONResult;
+        callback(res);
+      },
+      error: function (xhr, status, error) {},
+    });
+  }
+
   // gets consumers allowed on card
-  async function getSingleEntryConsumersPresent(singleEntryId, callback) {
+  async function getSingleEntryConsumersPresentAsync(singleEntryId, callback) {
     try {
       const data = await $.ajax({
         type: 'POST',
@@ -43,7 +68,7 @@ var singleEntryAjax = (function () {
         dataType: 'json',
       });
 
-      return data.getSingleEntryConsumersPresentJSON;
+      return data.getSingleEntryConsumersPresentJSONResult;
     } catch (error) {
       console.log(error.responseText);
     }
@@ -841,6 +866,7 @@ var singleEntryAjax = (function () {
   return {
     deleteSingleEntryRecord,
     getSingleEntryConsumersPresent,
+    getSingleEntryConsumersPresentAsync,
     getSubEmployeeListAndCountInfo,
     getSingleEntryPayPeriods,
     getRequiredSingleEntryFields,
