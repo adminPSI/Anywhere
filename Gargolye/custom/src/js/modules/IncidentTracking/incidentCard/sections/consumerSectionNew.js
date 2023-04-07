@@ -3582,9 +3582,6 @@ var consumerReview = (function () {
         if (tmpReviewedBy) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
         }
-        if ($.session.incidentTrackingReviewedBy) {
-          reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
-        }
 
         if (tmpNote) {
           reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
@@ -3659,9 +3656,10 @@ var consumerReview = (function () {
         dropdown.populate(rbDrop, data, reviewedById);
       } else {
         dropdown.populate(rbDrop, data, $.session.PeopleId);
+        reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
       }
 
-      rbDrop.classList.add('disabled');
+      input.disableInputField(rbDrop);
     }
 
     return rbDrop;

@@ -70,11 +70,13 @@ const demographics = (function () {
   }
   function formatPhoneNumber(number) {
     if (!number) return;
-    const splitNumber = number.split('%');
-    const splitNumber2 = splitNumber[0].split('x');
+    const splitNumber = number
+      .replace(/[^\w\s]/gi, '')
+      .replaceAll(' ', '')
+      .replaceAll('x', '');
 
-    const phoneNumber = UTIL.formatPhoneNumber(splitNumber2[0].trim());
-    const phoneExt = splitNumber2[1];
+    const phoneNumber = UTIL.formatPhoneNumber(splitNumber.substr(0, 10));
+    const phoneExt = splitNumber.substr(10);
 
     const phone = phoneExt ? `${phoneNumber} (${phoneExt})` : `${phoneNumber}`;
 
@@ -360,7 +362,7 @@ const demographics = (function () {
             .replaceAll(' ', '')
             .slice(0, 15);
 
-          if (value.length > 15) return;
+          if (value.length > 14) return;
 
           let phoneNumber;
 
@@ -410,7 +412,7 @@ const demographics = (function () {
           const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
           let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
-          saveValue = `${phoneNumber}x${phoneExt}`;
+          saveValue = `${phoneNumber}${phoneExt}`;
         }
         // save value
         const success = await rosterAjax.updateConsumerDemographics({
