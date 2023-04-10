@@ -7,7 +7,6 @@ const demographics = (function () {
     'organization',
     'organizationAddress',
     'organizationPhone',
-    'name',
     'generation',
     'age',
     'race',
@@ -108,8 +107,10 @@ const demographics = (function () {
     SSN = stringAdd(SSN, 6, '-');
     return SSN;
   }
-  function formatOrganizationAddress(add1, add2, city, zip) {
-    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''}`;
+  function formatOrganizationAddress(add1, add2, city, state, zip) {
+    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''} ${
+      state ? state : ''
+    }</br>${zip ? zip : ''}`;
   }
   function formatZipCode(zipCode) {
     const zip = zipCode ? zipCode.trim() : zipCode;
@@ -226,7 +227,7 @@ const demographics = (function () {
     const organizationAddress = formatOrganizationAddress(
       data.orgAdd1,
       data.orgAdd2,
-      data.city,
+      data.orgCity,
       data.orgZipCode,
       data.orgState,
     );
@@ -371,10 +372,27 @@ const demographics = (function () {
           }
         }
         if (name === 'ssn') {
+          let validSocial = false;
           let value = e.target.value.replaceAll('-', '');
           if (value.length > 9) return;
 
           if (value.length === 9) {
+            validSocial = true;
+          }
+
+          let social;
+
+          if (value.length >= 4 && value.length <= 5) {
+            social = stringAdd(value, 3, '-');
+            e.target.value = social;
+          }
+          if (value.length >= 6) {
+            social = stringAdd(value, 3, '-');
+            social = stringAdd(social, 6, '-');
+            e.target.value = social;
+          }
+
+          if (validSocial) {
             editElement.classList.remove('invalid');
           } else {
             editElement.classList.add('invalid');
@@ -614,6 +632,9 @@ const demographics = (function () {
   }
 
   function populateDemographicsSection(section, data, consumerID) {
+    // $.session.DemographicsViewSSN = true;
+    // $.session.DemographicsUpdate = true;
+
     consumerId = consumerID;
     demoData = formatDataForDisplay(data);
     isGK = $.session.applicationName === 'Gatekeeper';
