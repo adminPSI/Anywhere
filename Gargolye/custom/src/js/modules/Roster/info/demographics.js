@@ -101,7 +101,9 @@ const demographics = (function () {
     return formatDOB;
   }
   function formatSSN(ssn) {
-    return ssn.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+    let SSN = stringAdd(ssn, 3, '-');
+    SSN = stringAdd(SSN, 6, '-');
+    return SSN;
   }
   function formatOrganizationAddress(add1, add2, city, zip) {
     return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''}`;
