@@ -71,6 +71,10 @@ const demographics = (function () {
         return 'Married';
       case 'S':
         return 'Single';
+      case 'W':
+        return 'Widowed';
+      case 'D':
+        return 'Divorced';
       case 'U':
         return 'Unkown';
     }
