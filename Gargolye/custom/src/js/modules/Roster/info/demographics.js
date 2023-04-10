@@ -100,6 +100,9 @@ const demographics = (function () {
 
     return formatDOB;
   }
+  function formatSSN(ssn) {
+    return ssn.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+  }
   function formatOrganizationAddress(add1, add2, city, zip) {
     return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''}`;
   }
@@ -207,7 +210,7 @@ const demographics = (function () {
 
     // Additional Info
     const dateOfBirth = formatDOB(data.DOB);
-    const socialSecurityNumber = data.SSN;
+    const socialSecurityNumber = formatSSN(data.SSN);
     const medicaidNumber = data.MedicaidNumber;
     const medicareNumber = data.MedicareNumber;
     const residentNumber = data.ResidentNumber;
@@ -362,6 +365,16 @@ const demographics = (function () {
             editElement.classList.remove('invalid');
           }
         }
+        if (name === 'ssn') {
+          let value = e.target.value.replaceAll('-', '');
+          if (value.length > 9) return;
+
+          if (value.length === 9) {
+            editElement.classList.remove('invalid');
+          } else {
+            editElement.classList.add('invalid');
+          }
+        }
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
           let validPhone = false;
           let value = e.target.value
@@ -393,11 +406,9 @@ const demographics = (function () {
 
             validPhone = true;
           }
-
           // const validatePhone = phone => {
           //   return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
           // };
-
           if (!validPhone) {
             editElement.classList.add('invalid');
           } else {
@@ -420,6 +431,9 @@ const demographics = (function () {
           let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
           saveValue = `${phoneNumber}${phoneExt}`;
+        }
+        if (name === 'ssn') {
+          saveValue = e.target.value.replaceAll('-', '');
         }
         // save value
         const success = await rosterAjax.updateConsumerDemographics({
