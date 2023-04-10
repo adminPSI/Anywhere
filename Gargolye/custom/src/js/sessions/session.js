@@ -10,6 +10,7 @@ $.session.DayServiceOverRide = false;
 $.session.DenyStaffClockUpdate = false;
 $.session.DenyClockUpdate = false;
 $.session.DemographicsView = false;
+$.session.DemographicsUpdate = false;
 $.session.DemographicsBasicDataView = false;
 $.session.DemographicsRelationshipsView = false;
 $.session.DemographicsPictureUpdate = false;
@@ -20,6 +21,7 @@ $.session.DemographicsViewDOB = false;
 $.session.DemographicsViewMedicaid = false;
 $.session.DemographicsViewMedicare = false;
 $.session.DemographicsViewResident = false;
+$.session.DemographicsViewSSN = false;
 $.session.GoalsView = false;
 $.session.GoalsUpdate = false;
 $.session.CaseNotesView = false;
@@ -497,8 +499,12 @@ function setSessionVariables() {
     //Demographics
     //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Demographics') {
+      console.log(tmpPerm);
       if (tmpPerm == 'View') {
         $.session.DemographicsView = true;
+      }
+      if (tmpPerm == 'Update') {
+        $.session.DemographicsUpdate = true;
       }
 
       if (tmpPerm == 'View Relationships') {
@@ -535,6 +541,9 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'View Resident Number') {
         $.session.DemographicsViewResident = true;
+      }
+      if (tmpPerm == 'View SSN') {
+        $.session.DemographicsViewSSN = true;
       }
     }
 
@@ -667,30 +676,29 @@ function setSessionVariables() {
       if (tmpPerm == 'Insert' || $.session.isPSI == true) {
         $.session.OODInsert = true;
       }
-      }
+    }
 
-      // Consumer Finance
-      if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
-          if (tmpPerm == 'Update' || $.session.isPSI == true) {
-              $.session.CFUpdate = true;
-          }
-          if (tmpPerm == 'Delete' || $.session.isPSI == true) {
-              $.session.CFDelete = true;
-          }
-          if (tmpPerm == 'View' || $.session.isPSI == true) {
-              $.session.CFView = true;
-          }
-          if (tmpPerm == 'Insert' || $.session.isPSI == true) {
-              $.session.CFInsert = true;
-          }
-          if (tmpPerm == 'Add Payee' || $.session.isPSI == true) {
-              $.session.CFADDPayee = true;
-          }
-          if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
-              $.session.CFEditAccountEntries = true; 
-          }
+    // Consumer Finance
+    if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
+      if (tmpPerm == 'Update' || $.session.isPSI == true) {
+        $.session.CFUpdate = true;
       }
-
+      if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+        $.session.CFDelete = true;
+      }
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $.session.CFView = true;
+      }
+      if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+        $.session.CFInsert = true;
+      }
+      if (tmpPerm == 'Add Payee' || $.session.isPSI == true) {
+        $.session.CFADDPayee = true;
+      }
+      if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
+        $.session.CFEditAccountEntries = true;
+      }
+    }
 
     if (tmpWindow == 'Anywhere User Home') {
       if (tmpPerm == 'Deny Staff TimeClock Change') {
@@ -1635,19 +1643,19 @@ function disableModules() {
     //Leave module on
   } else {
     $('#plansettingsdiv').css('display', 'none');
-    }
+  }
 
-    if ($.session.anywhereResetPasswordPermission == 'Anywhere_Administration') {
-        //Leave module on
-    } else {
-        $('#Adminsettingdiv').css('display', 'none');
-    }
+  if ($.session.anywhereResetPasswordPermission == 'Anywhere_Administration') {
+    //Leave module on
+  } else {
+    $('#Adminsettingdiv').css('display', 'none');
+  }
 
-    if ($.session.anywhereConsumerFinancesPermission == 'Anywhere_Consumer_Finances') {
-        //Leave module on
-    } else {
-        $('#consumerfinancessettingsdiv').css('display', 'none');
-    }
+  if ($.session.anywhereConsumerFinancesPermission == 'Anywhere_Consumer_Finances') {
+    //Leave module on
+  } else {
+    $('#consumerfinancessettingsdiv').css('display', 'none');
+  }
 }
 
 function setUpAdminPermissions() {

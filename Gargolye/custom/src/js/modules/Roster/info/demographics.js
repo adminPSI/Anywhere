@@ -290,6 +290,8 @@ const demographics = (function () {
     wrap.appendChild(heading);
 
     wrap.addEventListener('click', e => {
+      if (!$.session.DemographicsUpdate) return;
+
       if (e.target.classList.contains('inputGroup')) {
         if (e.target.classList.contains('unEditabled')) return;
         clearCurrentEdit();
@@ -320,7 +322,7 @@ const demographics = (function () {
 
     // edit element
     let editElement;
-    if (!unEditabled.includes(name)) {
+    if (!unEditabled.includes(name) || !$.session.DemographicsUpdate) {
       editElement = document.createElement('div');
       editElement.classList.add('edit');
 
@@ -541,7 +543,9 @@ const demographics = (function () {
         if ($.session.DemographicsViewResident) {
           viewElements['residentNumber'].classList.remove('hidden');
         }
-        viewElements['ssn'].classList.remove('hidden');
+        if ($.session.DemographicsViewSSN) {
+          viewElements['ssn'].classList.remove('hidden');
+        }
       } else {
         e.target.innerText = 'Show Details';
 
