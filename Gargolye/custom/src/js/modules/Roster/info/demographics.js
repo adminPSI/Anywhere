@@ -57,7 +57,6 @@ const demographics = (function () {
       currentEdit.classList.remove('editMode');
     }
   }
-
   function formatName(f, m, l) {
     const first = f;
     const middle = m ? m : '';
