@@ -128,7 +128,7 @@ namespace Anywhere.service.Data.ConsumerDemographics
                 }
                 else
                 {
-                    sb.AppendFormat("update dba.consumers set medicaid_number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                    sb.AppendFormat("update dba.consumers set billing_number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
                 }
             }
             if (field.Equals("medicareNumber"))
