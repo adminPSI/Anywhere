@@ -1770,7 +1770,7 @@ const plan = (function () {
       const esDate = UTIL.formatDateFromDateObj(EffectiveStartDate);
       const planYearReviewDate = planDates.getPlanReviewDate();
 
-      currentPlanId = await planAjax.insertRevisedPlan({
+      let returnString = await planAjax.insertRevisedPlan({
         token: $.session.Token,
         priorConsumerPlanId,
         effectiveStart: esDate,
@@ -1778,6 +1778,10 @@ const plan = (function () {
         reviewDate: UTIL.formatDateFromDateObj(planYearReviewDate),
         useLatestPlanVersion: true,
       });
+
+      returnString = returnString.split(',');
+      currentPlanId = returnString[0];
+      insertedSSA = returnString[1];
     }
 
     if (selectedWorkflows && selectedWorkflows.length > 0) {
@@ -1820,18 +1824,12 @@ const plan = (function () {
     planActiveStatus = true;
     revisionNumber = undefined;
 
-    if (planType === 'a') {
-      const consumer = getSelectedConsumerName(selectedConsumer);
-      showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
-        POPUP.hide(addedMemberPopup);
-        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
-        buildPlanPage();
-      });
-      return;
-    }
-
-    planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
-    buildPlanPage();
+    const consumer = getSelectedConsumerName(selectedConsumer);
+    showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
+      POPUP.hide(addedMemberPopup);
+      planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+      buildPlanPage();
+    });
   }
 
   function buildPreviousPlansTable() {
