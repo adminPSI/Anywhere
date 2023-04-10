@@ -58,6 +58,13 @@ const demographics = (function () {
     }
   }
 
+  function formatName(f, m, l) {
+    const first = f;
+    const middle = m ? m : '';
+    const last = l;
+
+    return `${first} ${middle} ${last}`;
+  }
   function formatMaritalStatus(status) {
     switch (status) {
       case 'M':
@@ -230,7 +237,7 @@ const demographics = (function () {
     const organizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
 
     // Demographic Info
-    const name = `${data.firstname} ${data.lastname}`;
+    const name = formatName(data.firstname, data.middlename, data.lastname);
     const generation = data.generation;
     const age = getAgeFromDOB(data.DOB);
     const race = data.race;
