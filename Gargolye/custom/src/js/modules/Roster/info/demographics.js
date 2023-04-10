@@ -108,8 +108,8 @@ const demographics = (function () {
     SSN = stringAdd(SSN, 6, '-');
     return SSN;
   }
-  function formatOrganizationAddress(add1, add2, city, zip) {
-    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''}`;
+  function formatOrganizationAddress(add1, add2, city, state, zip) {
+      return `${add1 ? add1 : ''} ${add2 ? add2 : ''}</br>${city ? city : ''}, ${state ? state : ''} ${zip ? zip : ''}`;
   }
   function formatZipCode(zipCode) {
     const zip = zipCode ? zipCode.trim() : zipCode;
@@ -226,9 +226,9 @@ const demographics = (function () {
     const organizationAddress = formatOrganizationAddress(
       data.orgAdd1,
       data.orgAdd2,
-      data.city,
-      data.orgZipCode,
+      data.orgCity,
       data.orgState,
+      data.orgZipCode,
     );
     const organizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
 
