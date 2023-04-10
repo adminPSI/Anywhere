@@ -290,6 +290,7 @@ namespace Anywhere.service.Data
                         // string eventId = "30";
                         // executeWorkflowActions(token, eventId, consumerPlanId);
 
+                        inputString = consumerPlanId.TrimEnd(',');
                         return inputString;
                     }
                     catch (Exception ex)

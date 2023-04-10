@@ -703,13 +703,17 @@ var timeEntry = (function () {
     );
 
       //After all Single Entries have been saved, go get the Consumers Present and update the AA_Single_Entry Table
-      let saveData = timeEntryCard.getSaveUpdateData();
+      // let saveData = timeEntryCard.getSaveUpdateData();
       for (const item of concatsavedLocationsSingleEntryPairs) { 
-      const consumersPresentList = await singleEntryAjax.getSingleEntryConsumersPresent(item.singleEntryId, consumers => {});
-        saveData.singleEntryId = item.singleEntryId;
-        saveData.locationId = item.locationId;
-        saveData.numberOfConsumersPresent == consumersPresentList.length;
+        await singleEntryAjax.getSingleEntryConsumersPresentAsync(item.singleEntryId, function (res) {
+          saveData.singleEntryId = item.singleEntryId;
+          saveData.locationId = item.locationId;
+          saveData.numberOfConsumersPresent = res.length;
+          
+        },);
         await singleEntryAjax.updateSingleEntry(saveData, function(results) {}, );
+   
+
      }
     // return list of newly created singleEntryIds (from all the AA_Single_Entry saves/inserts from ALL the SAVES above)
     const singleEntryIdArray = concatsavedLocationsSingleEntryPairs.map(r => r.singleEntryId);
