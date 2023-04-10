@@ -58,12 +58,23 @@ const demographics = (function () {
     }
   }
 
+  function formatName(f, m, l) {
+    const first = f;
+    const middle = m ? m : '';
+    const last = l;
+
+    return `${first} ${middle} ${last}`;
+  }
   function formatMaritalStatus(status) {
     switch (status) {
       case 'M':
         return 'Married';
       case 'S':
         return 'Single';
+      case 'W':
+        return 'Widowed';
+      case 'D':
+        return 'Divorced';
       case 'U':
         return 'Unkown';
     }
@@ -99,6 +110,11 @@ const demographics = (function () {
     }
 
     return formatDOB;
+  }
+  function formatSSN(ssn) {
+    let SSN = stringAdd(ssn, 3, '-');
+    SSN = stringAdd(SSN, 6, '-');
+    return SSN;
   }
   function formatOrganizationAddress(add1, add2, city, zip) {
     return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''}`;
@@ -207,7 +223,7 @@ const demographics = (function () {
 
     // Additional Info
     const dateOfBirth = formatDOB(data.DOB);
-    const socialSecurityNumber = data.SSN;
+    const socialSecurityNumber = formatSSN(data.SSN);
     const medicaidNumber = data.MedicaidNumber;
     const medicareNumber = data.MedicareNumber;
     const residentNumber = data.ResidentNumber;
@@ -225,7 +241,7 @@ const demographics = (function () {
     const organizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
 
     // Demographic Info
-    const name = `${data.firstname} ${data.lastname}`;
+    const name = formatName(data.firstname, data.middlename, data.lastname);
     const generation = data.generation;
     const age = getAgeFromDOB(data.DOB);
     const race = data.race;
@@ -362,6 +378,16 @@ const demographics = (function () {
             editElement.classList.remove('invalid');
           }
         }
+        if (name === 'ssn') {
+          let value = e.target.value.replaceAll('-', '');
+          if (value.length > 9) return;
+
+          if (value.length === 9) {
+            editElement.classList.remove('invalid');
+          } else {
+            editElement.classList.add('invalid');
+          }
+        }
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
           let validPhone = false;
           let value = e.target.value
@@ -393,11 +419,9 @@ const demographics = (function () {
 
             validPhone = true;
           }
-
           // const validatePhone = phone => {
           //   return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
           // };
-
           if (!validPhone) {
             editElement.classList.add('invalid');
           } else {
@@ -420,6 +444,9 @@ const demographics = (function () {
           let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
           saveValue = `${phoneNumber}${phoneExt}`;
+        }
+        if (name === 'ssn') {
+          saveValue = e.target.value.replaceAll('-', '');
         }
         // save value
         const success = await rosterAjax.updateConsumerDemographics({
