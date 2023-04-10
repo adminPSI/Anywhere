@@ -32,6 +32,17 @@ namespace Anywhere.service.Data.ConsumerDemographics
                     sb.AppendFormat("update dba.consumers set address2 = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
                 }
             }
+            if (field.Equals("ssn"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set ssn = {0} where people.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set ssn = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
             if (field.Equals("city"))
             {
                 if (applicationName.ToUpper() == "GATEKEEPER")
@@ -128,7 +139,7 @@ namespace Anywhere.service.Data.ConsumerDemographics
                 }
                 else
                 {
-                    sb.AppendFormat("update dba.consumers set medicaid_number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                    sb.AppendFormat("update dba.consumers set billing_number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
                 }
             }
             if (field.Equals("medicareNumber"))
