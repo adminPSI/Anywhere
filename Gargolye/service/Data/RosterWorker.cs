@@ -110,6 +110,8 @@ namespace Anywhere.service.Data
             public string orgAdd2 { get; set; }
             public string city { get; set; }
             public string orgZipCode { get; set; }
+            public string orgCity { get; set; }
+            public string orgState { get; set; }
             public string orgPrimaryPhone { get; set; }
             public string pathToEmployment { get; set; }
             public string race { get; set; }
