@@ -18,13 +18,6 @@ const demographics = (function () {
   ];
   let gkOnly = ['cellPhone', 'generation'];
 
-  /**
-   * @this {String}
-   * @param {string} string The String that gets changed
-   * @param {number} start Index at which to start changing the string.
-   * @param {string} newSubStr The String that is spliced in.
-   * @return {string} A new string with the spliced substring.
-   */
   function stringAdd(string, start, newSubStr) {
     return string.slice(0, start) + newSubStr + string.slice(start);
   }
