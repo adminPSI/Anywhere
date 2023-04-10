@@ -1968,7 +1968,9 @@ const plan = (function () {
     if (ssa) {
       addedMemberPopup.innerHTML += `<p>${consumer} and ${ssa} have been added as a Team Member to this plan.</p>`;
     } else {
-      addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>`;
+      addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>
+      <p>No SSA/QIDP assigned to this consumer in Salesforce. Please assign SSA/QIDP</p>
+      `;
     }
 
     const okButton = button.build({

@@ -3582,6 +3582,13 @@ var consumerReview = (function () {
         if (tmpReviewedBy) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
         }
+        const currentReviewedBy = reviewData[selectedConsumerId][selectedReviewId].reviewedBy;
+        if (
+          $.session.incidentTrackingReviewedBy &&
+          (!currentReviewedBy || currentReviewedBy === '')
+        ) {
+          reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
+        }
 
         if (tmpNote) {
           reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
@@ -3656,7 +3663,6 @@ var consumerReview = (function () {
         dropdown.populate(rbDrop, data, reviewedById);
       } else {
         dropdown.populate(rbDrop, data, $.session.PeopleId);
-        reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
       }
 
       input.disableInputField(rbDrop);

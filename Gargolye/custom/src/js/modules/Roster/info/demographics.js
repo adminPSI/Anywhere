@@ -101,9 +101,7 @@ const demographics = (function () {
     return formatDOB;
   }
   function formatOrganizationAddress(add1, add2, city, zip) {
-    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''} ${
-      zip ? zip : ''
-    }`;
+    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''}`;
   }
   function formatZipCode(zipCode) {
     const zip = zipCode ? zipCode.trim() : zipCode;
@@ -160,6 +158,10 @@ const demographics = (function () {
     return age;
   }
   function formatLabelText(text) {
+    if (text.toLowerCase() === 'ssn') {
+      return text.toUpperCase();
+    }
+
     const splitText = text
       .match(/([A-Z]?[^A-Z]*)/g)
       .slice(0, -1)
@@ -327,6 +329,9 @@ const demographics = (function () {
       } else {
         if (name.includes('Phone')) {
           value = value.replace(' ', '');
+        }
+        if (name === 'dateOfBirth') {
+          value = UTIL.formatDateToIso(value);
         }
       }
 
