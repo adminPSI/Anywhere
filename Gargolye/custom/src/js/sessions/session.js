@@ -1632,12 +1632,12 @@ function disableModules() {
   } else {
     $('#OODsettingsdiv').css('display', 'none');
   }
-  if (($.session.passwordResetPermission = 'Anywhere')) {
-    //
-    //Leave module on
-  } else {
-    $('#Adminsettingdiv').css('display', 'none');
-  }
+  //if (($.session.passwordResetPermission = 'Anywhere')) {
+  //  //
+  //  //Leave module on
+  //} else {
+  //  $('#Adminsettingdiv').css('display', 'none');
+  //}
   if ($.session.UserId === 'ash' || $.session.anywherePlanPermission == 'Anywhere_Plan') {
     //Leave module on
   } else {
