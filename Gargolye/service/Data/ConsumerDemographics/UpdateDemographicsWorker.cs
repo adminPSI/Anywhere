@@ -164,7 +164,39 @@ namespace Anywhere.service.Data.ConsumerDemographics
                     sb.AppendFormat("update dba.consumers set resident_Number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
                 }
             }
-
+            if (field.Equals("firstName"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set first_name = {0} where consumer_info.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set first_name = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
+            if (field.Equals("lastName"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set last_name = {0} where consumer_info.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set last_name = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
+            if (field.Equals("middleName"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set middle_name = {0} where consumer_info.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set middle_name = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
             long ret = di.UpdateRecord(sb.ToString());
             if (ret.ToString() == "-999")
             {
