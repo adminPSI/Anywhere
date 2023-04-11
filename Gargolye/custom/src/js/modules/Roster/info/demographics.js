@@ -8,6 +8,7 @@ const demographics = (function () {
     'organizationAddress',
     'organizationPhone',
     'generation',
+    'name',
     'age',
     'race',
     'maritalStatus',
@@ -112,10 +113,10 @@ const demographics = (function () {
   function formatOrganizationAddress(add1, add2, city, state, zip) {
     return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''} ${
       state ? state : ''
-    }</br>${zip ? zip : ''}`;
+    }</br>${zip ? formatZipCode(zip) : ''}`;
   }
   function formatZipCode(zipCode) {
-    const zip = zipCode ? zipCode.trim() : zipCode;
+    const zip = zipCode.replace(/[^\w\s]/gi, '').replaceAll(' ', '');
     if (zip.length <= 5) {
       return zip;
     } else {
@@ -207,7 +208,7 @@ const demographics = (function () {
     const addressTwo = data.addresstwo;
     const city = data.mailcity;
     const state = data.mailstate;
-    const zip = formatZipCode(data.mailzipcode);
+    const zip = data.mailzipcode ? formatZipCode(data.mailzipcode) : '';
 
     // Contact Info
     const primaryPhone = formatPhoneNumber(data.primaryphone);
@@ -230,7 +231,6 @@ const demographics = (function () {
       data.orgAdd1,
       data.orgAdd2,
       data.orgCity,
-      data.orgZipCode,
       data.orgState,
       data.orgZipCode,
     );
@@ -238,6 +238,10 @@ const demographics = (function () {
 
     // Demographic Info
     const name = formatName(data.firstname, data.middlename, data.lastname);
+    // const firstName = data.firstname;
+    // const middleName = data.middlename;
+    // const lastName = data.lastname;
+
     const generation = data.generation;
     const age = getAgeFromDOB(data.DOB);
     const race = data.race;
@@ -376,8 +380,7 @@ const demographics = (function () {
         }
         if (name === 'ssn') {
           let validSocial = false;
-          let value = e.target.value.replaceAll('-', '');
-          if (value.length > 9) return;
+          let value = e.target.value.replaceAll('-', '').slice(0, 9);
 
           if (value.length === 9) {
             validSocial = true;
@@ -407,8 +410,6 @@ const demographics = (function () {
             .replace(/[^\w\s]/gi, '')
             .replaceAll(' ', '')
             .slice(0, 15);
-
-          if (value.length > 14) return;
 
           let phoneNumber;
 
@@ -635,8 +636,8 @@ const demographics = (function () {
   }
 
   function populateDemographicsSection(section, data, consumerID) {
-    // $.session.DemographicsViewSSN = true;
-    // $.session.DemographicsUpdate = true;
+    $.session.DemographicsViewSSN = true;
+    $.session.DemographicsUpdate = true;
 
     consumerId = consumerID;
     demoData = formatDataForDisplay(data);
