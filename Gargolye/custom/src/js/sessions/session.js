@@ -282,7 +282,7 @@ $.session.CFInsert = false;
 $.session.CFUpdate = false;
 $.session.CFView = false;
 $.session.CFADDPayee = false;
-$.session.CFEditAccountEntries = false;
+$.session.CFEditAccountEntries = false;//
 
 $.session.consumerId = '';
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
