@@ -5,7 +5,9 @@ using System.Configuration;
 using System.Data;
 using System.Data.Odbc;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.eSignature___OneSpan.OneSpanWorker;
 
 namespace Anywhere.service.Data.eSignature_OneSpan
 {
@@ -13,6 +15,24 @@ namespace Anywhere.service.Data.eSignature_OneSpan
     {
         private static Loger logger = new Loger();
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+
+        public string getSenderInfo(string token)
+        {
+            logger.debug("getSenderInfo ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_ISP_OneSpan_getSenderInfo(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1OSG", ex.Message + "ANYW_ISP_OneSpan_getSenderInfo(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1OSG: error ANYW_ISP_OneSpan_getSenderInfo";
+            }
+        }
 
         public string OneSpanGetSignatures(string token, long assessmentId)
         {

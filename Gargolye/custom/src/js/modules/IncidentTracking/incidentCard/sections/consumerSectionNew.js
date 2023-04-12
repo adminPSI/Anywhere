@@ -204,7 +204,7 @@ var itConsumerSection = (function () {
         consumerCard.dataset.consumerId,
       ).locationId;
 
-      const involvementSec = document.querySelector("[data-sectionid='4']");
+      const involvementSec = document.querySelector("[data-sectionid='5']");
 
       if (locationId === '' || consumerInvolvement.checkOneHasPPI() === false) {
         involvementSec.classList.add('sectionError');
@@ -2567,7 +2567,7 @@ var consumerInvolvement = (function () {
         tmpLocationId = undefined;
 
         const locationId = involvementsData[selectedConsumerId].locationId;
-        const involvementSec = document.querySelector("[data-sectionid='4']");
+        const involvementSec = document.querySelector("[data-sectionid='5']");
         if (locationId === '' || consumerInvolvement.checkOneHasPPI() === false) {
           involvementSec.classList.add('sectionError');
         } else {
@@ -3575,11 +3575,24 @@ var consumerReview = (function () {
           reviewData[selectedConsumerId][selectedReviewId].updated = true;
         }
 
-        if (tmpReviewDate)
+        if (tmpReviewDate) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedDate = tmpReviewDate;
-        if (tmpReviewedBy)
+        }
+
+        if (tmpReviewedBy) {
           reviewData[selectedConsumerId][selectedReviewId].reviewedBy = tmpReviewedBy;
-        if (tmpNote) reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
+        }
+        const currentReviewedBy = reviewData[selectedConsumerId][selectedReviewId].reviewedBy;
+        if (
+          $.session.incidentTrackingReviewedBy &&
+          (!currentReviewedBy || currentReviewedBy === '')
+        ) {
+          reviewData[selectedConsumerId][selectedReviewId].reviewedBy = $.session.PeopleId;
+        }
+
+        if (tmpNote) {
+          reviewData[selectedConsumerId][selectedReviewId].notes = tmpNote;
+        }
 
         selectedReviewId = undefined;
 
@@ -3625,7 +3638,7 @@ var consumerReview = (function () {
     var opts = {
       label: 'Reviewed By',
       style: 'secondary',
-      classNames: !$.session.incidentTrackingReviewedBy ? 'reviewedBy' : ['reviewedBy', 'disabled'],
+      classNames: 'reviewedBy',
     };
 
     if (isEdit && formReadOnly) {
@@ -3646,7 +3659,13 @@ var consumerReview = (function () {
     if (!$.session.incidentTrackingReviewedBy) {
       dropdown.populate(rbDrop, data, reviewedById);
     } else {
-      dropdown.populate(rbDrop, data, $.session.PeopleId);
+      if (isEdit) {
+        dropdown.populate(rbDrop, data, reviewedById);
+      } else {
+        dropdown.populate(rbDrop, data, $.session.PeopleId);
+      }
+
+      input.disableInputField(rbDrop);
     }
 
     return rbDrop;

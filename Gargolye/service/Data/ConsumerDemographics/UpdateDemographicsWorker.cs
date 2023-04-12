@@ -32,6 +32,17 @@ namespace Anywhere.service.Data.ConsumerDemographics
                     sb.AppendFormat("update dba.consumers set address2 = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
                 }
             }
+            if (field.Equals("ssn"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set ssn = {0} where people.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set ssn = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
             if (field.Equals("city"))
             {
                 if (applicationName.ToUpper() == "GATEKEEPER")
@@ -128,7 +139,7 @@ namespace Anywhere.service.Data.ConsumerDemographics
                 }
                 else
                 {
-                    sb.AppendFormat("update dba.consumers set medicaid_number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                    sb.AppendFormat("update dba.consumers set billing_number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
                 }
             }
             if (field.Equals("medicareNumber"))
@@ -153,7 +164,39 @@ namespace Anywhere.service.Data.ConsumerDemographics
                     sb.AppendFormat("update dba.consumers set resident_Number = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
                 }
             }
-
+            if (field.Equals("firstName"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set first_name = {0} where consumer_info.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set first_name = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
+            if (field.Equals("lastName"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set last_name = {0} where consumer_info.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set last_name = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
+            if (field.Equals("middleName"))
+            {
+                if (applicationName.ToUpper() == "GATEKEEPER")
+                {
+                    sb.AppendFormat("update dba.people set middle_name = {0} where consumer_info.id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+                else
+                {
+                    sb.AppendFormat("update dba.consumers set middle_name = {0} where consumers.consumer_id = {1}; commit; ", "'" + newValue + "'", consumerId);
+                }
+            }
             long ret = di.UpdateRecord(sb.ToString());
             if (ret.ToString() == "-999")
             {

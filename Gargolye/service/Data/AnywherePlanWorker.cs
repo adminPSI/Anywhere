@@ -206,7 +206,7 @@ namespace Anywhere.service.Data
                         if (targetAssessmentVersionId == null) throw new Exception("Unable to find latest assessment");
 
                         // insert assessment answers and copy data from previous assessment
-                        aW.insertAssessmentAnswers(consumerPlanId, priorConsumerPlanId, targetAssessmentVersionId, userId, effectiveStart, effectiveEnd, "false", transaction, token);
+                        aW.insertAssessmentAnswers(consumerPlanId.TrimEnd(','), priorConsumerPlanId, targetAssessmentVersionId, userId, effectiveStart, effectiveEnd, "false", transaction, token);
 
                         //   execute any Actions associated with 'Plan Inserted' event -- EventId = 29 (Annual)
                         // string eventId = "29";
@@ -281,7 +281,7 @@ namespace Anywhere.service.Data
                         if (targetAssessmentVersionId == null) throw new Exception("Unable to find latest assessment");
 
                         // insert assessment answers and copy data from previous assessment
-                        aW.insertAssessmentAnswers(consumerPlanId, priorConsumerPlanId, targetAssessmentVersionId, userId, newEffectiveStart, newEffectiveEnd, "true", transaction, token);
+                        aW.insertAssessmentAnswers(consumerPlanId.TrimEnd(','), priorConsumerPlanId, targetAssessmentVersionId, userId, newEffectiveStart, newEffectiveEnd, "true", transaction, token);
 
                         // deactivate old plan
                         adg.updateConsumerPlanSetInactive(priorConsumerPlanId, transaction);
@@ -290,6 +290,7 @@ namespace Anywhere.service.Data
                         // string eventId = "30";
                         // executeWorkflowActions(token, eventId, consumerPlanId);
 
+                        //inputString = consumerPlanId.TrimEnd(',');
                         return inputString;
                     }
                     catch (Exception ex)

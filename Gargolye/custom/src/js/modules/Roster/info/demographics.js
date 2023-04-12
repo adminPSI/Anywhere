@@ -7,8 +7,8 @@ const demographics = (function () {
     'organization',
     'organizationAddress',
     'organizationPhone',
-    'name',
     'generation',
+    'name',
     'age',
     'race',
     'maritalStatus',
@@ -17,6 +17,25 @@ const demographics = (function () {
     'educationLevel',
   ];
   let gkOnly = ['cellPhone', 'generation'];
+
+  function stringAdd(string, start, newSubStr) {
+    return string.slice(0, start) + newSubStr + string.slice(start);
+  }
+
+  function setCaretPosition(elem, caretPos) {
+    if (elem != null) {
+      if (elem.createTextRange) {
+        var range = elem.createTextRange();
+        range.move('character', caretPos);
+        range.select();
+      } else {
+        if (elem.selectionStart) {
+          elem.focus();
+          elem.setSelectionRange(caretPos, caretPos);
+        } else elem.focus();
+      }
+    }
+  }
 
   function clearCurrentEdit() {
     // check for field in edit mode and switch to view
@@ -31,24 +50,38 @@ const demographics = (function () {
       currentEdit.classList.remove('editMode');
     }
   }
+  function formatName(f, m, l) {
+    const first = f;
+    const middle = m ? m : '';
+    const last = l;
 
+    return `${first} ${middle} ${last}`;
+  }
   function formatMaritalStatus(status) {
     switch (status) {
       case 'M':
         return 'Married';
       case 'S':
         return 'Single';
+      case 'P':
+        return 'Separated';
+      case 'W':
+        return 'Widowed';
+      case 'D':
+        return 'Divorced';
       case 'U':
         return 'Unkown';
     }
   }
   function formatPhoneNumber(number) {
     if (!number) return;
-    const splitNumber = number.split('%');
-    const splitNumber2 = splitNumber[0].split('x');
+    const splitNumber = number
+      .replace(/[^\w\s]/gi, '')
+      .replaceAll(' ', '')
+      .replaceAll('x', '');
 
-    const phoneNumber = UTIL.formatPhoneNumber(splitNumber2[0].trim());
-    const phoneExt = splitNumber2[1];
+    const phoneNumber = UTIL.formatPhoneNumber(splitNumber.substr(0, 10));
+    const phoneExt = splitNumber.substr(10);
 
     const phone = phoneExt ? `${phoneNumber} (${phoneExt})` : `${phoneNumber}`;
 
@@ -72,13 +105,18 @@ const demographics = (function () {
 
     return formatDOB;
   }
-  function formatOrganizationAddress(add1, add2, city, zip) {
-    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''}</br>${zip ? zip : ''} ${
-      zip ? zip : ''
-    }`;
+  function formatSSN(ssn) {
+    let SSN = stringAdd(ssn, 3, '-');
+    SSN = stringAdd(SSN, 6, '-');
+    return SSN;
+  }
+  function formatOrganizationAddress(add1, add2, city, state, zip) {
+    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''} ${
+      state ? state : ''
+    }</br>${zip ? formatZipCode(zip) : ''}`;
   }
   function formatZipCode(zipCode) {
-    const zip = zipCode ? zipCode.trim() : zipCode;
+    const zip = zipCode.replace(/[^\w\s]/gi, '').replaceAll(' ', '');
     if (zip.length <= 5) {
       return zip;
     } else {
@@ -132,6 +170,10 @@ const demographics = (function () {
     return age;
   }
   function formatLabelText(text) {
+    if (text.toLowerCase() === 'ssn') {
+      return text.toUpperCase();
+    }
+
     const splitText = text
       .match(/([A-Z]?[^A-Z]*)/g)
       .slice(0, -1)
@@ -166,18 +208,18 @@ const demographics = (function () {
     const addressTwo = data.addresstwo;
     const city = data.mailcity;
     const state = data.mailstate;
-    const zip = formatZipCode(data.mailzipcode);
+    const zip = data.mailzipcode ? formatZipCode(data.mailzipcode) : '';
 
     // Contact Info
     const primaryPhone = formatPhoneNumber(data.primaryphone);
     const secondaryPhone = formatPhoneNumber(data.secondaryphone);
     let cellPhone = data.cellphone ? data.cellphone.trim() : undefined;
-    cellPhone = cellPhone !== '%' ? UTIL.formatPhoneNumber(cellPhone) : '';
+    cellPhone = cellPhone !== '%' ? formatPhoneNumber(cellPhone) : '';
     const email = data.email;
 
     // Additional Info
     const dateOfBirth = formatDOB(data.DOB);
-    const socialSecurityNumber = data.SSN;
+    const socialSecurityNumber = formatSSN(data.SSN);
     const medicaidNumber = data.MedicaidNumber;
     const medicareNumber = data.MedicareNumber;
     const residentNumber = data.ResidentNumber;
@@ -188,14 +230,18 @@ const demographics = (function () {
     const organizationAddress = formatOrganizationAddress(
       data.orgAdd1,
       data.orgAdd2,
-      data.city,
-      data.orgZipCode,
+      data.orgCity,
       data.orgState,
+      data.orgZipCode,
     );
     const organizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
 
     // Demographic Info
-    const name = `${data.firstname} ${data.lastname}`;
+    const name = formatName(data.firstname, data.middlename, data.lastname);
+    // const firstName = data.firstname;
+    // const middleName = data.middlename;
+    // const lastName = data.lastname;
+
     const generation = data.generation;
     const age = getAgeFromDOB(data.DOB);
     const race = data.race;
@@ -260,6 +306,8 @@ const demographics = (function () {
     wrap.appendChild(heading);
 
     wrap.addEventListener('click', e => {
+      if (!$.session.DemographicsUpdate) return;
+
       if (e.target.classList.contains('inputGroup')) {
         if (e.target.classList.contains('unEditabled')) return;
         clearCurrentEdit();
@@ -290,7 +338,7 @@ const demographics = (function () {
 
     // edit element
     let editElement;
-    if (!unEditabled.includes(name)) {
+    if (!unEditabled.includes(name) || !$.session.DemographicsUpdate) {
       editElement = document.createElement('div');
       editElement.classList.add('edit');
 
@@ -299,6 +347,9 @@ const demographics = (function () {
       } else {
         if (name.includes('Phone')) {
           value = value.replace(' ', '');
+        }
+        if (name === 'dateOfBirth') {
+          value = UTIL.formatDateToIso(value);
         }
       }
 
@@ -327,19 +378,65 @@ const demographics = (function () {
             editElement.classList.remove('invalid');
           }
         }
+        if (name === 'ssn') {
+          let validSocial = false;
+          let value = e.target.value.replaceAll('-', '').slice(0, 9);
+
+          if (value.length === 9) {
+            validSocial = true;
+          }
+
+          let social;
+
+          if (value.length >= 4 && value.length <= 5) {
+            social = stringAdd(value, 3, '-');
+            e.target.value = social;
+          }
+          if (value.length >= 6) {
+            social = stringAdd(value, 3, '-');
+            social = stringAdd(social, 6, '-');
+            e.target.value = social;
+          }
+
+          if (validSocial) {
+            editElement.classList.remove('invalid');
+          } else {
+            editElement.classList.add('invalid');
+          }
+        }
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
-          const splitNumber = e.target.value.split(' ');
-          const phoneNumber = splitNumber[0];
-          let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+          let validPhone = false;
+          let value = e.target.value
+            .replace(/[^\w\s]/gi, '')
+            .replaceAll(' ', '')
+            .slice(0, 15);
 
-          const validatePhone = phone => {
-            return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
-          };
+          let phoneNumber;
 
-          const isPhoneValid = validatePhone(phoneNumber);
-          const isExtValid = phoneExt.length <= 5 ? true : false;
+          if (value.length >= 4 && value.length <= 6) {
+            phoneNumber = stringAdd(value, 3, '-');
+            e.target.value = phoneNumber;
+          }
+          if (value.length >= 7 && value.length <= 10) {
+            phoneNumber = stringAdd(value, 3, '-');
+            phoneNumber = stringAdd(phoneNumber, 7, '-');
+            e.target.value = phoneNumber;
+          }
+          if (value.length > 10) {
+            phoneNumber = stringAdd(value, 3, '-');
+            phoneNumber = stringAdd(phoneNumber, 7, '-');
+            phoneNumber = stringAdd(phoneNumber, 12, ' (');
+            phoneNumber = stringAdd(phoneNumber, phoneNumber.length + 1, ')');
+            e.target.value = phoneNumber;
 
-          if (!isPhoneValid || !isExtValid) {
+            setCaretPosition(e.target, phoneNumber.length - 1);
+
+            validPhone = true;
+          }
+          // const validatePhone = phone => {
+          //   return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
+          // };
+          if (!validPhone) {
             editElement.classList.add('invalid');
           } else {
             editElement.classList.remove('invalid');
@@ -348,21 +445,27 @@ const demographics = (function () {
       });
 
       input.addEventListener('focusout', async e => {
+        // check for invalid calss
+        if (e.target.parentElement.classList.contains('invalid')) return;
+
         let saveValue = e.target.value;
         // show spinner
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
           const splitNumber = e.target.value.split(' ');
-          const phoneNumber = splitNumber[0];
+          const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
           let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
-          saveValue = `${phoneNumber}x${phoneExt}`;
+          saveValue = `${phoneNumber}${phoneExt}`;
+        }
+        if (name === 'ssn') {
+          saveValue = e.target.value.replaceAll('-', '');
         }
         // save value
         const success = await rosterAjax.updateConsumerDemographics({
           field: name,
-          newValue: e.target.value,
+          newValue: saveValue,
           consumerId,
           applicationName: $.session.applicationName,
         });
@@ -481,7 +584,9 @@ const demographics = (function () {
         if ($.session.DemographicsViewResident) {
           viewElements['residentNumber'].classList.remove('hidden');
         }
-        viewElements['ssn'].classList.remove('hidden');
+        if ($.session.DemographicsViewSSN) {
+          viewElements['ssn'].classList.remove('hidden');
+        }
       } else {
         e.target.innerText = 'Show Details';
 
@@ -531,6 +636,9 @@ const demographics = (function () {
   }
 
   function populateDemographicsSection(section, data, consumerID) {
+    $.session.DemographicsViewSSN = true;
+    $.session.DemographicsUpdate = true;
+
     consumerId = consumerID;
     demoData = formatDataForDisplay(data);
     isGK = $.session.applicationName === 'Gatekeeper';

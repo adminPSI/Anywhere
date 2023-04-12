@@ -881,7 +881,7 @@ var consumerInfo = (function () {
           });
           break;
         }
-        case 'Intellivue': {
+        case 'Intellivue': {//
           targetSection = consumerInfoCard.querySelector('.intellivueSection');
           intellivue.getApplicationListHostedWithUser(function (results) {
             populateIntellivueSection(targetSection, results);

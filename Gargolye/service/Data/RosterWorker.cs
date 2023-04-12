@@ -88,6 +88,7 @@ namespace Anywhere.service.Data
             public string firstname { get; set; }
             public string lastname { get; set; }
             public string nickname { get; set; }
+            public string middlename { get; set; }
             public string primaryphone { get; set; }
             public string secondaryphone { get; set; }
             public string cellphone { get; set; }
@@ -109,6 +110,7 @@ namespace Anywhere.service.Data
             public string orgAdd2 { get; set; }
             public string city { get; set; }
             public string orgZipCode { get; set; }
+            public string orgCity { get; set; }
             public string orgPrimaryPhone { get; set; }
             public string pathToEmployment { get; set; }
             public string race { get; set; }

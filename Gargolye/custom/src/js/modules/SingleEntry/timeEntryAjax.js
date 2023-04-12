@@ -24,8 +24,9 @@ var singleEntryAjax = (function () {
       },
     });
   }
-  // gets consumers allowed on card
-  function getSingleEntryConsumersPresent(singleEntryId, callback) {
+
+   // gets consumers allowed on card
+   function getSingleEntryConsumersPresent(singleEntryId, callback) {
     $.ajax({
       type: 'POST',
       url:
@@ -47,6 +48,34 @@ var singleEntryAjax = (function () {
       error: function (xhr, status, error) {},
     });
   }
+
+  // gets consumers allowed on card
+  async function getSingleEntryConsumersPresentAsync(singleEntryId, callback) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSingleEntryConsumersPresentJSON/',
+          data: '{"token":"' + $.session.Token + '", "singleEntryId":"' + singleEntryId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      var res = data.getSingleEntryConsumersPresentJSONResult;
+        callback(res);
+
+     //  return data.getSingleEntryConsumersPresentJSONResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
   function getSubEmployeeListAndCountInfo(supervisorId, callback) {
     $.ajax({
       type: 'POST',
@@ -149,7 +178,7 @@ var singleEntryAjax = (function () {
   async function getWorkCodesAsync(getAllWorkCodes) {
     const retrieveData = {
       token: $.session.Token,
-      getAllWorkCodes: !getAllWorkCodes ? 'N' : getAllWorkCodes,
+      getAllWorkCodes: !getAllWorkCodes ? 'N' : 'Y',
     };
     try {
       const data = await $.ajax({
@@ -167,6 +196,8 @@ var singleEntryAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
+
+      console.log(data.getWorkCodesJSONResult);
 
       return data.getWorkCodesJSONResult;
     } catch (error) {
@@ -803,9 +834,41 @@ var singleEntryAjax = (function () {
     });
   }
 
+  async function getEvvEligibilityAsync(consumerId, entryDate) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getSingleEntryEvvEligibilityJSON/',
+        data:
+          '{"token":"' +
+          $.session.Token +
+          '", "consumerId":"' +
+          consumerId +
+          '" , "entryDate":"' +
+          entryDate +
+          '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getSingleEntryEvvEligibilityJSONResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
   return {
     deleteSingleEntryRecord,
     getSingleEntryConsumersPresent,
+    getSingleEntryConsumersPresentAsync,
     getSubEmployeeListAndCountInfo,
     getSingleEntryPayPeriods,
     getRequiredSingleEntryFields,
@@ -836,5 +899,6 @@ var singleEntryAjax = (function () {
     getLocationsAndResidences,
     getEvvReasonCodes,
     getEvvEligibility,
+    getEvvEligibilityAsync,
   };
 })();
