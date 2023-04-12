@@ -27,11 +27,10 @@ const NewEntryCF = (() => {
     let inputElement;
 
     async function init() {
-        buildNewEntryForm();       
+        buildNewEntryForm();
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
-
         if (attachment) {
             attachmentArray = attachment;
             attachmentId = attachmentID;
@@ -67,9 +66,13 @@ const NewEntryCF = (() => {
             IsReconciled = getAccountEntriesByIdResult[0].reconciled;
             lastUpdateBy = getAccountEntriesByIdResult[0].lastUpdateBy;
         }
+        else if (registerId == 0 && attachmentID) {
+            regId = 0;
+            BtnName = 'SAVE'; 
+        }
         else {
             regId = 0;
-            BtnName = 'SAVE'
+            BtnName = 'SAVE';
             date = UTIL.getTodaysDate();
             amount = '';
             account = '';
@@ -156,6 +159,7 @@ const NewEntryCF = (() => {
             type: 'textarea',
             label: 'Description',
             style: 'secondary',
+            classNames: 'autosize',
             value: (description) ? description : '',
         });
 
@@ -333,7 +337,7 @@ const NewEntryCF = (() => {
         else {
             DisabledAllInputs();
         }
-        
+
     }
 
     function DisabledAllInputs() {
@@ -372,12 +376,12 @@ const NewEntryCF = (() => {
         IsDisabledBtn = false;
     }
 
-    function disabledUpdateBtn(){
+    function disabledUpdateBtn() {
         //Disable the UPDATE button until the user makes a change to the record. 
-        NEW_SAVE_BTN.classList.add('disabled'); 
+        NEW_SAVE_BTN.classList.add('disabled');
     }
 
-    function checkRequiredFieldsOfNewEntry() { 
+    function checkRequiredFieldsOfNewEntry() {
         var date = newDateInput.querySelector('#newDateInput');
         var amount = newAmountInput.querySelector('#newAmountInput');
         var account = newAccountDropdown.querySelector('#newAccountDropdown');
@@ -394,7 +398,7 @@ const NewEntryCF = (() => {
         if (amount.value === '') {
             newAmountInput.classList.add('error');
         } else {
-            newAmountInput.classList.remove('error'); 
+            newAmountInput.classList.remove('error');
         }
 
         if (account.value === '') {
@@ -474,6 +478,12 @@ const NewEntryCF = (() => {
         newReceiptInput.addEventListener('input', event => {
             receipt = event.target.value;
         });
+        expenseRadio.addEventListener('change', event => {
+            accountType = 'E';
+        });
+        depositRadio.addEventListener('change', event => {
+            accountType = 'D'; 
+        });
     }
 
     async function saveNewAccount() {
@@ -526,7 +536,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
     async function populatePayeeDropdown() {
@@ -541,7 +553,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newPayeeDropdown", data, payee);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
     async function populateCategoryDropdown(categoryID) {
@@ -556,7 +570,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
     async function populateSubCategoryDropdown(categoryID) {
@@ -571,7 +587,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();  
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
 

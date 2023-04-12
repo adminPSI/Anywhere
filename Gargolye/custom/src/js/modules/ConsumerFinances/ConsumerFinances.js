@@ -175,6 +175,12 @@ const ConsumerFinances = (() => {
             classNames: 'newEntryBtn',
             callback: async () => { NewEntryCF.init() },
         });
+        if ($.session.CFInsert) {
+            entryBtn.classList.remove('disabled'); 
+        }
+        else {
+            entryBtn.classList.add('disabled');
+        }
         entryBtn.style.height = '50px';
         entryBtn.style.minWidth = '100%';
 
