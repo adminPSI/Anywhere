@@ -2,7 +2,7 @@ const consumerFinanceAttachment = (() => {
     let attachments;
     let registerID;
     let IsDisabledBtn;
-
+    let attachmentArray = [];
     /** Class for attachments in Plan Module */
     class ConsumerFinanceAttachment {
         /**
@@ -40,6 +40,7 @@ const consumerFinanceAttachment = (() => {
             const attachmentsForQuestion = this.attachmentsForQuestion;
             const attachmentsToDelete = [];
             const attachmentsAdded = [];
+           
             // PERMISSIONS
             let ro;
             const planStatus = plan.getPlanStatus();
@@ -177,9 +178,9 @@ const consumerFinanceAttachment = (() => {
                     console.log('no attachments to add');
                     return;
                 }
-
+ 
                 let attachmentProms = [];
-                let attachmentArray = [];
+  
                 attachmentInputs.forEach(inputElement => {
                     if (inputElement.value === '') {
                         return;
