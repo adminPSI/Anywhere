@@ -95,10 +95,10 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
-        public string getSubCatogories(DistributedTransaction transaction, string categoryID)
+        public string getSubCatogories(DistributedTransaction transaction, string category)
         {
             List<string> list = new List<string>();
-            list.Add(categoryID);
+            list.Add(category);
             try
             {
                 logger.debug("getSubCatogories");
