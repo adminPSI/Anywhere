@@ -128,7 +128,7 @@ var ConsumerFinancesAjax = (function () {
         }
     }
 
-    async function getSubCategoriesAsync(CategoryID) {
+    async function getSubCategoriesAsync(Category) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -143,7 +143,7 @@ var ConsumerFinancesAjax = (function () {
                     '/getSubCatogories/',
                 data: JSON.stringify({
                     token: $.session.Token,
-                    categoryID: CategoryID,
+                    category: Category,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

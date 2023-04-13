@@ -282,13 +282,13 @@ $.session.CFInsert = false;
 $.session.CFUpdate = false;
 $.session.CFView = false;
 $.session.CFADDPayee = false;
-$.session.CFEditAccountEntries = false;
+$.session.CFEditAccountEntries = false;//
 
 $.session.consumerId = '';
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
-$.session.version = '2023.1';
+$.session.version = '2023.2';
 //State Abbreviation
 $.session.stateAbbreviation = '';
 // temp holder for the device GUID when logging in
@@ -1632,12 +1632,12 @@ function disableModules() {
   } else {
     $('#OODsettingsdiv').css('display', 'none');
   }
-  if (($.session.passwordResetPermission = 'Anywhere')) {
-    //
-    //Leave module on
-  } else {
-    $('#Adminsettingdiv').css('display', 'none');
-  }
+  //if (($.session.passwordResetPermission = 'Anywhere')) {
+  //  //
+  //  //Leave module on
+  //} else {
+  //  $('#Adminsettingdiv').css('display', 'none');
+  //}
   if ($.session.UserId === 'ash' || $.session.anywherePlanPermission == 'Anywhere_Plan') {
     //Leave module on
   } else {

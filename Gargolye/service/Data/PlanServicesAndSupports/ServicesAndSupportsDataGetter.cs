@@ -26,7 +26,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(newOrExisting.ToString());
             list.Add(whoSupports);
             list.Add(reasonForReferral);
+            // TODO JOE -- 100348 -- uncomment out the line below and delete the existing 'text =' (line 31) 
+            // string text = "CALL DBA.ANYW_ISP_UpdateProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             string text = "CALL DBA.ANYW_ISP_UpdateProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            
             try
             {
                 return executeDataBaseCallJSON(text);
@@ -50,6 +53,8 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(whoSupports);
             list.Add(reasonForReferral);
             list.Add(rowOrder.ToString());
+            // TODO JOE -- 100348 -- uncomment out the line below and delete the existing 'text =' (line 31) 
+            // string text = "CALL DBA.ANYW_ISP_InsertProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             string text = "CALL DBA.ANYW_ISP_InsertProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

@@ -4230,7 +4230,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getSubCatogories/")]
-        ConsumerFinancesWorker.SubCategory[] getSubCatogories(string token, string categoryID);
+        ConsumerFinancesWorker.SubCategory[] getSubCatogories(string token, string category);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

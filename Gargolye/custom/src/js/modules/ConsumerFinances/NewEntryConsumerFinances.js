@@ -27,11 +27,10 @@ const NewEntryCF = (() => {
     let inputElement;
 
     async function init() {
-        buildNewEntryForm();       
+        buildNewEntryForm();
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
-
         if (attachment) {
             attachmentArray = attachment;
             attachmentId = attachmentID;
@@ -67,9 +66,13 @@ const NewEntryCF = (() => {
             IsReconciled = getAccountEntriesByIdResult[0].reconciled;
             lastUpdateBy = getAccountEntriesByIdResult[0].lastUpdateBy;
         }
+        else if (registerId == 0 && attachmentID) {
+            regId = 0;
+            BtnName = 'SAVE'; 
+        }
         else {
             regId = 0;
-            BtnName = 'SAVE'
+            BtnName = 'SAVE';
             date = UTIL.getTodaysDate();
             amount = '';
             account = '';
@@ -156,6 +159,7 @@ const NewEntryCF = (() => {
             type: 'textarea',
             label: 'Description',
             style: 'secondary',
+            classNames: 'autosize',
             value: (description) ? description : '',
         });
 
@@ -286,7 +290,7 @@ const NewEntryCF = (() => {
         populateAccountDropdown();
         populatePayeeDropdown();
         populateCategoryDropdown(categoryID);
-        populateSubCategoryDropdown(categoryID);
+        populateSubCategoryDropdown(category);   
         checkRequiredFieldsOfNewEntry();
         disabledUpdateBtn();
     }
@@ -333,7 +337,7 @@ const NewEntryCF = (() => {
         else {
             DisabledAllInputs();
         }
-        
+
     }
 
     function DisabledAllInputs() {
@@ -372,12 +376,12 @@ const NewEntryCF = (() => {
         IsDisabledBtn = false;
     }
 
-    function disabledUpdateBtn(){
+    function disabledUpdateBtn() {
         //Disable the UPDATE button until the user makes a change to the record. 
-        NEW_SAVE_BTN.classList.add('disabled'); 
+        NEW_SAVE_BTN.classList.add('disabled');
     }
 
-    function checkRequiredFieldsOfNewEntry() { 
+    function checkRequiredFieldsOfNewEntry() {
         var date = newDateInput.querySelector('#newDateInput');
         var amount = newAmountInput.querySelector('#newAmountInput');
         var account = newAccountDropdown.querySelector('#newAccountDropdown');
@@ -394,7 +398,7 @@ const NewEntryCF = (() => {
         if (amount.value === '') {
             newAmountInput.classList.add('error');
         } else {
-            newAmountInput.classList.remove('error'); 
+            newAmountInput.classList.remove('error');
         }
 
         if (account.value === '') {
@@ -414,11 +418,11 @@ const NewEntryCF = (() => {
         } else {
             newCategoryDropdown.classList.remove('error');
         }
-        if (subCategory.value === '') {
-            newSubCategoryDropdown.classList.add('error');
-        } else {
-            newSubCategoryDropdown.classList.remove('error');
-        }
+        //if (subCategory.value === '') {
+        //    newSubCategoryDropdown.classList.add('error');
+        //} else {
+        //    newSubCategoryDropdown.classList.remove('error');
+        //} 
 
         if (IsReconciled == 'N') {
             setBtnStatusOfNewEntry();
@@ -459,11 +463,12 @@ const NewEntryCF = (() => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             category = event.target.options[event.target.selectedIndex].text;
             checkRequiredFieldsOfNewEntry();
+            populateSubCategoryDropdown(category);
         });
         newSubCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             subCategory = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            //checkRequiredFieldsOfNewEntry();
         });
         newCheckNoInput.addEventListener('input', event => {
             checkNo = event.target.value;
@@ -473,6 +478,12 @@ const NewEntryCF = (() => {
         });
         newReceiptInput.addEventListener('input', event => {
             receipt = event.target.value;
+        });
+        expenseRadio.addEventListener('change', event => {
+            accountType = 'E';
+        });
+        depositRadio.addEventListener('change', event => {
+            accountType = 'D'; 
         });
     }
 
@@ -508,7 +519,7 @@ const NewEntryCF = (() => {
         category = CategoriesSubCategory[0].CategoryDescription;
         subCategory = CategoriesSubCategory[0].SubCategoryDescription;
         populateCategoryDropdown(categoryID);
-        populateSubCategoryDropdown(categoryID);
+        populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
         disabledUpdateBtn();
     }
@@ -526,7 +537,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
     async function populatePayeeDropdown() {
@@ -541,7 +554,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newPayeeDropdown", data, payee);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
     async function populateCategoryDropdown(categoryID) {
@@ -556,13 +571,15 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
-    async function populateSubCategoryDropdown(categoryID) {
+    async function populateSubCategoryDropdown(category) {
         const {
             getSubCatogoriesResult: SubCategory,
-        } = await ConsumerFinancesAjax.getSubCategoriesAsync(categoryID);
+        } = await ConsumerFinancesAjax.getSubCategoriesAsync(category);
         let data = SubCategory.map((subCategory) => ({
             id: subCategory.CategoryID,
             value: subCategory.SubCategoryDescription,
@@ -571,7 +588,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();  
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
 

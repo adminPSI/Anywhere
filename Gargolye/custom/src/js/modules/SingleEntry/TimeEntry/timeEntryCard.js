@@ -795,8 +795,10 @@ var timeEntryCard = (function () {
 
         if (!startValue && !endValue && !totalValue) {
           // blank slate, clear all errors
-          odometerTotalInput.classList.remove('disabled');
-          odometerTotalInput.classList.remove('error');
+         odometerTotalInput.classList.remove('disabled');
+         odometerTotalInput.classList.remove('error');
+         // TODO JOE -- 99417 -- add the line below and comment out the two lines above
+         // odometerTotalInput.classList.add('error');
           odometerStartInput.classList.remove('disabled');
           odometerStartInput.classList.remove('error');
           odometerEndInput.classList.remove('disabled');
@@ -829,6 +831,23 @@ var timeEntryCard = (function () {
         }
       }
     }
+
+    // TODO JOE -- 99417 -- add the following function 
+    // NOTE: that isOdometerRequired covers all THREE odometer inputs and below is just fudged so it will work
+    // NOTE : Do we need to rewrite the code above to handle two Scenarios: 1. just type in total miles  2. type in start and Stop and calculate
+    // NOTE : DO we need an additional isTotalMilesREquired (and then furter define how that would work with isodometerREquired)
+    // function checkTotalMiles() {
+    //   var totalMilesVal = transportationUnits;
+
+    //   if (requiredFields.isOdometerRequired === 'N') {
+    //     if (totalMilesVal === '' || !totalMilesVal) {
+    //       odometerTotalInput.classList.add('error');
+    //     } else {
+    //       odometerTotalInput.classList.remove('error');
+    //     }
+    //   }
+    // }
+
     // reason
     function checkReason() {
       var reasonVal = reason;
@@ -867,6 +886,8 @@ var timeEntryCard = (function () {
       }
     }
 
+    // TODO JOE -- 99417 -- add the following function call below
+    // checkTotalMiles();
     checkOdometer();
     checkReason();
     checkDestination();
