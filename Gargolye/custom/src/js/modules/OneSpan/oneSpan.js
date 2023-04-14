@@ -162,7 +162,7 @@ const oneSpan = (() => {
       }  
   
     return {
-        checkOneSpanData,
+        checkOneSpanData,//
         buildSendDocumentToOneSpanBtn,
         shouldBeDisabled,
         fireDataUpdateEvent
