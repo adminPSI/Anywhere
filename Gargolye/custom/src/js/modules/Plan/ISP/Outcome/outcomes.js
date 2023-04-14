@@ -238,6 +238,10 @@ const planOutcomes = (() => {
   //* OUTCOME, DETAILS & HISTORY
   //*------------------------------------------------------
   async function insertOutcome(saveData, fromAssessment) {
+    if (fromAssessment) {
+      planId = plan.getCurrentPlanId();
+    }
+
     const outcomeId = await planOutcomesAjax.insertPlanOutcome({
       token: $.session.Token,
       assessmentId: planId,
