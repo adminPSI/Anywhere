@@ -73,6 +73,17 @@ const planData = (() => {
 
   // DROPDOWN DATA
   //-----------------------------------------
+  const removeDupRelationships = relationships => {
+    const unique = [];
+    const flag = {};
+    relationships.forEach(el => {
+      if (!flag[el.peopleId]) {
+        flag[el.peopleId] = true;
+        unique.push(el);
+      }
+    });
+    return unique;
+  };
   const removeDups = data => {
     const flag = {};
     const flagN = {};
@@ -340,6 +351,8 @@ const planData = (() => {
         ...data.getServiceAndSupportsDataResult,
         ...defaultDropdowns,
       };
+
+      dropdowns.relationships = removeDupRelationships(dropdowns.relationships);
     } catch (error) {
       console.log(error);
     }

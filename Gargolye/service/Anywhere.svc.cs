@@ -3119,9 +3119,9 @@ namespace Anywhere
             return cf.getCatogories(token, categoryID);
         }
 
-        public SubCategory[] getSubCatogories(string token, string categoryID)
+        public SubCategory[] getSubCatogories(string token, string category)
         {
-            return cf.getSubCatogories(token, categoryID);
+            return cf.getSubCatogories(token, category);
         }
 
         public CategorySubCategory[] getCategoriesSubCategoriesByPayee(string token, string categoryID)

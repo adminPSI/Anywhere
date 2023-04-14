@@ -357,6 +357,8 @@ function getCustomLoginTextAndVersion(callback) {
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
+      // TODO JOE -- 83945 -- uncomment the line below and then use callback(test2) NOT callback(res)
+      // var test2 = response.getCustomTextAndAnywhereVersionResult.replace(/\r/g, '').replace(/\n/g, '<br>');
       var res = JSON.stringify(response);
       callback(res);
     },

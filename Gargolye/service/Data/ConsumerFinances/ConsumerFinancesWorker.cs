@@ -225,7 +225,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public SubCategory[] getSubCatogories(string token, string categoryID)
+        public SubCategory[] getSubCatogories(string token, string category)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -233,7 +233,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    SubCategory[] subCategory = js.Deserialize<SubCategory[]>(Odg.getSubCatogories(transaction, categoryID));
+                    SubCategory[] subCategory = js.Deserialize<SubCategory[]>(Odg.getSubCatogories(transaction, category));
                     return subCategory;
                 }
                 catch (Exception ex)

@@ -1590,6 +1590,7 @@ const servicesSupports = (() => {
         if (isNew) {
           if (fromAssessment) {
             saveUpdateData.rowOrder = 0;
+            planID = plan.getCurrentPlanId();
           } else {
             const rowOrder = table.getRowCount('paidSupportsTable');
             saveUpdateData.rowOrder = rowOrder + 1;
@@ -2217,6 +2218,7 @@ const servicesSupports = (() => {
         doneBtn.classList.add('disabled');
         if (isNew) {
           if (fromAssessment) {
+            planID = plan.getCurrentPlanId();
             saveUpdateData.rowOrder = 0;
           } else {
             const rowOrder = table.getRowCount('additionalSupportsTable');
@@ -2599,6 +2601,7 @@ const servicesSupports = (() => {
         if (isNew) {
           if (fromAssessment) {
             saveUpdateData.rowOrder = 0;
+            planID = plan.getCurrentPlanId();
           } else {
             const rowOrder = table.getRowCount('professionalReferralsTable');
             saveUpdateData.rowOrder = rowOrder + 1;
