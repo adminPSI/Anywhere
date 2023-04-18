@@ -284,6 +284,10 @@ $.session.CFView = false;
 $.session.CFADDPayee = false;
 $.session.CFEditAccountEntries = false;//
 
+// Reset Password
+$.session.ResetPasswordView = false;
+$.session.ResetPasswordUpdate = false;
+
 $.session.consumerId = '';
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
@@ -359,10 +363,10 @@ function eraseCookie(name) {
 }
 
 function setSessionVariables() {
-  var cookieInnards = $.session.permissionString;
+    var cookieInnards = $.session.permissionString;
   //checkForErrors();
 
-  $('result', cookieInnards).each(function () {
+    $('result', cookieInnards).each(function () {
     tmpWindow = $('window_name', this).text();
     tmpPerm = $('permission', this).text();
     tmpSpec = $('special_data', this).text();
@@ -678,7 +682,7 @@ function setSessionVariables() {
     }
 
     // Consumer Finance
-    if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
+      if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
       if (tmpPerm == 'Update' || $.session.isPSI == true) {
         $.session.CFUpdate = true;
       }
@@ -697,7 +701,18 @@ function setSessionVariables() {
       if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
         $.session.CFEditAccountEntries = true;
       }
-    }
+      }
+  
+      //Reset Password
+        if (tmpWindow == 'Anywhere Reset Passwords' ) {    
+          if (tmpPerm == 'View' || $.session.isPSI == true) { 
+              $('#Adminsettingdiv').removeClass('disabledModule');
+              $.session.ResetPasswordView = true; 
+          }     
+          if (tmpPerm == 'Update' || $.session.isPSI == true) {
+              $.session.ResetPasswordUpdate = true;
+          }        
+      }  
 
     if (tmpWindow == 'Anywhere User Home') {
       if (tmpPerm == 'Deny Staff TimeClock Change') {
@@ -1531,7 +1546,11 @@ function checkModulePermissions() {
   }
   if ($.session.OODView == false) {
     $('#OODsettingsdiv').addClass('disabledModule');
-  }
+    }
+
+    if ($.session.ResetPasswordView == false) {
+        $('#Adminsettingdiv').addClass('disabledModule');
+    }
 
   $('#adminsingleentrysettingsdiv').hide();
   if ($.session.ViewAdminSingleEntry === true) {

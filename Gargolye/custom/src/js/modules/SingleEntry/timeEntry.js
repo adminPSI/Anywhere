@@ -1093,7 +1093,7 @@ var timeEntry = (function () {
   }
 
   function checkLocationServicesEnabled() {
-    if ('geolocation' in navigator) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         function (position) {
           // if location services are on, continue with normal functionality

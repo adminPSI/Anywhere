@@ -553,3 +553,10 @@
         }
     }
 }
+
+
+[data-active-module="ConsumerFinances"] {
+    .checkbox-mtd > span::after {
+        left: -24px;  
+    }
+}
