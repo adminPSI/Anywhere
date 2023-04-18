@@ -636,9 +636,6 @@ const demographics = (function () {
   }
 
   function populateDemographicsSection(section, data, consumerID) {
-    $.session.DemographicsViewSSN = true;
-    $.session.DemographicsUpdate = true;
-
     consumerId = consumerID;
     demoData = formatDataForDisplay(data);
     isGK = $.session.applicationName === 'Gatekeeper';
