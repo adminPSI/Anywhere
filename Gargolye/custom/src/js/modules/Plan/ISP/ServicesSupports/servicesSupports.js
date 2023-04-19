@@ -1136,7 +1136,7 @@ const servicesSupports = (() => {
         // store currently selected fundingSource (fundingSourceDropdownSelectedText) for use when populating the vendor dropdown
         // store type of fundingSource (hcbsSelected) for use when populating service and vendor dropdowns
         fundingSourceDropdownSelectedText = selectedOption.innerText;
-        if (selectedOption.innerText.includes('HCBS') || selectedOption.innerText.includes('ICF')) {
+        if (selectedOption.innerText.includes('HCBS') || selectedOption.innerText.includes('ICF')) {//
           hcbsSelected = true;
         } else {
           hcbsSelected = false;
@@ -1144,7 +1144,10 @@ const servicesSupports = (() => {
 
         if (hcbsSelected) {
           providerNameDropdown.classList.remove('disabled');
-          await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+            await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+            if (saveUpdateProvider) {
+                saveUpdateData.providerId = saveUpdateProvider;
+            }
         } else {
           // re-enable provider dropdown if it was disabled
           providerNameDropdown.classList.remove('disabled');
@@ -1152,7 +1155,10 @@ const servicesSupports = (() => {
 
           // non-waver -- get all Active Providers
           servicesDropdownSelectedText = '%';
-          await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+            await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+            if (saveUpdateProvider) {
+                saveUpdateData.providerId = saveUpdateProvider;
+            }
         }
 
         if (saveUpdateData.fundingSource === '5') {
@@ -1210,7 +1216,10 @@ const servicesSupports = (() => {
         ) {
           servicesDropdownSelectedText =
             servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text;
-          await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+            await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+            if (saveUpdateProvider) {
+                saveUpdateData.providerId = saveUpdateProvider;
+            }
         } else {
           servicesDropdownSelectedText = '';
           saveUpdateData.providerId = '';
@@ -1351,7 +1360,10 @@ const servicesSupports = (() => {
         }
 
         if (hcbsSelected) {
-          await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+            await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+            if (saveUpdateProvider) {
+                saveUpdateData.providerId = saveUpdateProvider;
+            }
           // populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
         }
 
