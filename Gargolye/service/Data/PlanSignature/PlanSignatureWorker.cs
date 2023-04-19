@@ -262,6 +262,18 @@ namespace Anywhere.service.Data.PlanSignature
 
         }
 
+        public string getStateCaseManagerforConsumer(long peopleId)
+        {
+
+            ISPDTData ispDT = new ISPDTData();
+
+            long caseManagerId = ispDT.GetIndividualCaseManager(peopleId);
+
+            return caseManagerId.ToString();
+
+        }
+
+
         public class AssignStateConsumer
         {
             public string id { get; set; }
