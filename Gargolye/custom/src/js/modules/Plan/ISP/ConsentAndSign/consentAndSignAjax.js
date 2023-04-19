@@ -178,6 +178,33 @@ const consentAndSignAjax = (() => {
     }
   }
 
+  async function getStateCaseManagerforConsumer(peopleIdData) {
+    //cosumerId as a string in retrieveData
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getStateCaseManagerforConsumer/',
+        data: JSON.stringify(peopleIdData),
+        //data: '{"peopleId":"' + peopleId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getStateCaseManagerforConsumerResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   async function assignStateCaseManagertoConsumers(peopleIdData) {
     //cosumerId as a string in retrieveData
     try {
@@ -544,6 +571,7 @@ const consentAndSignAjax = (() => {
     setSalesForceIdForTeamMemberUpdate,
     validateConsumerForSalesForceId,
     getStateGuardiansforConsumer,
+    getStateCaseManagerforConsumer,
     assignStateCaseManagertoConsumers,
     getAllActiveVendors
   };
