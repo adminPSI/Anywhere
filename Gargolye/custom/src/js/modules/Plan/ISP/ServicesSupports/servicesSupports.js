@@ -493,6 +493,7 @@ const servicesSupports = (() => {
       if (tempData.length === 1) {
         defaultValue = tempData[0].value;
         saveUpdateProvider = defaultValue;
+        saveUpdateData.providerId = saveUpdateProvider;
         dropdownEle.classList.remove('error');
       }
     }
