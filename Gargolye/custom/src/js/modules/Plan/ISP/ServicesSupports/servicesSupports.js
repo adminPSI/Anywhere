@@ -1604,6 +1604,14 @@ const servicesSupports = (() => {
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(paidSupportPopup);
+
+        fundingSourceDropdownSelectedText = undefined;
+        servicesDropdownSelectedText = undefined;
+        servicesOtherDropdownSelectedText = undefined;
+        providerDropdownSelectedText = undefined;
+
+        hcbsSelected = undefined;
+        saveUpdateProvider = '';
       },
     });
     const cancelBtn = button.build({
@@ -1612,6 +1620,14 @@ const servicesSupports = (() => {
       type: 'outlined',
       callback: () => {
         POPUP.hide(paidSupportPopup);
+
+        fundingSourceDropdownSelectedText = undefined;
+        servicesDropdownSelectedText = undefined;
+        servicesOtherDropdownSelectedText = undefined;
+        providerDropdownSelectedText = undefined;
+
+        hcbsSelected = undefined;
+        saveUpdateProvider = '';
       },
     });
     const deleteBtn = button.build({
@@ -1623,6 +1639,14 @@ const servicesSupports = (() => {
         ISP.showDeleteWarning(paidSupportPopup, message, () => {
           deletePaidSupport(saveUpdateData.paidSupportsId);
         });
+
+        fundingSourceDropdownSelectedText = undefined;
+        servicesDropdownSelectedText = undefined;
+        servicesOtherDropdownSelectedText = undefined;
+        providerDropdownSelectedText = undefined;
+
+        hcbsSelected = undefined;
+        saveUpdateProvider = '';
       },
     });
     const btnWrap = document.createElement('div');
