@@ -2438,6 +2438,12 @@ namespace Anywhere
             return psw.getStateGuardiansforConsumer(peopleId);
         }
 
+        public string getStateCaseManagerforConsumer(long peopleId)
+        {
+            return psw.getStateCaseManagerforConsumer(peopleId);
+        }
+
+
         public string assignStateCaseManagertoConsumers(string caseManagerId, PlanSignatureWorker.AssignStateConsumer[] consumers)
         {
             return psw.assignStateCaseManagertoConsumers(caseManagerId, consumers);

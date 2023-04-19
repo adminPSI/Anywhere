@@ -1755,6 +1755,19 @@ const plan = (function () {
       const planYearStartDate = planDates.getPlanYearStartDate();
       const planYearReviewDate = planDates.getPlanReviewDate();
 
+      var selectedConsumer = plan.getSelectedConsumer();
+      var stateCaseManagerId = await consentAndSignAjax.getStateCaseManagerforConsumer({
+        peopleId: selectedConsumer.id,
+      });
+
+      // if (stateCaseManagerId === "0") {
+      //   alert("No state Case Manager was found");
+      //   return;
+      // } else {
+      //   alert(`This state Case Manager was found: ${stateCaseManagerId}`);
+      //   return;
+      // }
+
       let returnString = await planAjax.insertAnnualPlan({
         token: $.session.Token,
         consumerId: selectedConsumer.id,

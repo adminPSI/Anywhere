@@ -3486,6 +3486,14 @@ namespace Anywhere
             UriTemplate = "/getStateGuardiansforConsumer/")]
         PlanSignatureWorker.TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId);
 
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getStateCaseManagerforConsumer/")]
+        string getStateCaseManagerforConsumer(long peopleId);
+
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
