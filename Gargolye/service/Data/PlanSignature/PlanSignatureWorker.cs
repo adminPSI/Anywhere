@@ -241,36 +241,56 @@ namespace Anywhere.service.Data.PlanSignature
 
         public TeamMemberFromState[] getTeamMemberListFromState(long peopleId)
         {
-            ISPDTData ispDT = new ISPDTData();
-            string teamMembers = ispDT.IndividualContactsJSON(peopleId);
-            //string teamMembers = oispW.GetIndividualContactsJSON(peopleId.ToString());
-            TeamMemberFromState[] stateTeamMemberObject = js.Deserialize<TeamMemberFromState[]>(teamMembers);
+            try
+            {
+                ISPDTData ispDT = new ISPDTData();
+                string teamMembers = ispDT.IndividualContactsJSON(peopleId);
+                //string teamMembers = oispW.GetIndividualContactsJSON(peopleId.ToString());
+                TeamMemberFromState[] stateTeamMemberObject = js.Deserialize<TeamMemberFromState[]>(teamMembers);
 
-            return stateTeamMemberObject;
+                return stateTeamMemberObject;
+            }
+            catch
+            {
+
+            }
+            return null;
         }
 
         public TeamMemberFromState[] getStateGuardiansforConsumer(long peopleId)
         {
+            try
+            {
+                ISPDTData ispDT = new ISPDTData();
 
-            ISPDTData ispDT = new ISPDTData();
+                string theGuardians = ispDT.IndividualGuardians(peopleId);
 
-            string theGuardians = ispDT.IndividualGuardians(peopleId);
+                TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
 
-            TeamMemberFromState[] stateGuardianObject = js.Deserialize<TeamMemberFromState[]>(theGuardians);
+                return stateGuardianObject;
+            }
+            catch
+            {
 
-            return stateGuardianObject;
-
+            }
+            return null;
         }
 
         public string getStateCaseManagerforConsumer(long peopleId)
         {
+            try
+            {
+                ISPDTData ispDT = new ISPDTData();
 
-            ISPDTData ispDT = new ISPDTData();
+                long caseManagerId = ispDT.GetIndividualCaseManager(peopleId);
 
-            long caseManagerId = ispDT.GetIndividualCaseManager(peopleId);
+                return caseManagerId.ToString();
+            }
+            catch
+            {
 
-            return caseManagerId.ToString();
-
+            }
+            return "";
         }
 
 
