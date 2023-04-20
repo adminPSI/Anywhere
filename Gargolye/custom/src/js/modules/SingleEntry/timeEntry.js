@@ -165,7 +165,7 @@ var timeEntry = (function () {
       return;
     }
 
-    var saveData = timeEntryCard.getSaveUpdateData();
+    let saveData = timeEntryCard.getSaveUpdateData();
 
     if ($.session.singleEntrycrossMidnight === false || !saveData.endTime) {
       saveEntryData(saveData);
@@ -173,39 +173,39 @@ var timeEntry = (function () {
       // entry crosses midnight, meaning two entries need tp be saved to DB
 
       // first day entry in the database
-      saveData = timeEntryCard.getSaveUpdateData();
-      saveData.checkHours = saveData.crossMidnightCheckHours[0].day1TotalHours;
-      saveData.endTime = '00:00';
+      let saveData1 = timeEntryCard.getSaveUpdateData();
+      saveData1.checkHours = saveData1.crossMidnightCheckHours[0].day1TotalHours;
+      saveData1.endTime = '00:00';
 
-      if (!saveData.defaultStartTimeChanged) {
-        saveData.evvReason = '';
+      if (!saveData1.defaultStartTimeChanged) {
+        saveData1.evvReason = '';
         checkDeviceType() === 'Mobile'
-          ? (saveData.deviceType = 'Mobile')
-          : (saveData.deviceType = 'Other');
+          ? (saveData1.deviceType = 'Mobile')
+          : (saveData1.deviceType = 'Other');
       }
 
-      saveEntryData(saveData);
+      //saveEntryData(saveData1);
 
       // second day entry in the database
-      saveData = timeEntryCard.getSaveUpdateData();
-      saveData.checkHours = saveData.crossMidnightCheckHours[1].day2TotalHours;
-      saveData.startTime = '00:00';
+      let saveData2 = timeEntryCard.getSaveUpdateData();
+      saveData2.checkHours = saveData2.crossMidnightCheckHours[1].day2TotalHours;
+      saveData2.startTime = '00:00';
 
       // transportation only saved with the first day entry
-      saveData.destination = '';
-      saveData.licensePlateNumber = '';
-      saveData.odometerEnd = '';
-      saveData.odometerStart = '';
-      saveData.reason = '';
-      saveData.transportationReimbursable = '';
-      saveData.transportationUnits = 0;
+      saveData2.destination = '';
+      saveData2.licensePlateNumber = '';
+      saveData2.odometerEnd = '';
+      saveData2.odometerStart = '';
+      saveData2.reason = '';
+      saveData2.transportationReimbursable = '';
+      saveData2.transportationUnits = 0;
 
       // * Date Constructor Doc: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
       // * Note on constructing date on date string is highly discouraged due to browser differences and inconsistencies.
       // * This was the issue for the crossing over midnight issue in older versions of safari.
-      const year = parseInt(saveData.dateOfService.split('-')[0]);
-      const month = parseInt(saveData.dateOfService.split('-')[1]);
-      const day = parseInt(saveData.dateOfService.split('-')[2]);
+      const year = parseInt(saveData2.dateOfService.split('-')[0]);
+      const month = parseInt(saveData2.dateOfService.split('-')[1]);
+      const day = parseInt(saveData2.dateOfService.split('-')[2]);
       var nextDay = new Date(year, month - 1, day);
       nextDay.setDate(nextDay.getDate() + 1);
 
@@ -213,20 +213,20 @@ var timeEntry = (function () {
       var mm = ('0' + (nextDay.getMonth() + 1)).slice(-2);
       var yyyy = nextDay.getFullYear();
 
-      saveData.dateOfService = yyyy + '-' + mm + '-' + dd;
+      saveData2.dateOfService = yyyy + '-' + mm + '-' + dd;
 
-      if (!saveData.defaultEndTimeChanged) {
-        saveData.evvReason = '';
+      if (!saveData2.defaultEndTimeChanged) {
+        saveData2.evvReason = '';
         checkDeviceType() === 'Mobile'
-          ? (saveData.deviceType = 'Mobile')
-          : (saveData.deviceType = 'Other');
+          ? (saveData2.deviceType = 'Mobile')
+          : (saveData2.deviceType = 'Other');
       }
 
-      saveEntryData(saveData);
+      saveEntryData(saveData1, saveData2);
     }
   }
 
-  function saveEntryData(saveData) {
+  function saveEntryData(saveData, saveData2) {
     var test = saveData;
     if (saveData.locationId !== '' || saveData.consumerId === '') {
       if (saveAndSubmit) {
@@ -234,21 +234,42 @@ var timeEntry = (function () {
 
         showDeleteEntryWarningPopup(warningMessage, () => {
           singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
-            var entryId = results[1].replace('</', '');
-            var updateObj = {
+            const entryId = results[1].replace('</', '');
+            const updateObj = {
               token: $.session.Token,
               singleEntryIdString: entryId,
               newStatus: 'S',
             };
 
             singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
-              successfulSave.show('SAVED & SUBMITTED');
-              setTimeout(function () {
-                successfulSave.hide();
-                timeEntryCard.clearAllGlobalVariables();
-                roster2.clearActiveConsumers();
-                newTimeEntry.init(true);
-              }, 1000);
+              if (!saveData2) {
+                successfulSave.show('SAVED & SUBMITTED');
+                setTimeout(function () {
+                  successfulSave.hide();
+                  timeEntryCard.clearAllGlobalVariables();
+                  roster2.clearActiveConsumers();
+                  newTimeEntry.init(true);
+                }, 1000);
+              } else {
+                singleEntryAjax.insertSingleEntryNew(saveData2, function (results2) {
+                  const entryId2 = results2[1].replace('</', '');
+                  const updateObj2 = {
+                    token: $.session.Token,
+                    singleEntryIdString: entryId2,
+                    newStatus: 'S',
+                  };
+
+                  singleEntryAjax.updateSingleEntryStatus(updateObj2, function () {
+                    successfulSave.show('SAVED & SUBMITTED');
+                    setTimeout(function () {
+                      successfulSave.hide();
+                      timeEntryCard.clearAllGlobalVariables();
+                      roster2.clearActiveConsumers();
+                      newTimeEntry.init(true);
+                    }, 1000);
+                  });
+                });
+              }
             });
           });
         });
@@ -264,7 +285,6 @@ var timeEntry = (function () {
         });
       }
     } else {
-      // if (saveData.locationId !== '' || saveData.consumerId === '')
       if (saveAndSubmit) {
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
@@ -276,35 +296,56 @@ var timeEntry = (function () {
             if (overlapconsumerlocationdata.length === 0) {
               singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
                 const idArray = results.map(r => r.singleEntryId);
-                var updateObj = {
+                const updateObj = {
                   token: $.session.Token,
                   singleEntryIdString: idArray.join(','),
                   newStatus: 'S',
                 };
 
                 singleEntryAjax.updateSingleEntryStatus(updateObj, function () {
-                  successfulSave.show('SAVED & SUBMITTED');
-                  setTimeout(function () {
-                    successfulSave.hide();
-                    timeEntryCard.clearAllGlobalVariables();
-                    roster2.clearActiveConsumers();
-                    newTimeEntry.init();
-                  }, 1000);
-                }); // end  -- singleEntryAjax.updateSingleEntryStatus
-              }); // end -- singleEntryAjax.preInsertSingleEntry
+                  if (!saveData2) {
+                    successfulSave.show('SAVED & SUBMITTED');
+                    setTimeout(function () {
+                      successfulSave.hide();
+                      timeEntryCard.clearAllGlobalVariables();
+                      roster2.clearActiveConsumers();
+                      newTimeEntry.init();
+                    }, 1000);
+                  } else {
+                    singleEntryAjax.preInsertSingleEntry(saveData2, function (results2) {
+                      const idArray = results2.map(r => r.singleEntryId);
+                      const updateObj2 = {
+                        token: $.session.Token,
+                        singleEntryIdString: idArray.join(','),
+                        newStatus: 'S',
+                      };
+
+                      singleEntryAjax.updateSingleEntryStatus(updateObj2, function () {
+                        successfulSave.show('SAVED & SUBMITTED');
+                        setTimeout(function () {
+                          successfulSave.hide();
+                          timeEntryCard.clearAllGlobalVariables();
+                          roster2.clearActiveConsumers();
+                          newTimeEntry.init();
+                        }, 1000);
+                      });
+                    });
+                  }
+                });
+              });
             } else {
               // location overlaps exist for a selected consumer
               displayOverlapLocationsPopup(results);
             }
-          }); // end -- getSelectedConsumerLocations
-        }); // end -- showDeleteEntryWarningPopup
+          });
+        });
       } else {
         // Just the save BTN -- if (saveData.locationId !== '' || saveData.consumerId === '')
 
         // 1. Grab the consumer/location data
         singleEntryAjax.getSelectedConsumerLocations(saveData, function (results) {
           overlapconsumerlocationdata = results;
-          // });
+
           // no location overlaps for any selected consumer
           if (overlapconsumerlocationdata.length === 0) {
             singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
@@ -702,22 +743,18 @@ var timeEntry = (function () {
       overlapSavedLocationsSingleEntryPairs,
     );
 
-      //After all Single Entries have been saved, go get the Consumers Present and update the AA_Single_Entry Table
-      // let saveData = timeEntryCard.getSaveUpdateData();
-      for (const item of concatsavedLocationsSingleEntryPairs) { 
-        await singleEntryAjax.getSingleEntryConsumersPresentAsync(item.singleEntryId, function (res) {
-          saveData.singleEntryId = item.singleEntryId;
-          saveData.locationId = item.locationId;
-          saveData.numberOfConsumersPresent = res.length;
-          
-        },);
-        await singleEntryAjax.updateSingleEntry(saveData, function(results) {}, );
-   
-
-     }
+    //After all Single Entries have been saved, go get the Consumers Present and update the AA_Single_Entry Table
+    // let saveData = timeEntryCard.getSaveUpdateData();
+    for (const item of concatsavedLocationsSingleEntryPairs) {
+      await singleEntryAjax.getSingleEntryConsumersPresentAsync(item.singleEntryId, function (res) {
+        saveData.singleEntryId = item.singleEntryId;
+        saveData.locationId = item.locationId;
+        saveData.numberOfConsumersPresent = res.length;
+      });
+      await singleEntryAjax.updateSingleEntry(saveData, function (results) {});
+    }
     // return list of newly created singleEntryIds (from all the AA_Single_Entry saves/inserts from ALL the SAVES above)
     const singleEntryIdArray = concatsavedLocationsSingleEntryPairs.map(r => r.singleEntryId);
-
 
     return singleEntryIdArray;
   } // end of Parent/containing function -- function populateOverlapLocationsDropdown(locDrop, consumer)
