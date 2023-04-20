@@ -1756,35 +1756,7 @@ const plan = (function () {
       peopleId: selectedConsumer.id,
     });
 
-    if (salesForceCaseManagerId === "0") {
-      const wfvPopup = document.querySelector('.workflowListPopup');
-      if (wfvPopup) {
-        // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
-        POPUP.hide(wfvPopup);
-      }
-      const consumer = getSelectedConsumerName(selectedConsumer);
-      showAddedToTeamMemberNoCasemanagerFoundPopup(consumer, () => {
-        POPUP.hide(addedMemberNoCaseManagerPopup);
-        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
-        buildPlanPage();
-      });   
-    } else if (salesForceCaseManagerId === "-1") {
-      // const wfvPopup = document.querySelector('.workflowListPopup');
-      // if (wfvPopup) {
-      //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
-      //   POPUP.hide(wfvPopup);
-      // }
-      // const consumer = getSelectedConsumerName(selectedConsumer);
-      // showAddedTeamMemberPopup(consumer, () => {
-      //   POPUP.hide(addedTeamMemberPopup);
-      //   planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
-      //   buildPlanPage();
-      // });   
-    } else {
-     // alert(`This state Case Manager was found: ${salesForceCaseManagerId}`);
-      // return;
-    }
-
+   
     if (planType === 'a') {
       const planYearStartDate = planDates.getPlanYearStartDate();
       const planYearReviewDate = planDates.getPlanReviewDate();
@@ -1860,12 +1832,39 @@ const plan = (function () {
     planActiveStatus = true;
     revisionNumber = undefined;
 
-    const consumer = getSelectedConsumerName(selectedConsumer);
-    showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
-      POPUP.hide(addedMemberPopup);
-      planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
-      buildPlanPage();
-    });
+    if (salesForceCaseManagerId === "0") {
+      // const wfvPopup = document.querySelector('.workflowListPopup');
+      // if (wfvPopup) {
+      //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
+      //   POPUP.hide(wfvPopup);
+      // }
+      const consumer = getSelectedConsumerName(selectedConsumer);
+      showAddedToTeamMemberNoCasemanagerFoundPopup(consumer, () => {
+        POPUP.hide(addedMemberNoCaseManagerPopup);
+        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+        buildPlanPage();
+      });   
+    } else if (salesForceCaseManagerId === "-1") {
+      // const wfvPopup = document.querySelector('.workflowListPopup');
+      // if (wfvPopup) {
+      //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
+      //   POPUP.hide(wfvPopup);
+      // }
+      const consumer = getSelectedConsumerName(selectedConsumer);
+      showAddedTeamMemberPopup(consumer, () => {
+        POPUP.hide(addedTeamMemberPopup);
+        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+        buildPlanPage();
+      });   
+    } else {
+      const consumer = getSelectedConsumerName(selectedConsumer);
+      showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
+        POPUP.hide(addedMemberPopup);
+        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+        buildPlanPage();
+      });
+    }
+    
   }
 
   function buildPreviousPlansTable() {
