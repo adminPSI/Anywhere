@@ -1757,14 +1757,33 @@ const plan = (function () {
     });
 
     if (salesForceCaseManagerId === "0") {
-      alert("No state Case Manager was found");
-      return;
+      const wfvPopup = document.querySelector('.workflowListPopup');
+      if (wfvPopup) {
+        // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
+        POPUP.hide(wfvPopup);
+      }
+      const consumer = getSelectedConsumerName(selectedConsumer);
+      showAddedToTeamMemberNoCasemanagerFoundPopup(consumer, () => {
+        POPUP.hide(addedMemberNoCaseManagerPopup);
+        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+        buildPlanPage();
+      });   
+    } else if (salesForceCaseManagerId === "-1") {
+      // const wfvPopup = document.querySelector('.workflowListPopup');
+      // if (wfvPopup) {
+      //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
+      //   POPUP.hide(wfvPopup);
+      // }
+      // const consumer = getSelectedConsumerName(selectedConsumer);
+      // showAddedTeamMemberPopup(consumer, () => {
+      //   POPUP.hide(addedTeamMemberPopup);
+      //   planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+      //   buildPlanPage();
+      // });   
     } else {
-      alert(`This state Case Manager was found: ${salesForceCaseManagerId}`);
-      return;
+     // alert(`This state Case Manager was found: ${salesForceCaseManagerId}`);
+      // return;
     }
-
-    // TODO JOE -- 97136 -- NEED TO SEE salesForceCaseManagerID = -1
 
     if (planType === 'a') {
       const planYearStartDate = planDates.getPlanYearStartDate();
@@ -1983,9 +2002,10 @@ const plan = (function () {
     if (ssa) {
       addedMemberPopup.innerHTML += `<p>${consumer} and ${ssa} have been added as a Team Member to this plan.</p>`;
     } else {
-      addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>
-      <p>No SSA/QIDP assigned to this consumer in Salesforce. Please assign SSA/QIDP.</p>
-      `;
+      addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>`;
+      // addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>
+      // <p>No SSA/QIDP assigned to this consumer in Salesforce. Please assign SSA/QIDP.</p>
+      // `;
     }
 
     const okButton = button.build({
@@ -1998,6 +2018,47 @@ const plan = (function () {
     addedMemberPopup.appendChild(okButton);
 
     POPUP.show(addedMemberPopup);
+  }
+
+  function showAddedToTeamMemberNoCasemanagerFoundPopup(consumer, callback) {
+    addedMemberNoCaseManagerPopup = POPUP.build({
+      id: 'importRelationshipPopup',
+      hideX: true,
+    });
+
+    addedMemberNoCaseManagerPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>
+      <p>No SSA/QIDP assigned to this consumer in Salesforce. Please assign SSA/QIDP.</p>`;
+
+    const okButton = button.build({
+      text: 'Ok',
+      style: 'secondary',
+      type: 'contained',
+      callback: callback,
+    });
+
+    addedMemberNoCaseManagerPopup.appendChild(okButton);
+
+    POPUP.show(addedMemberNoCaseManagerPopup);
+  }
+
+  function showAddedTeamMemberPopup(consumer, callback) {
+    addedTeamMemberPopup = POPUP.build({
+      id: 'importRelationshipPopup',
+      hideX: true,
+    });
+
+    addedTeamMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>`;
+
+    const okButton = button.build({
+      text: 'Ok',
+      style: 'secondary',
+      type: 'contained',
+      callback: callback,
+    });
+
+    addedTeamMemberPopup.appendChild(okButton);
+
+    POPUP.show(addedTeamMemberPopup);
   }
 
   function buildNewPlanBtn() {
