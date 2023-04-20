@@ -1751,28 +1751,31 @@ const plan = (function () {
     let insertedSSA;
     const workflowIds = [];
 
+    var selectedConsumer = plan.getSelectedConsumer();
+    var salesForceCaseManagerId = await consentAndSignAjax.getStateCaseManagerforConsumer({
+      peopleId: selectedConsumer.id,
+    });
+
+    if (salesForceCaseManagerId === "0") {
+      alert("No state Case Manager was found");
+      return;
+    } else {
+      alert(`This state Case Manager was found: ${salesForceCaseManagerId}`);
+      return;
+    }
+
+    // TODO JOE -- 97136 -- NEED TO SEE salesForceCaseManagerID = -1
+
     if (planType === 'a') {
       const planYearStartDate = planDates.getPlanYearStartDate();
       const planYearReviewDate = planDates.getPlanReviewDate();
-
-      var selectedConsumer = plan.getSelectedConsumer();
-      var stateCaseManagerId = await consentAndSignAjax.getStateCaseManagerforConsumer({
-        peopleId: selectedConsumer.id,
-      });
-
-      // if (stateCaseManagerId === "0") {
-      //   alert("No state Case Manager was found");
-      //   return;
-      // } else {
-      //   alert(`This state Case Manager was found: ${stateCaseManagerId}`);
-      //   return;
-      // }
 
       let returnString = await planAjax.insertAnnualPlan({
         token: $.session.Token,
         consumerId: selectedConsumer.id,
         planYearStart: UTIL.formatDateFromDateObj(planYearStartDate),
         reviewDate: UTIL.formatDateFromDateObj(planYearReviewDate),
+        salesForceCaseManagerId: salesForceCaseManagerId,
       });
 
       returnString = returnString.split(',');
@@ -1790,6 +1793,7 @@ const plan = (function () {
         effectiveEnd: edDate,
         reviewDate: UTIL.formatDateFromDateObj(planYearReviewDate),
         useLatestPlanVersion: true,
+        salesForceCaseManagerId: salesForceCaseManagerId,
       });
 
       returnString = returnString.split(',');

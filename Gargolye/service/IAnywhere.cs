@@ -2525,7 +2525,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertConsumerPlanAnnual/")]
-        string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate);
+        string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate, string salesForceCaseManagerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2549,7 +2549,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertConsumerPlanRevision/")]
-        string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string effectiveStart, string effectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion);
+        string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string effectiveStart, string effectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion, string salesForceCaseManagerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
