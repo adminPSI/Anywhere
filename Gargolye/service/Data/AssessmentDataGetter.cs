@@ -54,7 +54,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string insertConsumerPlan(string token, string consumerId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate)
+        public string insertConsumerPlan(string token, string consumerId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate, string salesForceCaseManagerId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertConsumerPlan ");
@@ -68,6 +68,7 @@ namespace Anywhere.service.Data
             list.Add(effectiveEnd);
             list.Add(active);
             list.Add(reviewDate);
+            list.Add(salesForceCaseManagerId);
 
             string text = "CALL DBA.ANYW_ISP_insertConsumerPlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
