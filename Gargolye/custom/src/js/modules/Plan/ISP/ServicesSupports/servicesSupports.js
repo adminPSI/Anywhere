@@ -429,29 +429,7 @@ const servicesSupports = (() => {
 
                 return;
             }
-            //Check for hcbs and ICF. If a service is selected see if only one value and populate if so
-            //if ((fundingSourceDropdownSelectedText.includes('HCBS') ||
-            //    fundingSourceDropdownSelectedText.includes('ICF')) &&
-            //    servicesDropdownSelectedText != '%') {
-            //    const thisVendorDropDownData = [].map(dd => {
-            //        return {
-            //            value: dd.vendorId,
-            //            text: dd.vendorName,
-            //        };
-            //    });
-            //    if (!defaultValue) {
-            //        if (thisVendorDropDownData.length === 1) {
-            //            defaultValue = thisVendorDropDownData[0].value;
-            //            saveUpdateProvider = defaultValue;
-            //            dropdownEle.classList.remove('error');
-            //        }
-            //    }
-            //    thisVendorDropDownData.unshift({ value: '%', text: '' });
-            //    dropdown.populate(dropdownEle, thisVendorDropDownData, defaultValue);
-
-            //    return;
-
-            //}
+            
         }
 
         // if guard clauses are not used (see above), then repopulate serviceVEndorDropDown
@@ -539,7 +517,7 @@ const servicesSupports = (() => {
     function populateNewOrExistingDropdown(dropdownEle, defaultValue) {
         dropdown.populate(dropdownEle, dropdownData.newOrExisting, defaultValue);
     }
-    //-- map id to name -------
+    
     function getAssessmentAreaById(id) {
         const filteredAssessment = dropdownData.assessmentAreas.filter(
             dd => dd.assessmentAreaId === id,
@@ -1168,9 +1146,9 @@ const servicesSupports = (() => {
                 if (hcbsSelected) {
                     providerNameDropdown.classList.remove('disabled');
                     await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
-                    //if (saveUpdateProvider) {
-                    //    saveUpdateData.providerId = saveUpdateProvider;
-                    //}
+                    if (saveUpdateProvider) {
+                        saveUpdateData.providerId = saveUpdateProvider;
+                    }
                 } else {
                     // re-enable provider dropdown if it was disabled
                     providerNameDropdown.classList.remove('disabled');
@@ -1179,9 +1157,9 @@ const servicesSupports = (() => {
                     // non-waver -- get all Active Providers
                     servicesDropdownSelectedText = '%';
                     await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
-                    //if (saveUpdateProvider) {
-                    //    saveUpdateData.providerId = saveUpdateProvider;
-                    //}
+                    if (saveUpdateProvider) {
+                        saveUpdateData.providerId = saveUpdateProvider;
+                    }
                 }
 
                 if (saveUpdateData.fundingSource === '5') {
@@ -1240,9 +1218,9 @@ const servicesSupports = (() => {
                     servicesDropdownSelectedText =
                         servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text;
                     await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
-                    //if (saveUpdateProvider) {
-                    //    saveUpdateData.providerId = saveUpdateProvider;
-                    //}
+                    if (saveUpdateProvider) {
+                        saveUpdateData.providerId = saveUpdateProvider;
+                    }
                 } else {
                     servicesDropdownSelectedText = '';
                     saveUpdateData.providerId = '';
@@ -1384,10 +1362,10 @@ const servicesSupports = (() => {
 
                 if (hcbsSelected) {
                     await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
-                    //if (saveUpdateProvider) {
-                    //    saveUpdateData.providerId = saveUpdateProvider;
-                    //}
-                    // populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+                    if (saveUpdateProvider) {
+                        saveUpdateData.providerId = saveUpdateProvider;
+                    }
+                     populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
                 }
 
                 // Validation of Services DDL
