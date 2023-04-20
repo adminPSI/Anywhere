@@ -37,9 +37,9 @@ namespace Anywhere.service.Data.ResetPassword
         public string updateActiveInactiveUserDateJSON(string token, string isInactiveUser, string userId)
         {
             if (tokenValidator(token) == false) return null;
-            logger.debug("updateActiveInactiveUserDateJSON" + token);
+            logger.debug("updateActiveInactiveUserDateJSON Token:" + token + " UserId:" + isInactiveUser + "isInactiveUser:" + isInactiveUser); 
             List<string> list = new List<string>();
-            list.Add(isInactiveUser);
+            list.Add(isInactiveUser); 
             list.Add(userId);
             string text = "CALL DBA.ANYW_updateUserStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
 

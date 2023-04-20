@@ -299,6 +299,7 @@ $.session.stateAbbreviation = '';
 $.session.deviceGUID = '';
 //API Keys
 $.session.azureSTTApi = '';
+$.session.isActiveUsers = false; // false to get active and inactive user both 
 
 $(window).resize(function () {
   //resizeActionCenter();
@@ -704,7 +705,7 @@ function setSessionVariables() {
       }
   
       //Reset Password
-        if (tmpWindow == 'Anywhere Reset Passwords' ) {    
+        if (tmpWindow == 'Anywhere Reset Passwords' ) {       
           if (tmpPerm == 'View' || $.session.isPSI == true) { 
               $('#Adminsettingdiv').removeClass('disabledModule');
               $.session.ResetPasswordView = true; 

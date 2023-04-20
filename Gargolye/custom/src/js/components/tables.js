@@ -77,7 +77,11 @@ var table = (function () {
     // add empty cell for endIcon
     if (options.endIcon) {
       var td = document.createElement('div');
-      td.classList.add('endIcon');
+      td.classList.add('endIcon');  
+      if (options.endIconHeading == undefined) {
+          options.endIconHeading = '';
+      }
+      td.innerHTML = options.endIconHeading;     
       headerRow.appendChild(td);
     }
     // add empty cell for copyIcon
