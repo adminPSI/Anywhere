@@ -1708,10 +1708,10 @@ namespace Anywhere
             return aAW.transferPlanReportToONET(token, planId);
         }
 
-        public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate)
+        public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate, string salesForceCaseManagerId)
         {
             // insert the annaul consumer plan and assessment
-            return aPW.insertConsumerPlanAnnual(token, consumerId, planYearStart, reviewDate);
+            return aPW.insertConsumerPlanAnnual(token, consumerId, planYearStart, reviewDate, salesForceCaseManagerId);
         }
 
         public string switchPlanType(string token, string consumerPlanId, string planType)
@@ -1725,10 +1725,10 @@ namespace Anywhere
             return pAW.updateConsumerNameInfo(token, consumerId, firstName, lastName, middleName, nickName);
         }
 
-        public string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string effectiveStart, string effectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion)
+        public string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string effectiveStart, string effectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion, string salesForceCaseManagerId)
         {
             // insert the revised consumer plan and assessment
-            return aPW.insertConsumerPlanRevision(token, priorConsumerPlanId, effectiveStart, effectiveEnd, reviewDate, useLatestAssessmentVersion);
+            return aPW.insertConsumerPlanRevision(token, priorConsumerPlanId, effectiveStart, effectiveEnd, reviewDate, useLatestAssessmentVersion, salesForceCaseManagerId);
         }
 
         public int updateAssessmentAnswers(string token, AssessmentWorker.AssessmentAnswer[] answers)

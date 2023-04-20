@@ -19,7 +19,7 @@ const resetPassword = function () {
     var newPasswordValue = null;
     var confirmPasswordValue = null;
     var selectedUserID;
-    var isChecked = false;
+    var isChecked;
 
     function init() {
         DOM.clearActionCenter();
@@ -39,6 +39,7 @@ const resetPassword = function () {
         SEARCH_INPUT.addEventListener('keyup', event => {
             tableUserSearch(event.target.value);
         });
+        isChecked = $.session.isActiveUsers;
         loadReviewPage(isChecked);
     }
 
@@ -63,8 +64,9 @@ const resetPassword = function () {
     function buildInactiveChkBox() {
         return input.buildCheckbox({
             text: "Show Inactives",
+            id:"chkInacive",
             callback: () => setCheckForInactiveUser(event.target),
-            isChecked: true
+            isChecked: true,
         });
     }
 
@@ -75,7 +77,7 @@ const resetPassword = function () {
         });
     }
 
-    function buildTable() {
+    function buildTable() {   
         var tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
@@ -83,12 +85,11 @@ const resetPassword = function () {
                 'User Name',
                 'Last Name',
                 'First Name',
-                '   ',
-                'Active'
+                '   ',            
             ],
             endIcon: true,
-
-            callback: handleUserTableEvents
+            endIconHeading: 'Active',       
+            callback: handleUserTableEvents    
 
         };
 
@@ -288,17 +289,19 @@ const resetPassword = function () {
             if (pass1.value === '' || pass2.value === '') {
                 message.innerHTML = 'Please enter and confirm a new password.';
                 message.classList.add('password-error');
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             }
             //passwords match?
             if (pass1.value !== pass2.value) {
                 message.innerHTML = 'Passwords Do Not Match!';
                 message.classList.add('password-error');
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             } else {
                 message.innerHTML = '';
                 message.classList.remove('password-error');
-                document.getElementById('savePasswordBtn').classList.remove('disabled');  
+                document.getElementById('savePasswordBtn').classList.remove('disabled');   
                 return 1;
             }
         } else {
@@ -309,6 +312,7 @@ const resetPassword = function () {
                 $.session.changePasswordLinkSelected === ''
             ) {
                 message.innerHTML = 'Please enter and confirm a new password.';
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             }
 
@@ -319,6 +323,7 @@ const resetPassword = function () {
                 specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
                 message.innerHTML = `Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
                                         have a special character(${specialCharDisplay}), upper and lower case letters.`;
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             }
 
@@ -326,12 +331,14 @@ const resetPassword = function () {
             if (pass1.value === '' || pass2.value === '') {
                 message.innerHTML = 'Please enter and confirm a new password.';
                 message.classList.add('password-error');
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             }
             //passwords match?
             if (pass1.value !== pass2.value) {
                 message.innerHTML = 'Passwords Do Not Match!';
                 message.classList.add('password-error');
+                document.getElementById('savePasswordBtn').classList.add('disabled');  
                 return 0;
             } else {
                 message.innerHTML = '';
@@ -386,6 +393,7 @@ const resetPassword = function () {
             const additionalInformation = changePasswordBtn();
             additionalInformation.innerHTML = 'CHANGE PASSWORD';
 
+            additionalInformation.style = 'margin-top: -10px;';
             const activeCheckbox = buildActiveChkBox(Active);
 
             return {
@@ -398,8 +406,7 @@ const resetPassword = function () {
                     userID,
                     LastName,
                     FirstName,
-                    additionalInformation.outerHTML,
-                    ''
+                    additionalInformation.outerHTML,  
                 ],
                 attributes: [
                     { key: 'data-status', value: Active },
@@ -457,24 +464,24 @@ const resetPassword = function () {
         loadReviewPage(isChecked)
     }
 
-    function setCheckUpdateUserStatus(active, id) {
+    function setCheckUpdateUserStatus(active, id) { 
         resetPasswordAjax.updateActiveInactiveUser(
             {
                 isActive: active == 'Y' ? 'N' : 'Y',
                 userId: id,
             },
             function (results, error) {
-                populateTable(results, true);
+                populateTable(results, true);               
             },
         );
-         
-        loadReviewPage(isChecked);
+
+        loadReviewPage(isChecked);   
 
         const passwordChangeConfPOPUP = POPUP.build({
             hideX: true,
         });
         const okBtn = button.build({
-            text: 'OK',
+            text: 'OK', 
             style: 'secondary',
             type: 'contained',
             callback: () => {
@@ -495,8 +502,7 @@ const resetPassword = function () {
         passwordChangeConfPOPUP.appendChild(message);
         passwordChangeConfPOPUP.appendChild(okBtn);
         okBtn.focus();
-        POPUP.show(passwordChangeConfPOPUP);
-        loadReviewPage(isChecked);  
+        POPUP.show(passwordChangeConfPOPUP);  
     }
 
     function tableUserSearch(searchValue) {
@@ -527,13 +533,15 @@ const resetPassword = function () {
 
 
     // load
-    function loadReviewPage(active) {
+    function loadReviewPage(active) { 
+        const amountType = document.getElementById("chkInacive").checked; 
+        active = amountType == true ? false : true; 
         resetPasswordAjax.getActiveInactiveUserlist(
             {
-                isActive: active == true ? 'Y' : 'N',
+                isActive: active == true ? 'Y' : 'N', 
             },
             function (results, error) {
-                populateTable(results, true);
+                populateTable(results, true);              
             },
         );
     }

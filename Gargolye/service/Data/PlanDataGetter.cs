@@ -226,12 +226,12 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
-        public string insertConsumerPlan(string consumerId, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string planType, string revisionNumber, string active, string updatedBy, string reviewDate, string priorPlanIdForApplicable, string priorPlanId, DistributedTransaction transaction)
+        public string insertConsumerPlan(string consumerId, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string planType, string revisionNumber, string active, string updatedBy, string reviewDate, string priorPlanIdForApplicable, string priorPlanId, string salesForceCaseManagerId, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("insertConsumerPlan ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[12];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[13];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@planYearStart", DbType.Date, planYearStart);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@planYearEnd", DbType.Date, planYearEnd);
@@ -244,8 +244,9 @@ namespace Anywhere.service.Data
                 args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@reviewDate", DbType.String, reviewDate);
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorPlanIdForApplicable", DbType.String, priorPlanIdForApplicable);
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorPlanId", DbType.String, priorPlanId);
+                args[12] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@salesForceCaseManagerId", DbType.String, salesForceCaseManagerId);
                 // returns the consumerPlanId of the consumer plan that was just inserted
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerPlan(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerPlan(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
                 //System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerPlan(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
                 //return convertToJSON(returnMsg);
             }

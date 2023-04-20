@@ -136,10 +136,10 @@ namespace Anywhere.service.Data
             return resultString;
         }
 
-        public string insertConsumerPlan(string token, string consumerId, string assessmentVersionId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate)
+        public string insertConsumerPlan(string token, string consumerId, string assessmentVersionId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate, string salesForceCaseManagerId)
         {
             // insert the assessment
-            string assessmentIdObj = adg.insertConsumerPlan(token, consumerId, planType, planYearStart, planYearEnd, effectiveStart, effectiveEnd, active, reviewDate);
+            string assessmentIdObj = adg.insertConsumerPlan(token, consumerId, planType, planYearStart, planYearEnd, effectiveStart, effectiveEnd, active, reviewDate, salesForceCaseManagerId);
 
             ConsumerPlan[] plan = js.Deserialize<ConsumerPlan[]>(assessmentIdObj);
 

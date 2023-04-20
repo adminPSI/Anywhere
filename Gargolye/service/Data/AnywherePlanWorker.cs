@@ -160,7 +160,7 @@ namespace Anywhere.service.Data
             #endregion
 
             #region CREATE METHODS
-            public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate)
+            public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate, string salesForceCaseManagerId)
             {
                 using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
                 {
@@ -198,7 +198,7 @@ namespace Anywhere.service.Data
                         String active = "1";
                         String planType = PlanType.Annual;
                         String revisionNumber = "0";
-                        String inputString = adg.insertConsumerPlan(consumerId, planYearStart, planYearEnd, effectiveStart, effectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorPlanIdForApplicable, priorConsumerPlanId, transaction);
+                        String inputString = adg.insertConsumerPlan(consumerId, planYearStart, planYearEnd, effectiveStart, effectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorPlanIdForApplicable, priorConsumerPlanId, salesForceCaseManagerId, transaction);
                         String[] splitString = inputString.Split(',');
                         String consumerPlanId = splitString[0];
                         // always use the latest assessment version
@@ -235,7 +235,7 @@ namespace Anywhere.service.Data
                 string processingCompleted = wfWorker.processWorkflowStepEvent(token, thisEvent);
             }
 
-            public string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string newEffectiveStart, string newEffectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion)
+            public string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string newEffectiveStart, string newEffectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion, string salesForceCaseManagerId)
             {
                 using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
                 {
@@ -271,7 +271,7 @@ namespace Anywhere.service.Data
                         //DateTime revDate = Convert.ToDateTime(existingPlan.reviewDate);
                         //var revDate = DateTime.Parse(existingPlan.reviewDate);
                         //var reviewDate = revDate.ToString("yyyy-MM-dd");
-                        String inputString = adg.insertConsumerPlan(existingPlan.consumerId, existingPlan.planYearStart, existingPlan.planYearEnd, newEffectiveStart, newEffectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorConsumerPlanId, priorConsumerPlanId, transaction);
+                        String inputString = adg.insertConsumerPlan(existingPlan.consumerId, existingPlan.planYearStart, existingPlan.planYearEnd, newEffectiveStart, newEffectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorConsumerPlanId, priorConsumerPlanId, salesForceCaseManagerId, transaction);
                         String[] splitString = inputString.Split(',');
                         String consumerPlanId = splitString[0];
                         // determine whether to use the existing assessment version or the lastest assessment version
