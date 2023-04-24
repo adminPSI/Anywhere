@@ -528,7 +528,7 @@ const planConsentAndSign = (() => {
     changeMindQuestion.appendChild(csChangeMindQuestionText);
 
     // required fields
-    if (data.csChangeMindSSAPeopleId === '' && !isSigned) {
+    if ((data.csChangeMindSSAPeopleId === '' || data.csChangeMindSSAPeopleId === 0 || data.csChangeMindSSAPeopleId === null)&& !isSigned) {
       changeMindQuestion.classList.add('error');
     }
 
