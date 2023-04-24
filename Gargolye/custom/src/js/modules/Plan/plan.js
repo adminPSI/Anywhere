@@ -1851,8 +1851,8 @@ const plan = (function () {
       //   POPUP.hide(wfvPopup);
       // }
       const consumer = getSelectedConsumerName(selectedConsumer);
-      showAddedTeamMemberPopup(consumer, () => {
-        POPUP.hide(addedTeamMemberPopup);
+      showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
+        POPUP.hide(addedMemberPopup);
         planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
         buildPlanPage();
       });   
@@ -2038,26 +2038,6 @@ const plan = (function () {
     addedMemberNoCaseManagerPopup.appendChild(okButton);
 
     POPUP.show(addedMemberNoCaseManagerPopup);
-  }
-
-  function showAddedTeamMemberPopup(consumer, callback) {
-    addedTeamMemberPopup = POPUP.build({
-      id: 'importRelationshipPopup',
-      hideX: true,
-    });
-
-    addedTeamMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>`;
-
-    const okButton = button.build({
-      text: 'Ok',
-      style: 'secondary',
-      type: 'contained',
-      callback: callback,
-    });
-
-    addedTeamMemberPopup.appendChild(okButton);
-
-    POPUP.show(addedTeamMemberPopup);
   }
 
   function buildNewPlanBtn() {
