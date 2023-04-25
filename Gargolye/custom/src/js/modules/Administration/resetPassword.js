@@ -66,7 +66,7 @@ const resetPassword = function () {
             text: "Show Inactives",
             id:"chkInacive",
             callback: () => setCheckForInactiveUser(event.target),
-            isChecked: true,
+            isChecked: $.session.isActiveUsers,   
         });
     }
 
@@ -447,7 +447,8 @@ const resetPassword = function () {
         wrap1.appendChild(SEARCH_WRAP);
 
         INACTIVE_CHKBOX.addEventListener('change', event => {  
-            isChecked = event.target.checked;   
+            isChecked = event.target.checked;     
+            $.session.isActiveUsers = isChecked;
         });
 
         btnWrap.appendChild(wrap1);
@@ -455,11 +456,10 @@ const resetPassword = function () {
     }
 
     function setCheckForInactiveUser(input) {
-         isChecked;
         if (input.checked) {
-            isChecked = false;
-        } else {
             isChecked = true;
+        } else {
+            isChecked = false;
         }
         loadReviewPage(isChecked)
     }
@@ -534,11 +534,10 @@ const resetPassword = function () {
 
     // load
     function loadReviewPage(active) { 
-        const amountType = document.getElementById("chkInacive").checked; 
-        active = amountType == true ? false : true; 
+        active = document.getElementById("chkInacive").checked;   
         resetPasswordAjax.getActiveInactiveUserlist(
             {
-                isActive: active == true ? 'Y' : 'N', 
+                isActive: active == true ? 'N' : 'Y', 
             },
             function (results, error) {
                 populateTable(results, true);              

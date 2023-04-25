@@ -11,6 +11,8 @@ using System.Linq;
 using System.Management.Automation.Language;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
+using System.Web.UI.MobileControls.Adapters;
+using static Anywhere.service.Data.eSignature___OneSpan.OneSpanWorker;
 
 
 namespace Anywhere.service.Data.eSignature___OneSpan
@@ -23,50 +25,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         OssClient ossClient = new OssClient(apiKey, apiUrl);
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
-
-        public void oneSpanAssignSender(string token)
-        {
-            string firstName = "";
-            string lastName = "";
-            string emailAddress  = "";
-            // Retrieve current user first name, last name, email
-            string input = osdg.getSenderInfo(token);
-
-            List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
-
-            // Assign values for current user to variables for AccountMemberBuilder
-            foreach (Dictionary<string, string> dict in result)
-            {
-                lastName = dict["Last_Name"];
-                firstName = dict["First_Name"];
-                emailAddress = dict["Email_Address"];
-            }
-
-            AccountMember member = AccountMemberBuilder.NewAccountMember(emailAddress)
-                .WithFirstName(firstName)
-                .WithLastName(lastName)
-                .WithStatus(SenderStatus.ACTIVE)
-                .Build();
-
-            ossClient.AccountService.InviteUser(member);
-        }
-
-        public void checkAccountUsers()
-        {
-            int i = 1;
-            IDictionary<string, Sender> accountMembers = ossClient.AccountService.GetSenders(Direction.ASCENDING, new PageRequest(i, 5));
-            while (accountMembers.Count != 0)
-            {
-                foreach (var s in accountMembers)
-                {
-                    string email = s.Key.ToString();
-                    string id = s.Value.Id;
-                    Debug.WriteLine(email + " " + id);
-                    i++;
-                }
-                accountMembers = ossClient.AccountService.GetSenders(Direction.ASCENDING, new PageRequest(i, 10));
-            }
-        }
 
 
         public string oneSpanBuildSigners(string token, string assessmentID, MemoryStream ms)
@@ -84,8 +42,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 string input = osdg.OneSpanGetSignatures(token, assessmentId);
 
                 List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
-
-                //string[] emails = { "erickbey1@outlook.com", "erickbey10@gmail.com", "erickbey10@yahoo.com" };
 
                 // Create a list for each category for signers
                 List<string> emailsList = new List<string>();
@@ -106,17 +62,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     dateSignedList.Add(item["dateSigned"]);
                 }
 
-                // Converts the lists into arrays
-                string[] names = namesList.ToArray();
-                string[] memberTypes = memberTypesList.ToArray();
-                string[] signatureIds = signatureIdsList.ToArray();
-                string[] signatureTypes = signatureTypeList.ToArray();
-                string[] dateSigned = dateSignedList.ToArray();
-
-                //oneSpanAssignSender(token);
-
-                //Sender retrievedSender = ossClient.AccountService.GetSender("senderId");
-
                 // Sets the senders info
                 string firstNameTest = "Your County Board";
                 string lastNameTest = "of DD";
@@ -127,19 +72,16 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 // Sets default last name value if one is not provided
                 string lastName = "(No Last Name Provided)";
                 string packageName = "Plan Report";
+
                 PackageBuilder superPackage = PackageBuilder.NewPackageNamed(packageName).WithSenderInfo(sender);
 
                 int i = 0;
-                List<Signer> allSigners = new List<Signer>();
-                foreach (string email in emailsList)
+                List<OneSpanSigner> allOneSpanSigners = new List<OneSpanSigner>();
+
+                // Loop over every email to create a signer object and add to the list of signers
+                foreach (string sigId in signatureIdsList)
                 {
-                    // Skips over non-digital signers, and people who have already signed
-                    if (signatureTypes[i] != "1" || dateSigned[i] != "")
-                    {
-                        i++;
-                        continue;
-                    }
-                    string fullName = names[i];
+                    string fullName = namesList[i];
                     string[] splitName = fullName.Trim().Split(' ');
 
                     if (splitName.Length > 1)
@@ -147,21 +89,24 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                         lastName = string.Join(" ", splitName, 1, splitName.Length - 1);
                     }
 
-                    Signer signer = SignerBuilder.NewSignerWithEmail(email)
-                        .WithFirstName(splitName[0])
-                        .WithLastName(lastName)
-                        .WithCustomId(signatureIds[i])
-                        .WithTitle(memberTypes[i])
-                        .Build();
-                    superPackage.WithSigner(signer);
+                    OneSpanSigner oneSpanSigner = new OneSpanSigner()
+                    {
+                        Email = emailsList[i],
+                        FirstName = splitName[0],
+                        LastName = lastName,
+                        SignatureId = sigId,
+                        MemberType = memberTypesList[i],
+                        DateSigned = dateSignedList[i],
+                        SignatureType = signatureTypeList[i]
+                    };
 
-                    allSigners.Add(signer);
+                    allOneSpanSigners.Add(oneSpanSigner);
 
                     i++;
                     lastName = "(No Last Name Provided)";
                 }
 
-                return createDocument(token, assessmentID, allSigners, names, signatureTypes, dateSigned, superPackage, ms);
+                return createDocument(token, assessmentID, allOneSpanSigners, namesList, superPackage, ms);
             }
         }
 
@@ -176,7 +121,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             {
                 xOffset = 805;
             }
-            else if (answerType == "N/A")
+            else if (answerType == "NA")
             {
                 xOffset = 911;
             }
@@ -211,10 +156,11 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             }
 
             // If the team member type is Parent, Day Provider, or Other, make the text area height smaller
-            if (teamMemberType == "Parent" || teamMemberType == "Day Provider" || teamMemberType == "Other") 
+            if (teamMemberType == "Parent" || teamMemberType == "Day Provider" || teamMemberType == "Other")
             {
                 textAreaHeight = 20;
-            } else if (teamMemberType == "Home Provider Vendor")
+            }
+            else if (teamMemberType == "Home Provider Vendor")
             {
                 textAreaHeight = 60;
             }
@@ -238,7 +184,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             return textAreaInput;
         }
 
-        public string createDocument(string token, string assessmentID, List<Signer> allSigners, string[] names, string[] signatureTypes, string[] dateSigned, PackageBuilder package, MemoryStream ms)
+        public string createDocument(string token, string assessmentID, List<OneSpanSigner> allSigners, List<string> names, PackageBuilder package, MemoryStream ms)
         {
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Plan Report")
                                 .FromStream(ms, DocumentType.PDF)
@@ -273,20 +219,28 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
             int occurence = 0;
             int i = 0;
-
-            foreach (Signer signer in allSigners)
+            foreach (OneSpanSigner oneSpanSigner in allSigners)
             {
                 // If not a digital signer type or if signer has already signed, skip to next signer
-                if (signatureTypes[i] != "1" || dateSigned[i] != "")
+                if (oneSpanSigner.SignatureType != "1" || oneSpanSigner.DateSigned != "")
                 {
+                    occurence++;
                     i++;
                     continue;
                 }
                 string anchor = names[i] + " /";
                 string dateAnchor = names[i] + " Date";
 
+                Signer signer = SignerBuilder.NewSignerWithEmail(oneSpanSigner.Email)
+                        .WithFirstName(oneSpanSigner.FirstName)
+                        .WithLastName(oneSpanSigner.LastName)
+                        .WithCustomId(oneSpanSigner.SignatureId)
+                        .WithTitle(oneSpanSigner.MemberType)
+                        .Build();
+                package.WithSigner(signer);
+
                 // If the team member type is "Guardian", "Person Supported", or "Parent/Guardian", create radio button fields
-                if (signer.Title == "Guardian" || signer.Title == "Person Supported" || signer.Title == "Parent/Guardian")
+                if (oneSpanSigner.MemberType == "Guardian" || oneSpanSigner.MemberType == "Person Supported" || oneSpanSigner.MemberType == "Parent/Guardian")
                 {
                     Signature sig1 = SignatureBuilder.SignatureFor(signer.Email)
                                         .WithName(signer.Email)
@@ -309,19 +263,19 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                                         .WithField(createRadioButton("Y", groupNames[5], "csTechnology-Yes", i, descriptionAnchor[5], occurence))
                                         .WithField(createRadioButton("N", groupNames[5], "csTechnology-No", i, descriptionAnchor[5], occurence))
-                                        .WithField(createRadioButton("N/A", groupNames[5], "csTechnology", i, descriptionAnchor[5], occurence))
+                                        //.WithField(createRadioButton("NA", groupNames[5], "csTechnology-NA", i, descriptionAnchor[5], occurence))
 
                                         .WithField(createRadioButton("Y", groupNames[6], "csFCOPExplained-Yes", i, descriptionAnchor[6], occurence))
                                         .WithField(createRadioButton("N", groupNames[6], "csFCOPExplained-No", i, descriptionAnchor[6], occurence))
-                                        .WithField(createRadioButton("N/A", groupNames[6], "csFCOPExplained", i, descriptionAnchor[6], occurence))
+                                        .WithField(createRadioButton("NA", groupNames[6], "csFCOPExplained-NA", i, descriptionAnchor[6], occurence))
 
                                         .WithField(createRadioButton("Y", groupNames[7], "csDueProcess-Yes", i, descriptionAnchor[7], occurence))
                                         .WithField(createRadioButton("N", groupNames[7], "csDueProcess-No", i, descriptionAnchor[7], occurence))
-                                        .WithField(createRadioButton("N/A", groupNames[7], "csDueProcess", i, descriptionAnchor[7], occurence))
+                                        .WithField(createRadioButton("NA", groupNames[7], "csDueProcess-NA", i, descriptionAnchor[7], occurence))
 
                                         .WithField(createRadioButton("Y", groupNames[8], "csResidentialOptions-Yes", i, descriptionAnchor[8], occurence))
                                         .WithField(createRadioButton("N", groupNames[8], "csResidentialOptions-No", i, descriptionAnchor[8], occurence))
-                                        .WithField(createRadioButton("N/A", groupNames[8], "csResidentialOptions", i, descriptionAnchor[8], occurence))
+                                        .WithField(createRadioButton("NA", groupNames[8], "csResidentialOptions-NA", i, descriptionAnchor[8], occurence))
 
                                         // Creates dissenting opinion text area fields
                                         .WithField(createTextAreaField("dissentAreaDisagree-", i, anchor, signer.Title))
@@ -418,37 +372,43 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
             List<string> signatureIds = new List<string>();
             List<string> datesSigned = new List<string>();
+            List<string> signatureTypes = new List<string>();
 
             foreach (var item in result)
             {
                 signatureIds.Add(item["signatureId"]);
                 datesSigned.Add(item["dateSigned"]);
+                signatureTypes.Add(item["signatureType"]);
             }
 
             PackageId currentPackageId = new PackageId(packageId);
             DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
             DocumentPackageStatus packageStatus = sentPackage.Status;
 
-            SigningStatus signingStatus = ossClient.GetSigningStatus(currentPackageId, null, null);
-
-            // If all signers have signed the document, update the DB 
-            if (signingStatus.ToString().Equals("COMPLETE"))
-            {
-                string signedStatus = signingStatus.ToString();
-
-                updateTeamMemberTable = true;
-                osdg.OneSpanUpdateDocumentSignedStatus(token, assessmentID, signedStatus);
-            }
-
             // Sets the values from the documents radio buttons and assigns them to fieldIds using the fieldName as the value. This is all grouped by each signers signatureID so we can send each signers values to be updated in the DB
             List<FieldSummary> fieldSummaries = ossClient.FieldSummaryService.GetFieldSummary(new PackageId(packageId));
 
-            var fieldIds = new List<string> { "csChangeMind", "csChangeMindSSAPeopleId", "csContact", "csContactProviderVendorId", "csContactInput", "csRightsReviewed", "csAgreeToPlan", "csFCOPExplained", "csDueProcess", "csResidentialOptions", "csSupportsHealthNeeds", "csTechnology", "dissentAreaDisagree", "dissentHowToAddress" };
+            var fieldIds = new List<string> {"csChangeMind", "csChangeMindSSAPeopleId", "csContact", "csContactProviderVendorId", "csContactInput", "csRightsReviewed", "csAgreeToPlan", "csFCOPExplained", "csDueProcess", "csResidentialOptions", "csSupportsHealthNeeds", "csTechnology", "dissentAreaDisagree", "dissentHowToAddress" };
 
             int i = 0;
             foreach (string sigId in signatureIds)
             {
-                SigningStatus individualSigningStatus = ossClient.GetSigningStatus(currentPackageId, sigId, null);
+                // If not a digital signer type or if signer has already signed, skip to next signer
+                if (signatureTypes[i] != "1")
+                {
+                    i++;
+                    continue;
+                }
+
+                SigningStatus individualSigningStatus = SigningStatus.SIGNING_PENDING;
+
+                try
+                {
+                    individualSigningStatus = ossClient.GetSigningStatus(currentPackageId, sigId, null);
+                } catch
+                {
+                    // Do nothing and continue with the rest of the function
+                }
 
                 // Checks if signer already has a completed signature in the DB, then checks if the signer has completed the one span signature
                 if (datesSigned[i] == "" && (individualSigningStatus.ToString().Equals("SIGNING_COMPLETE") || individualSigningStatus.ToString().Equals("COMPLETE")))
@@ -493,7 +453,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                             fieldDictionary.Add(fieldId, "");
                         }
                     }
-                    // TODO: add in the textarea field values
                     osdg.UpdateOneSpanPlanConsentStatements(
                         token,
                         fieldDictionary["signatureId"],
@@ -540,5 +499,17 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 return true;
             }
         }
+
+        public class OneSpanSigner
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+            public string DateSigned { get; set; }
+            public string MemberType { get; set; }
+            public string SignatureId { get; set; }
+            public string SignatureType { get; set; }
+        }
+
     }
 }
