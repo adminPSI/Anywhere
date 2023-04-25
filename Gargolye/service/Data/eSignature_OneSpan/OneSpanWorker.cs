@@ -263,7 +263,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                                         .WithField(createRadioButton("Y", groupNames[5], "csTechnology-Yes", i, descriptionAnchor[5], occurence))
                                         .WithField(createRadioButton("N", groupNames[5], "csTechnology-No", i, descriptionAnchor[5], occurence))
-                                        .WithField(createRadioButton("NA", groupNames[5], "csTechnology-NA", i, descriptionAnchor[5], occurence))
+                                        //.WithField(createRadioButton("NA", groupNames[5], "csTechnology-NA", i, descriptionAnchor[5], occurence))
 
                                         .WithField(createRadioButton("Y", groupNames[6], "csFCOPExplained-Yes", i, descriptionAnchor[6], occurence))
                                         .WithField(createRadioButton("N", groupNames[6], "csFCOPExplained-No", i, descriptionAnchor[6], occurence))
