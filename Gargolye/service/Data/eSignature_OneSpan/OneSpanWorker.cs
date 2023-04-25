@@ -121,7 +121,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             {
                 xOffset = 805;
             }
-            else if (answerType == "N/A")
+            else if (answerType == "NA")
             {
                 xOffset = 911;
             }
@@ -224,6 +224,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 // If not a digital signer type or if signer has already signed, skip to next signer
                 if (oneSpanSigner.SignatureType != "1" || oneSpanSigner.DateSigned != "")
                 {
+                    occurence++;
                     i++;
                     continue;
                 }
@@ -262,19 +263,19 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                                         .WithField(createRadioButton("Y", groupNames[5], "csTechnology-Yes", i, descriptionAnchor[5], occurence))
                                         .WithField(createRadioButton("N", groupNames[5], "csTechnology-No", i, descriptionAnchor[5], occurence))
-                                        .WithField(createRadioButton("N/A", groupNames[5], "csTechnology", i, descriptionAnchor[5], occurence))
+                                        .WithField(createRadioButton("NA", groupNames[5], "csTechnology-NA", i, descriptionAnchor[5], occurence))
 
                                         .WithField(createRadioButton("Y", groupNames[6], "csFCOPExplained-Yes", i, descriptionAnchor[6], occurence))
                                         .WithField(createRadioButton("N", groupNames[6], "csFCOPExplained-No", i, descriptionAnchor[6], occurence))
-                                        .WithField(createRadioButton("N/A", groupNames[6], "csFCOPExplained", i, descriptionAnchor[6], occurence))
+                                        .WithField(createRadioButton("NA", groupNames[6], "csFCOPExplained-NA", i, descriptionAnchor[6], occurence))
 
                                         .WithField(createRadioButton("Y", groupNames[7], "csDueProcess-Yes", i, descriptionAnchor[7], occurence))
                                         .WithField(createRadioButton("N", groupNames[7], "csDueProcess-No", i, descriptionAnchor[7], occurence))
-                                        .WithField(createRadioButton("N/A", groupNames[7], "csDueProcess", i, descriptionAnchor[7], occurence))
+                                        .WithField(createRadioButton("NA", groupNames[7], "csDueProcess-NA", i, descriptionAnchor[7], occurence))
 
                                         .WithField(createRadioButton("Y", groupNames[8], "csResidentialOptions-Yes", i, descriptionAnchor[8], occurence))
                                         .WithField(createRadioButton("N", groupNames[8], "csResidentialOptions-No", i, descriptionAnchor[8], occurence))
-                                        .WithField(createRadioButton("N/A", groupNames[8], "csResidentialOptions", i, descriptionAnchor[8], occurence))
+                                        .WithField(createRadioButton("NA", groupNames[8], "csResidentialOptions-NA", i, descriptionAnchor[8], occurence))
 
                                         // Creates dissenting opinion text area fields
                                         .WithField(createTextAreaField("dissentAreaDisagree-", i, anchor, signer.Title))
@@ -383,17 +384,6 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             PackageId currentPackageId = new PackageId(packageId);
             DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
             DocumentPackageStatus packageStatus = sentPackage.Status;
-
-            //SigningStatus signingStatus = ossClient.GetSigningStatus(currentPackageId, null, null);
-
-            // If all signers have signed the document, update the DB 
-            //if (signingStatus.ToString().Equals("COMPLETE"))
-            //{
-            //    string signedStatus = signingStatus.ToString();
-
-            //    updateTeamMemberTable = true;
-            //    osdg.OneSpanUpdateDocumentSignedStatus(token, assessmentID, signedStatus);
-            //}
 
             // Sets the values from the documents radio buttons and assigns them to fieldIds using the fieldName as the value. This is all grouped by each signers signatureID so we can send each signers values to be updated in the DB
             List<FieldSummary> fieldSummaries = ossClient.FieldSummaryService.GetFieldSummary(new PackageId(packageId));
