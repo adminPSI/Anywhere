@@ -299,7 +299,7 @@ $.session.stateAbbreviation = '';
 $.session.deviceGUID = '';
 //API Keys
 $.session.azureSTTApi = '';
-$.session.isActiveUsers = false; // false to get active and inactive user both 
+$.session.isActiveUsers = true; // to get active and inactive user both  
 
 $(window).resize(function () {
   //resizeActionCenter();
