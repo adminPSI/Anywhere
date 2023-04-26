@@ -1,27 +1,14 @@
 ﻿using Anywhere.Data;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using pdftron.Filters;
+using pdftron.PDF;
+using pdftron.SDF;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
-using System.Text;
 using System.Web.Script.Serialization;
-using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
-using PSIOISP;
-using System.Web.Services.Description;
-using pdftron.PDF;
-using pdftron.Filters;
-using pdftron.SDF;
-using pdftron.FDF;
-using System.Collections;
-using iTextSharp.text.pdf;
-using iTextSharp.text;
-using pdftron;
-using System.Management.Automation.Language;
-using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
-using iTextSharp.text.pdf.qrcode;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -36,8 +23,8 @@ namespace Anywhere.service.Data.DocumentConversion
         JavaScriptSerializer js = new JavaScriptSerializer();
         GetReportsStreams grs = new GetReportsStreams();
         PDFGenerator.Data obj = new PDFGenerator.Data();
-        
-      //  PDFDoc doc = new PDFDoc();
+
+        //  PDFDoc doc = new PDFDoc();
 
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
         {
@@ -50,18 +37,18 @@ namespace Anywhere.service.Data.DocumentConversion
                 string planAttachments = aadg.getPlanAttachmentsWithOrdering(assessmentId);
                 js.MaxJsonLength = Int32.MaxValue;
                 PlanAttachments[] planAttachmentsObj = js.Deserialize<PlanAttachments[]>(planAttachments);
-                
+
                 string workflowAttachments = aadg.getWorkFlowAttachmentswithOrdering(assessmentId);
                 js.MaxJsonLength = Int32.MaxValue;
                 WorkFlowAttachments[] workflowAttachmentsObj = js.Deserialize<WorkFlowAttachments[]>(workflowAttachments);
-                
+
                 int wfL = workflowAttachmentsObj.Length;
                 int planL = planAttachmentsObj.Length;
                 int total = wfL + planL;
                 string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
                 PlanAndWorkflowAttachments[] pAWAttachObj = js.Deserialize<PlanAndWorkflowAttachments[]>(pAWAttach);
                 int i = 0;
-                foreach(WorkFlowAttachments wfa in workflowAttachmentsObj)
+                foreach (WorkFlowAttachments wfa in workflowAttachmentsObj)
                 {
                     pAWAttachObj[i].attachmentId = wfa.attachmentId;
                     pAWAttachObj[i].description = wfa.description;
@@ -70,7 +57,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
-                //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
+                    //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 foreach (PlanAttachments wfa in planAttachmentsObj)
@@ -82,7 +69,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
-                //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
+                    //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 //string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
@@ -96,7 +83,7 @@ namespace Anywhere.service.Data.DocumentConversion
         }
         public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
-            string sendtoDODDResult = string.Empty; 
+            string sendtoDODDResult = string.Empty;
 
             try
             {
@@ -173,24 +160,25 @@ namespace Anywhere.service.Data.DocumentConversion
             }
             catch (Exception)
             {
-                return "There was failure in the send process. Please contact your adminitrator.";        
+                return "There was failure in the send process. Please contact your adminitrator.";
             }
 
             if (wfAttachmentIds.Length == 0 && sigAttachmentIds.Length == 0 && planAttachmentIds.Length == 0)
             {
                 return "Successfully sent Plan to DODD.";
-            } else
+            }
+            else
             {
                 return "Successfully sent Plan and selected Attachments to DODD.";
             }
-            
-           // }
+
+            // }
 
         }
 
-        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan)
         {
-           
+
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
@@ -209,7 +197,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 MemoryStream assessment = new MemoryStream();
                 MemoryStream intro = new MemoryStream();
                 MemoryStream plan = new MemoryStream();
-               
+
                 foreach (ReportSectionOrder ord in order)
                 {
                     if (true == true)
@@ -222,110 +210,110 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "All About Me")
                             {
-                               intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                 plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
 
                             }
                         }
-                            if (ord.setting_value == "2")
+                        if (ord.setting_value == "2")
+                        {
+                            if (ord.setting_key == "Assessment")
                             {
-                                if (ord.setting_key == "Assessment")
-                                {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "Plan")
-                                {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
                             }
-                            if (ord.setting_value == "3")
+                            if (ord.setting_key == "All About Me")
                             {
-                                if (ord.setting_key == "Assessment")
-                                {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "Plan")
-                                {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
                             }
-                            if (ord.setting_value == "4")
+                            if (ord.setting_key == "Plan")
                             {
-                                if (ord.setting_key == "Assessment")
-                                {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
 
-                                }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "Plan")
-                                {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
-
-                                }
                             }
-                            if (ord.setting_value == "5")
+                        }
+                        if (ord.setting_value == "3")
+                        {
+                            if (ord.setting_key == "Assessment")
                             {
-                                if (ord.setting_key == "Assessment")
-                                {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "Plan")
-                                {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
                             }
-                            if (ord.setting_value == "6")
+                            if (ord.setting_key == "All About Me")
                             {
-                                if (ord.setting_key == "Assessment")
-                                {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "Plan")
-                                {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
                             }
-                        
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
+
+                            }
+                        }
+                        if (ord.setting_value == "4")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
+
+
+                            }
+                        }
+                        if (ord.setting_value == "5")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
+
+                            }
+                        }
+                        if (ord.setting_value == "6")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
+
+                            }
+                        }
+
 
                     }
-                 }
+                }
 
                 byte[] introReport = StreamExtensions.ToByteArray(intro);
                 intro.Close();
@@ -335,7 +323,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 assessment.Close();
                 intro.Flush();
                 assessment.Dispose();
-                byte[] planReport = StreamExtensions.ToByteArray(plan);                
+                byte[] planReport = StreamExtensions.ToByteArray(plan);
                 plan.Close();
                 intro.Flush();
                 plan.Dispose();
@@ -344,18 +332,18 @@ namespace Anywhere.service.Data.DocumentConversion
                 {
                     wfAttRep = wfAttReport(wfAttachmentIds);
                 }
-                if(sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
+                if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
                 {
                     sigAttRep = sigAttReport(sigAttachmentIds);
                 }
-                if(planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
+                if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
                 {
                     planAttRep = planAttReport(planAttachmentIds);
                 }
-                
+
                 foreach (ReportSectionOrder ord in order)
                 {
-                    if(ord.setting_value == "1")
+                    if (ord.setting_value == "1")
                     {
                         if (ord.setting_key == "Assessment")
                         {
@@ -371,34 +359,34 @@ namespace Anywhere.service.Data.DocumentConversion
                         }
                         if (ord.setting_key == "Assessment Attachments")
                         {
-                            if(planAttRep.Count != 0)
+                            if (planAttRep.Count != 0)
                             {
                                 foreach (byte[] att in planAttRep)
                                 {
                                     allAttachments.Add(att);
                                 }
                             }
-                                                       
+
                         }
                         if (ord.setting_key == "Signature Attachments")
                         {
-                            if(sigAttRep.Count != 0)
+                            if (sigAttRep.Count != 0)
                             {
                                 foreach (byte[] att in sigAttRep)
                                 {
                                     allAttachments.Add(att);
                                 }
-                            }                            
+                            }
                         }
                         if (ord.setting_key == "Workflow Attachments")
                         {
-                            if(wfAttRep.Count != 0)
+                            if (wfAttRep.Count != 0)
                             {
                                 foreach (byte[] att in wfAttRep)
                                 {
                                     allAttachments.Add(att);
                                 }
-                            }                            
+                            }
                         }
                     }
                     if (ord.setting_value == "2")
@@ -634,18 +622,18 @@ namespace Anywhere.service.Data.DocumentConversion
 
                 }
 
-                
+
                 byte[] finalMergedArray = concatAndAddContent(allAttachments);
                 response.Clear();
                 response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
-                response.ContentType = "application/pdf";                
+                response.ContentType = "application/pdf";
                 response.BinaryWrite(finalMergedArray);
 
             }
 
         }
 
-        
+
 
         public List<byte[]> wfAttReport(string[] wfAttachmentIds)
         {
@@ -750,7 +738,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-       
+
 
 
         public List<byte[]> sigAttReport(string[] wfAttachmentIds)
@@ -856,8 +844,8 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-       public List<byte[]> planAttReport(string[] planAttachmentIds)
-       {
+        public List<byte[]> planAttReport(string[] planAttachmentIds)
+        {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
@@ -954,14 +942,14 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                         }
                     }
-                    
+
                 }
 
             }
             return allAttachments;
 
         }
-       
+
 
         public static byte[] concatAndAddContent(List<byte[]> pdfByteContent)
         {
@@ -1108,7 +1096,7 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        
+
 
         public byte[] getISPReportStream(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
@@ -1118,7 +1106,7 @@ namespace Anywhere.service.Data.DocumentConversion
             byte[] planReport = StreamExtensions.ToByteArray(ms);
             ms.Close();
             ms.Dispose();
-            
+
             return planReport;
         }
 
@@ -1153,7 +1141,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
             public string workflowstepdocId { get; set; }
-            
+
         }
 
         public class PlanAttachments

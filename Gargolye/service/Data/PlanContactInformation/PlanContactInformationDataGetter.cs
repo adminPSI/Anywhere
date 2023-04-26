@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanContactInformation
@@ -202,7 +201,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             }
         }
 
-        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email)
+        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertPlanContactImportantPeople ");
@@ -215,6 +214,9 @@ namespace Anywhere.service.Data.PlanContactInformation
             list.Add(address);
             list.Add(phone);
             list.Add(email);
+            list.Add(phone2);
+            list.Add(phoneExt);
+            list.Add(phone2Ext);
             string text = "CALL DBA.ANYW_ISP_InsertContactImportantPeople(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -226,7 +228,7 @@ namespace Anywhere.service.Data.PlanContactInformation
                 return "7APCIDG: error ANYW_ISP_InsertContactImportantPeople";
             }
         }
-        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email)
+        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updatePlanContactImportantPeople ");
@@ -239,6 +241,9 @@ namespace Anywhere.service.Data.PlanContactInformation
             list.Add(address);
             list.Add(phone);
             list.Add(email);
+            list.Add(phone2);
+            list.Add(phoneExt);
+            list.Add(phone2Ext);
             string text = "CALL DBA.ANYW_ISP_UpdateContactImportantPeople(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

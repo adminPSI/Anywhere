@@ -1,7 +1,8 @@
 const consumerFinanceAttachment = (() => {
     let attachments;
     let registerID;
-
+    let IsDisabledBtn;
+    let attachmentArray = [];
     /** Class for attachments in Plan Module */
     class ConsumerFinanceAttachment {
         /**
@@ -10,9 +11,10 @@ const consumerFinanceAttachment = (() => {
          * @param {string} regId question ID the attachment button is assoicated with
          * @param {string} assessmentId Assessment ID
          */
-        constructor(header, regId) {
+        constructor(header, regId, IsDisabled) {
             this.attachmentsForQuestion = header;
             this.regId = regId;
+            this.IsDisabledBtn = IsDisabled;
         }
 
         buildAttachmentButton() {
@@ -38,6 +40,7 @@ const consumerFinanceAttachment = (() => {
             const attachmentsForQuestion = this.attachmentsForQuestion;
             const attachmentsToDelete = [];
             const attachmentsAdded = [];
+           
             // PERMISSIONS
             let ro;
             const planStatus = plan.getPlanStatus();
@@ -56,7 +59,7 @@ const consumerFinanceAttachment = (() => {
                 attachmentsForQuestion.forEach(attachment => {
                     const fileContainer = document.createElement('div');
                     fileContainer.classList.add('reviewAttachmentContainer');
-                    fileContainer.setAttribute('id', attachment.planAttachmentId);
+                    fileContainer.setAttribute('id', attachment.attachmentID); 
                     fileContainer.setAttribute('delete', false);
                     const removeAttachmentBtn = button.build({
                         style: 'secondary',
@@ -70,7 +73,7 @@ const consumerFinanceAttachment = (() => {
                     fileContainer.appendChild(file);
                     file.addEventListener('click', event => {
                         const attachmentId = event.target.parentElement.id;
-                        planAjax.viewPlanAttachment(attachmentId, '');
+                        ConsumerFinancesAjax.viewCFAttachment(attachmentId, '');
                     });
                     reviewAttachmentList.appendChild(fileContainer);
                 });
@@ -166,7 +169,7 @@ const consumerFinanceAttachment = (() => {
                 }
                 // DELETE ATTACHMENTS
                 attachmentsToDelete.forEach(attachment => {
-                    ConsumerFinancesAjax.deleteCFAttachment(assessmentId, attachment);
+                    ConsumerFinancesAjax.deleteCFAttachment(attachment);                 
                 });
 
                 // ADD ATTACHMENTS
@@ -175,9 +178,9 @@ const consumerFinanceAttachment = (() => {
                     console.log('no attachments to add');
                     return;
                 }
-
+ 
                 let attachmentProms = [];
-                let attachmentArray = [];
+  
                 attachmentInputs.forEach(inputElement => {
                     if (inputElement.value === '') {
                         return;
@@ -202,6 +205,9 @@ const consumerFinanceAttachment = (() => {
 
                 await Promise.all(attachmentProms);
                 await saveAttachmentsToDB();
+
+                POPUP.hide(popup);
+                NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded) 
             }
             //===========================================
             //===========================================
@@ -254,6 +260,18 @@ const consumerFinanceAttachment = (() => {
                     POPUP.hide(popup);
                 },
             });
+
+            if (this.IsDisabledBtn == true) { 
+                removeAttachmentBtn.classList.add('disabled'); 
+                saveBtn.classList.add('disabled');
+                addAttachmentBtn.classList.add('disabled');
+            }
+            else {
+                removeAttachmentBtn.classList.remove('disabled');
+                saveBtn.classList.remove('disabled');
+                addAttachmentBtn.classList.remove('disabled');  
+            }
+
             const reviewAttachmentList = document.createElement('div');
             reviewAttachmentList.classList.add('reviewAttachmentList');
             const newAttachmentList = document.createElement('div');
@@ -286,7 +304,7 @@ const consumerFinanceAttachment = (() => {
                 btnWrap.appendChild(saveBtn);
             }
 
-            btnWrap.appendChild(cancelBtn);
+            btnWrap.appendChild(cancelBtn); 
             popup.appendChild(btnWrap);
 
             if (attachmentsForQuestion.length > 0) populateExistingAttachments();

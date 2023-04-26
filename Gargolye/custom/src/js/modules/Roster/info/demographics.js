@@ -2,12 +2,13 @@ const demographics = (function () {
   let demoData;
   let sectionInner;
   let unEditabled = [
+    'pathToEmployment',
     'county',
     'organization',
     'organizationAddress',
     'organizationPhone',
-    'name',
     'generation',
+    'name',
     'age',
     'race',
     'maritalStatus',
@@ -16,6 +17,25 @@ const demographics = (function () {
     'educationLevel',
   ];
   let gkOnly = ['cellPhone', 'generation'];
+
+  function stringAdd(string, start, newSubStr) {
+    return string.slice(0, start) + newSubStr + string.slice(start);
+  }
+
+  function setCaretPosition(elem, caretPos) {
+    if (elem != null) {
+      if (elem.createTextRange) {
+        var range = elem.createTextRange();
+        range.move('character', caretPos);
+        range.select();
+      } else {
+        if (elem.selectionStart) {
+          elem.focus();
+          elem.setSelectionRange(caretPos, caretPos);
+        } else elem.focus();
+      }
+    }
+  }
 
   function clearCurrentEdit() {
     // check for field in edit mode and switch to view
@@ -30,13 +50,40 @@ const demographics = (function () {
       currentEdit.classList.remove('editMode');
     }
   }
+  function formatName(f, m, l) {
+    const first = f;
+    const middle = m ? m : '';
+    const last = l;
 
+    return `${first} ${middle} ${last}`;
+  }
+  function formatMaritalStatus(status) {
+    switch (status) {
+      case 'M':
+        return 'Married';
+      case 'S':
+        return 'Single';
+      case 'P':
+        return 'Separated';
+      case 'W':
+        return 'Widowed';
+      case 'D':
+        return 'Divorced';
+      case 'U':
+        return 'Unkown';
+    }
+  }
   function formatPhoneNumber(number) {
     if (!number) return;
-    const splitNumber = number.split('%');
-    const phoneNumber = UTIL.formatPhoneNumber(splitNumber[0].trim());
-    const phoneType = splitNumber.length > 1 ? splitNumber[1] : '';
-    const phone = `${phoneNumber} ${phoneType}`;
+    const splitNumber = number
+      .replace(/[^\w\s]/gi, '')
+      .replaceAll(' ', '')
+      .replaceAll('x', '');
+
+    const phoneNumber = UTIL.formatPhoneNumber(splitNumber.substr(0, 10));
+    const phoneExt = splitNumber.substr(10);
+
+    const phone = phoneExt ? `${phoneNumber} (${phoneExt})` : `${phoneNumber}`;
 
     return phone;
   }
@@ -58,34 +105,25 @@ const demographics = (function () {
 
     return formatDOB;
   }
-  function formatLabelText(text) {
-    const splitText = text
-      .match(/([A-Z]?[^A-Z]*)/g)
-      .slice(0, -1)
-      .map(t => UTIL.capitalize(t));
-    return splitText.join(' ');
+  function formatSSN(ssn) {
+    let SSN = stringAdd(ssn, 3, '-');
+    SSN = stringAdd(SSN, 6, '-');
+    return SSN;
   }
-  function formatViewInnerHTML(name, value) {
-    if (!value) value = '';
-
-    switch (name) {
-      case 'city': {
-        return `${value}, `;
-      }
-      case 'addressOne':
-      case 'addressTwo':
-      case 'state':
-      case 'zip': {
-        return value;
-      }
-      default: {
-        return `<span>${formatLabelText(name)}:</span> ${value}`;
-      }
+  function formatOrganizationAddress(add1, add2, city, state, zip) {
+    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''} ${
+      state ? state : ''
+    }</br>${zip ? formatZipCode(zip) : ''}`;
+  }
+  function formatZipCode(zipCode) {
+    const zip = zipCode.replace(/[^\w\s]/gi, '').replaceAll(' ', '');
+    if (zip.length <= 5) {
+      return zip;
+    } else {
+      return zip.slice(0, 5) + '-' + zip.slice(5);
     }
   }
-  function formatOrganizationAddress(add1, add2, city, zip) {
-    return `${add1 ? add1 : ''} ${add2 ? add2 : ''}, ${city ? city : ''} ${zip ? zip : ''}`;
-  }
+
   function setInputType(input, name) {
     // DATE
     if (name === 'dateOfBirth') {
@@ -131,6 +169,36 @@ const demographics = (function () {
     }
     return age;
   }
+  function formatLabelText(text) {
+    if (text.toLowerCase() === 'ssn') {
+      return text.toUpperCase();
+    }
+
+    const splitText = text
+      .match(/([A-Z]?[^A-Z]*)/g)
+      .slice(0, -1)
+      .map(t => UTIL.capitalize(t));
+    return splitText.join(' ');
+  }
+  function formatViewInnerHTML(name, value) {
+    if (!value) value = '';
+
+    switch (name) {
+      case 'city': {
+        return `${value}, `;
+      }
+      case 'addressOne':
+      case 'addressTwo':
+      case 'state':
+      case 'zip':
+      case 'pathToEmployment': {
+        return value;
+      }
+      default: {
+        return `<span>${formatLabelText(name)}:</span> ${value}`;
+      }
+    }
+  }
 
   function formatDataForDisplay(data) {
     const pathToEmployment = data.pathToEmployment;
@@ -140,38 +208,44 @@ const demographics = (function () {
     const addressTwo = data.addresstwo;
     const city = data.mailcity;
     const state = data.mailstate;
-    const zip = data.mailzipcode ? data.mailzipcode.trim() : data.mailzipcode;
+    const zip = data.mailzipcode ? formatZipCode(data.mailzipcode) : '';
 
     // Contact Info
     const primaryPhone = formatPhoneNumber(data.primaryphone);
     const secondaryPhone = formatPhoneNumber(data.secondaryphone);
     let cellPhone = data.cellphone ? data.cellphone.trim() : undefined;
-    cellPhone = cellPhone !== '%' ? UTIL.formatPhoneNumber(cellPhone) : '';
+    cellPhone = cellPhone !== '%' ? formatPhoneNumber(cellPhone) : '';
     const email = data.email;
 
     // Additional Info
     const dateOfBirth = formatDOB(data.DOB);
+    const socialSecurityNumber = formatSSN(data.SSN);
     const medicaidNumber = data.MedicaidNumber;
     const medicareNumber = data.MedicareNumber;
     const residentNumber = data.ResidentNumber;
 
     // Organization Info
-    const county = data.county;
+    const county = data.County;
     const organization = data.orgName;
     const organizationAddress = formatOrganizationAddress(
       data.orgAdd1,
       data.orgAdd2,
-      data.city,
+      data.orgCity,
+      data.orgState,
       data.orgZipCode,
     );
     const organizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
 
     // Demographic Info
-    const name = `${data.firstname} ${data.lastname}`;
+    const name = formatName(data.firstname, data.middlename, data.lastname);
+    // const firstName = data.firstname;
+    // const middleName = data.middlename;
+    // const lastName = data.lastname;
+
     const generation = data.generation;
     const age = getAgeFromDOB(data.DOB);
     const race = data.race;
-    const maritalStatus = data.maritalStatus;
+    const maritalStatus = formatMaritalStatus(data.maritalStatus);
     const gender = data.gender;
     const primaryLanguage = data.language;
     const educationLevel = data.educationLevel;
@@ -199,6 +273,7 @@ const demographics = (function () {
         medicaidNumber,
         medicareNumber,
         residentNumber,
+        ssn: socialSecurityNumber,
       },
       // Organization Info
       organization: {
@@ -223,7 +298,7 @@ const demographics = (function () {
 
   function buildInputGroupWrap(title) {
     const wrap = document.createElement('div');
-    wrap.classList.add('inputGroupWrap', `${title.split(' ')[0].toLowerCase()}`);
+    wrap.classList.add('inputGroupWrap', `${title.replaceAll(' ', '').toLowerCase()}`);
 
     const heading = document.createElement('h3');
     heading.innerText = title;
@@ -231,8 +306,9 @@ const demographics = (function () {
     wrap.appendChild(heading);
 
     wrap.addEventListener('click', e => {
+      if (!$.session.DemographicsUpdate) return;
+
       if (e.target.classList.contains('inputGroup')) {
-        console.log('click from wrap');
         if (e.target.classList.contains('unEditabled')) return;
         clearCurrentEdit();
         // set target to edit mode
@@ -262,7 +338,7 @@ const demographics = (function () {
 
     // edit element
     let editElement;
-    if (!unEditabled.includes(name)) {
+    if (!unEditabled.includes(name) || !$.session.DemographicsUpdate) {
       editElement = document.createElement('div');
       editElement.classList.add('edit');
 
@@ -271,6 +347,9 @@ const demographics = (function () {
       } else {
         if (name.includes('Phone')) {
           value = value.replace(' ', '');
+        }
+        if (name === 'dateOfBirth') {
+          value = UTIL.formatDateToIso(value);
         }
       }
 
@@ -299,12 +378,65 @@ const demographics = (function () {
             editElement.classList.remove('invalid');
           }
         }
+        if (name === 'ssn') {
+          let validSocial = false;
+          let value = e.target.value.replaceAll('-', '').slice(0, 9);
+
+          if (value.length === 9) {
+            validSocial = true;
+          }
+
+          let social;
+
+          if (value.length >= 4 && value.length <= 5) {
+            social = stringAdd(value, 3, '-');
+            e.target.value = social;
+          }
+          if (value.length >= 6) {
+            social = stringAdd(value, 3, '-');
+            social = stringAdd(social, 6, '-');
+            e.target.value = social;
+          }
+
+          if (validSocial) {
+            editElement.classList.remove('invalid');
+          } else {
+            editElement.classList.add('invalid');
+          }
+        }
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
-          const validatePhone = phone => {
-            return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
-            //return phone.replace(/[^0-9.]/g, '').length === 10;
-          };
-          if (!validatePhone(e.target.value)) {
+          let validPhone = false;
+          let value = e.target.value
+            .replace(/[^\w\s]/gi, '')
+            .replaceAll(' ', '')
+            .slice(0, 15);
+
+          let phoneNumber;
+
+          if (value.length >= 4 && value.length <= 6) {
+            phoneNumber = stringAdd(value, 3, '-');
+            e.target.value = phoneNumber;
+          }
+          if (value.length >= 7 && value.length <= 10) {
+            phoneNumber = stringAdd(value, 3, '-');
+            phoneNumber = stringAdd(phoneNumber, 7, '-');
+            e.target.value = phoneNumber;
+          }
+          if (value.length > 10) {
+            phoneNumber = stringAdd(value, 3, '-');
+            phoneNumber = stringAdd(phoneNumber, 7, '-');
+            phoneNumber = stringAdd(phoneNumber, 12, ' (');
+            phoneNumber = stringAdd(phoneNumber, phoneNumber.length + 1, ')');
+            e.target.value = phoneNumber;
+
+            setCaretPosition(e.target, phoneNumber.length - 1);
+
+            validPhone = true;
+          }
+          // const validatePhone = phone => {
+          //   return phone.match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
+          // };
+          if (!validPhone) {
             editElement.classList.add('invalid');
           } else {
             editElement.classList.remove('invalid');
@@ -313,14 +445,27 @@ const demographics = (function () {
       });
 
       input.addEventListener('focusout', async e => {
-        console.log('focusout from input');
+        // check for invalid calss
+        if (e.target.parentElement.classList.contains('invalid')) return;
+
+        let saveValue = e.target.value;
         // show spinner
         PROGRESS__ANYWHERE.init();
         PROGRESS__ANYWHERE.SPINNER.show(saveIcon);
+        if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
+          const splitNumber = e.target.value.split(' ');
+          const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
+          let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+
+          saveValue = `${phoneNumber}${phoneExt}`;
+        }
+        if (name === 'ssn') {
+          saveValue = e.target.value.replaceAll('-', '');
+        }
         // save value
         const success = await rosterAjax.updateConsumerDemographics({
           field: name,
-          newValue: e.target.value,
+          newValue: saveValue,
           consumerId,
           applicationName: $.session.applicationName,
         });
@@ -348,6 +493,13 @@ const demographics = (function () {
     return { inputGroup, viewEle: viewElement };
   }
 
+  function buildPathToEmployment() {
+    const groupWrap = buildInputGroupWrap('Path To Employment');
+    const { inputGroup } = buildInputGroup('pathToEmployment', demoData.pathToEmployment);
+    groupWrap.appendChild(inputGroup);
+
+    return groupWrap;
+  }
   function buildAddressInfo() {
     const groupWrap = buildInputGroupWrap('Address');
 
@@ -374,8 +526,6 @@ const demographics = (function () {
       }
       const propValue = demoData.contact[prop];
       const { inputGroup } = buildInputGroup(prop, propValue);
-      // set label for view elements
-
       // append
       groupWrap.appendChild(inputGroup);
     }
@@ -384,6 +534,7 @@ const demographics = (function () {
   }
   function buildAdditionalInfo() {
     const groupWrap = buildInputGroupWrap('Additional Info');
+    const viewElements = {};
 
     for (const prop in demoData.additional) {
       // GK Only Check
@@ -391,11 +542,61 @@ const demographics = (function () {
         if (gkOnly.includes(prop)) continue;
       }
       const propValue = demoData.additional[prop];
-      const { inputGroup } = buildInputGroup(prop, propValue);
+      const { inputGroup, viewEle } = buildInputGroup(prop, propValue);
+
+      if (
+        prop === 'ssn' ||
+        prop === 'dateOfBirth' ||
+        prop === 'medicaidNumber' ||
+        prop === 'medicareNumber' ||
+        prop === 'residentNumber'
+      ) {
+        viewEle.classList.add('hidden');
+      }
+
+      // cache view ele
+      viewElements[prop] = viewEle;
 
       // append
       groupWrap.appendChild(inputGroup);
     }
+
+    const showDetailsoBtn = button.build({
+      text: 'Show Details',
+      style: 'secondary',
+      type: 'outlined',
+    });
+    groupWrap.appendChild(showDetailsoBtn);
+
+    showDetailsoBtn.addEventListener('click', function (e) {
+      if (e.target.innerText.toLowerCase() === 'show details') {
+        e.target.innerText = 'Hide Details';
+
+        if ($.session.DemographicsViewDOB) {
+          viewElements['dateOfBirth'].classList.remove('hidden');
+        }
+        if ($.session.DemographicsViewMedicaid) {
+          viewElements['medicaidNumber'].classList.remove('hidden');
+        }
+        if ($.session.DemographicsViewMedicare) {
+          viewElements['medicareNumber'].classList.remove('hidden');
+        }
+        if ($.session.DemographicsViewResident) {
+          viewElements['residentNumber'].classList.remove('hidden');
+        }
+        if ($.session.DemographicsViewSSN) {
+          viewElements['ssn'].classList.remove('hidden');
+        }
+      } else {
+        e.target.innerText = 'Show Details';
+
+        viewElements['dateOfBirth'].classList.add('hidden');
+        viewElements['medicaidNumber'].classList.add('hidden');
+        viewElements['medicareNumber'].classList.add('hidden');
+        viewElements['residentNumber'].classList.add('hidden');
+        viewElements['ssn'].classList.add('hidden');
+      }
+    });
 
     return groupWrap;
   }
@@ -432,22 +633,6 @@ const demographics = (function () {
     }
 
     return groupWrap;
-
-    // TODO: refactor below code *also show details button need changed to naked style
-    document.getElementById('infoButton').addEventListener('click', function (e) {
-      if (e.target.value === 'Show Details') {
-        e.target.value = 'Hide Details';
-
-        document.getElementById('DOB').textContent = `DOB: ${formatDOB}`;
-        document.getElementById('SSN').textContent = `SSN: ${demoData.SSN}`;
-        document.getElementById('Medicaid').textContent = `Medicaid: ${demoData.MedicaidNumber}`;
-      } else {
-        e.target.value = 'Show Details';
-        document.getElementById('DOB').textContent = 'DOB:';
-        document.getElementById('SSN').textContent = 'SSN:';
-        document.getElementById('Medicaid').textContent = 'Medicaid:';
-      }
-    });
   }
 
   function populateDemographicsSection(section, data, consumerID) {
@@ -458,17 +643,29 @@ const demographics = (function () {
     sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
 
+    const pathToEmployment = buildPathToEmployment();
     const addressInfo = buildAddressInfo();
     const contactInfo = buildContactInfo();
     const additionalInfo = buildAdditionalInfo();
     const organizationInfo = buildOrganizationInfo();
     const demographicInfo = buildDemographicInfo();
 
+    sectionInner.appendChild(pathToEmployment);
     sectionInner.appendChild(addressInfo);
     sectionInner.appendChild(contactInfo);
     sectionInner.appendChild(additionalInfo);
     sectionInner.appendChild(organizationInfo);
     sectionInner.appendChild(demographicInfo);
+
+    section.addEventListener('click', e => {
+      if (
+        !e.target.classList.contains('inputGroup') &&
+        e.target.nodeName !== 'INPUT' &&
+        e.target.nodeName !== 'LABLE'
+      ) {
+        clearCurrentEdit();
+      }
+    });
   }
 
   return {

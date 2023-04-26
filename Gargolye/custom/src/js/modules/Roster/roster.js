@@ -988,7 +988,11 @@ const roster2 = (function () {
       id: 'mini_roster',
       // classNames: ['floatingActionBtn', 'consumerListBtn', 'disabled'],
       classNames: ['floatingActionBtn', 'consumerListBtn'],
-      callback: async () => {
+        callback: async () => {          
+        if ($.loadedApp === 'ConsumerFinances') {
+            clearSelectedConsumers(); 
+            clearActiveConsumers();   
+        }
         MINI_ROSTER_BTN.classList.add('disabled');
         await showMiniRoster(rosterOptions);
         MINI_ROSTER_BTN.classList.remove('disabled');

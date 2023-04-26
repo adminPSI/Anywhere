@@ -10,11 +10,18 @@ $.session.DayServiceOverRide = false;
 $.session.DenyStaffClockUpdate = false;
 $.session.DenyClockUpdate = false;
 $.session.DemographicsView = false;
+$.session.DemographicsUpdate = false;
 $.session.DemographicsBasicDataView = false;
 $.session.DemographicsRelationshipsView = false;
 $.session.DemographicsPictureUpdate = false;
 $.session.DemographicsNotesView = false;
 $.session.DemographicsViewAttachments = false;
+$.session.viewLocationSchedulesKey = false;
+$.session.DemographicsViewDOB = false;
+$.session.DemographicsViewMedicaid = false;
+$.session.DemographicsViewMedicare = false;
+$.session.DemographicsViewResident = false;
+$.session.DemographicsViewSSN = false;
 $.session.GoalsView = false;
 $.session.GoalsUpdate = false;
 $.session.CaseNotesView = false;
@@ -137,7 +144,7 @@ $.session.dsLocationHistoryValue = 0;
 $.session.initialTimeOut = '';
 $.session.initialTimeIn = '';
 $.session.singleLoadedConsumerId = '';
-$.session.passwordSpecialCharacters = '!#$%*-?@_+'; 
+$.session.passwordSpecialCharacters = '!#$%*-?@_+';
 $.session.daysBackGoalsEdit = '';
 $.session.singleLoadedConsumerName = '';
 $.session.serviceStartDate = '';
@@ -158,6 +165,8 @@ $.session.intellivuePermission = '';
 $.session.passwordResetPermission = '';
 // $.session.formsPermission = '';
 // $.session.OODPermission = '';
+$.session.anywhereResetPasswordPermission = '';
+$.session.anywhereConsumerFinancesPermission = '';
 $.session.selectedConsumerIdForGoalsDateBack = '';
 $.session.caseNoteEdit = false;
 $.session.consumerIdToEdit = '';
@@ -196,6 +205,7 @@ $.session.singleEntryGottenById = false;
 $.session.singleEntrycrossMidnight = false;
 //Incident Tracking
 $.session.incidentTrackingView = false;
+$.session.incidentTrackingReviewedBy = false;
 $.session.incidentTrackingUpdate = false;
 $.session.incidentTrackingInsert = false;
 $.session.incidentTrackingDelete = false;
@@ -205,6 +215,7 @@ $.session.incidentTrackingPopulateIncidentDate = '';
 $.session.incidentTrackingPopulateIncidentTime = '';
 $.session.incidentTrackingPopulateReportedDate = '';
 $.session.incidentTrackingPopulateReportedTime = '';
+$.session.incidentTrackingEmailIncident = '';
 /////////
 $.session.infalHasConnectionString = false;
 $.session.isPSI = false;
@@ -236,6 +247,7 @@ $.session.schedRequestOpenShifts = 'N';
 $.session.hideAllScheduleButton = false;
 //Plan
 $.session.planUpdate = false;
+$.session.planDelete = false;
 $.session.planView = false;
 $.session.planInsertNewTeamMember = false;
 $.session.planAssignCaseload = false;
@@ -264,16 +276,30 @@ $.session.OODInsert = false;
 $.session.OODUpdate = false;
 $.session.OODView = false;
 
+// Consumer Finance
+$.session.CFDelete = false;
+$.session.CFInsert = false;
+$.session.CFUpdate = false;
+$.session.CFView = false;
+$.session.CFADDPayee = false;
+$.session.CFEditAccountEntries = false;//
+
+// Reset Password
+$.session.ResetPasswordView = false;
+$.session.ResetPasswordUpdate = false;
+
+$.session.consumerId = '';
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
-$.session.version = '2023.1';
+$.session.version = '2023.2';
 //State Abbreviation
 $.session.stateAbbreviation = '';
 // temp holder for the device GUID when logging in
 $.session.deviceGUID = '';
 //API Keys
 $.session.azureSTTApi = '';
+$.session.isActiveUsers = true; // to get active and inactive user both  
 
 $(window).resize(function () {
   //resizeActionCenter();
@@ -338,10 +364,10 @@ function eraseCookie(name) {
 }
 
 function setSessionVariables() {
-  var cookieInnards = $.session.permissionString;
+    var cookieInnards = $.session.permissionString;
   //checkForErrors();
 
-  $('result', cookieInnards).each(function () {
+    $('result', cookieInnards).each(function () {
     tmpWindow = $('window_name', this).text();
     tmpPerm = $('permission', this).text();
     tmpSpec = $('special_data', this).text();
@@ -476,9 +502,13 @@ function setSessionVariables() {
       }
     }
     //Demographics
+    //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Demographics') {
       if (tmpPerm == 'View') {
         $.session.DemographicsView = true;
+      }
+      if (tmpPerm == 'Update') {
+        $.session.DemographicsUpdate = true;
       }
 
       if (tmpPerm == 'View Relationships') {
@@ -504,7 +534,21 @@ function setSessionVariables() {
       if (tmpPerm == 'View Location Schedule') {
         $.session.viewLocationSchedulesKey = true;
       }
-      //$.session.DemographicsNotesView = true; //remove before committing
+      if (tmpPerm == 'View DOB') {
+        $.session.DemographicsViewDOB = true;
+      }
+      if (tmpPerm == 'View Medicaid Number') {
+        $.session.DemographicsViewMedicaid = true;
+      }
+      if (tmpPerm == 'View Medicare Number') {
+        $.session.DemographicsViewMedicare = true;
+      }
+      if (tmpPerm == 'View Resident Number') {
+        $.session.DemographicsViewResident = true;
+      }
+      if (tmpPerm == 'View SSN') {
+        $.session.DemographicsViewSSN = true;
+      }
     }
 
     //Incident Tracking Permissons
@@ -524,6 +568,12 @@ function setSessionVariables() {
       if (tmpPerm == 'View') {
         $.session.incidentTrackingView = true;
       }
+      if (tmpPerm == 'Reviewed By User') {
+        $.session.incidentTrackingReviewedBy = true;
+      }
+      if (tmpPerm == 'Email Incident') {
+        $.session.incidentTrackingEmailIncident = true;
+      }
     }
 
     //Anywhere Plan
@@ -531,6 +581,9 @@ function setSessionVariables() {
       //plansettingsdiv
       if (tmpPerm == 'Update' || $.session.isPSI == true) {
         $.session.planUpdate = true;
+      }
+      if (tmpPerm == 'Delete Plan' || $.session.isPSI == true) {
+        $.session.planDelete = true;
       }
       if (tmpPerm == 'View' || $.session.isPSI == true) {
         $.session.planView = true;
@@ -628,6 +681,39 @@ function setSessionVariables() {
         $.session.OODInsert = true;
       }
     }
+
+    // Consumer Finance
+      if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
+      if (tmpPerm == 'Update' || $.session.isPSI == true) {
+        $.session.CFUpdate = true;
+      }
+      if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+        $.session.CFDelete = true;
+      }
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $.session.CFView = true;
+      }
+      if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+        $.session.CFInsert = true;
+      }
+      if (tmpPerm == 'Add Payee' || $.session.isPSI == true) {
+        $.session.CFADDPayee = true;
+      }
+      if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
+        $.session.CFEditAccountEntries = true;
+      }
+      }
+  
+      //Reset Password
+        if (tmpWindow == 'Anywhere Reset Passwords' ) {       
+          if (tmpPerm == 'View' || $.session.isPSI == true) { 
+              $('#Adminsettingdiv').removeClass('disabledModule');
+              $.session.ResetPasswordView = true; 
+          }     
+          if (tmpPerm == 'Update' || $.session.isPSI == true) {
+              $.session.ResetPasswordUpdate = true;
+          }        
+      }  
 
     if (tmpWindow == 'Anywhere User Home') {
       if (tmpPerm == 'Deny Staff TimeClock Change') {
@@ -1461,7 +1547,11 @@ function checkModulePermissions() {
   }
   if ($.session.OODView == false) {
     $('#OODsettingsdiv').addClass('disabledModule');
-  }
+    }
+
+    if ($.session.ResetPasswordView == false) {
+        $('#Adminsettingdiv').addClass('disabledModule');
+    }
 
   $('#adminsingleentrysettingsdiv').hide();
   if ($.session.ViewAdminSingleEntry === true) {
@@ -1562,15 +1652,28 @@ function disableModules() {
   } else {
     $('#OODsettingsdiv').css('display', 'none');
   }
-  if ($.session.passwordResetPermission = 'Anywhere') {//
-      //Leave module on
-  } else {
-      $('#Adminsettingdiv').css('display', 'none');
-  }
+  //if (($.session.passwordResetPermission = 'Anywhere')) {
+  //  //
+  //  //Leave module on
+  //} else {
+  //  $('#Adminsettingdiv').css('display', 'none');
+  //}
   if ($.session.UserId === 'ash' || $.session.anywherePlanPermission == 'Anywhere_Plan') {
     //Leave module on
   } else {
     $('#plansettingsdiv').css('display', 'none');
+  }
+
+  if ($.session.anywhereResetPasswordPermission == 'Anywhere_Administration') {
+    //Leave module on
+  } else {
+    $('#Adminsettingdiv').css('display', 'none');
+  }
+
+  if ($.session.anywhereConsumerFinancesPermission == 'Anywhere_Consumer_Finances') {
+    //Leave module on
+  } else {
+    $('#consumerfinancessettingsdiv').css('display', 'none');
   }
 }
 

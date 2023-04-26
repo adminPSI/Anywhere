@@ -1258,7 +1258,7 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames:
-        planStatus === 'D' && planActiveStatus && $.session.planUpdate
+        planStatus === 'D' && planActiveStatus && $.session.planUpdate && $.session.planDelete
           ? ['deleteBtn']
           : ['deleteBtn', 'disabled'],
     });
@@ -1751,6 +1751,12 @@ const plan = (function () {
     let insertedSSA;
     const workflowIds = [];
 
+    var selectedConsumer = plan.getSelectedConsumer();
+    var salesForceCaseManagerId = await consentAndSignAjax.getStateCaseManagerforConsumer({
+      peopleId: selectedConsumer.id,
+    });
+
+   
     if (planType === 'a') {
       const planYearStartDate = planDates.getPlanYearStartDate();
       const planYearReviewDate = planDates.getPlanReviewDate();
@@ -1760,6 +1766,7 @@ const plan = (function () {
         consumerId: selectedConsumer.id,
         planYearStart: UTIL.formatDateFromDateObj(planYearStartDate),
         reviewDate: UTIL.formatDateFromDateObj(planYearReviewDate),
+        salesForceCaseManagerId: salesForceCaseManagerId,
       });
 
       returnString = returnString.split(',');
@@ -1770,14 +1777,19 @@ const plan = (function () {
       const esDate = UTIL.formatDateFromDateObj(EffectiveStartDate);
       const planYearReviewDate = planDates.getPlanReviewDate();
 
-      currentPlanId = await planAjax.insertRevisedPlan({
+      let returnString = await planAjax.insertRevisedPlan({
         token: $.session.Token,
         priorConsumerPlanId,
         effectiveStart: esDate,
         effectiveEnd: edDate,
         reviewDate: UTIL.formatDateFromDateObj(planYearReviewDate),
         useLatestPlanVersion: true,
+        salesForceCaseManagerId: salesForceCaseManagerId,
       });
+
+      returnString = returnString.split(',');
+      currentPlanId = returnString[0];
+      insertedSSA = returnString[1];
     }
 
     if (selectedWorkflows && selectedWorkflows.length > 0) {
@@ -1820,18 +1832,39 @@ const plan = (function () {
     planActiveStatus = true;
     revisionNumber = undefined;
 
-    if (planType === 'a') {
+    if (salesForceCaseManagerId === "0") {
+      // const wfvPopup = document.querySelector('.workflowListPopup');
+      // if (wfvPopup) {
+      //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
+      //   POPUP.hide(wfvPopup);
+      // }
+      const consumer = getSelectedConsumerName(selectedConsumer);
+      showAddedToTeamMemberNoCasemanagerFoundPopup(consumer, () => {
+        POPUP.hide(addedMemberNoCaseManagerPopup);
+        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+        buildPlanPage();
+      });   
+    } else if (salesForceCaseManagerId === "-1") {
+      // const wfvPopup = document.querySelector('.workflowListPopup');
+      // if (wfvPopup) {
+      //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
+      //   POPUP.hide(wfvPopup);
+      // }
+      const consumer = getSelectedConsumerName(selectedConsumer);
+      showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
+        POPUP.hide(addedMemberPopup);
+        planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
+        buildPlanPage();
+      });   
+    } else {
       const consumer = getSelectedConsumerName(selectedConsumer);
       showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
         POPUP.hide(addedMemberPopup);
         planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
         buildPlanPage();
       });
-      return;
     }
-
-    planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
-    buildPlanPage();
+    
   }
 
   function buildPreviousPlansTable() {
@@ -1969,6 +2002,9 @@ const plan = (function () {
       addedMemberPopup.innerHTML += `<p>${consumer} and ${ssa} have been added as a Team Member to this plan.</p>`;
     } else {
       addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>`;
+      // addedMemberPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>
+      // <p>No SSA/QIDP assigned to this consumer in Salesforce. Please assign SSA/QIDP.</p>
+      // `;
     }
 
     const okButton = button.build({
@@ -1981,6 +2017,27 @@ const plan = (function () {
     addedMemberPopup.appendChild(okButton);
 
     POPUP.show(addedMemberPopup);
+  }
+
+  function showAddedToTeamMemberNoCasemanagerFoundPopup(consumer, callback) {
+    addedMemberNoCaseManagerPopup = POPUP.build({
+      id: 'importRelationshipPopup',
+      hideX: true,
+    });
+
+    addedMemberNoCaseManagerPopup.innerHTML += `<p>${consumer} has been added as a Team Member to this plan.</p>
+      <p>No SSA/QIDP assigned to this consumer in Salesforce. Please assign SSA/QIDP.</p>`;
+
+    const okButton = button.build({
+      text: 'Ok',
+      style: 'secondary',
+      type: 'contained',
+      callback: callback,
+    });
+
+    addedMemberNoCaseManagerPopup.appendChild(okButton);
+
+    POPUP.show(addedMemberNoCaseManagerPopup);
   }
 
   function buildNewPlanBtn() {

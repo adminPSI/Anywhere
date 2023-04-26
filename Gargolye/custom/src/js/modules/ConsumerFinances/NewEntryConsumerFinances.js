@@ -20,6 +20,9 @@ const NewEntryCF = (() => {
     let Description;
     let BtnName;
     let regId;
+    let IsDisabledBtn = false;
+    let lastUpdateBy;
+    let IsReconciled = 'N';
 
     let inputElement;
 
@@ -38,7 +41,7 @@ const NewEntryCF = (() => {
         }
         else {
             attachmentArray = [];
-            attachmentId = []; 
+            attachmentId = [];
             attachmentDesc = [];
         }
 
@@ -49,21 +52,27 @@ const NewEntryCF = (() => {
             regId = registerId;
             const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
             const { getAccountEntriesByIdResult } = result;
-            date = UTIL.getTodaysDate();//UTIL.formatDateFromIso(getAccountEntriesByIdResult[0].activityDate);
+            date = moment(getAccountEntriesByIdResult[0].activityDate).format('YYYY-MM-DD');
             amount = getAccountEntriesByIdResult[0].amount;
             account = getAccountEntriesByIdResult[0].account;
             payee = getAccountEntriesByIdResult[0].payee;
             category = getAccountEntriesByIdResult[0].category;
-            subCategory = getAccountEntriesByIdResult[0].subCategory; 
+            subCategory = getAccountEntriesByIdResult[0].subCategory;
             checkNo = getAccountEntriesByIdResult[0].checkno;
             description = getAccountEntriesByIdResult[0].description;
             receipt = getAccountEntriesByIdResult[0].receipt;
             accountID = getAccountEntriesByIdResult[0].accountID;
             accountType = getAccountEntriesByIdResult[0].accountType;
+            IsReconciled = getAccountEntriesByIdResult[0].reconciled;
+            lastUpdateBy = getAccountEntriesByIdResult[0].lastUpdateBy;
+        }
+        else if (registerId == 0 && attachmentID) {
+            regId = 0;
+            BtnName = 'SAVE'; 
         }
         else {
-            regId = 0;        
-            BtnName = 'SAVE'
+            regId = 0;
+            BtnName = 'SAVE';
             date = UTIL.getTodaysDate();
             amount = '';
             account = '';
@@ -75,6 +84,9 @@ const NewEntryCF = (() => {
             attachment = '';
             receipt = '';
             accountID = '';
+            accountType = 'E';
+            IsReconciled = 'N';
+            IsDisabledBtn = false;
         }
         DOM.clearActionCenter();
 
@@ -147,6 +159,7 @@ const NewEntryCF = (() => {
             type: 'textarea',
             label: 'Description',
             style: 'secondary',
+            classNames: 'autosize',
             value: (description) ? description : '',
         });
 
@@ -188,7 +201,7 @@ const NewEntryCF = (() => {
             id: `depositRadio`,
             text: "Deposit",
             name: "amountType",
-            isChecked: accountType == 'D' ? true : false, 
+            isChecked: accountType == 'D' ? true : false,
         });
 
         const radioDiv = document.createElement("div");
@@ -208,12 +221,12 @@ const NewEntryCF = (() => {
         if (registerId) {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_DELETE_BTN);
+            enableDisabledInputs();
         }
         else {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_CANCEL_BTN);
         }
-
 
         var dropWrap = document.createElement('div');
         dropWrap.classList.add('vehicleInspectionDTWrap');
@@ -255,11 +268,11 @@ const NewEntryCF = (() => {
         addRightCard.appendChild(addRightBody);
 
         addRightBody.appendChild(newDescriptionInput);
-        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId);
+        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId, IsDisabledBtn);
         addRightBody.appendChild(questionAttachment.attachmentButton);
 
         addRightBody.appendChild(newReceiptInput);
-        if (registerId ) {
+        if (registerId) {
             addRightBody.appendChild(btnWrap);
             NEW_CANCEL_BTN.style.width = '100%';
             addRightBody.appendChild(NEW_CANCEL_BTN);
@@ -277,8 +290,95 @@ const NewEntryCF = (() => {
         populateAccountDropdown();
         populatePayeeDropdown();
         populateCategoryDropdown(categoryID);
-        populateSubCategoryDropdown(categoryID);
+        populateSubCategoryDropdown(category);   
         checkRequiredFieldsOfNewEntry();
+        disabledUpdateBtn();
+    }
+
+    function enableDisabledInputs() {
+
+        if (IsReconciled == 'Y') {
+            DisabledAllInputs();
+        } else if (IsReconciled == 'N') {
+            if (!$.session.CFUpdate) {
+                DisabledAllInputs();
+            }
+            else if (!$.session.CFEditAccountEntries && lastUpdateBy != $.session.UserId) {
+                DisabledAllInputs();
+            }
+            else if (($.session.CFDelete || $.session.CFUpdate || $.session.CFView) && lastUpdateBy == $.session.UserId) {
+                EnabledAllInputs();
+                if (!$.session.CFDelete) {
+                    NEW_DELETE_BTN.classList.add('disabled');
+                }
+                if (!$.session.CFADDPayee) {
+                    ADD_NEW_PAYEE_BTN.classList.add('disabled');
+                }
+                if (!$.session.CFUpdate) {
+                    NEW_SAVE_BTN.classList.add('disabled');
+                }
+            }
+            else if ($.session.CFDelete || $.session.CFUpdate || $.session.CFView || $.session.CFEditAccountEntries) {
+                EnabledAllInputs();
+                if (!$.session.CFDelete) {
+                    NEW_DELETE_BTN.classList.add('disabled');
+                }
+                if (!$.session.CFADDPayee) {
+                    ADD_NEW_PAYEE_BTN.classList.add('disabled');
+                }
+                if (!$.session.CFUpdate) {
+                    NEW_SAVE_BTN.classList.add('disabled');
+                }
+            }
+            else {
+                DisabledAllInputs();
+            }
+        }
+        else {
+            DisabledAllInputs();
+        }
+
+    }
+
+    function DisabledAllInputs() {
+        NEW_SAVE_BTN.classList.add('disabled');
+        newDateInput.classList.add('disabled');
+        newAmountInput.classList.add('disabled');
+        newAccountDropdown.classList.add('disabled');
+        newPayeeDropdown.classList.add('disabled');
+        ADD_NEW_PAYEE_BTN.classList.add('disabled');
+        newCategoryDropdown.classList.add('disabled');
+        newSubCategoryDropdown.classList.add('disabled');
+        newCheckNoInput.classList.add('disabled');
+        newDescriptionInput.classList.add('disabled');
+        newReceiptInput.classList.add('disabled');
+        NEW_DELETE_BTN.classList.add('disabled');
+        expenseRadio.classList.add('disabled');
+        depositRadio.classList.add('disabled');
+        IsDisabledBtn = true;
+    }
+
+    function EnabledAllInputs() {
+        NEW_SAVE_BTN.classList.remove('disabled');
+        newDateInput.classList.remove('disabled');
+        newAmountInput.classList.remove('disabled');
+        newAccountDropdown.classList.remove('disabled');
+        newPayeeDropdown.classList.remove('disabled');
+        ADD_NEW_PAYEE_BTN.classList.remove('disabled');
+        newCategoryDropdown.classList.remove('disabled');
+        newSubCategoryDropdown.classList.remove('disabled');
+        newCheckNoInput.classList.remove('disabled');
+        newDescriptionInput.classList.remove('disabled');
+        newReceiptInput.classList.remove('disabled');
+        NEW_DELETE_BTN.classList.remove('disabled');
+        expenseRadio.classList.remove('disabled');
+        depositRadio.classList.remove('disabled');
+        IsDisabledBtn = false;
+    }
+
+    function disabledUpdateBtn() {
+        //Disable the UPDATE button until the user makes a change to the record. 
+        NEW_SAVE_BTN.classList.add('disabled');
     }
 
     function checkRequiredFieldsOfNewEntry() {
@@ -318,13 +418,15 @@ const NewEntryCF = (() => {
         } else {
             newCategoryDropdown.classList.remove('error');
         }
-        if (subCategory.value === '') {
-            newSubCategoryDropdown.classList.add('error');
-        } else {
-            newSubCategoryDropdown.classList.remove('error');
-        }
+        //if (subCategory.value === '') {
+        //    newSubCategoryDropdown.classList.add('error');
+        //} else {
+        //    newSubCategoryDropdown.classList.remove('error');
+        //} 
 
-        setBtnStatusOfNewEntry();
+        if (IsReconciled == 'N') {
+            setBtnStatusOfNewEntry();
+        }
     }
 
     function setBtnStatusOfNewEntry() {
@@ -335,22 +437,20 @@ const NewEntryCF = (() => {
         } else {
             NEW_SAVE_BTN.classList.remove('disabled');
         }
-
     }
 
     function eventListeners() {
         newDateInput.addEventListener('input', event => {
             date = event.target.value;
             checkRequiredFieldsOfNewEntry();
-
         });
         newAmountInput.addEventListener('input', event => {
             amount = event.target.value;
             checkRequiredFieldsOfNewEntry();
-
         });
         newPayeeDropdown.addEventListener('change', event => {
-            /* categoryID = event.target.value;*/
+            categoryID = event.target.options[event.target.selectedIndex].id;
+            getCategorySubCategorybyPayee(categoryID);
             payee = event.target.options[event.target.selectedIndex].text;
             checkRequiredFieldsOfNewEntry();
         });
@@ -363,11 +463,12 @@ const NewEntryCF = (() => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             category = event.target.options[event.target.selectedIndex].text;
             checkRequiredFieldsOfNewEntry();
+            populateSubCategoryDropdown(category);
         });
         newSubCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             subCategory = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            //checkRequiredFieldsOfNewEntry();
         });
         newCheckNoInput.addEventListener('input', event => {
             checkNo = event.target.value;
@@ -378,20 +479,25 @@ const NewEntryCF = (() => {
         newReceiptInput.addEventListener('input', event => {
             receipt = event.target.value;
         });
-
+        expenseRadio.addEventListener('change', event => {
+            accountType = 'E';
+        });
+        depositRadio.addEventListener('change', event => {
+            accountType = 'D'; 
+        });
     }
 
     async function saveNewAccount() {
         const amountType = document.getElementById("expenseRadio").checked ? "E" : "D";
         if (attachmentArray == undefined || attachmentArray.length == 0) {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, null,null, receipt, BtnName, regId);
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, null, null, receipt, BtnName, regId);
             const { insertAccountResult } = result;
             if (insertAccountResult.registerId != null) {
                 ConsumerFinances.loadConsumerFinanceLanding();
             }
         }
         else {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, categoryID, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId);
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId);
             const { insertAccountResult } = result;
 
             if (insertAccountResult.registerId != null) {
@@ -405,11 +511,24 @@ const NewEntryCF = (() => {
         ConsumerFinances.loadConsumerFinanceLanding();
     }
 
+    async function getCategorySubCategorybyPayee(categoryID) {
+        const {
+            getCategoriesSubCategoriesByPayeeResult: CategoriesSubCategory,
+        } = await ConsumerFinancesAjax.getCategoriesSubCategoriesByPayeeAsync(categoryID);
+
+        category = CategoriesSubCategory[0].CategoryDescription;
+        subCategory = CategoriesSubCategory[0].SubCategoryDescription;
+        populateCategoryDropdown(categoryID);
+        populateSubCategoryDropdown(category);
+        checkRequiredFieldsOfNewEntry();
+        disabledUpdateBtn();
+    }
+
     // Populate the Account DDL 
     async function populateAccountDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync();
+        } = await ConsumerFinancesAjax.getActiveAccountAsync($.session.consumerId);
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
@@ -417,6 +536,10 @@ const NewEntryCF = (() => {
         }));
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
+        checkRequiredFieldsOfNewEntry();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
     async function populatePayeeDropdown() {
@@ -430,6 +553,10 @@ const NewEntryCF = (() => {
         }));
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newPayeeDropdown", data, payee);
+        checkRequiredFieldsOfNewEntry();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
     async function populateCategoryDropdown(categoryID) {
@@ -443,12 +570,16 @@ const NewEntryCF = (() => {
         }));
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
+        checkRequiredFieldsOfNewEntry();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
-    async function populateSubCategoryDropdown(categoryID) {
+    async function populateSubCategoryDropdown(category) {
         const {
             getSubCatogoriesResult: SubCategory,
-        } = await ConsumerFinancesAjax.getSubCategoriesAsync(categoryID);
+        } = await ConsumerFinancesAjax.getSubCategoriesAsync(category);
         let data = SubCategory.map((subCategory) => ({
             id: subCategory.CategoryID,
             value: subCategory.SubCategoryDescription,
@@ -457,6 +588,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
+        if (regId > 0) {
+            disabledUpdateBtn();
+        }
     }
 
 

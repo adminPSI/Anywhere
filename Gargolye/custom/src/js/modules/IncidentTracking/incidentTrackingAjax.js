@@ -21,15 +21,15 @@
         '","notificationType":"' +
         notificationType +
         '","employeeId":"' +
-          employeeId +
-          '","incidentTypeDesc":"' +
-          data.incidentTypeDesc +
-          '","incidentDate":"' +
-          data.incidentDate +
-          '","incidentTime":"' +
-          data.incidentTime +
-          '","subcategoryId":"' +
-          data.subcategoryId +
+        employeeId +
+        '","incidentTypeDesc":"' +
+        data.incidentTypeDesc +
+        '","incidentDate":"' +
+        data.incidentDate +
+        '","incidentTime":"' +
+        data.incidentTime +
+        '","subcategoryId":"' +
+        data.subcategoryId +
         '"}',
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
@@ -357,12 +357,17 @@
         successfulSave.show();
         setTimeout(function () {
           successfulSave.hide();
+            for (let i = 0; i < notifyArr.length; i++) {
+                if (notifyArr[i] === 'Y') {
+                    sendNotification(notificationType, employeeIdArr[i], incidentData);
+                }
+            }
+          //notifyArr.forEach((notify, index) => {
+          //  if (notify === 'Y') {
+          //    sendNotification(notificationType, employeeIdArr[index], incidentData);
+          //  }
+          //});
           if (callback) callback(res);
-          notifyArr.forEach((notify, index) => {
-           if (notify === 'Y') {
-              sendNotification(notificationType, employeeIdArr[index], incidentData);
-           }
-          });
         }, 1000);
         //for loop' if notify emp is y call procedure with person id of employee with checked box
       },
@@ -456,6 +461,29 @@
       dataType: 'json',
       success: function (response, status, xhr) {
         var res = response.getitConsumerFollowUpTypesResult;
+        callback(res);
+      },
+    });
+  }
+  //TODO: ash - c# and SQL
+  //TODO: ash - itBehaviorTypeId, behaviorTypeName
+  function getitConsumerBehaviorTypes(callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getitConsumerBehaviorTypes/',
+      data: '{"token":"' + $.session.Token + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getitConsumerBehaviorTypesResult;
         callback(res);
       },
     });
@@ -639,6 +667,34 @@
       dataType: 'json',
       success: function (response, status, xhr) {
         var res = response.getitConsumerReportingResult;
+        callback(res);
+      },
+    });
+  }
+  function getitConsumerBehavior(consumerId, incidentId, callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getitConsumerBehavior/',
+      data:
+        '{"token":"' +
+        $.session.Token +
+        '","consumerId":"' +
+        consumerId +
+        '","incidentId":"' +
+        incidentId +
+        '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getitConsumerBehaviorResult;
         callback(res);
       },
     });
@@ -922,6 +978,58 @@
       },
     });
   }
+  //Consumer Behavior Alters
+  function itDeleteConsumerBehavior(itConsumerBehaviorId, callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/itDeleteConsumerBehaviors/',
+      data:
+        '{"token":"' + $.session.Token + '","itConsumerBehaviorId":"' + itConsumerBehaviorId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.itDeleteConsumerBehaviorsResult;
+        callback(res);
+      },
+    });
+  }
+  function saveUpdateITConsumerBehaviors(data, callback) {
+    // data = {
+    // 	token: $.session.Token,
+    // 	consumerInvolvedId: '',
+    // 	itConsumerBehaviorIdArray: [],
+    // 	startTimeArray: [],
+    //  endTimeArray: [],
+    //  occurrencesArray: [],
+    // };
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/saveUpdateITConsumerBehaviors/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.saveUpdateITConsumerBehaviorsResult;
+        if (callback) callback(res);
+      },
+    });
+  }
 
   // User Incident View Tracking
   async function updateIncidentViewByUser(retrieveData) {
@@ -946,6 +1054,100 @@
     }
   }
 
+  // Generate Incident Tracking Report
+  function generateIncidentTrackingReport(incidentId, callback) {
+    data = {
+      token: $.session.Token,
+      incidentId: incidentId
+    };
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/generateIncidentTrackingReport/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.generateIncidentTrackingReportResult;
+        callback(res);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+
+  function checkIfITReportExists(res, callback) {
+    data = {
+      token: $.session.Token,
+      reportScheduleId: res[0].reportScheduleId,
+    };
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/checkIfITReportExists/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.checkIfITReportExistsResult;
+        callback(res, data.reportScheduleId);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+
+  // Send the report to designated emails
+  function sendIncidentTrackingReport(reportScheduleId, incidentTrackingEmailReportData) {
+    data = {
+      token: $.session.Token,
+      reportScheduleId: reportScheduleId,
+      toAddresses: incidentTrackingEmailReportData.toAddresses,
+      ccAddresses: incidentTrackingEmailReportData.ccAddresses,
+      bccAddresses: incidentTrackingEmailReportData.bccAddresses,
+      emailSubject: incidentTrackingEmailReportData.emailSubject,
+      emailBody: incidentTrackingEmailReportData.emailBody
+    };
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/sendIncidentTrackingReport/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.sendIncidentTrackingReportResult;
+        //callback(res, data.reportScheduleId);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+
   return {
     sendNotification,
     getInvolvementTypeData,
@@ -968,7 +1170,9 @@
     getitConsumerReviews,
     getitConsumerFollowUps,
     getitConsumerReporting,
+    getitConsumerBehavior,
     getitConsumerFollowUpTypes,
+    getitConsumerBehaviorTypes,
     getitReportingCategories,
     getInterventionTypesDropdown,
     itDeleteConsumerFollowUp,
@@ -981,6 +1185,11 @@
     itDeleteConsumerInterventions,
     saveUpdateITConsumerInjuries,
     saveUpdateITConsumerInterventions,
+    itDeleteConsumerBehavior,
+    saveUpdateITConsumerBehaviors,
     updateIncidentViewByUser,
+    generateIncidentTrackingReport,
+    checkIfITReportExists,
+    sendIncidentTrackingReport
   };
 })();

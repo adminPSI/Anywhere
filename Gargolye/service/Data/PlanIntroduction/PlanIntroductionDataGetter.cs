@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanIntroduction
@@ -46,7 +45,7 @@ namespace Anywhere.service.Data.PlanIntroduction
         //}
 
         public string updatePlanIntroduction(string token, string planId, string consumerId, string likeAdmire, string thingsImportantTo, string thingsImportantFor, string howToSupport, int usePlanImage, string consumerImage)
-        {                                  
+        {
             if (tokenValidator(token) == false) return null;
             logger.debug("updatePlanIntroduction ");
             List<string> list = new List<string>();
@@ -91,7 +90,7 @@ namespace Anywhere.service.Data.PlanIntroduction
             }
         }
 
-      
+
         public bool tokenValidator(string token)
         {
             if (token.Contains(" "))

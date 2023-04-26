@@ -357,6 +357,8 @@ function getCustomLoginTextAndVersion(callback) {
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
+      // TODO JOE -- 83945 -- uncomment the line below and then use callback(test2) NOT callback(res)
+      // var test2 = response.getCustomTextAndAnywhereVersionResult.replace(/\r/g, '').replace(/\n/g, '<br>');
       var res = JSON.stringify(response);
       callback(res);
     },
@@ -863,7 +865,7 @@ function getDefaultAnywhereSettings() {
     success: function (response, status, xhr) {
       res = response.getDefaultAnywhereSettingsJSONResult;
       res = res[0];
-
+ 
       $.session.anAdmin = res.admistrator;
       $.session.defaultCaseNoteReviewDays = res.setting_value === '' ? '7' : res.setting_value;
       $.session.defaultProgressNoteReviewDays =
@@ -918,8 +920,10 @@ function getDefaultAnywhereSettings() {
       $.session.singleEntryShowTransportation = res.seShowTransportation;
       $.session.schedAllowCallOffRequests = res.allowCallOffRequests;
       $.session.schedRequestOpenShifts = res.requestOpenShifts;
-      $.session.oneSpan = res.oneSpan;
+        $.session.oneSpan = res.oneSpan;
 
+        $.session.anywhereResetPasswordPermission = res.anywhereResetPasswordPermission;
+        $.session.anywhereConsumerFinancesPermission = res.anywhereConsumerFinancesPermission;
       //Default Work
       //.session.
       $.session.defaultRosterLocation = res.defaultrosterlocation;

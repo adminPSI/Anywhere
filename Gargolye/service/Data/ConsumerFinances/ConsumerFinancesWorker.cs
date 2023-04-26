@@ -1,21 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Anywhere.Data;
+using System;
 using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
 using System.ServiceModel.Web;
-using System.IO;
-using Anywhere.Data;
-using static Anywhere.service.Data.OODWorker;
-using OneSpanSign.Sdk;
-using static System.Windows.Forms.AxHost;
-using System.Reflection.Emit;
-using pdftron.PDF;
-using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
-using System.Security.Principal;
-using static Anywhere.service.Data.ResetPassword.ResetPasswordWorker;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {
@@ -60,6 +47,11 @@ namespace Anywhere.service.Data.ConsumerFinances
             [DataMember(Order = 14)]
             public string accountID { get; set; }
 
+            [DataMember(Order = 15)]
+            public string reconciled { get; set; }
+            [DataMember(Order = 16)]
+            public string lastUpdateBy { get; set; }
+
         }
 
         [DataContract]
@@ -103,6 +95,16 @@ namespace Anywhere.service.Data.ConsumerFinances
         }
 
         [DataContract]
+        public class CategorySubCategory
+        {
+            [DataMember(Order = 0)]
+            public string CategoryDescription { get; set; }
+            [DataMember(Order = 1)]
+            public string SubCategoryDescription { get; set; }
+
+        }
+
+        [DataContract]
         public class ActivePayee
         {
             [DataMember(Order = 0)]
@@ -138,6 +140,13 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
+        public class ConsumerName
+        {
+            [DataMember(Order = 0)]
+            public string FullName { get; set; }
+
+        }
+
 
         public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment)
         {
@@ -159,7 +168,7 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
-        public ActiveAccount[] getActiveAccount(string token)
+        public ActiveAccount[] getActiveAccount(string token, string consumerId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -167,7 +176,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getActiveAccount(transaction));
+                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getActiveAccount(transaction, consumerId));
                     return accounts;
                 }
                 catch (Exception ex)
@@ -216,7 +225,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public SubCategory[] getSubCatogories(string token, string categoryID)
+        public SubCategory[] getSubCatogories(string token, string category)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -224,8 +233,27 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    SubCategory[] subCategory = js.Deserialize<SubCategory[]>(Odg.getSubCatogories(transaction, categoryID));
+                    SubCategory[] subCategory = js.Deserialize<SubCategory[]>(Odg.getSubCatogories(transaction, category));
                     return subCategory;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public CategorySubCategory[] getCategoriesSubCategoriesByPayee(string token, string categoryID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    CategorySubCategory[] categorySubCategory = js.Deserialize<CategorySubCategory[]>(Odg.getCategoriesSubCategoriesByPayee(transaction, categoryID));
+                    return categorySubCategory;
                 }
                 catch (Exception ex)
                 {
@@ -388,6 +416,42 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     CFAttachmentsList[] attachmentsList = js.Deserialize<CFAttachmentsList[]>(Odg.getCFAttachmentsList(transaction, regId));
                     return attachmentsList;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ConsumerName[] getConsumerNameByID(string token, string consumersId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    ConsumerName[] consumerName = js.Deserialize<ConsumerName[]>(Odg.getConsumerNameByID(token, consumersId, transaction));
+
+                    return consumerName;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public string deleteCFAttachment(string token, string attachmentId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    return Odg.deleteCFAttachment(token, attachmentId, transaction);
+
                 }
                 catch (Exception ex)
                 {

@@ -1,25 +1,18 @@
 ﻿using Microsoft.VisualBasic;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Xml.Serialization;
 using System.IO;
-using System.Text;
-using System.Security.Cryptography;
 using System.Net;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Runtime.Serialization;
-using System.Linq;
-using System.Web;
+using System.Text;
 
 namespace Anywhere.service.Data
 {
     public class DataXferFunctions
     {
         private StringBuilder sb = new StringBuilder();
-        
+
         static System.Timers.Timer withEventsField_MyTimer = new System.Timers.Timer();//MAT. Changed from private to static
         private static System.Timers.Timer MyTimer
         {

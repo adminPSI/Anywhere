@@ -1,13 +1,12 @@
-﻿using System.Web;
+﻿using Anywhere.Log;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Odbc;
-using System.Configuration;
-using Anywhere.Log;
-using System.Web.Script.Serialization;
-using System.Collections.Generic;
-using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -25,7 +24,7 @@ namespace Anywhere.service.Data
             list.Add(consumerId);
             string text = "CALL DBA.ANYW_ISP_getConsumerPlans(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
-            {                
+            {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
@@ -55,7 +54,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string insertConsumerPlan(string token, string consumerId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate)
+        public string insertConsumerPlan(string token, string consumerId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate, string salesForceCaseManagerId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertConsumerPlan ");
@@ -69,6 +68,7 @@ namespace Anywhere.service.Data
             list.Add(effectiveEnd);
             list.Add(active);
             list.Add(reviewDate);
+            list.Add(salesForceCaseManagerId);
 
             string text = "CALL DBA.ANYW_ISP_insertConsumerPlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
@@ -110,7 +110,7 @@ namespace Anywhere.service.Data
             list.Add(token);
             string text = "CALL DBA.ANYW_TokenCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
-            {               
+            {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
@@ -135,7 +135,7 @@ namespace Anywhere.service.Data
                 logger.error("4ADG", ex.Message + "ANYW_ISP_getQuestionSets(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "4ADG: error ANYW_ISP_getQuestionSets";
             }
-        }        
+        }
 
         public string getQuestions(string questionSetId)
         {
@@ -235,19 +235,20 @@ namespace Anywhere.service.Data
         public void updateAssessmentAnswer(string answerId, string answer, DistributedTransaction transaction)
         {
             try
-            {   
-                
+            {
+
                 logger.debug("updateAssessmentAnswer ");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answerId", DbType.Int64, answerId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answer", DbType.String, answer);
                 DbHelper.ExecuteNonQuery(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_updateConsumerAssessmentAnswer(?, ?)", args, ref transaction);
-                
+
             }
-            catch (Exception ex) {
-                logger.error("7ADG", ex.Message + "ANYW_ISP_updateConsumerAssessmentAnswer(" + answerId + "," + answer + ")");                
+            catch (Exception ex)
+            {
+                logger.error("7ADG", ex.Message + "ANYW_ISP_updateConsumerAssessmentAnswer(" + answerId + "," + answer + ")");
                 throw ex;
-            }            
+            }
         }
 
         public string getServiceVendors(string token)
@@ -363,6 +364,7 @@ namespace Anywhere.service.Data
         public string getConsumerRelationships(string token, long consumerId, string effectiveStartDate, string effectiveEndDate, string areInSalesForce, string planId)
         {
             if (tokenValidator(token) == false) return null;
+            planId = planId.TrimEnd(',');
             logger.debug("getConsumerRelationships ");
             List<string> list = new List<string>();
             //list.Add(token);
@@ -495,7 +497,7 @@ namespace Anywhere.service.Data
 
             }
             catch (Exception ex)
-            {               
+            {
                 throw ex;
             }
             finally

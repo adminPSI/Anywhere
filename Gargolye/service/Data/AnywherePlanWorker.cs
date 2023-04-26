@@ -1,18 +1,16 @@
-﻿using System;
+﻿using Anywhere.service.Data.PlanContactInformation;
+using Anywhere.service.Data.PlanInformedConsent;
+using Anywhere.service.Data.PlanIntroduction;
+using Anywhere.service.Data.PlanOutcomes;
+using Anywhere.service.Data.PlanServicesAndSupports;
+using Anywhere.service.Data.PlanSignature;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Anywhere.Data;
-using System.Web.Script.Serialization;
-using System.ServiceModel.Web;
 using System.Runtime.Serialization;
+using System.ServiceModel.Web;
+using System.Web.Script.Serialization;
 using static Anywhere.service.Data.Plan.AnywherePlanWorker;
-using Anywhere.service.Data.PlanOutcomes;
-using Anywhere.service.Data.PlanInformedConsent;
-using Anywhere.service.Data.PlanSignature;
-using Anywhere.service.Data.PlanContactInformation;
-using Anywhere.service.Data.PlanServicesAndSupports;
-using Anywhere.service.Data.PlanIntroduction;
 
 
 namespace Anywhere.service.Data
@@ -162,7 +160,7 @@ namespace Anywhere.service.Data
             #endregion
 
             #region CREATE METHODS
-            public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate)
+            public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate, string salesForceCaseManagerId)
             {
                 using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
                 {
@@ -200,7 +198,7 @@ namespace Anywhere.service.Data
                         String active = "1";
                         String planType = PlanType.Annual;
                         String revisionNumber = "0";
-                        String inputString = adg.insertConsumerPlan(consumerId, planYearStart, planYearEnd, effectiveStart, effectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorPlanIdForApplicable, priorConsumerPlanId, transaction);
+                        String inputString = adg.insertConsumerPlan(consumerId, planYearStart, planYearEnd, effectiveStart, effectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorPlanIdForApplicable, priorConsumerPlanId, salesForceCaseManagerId, transaction);
                         String[] splitString = inputString.Split(',');
                         String consumerPlanId = splitString[0];
                         // always use the latest assessment version
@@ -208,7 +206,7 @@ namespace Anywhere.service.Data
                         if (targetAssessmentVersionId == null) throw new Exception("Unable to find latest assessment");
 
                         // insert assessment answers and copy data from previous assessment
-                        aW.insertAssessmentAnswers(consumerPlanId, priorConsumerPlanId, targetAssessmentVersionId, userId, effectiveStart, effectiveEnd, "false", transaction, token);
+                        aW.insertAssessmentAnswers(consumerPlanId.TrimEnd(','), priorConsumerPlanId, targetAssessmentVersionId, userId, effectiveStart, effectiveEnd, "false", transaction, token);
 
                         //   execute any Actions associated with 'Plan Inserted' event -- EventId = 29 (Annual)
                         // string eventId = "29";
@@ -237,7 +235,7 @@ namespace Anywhere.service.Data
                 string processingCompleted = wfWorker.processWorkflowStepEvent(token, thisEvent);
             }
 
-            public string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string newEffectiveStart, string newEffectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion)
+            public string insertConsumerPlanRevision(string token, string priorConsumerPlanId, string newEffectiveStart, string newEffectiveEnd, string reviewDate, Boolean useLatestAssessmentVersion, string salesForceCaseManagerId)
             {
                 using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
                 {
@@ -273,7 +271,7 @@ namespace Anywhere.service.Data
                         //DateTime revDate = Convert.ToDateTime(existingPlan.reviewDate);
                         //var revDate = DateTime.Parse(existingPlan.reviewDate);
                         //var reviewDate = revDate.ToString("yyyy-MM-dd");
-                        String inputString = adg.insertConsumerPlan(existingPlan.consumerId, existingPlan.planYearStart, existingPlan.planYearEnd, newEffectiveStart, newEffectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorConsumerPlanId, priorConsumerPlanId, transaction);
+                        String inputString = adg.insertConsumerPlan(existingPlan.consumerId, existingPlan.planYearStart, existingPlan.planYearEnd, newEffectiveStart, newEffectiveEnd, planType, revisionNumber, active, userId, reviewDate, priorConsumerPlanId, priorConsumerPlanId, salesForceCaseManagerId, transaction);
                         String[] splitString = inputString.Split(',');
                         String consumerPlanId = splitString[0];
                         // determine whether to use the existing assessment version or the lastest assessment version
@@ -283,7 +281,7 @@ namespace Anywhere.service.Data
                         if (targetAssessmentVersionId == null) throw new Exception("Unable to find latest assessment");
 
                         // insert assessment answers and copy data from previous assessment
-                        aW.insertAssessmentAnswers(consumerPlanId, priorConsumerPlanId, targetAssessmentVersionId, userId, newEffectiveStart, newEffectiveEnd, "true", transaction, token);
+                        aW.insertAssessmentAnswers(consumerPlanId.TrimEnd(','), priorConsumerPlanId, targetAssessmentVersionId, userId, newEffectiveStart, newEffectiveEnd, "true", transaction, token);
 
                         // deactivate old plan
                         adg.updateConsumerPlanSetInactive(priorConsumerPlanId, transaction);
@@ -292,6 +290,7 @@ namespace Anywhere.service.Data
                         // string eventId = "30";
                         // executeWorkflowActions(token, eventId, consumerPlanId);
 
+                        //inputString = consumerPlanId.TrimEnd(',');
                         return inputString;
                     }
                     catch (Exception ex)

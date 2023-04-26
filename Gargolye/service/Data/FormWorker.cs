@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
-using System.ServiceModel.Web;
 using System.IO;
+using System.Runtime.Serialization;
+using System.ServiceModel.Web;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -25,7 +22,7 @@ namespace Anywhere.service.Data
             public string formDescription { get; set; }
             [DataMember(Order = 2)]
             public string formType { get; set; }
-           
+
 
         }
         // used to retrieve form templates for the Workflow Step Documents/Forms
@@ -81,8 +78,8 @@ namespace Anywhere.service.Data
                 connectionString = connectionString + "UID=anywhereuser;PWD=anywhere4u;";
 
                 response = obj.GKGetData(mstemplate, consumerId, connectionString);
-                 return Convert.ToBase64String(response.ToArray());
-               
+                return Convert.ToBase64String(response.ToArray());
+
             }
             catch (Exception ex)
             {
@@ -90,7 +87,7 @@ namespace Anywhere.service.Data
             }
 
             return Convert.ToBase64String(mstemplate.ToArray());
-          
+
         }
 
         public string OpenPDFEditor(string documentId, string documentEdited, long consumerId, bool isRefresh)
@@ -104,7 +101,7 @@ namespace Anywhere.service.Data
                 // loading a form for the first time, then preload data
                 if (documentEdited == "0")
                 {
-                    
+
                     connectionString = connectionString + "UID=anywhereuser;PWD=anywhere4u;";
 
                     msdocument = fdg.getPDFDocument(documentId);
@@ -115,7 +112,8 @@ namespace Anywhere.service.Data
                 }
                 else  // loading a form that has been edited previously, then don't preload data, unless user requests a Refresh
                 {
-                    if (isRefresh) {
+                    if (isRefresh)
+                    {
 
                         connectionString = connectionString + "UID=anywhereuser;PWD=anywhere4u;";
 
@@ -124,14 +122,15 @@ namespace Anywhere.service.Data
 
                         return Convert.ToBase64String(response.ToArray());
 
-                    } else
+                    }
+                    else
                     {
                         msdocument = fdg.getPDFDocument(documentId);
                         return Convert.ToBase64String(msdocument.ToArray());
                     }
-                    
+
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -162,7 +161,8 @@ namespace Anywhere.service.Data
                     if (applicationName.Equals("Advisor"))
                     {
                         response = obj.AdvisorGetData(msdocument, consumerId, connectionString);
-                    } else
+                    }
+                    else
                     {
                         response = obj.GKGetData(msdocument, consumerId, connectionString);
                     }
@@ -380,7 +380,7 @@ namespace Anywhere.service.Data
 
                     return forms;
 
-                 }
+                }
                 catch (Exception ex)
                 {
                     transaction.Rollback();

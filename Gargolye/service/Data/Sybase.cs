@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.VisualBasic;
-using System.Collections;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
+﻿using Anywhere.Log;
 using iAnywhere.Data.SQLAnywhere;
+using Microsoft.VisualBasic;
+using System;
 using System.Configuration;
-using Anywhere.Log;
+using System.Data;
 using System.Data.Odbc;
 
 namespace Anywhere.service.Data
@@ -250,58 +244,58 @@ namespace Anywhere.service.Data
         }
 
 
-    
 
 
-    //public decimal SAQueryScalar(string QueryString)
-    //{
-    //    // Returns the first column of the first row in the results set (Used for Single value returns or counts)
 
-    //    SAQueryScalar = 0.0;
+        //public decimal SAQueryScalar(string QueryString)
+        //{
+        //    // Returns the first column of the first row in the results set (Used for Single value returns or counts)
 
-    //    try
-    //    {
-    //        using (SAConnection connection = new SAConnection(gSAConnString))
-    //        {
-    //            SAQueryScalar = 0;
+        //    SAQueryScalar = 0.0;
 
-    //            SACommand SqlCommand = new SACommand(QueryString, connection);
-    //            SqlCommand.CommandTimeout = 0;
+        //    try
+        //    {
+        //        using (SAConnection connection = new SAConnection(gSAConnString))
+        //        {
+        //            SAQueryScalar = 0;
 
-    //            connection.Open();
-    //            if (!SqlCommand.ExecuteScalarAsync() == System.DBNull.Value)
-    //            {
-    //                SAQueryScalar = SqlCommand.ExecuteScalarAsync();
-    //            }
+        //            SACommand SqlCommand = new SACommand(QueryString, connection);
+        //            SqlCommand.CommandTimeout = 0;
 
-    //            if (connection.State == ConnectionState.Open)
-    //                connection.Close();
+        //            connection.Open();
+        //            if (!SqlCommand.ExecuteScalarAsync() == System.DBNull.Value)
+        //            {
+        //                SAQueryScalar = SqlCommand.ExecuteScalarAsync();
+        //            }
 
-    //            return SAQueryScalar;
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //    }
-    //    return SAQueryScalar;
-    //}
+        //            if (connection.State == ConnectionState.Open)
+        //                connection.Close();
 
-    //public void SaveRecordDS(string queryString, DataSet DS)
-    //{
-    //    using (SAConnection connection = new SAConnection(gSAConnString))
-    //    {
-    //        using (SACommand SqlCommand = new SACommand(queryString, connection))
-    //        {
-    //            SqlCommand.CommandTimeout = 0;
-    //            using (SADataAdapter DA = new SADataAdapter(SqlCommand))
-    //            {
-    //                DA.Update(DS);
-    //            }
-    //        }
-    //    }
-    //}
+        //            return SAQueryScalar;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //    }
+        //    return SAQueryScalar;
+        //}
 
-    public DataSet SelectRowsDS(string queryString)
+        //public void SaveRecordDS(string queryString, DataSet DS)
+        //{
+        //    using (SAConnection connection = new SAConnection(gSAConnString))
+        //    {
+        //        using (SACommand SqlCommand = new SACommand(queryString, connection))
+        //        {
+        //            SqlCommand.CommandTimeout = 0;
+        //            using (SADataAdapter DA = new SADataAdapter(SqlCommand))
+        //            {
+        //                DA.Update(DS);
+        //            }
+        //        }
+        //    }
+        //}
+
+        public DataSet SelectRowsDS(string queryString)
         {
             DataSet DS = new DataSet();
             if (gSAConnString.ToUpper().IndexOf("UID") == -1)
@@ -320,7 +314,8 @@ namespace Anywhere.service.Data
                     {
                         SADataAdapter DA = new SADataAdapter(SqlCommand);
                         DA.Fill(DS);
-                        try{
+                        try
+                        {
                             DS.Tables[0].PrimaryKey = new DataColumn[] { DS.Tables[0].Columns[0] };
                         }
                         catch (Exception ex)
@@ -389,9 +384,9 @@ namespace Anywhere.service.Data
         {
             long functionReturnValue = 0;
             if (gSAConnString.ToUpper().IndexOf("UID") == -1)
-                {
-                    gSAConnString = gSAConnString + "UID=anywhereuser;PWD=anywhere4u;";
-                }
+            {
+                gSAConnString = gSAConnString + "UID=anywhereuser;PWD=anywhere4u;";
+            }
             try
             {
                 functionReturnValue = 0;

@@ -516,7 +516,7 @@ const servicesSupports = (() => {
   function populateNewOrExistingDropdown(dropdownEle, defaultValue) {
     dropdown.populate(dropdownEle, dropdownData.newOrExisting, defaultValue);
   }
-  //-- map id to name -------
+
   function getAssessmentAreaById(id) {
     const filteredAssessment = dropdownData.assessmentAreas.filter(
       dd => dd.assessmentAreaId === id,
@@ -951,8 +951,6 @@ const servicesSupports = (() => {
     // multiEditPopup.appendChild(providerNameDropdown);
     multiEditPopup.appendChild(wrap);
 
-    // populateServiceVendorsDropdown(providerNameDropdown, '', true);
-
     POPUP.show(multiEditPopup);
   }
   function buildMultiRowEdit() {
@@ -1137,6 +1135,7 @@ const servicesSupports = (() => {
         // store type of fundingSource (hcbsSelected) for use when populating service and vendor dropdowns
         fundingSourceDropdownSelectedText = selectedOption.innerText;
         if (selectedOption.innerText.includes('HCBS') || selectedOption.innerText.includes('ICF')) {
+          //
           hcbsSelected = true;
         } else {
           hcbsSelected = false;
@@ -1145,6 +1144,9 @@ const servicesSupports = (() => {
         if (hcbsSelected) {
           providerNameDropdown.classList.remove('disabled');
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+          if (saveUpdateProvider) {
+            saveUpdateData.providerId = saveUpdateProvider;
+          }
         } else {
           // re-enable provider dropdown if it was disabled
           providerNameDropdown.classList.remove('disabled');
@@ -1153,6 +1155,9 @@ const servicesSupports = (() => {
           // non-waver -- get all Active Providers
           servicesDropdownSelectedText = '%';
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+          if (saveUpdateProvider) {
+            saveUpdateData.providerId = saveUpdateProvider;
+          }
         }
 
         if (saveUpdateData.fundingSource === '5') {
@@ -1211,10 +1216,16 @@ const servicesSupports = (() => {
           servicesDropdownSelectedText =
             servicesDropdownSelect.options[servicesDropdownSelect.selectedIndex].text;
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+          if (saveUpdateProvider) {
+            saveUpdateData.providerId = saveUpdateProvider;
+          }
         } else {
           servicesDropdownSelectedText = '';
           saveUpdateData.providerId = '';
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+          if (saveUpdateProvider) {
+            saveUpdateData.providerId = saveUpdateProvider;
+          }
         }
       }
 
@@ -1352,7 +1363,9 @@ const servicesSupports = (() => {
 
         if (hcbsSelected) {
           await populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
-          // populateServiceVendorsDropdown(providerNameDropdown, saveUpdateData.providerId);
+          if (saveUpdateProvider) {
+            saveUpdateData.providerId = saveUpdateProvider;
+          }
         }
 
         // Validation of Services DDL
@@ -1590,6 +1603,7 @@ const servicesSupports = (() => {
         if (isNew) {
           if (fromAssessment) {
             saveUpdateData.rowOrder = 0;
+            planID = plan.getCurrentPlanId();
           } else {
             const rowOrder = table.getRowCount('paidSupportsTable');
             saveUpdateData.rowOrder = rowOrder + 1;
@@ -1603,6 +1617,14 @@ const servicesSupports = (() => {
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(paidSupportPopup);
+
+        fundingSourceDropdownSelectedText = undefined;
+        servicesDropdownSelectedText = undefined;
+        servicesOtherDropdownSelectedText = undefined;
+        providerDropdownSelectedText = undefined;
+
+        hcbsSelected = undefined;
+        saveUpdateProvider = '';
       },
     });
     const cancelBtn = button.build({
@@ -1611,6 +1633,14 @@ const servicesSupports = (() => {
       type: 'outlined',
       callback: () => {
         POPUP.hide(paidSupportPopup);
+
+        fundingSourceDropdownSelectedText = undefined;
+        servicesDropdownSelectedText = undefined;
+        servicesOtherDropdownSelectedText = undefined;
+        providerDropdownSelectedText = undefined;
+
+        hcbsSelected = undefined;
+        saveUpdateProvider = '';
       },
     });
     const deleteBtn = button.build({
@@ -1622,6 +1652,14 @@ const servicesSupports = (() => {
         ISP.showDeleteWarning(paidSupportPopup, message, () => {
           deletePaidSupport(saveUpdateData.paidSupportsId);
         });
+
+        fundingSourceDropdownSelectedText = undefined;
+        servicesDropdownSelectedText = undefined;
+        servicesOtherDropdownSelectedText = undefined;
+        providerDropdownSelectedText = undefined;
+
+        hcbsSelected = undefined;
+        saveUpdateProvider = '';
       },
     });
     const btnWrap = document.createElement('div');
@@ -1739,7 +1777,7 @@ const servicesSupports = (() => {
     );
     populateFundingSourceDropdown(fundingSourceDropdown, saveUpdateData.fundingSource);
 
-    if ($.session.applicationName === 'Advisor') {
+    if (isNew && $.session.applicationName === 'Advisor') {
       populateServiceNameDropdown(serviceNameDropdown, '24', '4');
 
       fundingSourceDropdown.classList.remove('error');
@@ -1832,7 +1870,11 @@ const servicesSupports = (() => {
     if (servicesSupportsData && servicesSupportsData.paidSupport) {
       const tableData = servicesSupportsData.paidSupport
         .sort((a, b) => {
-          return a.rowOrder < b.rowOrder ? -1 : a.rowOrder > b.rowOrder ? 1 : 0;
+          return parseInt(a.rowOrder) < parseInt(b.rowOrder)
+            ? -1
+            : parseInt(a.rowOrder) > parseInt(b.rowOrder)
+            ? 1
+            : 0;
         })
         .map(ps => {
           const { tableValues, psData } = mapPaidSupportDataForTable(ps);
@@ -2213,6 +2255,7 @@ const servicesSupports = (() => {
         doneBtn.classList.add('disabled');
         if (isNew) {
           if (fromAssessment) {
+            planID = plan.getCurrentPlanId();
             saveUpdateData.rowOrder = 0;
           } else {
             const rowOrder = table.getRowCount('additionalSupportsTable');
@@ -2359,7 +2402,11 @@ const servicesSupports = (() => {
     if (servicesSupportsData && servicesSupportsData.additionalSupport) {
       const tableData = servicesSupportsData.additionalSupport
         .sort((a, b) => {
-          return a.rowOrder < b.rowOrder ? -1 : a.rowOrder > b.rowOrder ? 1 : 0;
+          return parseInt(a.rowOrder) < parseInt(b.rowOrder)
+            ? -1
+            : parseInt(a.rowOrder) > parseInt(b.rowOrder)
+            ? 1
+            : 0;
         })
         .map(as => {
           const { tableValues, asData } = mapAdditionalSupportDataForTable(as);
@@ -2591,6 +2638,7 @@ const servicesSupports = (() => {
         if (isNew) {
           if (fromAssessment) {
             saveUpdateData.rowOrder = 0;
+            planID = plan.getCurrentPlanId();
           } else {
             const rowOrder = table.getRowCount('professionalReferralsTable');
             saveUpdateData.rowOrder = rowOrder + 1;
@@ -2720,7 +2768,11 @@ const servicesSupports = (() => {
     if (servicesSupportsData && servicesSupportsData.professionalReferral) {
       const tableData = servicesSupportsData.professionalReferral
         .sort((a, b) => {
-          return a.rowOrder < b.rowOrder ? -1 : a.rowOrder > b.rowOrder ? 1 : 0;
+          return parseInt(a.rowOrder) < parseInt(b.rowOrder)
+            ? -1
+            : parseInt(a.rowOrder) > parseInt(b.rowOrder)
+            ? 1
+            : 0;
         })
         .map(pr => {
           const { tableValues, prData } = mapProfessionalReferralDataForTable(pr);

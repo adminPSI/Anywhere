@@ -73,6 +73,17 @@ const planData = (() => {
 
   // DROPDOWN DATA
   //-----------------------------------------
+  const removeDupRelationships = relationships => {
+    const unique = [];
+    const flag = {};
+    relationships.forEach(el => {
+      if (!flag[el.peopleId]) {
+        flag[el.peopleId] = true;
+        unique.push(el);
+      }
+    });
+    return unique;
+  };
   const removeDups = data => {
     const flag = {};
     const flagN = {};
@@ -230,7 +241,7 @@ const planData = (() => {
         },
         { value: '45', text: 'Waiver Facility Licensee Only', showWith: ['8'] },
         { value: '46', text: 'Waiver Nursing Delegation (WND)', showWith: ['1', '2', '3', '8'] },
-        // { value: '47', text: 'Other (please specify)', showWith: ['5', '6', '8'] },
+        { value: '47', text: 'Other (please specify)', showWith: ['5'] },
         { value: '48', text: 'Self Directed Transportation', showWith: ['1', '2', '3'] },
         { value: '49', text: 'Adult Day Support - Both', showWith: ['1', '2', '3', '6', '7', '8'] },
         {
@@ -340,6 +351,8 @@ const planData = (() => {
         ...data.getServiceAndSupportsDataResult,
         ...defaultDropdowns,
       };
+
+      dropdowns.relationships = removeDupRelationships(dropdowns.relationships);
     } catch (error) {
       console.log(error);
     }

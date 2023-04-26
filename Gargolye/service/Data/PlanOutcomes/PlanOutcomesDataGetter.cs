@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanOutcomes
@@ -57,7 +56,7 @@ namespace Anywhere.service.Data.PlanOutcomes
                 return "4APODG: error ANYW_ISP_UpdatePlanOutcomeProgressSummary";
             }
         }
-                
+
         public string deletePlanOutcomeProgressSummary(string token, long progressSummaryId)
         {
             if (tokenValidator(token) == false) return null;
@@ -239,7 +238,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             logger.debug("insertPlanOutcomesExperiences ");
             List<string> list = new List<string>();
             list.Add(experienceId);
-            
+
             list.Add(responsibleContact.ToString());
             list.Add(responsibleProvider.ToString());
             list.Add(whenHowOftenValue);
@@ -366,7 +365,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        
+
 
         public string getPlanOutcomes(string token, string assessmentId, int targetAssessmentVersionId)
         {

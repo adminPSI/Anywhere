@@ -19,11 +19,14 @@ const resetPassword = function () {
     var newPasswordValue = null;
     var confirmPasswordValue = null;
     var selectedUserID;
+    var isChecked;
 
     function init() {
         DOM.clearActionCenter();
         const topNav = buildRosterTopNav();
         userTable = buildTable();
+
+        userTable.style = "cursor: pointer;"; 
         DOM.ACTIONCENTER.appendChild(topNav);
         DOM.ACTIONCENTER.appendChild(userTable);
 
@@ -36,7 +39,8 @@ const resetPassword = function () {
         SEARCH_INPUT.addEventListener('keyup', event => {
             tableUserSearch(event.target.value);
         });
-        loadReviewPage(true);
+        isChecked = $.session.isActiveUsers;
+        loadReviewPage(isChecked);
     }
 
     function buildSearchBtn() {
@@ -60,7 +64,9 @@ const resetPassword = function () {
     function buildInactiveChkBox() {
         return input.buildCheckbox({
             text: "Show Inactives",
-            callback: () => setCheckForInactiveUser(event.target)
+            id:"chkInacive",
+            callback: () => setCheckForInactiveUser(event.target),
+            isChecked: $.session.isActiveUsers,   
         });
     }
 
@@ -71,21 +77,20 @@ const resetPassword = function () {
         });
     }
 
-    function buildTable() {
+    function buildTable() {   
         var tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
             columnHeadings: [
                 'User Name',
                 'Last Name',
-                'First Name',      
-                '   ',
-                'Active'
+                'First Name',
+                '   ',            
             ],
-            endIcon: true, 
+            endIcon: true,
+            endIconHeading: 'Active',       
+            callback: handleUserTableEvents    
 
-            callback: handleUserTableEvents
-            
         };
 
         return table.build(tableOptions);
@@ -250,24 +255,19 @@ const resetPassword = function () {
                 });
                 okBtn.style.width = '100%';
                 const message = document.createElement('p');
-                message.innerText = 'Password has been changed. You may now log in with your new password.';
+                message.innerText = 'Password has been successfully changed for the selected user.'; 
                 message.style.textAlign = 'center';
                 message.style.marginBottom = '15px';
                 passwordChangeConfPOPUP.appendChild(message);
-                passwordChangeConfPOPUP.appendChild(okBtn);
-                bodyScrollLock.disableBodyScroll(passwordChangeConfPOPUP);
-                const overlayElement = document.querySelector('.overlay');
-                overlayElement.style.zIndex = '2';
-                passwordChangeConfPOPUP.style.zIndex = '3';
-                passwordChangeConfPOPUP.style.top = '40%';
+                passwordChangeConfPOPUP.appendChild(okBtn);                
                 okBtn.focus();
                 POPUP.hide(changePasswordPopup);
-                POPUP.show(passwordChangeConfPOPUP);
+                POPUP.show(passwordChangeConfPOPUP); 
             },
         );
     }
 
-    function checkPassword() {
+    function checkPassword() {  
         var pass1 = document.getElementById('newPasswordInput');
         var pass2 = document.getElementById('confirmPasswordInput');
         var message = document.getElementById('confirmMessage');
@@ -282,7 +282,6 @@ const resetPassword = function () {
             return 0;
         } else {
             $('#errortext').text(``);
-            document.getElementById('savePasswordBtn').classList.remove('disabled');
         }
 
         //Extra condition for whether or not a strong password is required
@@ -290,16 +289,19 @@ const resetPassword = function () {
             if (pass1.value === '' || pass2.value === '') {
                 message.innerHTML = 'Please enter and confirm a new password.';
                 message.classList.add('password-error');
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             }
             //passwords match?
             if (pass1.value !== pass2.value) {
                 message.innerHTML = 'Passwords Do Not Match!';
                 message.classList.add('password-error');
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             } else {
                 message.innerHTML = '';
                 message.classList.remove('password-error');
+                document.getElementById('savePasswordBtn').classList.remove('disabled');   
                 return 1;
             }
         } else {
@@ -310,6 +312,7 @@ const resetPassword = function () {
                 $.session.changePasswordLinkSelected === ''
             ) {
                 message.innerHTML = 'Please enter and confirm a new password.';
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             }
 
@@ -320,6 +323,7 @@ const resetPassword = function () {
                 specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
                 message.innerHTML = `Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
                                         have a special character(${specialCharDisplay}), upper and lower case letters.`;
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             }
 
@@ -327,19 +331,23 @@ const resetPassword = function () {
             if (pass1.value === '' || pass2.value === '') {
                 message.innerHTML = 'Please enter and confirm a new password.';
                 message.classList.add('password-error');
+                document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
             }
             //passwords match?
             if (pass1.value !== pass2.value) {
                 message.innerHTML = 'Passwords Do Not Match!';
                 message.classList.add('password-error');
+                document.getElementById('savePasswordBtn').classList.add('disabled');  
                 return 0;
             } else {
                 message.innerHTML = '';
                 message.classList.remove('password-error');
+                document.getElementById('savePasswordBtn').classList.remove('disabled');
                 return 1;
             }
         }
+        document.getElementById('savePasswordBtn').classList.remove('disabled'); 
         return 1;
     }
 
@@ -365,7 +373,7 @@ const resetPassword = function () {
     }
 
     // events
-    function handleUserTableEvents() { 
+    function handleUserTableEvents() {
         if (event.target.id == '') return;
         var userId = event.target.id;
         var rowLastName = event.target.childNodes[1].innerText;
@@ -385,11 +393,12 @@ const resetPassword = function () {
             const additionalInformation = changePasswordBtn();
             additionalInformation.innerHTML = 'CHANGE PASSWORD';
 
+            additionalInformation.style = 'margin-top: -10px;';
             const activeCheckbox = buildActiveChkBox(Active);
 
             return {
                 id: userID,
-                endIcon: activeCheckbox.outerHTML, 
+                endIcon: activeCheckbox.outerHTML,
                 FirstName: FirstName,
                 LastName: LastName,
                 Active: Active,
@@ -397,12 +406,11 @@ const resetPassword = function () {
                     userID,
                     LastName,
                     FirstName,
-                    additionalInformation.outerHTML, 
-                    ''
+                    additionalInformation.outerHTML,  
                 ],
                 attributes: [
                     { key: 'data-status', value: Active },
-                    { key: 'data-consumer-id', value: userID }, 
+                    { key: 'data-consumer-id', value: userID },
                 ],
                 endIconCallback: e => {
                     setCheckUpdateUserStatus(Active, userID);
@@ -412,7 +420,7 @@ const resetPassword = function () {
         if (IsFirstLoad) {
             tempUserTableData = userTableData;
         }
-        table.populate(userTable, userTableData ,false,true); 
+        table.populate(userTable, userTableData, false, true);
     }
 
 
@@ -432,22 +440,26 @@ const resetPassword = function () {
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
 
-        INACTIVE_CHKBOX.style = "margin-right: 400px";
+        INACTIVE_CHKBOX.style = "margin-right: 400px;padding-bottom: 12px";
         var wrap1 = document.createElement('div');
         wrap1.classList.add('btnWrap');
         wrap1.appendChild(INACTIVE_CHKBOX);
         wrap1.appendChild(SEARCH_WRAP);
+
+        INACTIVE_CHKBOX.addEventListener('change', event => {  
+            isChecked = event.target.checked;     
+            $.session.isActiveUsers = isChecked;
+        });
 
         btnWrap.appendChild(wrap1);
         return btnWrap;
     }
 
     function setCheckForInactiveUser(input) {
-        var isChecked;
         if (input.checked) {
-            isChecked = false;
-        } else {
             isChecked = true;
+        } else {
+            isChecked = false;
         }
         loadReviewPage(isChecked)
     }
@@ -459,19 +471,19 @@ const resetPassword = function () {
                 userId: id,
             },
             function (results, error) {
-                populateTable(results, true);
+                populateTable(results, true);               
             },
         );
 
-        loadReviewPage(true);
+        loadReviewPage(isChecked);   
 
         const passwordChangeConfPOPUP = POPUP.build({
             hideX: true,
         });
         const okBtn = button.build({
-            text: 'OK',
+            text: 'OK', 
             style: 'secondary',
-            type: 'contained', 
+            type: 'contained',
             callback: () => {
                 POPUP.hide(passwordChangeConfPOPUP);
             },
@@ -479,23 +491,18 @@ const resetPassword = function () {
         okBtn.style.width = '100%';
         const message = document.createElement('p');
         if (active == 'Y') {
-            message.innerText = 'The User has been de-activated and can no longer login to the website.';
+            message.innerText = 'The user has been de-activated and can no longer login to the website.';
         }
         else {
-            message.innerText = 'The User has been reactivated and can login to the website.';
+            message.innerText = 'The user has been reactivated and can login to the website.';
         }
-            
+
         message.style.textAlign = 'center';
         message.style.marginBottom = '15px';
         passwordChangeConfPOPUP.appendChild(message);
         passwordChangeConfPOPUP.appendChild(okBtn);
-        bodyScrollLock.disableBodyScroll(passwordChangeConfPOPUP);
-        const overlayElement = document.querySelector('.overlay');
-        overlayElement.style.zIndex = '2';
-        passwordChangeConfPOPUP.style.zIndex = '3';
-        passwordChangeConfPOPUP.style.top = '40%';
         okBtn.focus();
-        POPUP.show(passwordChangeConfPOPUP);
+        POPUP.show(passwordChangeConfPOPUP);  
     }
 
     function tableUserSearch(searchValue) {
@@ -504,8 +511,9 @@ const resetPassword = function () {
         tempUserTableData.forEach(consumer => {
             var firstName = consumer.FirstName.toLowerCase();
             var lastName = consumer.LastName.toLowerCase();
-            var fullName = `${firstName} ${lastName}`;
-            var fullNameReversed = `${lastName} ${firstName}`;
+            var userId = consumer.id.toLowerCase();
+            var fullName = `${firstName} ${lastName} ${userId}`; 
+            var fullNameReversed = `${lastName} ${firstName} ${userId}`;
             var matchesName = fullName.indexOf(searchValue);
             var matchesNameReverse = fullNameReversed.indexOf(searchValue);
 
@@ -525,13 +533,14 @@ const resetPassword = function () {
 
 
     // load
-    function loadReviewPage(active) {
+    function loadReviewPage(active) { 
+        active = document.getElementById("chkInacive").checked;   
         resetPasswordAjax.getActiveInactiveUserlist(
             {
-                isActive: active == true ? 'Y' : 'N',
+                isActive: active == true ? 'N' : 'Y', 
             },
             function (results, error) {
-                populateTable(results, true);
+                populateTable(results, true);              
             },
         );
     }

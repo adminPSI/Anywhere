@@ -1,15 +1,6 @@
-﻿using iAnywhere.Data.SQLAnywhere;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
-using Anywhere.Log;
-using System.Data;
-using System.Web.Script.Serialization;
+﻿using System;
 using System.Text;
-using Newtonsoft.Json;
+using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
 
 namespace Anywhere.service.Data.CaseNoteReportBuilder
@@ -22,7 +13,7 @@ namespace Anywhere.service.Data.CaseNoteReportBuilder
         StringBuilder sb = new StringBuilder();
         //public ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate, string enteredDateStart, string enteredDateEnd,
         //    string billingCode, string location, string service, string need, string contact, string applicationName)
-        public ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate, 
+        public ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,
                                                         string location, string originallyEnteredStart, string originallyEnteredEnd, string billingCode, string service, string need, string contact, string applicationName)
         {
             string category = "Case Notes";
@@ -57,15 +48,16 @@ namespace Anywhere.service.Data.CaseNoteReportBuilder
 
         public string cnDetailReportFilterSyntaxBuilder(string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,
                                                         string location, string originallyEnteredStart, string originallyEnteredEnd, string billingCode, string service, string need, string contact)
-        {            
+        {
             string filterSyntax = "";
             string percent = "%";
-           // sb.Clear();
+            // sb.Clear();
             //sb.AppendFormat("User ID = '{0}' ", userId);
             if (contact.Equals("%"))
             {
                 sb.AppendFormat("Contact = {0} or  Contact is null ", contact);
-            }else
+            }
+            else
             {
                 sb.AppendFormat("Contact = {0} ", contact);
             }
@@ -92,7 +84,8 @@ namespace Anywhere.service.Data.CaseNoteReportBuilder
             if (billingCode.Equals("%"))
             {
                 sb.AppendFormat("and (Service Code = {0} or  Service Code is null) ", billingCode);
-            }else
+            }
+            else
             {
                 sb.AppendFormat("and Service Code = {0} ", billingCode);
             }
@@ -226,7 +219,7 @@ namespace Anywhere.service.Data.CaseNoteReportBuilder
                 else
                 {
                     byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
-                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename+".pdf" + ";");
+                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ".pdf" + ";");
                     response.ContentType = "application/pdf";
                     response.AddHeader("Transfer-Encoding", "identity");
                     response.BinaryWrite(bytes);

@@ -1,15 +1,10 @@
-﻿using iAnywhere.Data.SQLAnywhere;
-using System;
+﻿using Anywhere.Log;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
-using Anywhere.Log;
 using System.Data;
-using System.Web.Script.Serialization;
 using System.Text;
-using Newtonsoft.Json;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -26,11 +21,14 @@ namespace Anywhere.service.Data
             string attachments, string noteText, string applicationName)
         {
             string jsonResult = "";
-            string query = "";     
-            if(applicationName.Equals("Advisor")){
+            string query = "";
+            if (applicationName.Equals("Advisor"))
+            {
                 query = filterCaseNoteListQueryADV(billerId, consumerId, serviceStartDate, serviceEndDate, dateEnteredStart, dateEnteredEnd, billingCode, reviewStatus,
                                                      location, service, need, contact, confidential, billed, noteText);
-            } else{
+            }
+            else
+            {
                 query = filterCaseNoteListQueryGK(billerId, consumerId, serviceStartDate, serviceEndDate, dateEnteredStart, dateEnteredEnd, billingCode, reviewStatus,
                                                          location, service, need, contact, confidential, corrected, billed, attachments, noteText);
             }
@@ -42,7 +40,7 @@ namespace Anywhere.service.Data
 
         public string filterCaseNoteListQueryADV(string billerId, string consumerId, string serviceStartDate, string serviceEndDate, string dateEnteredStart, string dateEnteredEnd,
                string billingCode, string reviewStatus, string location, string service, string need, string contact, string confidential, string billed, string noteText)
-        {            
+        {
             sb.Clear();
             sb.Append("select cn.case_note_id as casenoteid,cn.Service_Date as servicedate,cn.Start_Time as starttime,cn.End_Time as endtime,cn.Case_Manager_ID as casemanagerid,cn.ID,cn.Original_Update as originalupdate, ");
             sb.Append("cn.last_update  as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,p.first_name as firstname, ");
@@ -50,19 +48,27 @@ namespace Anywhere.service.Data
             sb.Append("from dba.case_notes as cn join dba.people as p on cn.id = p.Consumer_ID join dba.consumers as c on c.consumer_id = p.consumer_id ");
             sb.AppendFormat("where service_date between '{0}' and '{1}' ", serviceStartDate, serviceEndDate);
             sb.AppendFormat("and cast(original_update as date) between '{0}' and '{1}' ", dateEnteredStart, dateEnteredEnd);
-            if(billerId.Equals("%")) {
+            if (billerId.Equals("%"))
+            {
                 sb.AppendFormat("and (case_manager_id like '{0}' or case_manager_id is null) ", billerId);
-            } else {
+            }
+            else
+            {
                 sb.AppendFormat("and (case_manager_id = '{0}') ", billerId);
             }
-            if (consumerId.Equals("%")) {
+            if (consumerId.Equals("%"))
+            {
                 sb.AppendFormat("and (c.consumer_id like '{0}' or c.consumer_id is null) ", consumerId);
-            } else {
+            }
+            else
+            {
                 sb.AppendFormat("and (c.consumer_id = '{0}') ", consumerId);
             }
-            if (billingCode.Equals("%")) {
+            if (billingCode.Equals("%"))
+            {
                 sb.AppendFormat("and (service_id like '{0}' or  service_id is null) ", billingCode);
-            } else
+            }
+            else
             {
                 sb.AppendFormat("and (service_id = '{0}') ", billingCode);
             }
@@ -119,7 +125,7 @@ namespace Anywhere.service.Data
             {
                 sb.AppendFormat("and (billing_id like '{0}' or  billing_id is null) ", billed);
             }
-            else if(billed.Equals("Y"))
+            else if (billed.Equals("Y"))
             {
                 sb.AppendFormat("and (billing_id is not null) ");
             }
@@ -140,12 +146,12 @@ namespace Anywhere.service.Data
                 sb.AppendFormat("and (cn.notes like '{0}') ", noteText);
             }
 
-           // sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
-          //  sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.Ratio_Consumers, ");
-          //  sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID ");
+            // sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
+            //  sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.Ratio_Consumers, ");
+            //  sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID ");
 
             sb.Append("order by cn.service_date desc,cn.Start_Time desc,p.Last_Name asc ");
-            string sbToPass = sb.ToString();            
+            string sbToPass = sb.ToString();
             return sbToPass;
         }
 
@@ -283,12 +289,12 @@ namespace Anywhere.service.Data
             sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
             sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.corrected,cn.Ratio_Consumers, ");
             sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID ");
-             
+
 
             sb.Append("order by cn.service_date desc,cn.Start_Time desc,p.Last_Name asc ");
 
-            
-         
+
+
             string sbToPass = sb.ToString();
             return sbToPass;
         }
@@ -318,5 +324,4 @@ namespace Anywhere.service.Data
             return jsSerializer.Serialize(parentRow);
         }
     }
-}         
-              
+}

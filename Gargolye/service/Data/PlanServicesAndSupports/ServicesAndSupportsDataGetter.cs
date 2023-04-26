@@ -5,7 +5,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.Odbc;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanServicesAndSupports
@@ -27,7 +26,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(newOrExisting.ToString());
             list.Add(whoSupports);
             list.Add(reasonForReferral);
+            // TODO JOE -- 100348 -- uncomment out the line below and delete the existing 'text =' (line 31) 
+            // string text = "CALL DBA.ANYW_ISP_UpdateProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             string text = "CALL DBA.ANYW_ISP_UpdateProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            
             try
             {
                 return executeDataBaseCallJSON(text);
@@ -51,6 +53,8 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(whoSupports);
             list.Add(reasonForReferral);
             list.Add(rowOrder.ToString());
+            // TODO JOE -- 100348 -- uncomment out the line below and delete the existing 'text =' (line 31) 
+            // string text = "CALL DBA.ANYW_ISP_InsertProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             string text = "CALL DBA.ANYW_ISP_InsertProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -102,7 +106,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             }
         }
 
-            public string deleteProfessionalReferral(string token, long professionalReferralId)
+        public string deleteProfessionalReferral(string token, long professionalReferralId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("deleteProfessionalReferral ");
@@ -146,7 +150,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
                 return "2SSDG: error ANYW_ISP_UpdateAdditionalSupports";
             }
         }
-         
+
         public string insertAdditionalSupports(string token, long anywAssessmentId, int assessmentAreaId, string whoSupports, string whatSupportLooksLike, string howOftenValue, int howOftenFrequency, string howOftenText, int rowOrder)
         {
             if (tokenValidator(token) == false) return null;
@@ -289,7 +293,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(icfRate.ToString());
             list.Add(complexRate.ToString());
             list.Add(developmentalRate.ToString());
-            list.Add(childIntensiveRate.ToString()); 
+            list.Add(childIntensiveRate.ToString());
             string text = "CALL DBA.ANYW_ISP_InsertSSModifications(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -408,9 +412,9 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(howOftenValue);
             list.Add(howOftenFrequency.ToString());
             list.Add(howOftenText);
-            list.Add(beginDate); 
+            list.Add(beginDate);
             list.Add(endDate);
-            list.Add(fundingSource.ToString()); 
+            list.Add(fundingSource.ToString());
             list.Add(fundingSourceText);
             list.Add(rowOrder.ToString());
             list.Add(serviceNameOther);

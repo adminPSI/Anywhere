@@ -1,8 +1,4 @@
 ﻿using Anywhere.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -23,22 +19,29 @@ namespace Anywhere.service.Data
         public string authenticatedLogin(string userName, string genKey)
         {
             string passwordString = adg.getHashfromKey(userName, genKey);
-            if (passwordString.Contains("Invalid key")) {
+            if (passwordString.Contains("Invalid key"))
+            {
                 return "Invalid key";
-            } else if (passwordString.Contains("Too many failed")) {
+            }
+            else if (passwordString.Contains("Too many failed"))
+            {
                 return "Too many failed attempts";
-            }else if (passwordString.Contains("Expired key")) {
+            }
+            else if (passwordString.Contains("Expired key"))
+            {
                 return "Expired key";
-            }else {
+            }
+            else
+            {
                 Hash[] passwordObj = js.Deserialize<Hash[]>(passwordString);
                 string password = passwordObj[0].Hash_Password.ToString();
                 return dg.getLogIn(userName, password);
-            }            
+            }
         }
 
         public class Hash
         {
             public string Hash_Password { get; set; }
-        }       
+        }
     }
 }

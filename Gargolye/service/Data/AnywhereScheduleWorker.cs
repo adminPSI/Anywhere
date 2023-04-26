@@ -1,21 +1,14 @@
 ﻿using Anywhere.Data;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO.Packaging;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
-using System.Web.UI.WebControls;
-using System.Windows.Input;
-using System.Xml;
 
 namespace Anywhere.service.Data
 {
     public class AnywhereScheduleWorker
     {
-        DataGetter dg =  new DataGetter();
+        DataGetter dg = new DataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
         public AllScheduleData[] getSchedulesForSchedulingModule(string token, string locationId, string personId)
@@ -78,7 +71,7 @@ namespace Anywhere.service.Data
             string myApprovalDataString = dg.getScheduleMyApprovalData(token, personId);
             MyApprovalData[] myApprovalDataObj = js.Deserialize<MyApprovalData[]>(myApprovalDataString);
             return myApprovalDataObj;
-        }        
+        }
 
         public string requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
         {
@@ -87,10 +80,11 @@ namespace Anywhere.service.Data
             int count = 1;
             foreach (var requestedDate in dateArr)
             {
-                if(length == 1)
+                if (length == 1)
                 {
                     dg.requestDaysOffScheduling(token, personId, requestedDate, fromTime, toTime, reasonId, employeeNotifiedId, status);
-                }else if(length > 1 && count == 1)
+                }
+                else if (length > 1 && count == 1)
                 {
                     dg.requestDaysOffScheduling(token, personId, requestedDate, fromTime, "23:59:59", reasonId, employeeNotifiedId, status);
                 }
@@ -169,7 +163,7 @@ namespace Anywhere.service.Data
                 List<AllScheduleData> selectedShiftDataObj = JsonConvert.DeserializeObject<List<AllScheduleData>>(selectedShiftDataString);
 
                 string currentUserApprovedShiftsString = dg.getCurrentUserApprovedShifts(token, personId);
-                  AllScheduleData[] currentUserApprovedShiftsObj = js.Deserialize<AllScheduleData[]>(currentUserApprovedShiftsString);
+                AllScheduleData[] currentUserApprovedShiftsObj = js.Deserialize<AllScheduleData[]>(currentUserApprovedShiftsString);
 
                 foreach (var selectedShift in selectedShiftDataObj)
                 {
@@ -178,18 +172,18 @@ namespace Anywhere.service.Data
                         if (existingShift.serviceDate == selectedShift.serviceDate)
                         {
 
-                             TimeSpan selectedStartTime = TimeSpan.Parse(selectedShift.startTime);
+                            TimeSpan selectedStartTime = TimeSpan.Parse(selectedShift.startTime);
                             TimeSpan selectedEndTime = TimeSpan.Parse(selectedShift.endTime);
-                           TimeSpan existingStartTime = TimeSpan.Parse(existingShift.startTime);
-                         TimeSpan existingEndTime = TimeSpan.Parse(existingShift.endTime);
+                            TimeSpan existingStartTime = TimeSpan.Parse(existingShift.startTime);
+                            TimeSpan existingEndTime = TimeSpan.Parse(existingShift.endTime);
 
-                        //    // if (existingEndTime < selectedStartTime || existingStartTime > selectedEndTime)
+                            //    // if (existingEndTime < selectedStartTime || existingStartTime > selectedEndTime)
 
-                           if (((selectedStartTime > existingStartTime) && (selectedStartTime < existingEndTime))
-                               || ((selectedEndTime > existingStartTime) && (selectedEndTime < existingEndTime))
-                                || (((existingStartTime >= selectedStartTime) && (existingStartTime <= selectedEndTime))
-                                  && ((existingEndTime >= selectedStartTime) && (existingEndTime <= selectedEndTime)))
-                                || ((existingStartTime == selectedStartTime) && (existingEndTime == selectedEndTime)))
+                            if (((selectedStartTime > existingStartTime) && (selectedStartTime < existingEndTime))
+                                || ((selectedEndTime > existingStartTime) && (selectedEndTime < existingEndTime))
+                                 || (((existingStartTime >= selectedStartTime) && (existingStartTime <= selectedEndTime))
+                                   && ((existingEndTime >= selectedStartTime) && (existingEndTime <= selectedEndTime)))
+                                 || ((existingStartTime == selectedStartTime) && (existingEndTime == selectedEndTime)))
                             {
                                 string returnJSON = Newtonsoft.Json.JsonConvert.SerializeObject(selectedShift);
                                 return returnJSON;
@@ -236,7 +230,8 @@ namespace Anywhere.service.Data
                 if (response.Contains("is not unique: Primary key value"))
                 {
                     returnOverlapMessage = true;
-                } else
+                }
+                else
                 {
                     dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
                 }
@@ -249,12 +244,15 @@ namespace Anywhere.service.Data
             //    break;
             //}
 
-            if (returnOverlapMessage) {
+            if (returnOverlapMessage)
+            {
                 return "OverlapFound.";
-            } else { 
+            }
+            else
+            {
                 return "Success";
             }
-            
+
         }
 
         public class AllScheduleData

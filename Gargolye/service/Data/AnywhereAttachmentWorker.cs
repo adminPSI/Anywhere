@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Web;
 using Anywhere.Data;
 using Anywhere.Log;
-using System.Web.Script.Serialization;
 using Anywhere.service.Data.DocumentConversion;
+using System;
+using System.IO;
+using System.Linq;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -37,7 +34,7 @@ namespace Anywhere.service.Data
                 try
                 {
                     // use the filename parameter if it exists, otherwise create one from a guid 
-                    attachment.filename = (filename == null || (filename.Trim()) == "")? Guid.NewGuid().ToString() : attachment.filename + "." + dg.GetAttachmentExtension(attachmentId);
+                    attachment.filename = (filename == null || (filename.Trim()) == "") ? Guid.NewGuid().ToString() : attachment.filename + "." + dg.GetAttachmentExtension(attachmentId);
                     attachment.data = dg.GetAttachmentData(attachmentId);//reused
                 }
                 catch (Exception ex)
@@ -66,7 +63,7 @@ namespace Anywhere.service.Data
                 }
                 catch (Exception ex)
                 {
-                    
+
                 }
             }
             //logger.debug("Made it this far in attachment");
@@ -121,7 +118,7 @@ namespace Anywhere.service.Data
 
                     }
                 }
-                
+
             }
             displayAttachment(attachment);
         }
@@ -179,9 +176,33 @@ namespace Anywhere.service.Data
             }
         }
 
+        public void viewCFAttachment(string token, string attachmentId, string section)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
+                char value = '-';
+                bool guid = attachmentId.Contains(value);
+               
+                try
+                {
+                    attachment.filename = aadg.getCFAttachmentFileName(attachmentId);
+                    attachment.data = aadg.GetCFAttachmentData(attachmentId);//reused
+                }
+                catch (Exception ex)
+                {
+
+                }               
+            }
+            displayAttachment(attachment);
+        }
+
         public class Attachments
         {
-            public string filename {get; set;}
+            public string filename { get; set; }
             public string attachmentid { get; set; }
         }
 
@@ -190,5 +211,5 @@ namespace Anywhere.service.Data
             public string filename { get; set; }
             public MemoryStream data { get; set; }
         }
-	}
+    }
 }

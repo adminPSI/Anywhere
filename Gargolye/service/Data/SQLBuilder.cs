@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Data;
-using Microsoft.VisualBasic;
+﻿using Microsoft.VisualBasic;
+using System;
 
 namespace Anywhere.service.Data
 {
@@ -69,7 +65,7 @@ namespace Anywhere.service.Data
             //MAt. Changed > to != to because you cannot compare strings in C# with greater than signs
             if (StartTime != "" & EndTime != "")
             {
-               // hours = System.Math.Round(DateDiff(DateInterval.Minute, Convert.ToDateTime(StartTime), Convert.ToDateTime(EndTime)) / 60, 2);//MAT. Added system.math in front of round
+                // hours = System.Math.Round(DateDiff(DateInterval.Minute, Convert.ToDateTime(StartTime), Convert.ToDateTime(EndTime)) / 60, 2);//MAT. Added system.math in front of round
             }
 
             if (StartTime != "")

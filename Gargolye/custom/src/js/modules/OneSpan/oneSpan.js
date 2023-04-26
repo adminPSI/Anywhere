@@ -3,6 +3,7 @@ const oneSpan = (() => {
     let oneSpanDocumentData;
 
     async function checkOneSpanData(planId) {
+      // Checks if the document has been signed and values are in our database
         oneSpanDocumentStatus = await oneSpanAjax.oneSpanCheckDocumentStatus({
           token: $.session.Token,
           assessmentId: planId
@@ -65,6 +66,7 @@ const oneSpan = (() => {
         oneSpanPopup.style.display = 'none';
         pendingSave.show('Sending...');
 
+        // Sends the document out via One Span
         const sentStatus = await oneSpanAjax.oneSpanBuildSigners(oneSpanDocumentData);
 
         if (sentStatus === 'success') {
@@ -76,6 +78,7 @@ const oneSpan = (() => {
         const pendingSavePopup = document.querySelector('.pendingSavePopup');
         pendingSavePopup.style.display = 'none';
 
+        // Handles popup actions based on whether the One Span delivery was successsful
         if (success) {
           pendingSave.fulfill('Sent!');
           setTimeout(() => {
@@ -85,7 +88,6 @@ const oneSpan = (() => {
           }, 700);
         } else {
           pendingSave.reject('Failed to send, please try again.');
-          console.error(res);
           setTimeout(() => {
             const failPopup = document.querySelector('.failSavePopup');
             DOM.ACTIONCENTER.removeChild(failPopup);
@@ -146,7 +148,8 @@ const oneSpan = (() => {
                     userID: $.session.PeopleId,
                     versionID: 1,
                     extraSpace: "false",
-                    isp: true
+                    isp: true,
+                    oneSpan: true
                   },
 
                   showOneSpanPopup(oneSpanDocumentData)
@@ -159,7 +162,7 @@ const oneSpan = (() => {
       }  
   
     return {
-        checkOneSpanData,
+        checkOneSpanData,//
         buildSendDocumentToOneSpanBtn,
         shouldBeDisabled,
         fireDataUpdateEvent

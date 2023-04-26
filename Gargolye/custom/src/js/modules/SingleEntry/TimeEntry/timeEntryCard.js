@@ -652,7 +652,7 @@ var timeEntryCard = (function () {
   }
   function moveConsumersToTimeCard(consumers) {
     var consumerList = document.querySelector('.timeCard__consumers');
-    consumers.forEach(consumer => {
+    consumers.forEach(async consumer => {
       //If consumer is already on the selected consumer list ignore
       if (consumerIds.filter(id => id === consumer.id).length > 0) return;
       consumer.card.classList.remove('highlighted');
@@ -660,7 +660,7 @@ var timeEntryCard = (function () {
       var card = buildConsumerCard(clone, { consumerid: consumer.id });
       consumerList.appendChild(card);
       consumerIds.push(consumer.id);
-      evvCheckConsumerEligibility(consumer.id);
+      await evvCheckConsumerEligibility(consumer.id);
       numberOfConsumersPresent = consumerIds.length;
     });
     checkPermissions();
@@ -795,8 +795,10 @@ var timeEntryCard = (function () {
 
         if (!startValue && !endValue && !totalValue) {
           // blank slate, clear all errors
-          odometerTotalInput.classList.remove('disabled');
-          odometerTotalInput.classList.remove('error');
+         odometerTotalInput.classList.remove('disabled');
+         odometerTotalInput.classList.remove('error');
+         // TODO JOE -- 99417 -- add the line below and comment out the two lines above
+         // odometerTotalInput.classList.add('error');
           odometerStartInput.classList.remove('disabled');
           odometerStartInput.classList.remove('error');
           odometerEndInput.classList.remove('disabled');
@@ -829,6 +831,23 @@ var timeEntryCard = (function () {
         }
       }
     }
+
+    // TODO JOE -- 99417 -- add the following function 
+    // NOTE: that isOdometerRequired covers all THREE odometer inputs and below is just fudged so it will work
+    // NOTE : Do we need to rewrite the code above to handle two Scenarios: 1. just type in total miles  2. type in start and Stop and calculate
+    // NOTE : DO we need an additional isTotalMilesREquired (and then furter define how that would work with isodometerREquired)
+    // function checkTotalMiles() {
+    //   var totalMilesVal = transportationUnits;
+
+    //   if (requiredFields.isOdometerRequired === 'N') {
+    //     if (totalMilesVal === '' || !totalMilesVal) {
+    //       odometerTotalInput.classList.add('error');
+    //     } else {
+    //       odometerTotalInput.classList.remove('error');
+    //     }
+    //   }
+    // }
+
     // reason
     function checkReason() {
       var reasonVal = reason;
@@ -867,6 +886,8 @@ var timeEntryCard = (function () {
       }
     }
 
+    // TODO JOE -- 99417 -- add the following function call below
+    // checkTotalMiles();
     checkOdometer();
     checkReason();
     checkDestination();
@@ -1272,10 +1293,19 @@ var timeEntryCard = (function () {
       }
     }
     function checkEvv() {
-      if (reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged) {
-        reasonDropdown.classList.add('error');
-      } else {
+      var isDisabled = reasonDropdown.classList.contains('disabled');
+      var reasonSelect = reasonDropdown.querySelector('select');
+      var currentValue = reasonSelect.value;
+      if (isDisabled) {
         reasonDropdown.classList.remove('error');
+      } else {
+        if (currentValue === '%' || currentValue === '' && (reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged)) {
+          reasonDropdown.classList.add('error');
+         // roster2.toggleMiniRosterBtnVisible(false);
+        } else {
+          reasonDropdown.classList.remove('error');
+         // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
+        }
       }
     }
 
@@ -1431,7 +1461,7 @@ var timeEntryCard = (function () {
       event.preventDefault();
       event.stopPropagation();
     });
-    startTimeInput.addEventListener('focusout', event => {
+    startTimeInput.addEventListener('focusout', async event => {
       var hoursInput = totalHoursInput.querySelector('input');
       var isTimeValid = UTIL.validateTime(event.target.value);
       if (!isTimeValid) {
@@ -1460,7 +1490,7 @@ var timeEntryCard = (function () {
         reasonRequired = false;
       }
 
-      evvCheck();
+      await evvCheck();
       setTotalHours();
       checkPermissions();
       UTIL.getGeoLocation(setStartTimeLocation);
@@ -1468,7 +1498,7 @@ var timeEntryCard = (function () {
     endTimeInput.addEventListener('click', event => {
       setEndTimeOnClick(event);
     });
-    endTimeInput.addEventListener('focusout', event => {
+    endTimeInput.addEventListener('focusout', async event => {
       var hoursInput = totalHoursInput.querySelector('input');
       var endInput = endTimeInput.querySelector('input');
       var isTimeValid = UTIL.validateTime(event.target.value);
@@ -1511,7 +1541,7 @@ var timeEntryCard = (function () {
         reasonRequired = false;
       }
 
-      evvCheck();
+      await evvCheck();
       setTotalHours();
       checkPermissions();
       UTIL.getGeoLocation(setEndTimeLocation);
@@ -1564,6 +1594,10 @@ var timeEntryCard = (function () {
   function enableSaveButtons() {
     saveBtn.classList.remove('disabled');
     saveAndSumbitBtn.classList.remove('disabled');
+  }
+
+  function enableSaveButton() {
+    saveBtn.classList.remove('disabled');
   }
 
   async function customRosterApplyFilterEvent() {
@@ -1699,10 +1733,10 @@ var timeEntryCard = (function () {
     dropdownData.unshift({ value: '%', text: '' });
     dropdown.populate(reasonDropdown, dropdownData, evvReasonCode);
   }
-  function populateCard() {
+  async function populateCard(useAllWorkCodes) {
     payPeriodData = timeEntry.getPayPeriods(false);
     locationData = timeEntry.getLocations();
-    workCodeData = timeEntry.getWorkCodes();
+    workCodeData = await timeEntry.getWorkCodes(useAllWorkCodes);
     requiredFields = timeEntry.getRequiredFields();
     evvReasonCodeObj = timeEntry.getEvvReasonCodes();
 
@@ -1790,7 +1824,7 @@ var timeEntryCard = (function () {
     );
   }
 
-  function evvCheck() {
+  async function evvCheck() {
     if (!isEdit) {
       if (startTime) {
         // const timeChanged = startTime !== `${nowHour}:${nowMinutes}`
@@ -1824,7 +1858,7 @@ var timeEntryCard = (function () {
         if (defaultEndTimeChanged || defaultTimesChanged) {
           showEvv();
           // checkRequiredFields();
-          evvCheckConsumerEligibilityExistingConsumers();
+          await evvCheckConsumerEligibilityExistingConsumers();
         } else {
           reasonRequired = false;
           document.querySelector('.timeCard__evv').style.display = 'none';
@@ -1836,42 +1870,70 @@ var timeEntryCard = (function () {
     }
   }
 
-  function evvCheckConsumerEligibility(id) {
-    const eligibilityProm = new Promise((resolve, reject) => {
-      singleEntryAjax.getEvvEligibility(id, entryDate, res => {
-        if (res.length > 0) {
-          eligibleConsumersObj[id] = true;
-          reasonRequired = true;
-        } else eligibleConsumersObj[id] = false;
-        resolve('evvEligibilityChecked');
-      });
-    });
-    eligibilityProm.then(() => evvCheck());
+  // async function evvCheckConsumerEligibility(id) {
+  //   const eligibilityProm = new Promise((resolve, reject) => {
+  //     singleEntryAjax.getEvvEligibility(id, entryDate, res => {
+  //       if (res.length > 0) {
+  //         eligibleConsumersObj[id] = true;
+  //         reasonRequired = true;
+  //       } else eligibleConsumersObj[id] = false;
+  //       resolve('evvEligibilityChecked');
+  //     });
+  //   });
+  //   eligibilityProm.then(() => evvCheck());
+  // }
+
+  // function evvCheckConsumerEligibilityExistingConsumers() {
+  //   reasonRequired = false;
+  //   consumerIds.forEach(id => {
+  //     const eligibilityProm = new Promise((resolve, reject) => {
+  //       singleEntryAjax.getEvvEligibility(id, entryDate, res => {
+  //         if (res.length > 0) {
+  //           reasonRequired = true;
+  //           eligibleConsumersObj[id] = true;
+  //           checkAttestStatus();
+  //         } else eligibleConsumersObj[id] = false;
+  //         resolve('evvEligibilityChecked');
+  //       });
+  //     });
+  //     eligibilityProm.then(() => checkRequiredFields());
+  //   });
+  // }
+
+  async function evvCheckConsumerEligibility(id) {
+    const res = await singleEntryAjax.getEvvEligibilityAsync(id, entryDate);
+    if (res.length > 0) {
+      eligibleConsumersObj[id] = true;
+      reasonRequired = true;
+    } else {
+      eligibleConsumersObj[id] = false;
+    }
+
+    await evvCheck();
   }
 
-  function evvCheckConsumerEligibilityExistingConsumers() {
+  async function evvCheckConsumerEligibilityExistingConsumers() {
     reasonRequired = false;
-    consumerIds.forEach(id => {
-      const eligibilityProm = new Promise((resolve, reject) => {
-        singleEntryAjax.getEvvEligibility(id, entryDate, res => {
-          if (res.length > 0) {
-            reasonRequired = true;
-            eligibleConsumersObj[id] = true;
-            checkAttestStatus();
-          } else eligibleConsumersObj[id] = false;
-          resolve('evvEligibilityChecked');
-        });
-      });
-      eligibilityProm.then(() => checkRequiredFields());
+    consumerIds.forEach(async id => {
+      const res = await singleEntryAjax.getEvvEligibilityAsync(id, entryDate);
+      if (res.length > 0) {
+        reasonRequired = true;
+        eligibleConsumersObj[id] = true;
+        checkAttestStatus();
+      } else {
+        eligibleConsumersObj[id] = false;
+      }
     });
+
+    checkRequiredFields();
   }
 
-  function evvCheckRemainingConsumers() {
+  async function evvCheckRemainingConsumers() {
     reasonRequired = false;
     consumerIds.forEach(id => {
       if (eligibleConsumersObj[id]) reasonRequired = true;
     });
-    evvCheck();
+    await evvCheck();
     checkAttestStatus();
   }
 
@@ -2094,7 +2156,7 @@ var timeEntryCard = (function () {
 
     return section;
   }
-  function buildConsumerSection(consumersPresent) {
+  async function buildConsumerSection(consumersPresent) {
     var section = document.createElement('div');
     section.classList.add('timeCard__consumers');
 
@@ -2106,7 +2168,7 @@ var timeEntryCard = (function () {
     roster2.clearActiveConsumers(); // clear any previous active consumers
 
     if (consumersPresent && consumersPresent.length > 0) {
-      consumersPresent.forEach(cp => {
+      consumersPresent.forEach(async cp => {
         var splitName = cp.consumername.split(',');
         var consumer = roster2.buildConsumerCard({
           FN: splitName[0],
@@ -2118,7 +2180,7 @@ var timeEntryCard = (function () {
         section.appendChild(card);
         consumerIds.push(cp.consumerid);
         numberOfConsumersPresent = consumerIds.length;
-        evvCheckConsumerEligibility(cp.consumerid);
+        await evvCheckConsumerEligibility(cp.consumerid);
       });
     }
 
@@ -2203,7 +2265,7 @@ var timeEntryCard = (function () {
     cardBody.classList.add('card__body');
 
     var timeEntrySection = buildTimeEntrySection();
-    var consumerSection = buildConsumerSection(consumersPresent);
+    var consumerSection = await buildConsumerSection(consumersPresent);
     var saveDeleteCancel = buildSaveDeleteCancelButtons();
 
     // build card body
@@ -2228,5 +2290,6 @@ var timeEntryCard = (function () {
     handleActionNavEvent,
     clearAllGlobalVariables,
     enableSaveButtons,
+    enableSaveButton,
   };
 })();

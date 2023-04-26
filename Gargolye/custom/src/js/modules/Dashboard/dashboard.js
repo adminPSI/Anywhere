@@ -3,6 +3,27 @@
   var setupFuncs;
   var widgetSettings;
 
+  var widgetIds = {
+    absent: 6,
+    adminSingleEntry: 14,
+    customLinks: 5,
+    clockedIn: 12,
+    goals: 11,
+    hoursWorked: 10,
+    incidentTracking: 16,
+    infal: null,
+    timeClock: 9,
+    schedule: 15,
+    singleEntry: 13,
+    systemMessages: null,
+    consumerProgressNotes: 8,
+    unreadLocationNotes: 7,
+    caseNotesProductivity: 1,
+    caseNotesCaseLoad: 2,
+    caseNotesRejected: 3,
+    planWorkflow: 4,
+  };
+
   // Widget Markup
   var html = {
     absent: `
@@ -175,12 +196,7 @@
   }
   function buildFilterPopup() {
     var filterPopup = document.createElement('div');
-    filterPopup.classList.add(
-      'widget__filters',
-      'popup',
-      'popup--static',
-      'popup--filter',
-    );
+    filterPopup.classList.add('widget__filters', 'popup', 'popup--static', 'popup--filter');
     filterPopup.setAttribute('data-popup', 'true');
 
     return filterPopup;
@@ -188,9 +204,12 @@
 
   // Widget Init Functions
   function initAbsentWidget() {
-    if (infalOnly == false) {
+    const showHide = getWidgetSettings(widgetIds.absent).showHide;
+    if (!infalOnly) {
       (function loadAbsentWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.absent);
         div.id = 'dashabsentconsumers';
         div.classList.add('widget');
         div.classList.add('absentWidget');
@@ -201,9 +220,16 @@
     }
   }
   function initLinksAndMessagesWidget() {
+    const showHideCustomLinks = getWidgetSettings(widgetIds.customLinks).showHide;
+    const showHideMessages = getWidgetSettings(widgetIds.systemMessages).showHide;
+
     (function loadSysMessagesAndCustomLinksWidget() {
       var div = document.createElement('div');
       var div2 = document.createElement('div');
+      div.setAttribute('data-show', showHideMessages);
+      div.setAttribute('data-widgetId', widgetIds.systemMessages);
+      div2.setAttribute('data-show', showHideCustomLinks);
+      div2.setAttribute('data-widgetId', widgetIds.customLinks);
       div.id = 'dashsystemmessagewidget';
       div2.id = 'dashcustomlinks';
       div.classList.add('widget');
@@ -218,6 +244,7 @@
     })();
   }
   function initSingleEntryWidget() {
+    const showHide = getWidgetSettings(widgetIds.singleEntry).showHide;
     if (
       $.session.applicationName !== 'Gatekeeper' &&
       $.session.SingleEntryView &&
@@ -226,6 +253,8 @@
       // Single Entry
       (function loadAdminSingleEntryWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.singleEntry);
         div.id = 'dashsingleentrywidget';
         div.classList.add('widget');
         div.classList.add('singleEntryWidget');
@@ -236,6 +265,7 @@
     }
   }
   function initAdminSingleEntryWidget() {
+    const showHide = getWidgetSettings(widgetIds.adminSingleEntry).showHide;
     if (
       $.session.applicationName !== 'Gatekeeper' &&
       $.session.ViewAdminSingleEntry &&
@@ -244,6 +274,8 @@
       //TODO needs added to if  $.session.singleEntryPermission == "Anywhere_SingleEntry"
       (function loadSingleEntryWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.adminSingleEntry);
         div.id = 'admindashsingleentrywidget';
         div.classList.add('widget');
         div.classList.add('adminSingleEntryWidget');
@@ -254,6 +286,7 @@
     }
   }
   function initTimeClockWidget() {
+    const showHide = getWidgetSettings(widgetIds.timeClock).showHide;
     if (
       $.session.isPSI == false &&
       $.session.DayServiceUpdate &&
@@ -261,6 +294,8 @@
     ) {
       (function loadEmployeeDayServicesWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.timeClock);
         div.id = 'dashtimeclockwidget';
         div.classList.add('widget');
         div.classList.add('timeClockWidget');
@@ -271,13 +306,15 @@
     }
   }
   function initHoursWorkedWidget() {
+    const showHide = getWidgetSettings(widgetIds.hoursWorked).showHide;
     if (
       $.session.SEViewAdminWidget === true ||
-      ($.session.DayServiceUpdate &&
-        $.session.dayServicesPermission === 'Anywhere_DayServices')
+      ($.session.DayServiceUpdate && $.session.dayServicesPermission === 'Anywhere_DayServices')
     ) {
       (function loadHoursWorkedWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.hoursWorked);
         div.id = 'dashhoursworkedwidget';
         div.classList.add('widget');
         div.classList.add('hoursWorkedWidget');
@@ -288,12 +325,15 @@
     }
   }
   function initScheduleWidget() {
+    const showHide = getWidgetSettings(widgetIds.schedule).showHide;
     if (
       $.session.applicationName !== 'Gatekeeper' &&
       $.session.schedulingPermission === 'Scheduling'
     ) {
       (function loadScheduleWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.schedule);
         div.id = 'dashschedulewidget';
         div.classList.add('widget');
         div.classList.add('scheduleWidget');
@@ -304,6 +344,7 @@
     }
   }
   function initDailyServicesWidget() {
+    const showHide = getWidgetSettings(widgetIds.goals).showHide;
     if (
       $.session.GoalsView &&
       $.session.outcomesPermission === 'Anywhere_Outcomes' &&
@@ -311,6 +352,8 @@
     ) {
       (function loadDailyServicesWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.goals);
         div.id = 'dashgoalswidget';
         div.classList.add('widget');
         div.classList.add('goalsWidget');
@@ -327,12 +370,12 @@
     }
   }
   function initClockedInWidget() {
-    if (
-      $.session.DayServiceView &&
-      $.session.dayServicesPermission === 'Anywhere_DayServices'
-    ) {
+    const showHide = getWidgetSettings(widgetIds.clockedIn).showHide;
+    if ($.session.DayServiceView && $.session.dayServicesPermission === 'Anywhere_DayServices') {
       (function loadDayServicesWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.clockedIn);
         div.id = 'dashdsclockedin';
         div.classList.add('widget');
         div.classList.add('clockedInWidget');
@@ -343,12 +386,15 @@
     }
   }
   function initIncidentTrackingWidget() {
+    const showHide = getWidgetSettings(widgetIds.incidentTracking).showHide;
     if (
       ($.session.isASupervisor || $.session.isPSI == true) &&
       $.session.incidentTrackingPermission === 'Anywhere_Incident_Tracking'
     ) {
       (function loadIncidentTrackingWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.incidentTracking);
         div.id = 'incidenttrackingwidget';
         div.classList.add('widget');
         div.classList.add('incidentWidget');
@@ -359,9 +405,12 @@
     }
   }
   function initConsumerProgressNotesWidget() {
+    const showHide = getWidgetSettings(widgetIds.consumerProgressNotes).showHide;
     if ($.session.isPSI == true || $.session.useProgressNotes === 'Y') {
       (function loadConsumerProgressNotesWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.consumerProgressNotes);
         div.id = 'consumerprogressnoteswidget';
         div.classList.add('widget');
         div.classList.add('consumerProgressNoteWidget');
@@ -372,9 +421,12 @@
     }
   }
   function initLocationProgressNotesWidget() {
+    const showHide = getWidgetSettings(widgetIds.unreadLocationNotes).showHide;
     if ($.session.isPSI == true || $.session.useProgressNotes === 'Y') {
       (function loadLocationProgressNotesWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.unreadLocationNotes);
         div.id = 'locationprogressnoteswidget';
         div.classList.add('widget');
         div.classList.add('locationProgressNoteWidget');
@@ -385,14 +437,20 @@
     }
   }
   function initCaseNotesProductivityWidget() {
-    if (
-      ($.session.isPSI == true && $.session.applicationName === 'Gatekeeper') ||
-      (getWidgetSettings('1').showHide === 'Y' &&
-        $.session.caseNotesPermission === 'Anywhere_CaseNotes' &&
-        $.session.applicationName === 'Gatekeeper')
-    ) {
+    const isPSI =
+      $.session.isPSI == true && $.session.applicationName === 'Gatekeeper' ? true : false;
+    const hasPerm =
+      $.session.caseNotesPermission === 'Anywhere_CaseNotes' &&
+      $.session.applicationName === 'Gatekeeper'
+        ? true
+        : false;
+    const showHide = getWidgetSettings(widgetIds.caseNotesProductivity).showHide;
+
+    if (isPSI || hasPerm) {
       (function loadCaseNotesProdictivityWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.caseNotesProductivity);
         div.id = 'casenotesprodictivitywidget';
         div.classList.add('widget');
         div.classList.add('caseNotesProductivityWidget');
@@ -403,14 +461,16 @@
     }
   }
   function initCaseNotesCaseLoadWidget() {
+    const showHide = getWidgetSettings(widgetIds.caseNotesCaseLoad).showHide;
     if (
       ($.session.isPSI == true && $.session.applicationName === 'Gatekeeper') ||
-      (getWidgetSettings('2').showHide === 'Y' &&
-        $.session.caseNotesPermission === 'Anywhere_CaseNotes' &&
+      ($.session.caseNotesPermission === 'Anywhere_CaseNotes' &&
         $.session.applicationName === 'Gatekeeper')
     ) {
       (function loadCaseNotesCaseLoadWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.caseNotesCaseLoad);
         div.id = 'casenotescaseload';
         div.classList.add('widget');
         div.classList.add('caseNotesCaseLoadWidget');
@@ -420,16 +480,17 @@
       })();
     }
   }
-
   function initCaseNotesRejectedWidget() {
+    const showHide = getWidgetSettings(widgetIds.caseNotesRejected).showHide;
     if (
       ($.session.isPSI == true && $.session.applicationName === 'Gatekeeper') ||
-      (getWidgetSettings('3').showHide === 'Y' &&
-        $.session.caseNotesPermission === 'Anywhere_CaseNotes' &&
+      ($.session.caseNotesPermission === 'Anywhere_CaseNotes' &&
         $.session.applicationName === 'Gatekeeper')
     ) {
       (function loadCaseNotesCaseLoadWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.caseNotesRejected);
         div.id = 'casenotesrejected';
         div.classList.add('widget');
         div.classList.add('caseNotesRejectedWidget');
@@ -439,16 +500,17 @@
       })();
     }
   }
-
   function initPlanWorkflowWidget() {
+    const showHide = getWidgetSettings(widgetIds.planWorkflow).showHide;
     if (
       ($.session.isPSI == true && $.session.applicationName === 'Gatekeeper') ||
-      (getWidgetSettings('4').showHide === 'Y' &&
-        $.session.anywherePlanPermission == 'Anywhere_Plan' &&
+      ($.session.anywherePlanPermission == 'Anywhere_Plan' &&
         $.session.applicationName === 'Gatekeeper')
     ) {
       (function loadPlanWorkflowWidget() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.planWorkflow);
         div.id = 'planworkflow';
         div.classList.add('widget');
         div.classList.add('planWorkflowWidget');
@@ -458,8 +520,8 @@
       })();
     }
   }
-
   function initInfalWidget() {
+    const showHide = getWidgetSettings(widgetIds.infal).showHide;
     if (
       $.session.infalOnly &&
       $.session.applicationName == 'Gatekeeper' &&
@@ -467,6 +529,8 @@
     ) {
       (function anonymousFunction() {
         var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.infal);
         div.id = 'dashinfaltimeclockwidget';
         div.classList.add('widget');
         div.classList.add('infalWidget');
@@ -485,25 +549,25 @@
     // Check for invalid defaults while widgets load in background
     defaults.getInvalidDefaultLocations();
 
-
     // The order of the function calls below determines the order of widgets
-    initLinksAndMessagesWidget(); // System Messages & Custom Links
-    initAbsentWidget(); // Absent Consumers
-    initCaseNotesProductivityWidget(); // Case Notes Producitivity (GK Only) --- WidgetId 1
-    initCaseNotesCaseLoadWidget(); // Case Notes Case Load (GK Only) --- WidgetId 2
-    initCaseNotesRejectedWidget(); // Case Notes Rejected (GK Only) --- WidgetId 2
-    initPlanWorkflowWidget(); // Plan Workflow To Do List Widget
-    initLocationProgressNotesWidget(); //Location Progress Notes Widget
-    initSingleEntryWidget(); // Unapproved Time Entries - Single Entry
-    initConsumerProgressNotesWidget(); //Consumer Progress Note Widget
-    initAdminSingleEntryWidget(); // Supervisor Time Entry Review - Admin Single Entry
-    initTimeClockWidget(); // Employee Day Service Time Clock
-    initHoursWorkedWidget(); // Hours Worked
-    initScheduleWidget(); // My Schedule
-    initDailyServicesWidget(); // Remaining Daily Services
-    initClockedInWidget(); // Day Services Clocked In
-    initIncidentTrackingWidget(); // Incident Tracking
-    initInfalWidget(); // InfalTimeClock Widget
+    /*1*/ initLinksAndMessagesWidget(); // System Messages & Custom Links
+    /*2*/ initAbsentWidget(); // Absent Consumers
+    /*3*/ initCaseNotesProductivityWidget(); // Case Notes Producitivity (GK Only) --- WidgetId 1
+    /*4*/ initCaseNotesCaseLoadWidget(); // Case Notes Case Load (GK Only) --- WidgetId 2
+    /*5*/ initCaseNotesRejectedWidget(); // Case Notes Rejected (GK Only) --- WidgetId 2
+    /*6*/ initPlanWorkflowWidget(); // Plan Workflow To Do List Widget
+    /*7*/ initLocationProgressNotesWidget(); //Location Progress Notes Widget
+    /*8*/ initSingleEntryWidget(); // Unapproved Time Entries - Single Entry
+    /*9*/ initConsumerProgressNotesWidget(); //Consumer Progress Note Widget
+    /*10*/ initAdminSingleEntryWidget(); // Supervisor Time Entry Review - Admin Single Entry
+    /*11*/ initTimeClockWidget(); // Employee Day Service Time Clock
+    /*12*/ initHoursWorkedWidget(); // Hours Worked
+    /*13*/ initScheduleWidget(); // My Schedule
+    /*14*/ initDailyServicesWidget(); // Remaining Daily Services
+    /*15*/ initClockedInWidget(); // Day Services Clocked In
+    /*16*/ initIncidentTrackingWidget(); // Incident Tracking
+    /*17*/ initInfalWidget(); // InfalTimeClock Widget
+
     var actioncenter = document.getElementById('actioncenter');
     widgets.forEach(widget => {
       actioncenter.appendChild(widget);
@@ -513,17 +577,22 @@
   }
 
   function getWidgetSettings(widgetId) {
+    if (!widgetId) {
+      // if no widget id means no settings so go ahead and set showHide to Y
+      return {
+        showHide: 'Y',
+      };
+    }
+
     const settingForWidget = widgetSettings.filter(
-      widget => widget.widgetId === widgetId,
+      widget => parseInt(widget.widgetId) === parseInt(widgetId),
     )[0];
     if (settingForWidget) {
       return {
         widgetId: settingForWidget.widgetId,
         showHide: settingForWidget.showHide,
         widgetConfig:
-          settingForWidget.widgetConfig === ''
-            ? null
-            : JSON.parse(settingForWidget.widgetConfig),
+          settingForWidget.widgetConfig === '' ? null : JSON.parse(settingForWidget.widgetConfig),
         widgetName: settingForWidget.widgetName,
       };
     } else {
@@ -537,13 +606,11 @@
   }
 
   async function refreshWidgetSettings() {
-    widgetSettings = (await widgetSettingsAjax.getWidgetSettings())
-      .getUserWidgetSettingsResult;
+    widgetSettings = (await widgetSettingsAjax.getWidgetSettings()).getUserWidgetSettingsResult;
   }
 
   async function preLoadWidget() {
-    widgetSettings = (await widgetSettingsAjax.getWidgetSettings())
-      .getUserWidgetSettingsResult;
+    widgetSettings = (await widgetSettingsAjax.getWidgetSettings()).getUserWidgetSettingsResult;
 
     function getSetting(widgetId) {
       return widgetSettings.filter(widget => {

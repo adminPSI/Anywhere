@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Data;
-using System.Data.Common;
-using System.Data.Odbc;
-using log4net;
-using log4net.Config;
-using System.Configuration;
-using System.Web.Services.Description;
+﻿using Anywhere.Data;
 using Anywhere.service.Com;
-using Anywhere.Data;
+using System;
+using System.Configuration;
+using System.Web;
 
 namespace Anywhere.Log
 {
@@ -103,8 +95,8 @@ namespace Anywhere.Log
             DataGetter dg = new DataGetter();
             string ret = dg.getUserByToken(token);
 
-            
-            string name = ret.Substring(ret.IndexOf("<userId>")+8);
+
+            string name = ret.Substring(ret.IndexOf("<userId>") + 8);
             name = name.Substring(0, name.IndexOf("</userId>"));
 
             return name;

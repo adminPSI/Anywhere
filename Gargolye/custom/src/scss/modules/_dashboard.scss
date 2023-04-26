@@ -20,6 +20,10 @@
   margin: 0;
   overflow: hidden;
 
+  &[data-show='N'] {
+    display: none;
+  }
+
   &__header {
     align-items: center;
     background: $bg-dark;

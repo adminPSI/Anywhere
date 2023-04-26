@@ -409,6 +409,16 @@
         cursor: default;
       }
 
+      .view {
+        &.hidden {
+          visibility: hidden;
+
+          span {
+            visibility: visible;
+          }
+        }
+      }
+
       &.editMode {
         .edit {
           display: flex;

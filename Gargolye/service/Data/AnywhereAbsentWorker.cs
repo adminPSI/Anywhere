@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Anywhere.Data;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Anywhere.Data;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -33,7 +31,7 @@ namespace Anywhere.service.Data
             }
 
             return idsWithEntries;
-        }     
+        }
 
 
         public string OneLocationAbsentSave(string token, string absentReasonId, string absentNotificationId, string consumerIdString, string absenceDate, string locationId, string reportedBy, string timeReported, string dateReported)
@@ -67,7 +65,7 @@ namespace Anywhere.service.Data
             string objIdString = "";
             string locationIdString = "";
             string[] consumerIds = consumerIdString.Split(',');
-            String count ="";
+            String count = "";
             foreach (string consumerId in consumerIds)
             {
                 locationIdString = dg.getCounsumerLocationsForAbsentSave(token, consumerId, absenceDate);//May need work to get into string correctly

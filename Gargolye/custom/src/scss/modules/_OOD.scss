@@ -2,120 +2,116 @@
 //====================================
 // OOD entries listing
 #OODEntriesTable {
-    .table__row {
-      // cursor: pointer;
-      > div {
-        display: flex;
-        flex-grow: 1;
-        margin: 0 5px 0 0;
+  .table__row {
+    // cursor: pointer;
+    > div {
+      display: flex;
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+
+    > div:nth-child(2) {
+      flex-basis: 90px; // Consumer Name
+      justify-content: left;
+    }
+    > div:nth-child(3) {
+      // Service
+      flex-basis: 80px;
+      justify-content: left;
+    }
+    > div:nth-child(4) {
+      // Reference No
+      flex-basis: 80px;
+    }
+    > div:nth-child(5) {
+      // User Updated
+      flex-basis: 80px;
+    }
+    > div:nth-child(6) {
+      // Employer
+      flex-basis: 80px;
+    }
+
+    @media screen and (max-width: 560px) {
+      > div:nth-child(1) {
+        // service date
+        display: block;
       }
-      > div:last-child {
-        margin: 0;
-      }
-  
-      // Column Widths
-     
+
       > div:nth-child(2) {
-        flex-basis: 90px; // Consumer Name
-        justify-content: left;
+        // Consumer Name
+        display: block;
       }
       > div:nth-child(3) {
         // Service
-        flex-basis: 80px;
-        justify-content: left;
+        display: block;
       }
       > div:nth-child(4) {
         // Reference No
-        flex-basis: 80px;
+        display: block;
       }
       > div:nth-child(5) {
         // User Updated
-        flex-basis: 80px;
+        display: none;
       }
       > div:nth-child(6) {
         // Employer
-        flex-basis: 80px;
-      }
-
-      @media screen and (max-width: 560px) {
-        > div:nth-child(1) {
-            // service date
-           display: block;
-        }
-
-        > div:nth-child(2) {
-          // Consumer Name
-          display: block;
-        }
-        > div:nth-child(3) {
-          // Service
-          display: block;
-        }
-        > div:nth-child(4) {
-          // Reference No
-          display: block;
-        }
-        > div:nth-child(5) {
-          // User Updated
-          display: none;
-        }
-        > div:nth-child(6) {
-          // Employer
-          display: none;
-        }
-
+        display: none;
       }
     }
-  
-    // .table__row[data-signed='false'] {
-    //   background: $bg-warning;
-    // }
-  
-    margin-bottom: 20px;
   }
 
-  // employers listing 
-  #OODEmployersTable {
-    .table__row {
-      // cursor: pointer;
-      > div {
-        display: flex;
-        flex-grow: 1;
-        margin: 0 5px 0 0;
-      }
-      > div:last-child {
-        margin: 0;
-      }
-  
-      // Column Widths
-      > div:nth-child(1) {
-        flex-basis: 80px; 
-      }
-      > div:nth-child(2) {
-        flex-basis: 80px; // Address 1 and 2
-      }
-      > div:nth-child(3) {
-        
-        flex-basis: 80px; // City
-      }
-      > div:nth-child(4) {
-        
-        flex-basis: 80px; // State
-      }
-      > div:nth-child(5) {
-        
-        flex-basis: 80px; // delete icon
-      }
+  // .table__row[data-signed='false'] {
+  //   background: $bg-warning;
+  // }
+
+  margin-bottom: 20px;
+}
+
+// employers listing
+#OODEmployersTable {
+  .table__row {
+    // cursor: pointer;
+    > div {
+      display: flex;
+      flex-grow: 1;
+      margin: 0 5px 0 0;
     }
-  
-    // .table__row[data-signed='false'] {
-    //   background: $bg-warning;
-    // }
-  
-    margin-bottom: 20px;
+    > div:last-child {
+      margin: 0;
+    }
+
+    // Column Widths
+    > div:nth-child(1) {
+      flex-basis: 80px;
+    }
+    > div:nth-child(2) {
+      flex-basis: 80px; // Address 1 and 2
+    }
+    > div:nth-child(3) {
+      flex-basis: 80px; // City
+    }
+    > div:nth-child(4) {
+      flex-basis: 80px; // State
+    }
+    > div:nth-child(5) {
+      flex-basis: 80px; // delete icon
+    }
   }
 
-  // OOD Form 4 -- Monthly Summary listing
+  // .table__row[data-signed='false'] {
+  //   background: $bg-warning;
+  // }
+
+  margin-bottom: 20px;
+}
+
+// OOD Form 4 -- Monthly Summary listing
 #OODMonthlySummaryTable {
   flex-basis: 100%;
   .table__row {
@@ -130,7 +126,7 @@
     }
 
     // Column Widths
-   
+
     > div:nth-child(2) {
       flex-basis: 90px; // Individual Input on Search
     }
@@ -142,7 +138,6 @@
       // Plan/Goals for Next Month
       flex-basis: 80px;
     }
-    
   }
 
   // .table__row[data-signed='false'] {
@@ -152,340 +147,333 @@
   margin-bottom: 20px;
 }
 
-  .OODConsumerCard {
-    margin: 0 0 20px;
-    padding: 0 20px;
-    max-width: 600px;
-   // display: flex;
+.OODConsumerCard {
+  margin: 0 0 20px;
+  width: 100%;
+
+  .consumerCard {
+    box-shadow: none;
+    flex-flow: row nowrap;
+
+    .icons {
+      display: none;
+    }
+  }
+  .portrait {
+    padding: 0;
+    width: 60px;
+    img {
+      position: relative;
+    }
+  }
+  .details {
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 20px 10px;
+
+    .name {
+      display: flex;
+      .name_first {
+        margin: 0 0 0 5px;
+      }
+    }
+  }
+}
+
+.consumerHeader {
+  background: $bg-light;
+  display: flex;
+  margin: 0 0 10px;
+  flex-wrap: wrap;
+
   
-    .consumerCard {
-      box-shadow: none;
-      flex-flow: row nowrap;
-     // width: 50%;
+  .OODbuttonBar {
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+    margin: 0 0 12px;
+
+    > button.btn {// filter button
+      order: 2;
+      width: 100%;
+      flex-grow: 1;
+      margin: 0 0 10px;
+    }
+
+    &__btnWrap {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+      flex-grow: 1;
+      width: 100%;
+
+      button.btn {
+        flex-grow: 1;
+        width: 100%;
+        margin: 0 0 8px;
+      }
+    }
+  }
+
+  @media screen and (min-width: 1000px) {
+    .OODbuttonBar {
+      margin: 0 0 10px;
+
+      > button.btn {// filter button
+        max-width: 200px;
+      }
+
+      &__btnWrap {
+        flex-flow: row nowrap;
+        margin: 0 0 10px;
+
+        button.btn {
+          margin: 0 10px 0 0;
+
+          &:last-child {
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Row that includes Filter btn, FilterBy Text, and the editEmployersBtn
+.filterElement {
+  // display: flex;
+  // flex-grow: 1;
+
+  // button.btn {
+  //   margin: 0;
+  //   padding: 0 12px;
+  //   flex-grow: 1;
+  //   max-width: 200px;
+  //   max-height: 100px;
+  //   min-width: 100px;
+  //   min-height: 50px;
+
+  //   &:first-child {
+  //     margin-right: 8px;
+  //   }
+  // }
+
+  .widgetFilteredBy {
+    // flex-grow: 1;
+  }
+
   
-      .icons {
+}
+
+.OODsectionHeading {
+  color: $white;
+  background: $primary;
+  box-shadow: 0 4px 10px -2px $primary;
+  display: block;
+  font-size: 1.35rem;
+  padding: 8px 5px 5px;
+  margin: 0 0 20px 0;
+}
+
+// Form 4 Monthly Plcement Form
+.ood_form4monthlyplacement_inputContainer1 {
+  display: flex;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  > div:nth-child(1) {
+    //
+    min-width: 200px;
+  }
+  > div:nth-child(2) {
+    //
+    min-width: 260px;
+  }
+  > div:nth-child(3) {
+    //
+    min-width: 200px;
+  }
+  @media screen and (min-width: 560px) {
+    > div:nth-child(3) {
+      //
+      min-width: 420px;
+    }
+  }
+}
+
+// Form 4 Monthly Plcement Form
+.ood_form4monthlyplacement_inputContainer2 {
+  display: flex;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  > div:nth-child(1) {
+    // Job Seeker Present ?
+    min-width: 150px;
+  }
+  > div:nth-child(2) {
+    // Outcome
+    min-width: 150px;
+  }
+  > div:nth-child(3) {
+    // TBC Notified ?
+    min-width: 150px;
+
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
+  }
+  > div:nth-child(4) {
+    // Bilingual Supplmemnt ?
+    min-width: 150px;
+  }
+
+  @media screen and (min-width: 410px) {
+    > div:nth-child(4) {
+      // Bilingual Supplmemnt ?
+      max-width: 240px;
+    }
+  }
+}
+
+// Form 4 (both Placement and Summary Forms)
+.monthlyForm {
+  .btnWrap {
+    display: flex;
+    flex-flow: row wrap;
+    max-height: 50pc;
+    max-width: 1000px;
+    min-width: 600px;
+    // float: right;
+    //flex-basis: 100%;
+
+    // button {
+    //    flex-basis: 31%;
+    // }
+
+    @media screen and (max-width: 440px) {
+      display: flex;
+      flex-flow: nowrap;
+      float: none;
+      min-width: 180px;
+      max-width: 200px;
+      margin: 2px;
+      svg {
         display: none;
       }
     }
-    .portrait {
-      padding: 0;
-      width: 60px;
-      img {
-        position: relative;
+    @media screen and (min-width: 1000px) and (max-width: 1100px) {
+      svg {
+        display: none;
       }
     }
-    .details {
+  }
+
+  .btnRow {
+    // display: flex;
+    //flex-flow: row wrap;
+    float: right;
+
+    @media screen and (max-width: 440px) {
       display: flex;
-      flex-flow: column;
-     flex-grow: 1;
-      justify-content: center;
-      padding: 20px 10px;
-  
-      .name {
-        display: flex;
-        .name_first {
-          margin: 0 0 0 5px;
-        }
-      }
-    }
-   
-  }
-
-  .consumerHeader {
-    background: $bg-light;
-    display: flex;
-    margin: 0 0 2px;
-    padding: 5px 0 10px 0;
-    min-width: auto;
-    flex-wrap: wrap;
-    //height: 100px;
-  
-    @media screen and (max-width: 560px) {
-      height: 100px;
-      margin-bottom: 40px;
-      
-    }
-    .OODbuttonBar {
-      display: flex;
-      flex-grow: 1;
-      max-width: 1000px;
-      min-width: auto;
-      max-height: 60px;
-      min-height: auto;
-    
-      button.btn {
-        margin: 0;
-        padding: 0 12px;
-        flex-grow: 1;
-    
-        &:first-child {
-          margin-right: 8px;
-        }
-      }
+      flex-flow: nowrap;
+      float: none;
     }
   }
 
-  .newMonthlySummaryBtn {
-    flex-grow: 1;
-    max-width: 200px;
-  }
+  div.textarea {
+    // margin: 0 10px 20px;
+    height: auto;
+    min-height: 100px;
 
-  .newEntryBtn {
-    flex-grow: 1;
-    max-width: 200px;
-  }
-
-  // Row that includes Filter btn, FilterBy Text, and the editEmployersBtn
-  .filterElement {
-    display: flex;
-    flex-grow: 1;
-    
-  
-    button.btn {
-      margin: 0;
-      padding: 0 12px;
-      flex-grow: 1;
-      max-width: 200px;
-      max-height: 100px;
-      min-width: 100px;
-      min-height: 50px;
-
-      &:first-child {
-        margin-right: 8px;
-      }
-    }
-
-    .widgetFilteredBy {
-      max-width: 600px;
-      flex-grow: 1;
-      margin-right: auto;
-    }
-
-    .editEmployersBtn {
-      float: right;
-      margin-left: 20px;
-      flex-grow: 1;
-    }
-  }
-  
-  .OODsectionHeading {
-    color: $white;
-    background: $primary;
-    box-shadow: 0 4px 10px -2px $primary;
-    display: block;
-    font-size: 1.35rem;
-    padding: 8px 5px 5px;
-    margin: 0 0 20px 0;
-  }
-
-// Form 4 Monthly Plcement Form
-  .ood_form4monthlyplacement_inputContainer1 {
-    display: flex;
-    flex-flow: row wrap;
-    > div {
-      flex-grow: 1;
-      margin-right: 10px;
-    }
-    > div:nth-child(1) {
-      // 
-      min-width: 200px;
-    }
-    > div:nth-child(2) {
-      // 
-      min-width: 260px;
-    }
-    > div:nth-child(3) {
-      // 
-      min-width: 200px;
-    }
-    @media screen and (min-width: 560px) {
-      > div:nth-child(3) {
-        // 
-        min-width: 420px;
-      }
-    }
-  }
-  
-  // Form 4 Monthly Plcement Form
-  .ood_form4monthlyplacement_inputContainer2 {
-    display: flex;
-    flex-flow: row wrap;
-    > div {
-      flex-grow: 1;
-      margin-right: 10px;
-    }
-    > div:nth-child(1) {
-      // Job Seeker Present ?
-      min-width: 150px;
-    }
-    > div:nth-child(2) {
-      // Outcome
-      min-width: 150px;
-    }
-    > div:nth-child(3) {
-      // TBC Notified ?
-      min-width: 150px;
-      
-      input[type='number'] {
-        -moz-appearance: textfield;
-      }
-    }
-    > div:nth-child(4) {
-      // Bilingual Supplmemnt ?
-      min-width: 150px;
-    }
-    
-    @media screen and (min-width: 410px) {
-      > div:nth-child(4) {
-        // Bilingual Supplmemnt ?
-        max-width: 240px;
-      }
-    }
-  }
-
-  // Form 4 (both Placement and Summary Forms)
-  .monthlyForm {
-    .btnWrap {
-      display: flex;
-     flex-flow: row wrap;
-      max-height: 50pc;
-      max-width: 1000px;
-      min-width: 600px;
-     // float: right;
-      //flex-basis: 100%;
-
-     // button {
-     //    flex-basis: 31%;
-     // }
-
-      @media screen and (max-width: 440px) {
-          display: flex;
-          flex-flow: nowrap;
-          float: none;
-          min-width: 180px;
-          max-width: 200px;
-          margin: 2px;
-          svg {
-              display: none;
-            }
-          }
-      @media screen and (min-width: 1000px) and (max-width: 1100px) {
-          svg {
-              display: none;
-          }
-      }
-    }
-
-    .btnRow {
-     // display: flex;
-      //flex-flow: row wrap;
-      float: right;
-
-      @media screen and (max-width: 440px) {
-        display: flex;
-        flex-flow: nowrap;
-        float: none;
-      }
-
-    }
-
-    div.textarea {
-     // margin: 0 10px 20px;
+    textarea.autosize {
       height: auto;
       min-height: 100px;
-  
-      textarea.autosize {
-          height: auto;
-          min-height: 100px;
-      }
     }
-
   }
+}
 
-
-  // Form 4 - monthly  summary 
-  .monthYear {
-    display: flex;
-    flex-flow: row wrap;
-    flex-grow: 1;
-    margin-right: 10px;  
+// Form 4 - monthly  summary
+.monthYear {
+  display: flex;
+  flex-flow: row wrap;
+  flex-grow: 1;
+  margin-right: 10px;
   //  min-width: 50px;
-   // max-width: 120px;
+  // max-width: 120px;
+}
 
+// Form 4 Monthly Summary Form
+.ood_form4monthlysummary_inputContainer1 {
+  display: flex;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    margin-right: 10px;
   }
-
-  // Form 4 Monthly Summary Form
-  .ood_form4monthlysummary_inputContainer1 {
-    display: flex;
-    flex-flow: row wrap;
-    > div {
-      flex-grow: 1;
-      margin-right: 10px;
-    }
-    > div:nth-child(1) {
-      // 
-      min-width: 100px;
-      max-width: 150px;
-    }
-    > div:nth-child(2) {
-      // 
-      min-width: 250px;
-      max-width: 350px;
-    }
+  > div:nth-child(1) {
+    //
+    min-width: 100px;
+    max-width: 150px;
+  }
+  > div:nth-child(2) {
+    //
+    min-width: 250px;
+    max-width: 350px;
+  }
+  > div:nth-child(3) {
+    //
+    min-width: 250px;
+    max-width: 350px;
+  }
+  @media screen and (min-width: 560px) {
     > div:nth-child(3) {
-      // 
-      min-width: 250px;
-      max-width: 350px;
+      //
+      min-width: 420px;
     }
-    @media screen and (min-width: 560px) {
-      > div:nth-child(3) {
-        // 
-        min-width: 420px;
-      }
-    }
-
   }
-  
+}
 
-   // Form 4 Monthly Summary Form
-   .ood_form4monthlysummary_inputContainer2 {
-    display: flex;
-    flex-flow: row wrap;
-    > div {
-      flex-grow: 1;
-     // margin-right: 10px;
-    }
-    
-    }
+// Form 4 Monthly Summary Form
+.ood_form4monthlysummary_inputContainer2 {
+  display: flex;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    // margin-right: 10px;
+  }
+}
 
-    // Form 8 Monthly Summary Form
-    .ood_form8monthlysummary_inputContainer1 {
-    display: flex;
-    justify-content: space-between;
-    flex-flow: row wrap;
-    > div {
-      flex-grow: 1;
-      margin-right: 10px;
-    }
-    > div:nth-child(1) {
-      // 
-      min-width: 100px;
-      max-width: 150px;
-    }
-    > div:nth-child(2) {
-      // 
-      min-width: 250px;
-      max-width: 350px;
-    }
+// Form 8 Monthly Summary Form
+.ood_form8monthlysummary_inputContainer1 {
+  display: flex;
+  justify-content: space-between;
+  flex-flow: row wrap;
+  > div {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  > div:nth-child(1) {
+    //
+    min-width: 100px;
+    max-width: 150px;
+  }
+  > div:nth-child(2) {
+    //
+    min-width: 250px;
+    max-width: 350px;
+  }
 
-     // Form 8 Monthly Summary Form
-     .nextScheduledReviewInput {
-      // display: flex;
-      // justify-content: flex-end;
-       float: right;
-       }
-
-    }
-   
-
- 
+  // Form 8 Monthly Summary Form
+  .nextScheduledReviewInput {
+    // display: flex;
+    // justify-content: flex-end;
+    float: right;
+  }
+}

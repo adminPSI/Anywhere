@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Anywhere.Data;
+using System;
 using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
 using System.ServiceModel.Web;
-using System.IO;
-using Anywhere.Data;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -262,7 +258,7 @@ namespace Anywhere.service.Data
             [DataMember(Order = 9)]
             public string emReviewVTS { get; set; }
 
-            
+
         }
 
 
@@ -547,7 +543,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    OODDDLItem[] contactMethods = js.Deserialize<OODDDLItem[]> (Odg.getContactMethods(transaction));
+                    OODDDLItem[] contactMethods = js.Deserialize<OODDDLItem[]>(Odg.getContactMethods(transaction));
                     return contactMethods;
                 }
                 catch (Exception ex)
@@ -668,7 +664,7 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
-      
+
 
         // Form 8 Monthly Summary
         public Form8MonthlySummary[] getForm8MonthlySummary(string token, string emReviewId)
