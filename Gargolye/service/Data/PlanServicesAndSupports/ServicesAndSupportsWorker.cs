@@ -202,10 +202,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             {
                 return note;
             }
-            if (note.Contains("'"))
-            {
-                note = note.Replace("'", "''");
-            }
+            //if (note.Contains("'"))
+            //{
+            //    note = note.Replace("'", "''");
+            //}
             if (note.Contains("\\"))
             {
                 note = note.Replace("\\", "");
