@@ -1179,6 +1179,7 @@ var timeApproval = (function () {
       var hours = parseFloat(entry.check_hours);
       var location = entry.Location_Name;
       var workcode = entry.WCCode;
+      var comments = entry.comments;
       const consumersPresent = entry.Number_Consumers_Present;
       const transportationUnits = entry.transportation_units;
       let isValid;
@@ -1197,6 +1198,22 @@ var timeApproval = (function () {
       additionalInformation.innerHTML = consumersPresent;
       if (transportationUnits !== '') additionalInformation.innerHTML += icons.car;
 
+      const iconsBox = document.createElement('div');
+      iconsBox.classList.add('iconsBox');
+      iconsBox.appendChild(additionalInformation);
+
+      if (comments !== "" && comments !== null) {
+        const commentsBox = document.createElement('div');
+        commentsBox.classList.add('commentsBox');
+        commentsBox.innerHTML = icons.note;
+        iconsBox.appendChild(commentsBox);
+
+        if (isValid === 'false'){
+          const svgElement = commentsBox.querySelector('svg');
+          svgElement.style.color = 'white';
+        }
+      }
+     
       return {
         id: entryId,
         values: [
@@ -1208,7 +1225,7 @@ var timeApproval = (function () {
           hours,
           location,
           workcode,
-          additionalInformation.outerHTML,
+          iconsBox.outerHTML
         ],
         attributes: [
           { key: 'data-status', value: entry.Anywhere_status },
