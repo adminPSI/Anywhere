@@ -16,6 +16,16 @@ var itPeopleSection = (function () {
     countHolder.innerHTML = `( ${count} )`;
   }
 
+  function checkRequiredFields() {
+    var hasErrors = [].slice.call(section.querySelectorAll('.error'));
+
+    if (hasErrors.length !== 0) {
+      return true; // true means to disable the Save BTN
+    } else {
+      return false; // false means don't disable the Save BTN
+    }
+  }
+
   function addNewPersonRow() {
     var peopleCard = buildOtherPersonCard();
     sectionBody.appendChild(peopleCard);
@@ -234,5 +244,6 @@ var itPeopleSection = (function () {
 
   return {
     build: buildSection,
+    checkRequiredFields,
   };
 })();
