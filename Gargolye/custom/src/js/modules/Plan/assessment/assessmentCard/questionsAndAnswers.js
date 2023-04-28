@@ -1104,6 +1104,7 @@
 
           gridBody.appendChild(gridRow);
           DOM.autosizeTextarea();
+          // TODO: add focus to input in col 1
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {

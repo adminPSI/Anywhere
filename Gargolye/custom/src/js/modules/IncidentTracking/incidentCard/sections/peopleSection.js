@@ -76,6 +76,13 @@ var itPeopleSection = (function () {
       label: 'Involvement Type',
       style: 'secondary',
       className: 'involvmentTypeDropdown',
+      callback: e => {
+        if (!e.target.value || e.target.value === '%') {
+          involvementDropdown.classList.add('error');
+        } else {
+          involvementDropdown.classList.remove('error');
+        }
+      },
     });
     var companyInput = input.build({
       label: 'Company',
@@ -155,6 +162,10 @@ var itPeopleSection = (function () {
     var defaultValue = { value: '', text: '' };
     involvementDropdownData.unshift(defaultValue);
     dropdown.populate(involvementDropdown, involvementDropdownData, involvementId);
+
+    if (!involvementId) {
+      involvementDropdown.classList.add('error');
+    }
 
     // build card
     var wrap1 = document.createElement('div');
