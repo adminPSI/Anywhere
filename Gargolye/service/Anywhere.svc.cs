@@ -2155,9 +2155,9 @@ namespace Anywhere
         {
             return trW.getVehicleInspectionDetails(token, vehicleInspectionId);
         }
-        public TransportationWorker.Trips[] getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId)
+        public TransportationWorker.Trips[] getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId, string vehicleId)
         {
-            return trW.getTrips(token, serviceDateStart, serviceDateStop, personId, locationId);
+            return trW.getTrips(token, serviceDateStart, serviceDateStop, personId, locationId, vehicleId);
         }
         public TransportationWorker.TripConsumers[] getTripConsumers(string token, string tripsCompletedId)
         {
