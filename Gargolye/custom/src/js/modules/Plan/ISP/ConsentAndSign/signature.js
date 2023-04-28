@@ -10,6 +10,8 @@ const csSignature = (() => {
   let saveBtn;
   // other
   let characterLimits;
+  let prevDissentData = {};
+
 
   //*------------------------------------------------------
   //* UTIL
@@ -46,6 +48,7 @@ const csSignature = (() => {
     if (isNew) {
       insertSuccess = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
     } else {
+      selectedMemberData.dateSigned = UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned));
       await planConsentAndSign.updateTeamMember(selectedMemberData);
       insertSuccess = true;
     }
@@ -319,6 +322,11 @@ const csSignature = (() => {
     dissentWrap.appendChild(dissentAreaDisagree);
     dissentWrap.appendChild(dissentHowToAddress);
 
+    if (isSigned || readOnly) {
+      dissentAreaDisagree.classList.add('disabled');
+      dissentHowToAddress.classList.add('disabled');
+    }
+
     return dissentWrap;
   }
   function buildStandardQuestionSet() {
@@ -545,6 +553,10 @@ const csSignature = (() => {
     } 
     readOnly = isReadOnly;
     selectedMemberData = memberData;
+    prevDissentData = {
+      dissentHowToAddress: selectedMemberData.dissentHowToAddress,
+      dissentAreaDisagree: selectedMemberData.dissentAreaDisagree
+    }
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     characterLimits = planData.getISPCharacterLimits('consentAndSign');
 
@@ -562,7 +574,7 @@ const csSignature = (() => {
     prompt.innerText = `I agree this plan reflects actions, services, and supports requested by me and may be sent to those providing services to me.`;
 
     prompt.style.marginBottom = '14px';
-
+    
     //* SIGNATURE
     const signatureSection = buildSignatureSection();
 
@@ -606,8 +618,8 @@ const csSignature = (() => {
       style: 'secondary',
       type: 'outlined',
       callback: () => {
-        selectedMemberData.dissentAreaDisagree.value = '';
-        selectedMemberData.dissentHowToAddress.value = '';
+        selectedMemberData.dissentAreaDisagree = prevDissentData.dissentAreaDisagree;
+        selectedMemberData.dissentHowToAddress = prevDissentData.dissentHowToAddress;
 
         if (!isSigned) {
           selectedMemberData.dateSigned = prevDateSigned;
