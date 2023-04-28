@@ -117,7 +117,7 @@ const TRANS_manageRoutesFilter = (function () {
     vehicles.forEach((val, key, map) => {
       vehicleDropdownData.push({
         value: key,
-        text: `${val.vehicleNumber} ${val.vehicleDescription}`,
+        text: `${val.vehicleNumber}`,
       });
     });
     driverDropdownData.unshift({ value: '%', text: 'All' });
