@@ -82,6 +82,7 @@ var itPeopleSection = (function () {
         } else {
           involvementDropdown.classList.remove('error');
         }
+        incidentCard.checkEntireIncidentCardforErrors();
       },
     });
     var companyInput = input.build({
