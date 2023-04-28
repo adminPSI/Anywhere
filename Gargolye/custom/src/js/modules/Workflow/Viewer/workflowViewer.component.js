@@ -9,9 +9,13 @@ const WorkflowViewerComponent = (function () {
     return workflowsComponent.render();
   }
   async function getWorkflowData(processId, referenceId) {
+
+    const attachmentInputs = document.querySelector('.generalInfo');
+    var peopleId = attachmentInputs.dataset.peopleId;
+
     const {
       getPeopleNamesResult: people,
-    } = await WorkflowViewerAjax.getPeopleNamesAsync();
+    } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId);
 
     const { getWorkflowsResult: workflows } = await WorkflowViewerAjax.getWorkflowsAsync(
       processId,
@@ -132,9 +136,11 @@ const WorkflowViewerComponent = (function () {
 
   async function getWorkflowData2(processId, referenceId) {
     try {
+      const attachmentInputs = document.querySelector('.generalInfo');
+      var peopleId = attachmentInputs.dataset.peopleId;
       const {
         getPeopleNamesResult: people,
-      } = await WorkflowViewerAjax.getPeopleNamesAsync();
+      } = await WorkflowViewerAjax.getPeopleNamesAsync(peopleId);
       const {
         getWorkflowsResult: workflows,
       } = await WorkflowViewerAjax.getWorkflowsAsync(processId, referenceId);

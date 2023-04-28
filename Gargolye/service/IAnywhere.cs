@@ -2656,7 +2656,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/getPeopleNames/")]
-        WorkflowWorker.PeopleName[] getPeopleNames(string token);
+        WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
