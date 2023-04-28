@@ -152,9 +152,13 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             {
                 //var bd = DateTime.Parse(paidSupportObj[i].beginDate);
                 var bd = DateTime.Parse(effectiveStart);
-                beginDate = bd.ToString("yyyy-MM-dd");
+                //beginDate = bd.ToString("yyyy-MM-dd");
+                DateTime oldBeginDate = DateTime.Parse(paidSupportObj[i].beginDate);
+                beginDate = oldBeginDate.ToString("yyyy-MM-dd");
                 var ed = DateTime.Parse(effectiveend);
-                endDate = ed.ToString("yyyy-MM-dd");
+                //endDate = ed.ToString("yyyy-MM-dd");
+                DateTime oldEndDate = DateTime.Parse(paidSupportObj[i].endDate);
+                endDate = oldEndDate.ToString("yyyy-MM-dd");
                 var edT = DateTime.Parse(paidSupportObj[i].endDate);
                 endDateT = edT.ToString("yyy-MM-dd");
                 DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
@@ -198,10 +202,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             {
                 return note;
             }
-            if (note.Contains("'"))
-            {
-                note = note.Replace("'", "''");
-            }
+            //if (note.Contains("'"))
+            //{
+            //    note = note.Replace("'", "''");
+            //}
             if (note.Contains("\\"))
             {
                 note = note.Replace("\\", "");

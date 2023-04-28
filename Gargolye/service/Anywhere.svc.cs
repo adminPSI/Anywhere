@@ -1791,9 +1791,9 @@ namespace Anywhere
             return wfw.deleteWorkflow(token, workflowId);
         }
 
-        public WorkflowWorker.PeopleName[] getPeopleNames(string token)
+        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId)
         {
-            return wfw.getPeopleNames(token);
+            return wfw.getPeopleNames(token, peopleId);
         }
 
         public WorkflowWorker.ResponsiblePartyRelationship[] getWFResponsiblePartyRelationships(string token, string workflowId)

@@ -1457,6 +1457,7 @@ const plan = (function () {
 
     generalInfoBar = document.createElement('div');
     generalInfoBar.classList.add('generalInfo');
+    generalInfoBar.setAttribute('data-people-id', `${selectedConsumer.id}`);
 
     const consumerName = `<p>${getConsumerNameFromCard(selectedConsumer.card)}</p>`;
     const dateSpan = `<p>Span: ${starDate} - ${endDate}</p>`;

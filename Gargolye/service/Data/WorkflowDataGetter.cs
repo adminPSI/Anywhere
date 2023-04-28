@@ -7,6 +7,7 @@ using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere.service.Data
 {
@@ -372,14 +373,15 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string getPeopleNames(DistributedTransaction transaction)
+        public string getPeopleNames(string peopleId, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("getPeopleNames ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[0];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@peopleId", DbType.String, peopleId);
                 // returns people names
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_GetPeopleNames()", args, ref transaction);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_GetPeopleNames(?)", args, ref transaction);
                 return convertToJSON(returnMsg);
             }
             catch (Exception ex)
