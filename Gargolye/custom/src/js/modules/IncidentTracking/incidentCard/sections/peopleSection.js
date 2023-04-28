@@ -17,7 +17,7 @@ var itPeopleSection = (function () {
   }
 
   function checkRequiredFields() {
-    if (!section) return;
+    if (!section) return false;
 
     var hasErrors = [].slice.call(section.querySelectorAll('.error'));
 
