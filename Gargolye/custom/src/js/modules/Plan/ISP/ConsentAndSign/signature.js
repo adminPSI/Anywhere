@@ -208,6 +208,9 @@ const csSignature = (() => {
 
           if (!selectedMemberData.dateSigned) {
             date.classList.add('error');
+            if (signDate) {
+              date.classList.remove('error');
+            }
           } else {
             date.classList.remove('error');
           }
@@ -534,7 +537,12 @@ const csSignature = (() => {
   //*------------------------------------------------------
   function showPopup({ isNewMember, isReadOnly, memberData }) {
     isNew = isNewMember;
+    const prevDateSigned = memberData.dateSigned;
     isSigned = memberData.dateSigned !== '';
+
+    if (memberData.signatureType === "2" && memberData.description === "") {
+      isSigned = false;
+    } 
     readOnly = isReadOnly;
     selectedMemberData = memberData;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
@@ -602,6 +610,7 @@ const csSignature = (() => {
         selectedMemberData.dissentHowToAddress.value = '';
 
         if (!isSigned) {
+          selectedMemberData.dateSigned = prevDateSigned;
           selectedMemberData.description = '';
           selectedMemberData.attachmentType = '';
           selectedMemberData.hasWetSignature = false;
