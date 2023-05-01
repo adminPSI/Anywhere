@@ -1104,7 +1104,16 @@
 
           gridBody.appendChild(gridRow);
           DOM.autosizeTextarea();
-          // TODO: add focus to input in col 1
+
+          let firstCol;
+
+          if (isSortable) {
+            firstCol = gridRow.children[1];
+          } else {
+            firstCol = gridRow.children[0];
+          }
+          const colInput = firstCol.querySelector('.input-field__input');
+          colInput.focus();
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
