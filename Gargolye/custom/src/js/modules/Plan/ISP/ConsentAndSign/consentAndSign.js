@@ -528,7 +528,7 @@ const planConsentAndSign = (() => {
     changeMindQuestion.appendChild(csChangeMindQuestionText);
 
     // required fields
-    if ((data.csChangeMindSSAPeopleId === '' || data.csChangeMindSSAPeopleId === 0 || data.csChangeMindSSAPeopleId === null)&& !isSigned) {
+    if ((data.csChangeMindSSAPeopleId === '' || data.csChangeMindSSAPeopleId === '0' || data.csChangeMindSSAPeopleId === null)&& !isSigned) {
       changeMindQuestion.classList.add('error');
     }
 
@@ -705,17 +705,21 @@ const planConsentAndSign = (() => {
 
     if (teamMemberData) {
       const tableData = teamMemberData.map(m => {
-        const isSigned = m.dateSigned !== '';
+        let isSigned = m.dateSigned !== '';
+        const inPersonSignature = m.description;
 
         const teamMember = m.teamMember;
         const name = contactInformation.cleanName({
-          lastName: m.lastName,
-          firstName: m.name,
-          middleName: '',
+            lastName: m.lastName,
+            firstName: m.name,
+            middleName: '',
         });
         const participated = m.participated === '' ? '' : m.participated === 'Y' ? 'Yes' : 'No';
         const signatureType = csTeamMember.getSignatureTypeByID(m.signatureType);
-
+        
+        if (signatureType === "In-Person" && inPersonSignature === "") {
+            isSigned = false;
+        } 
         names.push(name);
 
         const tableOBJ = {

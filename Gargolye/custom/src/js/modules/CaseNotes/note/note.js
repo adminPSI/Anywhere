@@ -260,6 +260,7 @@ var note = (function () {
       lastUpdated = rd.lastupdate;
       enteredBy = rd.originaluserid;
       cnBatched = rd.batched;
+      originalUserName = rd.originaluserfullname;
       mileage = rd.totalmiles;
     }
   }
@@ -1312,7 +1313,7 @@ var note = (function () {
       lastUpdatedDisplay.classList.add('lastUpdatedDisplay');
       var lastUpdatedMessage = document.createElement('p');
       lastUpdatedMessage.innerHTML = `
-      Last Edited On: ${lastUpdated} <br> Entered By: ${enteredBy}<br>`;
+      Last Edited On: ${lastUpdated} <br> Entered By: ${enteredBy} (${originalUserName})<br>`;
       lastUpdatedDisplay.appendChild(lastUpdatedMessage);
       
       var correctedCheckboxDiv = document.createElement('div');

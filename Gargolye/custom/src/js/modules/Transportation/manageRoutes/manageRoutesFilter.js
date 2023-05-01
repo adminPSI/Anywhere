@@ -1,6 +1,6 @@
 const TRANS_manageRoutesFilter = (function () {
   // Inputs
-  let startDateInput, endDateInput, driverDropdown, locationDropdown, routeStatusDropdown;
+  let startDateInput, endDateInput, driverDropdown, locationDropdown, routeStatusDropdown, vehicleDropdown;
   let filterOpts;
 
   function createFilterElements() {
@@ -33,6 +33,11 @@ const TRANS_manageRoutesFilter = (function () {
       label: 'Route Status',
       style: 'secondary',
     });
+    vehicleDropdown = dropdown.build({
+      dropdownId: 'vehicleDropdown',
+      label: 'Vehicle',
+      style: 'secondary',
+    });
   }
 
   function buildFilterPopup(params) {
@@ -63,6 +68,7 @@ const TRANS_manageRoutesFilter = (function () {
     popup.appendChild(driverDropdown);
     popup.appendChild(locationDropdown);
     popup.appendChild(routeStatusDropdown);
+    popup.appendChild(vehicleDropdown);
     popup.appendChild(applyButton);
     POPUP.show(popup);
 
@@ -73,8 +79,10 @@ const TRANS_manageRoutesFilter = (function () {
   function populateDropdowns() {
     const driverDropdownData = [];
     const locationDropdownData = [];
+    const vehicleDropdownData = [];
     const drivers = TRANS_mainLanding.getAllDrivers();
     const locations = TRANS_mainLanding.getLocations();
+    const vehicles = TRANS_mainLanding.getVehicles();
     const routeStatusDropdownData = [
       {
         value: '%',
@@ -106,11 +114,18 @@ const TRANS_manageRoutesFilter = (function () {
         text: `${val.Name}`,
       });
     });
-
+    vehicles.forEach((val, key, map) => {
+      vehicleDropdownData.push({
+        value: key,
+        text: `${val.vehicleNumber}`,
+      });
+    });
     driverDropdownData.unshift({ value: '%', text: 'All' });
     locationDropdownData.unshift({ value: '%', text: 'All' });
+    vehicleDropdownData.unshift({ value: '%', text: 'All' });
     dropdown.populate(driverDropdown, driverDropdownData, filterOpts.personId);
     dropdown.populate(locationDropdown, locationDropdownData, filterOpts.locationId);
+    dropdown.populate(vehicleDropdown, vehicleDropdownData, filterOpts.vehicleId);
     dropdown.populate(
       routeStatusDropdown,
       routeStatusDropdownData,
@@ -138,6 +153,9 @@ const TRANS_manageRoutesFilter = (function () {
     });
     locationDropdown.addEventListener('change', event => {
       filterOpts.locationId = event.target.value;
+    });
+    vehicleDropdown.addEventListener('change', event => {
+      filterOpts.vehicleId = event.target.value;
     });
     routeStatusDropdown.addEventListener('change', event => {
       filterOpts.routeStatus = event.target.value;

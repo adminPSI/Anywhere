@@ -1791,9 +1791,9 @@ namespace Anywhere
             return wfw.deleteWorkflow(token, workflowId);
         }
 
-        public WorkflowWorker.PeopleName[] getPeopleNames(string token)
+        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId)
         {
-            return wfw.getPeopleNames(token);
+            return wfw.getPeopleNames(token, peopleId);
         }
 
         public WorkflowWorker.ResponsiblePartyRelationship[] getWFResponsiblePartyRelationships(string token, string workflowId)
@@ -2155,9 +2155,9 @@ namespace Anywhere
         {
             return trW.getVehicleInspectionDetails(token, vehicleInspectionId);
         }
-        public TransportationWorker.Trips[] getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId)
+        public TransportationWorker.Trips[] getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId, string vehicleId)
         {
-            return trW.getTrips(token, serviceDateStart, serviceDateStop, personId, locationId);
+            return trW.getTrips(token, serviceDateStart, serviceDateStop, personId, locationId, vehicleId);
         }
         public TransportationWorker.TripConsumers[] getTripConsumers(string token, string tripsCompletedId)
         {
@@ -2879,6 +2879,7 @@ namespace Anywhere
             string isp;
             string doddFlag;
             string oneSpan;
+            string signatureOnly;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -2889,6 +2890,8 @@ namespace Anywhere
             extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             oneSpan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            signatureOnly = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+
 
             string[] words = fullInput.Split('&');
             var index = Array.FindIndex(words, row => row.Contains("planAttachmentIds"));
@@ -2909,7 +2912,7 @@ namespace Anywhere
             attIdThree = attIdThree.Replace("%2C", ",");
             sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp), bool.Parse(oneSpan));
+            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly));
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
@@ -2943,7 +2946,8 @@ namespace Anywhere
         public string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp, bool oneSpan)
         {
             //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "crystal", "466", "1", "false", true);
-            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan);
+            bool signatureOnly = false;
+            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             return osw.oneSpanBuildSigners(token, assessmentID, ms);
         }
 

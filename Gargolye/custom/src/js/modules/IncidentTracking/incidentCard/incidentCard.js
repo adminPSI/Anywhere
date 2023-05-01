@@ -211,9 +211,10 @@ var incidentCard = (function () {
   }
   function checkEntireIncidentCardforErrors() {
     var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+    var peopleSectionHasErrors = itPeopleSection.checkRequiredFields();
     var consumerSectionHasErrors = checkforRequiredConsumer();
 
-    if (detailSectionHasErrors || consumerSectionHasErrors) {
+    if (detailSectionHasErrors || peopleSectionHasErrors || consumerSectionHasErrors) {
       toggleSaveBtnStatus(true);
     } else {
       toggleSaveBtnStatus(false);
