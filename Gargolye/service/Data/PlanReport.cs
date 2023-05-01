@@ -206,7 +206,7 @@ namespace Anywhere.service.Data
             //return msa2;
         }
 
-        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan)
+        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly )
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -259,6 +259,7 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("Header").SetDataSource(dt);
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
+            cr.DataDefinition.FormulaFields["SignatureOnly"].Text = signatureOnly.ToString();
 
             //cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
 
