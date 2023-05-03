@@ -90,7 +90,7 @@ namespace Anywhere
         DemographicsWoker cdw = new DemographicsWoker();
         public AnywhereService()
         {
-            log4net.Config.XmlConfigurator.Configure();
+            log4net.Config.XmlConfigurator.Configure(); 
         }
 
         public string getLocations(string token)//MAT need to see if I can remove
@@ -3123,6 +3123,11 @@ namespace Anywhere
         public Category[] getCatogories(string token, string categoryID)
         {
             return cf.getCatogories(token, categoryID);
+        }
+
+        public Category[] getCategoriesSubCategories(string token, string categoryID)
+        {
+            return cf.getCategoriesSubCategories(token, categoryID);
         }
 
         public SubCategory[] getSubCatogories(string token, string category)
