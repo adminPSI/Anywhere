@@ -184,6 +184,7 @@ const TRANS_manageRoutes = (function () {
 
     const driverLookup = TRANS_mainLanding.driverLookup(filterOpts.personId);
     const locationLookup = TRANS_mainLanding.locationLookup(filterOpts.locationId);
+    const vehicleLookup = TRANS_mainLanding.vehicleFilteredLookup(filterOpts.vehicleId);
 
     const filteredDateStart = UTIL.abbreviateDateYear(
       UTIL.formatDateFromIso(filterOpts.serviceDateStart, '/'),
@@ -195,6 +196,7 @@ const TRANS_manageRoutes = (function () {
       ? `${driverLookup.Last_Name}, ${driverLookup.First_Name}`
       : 'All';
     const selectedLocation = locationLookup ? locationLookup.Name : 'All';
+    const selectedVehicle = vehicleLookup ? vehicleLookup.vehicleNumber : 'All';
     const totalRouteCount = filteredRoutes ? filteredRoutes.size : '0';
 
     let selectedRouteStatus;
@@ -220,6 +222,7 @@ const TRANS_manageRoutes = (function () {
         <p><span>Location:</span> ${selectedLocation}</p>
         <p><span>Route Status:</span> ${selectedRouteStatus}</p>
         <p id="totalRouteCount"><span>Total Route Count:</span> ${totalRouteCount}</p>
+        <p id="totalRouteCount"><span>Vehicle:</span>  ${selectedVehicle}</p>
       </div>
     `;
 

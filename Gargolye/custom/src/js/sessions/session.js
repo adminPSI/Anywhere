@@ -138,13 +138,13 @@ $.session.errorMessage = '';
 $.session.selectedGroupId = 0;
 $.session.deletedGroupId = 0; //Added to handle the delete group issue when deleting from the page where you are in the group to be deleted
 $.session.changePasswordLinkSelected = '';
-$.session.advancedPasswordLength = '8';
+$.session.advancedPasswordLength = '';
 $.session.dsLocationHistoryFlag = false;
 $.session.dsLocationHistoryValue = 0;
 $.session.initialTimeOut = '';
 $.session.initialTimeIn = '';
 $.session.singleLoadedConsumerId = '';
-$.session.passwordSpecialCharacters = '!#$%*-?@_+';
+$.session.passwordSpecialCharacters = '';
 $.session.daysBackGoalsEdit = '';
 $.session.singleLoadedConsumerName = '';
 $.session.serviceStartDate = '';
@@ -691,6 +691,7 @@ function setSessionVariables() {
         $.session.CFDelete = true;
       }
       if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $('#consumerfinancessettingsdiv').removeClass('disabledModule'); 
         $.session.CFView = true;
       }
       if (tmpPerm == 'Insert' || $.session.isPSI == true) {
@@ -701,6 +702,7 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
         $.session.CFEditAccountEntries = true;
+<<<<<<< HEAD
       }
     }
 
@@ -714,6 +716,21 @@ function setSessionVariables() {
         $.session.ResetPasswordUpdate = true;
       }
     }
+=======
+      }            
+      }
+  
+      //Reset Password
+        if (tmpWindow == 'Anywhere Reset Passwords' ) {        
+          if (tmpPerm == 'View' || $.session.isPSI == true) { 
+              $('#Adminsettingdiv').removeClass('disabledModule');
+              $.session.ResetPasswordView = true; 
+          }     
+          if (tmpPerm == 'Update' || $.session.isPSI == true) {
+              $.session.ResetPasswordUpdate = true;
+          }        
+      }  
+>>>>>>> 6ab6aaba97fc45077062ca2260bb42f6097222a6
 
     if (tmpWindow == 'Anywhere User Home') {
       if (tmpPerm == 'Deny Staff TimeClock Change') {
@@ -1551,6 +1568,10 @@ function checkModulePermissions() {
   if ($.session.ResetPasswordView == false) {
     $('#Adminsettingdiv').addClass('disabledModule');
   }
+
+    if ($.session.CFView == false) {
+        $('#consumerfinancessettingsdiv').addClass('disabledModule');
+    }
 
   $('#adminsingleentrysettingsdiv').hide();
   if ($.session.ViewAdminSingleEntry === true) {

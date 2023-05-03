@@ -563,7 +563,7 @@
 [data-active-module="resetPassword"] {
 
     h3 {
-        font-size: 1rem; 
+        font-size: 1rem;
     }
 
     #singleEntryAdminReviewTable {
@@ -573,6 +573,18 @@
                 height: 26px;
                 margin-top: 10px
             }
+        }
+    }
+
+    .resetPasswordPopup {
+        padding-top: 16px; 
+
+        .cancelTransBtn {
+            pointer-events: all;
+        }
+
+        .btnWrap {
+            flex-flow: row nowrap;
         }
     }
 }
