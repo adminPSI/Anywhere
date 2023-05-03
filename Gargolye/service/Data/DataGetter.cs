@@ -1037,9 +1037,17 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             try
             {
-                //File.WriteAllBytes(@"\\solo\wwwroot\testGkAnywhere\webroot\Images\portraits\" + id + ".png", Convert.FromBase64String(imageFile));
-                // File.WriteAllBytes(@"C:\\Projects\\anywhere-4\\Gargolye\\webroot\\Images\\portraits\\" + id + ".png", Convert.FromBase64String(imageFile));
-                File.WriteAllBytes(@portraitPath + id + ".png", Convert.FromBase64String(imageFile));
+                if(imageFile == "")
+                {
+                    File.Delete(@portraitPath + id + ".png");
+                }
+                else
+                {
+                    //File.WriteAllBytes(@"\\solo\wwwroot\testGkAnywhere\webroot\Images\portraits\" + id + ".png", Convert.FromBase64String(imageFile));
+                    // File.WriteAllBytes(@"C:\\Projects\\anywhere-4\\Gargolye\\webroot\\Images\\portraits\\" + id + ".png", Convert.FromBase64String(imageFile));
+                    File.WriteAllBytes(@portraitPath + id + ".png", Convert.FromBase64String(imageFile));
+                }
+                
 
                 return executeDataBaseCall("CALL DBA.ANYW_Roster_UpdatePortrait('" + token + "', '" + employeeUserName + "', '" + imageFile + "', '" + id + "');", "results", "results");
             }
