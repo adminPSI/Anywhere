@@ -1017,7 +1017,8 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',
+              'false',
+            'false'
           );
         } else {
           //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
@@ -1031,7 +1032,8 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',
+              'false',
+            'false'
           );
         }
 

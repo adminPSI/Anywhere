@@ -4237,6 +4237,14 @@ namespace Anywhere
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getCategoriesSubCategories/")]
+        ConsumerFinancesWorker.Category[] getCategoriesSubCategories(string token, string categoryID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getSubCatogories/")]
         ConsumerFinancesWorker.SubCategory[] getSubCatogories(string token, string category);
 
