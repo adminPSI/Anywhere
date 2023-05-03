@@ -702,7 +702,6 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
         $.session.CFEditAccountEntries = true;
-<<<<<<< HEAD
       }
     }
 
@@ -716,21 +715,6 @@ function setSessionVariables() {
         $.session.ResetPasswordUpdate = true;
       }
     }
-=======
-      }            
-      }
-  
-      //Reset Password
-        if (tmpWindow == 'Anywhere Reset Passwords' ) {        
-          if (tmpPerm == 'View' || $.session.isPSI == true) { 
-              $('#Adminsettingdiv').removeClass('disabledModule');
-              $.session.ResetPasswordView = true; 
-          }     
-          if (tmpPerm == 'Update' || $.session.isPSI == true) {
-              $.session.ResetPasswordUpdate = true;
-          }        
-      }  
->>>>>>> 6ab6aaba97fc45077062ca2260bb42f6097222a6
 
     if (tmpWindow == 'Anywhere User Home') {
       if (tmpPerm == 'Deny Staff TimeClock Change') {
