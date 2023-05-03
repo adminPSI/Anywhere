@@ -119,7 +119,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             list.Add(categoryID);
             try
             {
-                logger.debug("getCatogories");
+                logger.debug("getCategoriesSubCategories");
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getCategoriesSubCategories(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
@@ -136,7 +136,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             list.Add(categoryID);
             try
             {
-                logger.debug("getSubCatogories");
+                logger.debug("getCategoriesSubCategoriesByPayee");
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getCategoriesSubCategoriesByPayee(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
@@ -190,7 +190,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@regId", DbType.String, regId);
 
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updateAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString(); 
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updateAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
