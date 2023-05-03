@@ -1293,10 +1293,19 @@ var timeEntryCard = (function () {
       }
     }
     function checkEvv() {
-      if (reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged) {
-        reasonDropdown.classList.add('error');
-      } else {
+      var isDisabled = reasonDropdown.classList.contains('disabled');
+      var reasonSelect = reasonDropdown.querySelector('select');
+      var currentValue = reasonSelect.value;
+      if (isDisabled) {
         reasonDropdown.classList.remove('error');
+      } else {
+        if (currentValue === '%' || currentValue === '' && (reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged)) {
+          reasonDropdown.classList.add('error');
+         // roster2.toggleMiniRosterBtnVisible(false);
+        } else {
+          reasonDropdown.classList.remove('error');
+         // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
+        }
       }
     }
 

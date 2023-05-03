@@ -104,7 +104,7 @@ const WorkflowViewerAjax = (() => {
     }
   }
 
-  async function getPeopleNamesAsync() {
+  async function getPeopleNamesAsync(peopleId) {
     try {
       const result = await $.ajax({
         type: 'POST',
@@ -117,7 +117,10 @@ const WorkflowViewerAjax = (() => {
           '/' +
           $.webServer.serviceName +
           '/getPeopleNames/',
-        data: '{"token":"' + $.session.Token + '"}',
+        data: JSON.stringify({
+          token: $.session.Token,
+          peopleId: peopleId,
+        }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });

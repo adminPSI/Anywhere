@@ -333,6 +333,11 @@ button.evv-highlight {
 }
 #singleEntryReviewTable,
 #singleEntryAdminReviewTable {
+  .iconsBox {
+    display: flex;
+    flex-direction: row;
+  }
+
   .additionalInfoBox {
     display: flex;
     text-align: center;
@@ -350,6 +355,21 @@ button.evv-highlight {
     svg {
       min-width: 25px;
       padding-left: 7px;
+    }
+  }
+  .commentsBox {
+    display: flex;
+    text-align: center;
+    line-height: 28px;
+    color: $primary;
+    height: 26px;
+    border-radius: 4px;
+    min-width: 20px;
+    font-weight: 500;
+    max-width: 54px;
+    svg {
+      min-width: 25px;
+      color: $primary;
     }
   }
 }

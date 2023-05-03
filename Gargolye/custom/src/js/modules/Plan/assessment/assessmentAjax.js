@@ -102,6 +102,10 @@ const assessmentAjax = (function () {
       oneSpanInput.setAttribute('name', 'oneSpan');
       oneSpanInput.setAttribute('value', retrieveData.oneSpan);
       oneSpanInput.id = 'oneSpan';
+    var signatureOnlyInput = document.createElement('input');
+      signatureOnlyInput.setAttribute('name', 'oneSpan');
+      signatureOnlyInput.setAttribute('value', retrieveData.signatureOnly);
+      signatureOnlyInput.id = 'signatureOnly';
     var planAttachmentIdsInput = document.createElement('input');
       planAttachmentIdsInput.setAttribute('name', 'planAttachmentIds');
       planAttachmentIdsInput.setAttribute('value', retrieveData.planAttachmentIds);
@@ -122,6 +126,7 @@ const assessmentAjax = (function () {
     form.appendChild(extraSpaceInput);
     form.appendChild(ispInput);
     form.appendChild(oneSpanInput);
+    form.appendChild(signatureOnlyInput);
     form.appendChild(planAttachmentIdsInput);
     form.appendChild(wfAttachmentIdsInput);
     form.appendChild(sigAttachmentIdsInput);

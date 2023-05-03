@@ -329,6 +329,16 @@ var consumerInfo = (function () {
     var sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
 
+    var removePhotoBtn = button.build({
+      text: 'Remove Photo',
+      style: 'secondary',
+      type: 'contained',
+      callback: e => {
+        //TODO: AJAX call rosterAjax.removeConsumerPhoto({consumerId: consumerId});
+        rosterAjax.updatePortrait('', parseInt(consumerId), $.session.portraitPath);
+      },
+    });
+
     var photoInput = input.build({
       label: 'Choose Image',
       type: 'file',
@@ -337,6 +347,7 @@ var consumerInfo = (function () {
       attributes: [{ key: 'multiple', value: 'false' }],
     });
 
+    sectionInner.appendChild(removePhotoBtn);
     sectionInner.appendChild(photoInput);
 
     photoInput.addEventListener('change', updateConsumerPhoto);
@@ -881,7 +892,8 @@ var consumerInfo = (function () {
           });
           break;
         }
-        case 'Intellivue': {//
+        case 'Intellivue': {
+          //
           targetSection = consumerInfoCard.querySelector('.intellivueSection');
           intellivue.getApplicationListHostedWithUser(function (results) {
             populateIntellivueSection(targetSection, results);

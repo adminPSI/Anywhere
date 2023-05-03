@@ -411,6 +411,7 @@ const assessment = (function () {
     wfAttachmentIds,
     sigAttachmentIds,
     DODDFlag,
+    signatureOnly,
   ) {
     assessmentAjax.getPlanAssessmentReportWithAttachments(//Testgd
       {
@@ -425,6 +426,7 @@ const assessment = (function () {
         wfAttachmentIds,
         sigAttachmentIds,
         DODDFlag,
+        signatureOnly,
       },
       () => {
         const arr = success._buffer;

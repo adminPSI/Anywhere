@@ -1017,7 +1017,8 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',
+              'false',
+            'false'
           );
         } else {
           //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
@@ -1031,7 +1032,8 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',
+              'false',
+            'false'
           );
         }
 
@@ -1213,6 +1215,42 @@ const plan = (function () {
       type: 'contained',
       classNames: ['reportBtn2'],
     });
+
+    const reportSignatureBtn = button.build({
+      text: 'Print Signature Page',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['reportBtn2'],
+      callback: async () => {
+        let isSuccess;
+        const selectedAttachmentsPlan = {};
+        const selectedAttachmentsWorkflow = {};
+        const selectedAttachmentsSignature = {};
+        let extraSpace = 'false';
+        
+        // build & show spinner
+       //  const spinner = PROGRESS.SPINNER.show('Building Report...');
+        //const screenInner = reportsScreen.querySelector('.attachmentsWrap');
+       // reportsScreen.removeChild(doneBtn);
+       // reportsScreen.removeChild(screenInner);
+      //  reportsScreen.appendChild(spinner);
+        // generate report
+          const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+          const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+          const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+          isSuccess = assessment.generateReportWithAttachments(
+            planId,
+            '1',
+            extraSpace,
+            planAttachmentIds,
+            wfAttachmentIds,
+            sigAttachmentIds,
+            'false',
+            'true',
+          );
+      },
+    });
+
     const reportBtn3 = button.build({
       text: 'Report with attachments',
       style: 'secondary',
@@ -1281,7 +1319,7 @@ const plan = (function () {
     //morepopupmenu.appendChild(addWorkflowBtn);
     morepopupmenu.appendChild(reportBtn);
     morepopupmenu.appendChild(reportBtn2);
-    //morepopupmenu.appendChild(reportBtn3);
+    morepopupmenu.appendChild(reportSignatureBtn);
     morepopupmenu.appendChild(sendtoPortalBtn);
     morepopupmenu.appendChild(sendToDODDBtn);
     morepopupmenu.appendChild(editDatesBtn);
@@ -1299,6 +1337,10 @@ const plan = (function () {
         case reportBtn:
         case reportBtn2: {
           targetScreen = 'reportsScreen';
+          break;
+        }
+        case reportSignatureBtn: {
+          //targetScreen = 'reportsScreen';
           break;
         }
         case reportBtn3: {
@@ -1457,6 +1499,7 @@ const plan = (function () {
 
     generalInfoBar = document.createElement('div');
     generalInfoBar.classList.add('generalInfo');
+    generalInfoBar.setAttribute('data-people-id', `${selectedConsumer.id}`);
 
     const consumerName = `<p>${getConsumerNameFromCard(selectedConsumer.card)}</p>`;
     const dateSpan = `<p>Span: ${starDate} - ${endDate}</p>`;

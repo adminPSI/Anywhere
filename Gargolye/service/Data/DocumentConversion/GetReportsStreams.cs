@@ -28,11 +28,11 @@ namespace Anywhere.service.Data.DocumentConversion
             return ms;
         }
 
-        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan)
+        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly)
         {
 
             MemoryStream ms = null;
-            ms = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan);
+            ms = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             //ms.Flush();
             //ms.Close();
             //ms.Dispose();
