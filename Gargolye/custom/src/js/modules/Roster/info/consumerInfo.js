@@ -334,7 +334,6 @@ var consumerInfo = (function () {
       style: 'secondary',
       type: 'contained',
       callback: e => {
-        //TODO: AJAX call rosterAjax.removeConsumerPhoto({consumerId: consumerId});
         rosterAjax.updatePortrait('', parseInt(consumerId), $.session.portraitPath);
       },
     });
