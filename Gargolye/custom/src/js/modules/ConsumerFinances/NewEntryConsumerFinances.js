@@ -68,7 +68,7 @@ const NewEntryCF = (() => {
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
-            BtnName = 'SAVE'; 
+            BtnName = 'SAVE';
         }
         else {
             regId = 0;
@@ -110,7 +110,10 @@ const NewEntryCF = (() => {
             type: 'number',
             label: 'Amount',
             style: 'secondary',
-            value: (amount) ? amount : '',
+            value:  (amount) ? amount : '',  
+            attributes: [
+                { key: 'pattern', value: '^[0-9]*\.[0-9]{2}$' },
+            ],
         });
 
         newAccountDropdown = dropdown.build({
@@ -226,6 +229,12 @@ const NewEntryCF = (() => {
         else {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_CANCEL_BTN);
+            if ($.session.CFADDPayee) {
+                ADD_NEW_PAYEE_BTN.classList.remove('disabled');
+            }
+            else {
+                ADD_NEW_PAYEE_BTN.classList.add('disabled');
+            }
         }
 
         var dropWrap = document.createElement('div');
@@ -290,13 +299,12 @@ const NewEntryCF = (() => {
         populateAccountDropdown();
         populatePayeeDropdown();
         populateCategoryDropdown(categoryID);
-        populateSubCategoryDropdown(category);   
+        populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
         disabledUpdateBtn();
     }
 
     function enableDisabledInputs() {
-
         if (IsReconciled == 'Y') {
             DisabledAllInputs();
         } else if (IsReconciled == 'N') {
@@ -364,7 +372,6 @@ const NewEntryCF = (() => {
         newAmountInput.classList.remove('disabled');
         newAccountDropdown.classList.remove('disabled');
         newPayeeDropdown.classList.remove('disabled');
-        ADD_NEW_PAYEE_BTN.classList.remove('disabled');
         newCategoryDropdown.classList.remove('disabled');
         newSubCategoryDropdown.classList.remove('disabled');
         newCheckNoInput.classList.remove('disabled');
@@ -394,8 +401,8 @@ const NewEntryCF = (() => {
         } else {
             newDateInput.classList.remove('error');
         }
-
-        if (amount.value === '') {
+          
+        if (amount.value === '') {   
             newAmountInput.classList.add('error');
         } else {
             newAmountInput.classList.remove('error');
@@ -418,11 +425,6 @@ const NewEntryCF = (() => {
         } else {
             newCategoryDropdown.classList.remove('error');
         }
-        //if (subCategory.value === '') {
-        //    newSubCategoryDropdown.classList.add('error');
-        //} else {
-        //    newSubCategoryDropdown.classList.remove('error');
-        //} 
 
         if (IsReconciled == 'N') {
             setBtnStatusOfNewEntry();
@@ -446,6 +448,15 @@ const NewEntryCF = (() => {
         });
         newAmountInput.addEventListener('input', event => {
             amount = event.target.value;
+            var reg = new RegExp('^[0-9 .]+$');
+            if (!reg.test(amount)) {
+                document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
+                return;
+            }
+            else if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
+                document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
+                return;
+            }  
             checkRequiredFieldsOfNewEntry();
         });
         newPayeeDropdown.addEventListener('change', event => {
@@ -468,22 +479,27 @@ const NewEntryCF = (() => {
         newSubCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             subCategory = event.target.options[event.target.selectedIndex].text;
-            //checkRequiredFieldsOfNewEntry();
+            checkRequiredFieldsOfNewEntry();
         });
         newCheckNoInput.addEventListener('input', event => {
             checkNo = event.target.value;
+            checkRequiredFieldsOfNewEntry();
         });
         newDescriptionInput.addEventListener('input', event => {
             description = event.target.value;
+            checkRequiredFieldsOfNewEntry();
         });
         newReceiptInput.addEventListener('input', event => {
             receipt = event.target.value;
+            checkRequiredFieldsOfNewEntry();
         });
         expenseRadio.addEventListener('change', event => {
             accountType = 'E';
+            checkRequiredFieldsOfNewEntry();
         });
         depositRadio.addEventListener('change', event => {
-            accountType = 'D'; 
+            accountType = 'D';
+            checkRequiredFieldsOfNewEntry();
         });
     }
 
@@ -650,9 +666,9 @@ const NewEntryCF = (() => {
             type: 'text',
             style: 'secondary',
             classNames: ['zip'],
-            attributes: [{ key: 'maxlength', value: '9' }],
+            attributes: [{ key: 'maxlength', value: '10' }],
             value: (payeezipcode) ? payeezipcode : '',
-        });
+        }); 
 
         saveBtn = button.build({
             id: "addpayeeSaveBtn",
@@ -722,6 +738,16 @@ const NewEntryCF = (() => {
 
         zipcodeInput.addEventListener('input', event => {
             payeezipcode = event.target.value;
+            var reg = new RegExp('^[0-9 -]+$');
+            if (payeezipcode) {
+                if (!reg.test(payeezipcode)) {
+                    document.getElementById('zipcodeInput').value = payeezipcode.substring(0, payeezipcode.length - 1);
+                    return;
+                }
+                payeezipcode = payeezipcode.split('-').join('');
+                let finalVal = payeezipcode.match(/.{1,5}/g).join('-');
+                document.getElementById('zipcodeInput').value = finalVal;
+            }
             checkRequiredFields();
         });
 
@@ -784,6 +810,7 @@ const NewEntryCF = (() => {
         const { insertPayeeResult } = result;
         let regionID = insertPayeeResult.RegionID;
         POPUP.hide(addPayeePopup);
+        payee = payeeName;  
         populatePayeeDropdown();
     }
 

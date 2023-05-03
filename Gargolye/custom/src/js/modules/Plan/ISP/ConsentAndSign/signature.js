@@ -12,7 +12,6 @@ const csSignature = (() => {
   let characterLimits;
   let prevDissentData = {};
 
-
   //*------------------------------------------------------
   //* UTIL
   //*------------------------------------------------------
@@ -48,7 +47,9 @@ const csSignature = (() => {
     if (isNew) {
       insertSuccess = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
     } else {
-      selectedMemberData.dateSigned = UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned));
+      selectedMemberData.dateSigned = UTIL.formatDateToIso(
+        dates.removeTimestamp(selectedMemberData.dateSigned),
+      );
       await planConsentAndSign.updateTeamMember(selectedMemberData);
       insertSuccess = true;
     }
@@ -89,10 +90,53 @@ const csSignature = (() => {
       },
     });
   }
+  function allowSignatureClear() {
+    const planStatus = plan.getPlanStatus();
+    const activePlan = plan.getPlanActiveStatus();
+    $.session.planClearSignature = true; // temp
+    const allowSignatureClear =
+      $.session.planClearSignature && planStatus === 'D' && activePlan === true ? true : false;
+    return allowSignatureClear;
+  }
 
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
+  function showClearConfirmationPopup() {
+    const confirmPop = POPUP.build({
+      id: 'clearSignConfirmPopup',
+      hideX: true,
+    });
+    const message = document.createElement('p');
+    message.innerText = `Are you sure you would like to remove this signature and any associated consent and dissenting opinions? This cannot be undone.`;
+
+    const yesBtn = button.build({
+      text: 'yes',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        // TODO: if clear button is pressed remove signature, dissenting opinions and consents
+        // TODO: after clearing out fields refresh popup so they can insert new values
+      },
+    });
+    const noBtn = button.build({
+      text: 'no',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        POPUP.hide(confirmPop);
+      },
+    });
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(yesBtn);
+    btnWrap.appendChild(noBtn);
+
+    confirmPop.appendChild(message);
+    confirmPop.appendChild(btnWrap);
+
+    POPUP.show(confirmPop);
+  }
   function buildSignatureSection() {
     const signatureWrap = document.createElement('div');
     signatureWrap.classList.add('signatureWrap');
@@ -270,6 +314,7 @@ const csSignature = (() => {
       sigBody.appendChild(sigImage);
     }
 
+    // this clear signature button is only for the sig pad canvas
     const clearSignatureBtn = button.build({
       id: '',
       text: 'clear',
@@ -548,15 +593,15 @@ const csSignature = (() => {
     const prevDateSigned = memberData.dateSigned;
     isSigned = memberData.dateSigned !== '';
 
-    if (memberData.signatureType === "2" && memberData.description === "") {
+    if (memberData.signatureType === '2' && memberData.description === '') {
       isSigned = false;
-    } 
+    }
     readOnly = isReadOnly;
     selectedMemberData = memberData;
     prevDissentData = {
       dissentHowToAddress: selectedMemberData.dissentHowToAddress,
-      dissentAreaDisagree: selectedMemberData.dissentAreaDisagree
-    }
+      dissentAreaDisagree: selectedMemberData.dissentAreaDisagree,
+    };
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     characterLimits = planData.getISPCharacterLimits('consentAndSign');
 
@@ -574,7 +619,7 @@ const csSignature = (() => {
     prompt.innerText = `I agree this plan reflects actions, services, and supports requested by me and may be sent to those providing services to me.`;
 
     prompt.style.marginBottom = '14px';
-    
+
     //* SIGNATURE
     const signatureSection = buildSignatureSection();
 
@@ -586,9 +631,20 @@ const csSignature = (() => {
 
     //* SAVE/CANCEL BUTTONS
     //*------------------------------
+    debugger;
+    const allowSignClear = allowSignatureClear();
+    const clearSignatureBtn = button.build({
+      id: 'clearSigBtn',
+      text: 'clear',
+      style: 'danger',
+      type: 'contained',
+      callback: () => {
+        showClearConfirmationPopup();
+      },
+    });
     saveBtn = button.build({
       id: 'saveSigBtn',
-      text: 'save',
+      text: allowSignClear ? 'update' : 'save',
       style: 'secondary',
       type: 'contained',
       callback: () => {
@@ -613,8 +669,9 @@ const csSignature = (() => {
         }
       },
     });
+    const cancelText = (isSigned || readOnly) && !allowSignClear ? 'close' : 'cancel';
     const cancelBtn = button.build({
-      text: isSigned || readOnly ? 'close' : 'cancel',
+      text: cancelText,
       style: 'secondary',
       type: 'outlined',
       callback: () => {
@@ -632,9 +689,16 @@ const csSignature = (() => {
         POPUP.hide(signaturePopup);
       },
     });
+
     const saveCancelWrap = document.createElement('div');
     saveCancelWrap.classList.add('btnWrap');
-    if (!isSigned && !readOnly) saveCancelWrap.appendChild(saveBtn);
+
+    if (allowSignClear) {
+      saveCancelWrap.appendChild(clearSignatureBtn);
+      saveCancelWrap.appendChild(saveBtn);
+    } else {
+      if (!isSigned && !readOnly) saveCancelWrap.appendChild(saveBtn);
+    }
     saveCancelWrap.appendChild(cancelBtn);
 
     //* BUILD IT

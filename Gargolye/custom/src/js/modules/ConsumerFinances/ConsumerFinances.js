@@ -56,17 +56,13 @@ const ConsumerFinances = (() => {
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
                 token: $.session.Token,
-                consumerId :selectedConsumersId, 
+                consumerId: selectedConsumersId,
             })
         ).getConsumerNameByIDResult;
-
-
 
         selectedConsumersName = name[0].FullName;
         const topButton = buildHeaderButton(selectedConsumers[0]);
         landingPage.appendChild(topButton);
-
-
         filterRow = document.createElement('div');
         filterRow.classList.add('filterElement');
 
@@ -88,7 +84,7 @@ const ConsumerFinances = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            headline: 'Consumer: '+ selectedConsumersName, 
+            headline: 'Consumer: ' + selectedConsumersName,
             columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By', ''],
         };
 
@@ -102,7 +98,7 @@ const ConsumerFinances = (() => {
             filterValues.category,
             filterValues.minamount,
             filterValues.maxamount,
-            filterValues.checkNo,
+            filterValues.checkNo, 
             filterValues.Balance,
             filterValues.enteredBy,
             filterValues.isattachment,
@@ -116,7 +112,7 @@ const ConsumerFinances = (() => {
         });
 
         let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
-            values: [entry.activityDate, entry.account, entry.payee, entry.category, entry.amount, entry.checkno, entry.balance, entry.enteredby, entry.AttachmentsID == 0 ? '' : `${icons['attachmentSmall']}`],
+            values: [entry.activityDate, entry.account, entry.payee, entry.category, '$' + entry.amount, entry.checkno, '$' + entry.balance, entry.enteredby, entry.AttachmentsID == 0 ? '' : `${icons['attachmentSmall']}`],
             attributes: [{ key: 'registerId', value: entry.ID }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.registerId.value)
@@ -129,7 +125,7 @@ const ConsumerFinances = (() => {
     }
 
     function handleAccountTableEvents(registerId) {
-        NewEntryCF.buildNewEntryForm(registerId); 
+        NewEntryCF.buildNewEntryForm(registerId);
     }
 
     // build display of Account and button
@@ -176,7 +172,7 @@ const ConsumerFinances = (() => {
             callback: async () => { NewEntryCF.init() },
         });
         if ($.session.CFInsert) {
-            entryBtn.classList.remove('disabled'); 
+            entryBtn.classList.remove('disabled');
         }
         else {
             entryBtn.classList.add('disabled');
@@ -242,7 +238,7 @@ const ConsumerFinances = (() => {
 
     // build the display of the current Filter Settings (next to the Filter button) 
     function buildFilteredBy() {
-        var filteredBy = document.querySelector('.widgetFilteredBy'); 
+        var filteredBy = document.querySelector('.widgetFilteredBy');
 
         if (!filteredBy) {
             filteredBy = document.createElement('div');
@@ -303,18 +299,18 @@ const ConsumerFinances = (() => {
 
         minAmountInput = input.build({
             id: 'minAmountInput',
-            type: 'number',
+            type: 'text',  
             label: 'Min Amount',
             style: 'secondary',
-            value: (filterValues.minamount) ? filterValues.minamount : '',
+            value: '$' + ((filterValues.minamount) ? filterValues.minamount : ''), 
         });
 
         maxAmountInput = input.build({
             id: 'maxAmountInput',
-            type: 'number',
+            type: 'text',
             label: 'Max Amount',
             style: 'secondary',
-            value: (filterValues.maxamount) ? filterValues.maxamount : '',
+            value: '$' + ((filterValues.maxamount) ? filterValues.maxamount : ''),
         });
 
         // dropdowns & inputs
@@ -426,11 +422,31 @@ const ConsumerFinances = (() => {
         });
 
         minAmountInput.addEventListener('keyup', event => {
-            filterValues.minamount = event.target.value;
+            minAmount = event.target.value;
+            var reg = new RegExp('^[0-9 . $ -]+$');
+            if (!reg.test(minAmount)) {
+                document.getElementById('minAmountInput').value = minAmount.substring(0, minAmount.length - 1);
+                return;
+            }
+            else if (minAmount.includes('.') && (minAmount.match(/\./g).length > 1 || minAmount.toString().split('.')[1].length > 2)) {
+                document.getElementById('minAmountInput').value = minAmount.substring(0, minAmount.length - 1);
+                return;
+            }  
+            filterValues.minamount = minAmount.replace('$', '');
         });
 
         maxAmountInput.addEventListener('keyup', event => {
-            filterValues.maxamount = event.target.value;
+            maxAmount = event.target.value;
+            var reg = new RegExp('^[0-9 . $ -]+$');     
+            if (!reg.test(maxAmount)) {
+                document.getElementById('maxAmountInput').value = maxAmount.substring(0, maxAmount.length - 1);
+                return;
+            }
+            else if (maxAmount.includes('.') && (maxAmount.match(/\./g).length > 1 || maxAmount.toString().split('.')[1].length > 2)) {
+                document.getElementById('maxAmountInput').value = maxAmount.substring(0, maxAmount.length - 1);
+                return;
+            }   
+            filterValues.maxamount = maxAmount.replace('$', ''); 
         });
 
         accountFilterDropdown.addEventListener('change', event => {
@@ -472,13 +488,13 @@ const ConsumerFinances = (() => {
         dropdown.populate("payeeDropdown", payeeData, filterValues.payee);
         let categoryID;
         const {
-            getCatogoriesResult: Category,
-        } = await ConsumerFinancesAjax.getCategoriesAsync(categoryID);
+            getCategoriesSubCategoriesResult: Category,
+        } = await ConsumerFinancesAjax.getCategoriesSubCategoriesAsync(categoryID);
         let categoryData = Category.map((category) => ({
             id: category.CategoryID,
             value: category.CategoryDescription,
             text: category.CategoryDescription
-        }));
+        })); 
         categoryData.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("categoryDropdown", categoryData, filterValues.category);
 
