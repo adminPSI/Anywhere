@@ -282,7 +282,7 @@ $.session.CFInsert = false;
 $.session.CFUpdate = false;
 $.session.CFView = false;
 $.session.CFADDPayee = false;
-$.session.CFEditAccountEntries = false;//
+$.session.CFEditAccountEntries = false; //
 
 // Reset Password
 $.session.ResetPasswordView = false;
@@ -299,7 +299,7 @@ $.session.stateAbbreviation = '';
 $.session.deviceGUID = '';
 //API Keys
 $.session.azureSTTApi = '';
-$.session.isActiveUsers = true; // to get active and inactive user both  
+$.session.isActiveUsers = true; // to get active and inactive user both
 
 $(window).resize(function () {
   //resizeActionCenter();
@@ -364,10 +364,10 @@ function eraseCookie(name) {
 }
 
 function setSessionVariables() {
-    var cookieInnards = $.session.permissionString;
+  var cookieInnards = $.session.permissionString;
   //checkForErrors();
 
-    $('result', cookieInnards).each(function () {
+  $('result', cookieInnards).each(function () {
     tmpWindow = $('window_name', this).text();
     tmpPerm = $('permission', this).text();
     tmpSpec = $('special_data', this).text();
@@ -683,7 +683,7 @@ function setSessionVariables() {
     }
 
     // Consumer Finance
-      if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
+    if (tmpWindow == 'Anywhere Consumer Finances' || $.session.isPSI == true) {
       if (tmpPerm == 'Update' || $.session.isPSI == true) {
         $.session.CFUpdate = true;
       }
@@ -702,18 +702,18 @@ function setSessionVariables() {
       if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
         $.session.CFEditAccountEntries = true;
       }
+    }
+
+    //Reset Password
+    if (tmpWindow == 'Anywhere Reset Passwords') {
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $('#Adminsettingdiv').removeClass('disabledModule');
+        $.session.ResetPasswordView = true;
       }
-  
-      //Reset Password
-        if (tmpWindow == 'Anywhere Reset Passwords' ) {       
-          if (tmpPerm == 'View' || $.session.isPSI == true) { 
-              $('#Adminsettingdiv').removeClass('disabledModule');
-              $.session.ResetPasswordView = true; 
-          }     
-          if (tmpPerm == 'Update' || $.session.isPSI == true) {
-              $.session.ResetPasswordUpdate = true;
-          }        
-      }  
+      if (tmpPerm == 'Update' || $.session.isPSI == true) {
+        $.session.ResetPasswordUpdate = true;
+      }
+    }
 
     if (tmpWindow == 'Anywhere User Home') {
       if (tmpPerm == 'Deny Staff TimeClock Change') {
@@ -957,11 +957,11 @@ function customPasswordChange(reset) {
   $('#change').css('display', 'block');
   $('#backToLogin').css('display', 'flex');
 
-  if ($.session.changePasswordLinkSelected == '') {
+  if ($.session.changePasswordLinkSelected === '') {
     $('#confirmMessage').text(
       'Your password has expired.  Please enter and confirm a new password.',
     );
-  } else if (reset == true) {
+  } else if (reset) {
     $('#confirmMessage').text('Your message has been sent.  Please reset password.');
   } else {
     $('#confirmMessage').text('Please enter and confirm a new password.');
@@ -1186,6 +1186,7 @@ function IsPasswordStrong(password) {
   if (password.length < $.session.advancedPasswordLength) return 0;
   if (!password.match(/[a-z]/) || !password.match(/[A-Z]/)) return 0;
   if (!password.match(specChar)) return 0;
+  if (/\d/.test(password) === false) return 0;
 
   return 1;
 }
@@ -1243,8 +1244,8 @@ function checkPass() {
       let specialCharDisplay = $.session.passwordSpecialCharacters.replaceAll(`\\\\`, `\\`);
       specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
       message.innerHTML = `
-        Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
-        have a special character(${specialCharDisplay}), upper and lower case letters.
+        Passwords must meet all of the following requirements: Be at least ${$.session.advancedPasswordLength} characters long, 
+        have a special character(${specialCharDisplay}), have a number, and include upper and lower case letters.
       `;
       return 0;
     }
@@ -1266,8 +1267,6 @@ function checkPass() {
       return 1;
     }
   }
-
-  return 1;
 }
 
 Date.prototype.monthNames = [
@@ -1547,11 +1546,11 @@ function checkModulePermissions() {
   }
   if ($.session.OODView == false) {
     $('#OODsettingsdiv').addClass('disabledModule');
-    }
+  }
 
-    if ($.session.ResetPasswordView == false) {
-        $('#Adminsettingdiv').addClass('disabledModule');
-    }
+  if ($.session.ResetPasswordView == false) {
+    $('#Adminsettingdiv').addClass('disabledModule');
+  }
 
   $('#adminsingleentrysettingsdiv').hide();
   if ($.session.ViewAdminSingleEntry === true) {
