@@ -90,7 +90,8 @@ const planDates = (function () {
     effectiveEndDate = new Date(effectiveEnd);
     planYearStartDate = new Date(planYearStart);
     planYearEndDate = new Date(planYearEnd);
-    planReviewDate = new Date(reviewDate);
+    //planReviewDate = new Date(reviewDate);
+    planReviewDate = dates.addMonths(effectiveEndDate, -1);
 
     priorPlanYearEndDate = planYearEndDate;
     priorPlanYearStartDate = planYearStartDate;
@@ -389,6 +390,8 @@ const planDates = (function () {
             startDateInput.classList.add('error');
             hasError = true;
             return;
+          } else {
+            startDateInput.classList.remove('error');
           }
 
           let newStartDate = e.target.value.split('-');
@@ -413,7 +416,7 @@ const planDates = (function () {
           const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
           if (!isBeforeEnd || !isAfterStart) {
             showReviewDateWarningPopup();
-            startDateInput.classList.add('error');
+            reviewDateInput.classList.add('error');
             hasError = true;
             // use below if we want to reset date for them to orig requirements
             //planReviewDate = dates.addMonths(effectiveEndDate, -1);
@@ -491,9 +494,11 @@ const planDates = (function () {
           const isAfterStart = dates.isAfter(newReviewDate, effectiveStartDate);
           if (!isBeforeEnd || !isAfterStart) {
             showReviewDateWarningPopup();
-            startDateInput.classList.add('error');
+            reviewDateInput.classList.add('error');
             hasError = true;
             break;
+          } else {
+            reviewDateInput.classList.remove('error');
           }
 
           // cache original date

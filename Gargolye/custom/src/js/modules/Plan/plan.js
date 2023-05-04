@@ -1949,7 +1949,11 @@ const plan = (function () {
 
             if (setupWrap.contains(datesBoxDiv)) setupWrap.removeChild(datesBoxDiv);
             datesBoxDiv = planDates.buildDatesBox(isValid => {
-              if (isValid) doneBtn.classList.remove('disabled');
+              if (isValid) {
+                doneBtn.classList.remove('disabled');
+              } else {
+                doneBtn.classList.add('disabled');
+              }
             });
             setupWrap.insertBefore(datesBoxDiv, prevPlanTable);
           },
