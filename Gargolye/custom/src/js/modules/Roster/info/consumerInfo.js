@@ -334,7 +334,11 @@ var consumerInfo = (function () {
       style: 'secondary',
       type: 'contained',
       callback: e => {
-        rosterAjax.updatePortrait('', parseInt(consumerId), $.session.portraitPath);
+        rosterAjax.updatePortrait(
+          '',
+          parseInt(consumerId),
+          formatPortraitPath($.session.portraitPath),
+        );
       },
     });
 
