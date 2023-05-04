@@ -408,6 +408,17 @@ const planDates = (function () {
           effectiveStartDate = planYearStartDate;
           effectiveEndDate = planYearEndDate;
 
+          // check review date
+          const isBeforeEnd = dates.isBefore(planReviewDate, effectiveEndDate);
+          const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
+          if (!isBeforeEnd || !isAfterStart) {
+            showReviewDateWarningPopup();
+            startDateInput.classList.add('error');
+            hasError = true;
+            // use below if we want to reset date for them to orig requirements
+            //planReviewDate = dates.addMonths(effectiveEndDate, -1);
+          }
+
           const endInput = endDateInput.querySelector('input');
           const effectiveEndInput = effectiveEndDateInput.querySelector('input');
           const effectiveStartInput = effectiveStartDateInput.querySelector('input');
