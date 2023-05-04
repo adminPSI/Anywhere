@@ -1261,6 +1261,7 @@ function checkPass() {
     ) {
       document.getElementById('changebutton').classList.add('disabled');
       message.innerHTML = 'Your password has expired, please enter and confirm a new password.';
+      document.getElementById('changebutton').classList.add('disabled');
       return 0;
     }
 
@@ -1273,6 +1274,7 @@ function checkPass() {
         Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
         have a special character(${specialCharDisplay}), upper and lower case letters.
       `;
+      document.getElementById('changebutton').classList.add('disabled');
       return 0;
     }
 
