@@ -574,10 +574,20 @@
                 margin-top: 10px
             }
         }
-    }
+
+        .endIcon {
+            max-width: 280px !important;
+            cursor: pointer;
+        }
+
+        .secondendIcon {
+            max-width: 50px !important; 
+            cursor: pointer;
+        }  
+    } 
 
     .resetPasswordPopup {
-        padding-top: 16px; 
+        padding-top: 16px;
 
         .cancelTransBtn {
             pointer-events: all;

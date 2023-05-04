@@ -24,7 +24,6 @@ const resetPassword = (function () {
         const topNav = buildRosterTopNav();
         userTable = buildTable();
 
-        userTable.style = 'cursor: pointer;';
         DOM.ACTIONCENTER.appendChild(topNav);
         DOM.ACTIONCENTER.appendChild(userTable);
 
@@ -79,10 +78,10 @@ const resetPassword = (function () {
         var tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            columnHeadings: ['User Name', 'Last Name', 'First Name', '   '],
+            columnHeadings: ['User Name', 'Last Name', 'First Name'],
             endIcon: true,
-            endIconHeading: 'Active',
-            callback: handleUserTableEvents,
+            secondendIconHeading: 'Active',
+            secondendIcon: true,
         };
 
         return table.build(tableOptions);
@@ -164,8 +163,8 @@ const resetPassword = (function () {
             messagetext.innerHTML = ``;
             let specialCharDisplay = $.session.passwordSpecialCharacters.replaceAll(`\\\\`, `\\`);
             specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
-            messagetext.innerHTML = `Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
-                                        have a special character(${specialCharDisplay}), upper and lower case letters.`;
+            messagetext.innerHTML = `Passwords must meet all of the following requirements: Be at least ${$.session.advancedPasswordLength} characters long, 
+                                        have a special character(${specialCharDisplay}), have a number, and include upper and lower case letters.`;
             messagetext.classList.remove('password-error');
         }
     }
@@ -320,10 +319,10 @@ const resetPassword = (function () {
                 // specialCharDisplay. Remove the escape from backslash and quote.
                 let specialCharDisplay = $.session.passwordSpecialCharacters.replaceAll(`\\\\`, `\\`);
                 specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
-                message.innerHTML = `Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
-                                        have a special character(${specialCharDisplay}), upper and lower case letters.`;
+                message.innerHTML = `Passwords must meet all of the following requirements: Be at least ${$.session.advancedPasswordLength} characters long, 
+                                        have a special character(${specialCharDisplay}), have a number, and include upper and lower case letters.`;
                 document.getElementById('savePasswordBtn').classList.add('disabled');
-                message.classList.remove('password-error');
+                message.classList.add('password-error');
                 return 0;
             }
 
@@ -369,17 +368,9 @@ const resetPassword = (function () {
         if (password.length < $.session.advancedPasswordLength) return 0;
         if (!password.match(/[a-z]/) || !password.match(/[A-Z]/)) return 0;
         if (!password.match(specChar)) return 0;
-        return 1;
-    }
+        if (/\d/.test(password) === false) return 0;
 
-    // events
-    function handleUserTableEvents() {
-        if (event.target.id == '') return;
-        var userId = event.target.id;
-        var rowLastName = event.target.childNodes[1].innerText;
-        var rowFirstName = event.target.childNodes[2].innerText;
-        var rowIsActive = event.target.dataset.status;
-        buildChangePasswordPopup(userId, rowFirstName, rowLastName);
+        return 1;
     }
 
     //populate
@@ -398,16 +389,20 @@ const resetPassword = (function () {
             activeCheckbox.style = "padding-top: 2px; margin-left: 10px";
             return {
                 id: userID,
-                endIcon: activeCheckbox.outerHTML,
+                endIcon: additionalInformation.outerHTML,
+                secondendIcon: activeCheckbox.outerHTML,
                 FirstName: FirstName,
                 LastName: LastName,
                 Active: Active,
-                values: [userID, LastName, FirstName, additionalInformation.outerHTML],
+                values: [userID, LastName, FirstName],
                 attributes: [
                     { key: 'data-status', value: Active },
                     { key: 'data-consumer-id', value: userID },
                 ],
                 endIconCallback: e => {
+                    buildChangePasswordPopup(userID, FirstName, LastName);
+                },
+                secondendIconCallback: e => {
                     setCheckUpdateUserStatus(Active, userID);
                 },
             };
@@ -468,7 +463,6 @@ const resetPassword = (function () {
             },
         );
 
-        loadReviewPage(isChecked);
 
         const passwordChangeConfPOPUP = POPUP.build({
             hideX: true,
@@ -479,6 +473,7 @@ const resetPassword = (function () {
             type: 'contained',
             callback: () => {
                 POPUP.hide(passwordChangeConfPOPUP);
+                loadReviewPage(isChecked);
             },
         });
         okBtn.style.width = '100%';
@@ -519,7 +514,7 @@ const resetPassword = (function () {
                 displayedUsers.push(consumerObj);
             }
         });
-    populateTable(displayedUsers, false);
+        populateTable(displayedUsers, false);
     }
 
     // load
@@ -536,6 +531,6 @@ const resetPassword = (function () {
     }
 
     return {
-    init,
+        init,
     };
 })();

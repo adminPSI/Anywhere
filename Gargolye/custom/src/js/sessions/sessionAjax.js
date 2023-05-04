@@ -373,8 +373,9 @@ function getCustomLoginTextAndVersion(callback) {
 
 function changeIt() {
   const changeBtn = document.getElementById('changebutton');
-  if (checkPass() == 0) return;
   changeBtn.classList.add('disabled');
+  if (checkPass() == 0) return;
+  //changeBtn.classList.add('disabled');
   let newPW = $('#newpassword1').val();
   newPW = newPW.replaceAll(`\\`, `\\\\`);
   newPW = newPW.replaceAll(`"`, `\\"`);
