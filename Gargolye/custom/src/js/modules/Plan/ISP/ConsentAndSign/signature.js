@@ -90,13 +90,21 @@ const csSignature = (() => {
       },
     });
   }
-  function allowSignatureClear() {
+  function checkForAllowClearSignature(sigType) {
     const planStatus = plan.getPlanStatus();
     const activePlan = plan.getPlanActiveStatus();
     $.session.planClearSignature = true; // temp
-    const allowSignatureClear =
-      $.session.planClearSignature && planStatus === 'D' && activePlan === true ? true : false;
-    return allowSignatureClear;
+    $.session.oneSpan = true; // temp
+
+    if ($.session.planClearSignature && planStatus === 'D' && activePlan === true) {
+      if ($.session.oneSpan && sigType === '2') {
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   //*------------------------------------------------------
@@ -632,7 +640,7 @@ const csSignature = (() => {
     //* SAVE/CANCEL BUTTONS
     //*------------------------------
     debugger;
-    const allowSignClear = allowSignatureClear();
+    const allowSignClear = checkForAllowClearSignature(memberData.signatureType);
     const clearSignatureBtn = button.build({
       id: 'clearSigBtn',
       text: 'clear',
