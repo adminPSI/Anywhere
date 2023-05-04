@@ -9,6 +9,7 @@ const csSignature = (() => {
   let sigPad;
   let saveBtn;
   // other
+  let clearSignature = false;
   let characterLimits;
   let prevDissentData = {};
 
@@ -50,7 +51,7 @@ const csSignature = (() => {
       selectedMemberData.dateSigned = UTIL.formatDateToIso(
         dates.removeTimestamp(selectedMemberData.dateSigned),
       );
-      await planConsentAndSign.updateTeamMember(selectedMemberData);
+      await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
       insertSuccess = true;
     }
 
@@ -125,6 +126,7 @@ const csSignature = (() => {
       callback: () => {
         // TODO: if clear button is pressed remove signature, dissenting opinions and consents
         // TODO: after clearing out fields refresh popup so they can insert new values
+        clearSignature = true;
       },
     });
     const noBtn = button.build({
@@ -600,6 +602,7 @@ const csSignature = (() => {
     isNew = isNewMember;
     const prevDateSigned = memberData.dateSigned;
     isSigned = memberData.dateSigned !== '';
+    clearSignature = false;
 
     if (memberData.signatureType === '2' && memberData.description === '') {
       isSigned = false;

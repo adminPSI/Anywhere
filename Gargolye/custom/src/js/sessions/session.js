@@ -691,7 +691,7 @@ function setSessionVariables() {
         $.session.CFDelete = true;
       }
       if (tmpPerm == 'View' || $.session.isPSI == true) {
-        $('#consumerfinancessettingsdiv').removeClass('disabledModule'); 
+        $('#consumerfinancessettingsdiv').removeClass('disabledModule');
         $.session.CFView = true;
       }
       if (tmpPerm == 'Insert' || $.session.isPSI == true) {
@@ -1239,7 +1239,7 @@ function checkPass() {
       document.getElementById('changebutton').classList.add('disabled');
       return 0;
     }
- 
+
     //passwords match?
     if (pass1.value !== pass2.value) {
       message.innerHTML = 'Passwords Do Not Match!';
@@ -1583,9 +1583,9 @@ function checkModulePermissions() {
     $('#Adminsettingdiv').addClass('disabledModule');
   }
 
-    if ($.session.CFView == false) {
-        $('#consumerfinancessettingsdiv').addClass('disabledModule');
-    }
+  if ($.session.CFView == false) {
+    $('#consumerfinancessettingsdiv').addClass('disabledModule');
+  }
 
   $('#adminsingleentrysettingsdiv').hide();
   if ($.session.ViewAdminSingleEntry === true) {
