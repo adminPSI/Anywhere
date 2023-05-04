@@ -163,8 +163,8 @@ const resetPassword = (function () {
             messagetext.innerHTML = ``;
             let specialCharDisplay = $.session.passwordSpecialCharacters.replaceAll(`\\\\`, `\\`);
             specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
-            messagetext.innerHTML = `Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
-                                        have a special character(${specialCharDisplay}), upper and lower case letters.`;
+            messagetext.innerHTML = `Passwords must meet all of the following requirements: Be at least ${$.session.advancedPasswordLength} characters long, 
+                                        have a special character(${specialCharDisplay}), have a number, and include upper and lower case letters.`;
             messagetext.classList.remove('password-error');
         }
     }
@@ -319,10 +319,10 @@ const resetPassword = (function () {
                 // specialCharDisplay. Remove the escape from backslash and quote.
                 let specialCharDisplay = $.session.passwordSpecialCharacters.replaceAll(`\\\\`, `\\`);
                 specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
-                message.innerHTML = `Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
-                                        have a special character(${specialCharDisplay}), upper and lower case letters.`;
+                message.innerHTML = `Passwords must meet all of the following requirements: Be at least ${$.session.advancedPasswordLength} characters long, 
+                                        have a special character(${specialCharDisplay}), have a number, and include upper and lower case letters.`;
                 document.getElementById('savePasswordBtn').classList.add('disabled');
-                message.classList.remove('password-error');
+                message.classList.add('password-error');
                 return 0;
             }
 
@@ -368,6 +368,8 @@ const resetPassword = (function () {
         if (password.length < $.session.advancedPasswordLength) return 0;
         if (!password.match(/[a-z]/) || !password.match(/[A-Z]/)) return 0;
         if (!password.match(specChar)) return 0;
+        if (/\d/.test(password) === false) return 0;
+
         return 1;
     }
 
@@ -387,7 +389,7 @@ const resetPassword = (function () {
             activeCheckbox.style = "padding-top: 2px; margin-left: 10px";
             return {
                 id: userID,
-                endIcon: additionalInformation.outerHTML, 
+                endIcon: additionalInformation.outerHTML,
                 secondendIcon: activeCheckbox.outerHTML,
                 FirstName: FirstName,
                 LastName: LastName,
@@ -461,7 +463,6 @@ const resetPassword = (function () {
             },
         );
 
-        loadReviewPage(isChecked);
 
         const passwordChangeConfPOPUP = POPUP.build({
             hideX: true,
@@ -472,6 +473,7 @@ const resetPassword = (function () {
             type: 'contained',
             callback: () => {
                 POPUP.hide(passwordChangeConfPOPUP);
+                loadReviewPage(isChecked);
             },
         });
         okBtn.style.width = '100%';
