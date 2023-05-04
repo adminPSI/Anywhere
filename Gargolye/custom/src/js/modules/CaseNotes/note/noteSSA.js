@@ -267,6 +267,7 @@ var noteSSA = (function () {
       travelTime = rd.traveltime;
       lastUpdated = rd.lastupdate;
       enteredBy = rd.originaluserid;
+      originalUserName = rd.originaluserfullname;
       cnBatched = rd.batched;
       mileage = rd.totalmiles;
     }
