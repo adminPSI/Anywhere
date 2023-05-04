@@ -1363,7 +1363,7 @@ var noteSSA = (function () {
       lastUpdatedDisplay.classList.add('lastUpdatedDisplay');
       var lastUpdatedMessage = document.createElement('p');
       lastUpdatedMessage.innerHTML = `
-      Last Edited On: ${lastUpdated} <br> Entered By: ${enteredBy}<br>`;
+      Last Edited On: ${lastUpdated} <br> Entered By: ${enteredBy} (${originalUserName})<br>`;
       lastUpdatedDisplay.appendChild(lastUpdatedMessage);
 
       var correctedCheckboxDiv = document.createElement('div');
