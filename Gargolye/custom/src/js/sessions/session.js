@@ -504,6 +504,7 @@ function setSessionVariables() {
     //Demographics
     //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Demographics') {
+      //debugger;
       if (tmpPerm == 'View') {
         $.session.DemographicsView = true;
       }
