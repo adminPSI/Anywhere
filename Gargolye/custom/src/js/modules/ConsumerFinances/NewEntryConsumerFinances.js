@@ -110,10 +110,7 @@ const NewEntryCF = (() => {
             type: 'number',
             label: 'Amount',
             style: 'secondary',
-            value:  (amount) ? amount : '',  
-            attributes: [
-                { key: 'pattern', value: '^[0-9]*\.[0-9]{2}$' },
-            ],
+            value:  (amount) ? amount : '',            
         });
 
         newAccountDropdown = dropdown.build({
@@ -448,12 +445,7 @@ const NewEntryCF = (() => {
         });
         newAmountInput.addEventListener('input', event => {
             amount = event.target.value;
-            var reg = new RegExp('^[0-9 .]+$');
-            if (!reg.test(amount)) {
-                document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
-                return;
-            }
-            else if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
+            if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
                 document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
                 return;
             }  

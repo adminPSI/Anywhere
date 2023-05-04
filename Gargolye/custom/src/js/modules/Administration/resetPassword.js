@@ -24,7 +24,6 @@ const resetPassword = (function () {
         const topNav = buildRosterTopNav();
         userTable = buildTable();
 
-        userTable.style = 'cursor: pointer;';
         DOM.ACTIONCENTER.appendChild(topNav);
         DOM.ACTIONCENTER.appendChild(userTable);
 
@@ -79,10 +78,10 @@ const resetPassword = (function () {
         var tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            columnHeadings: ['User Name', 'Last Name', 'First Name', '   '],
+            columnHeadings: ['User Name', 'Last Name', 'First Name'],
             endIcon: true,
-            endIconHeading: 'Active',
-            callback: handleUserTableEvents,
+            secondendIconHeading: 'Active',
+            secondendIcon: true,
         };
 
         return table.build(tableOptions);
@@ -372,16 +371,6 @@ const resetPassword = (function () {
         return 1;
     }
 
-    // events
-    function handleUserTableEvents() {
-        if (event.target.id == '') return;
-        var userId = event.target.id;
-        var rowLastName = event.target.childNodes[1].innerText;
-        var rowFirstName = event.target.childNodes[2].innerText;
-        var rowIsActive = event.target.dataset.status;
-        buildChangePasswordPopup(userId, rowFirstName, rowLastName);
-    }
-
     //populate
     function populateTable(results, IsFirstLoad) {
         userTableData = results.map(td => {
@@ -398,16 +387,20 @@ const resetPassword = (function () {
             activeCheckbox.style = "padding-top: 2px; margin-left: 10px";
             return {
                 id: userID,
-                endIcon: activeCheckbox.outerHTML,
+                endIcon: additionalInformation.outerHTML, 
+                secondendIcon: activeCheckbox.outerHTML,
                 FirstName: FirstName,
                 LastName: LastName,
                 Active: Active,
-                values: [userID, LastName, FirstName, additionalInformation.outerHTML],
+                values: [userID, LastName, FirstName],
                 attributes: [
                     { key: 'data-status', value: Active },
                     { key: 'data-consumer-id', value: userID },
                 ],
                 endIconCallback: e => {
+                    buildChangePasswordPopup(userID, FirstName, LastName);
+                },
+                secondendIconCallback: e => {
                     setCheckUpdateUserStatus(Active, userID);
                 },
             };
@@ -519,7 +512,7 @@ const resetPassword = (function () {
                 displayedUsers.push(consumerObj);
             }
         });
-    populateTable(displayedUsers, false);
+        populateTable(displayedUsers, false);
     }
 
     // load
@@ -536,6 +529,6 @@ const resetPassword = (function () {
     }
 
     return {
-    init,
+        init,
     };
 })();
