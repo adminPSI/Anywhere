@@ -123,6 +123,16 @@ body.planActive {
   }
 }
 
+.dateErrorMessage {
+  color: $input-error;
+  margin: 0 1% 10px;
+  width: 100%;
+
+  .hidden {
+    display: none;
+  }
+}
+
 // OVERVIEW PAGE
 #planOverviewTable,
 #previousPlanTable {

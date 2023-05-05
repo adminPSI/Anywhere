@@ -6,6 +6,7 @@ const planDates = (function () {
   let effectiveStartDateInput;
   let effectiveEndDateInput;
   let reviewDateInput;
+  let dateErrorMessage;
   // Data
   let planYearInfo;
   let selectedConsumer;
@@ -412,15 +413,15 @@ const planDates = (function () {
           effectiveEndDate = planYearEndDate;
 
           // check review date
-          const isBeforeEnd = dates.isBefore(planReviewDate, effectiveEndDate);
-          const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
-          if (!isBeforeEnd || !isAfterStart) {
-            showReviewDateWarningPopup();
-            reviewDateInput.classList.add('error');
-            hasError = true;
-            // use below if we want to reset date for them to orig requirements
-            //planReviewDate = dates.addMonths(effectiveEndDate, -1);
-          }
+          // const isBeforeEnd = dates.isBefore(planReviewDate, effectiveEndDate);
+          // const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
+          // if (!isBeforeEnd || !isAfterStart) {
+          //   showReviewDateWarningPopup();
+          //   reviewDateInput.classList.add('error');
+          //   hasError = true;
+          //   // use below if we want to reset date for them to orig requirements
+          //   //planReviewDate = dates.addMonths(effectiveEndDate, -1);
+          // }
 
           const endInput = endDateInput.querySelector('input');
           const effectiveEndInput = effectiveEndDateInput.querySelector('input');
@@ -493,12 +494,15 @@ const planDates = (function () {
           const isBeforeEnd = dates.isBefore(newReviewDate, effectiveEndDate);
           const isAfterStart = dates.isAfter(newReviewDate, effectiveStartDate);
           if (!isBeforeEnd || !isAfterStart) {
-            showReviewDateWarningPopup();
+            dateErrorMessage.innerText = `Review date must fall between effective start date and effective end date.`;
+            dateErrorMessage.classList.remove('hidden');
             reviewDateInput.classList.add('error');
             hasError = true;
             break;
           } else {
             reviewDateInput.classList.remove('error');
+            dateErrorMessage.innerText = '';
+            dateErrorMessage.classList.add('hidden');
           }
 
           // cache original date
@@ -574,12 +578,15 @@ const planDates = (function () {
     effectiveStartDateInput = input.build(effectiveStartDateOpts);
     effectiveEndDateInput = input.build(effectiveEndDateOpts);
     reviewDateInput = input.build(reviewDateOpts);
+    dateErrorMessage = document.createElement('p');
+    dateErrorMessage.classList.add('dateErrorMessage', 'hidden');
 
     datesBoxDiv.appendChild(startDateInput);
     datesBoxDiv.appendChild(endDateInput);
     datesBoxDiv.appendChild(effectiveStartDateInput);
     datesBoxDiv.appendChild(effectiveEndDateInput);
     datesBoxDiv.appendChild(reviewDateInput);
+    datesBoxDiv.appendChild(dateErrorMessage);
 
     toggleDateInputDisable();
     checkRequiredFields();
