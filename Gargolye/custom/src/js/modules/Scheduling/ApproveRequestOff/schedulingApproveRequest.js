@@ -565,7 +565,9 @@ var schedulingApproveRequest = (function () {
       icon: 'checkmark',
       callback: async function () {
         POPUP.hide(alertPopup);
-        // overlay.show();
+
+        // Reset the overlap Ids
+        overlapIds = [];
       },
     });
 

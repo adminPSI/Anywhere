@@ -82,7 +82,7 @@ namespace Anywhere.service.Data
 
             foreach (var requestedDate in dateArr)
             {
-                string checkOverlap = dg.RequestDaysOffRequestOverlapCheck(token, personId, requestedDate, fromTime, toTime);
+                string checkOverlap = dg.RequestDaysOffOverlapCheck(token, personId, requestedDate, fromTime, toTime);
                 checkOverlapObj = js.Deserialize<OverlapData[]>(checkOverlap);
 
                 if (checkOverlapObj.Length > 0)
@@ -236,30 +236,24 @@ namespace Anywhere.service.Data
 
             foreach (var dayOffId in dateArr)
             {
-                response = dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
-                ////Notification
-                //dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
+                string checkOverlap = dg.approveDenyDaysOffOverlapCheck(token, dayOffId);
+                OverlapData [] checkOverlapObj = js.Deserialize<OverlapData[]>(checkOverlap);
 
-                if (response.Contains("is not unique: Primary key value"))
+                if (checkOverlapObj.Length > 0)
                 {
                     returnOverlapMessage = true;
+                    break;
                 }
                 else
                 {
+                    dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
                     dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
                 }
             }
 
-            //Notification
-            //foreach (var dayOffId in dateArr)
-            //{
-            //    dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
-            //    break;
-            //}
-
             if (returnOverlapMessage)
             {
-                return "OverlapFound.";
+                return daysOffIdString;
             }
             else
             {
