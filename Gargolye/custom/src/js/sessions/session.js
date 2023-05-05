@@ -504,6 +504,7 @@ function setSessionVariables() {
     //Demographics
     //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Demographics') {
+      //debugger;
       if (tmpPerm == 'View') {
         $.session.DemographicsView = true;
       }
@@ -1271,8 +1272,8 @@ function checkPass() {
       let specialCharDisplay = $.session.passwordSpecialCharacters.replaceAll(`\\\\`, `\\`);
       specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
       message.innerHTML = `
-        Passwords must: Be at least ${$.session.advancedPasswordLength} characters long, 
-        have a special character(${specialCharDisplay}), upper and lower case letters.
+        Passwords must meet all of the following requirements: Be at least ${$.session.advancedPasswordLength} characters long, 
+        have a special character (${specialCharDisplay}), have a number, and include upper and lower case letters.
       `;
       document.getElementById('changebutton').classList.add('disabled');
       return 0;

@@ -1244,13 +1244,13 @@ const plan = (function () {
         const selectedAttachmentsWorkflow = {};
         const selectedAttachmentsSignature = {};
         let extraSpace = 'false';
-        
+
         // build & show spinner
-       //  const spinner = PROGRESS.SPINNER.show('Building Report...');
+        //  const spinner = PROGRESS.SPINNER.show('Building Report...');
         //const screenInner = reportsScreen.querySelector('.attachmentsWrap');
-       // reportsScreen.removeChild(doneBtn);
-       // reportsScreen.removeChild(screenInner);
-      //  reportsScreen.appendChild(spinner);
+        // reportsScreen.removeChild(doneBtn);
+        // reportsScreen.removeChild(screenInner);
+        //  reportsScreen.appendChild(spinner);
         // generate report
           const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
           const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
@@ -1770,7 +1770,13 @@ const plan = (function () {
     if (planType === 'a') {
       await planDates.setAnnualPlanDates(previousPlansData);
       plan.setPlanType('a');
-      datesBoxDiv = planDates.buildDatesBox();
+      datesBoxDiv = planDates.buildDatesBox(isValid => {
+        if (isValid) {
+          doneBtn.classList.remove('disabled');
+        } else {
+          doneBtn.classList.add('disabled');
+        }
+      });
       setupWrap.insertBefore(datesBoxDiv, doneBtn);
       doneBtn.classList.remove('disabled');
     }
@@ -1817,7 +1823,6 @@ const plan = (function () {
       peopleId: selectedConsumer.id,
     });
 
-   
     if (planType === 'a') {
       const planYearStartDate = planDates.getPlanYearStartDate();
       const planYearReviewDate = planDates.getPlanReviewDate();
@@ -1893,7 +1898,7 @@ const plan = (function () {
     planActiveStatus = true;
     revisionNumber = undefined;
 
-    if (salesForceCaseManagerId === "0") {
+    if (salesForceCaseManagerId === '0') {
       // const wfvPopup = document.querySelector('.workflowListPopup');
       // if (wfvPopup) {
       //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
@@ -1904,8 +1909,8 @@ const plan = (function () {
         POPUP.hide(addedMemberNoCaseManagerPopup);
         planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
         buildPlanPage();
-      });   
-    } else if (salesForceCaseManagerId === "-1") {
+      });
+    } else if (salesForceCaseManagerId === '-1') {
       // const wfvPopup = document.querySelector('.workflowListPopup');
       // if (wfvPopup) {
       //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
@@ -1916,7 +1921,7 @@ const plan = (function () {
         POPUP.hide(addedMemberPopup);
         planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
         buildPlanPage();
-      });   
+      });
     } else {
       const consumer = getSelectedConsumerName(selectedConsumer);
       showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
@@ -1925,7 +1930,6 @@ const plan = (function () {
         buildPlanPage();
       });
     }
-    
   }
 
   function buildPreviousPlansTable() {
@@ -1963,7 +1967,11 @@ const plan = (function () {
 
             if (setupWrap.contains(datesBoxDiv)) setupWrap.removeChild(datesBoxDiv);
             datesBoxDiv = planDates.buildDatesBox(isValid => {
-              if (isValid) doneBtn.classList.remove('disabled');
+              if (isValid) {
+                doneBtn.classList.remove('disabled');
+              } else {
+                doneBtn.classList.add('disabled');
+              }
             });
             setupWrap.insertBefore(datesBoxDiv, prevPlanTable);
           },
@@ -2027,7 +2035,13 @@ const plan = (function () {
     if (!hasPreviousPlans) {
       plan.setPlanType('a');
       await planDates.setAnnualPlanDates(previousPlansData);
-      datesBoxDiv = planDates.buildDatesBox();
+      datesBoxDiv = planDates.buildDatesBox(isValid => {
+        if (isValid) {
+          doneBtn.classList.remove('disabled');
+        } else {
+          doneBtn.classList.add('disabled');
+        }
+      });
       setupWrap.appendChild(datesBoxDiv);
     }
 

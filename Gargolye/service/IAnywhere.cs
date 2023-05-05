@@ -2054,7 +2054,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/requestDaysOffScheduling/")]
-        string requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status);
+        AnywhereScheduleWorker.OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

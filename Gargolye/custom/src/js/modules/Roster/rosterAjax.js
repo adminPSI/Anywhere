@@ -253,6 +253,11 @@ const rosterAjax = (function () {
       success: function (response, status, xhr) {
         var res = JSON.stringify(response);
       },
+      error: function (xhr, status, error) {
+        console.log(status);
+        console.log(error);
+        console.log(xhr.responseText);
+      },
     });
   }
   function getPSIUserOptionList(callback) {

@@ -40,6 +40,17 @@ body.planActive {
   }
 }
 
+#reviewDateWraningPopup {
+  background: $bg-warning;
+
+  p {
+    color: $font-dark;
+    font-weight: $normal;
+    text-align: center;
+    padding-bottom: 10px;
+  }
+}
+
 .planConsumerCard {
   margin: 0 0 20px;
 
@@ -109,6 +120,16 @@ body.planActive {
     p {
       white-space: nowrap;
     }
+  }
+}
+
+.dateErrorMessage {
+  color: $input-error;
+  margin: 0 1% 10px;
+  width: 100%;
+
+  .hidden {
+    display: none;
   }
 }
 

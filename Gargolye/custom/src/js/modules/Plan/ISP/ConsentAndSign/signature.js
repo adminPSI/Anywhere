@@ -642,7 +642,7 @@ const csSignature = (() => {
 
     //* SAVE/CANCEL BUTTONS
     //*------------------------------
-    debugger;
+    //debugger;
     const allowSignClear = checkForAllowClearSignature(memberData.signatureType);
     const clearSignatureBtn = button.build({
       id: 'clearSigBtn',
