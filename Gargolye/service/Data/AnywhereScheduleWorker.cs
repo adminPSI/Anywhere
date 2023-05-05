@@ -231,19 +231,30 @@ namespace Anywhere.service.Data
         public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision)
         {
             string[] dateArr = daysOffIdString.Split(',');
-            string response = string.Empty;
+            string checkOverlap;
             Boolean returnOverlapMessage = false;
 
             foreach (var dayOffId in dateArr)
             {
-                string checkOverlap = dg.approveDenyDaysOffOverlapCheck(token, dayOffId);
-                OverlapData [] checkOverlapObj = js.Deserialize<OverlapData[]>(checkOverlap);
-
-                if (checkOverlapObj.Length > 0)
+                // If decision is 'approve' check for overlaps
+                if (decision == "A".ToString())
                 {
-                    returnOverlapMessage = true;
-                    break;
+                    checkOverlap = dg.approveDenyDaysOffOverlapCheck(token, dayOffId);
+                    OverlapData[] checkOverlapObj = js.Deserialize<OverlapData[]>(checkOverlap);
+
+                    // if their is an overlap, exit the loop to return the id string
+                    if (checkOverlapObj.Length > 0)
+                    {
+                        returnOverlapMessage = true;
+                        break;
+                    } else // run normal functionality
+                    {
+                        dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
+                        dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
+                    }
                 }
+
+                // If decision is not 'approve', run normal functionality
                 else
                 {
                     dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
