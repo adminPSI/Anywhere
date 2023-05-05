@@ -4796,6 +4796,27 @@ namespace Anywhere.Data
             }
         }
 
+        public string RequestDaysOffRequestOverlapCheck(string token, string personId, string date, string startTime, string endTime)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ApproveDenyDaysOffRequestOverlapCheck ");
+            List<string> list = new List<string>();
+            list.Add(personId);
+            list.Add(date);
+            list.Add(startTime);
+            list.Add(endTime);
+            string text = "CALL DBA.ANYW_Scheduling_RequestDaysOffRequestOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("703", ex.Message + "ANYW_Scheduling_RequestDaysOffRequestOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return ex.Message;
+            }
+        }
+
         public string approveDenyDaysOffRequestSchedulingNotification(string token, string dayOffId, string decision)
         {
             if (tokenValidator(token) == false) return null;

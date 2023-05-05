@@ -1415,7 +1415,7 @@ namespace Anywhere
             return anywhereScheduleWorker.approveDenyDaysOffRequestScheduling(token, daysOffIdString, decision);
         }
 
-        public string requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
+        public AnywhereScheduleWorker.OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
         {
             return anywhereScheduleWorker.requestDaysOffScheduling(token, personId, dates, fromTime, toTime, reasonId, employeeNotifiedId, status);
         }
