@@ -178,7 +178,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly)
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly, string include)
         {
 
             var current = System.Web.HttpContext.Current;
@@ -219,7 +219,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
 
                             }
                         }
@@ -237,7 +237,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
 
                             }
                         }
@@ -255,7 +255,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
 
                             }
                         }
@@ -273,7 +273,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
 
 
                             }
@@ -292,7 +292,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
 
                             }
                         }
@@ -310,7 +310,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
 
                             }
                         }
@@ -320,7 +320,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
                     if (signatureOnly == true)
                     {
-                        plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                        plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
                     }
                 }
 
