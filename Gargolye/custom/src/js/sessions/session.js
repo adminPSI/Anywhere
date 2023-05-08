@@ -1275,6 +1275,7 @@ function checkPass() {
         Passwords must meet all of the following requirements: Be at least ${$.session.advancedPasswordLength} characters long, 
         have a special character (${specialCharDisplay}), have a number, and include upper and lower case letters.
       `;
+      message.classList.add('password-error');
       document.getElementById('changebutton').classList.add('disabled');
       return 0;
     }
@@ -1299,8 +1300,6 @@ function checkPass() {
       return 1;
     }
   }
-
-  return 1;
 }
 
 Date.prototype.monthNames = [
