@@ -351,6 +351,14 @@
         .okBtn {
             width: 100%;
         }
+        .checkboxWrap {
+          display: flex;
+          flex-flow: row nowrap;
+          flex-grow: 1;
+          width: 100%;
+
+
+        }
     }
 
     #DODDScreen {

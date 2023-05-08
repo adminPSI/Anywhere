@@ -1066,6 +1066,7 @@ const plan = (function () {
     const checkboxText = document.createElement('div');
     checkboxText.innerHTML = 'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
     const checkboxArea = document.createElement('div');
+    checkboxArea.classList.add('checkboxWrap');
     checkboxArea.appendChild(checkboxCheck);
     checkboxArea.appendChild(checkboxText);
     reportsScreen.appendChild(checkboxArea);
