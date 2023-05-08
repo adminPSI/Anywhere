@@ -274,20 +274,21 @@ const ConsumerFinances = (() => {
             hideX: true,
         });
 
-        fromDateInput = input.build({
+        fromDateInput = input.build({ 
             id: 'fromDateInput',
             type: 'date',
-            label: 'From Date',
+            label: 'From Date', 
             style: 'secondary',
-            value: (filterValues.activityStartDate) ? filterValues.activityStartDate : '',
+            value: UTIL.formatDateFromDateObj(filterValues.activityStartDate),
         });
+ 
  
         toDateInput = input.build({
             id: 'toDateInput',
             type: 'date',
             label: 'To Date',
             style: 'secondary',
-            value: (filterValues.activityEndDate) ? filterValues.activityEndDate : '',
+            value: UTIL.formatDateFromDateObj(filterValues.activityEndDate),
         });
 
         minAmountInput = input.build({
@@ -391,18 +392,10 @@ const ConsumerFinances = (() => {
     // binding filter events 
     function eventListeners() {
         fromDateInput.addEventListener('change', event => {
-            if (UTIL.validateDateFromInput(event.target.value)) {
-                filterValues.activityStartDate = event.target.value;
-            } else {
-                event.target.value = filterValues.activityStartDate;
-            }
+            filterValues.activityStartDate = event.target.value;
         });
         toDateInput.addEventListener('change', event => {
-            if (UTIL.validateDateFromInput(event.target.value)) {
-                filterValues.activityEndDate = event.target.value;
-            } else {
-                event.target.value = filterValues.activityEndDate;
-            }
+            filterValues.activityEndDate = event.target.value;   
         });
 
         minAmountInput.addEventListener('keyup', event => {
