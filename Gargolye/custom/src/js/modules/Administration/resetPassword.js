@@ -328,7 +328,7 @@ const resetPassword = (function () {
 
             //passwords match?
             if (pass1.value === '' || pass2.value === '') {
-                message.innerHTML = 'Please enter and confirm a new password.';
+                message.innerHTML = 'Please enter and confirm a new password.'; 
                 message.classList.add('password-error');
                 document.getElementById('savePasswordBtn').classList.add('disabled');
                 return 0;
@@ -384,9 +384,9 @@ const resetPassword = (function () {
             const additionalInformation = changePasswordBtn();
             additionalInformation.innerHTML = 'CHANGE PASSWORD';
 
-            additionalInformation.style = 'margin-top: -10px;';
+            additionalInformation.style = 'margin-top: -10px; width: 200px;';
             const activeCheckbox = buildActiveChkBox(Active);
-            activeCheckbox.style = "padding-top: 2px; margin-left: 10px";
+            activeCheckbox.style = "padding-top: 2px; margin-left: 10px;";   
             return {
                 id: userID,
                 endIcon: additionalInformation.outerHTML,

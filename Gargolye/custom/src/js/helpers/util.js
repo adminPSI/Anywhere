@@ -706,7 +706,7 @@ const UTIL = (function () {
     var current = document.querySelector('.menu__button.active');
     var target;
 
-    function toggleHighlight() {
+    function toggleHighlight() { 
       if (target === current) return;
       if (current) current.classList.remove('active');
       var btn = target.querySelector('.menu__button');
@@ -778,12 +778,12 @@ const UTIL = (function () {
         break;
       }
       case 'resetPassword': {
-            target = document.getElementById('Adminsettingdiv'); 
+            target = document.getElementById('resetPw');  
         break;
       }
         case 'ConsumerFinances': {
             target = document.getElementById('consumerfinancessettingsdiv');
-        break;
+        break; 
       }
       default: {
         break;

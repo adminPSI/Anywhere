@@ -4796,16 +4796,34 @@ namespace Anywhere.Data
             }
         }
 
-        public string RequestDaysOffRequestOverlapCheck(string token, string personId, string date, string startTime, string endTime)
+        public string RequestDaysOffOverlapCheck(string token, string personId, string date, string startTime, string endTime)
         {
             if (tokenValidator(token) == false) return null;
-            logger.debug("ApproveDenyDaysOffRequestOverlapCheck ");
+            logger.debug("ApproveDenyDaysOffOverlapCheck ");
             List<string> list = new List<string>();
             list.Add(personId);
             list.Add(date);
             list.Add(startTime);
             list.Add(endTime);
-            string text = "CALL DBA.ANYW_Scheduling_RequestDaysOffRequestOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            string text = "CALL DBA.ANYW_Scheduling_RequestDaysOffOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("703", ex.Message + "ANYW_Scheduling_RequestDaysOffRequestOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return ex.Message;
+            }
+        }
+
+        public string approveDenyDaysOffOverlapCheck(string token, string daysOffId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ApproveDenyDaysOffOverlapCheck ");
+            List<string> list = new List<string>();
+            list.Add(daysOffId);
+            string text = "CALL DBA.ANYW_Scheduling_ApproveDenyDaysOffOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
                 return executeDataBaseCallJSON(text);

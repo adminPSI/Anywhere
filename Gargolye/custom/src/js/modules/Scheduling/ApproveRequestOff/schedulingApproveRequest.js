@@ -541,7 +541,7 @@ var schedulingApproveRequest = (function () {
             decision: decision,
           });
     
-          if (approveDenyResponse !== 'Success.') {
+          if (approveDenyResponse !== 'Success') {
             // alert("Overlap found. Please review the days off requests NOT processed. These requests are in conflict with already approved requests.")
             overlapIds.push(approveDenyResponse);
             daysOffOverlapConfirmed = true;
@@ -565,7 +565,13 @@ var schedulingApproveRequest = (function () {
       icon: 'checkmark',
       callback: async function () {
         POPUP.hide(alertPopup);
-        // overlay.show();
+
+        // Reset the overlap Ids
+        overlapIds = [];
+
+        ACTION_NAV.hide();
+        DOM.clearActionCenter();
+        scheduling.init();
       },
     });
 
@@ -588,7 +594,7 @@ var schedulingApproveRequest = (function () {
         nestedDivsObject[`nestedDiv${i + 1}`] = textContent;
       }
 
-      const requestData = `Employee: ${nestedDivsObject.nestedDiv1} ${nestedDivsObject.nestedDiv2} ${nestedDivsObject.nestedDiv3} ${nestedDivsObject.nestedDiv4} ${nestedDivsObject.nestedDiv5}`
+      const requestData = `Employee: ${nestedDivsObject.nestedDiv1}, ${nestedDivsObject.nestedDiv2} - ${nestedDivsObject.nestedDiv3}`
       requestDataText.push(requestData);
     });
 

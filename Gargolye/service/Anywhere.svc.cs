@@ -2880,6 +2880,7 @@ namespace Anywhere
             string doddFlag;
             string oneSpan;
             string signatureOnly;
+            string include;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -2891,6 +2892,7 @@ namespace Anywhere
             isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             oneSpan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
             signatureOnly = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+            include = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[8], "=")[1];
 
 
             string[] words = fullInput.Split('&');
@@ -2912,7 +2914,7 @@ namespace Anywhere
             attIdThree = attIdThree.Replace("%2C", ",");
             sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly));
+            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly), include);
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
@@ -2947,7 +2949,8 @@ namespace Anywhere
         {
             //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "crystal", "466", "1", "false", true);
             bool signatureOnly = false;
-            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+            string include = "N";
+            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
             return osw.oneSpanBuildSigners(token, assessmentID, ms);
         }
 

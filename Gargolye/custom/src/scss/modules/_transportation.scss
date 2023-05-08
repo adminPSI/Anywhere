@@ -568,22 +568,24 @@
 
     #singleEntryAdminReviewTable {
 
-        .table__row {
+         .table__row {
             > div {
-                height: 26px;
-                margin-top: 10px
+                height: 26px; 
+                margin-top: 10px;
             }
         }
 
         .endIcon {
-            max-width: 280px !important;
+            max-width: 200px !important;   
             cursor: pointer;
+            margin-right: 100px !important;   
         }
 
         .secondendIcon {
-            max-width: 50px !important; 
+            max-width: 40px !important;
             cursor: pointer;
-        }  
+            margin-right: 20px;      
+        } 
     } 
 
     .resetPasswordPopup {

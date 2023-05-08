@@ -55,6 +55,8 @@ const plan = (function () {
   let DODDplanAttBody;
   let DODDsignAttBody;
   let DODDworkflowAttBody;
+  // runReports screen
+  let include = 'N';
 
   async function launchWorkflowViewer() {
     let processId =
@@ -988,6 +990,16 @@ const plan = (function () {
         index++;
       }
     }
+ 
+    // checkbox
+    const includeCheckbox = input.buildCheckbox({
+      text: 'Include Important to, Important For, Skills and Abilities, and Risks in assessment',
+      isChecked: include === 'Y' ? true : false,
+    });
+
+    includeCheckbox.addEventListener('change', event => {
+      include = event.target.checked ? 'Y' : 'N';
+    });
 
     const doneBtn = button.build({
       text: 'Done',
@@ -1017,8 +1029,9 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',
-            'false',
+            'false',  //DODDFlag
+            'false',   //signatureOnly
+            include,  // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
           );
         } else {
           //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
@@ -1032,8 +1045,9 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',
-            'false',
+              'false', //DODDFlag
+            'false',  //signatureOnly
+            include,  // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
           );
         }
 
@@ -1045,6 +1059,9 @@ const plan = (function () {
       },
     });
 
+    // add checkbox 
+    
+    reportsScreen.appendChild(includeCheckbox);
     reportsScreen.appendChild(doneBtn);
   }
 
@@ -1235,19 +1252,20 @@ const plan = (function () {
         // reportsScreen.removeChild(screenInner);
         //  reportsScreen.appendChild(spinner);
         // generate report
-        const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
-        const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
-        const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-        isSuccess = assessment.generateReportWithAttachments(
-          planId,
-          '1',
-          extraSpace,
-          planAttachmentIds,
-          wfAttachmentIds,
-          sigAttachmentIds,
-          'false',
-          'true',
-        );
+          const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+          const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+          const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+          isSuccess = assessment.generateReportWithAttachments(
+            planId,
+            '1',
+            extraSpace,
+            planAttachmentIds,
+            wfAttachmentIds,
+            sigAttachmentIds,
+            'false',  //DODDFlag
+            'true',  //signatureOnly
+            'N',  // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
+          );
       },
     });
 
