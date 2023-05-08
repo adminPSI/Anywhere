@@ -1796,6 +1796,10 @@ const plan = (function () {
     }
   }
   async function handleDoneBtnClick(selectedConsumer) {
+    if (doneBtn.classList.contains('disabled')) {
+      return;
+    }
+
     PROGRESS__BTN.SPINNER.show('annualRevisionDoneBtn', '', true);
     const processId = planWorkflow.getProcessId(planType);
     const wfvData = await planWorkflow.getWorkflowList(processId, 0);
