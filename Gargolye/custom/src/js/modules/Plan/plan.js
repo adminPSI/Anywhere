@@ -57,6 +57,7 @@ const plan = (function () {
   let DODDworkflowAttBody;
   // runReports screen
   let include = 'N';
+  let includeCheckbox;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -992,8 +993,8 @@ const plan = (function () {
     }
  
     // checkbox
-    const includeCheckbox = input.buildCheckbox({
-      text: 'Include Important to, Important For, Skills and Abilities, and Risks in assessment',
+    includeCheckbox = input.buildCheckbox({
+      // text: '',
       isChecked: include === 'Y' ? true : false,
     });
 
@@ -1060,8 +1061,15 @@ const plan = (function () {
     });
 
     // add checkbox 
-    
-    reportsScreen.appendChild(includeCheckbox);
+    const checkboxCheck = document.createElement('div');
+    checkboxCheck.appendChild(includeCheckbox);
+    const checkboxText = document.createElement('div');
+    checkboxText.innerHTML = 'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
+    const checkboxArea = document.createElement('div');
+    checkboxArea.classList.add('checkboxWrap');
+    checkboxArea.appendChild(checkboxCheck);
+    checkboxArea.appendChild(checkboxText);
+    reportsScreen.appendChild(checkboxArea);
     reportsScreen.appendChild(doneBtn);
   }
 
