@@ -165,7 +165,7 @@ const planConsentAndSign = (() => {
 
     return stuff;
   }
-  async function updateTeamMember(selectedMemberData) {
+  async function updateTeamMember(selectedMemberData, clearSignature) {
     const data = {
       token: $.session.Token,
       assessmentId: planId,
@@ -202,6 +202,8 @@ const planConsentAndSign = (() => {
       section: '',
       questionId: '0',
       vendorId: selectedMemberData.vendorId,
+      // for clearing signature
+      clear: clearSignature ? 't' : 'f',
     };
 
     // Gets the connection between the selected vendor name and the correct vendorId
@@ -209,7 +211,7 @@ const planConsentAndSign = (() => {
     if (vendorRel !== undefined) {
       data.vendorId = vendorRel.vendorId;
     }
-    
+
     const data2 = {
       token: $.session.Token,
       signatureId: selectedMemberData.signatureId,
@@ -270,7 +272,7 @@ const planConsentAndSign = (() => {
       });
 
       // triggers event listener for one span button
-    oneSpan.fireDataUpdateEvent(planId);
+      oneSpan.fireDataUpdateEvent(planId);
 
       if (res === '[]') {
         pendingSave.fulfill('Deleted');
@@ -528,7 +530,12 @@ const planConsentAndSign = (() => {
     changeMindQuestion.appendChild(csChangeMindQuestionText);
 
     // required fields
-    if ((data.csChangeMindSSAPeopleId === '' || data.csChangeMindSSAPeopleId === '0' || data.csChangeMindSSAPeopleId === null)&& !isSigned) {
+    if (
+      (data.csChangeMindSSAPeopleId === '' ||
+        data.csChangeMindSSAPeopleId === '0' ||
+        data.csChangeMindSSAPeopleId === null) &&
+      !isSigned
+    ) {
       changeMindQuestion.classList.add('error');
     }
 
@@ -710,16 +717,16 @@ const planConsentAndSign = (() => {
 
         const teamMember = m.teamMember;
         const name = contactInformation.cleanName({
-            lastName: m.lastName,
-            firstName: m.name,
-            middleName: '',
+          lastName: m.lastName,
+          firstName: m.name,
+          middleName: '',
         });
         const participated = m.participated === '' ? '' : m.participated === 'Y' ? 'Yes' : 'No';
         const signatureType = csTeamMember.getSignatureTypeByID(m.signatureType);
-        
-        if (signatureType === "In-Person" && inPersonSignature === "") {
-            isSigned = false;
-        } 
+
+        if (signatureType === 'In-Person' && inPersonSignature === '') {
+          isSigned = false;
+        }
         names.push(name);
 
         const tableOBJ = {
@@ -732,14 +739,14 @@ const planConsentAndSign = (() => {
                 isNewMember: false,
                 isReadOnly: readOnly,
                 memberData: m,
-                vendorData: vendorData
+                vendorData: vendorData,
               });
             } else {
               await csTeamMember.showPopup({
-              isNewMember: false,
-              isReadOnly: readOnly,
-              memberData: m,
-            });
+                isNewMember: false,
+                isReadOnly: readOnly,
+                memberData: m,
+              });
             }
           },
         };
@@ -878,33 +885,32 @@ const planConsentAndSign = (() => {
             planYearEnd: '',
           },
           currentTeamMemberData: teamMemberData,
-          vendorData: vendorData
+          vendorData: vendorData,
         });
       },
     });
 
     let sendDocumentToOneSpanBtn;
-    if($.session.oneSpan) {
+    if ($.session.oneSpan) {
       sendDocumentToOneSpanBtn = oneSpan.buildSendDocumentToOneSpanBtn(planId);
 
       const planStatus = plan.getPlanStatus();
       if (planStatus === 'C') {
         sendDocumentToOneSpanBtn.classList.add('disabled');
       }
-      
-    //initial check for digital signers to remove disabled class from one span button
-    teamMemberData.forEach(member => {
-      if (member.signatureType === '1') {
-        sendDocumentToOneSpanBtn.classList.remove('disabled');
-      }
-    })
 
-    // Checks for any changes in the team members and the signature type 
-    document.addEventListener("data-update", function(event) {
-      oneSpan.shouldBeDisabled(sendDocumentToOneSpanBtn, event.detail.data);
-    })
+      //initial check for digital signers to remove disabled class from one span button
+      teamMemberData.forEach(member => {
+        if (member.signatureType === '1') {
+          sendDocumentToOneSpanBtn.classList.remove('disabled');
+        }
+      });
+
+      // Checks for any changes in the team members and the signature type
+      document.addEventListener('data-update', function (event) {
+        oneSpan.shouldBeDisabled(sendDocumentToOneSpanBtn, event.detail.data);
+      });
     }
-    
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('topOutcomeWrap');
@@ -912,10 +918,9 @@ const planConsentAndSign = (() => {
     btnWrap.appendChild(addMemberBtn);
     btnWrap.appendChild(addVendorBtn);
 
-    if($.session.oneSpan) {
+    if ($.session.oneSpan) {
       btnWrap.appendChild(sendDocumentToOneSpanBtn);
     }
-    
 
     tableWrap.appendChild(btnWrap);
     tableWrap.appendChild(teamMemberTable);
@@ -954,22 +959,22 @@ const planConsentAndSign = (() => {
 
   async function checkOneSpan() {
     // Checks for new signed values or completed documents to retrieve
-      oneSpanDocumentStatus = await oneSpanAjax.oneSpanCheckDocumentStatus({
-        token: $.session.Token,
-        assessmentId: planId
-      });
-    
+    oneSpanDocumentStatus = await oneSpanAjax.oneSpanCheckDocumentStatus({
+      token: $.session.Token,
+      assessmentId: planId,
+    });
+
     // Retrieves signers values and downloads document if all digital signers have signed
-      if (oneSpanDocumentStatus[0].signedStatus !== "") {
-        const oneSpanRetrieveData = {
-          token: $.session.Token,
-          packageId: oneSpanDocumentStatus[0].packageId,
-          assessmentID: planId
-        }
-      
-        await oneSpanAjax.oneSpanGetSignedDocuments(oneSpanRetrieveData);
-      }
+    if (oneSpanDocumentStatus[0].signedStatus !== '') {
+      const oneSpanRetrieveData = {
+        token: $.session.Token,
+        packageId: oneSpanDocumentStatus[0].packageId,
+        assessmentID: planId,
+      };
+
+      await oneSpanAjax.oneSpanGetSignedDocuments(oneSpanRetrieveData);
     }
+  }
 
   async function init(data) {
     planId = data.planId;

@@ -504,6 +504,7 @@ function setSessionVariables() {
     //Demographics
     //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Demographics') {
+      //debugger;
       if (tmpPerm == 'View') {
         $.session.DemographicsView = true;
       }
@@ -691,7 +692,7 @@ function setSessionVariables() {
         $.session.CFDelete = true;
       }
       if (tmpPerm == 'View' || $.session.isPSI == true) {
-        $('#consumerfinancessettingsdiv').removeClass('disabledModule'); 
+        $('#consumerfinancessettingsdiv').removeClass('disabledModule');
         $.session.CFView = true;
       }
       if (tmpPerm == 'Insert' || $.session.isPSI == true) {
@@ -1192,7 +1193,27 @@ function IsPasswordStrong(password) {
   return 1;
 }
 
+function checkChangePasswordLoginValues() {
+  var user = document.getElementById('username2');
+  var pass = document.getElementById('password2');
+  var pass1 = document.getElementById('newpassword1');
+  var pass2 = document.getElementById('newpassword2');
+
+  if (user.value === '' || pass.value === '') {
+    // message.innerHTML = 'Please enter current login name and password.';
+    // message.classList.add('password-error');
+    document.getElementById('changebutton').classList.add('disabled');
+    return 0;
+  } else if (pass1 === '' || pass2.value === '') {
+    document.getElementById('changebutton').classList.add('disabled');
+  } else {
+    document.getElementById('changebutton').classList.remove('disabled');
+  }
+}
+
 function checkPass() {
+  var user = document.getElementById('username2');
+  var pass = document.getElementById('password2');
   var pass1 = document.getElementById('newpassword1');
   var pass2 = document.getElementById('newpassword2');
   var message = document.getElementById('confirmMessage');
@@ -1213,19 +1234,23 @@ function checkPass() {
 
   //Extra condition for whether or not a strong password is required
   if (strongPassword === 'N') {
-    if (pass1.value === '' || pass2.value === '') {
+    if (pass1.value === '' || pass2.value === '' || user.value === '' || pass.value === '') {
       message.innerHTML = 'Please enter and confirm a new password.';
       message.classList.add('password-error');
+      document.getElementById('changebutton').classList.add('disabled');
       return 0;
     }
+
     //passwords match?
     if (pass1.value !== pass2.value) {
       message.innerHTML = 'Passwords Do Not Match!';
       message.classList.add('password-error');
+      document.getElementById('changebutton').classList.add('disabled');
       return 0;
     } else {
       message.innerHTML = '';
       message.classList.remove('password-error');
+      document.getElementById('changebutton').classList.remove('disabled');
       return 1;
     }
   } else {
@@ -1235,7 +1260,9 @@ function checkPass() {
       pass2.value.length === 0 &&
       $.session.changePasswordLinkSelected === ''
     ) {
+      document.getElementById('changebutton').classList.add('disabled');
       message.innerHTML = 'Your password has expired, please enter and confirm a new password.';
+      document.getElementById('changebutton').classList.add('disabled');
       return 0;
     }
 
@@ -1246,25 +1273,30 @@ function checkPass() {
       specialCharDisplay = specialCharDisplay.replaceAll(`\\"`, `"`);
       message.innerHTML = `
         Passwords must meet all of the following requirements: Be at least ${$.session.advancedPasswordLength} characters long, 
-        have a special character(${specialCharDisplay}), have a number, and include upper and lower case letters.
+        have a special character (${specialCharDisplay}), have a number, and include upper and lower case letters.
       `;
+      message.classList.add('password-error');
+      document.getElementById('changebutton').classList.add('disabled');
       return 0;
     }
 
     //passwords match?
-    if (pass1.value === '' || pass2.value === '') {
+    if (pass1.value === '' || pass2.value === '' || user.value === '' || pass.value === '') {
       message.innerHTML = 'Please enter and confirm a new password.';
       message.classList.add('password-error');
+      document.getElementById('changebutton').classList.add('disabled');
       return 0;
     }
     //passwords match?
     if (pass1.value !== pass2.value) {
       message.innerHTML = 'Passwords Do Not Match!';
       message.classList.add('password-error');
+      document.getElementById('changebutton').classList.add('disabled');
       return 0;
     } else {
       message.innerHTML = '';
       message.classList.remove('password-error');
+      document.getElementById('changebutton').classList.remove('disabled');
       return 1;
     }
   }
@@ -1553,9 +1585,9 @@ function checkModulePermissions() {
     $('#Adminsettingdiv').addClass('disabledModule');
   }
 
-    if ($.session.CFView == false) {
-        $('#consumerfinancessettingsdiv').addClass('disabledModule');
-    }
+  if ($.session.CFView == false) {
+    $('#consumerfinancessettingsdiv').addClass('disabledModule');
+  }
 
   $('#adminsingleentrysettingsdiv').hide();
   if ($.session.ViewAdminSingleEntry === true) {

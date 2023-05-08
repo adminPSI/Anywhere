@@ -9,6 +9,7 @@ const csSignature = (() => {
   let sigPad;
   let saveBtn;
   // other
+  let clearSignature = false;
   let characterLimits;
   let prevDissentData = {};
 
@@ -50,7 +51,7 @@ const csSignature = (() => {
       selectedMemberData.dateSigned = UTIL.formatDateToIso(
         dates.removeTimestamp(selectedMemberData.dateSigned),
       );
-      await planConsentAndSign.updateTeamMember(selectedMemberData);
+      await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
       insertSuccess = true;
     }
 
@@ -90,13 +91,21 @@ const csSignature = (() => {
       },
     });
   }
-  function allowSignatureClear() {
+  function checkForAllowClearSignature(sigType) {
     const planStatus = plan.getPlanStatus();
     const activePlan = plan.getPlanActiveStatus();
     $.session.planClearSignature = true; // temp
-    const allowSignatureClear =
-      $.session.planClearSignature && planStatus === 'D' && activePlan === true ? true : false;
-    return allowSignatureClear;
+    $.session.oneSpan = true; // temp
+
+    if ($.session.planClearSignature && planStatus === 'D' && activePlan === true) {
+      if ($.session.oneSpan && sigType === '2') {
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   //*------------------------------------------------------
@@ -117,6 +126,7 @@ const csSignature = (() => {
       callback: () => {
         // TODO: if clear button is pressed remove signature, dissenting opinions and consents
         // TODO: after clearing out fields refresh popup so they can insert new values
+        clearSignature = true;
       },
     });
     const noBtn = button.build({
@@ -592,6 +602,7 @@ const csSignature = (() => {
     isNew = isNewMember;
     const prevDateSigned = memberData.dateSigned;
     isSigned = memberData.dateSigned !== '';
+    clearSignature = false;
 
     if (memberData.signatureType === '2' && memberData.description === '') {
       isSigned = false;
@@ -631,8 +642,8 @@ const csSignature = (() => {
 
     //* SAVE/CANCEL BUTTONS
     //*------------------------------
-    debugger;
-    const allowSignClear = allowSignatureClear();
+    //debugger;
+    const allowSignClear = checkForAllowClearSignature(memberData.signatureType);
     const clearSignatureBtn = button.build({
       id: 'clearSigBtn',
       text: 'clear',

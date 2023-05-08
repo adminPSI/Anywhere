@@ -131,6 +131,7 @@
                   class="input-field__input"
                   type="text"
                   autocomplete="off"
+                  onkeyup="checkChangePasswordLoginValues(); return false;"
                   tabindex="1"
                 />
                 <div class="notched-outline">
@@ -148,6 +149,7 @@
                   class="input-field__input"
                   type="password"
                   autocomplete="new-password"
+                  onkeyup="checkChangePasswordLoginValues(); return false;"
                   tabindex="2"
                 />
                 <div class="notched-outline">
@@ -241,7 +243,7 @@
                 </button>
               </div>
 
-              <button type="submit" id="changebutton" class="btn btn-login" tabindex="5">
+              <button type="submit" id="changebutton" class="btn btn-login disabled" tabindex="5">
                 Change
               </button>
             </form>

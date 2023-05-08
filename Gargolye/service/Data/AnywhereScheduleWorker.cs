@@ -73,35 +73,48 @@ namespace Anywhere.service.Data
             return myApprovalDataObj;
         }
 
-        public string requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
+        public OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
         {
             string[] dateArr = dates.Split(',');
             int length = dateArr.Length;
             int count = 1;
+            OverlapData[] checkOverlapObj = new OverlapData[1];
+
             foreach (var requestedDate in dateArr)
             {
-                if (length == 1)
+                string checkOverlap = dg.RequestDaysOffOverlapCheck(token, personId, requestedDate, fromTime, toTime);
+                checkOverlapObj = js.Deserialize<OverlapData[]>(checkOverlap);
+
+                if (checkOverlapObj.Length > 0)
                 {
-                    dg.requestDaysOffScheduling(token, personId, requestedDate, fromTime, toTime, reasonId, employeeNotifiedId, status);
-                }
-                else if (length > 1 && count == 1)
-                {
-                    dg.requestDaysOffScheduling(token, personId, requestedDate, fromTime, "23:59:59", reasonId, employeeNotifiedId, status);
-                }
-                else if (length > 1 && count > 0 && count < length)
-                {
-                    dg.requestDaysOffScheduling(token, personId, requestedDate, "00:00:00", "23:59:59", reasonId, employeeNotifiedId, status);
+                    dg.requestDaysOffSchedulingNotification(token, personId, employeeNotifiedId);
+                    return checkOverlapObj;
                 }
                 else
                 {
-                    dg.requestDaysOffScheduling(token, personId, requestedDate, "00:00:00", toTime, reasonId, employeeNotifiedId, status);
+                    if (length == 1)
+                    {
+                        dg.requestDaysOffScheduling(token, personId, requestedDate, fromTime, toTime, reasonId, employeeNotifiedId, status);
+                    }
+                    else if (length > 1 && count == 1)
+                    {
+                        dg.requestDaysOffScheduling(token, personId, requestedDate, fromTime, "23:59:59", reasonId, employeeNotifiedId, status);
+                    }
+                    else if (length > 1 && count > 0 && count < length)
+                    {
+                        dg.requestDaysOffScheduling(token, personId, requestedDate, "00:00:00", "23:59:59", reasonId, employeeNotifiedId, status);
+                    }
+                    else
+                    {
+                        dg.requestDaysOffScheduling(token, personId, requestedDate, "00:00:00", toTime, reasonId, employeeNotifiedId, status);
+                    }
                 }
                 count++;
             }
 
             //Send request day off notification
             dg.requestDaysOffSchedulingNotification(token, personId, employeeNotifiedId);
-            return "Success";
+            return checkOverlapObj;
         }
 
         public string saveOpenShiftRequestScheduling(string token, string shiftId, string personId, string status, string notifiedEmployeeId)
@@ -218,35 +231,40 @@ namespace Anywhere.service.Data
         public string approveDenyDaysOffRequestScheduling(string token, string daysOffIdString, string decision)
         {
             string[] dateArr = daysOffIdString.Split(',');
-            string response = string.Empty;
+            string checkOverlap;
             Boolean returnOverlapMessage = false;
 
             foreach (var dayOffId in dateArr)
             {
-                response = dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
-                ////Notification
-                //dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
-
-                if (response.Contains("is not unique: Primary key value"))
+                // If decision is 'approve' check for overlaps
+                if (decision == "A".ToString())
                 {
-                    returnOverlapMessage = true;
+                    checkOverlap = dg.approveDenyDaysOffOverlapCheck(token, dayOffId);
+                    OverlapData[] checkOverlapObj = js.Deserialize<OverlapData[]>(checkOverlap);
+
+                    // if their is an overlap, exit the loop to return the id string
+                    if (checkOverlapObj.Length > 0)
+                    {
+                        returnOverlapMessage = true;
+                        break;
+                    } else // run normal functionality
+                    {
+                        dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
+                        dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
+                    }
                 }
+
+                // If decision is not 'approve', run normal functionality
                 else
                 {
+                    dg.approveDenyDaysOffRequestScheduling(token, dayOffId, decision);
                     dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
                 }
             }
 
-            //Notification
-            //foreach (var dayOffId in dateArr)
-            //{
-            //    dg.approveDenyDaysOffRequestSchedulingNotification(token, dayOffId, decision);
-            //    break;
-            //}
-
             if (returnOverlapMessage)
             {
-                return "OverlapFound.";
+                return daysOffIdString;
             }
             else
             {
@@ -278,6 +296,17 @@ namespace Anywhere.service.Data
             public string callOffStatus { get; set; }
             public string consumerNames { get; set; }
             public string preferred { get; set; }
+        }
+
+        public class OverlapData
+        {
+            public string personId { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
+            public string startTime { get; set; }
+            public string endTime { get; set; }
+            public string serviceDate { get; set; }
+            public string requestReason { get; set; }
         }
 
         public class MainLocationDropDownData

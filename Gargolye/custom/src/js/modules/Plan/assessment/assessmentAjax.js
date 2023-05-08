@@ -103,9 +103,13 @@ const assessmentAjax = (function () {
       oneSpanInput.setAttribute('value', retrieveData.oneSpan);
       oneSpanInput.id = 'oneSpan';
     var signatureOnlyInput = document.createElement('input');
-      signatureOnlyInput.setAttribute('name', 'oneSpan');
+      signatureOnlyInput.setAttribute('name', 'signatureOnly');
       signatureOnlyInput.setAttribute('value', retrieveData.signatureOnly);
       signatureOnlyInput.id = 'signatureOnly';
+    var includeInput = document.createElement('input');
+      includeInput.setAttribute('name', 'include');
+      includeInput.setAttribute('value', retrieveData.include);
+      includeInput.id = 'include';
     var planAttachmentIdsInput = document.createElement('input');
       planAttachmentIdsInput.setAttribute('name', 'planAttachmentIds');
       planAttachmentIdsInput.setAttribute('value', retrieveData.planAttachmentIds);
@@ -127,6 +131,7 @@ const assessmentAjax = (function () {
     form.appendChild(ispInput);
     form.appendChild(oneSpanInput);
     form.appendChild(signatureOnlyInput);
+    form.appendChild(includeInput);
     form.appendChild(planAttachmentIdsInput);
     form.appendChild(wfAttachmentIdsInput);
     form.appendChild(sigAttachmentIdsInput);

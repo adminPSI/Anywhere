@@ -6,6 +6,7 @@ const planDates = (function () {
   let effectiveStartDateInput;
   let effectiveEndDateInput;
   let reviewDateInput;
+  let dateErrorMessage;
   // Data
   let planYearInfo;
   let selectedConsumer;
@@ -49,6 +50,28 @@ const planDates = (function () {
     priorEffectiveStartDate = undefined;
     priorPlanYearStartDate = undefined;
   }
+  function showReviewDateWarningPopup() {
+    const warningPop = POPUP.build({
+      id: 'reviewDateWraningPopup',
+      hideX: true,
+    });
+    const message = document.createElement('p');
+    message.innerText = `Review date must fall between effective start date and effective end date.`;
+
+    const okBtn = button.build({
+      text: 'ok',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(warningPop);
+      },
+    });
+
+    warningPop.appendChild(message);
+    warningPop.appendChild(okBtn);
+
+    POPUP.show(warningPop);
+  }
 
   // Dates
   //------------------------------------
@@ -68,7 +91,8 @@ const planDates = (function () {
     effectiveEndDate = new Date(effectiveEnd);
     planYearStartDate = new Date(planYearStart);
     planYearEndDate = new Date(planYearEnd);
-    planReviewDate = new Date(reviewDate);
+    //planReviewDate = new Date(reviewDate);
+    planReviewDate = dates.addMonths(effectiveEndDate, -1);
 
     priorPlanYearEndDate = planYearEndDate;
     priorPlanYearStartDate = planYearStartDate;
@@ -104,12 +128,10 @@ const planDates = (function () {
 
     if (previousPlanStartDate) {
       planStartDate = dates.addYears(previousPlanStartDate, 1);
-      // newReviewDate = dates.addYears(previousPlanCreatedOnDate, 1);
       const today = new Date();
-      newReviewDate = dates.addYears(today, 1);
+      //newReviewDate = dates.addMonths(today, 1);
     } else {
       const today = new Date();
-      newReviewDate = dates.addYears(today, 1);
 
       if (!startDay || !startMonth) {
         planStartDate = today;
@@ -117,10 +139,14 @@ const planDates = (function () {
         const currentYear = today.getFullYear();
         planStartDate = new Date(currentYear, startMonth - 1, startDay, 0);
       }
+
+      //newReviewDate = dates.addYears(today, 1);
     }
 
     planEndDate = dates.addYears(planStartDate, 1);
     planEndDate = dates.subDays(planEndDate, 1);
+
+    newReviewDate = dates.addMonths(planEndDate, -1);
 
     planYearStartDate = planStartDate;
     planYearEndDate = planEndDate;
@@ -365,6 +391,8 @@ const planDates = (function () {
             startDateInput.classList.add('error');
             hasError = true;
             return;
+          } else {
+            startDateInput.classList.remove('error');
           }
 
           let newStartDate = e.target.value.split('-');
@@ -383,6 +411,17 @@ const planDates = (function () {
           planYearEndDate = newEndDate;
           effectiveStartDate = planYearStartDate;
           effectiveEndDate = planYearEndDate;
+
+          // check review date
+          // const isBeforeEnd = dates.isBefore(planReviewDate, effectiveEndDate);
+          // const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
+          // if (!isBeforeEnd || !isAfterStart) {
+          //   showReviewDateWarningPopup();
+          //   reviewDateInput.classList.add('error');
+          //   hasError = true;
+          //   // use below if we want to reset date for them to orig requirements
+          //   //planReviewDate = dates.addMonths(effectiveEndDate, -1);
+          // }
 
           const endInput = endDateInput.querySelector('input');
           const effectiveEndInput = effectiveEndDateInput.querySelector('input');
@@ -439,6 +478,8 @@ const planDates = (function () {
         break;
       }
       case reviewDateInput: {
+        // effectiveStartDate = planYearStartDate;
+        // effectiveEndDate = planYearEndDate;
         if (e.target.value) {
           if (!isValidDate) {
             // reviewDateInput.classList.add('error');
@@ -448,6 +489,21 @@ const planDates = (function () {
 
           let newReviewDate = e.target.value.split('-');
           newReviewDate = new Date(newReviewDate[0], newReviewDate[1] - 1, newReviewDate[2], 0);
+
+          // make sure review date falls between effective start and effective end dates
+          const isBeforeEnd = dates.isBefore(newReviewDate, effectiveEndDate);
+          const isAfterStart = dates.isAfter(newReviewDate, effectiveStartDate);
+          if (!isBeforeEnd || !isAfterStart) {
+            dateErrorMessage.innerText = `Review date must fall between effective start date and effective end date.`;
+            dateErrorMessage.classList.remove('hidden');
+            reviewDateInput.classList.add('error');
+            hasError = true;
+            break;
+          } else {
+            reviewDateInput.classList.remove('error');
+            dateErrorMessage.innerText = '';
+            dateErrorMessage.classList.add('hidden');
+          }
 
           // cache original date
           origPlanReviewDate = planReviewDate;
@@ -522,12 +578,15 @@ const planDates = (function () {
     effectiveStartDateInput = input.build(effectiveStartDateOpts);
     effectiveEndDateInput = input.build(effectiveEndDateOpts);
     reviewDateInput = input.build(reviewDateOpts);
+    dateErrorMessage = document.createElement('p');
+    dateErrorMessage.classList.add('dateErrorMessage', 'hidden');
 
     datesBoxDiv.appendChild(startDateInput);
     datesBoxDiv.appendChild(endDateInput);
     datesBoxDiv.appendChild(effectiveStartDateInput);
     datesBoxDiv.appendChild(effectiveEndDateInput);
     datesBoxDiv.appendChild(reviewDateInput);
+    datesBoxDiv.appendChild(dateErrorMessage);
 
     toggleDateInputDisable();
     checkRequiredFields();

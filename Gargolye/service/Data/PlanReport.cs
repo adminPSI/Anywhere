@@ -206,7 +206,7 @@ namespace Anywhere.service.Data
             //return msa2;
         }
 
-        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly )
+        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly, string include )
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -262,9 +262,13 @@ namespace Anywhere.service.Data
             cr.DataDefinition.FormulaFields["SignatureOnly"].Text = signatureOnly.ToString();
 
             //cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
-
-            cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUMMARY", Advisor));
-            cr.OpenSubreport("Skills").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SKILLS", Advisor));
+            if (include == "Y")
+            {
+                cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUMMARY", Advisor));
+                cr.OpenSubreport("Skills").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SKILLS", Advisor));
+            }
+           // cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUMMARY", Advisor));
+            //    cr.OpenSubreport("Skills").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SKILLS", Advisor));
             cr.OpenSubreport("Supervision").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUPERVISION", Advisor));
             cr.OpenSubreport("Outcomes").SetDataSource(ars.ISPOutcomes(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("Services").SetDataSource(ars.ISPServices(long.Parse(assessmentID), Advisor));
@@ -276,7 +280,13 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
             cr.OpenSubreport("Dissenting").SetDataSource(ars.Dissenting(long.Parse(assessmentID), oneSpan));
             cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(long.Parse(assessmentID), Advisor));
-            cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));
+            // cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));
+
+            if (include == "Y")
+            {
+                cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));
+            }
+
             cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(long.Parse(assessmentID)));
             cr.OpenSubreport("Places").SetDataSource(ars.ISPPlaces(long.Parse(assessmentID)));
 
