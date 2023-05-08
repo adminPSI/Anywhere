@@ -211,7 +211,7 @@ const ConsumerFinances = (() => {
             checkNo: '',
             Balance: '',
             enteredBy: '%',
-            isattachment: 'No'
+            isattachment: '%', 
         }
 
         return button.build({
@@ -246,12 +246,6 @@ const ConsumerFinances = (() => {
         }
 
         filteredBy.style.maxWidth = '100%';
-        // var splitDate = selectedDate.split('-');
-        var splitDate = "2021-12-28".split('-');
-        var filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(
-            splitDate[2],
-        )}/${splitDate[0].slice(2, 4)}`;
-
         const startDate = moment(filterValues.activityStartDate, 'YYYY-MM-DD').format('M/D/YYYY');
         const endDate = moment(filterValues.activityEndDate, 'YYYY-MM-DD').format('M/D/YYYY');
 
@@ -264,15 +258,14 @@ const ConsumerFinances = (() => {
                 <span>Account:</span> ${(filterValues.accountName == '%') ? 'ALL' : filterValues.accountName}&nbsp;&nbsp;
 			    <span>Payee:</span> ${(filterValues.payee == '%') ? 'ALL' : filterValues.payee}&nbsp;&nbsp;
 			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category} &nbsp;&nbsp;
-                <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;&nbsp; 
-                <span>Has Attachment:</span>  ${filterValues.isattachment}
+                <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;
+                <span>Has Attachment:</span>${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment} 
             </p>
 		  </div>`;
 
         return filteredBy;
     }
 
-    // ToDO:
     // build Filter pop-up that displays when an "Filter" button is clicked
     function buildFilterPopUp(filterValues) {
         // popup
@@ -288,7 +281,7 @@ const ConsumerFinances = (() => {
             style: 'secondary',
             value: (filterValues.activityStartDate) ? filterValues.activityStartDate : '',
         });
-
+ 
         toDateInput = input.build({
             id: 'toDateInput',
             type: 'date',
@@ -337,11 +330,10 @@ const ConsumerFinances = (() => {
             dropdownId: "lastUpdateDropdown",
         });
 
-        isAttachedChkBox = input.buildCheckbox({
-            isChecked: false,
-            text: "Has Attachment ?",
-            isChecked: filterValues.isattachment === 'Yes' ? true : false,
-            callback: () => setIsAttachedChkBox(event.target)
+        isAttachedDropdown = dropdown.build({
+            id: 'isAttachedDropdown',
+            label: "Has Attachment ?",
+            dropdownId: "isAttachedDropdown",
         });
 
         // apply filters button
@@ -388,20 +380,12 @@ const ConsumerFinances = (() => {
         filterPopup.appendChild(payeeDropdown);
         filterPopup.appendChild(categoryDropdown);
         filterPopup.appendChild(lastUpdateDropdown);
-        filterPopup.appendChild(isAttachedChkBox);
+        filterPopup.appendChild(isAttachedDropdown);
 
         filterPopup.appendChild(btnWrap);
         eventListeners();
         populateFilterDropdown();
         POPUP.show(filterPopup);
-    }
-
-    function setIsAttachedChkBox(input) {
-        if (input.checked) {
-            filterValues.isattachment = 'Yes';
-        } else {
-            filterValues.isattachment = 'No';
-        }
     }
 
     // binding filter events 
@@ -462,6 +446,10 @@ const ConsumerFinances = (() => {
         categoryDropdown.addEventListener('change', event => {
             filterValues.category = event.target.value;
         });
+        isAttachedDropdown.addEventListener('change', event => {
+            filterValues.isattachment = event.target.value; 
+        });
+
     }
 
     async function populateFilterDropdown() {
@@ -508,6 +496,13 @@ const ConsumerFinances = (() => {
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("lastUpdateDropdown", data, filterValues.enteredBy);
+
+        const condfidentialDropdownData = ([ 
+            { text: 'Yes', value: 'Yes' },
+            { text: 'No', value: 'No' },
+        ]);
+        condfidentialDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
+        dropdown.populate("isAttachedDropdown", condfidentialDropdownData, filterValues.isattachment);   
     }
 
     async function filterPopupDoneBtn() {
