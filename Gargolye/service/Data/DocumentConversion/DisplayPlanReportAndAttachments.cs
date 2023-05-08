@@ -99,6 +99,9 @@ namespace Anywhere.service.Data.DocumentConversion
                 // send Plan to DODD
                 // success -- "ISP Successfully Uploaded."
                 sendtoDODDResult = psiOispDT.UploadISP(lngConsumerId, lngPlanId);
+                sendtoDODDResult = sendtoDODDResult.Replace(@"{/n", "[{");
+                sendtoDODDResult = sendtoDODDResult.Replace(@"/", "");
+                sendtoDODDResult = sendtoDODDResult.Replace(@"\", "");
                 DODDResult resultResponse = js.Deserialize<DODDResult>(sendtoDODDResult);
                 DODDResult test = resultResponse;
 
@@ -318,12 +321,11 @@ namespace Anywhere.service.Data.DocumentConversion
                         }
 
 
-                    }
-
-                    if (signatureOnly == true)
-                    {
-                        plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
-                    }
+                    }                    
+                }
+                if (signatureOnly == true)
+                {
+                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
                 }
 
                 byte[] introReport = new byte[intro.Length];
@@ -645,11 +647,12 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                         }
                     }
-                    if (signatureOnly == true)
-                    {
-                        allAttachments.Add(planReport);
-                    }
+                                      
 
+                }
+                if (signatureOnly == true)
+                {
+                    allAttachments.Add(planReport);
                 }
 
 
