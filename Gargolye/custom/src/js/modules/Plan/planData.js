@@ -9,11 +9,11 @@ const planData = (() => {
     assessment: {},
     isp: {
       consentAndSign: {
-        dissentAreaDisagree: 2500,
-        dissentHowToAddress: 2500,
+        dissentAreaDisagree: 10000,
+        dissentHowToAddress: 10000,
       },
       contactInfo: {
-        moreDetail: 1000,
+        moreDetail: 10000,
       },
       restrictiveMeasures: {
         rmKeepSelfSafe: 10000,
@@ -24,40 +24,40 @@ const planData = (() => {
         rmOtherWayHelpBad: 10000,
       },
       introduction: {
-        likeAdmire: 2464,
-        thingsImportantTo: 2464,
-        thingsImportantFor: 2464,
-        howToSupport: 2464,
+        likeAdmire: 2500,
+        thingsImportantTo: 2500,
+        thingsImportantFor: 2500,
+        howToSupport: 2500,
       },
       outcomes: {
-        description: 2500,
-        details: 1000,
-        history: 1000,
-        carryOverReason: 255,
-        whatNeedsToHappen: 255, // exp
-        howItShouldHappen: 255, // exp
-        whenHowOften: 255, // exp
-        whenHowOftenOther: 255, // exp
-        whatWillHappen: 1000, // rev
-        whenToCheckIn: 255, // rev
+        description: 10000,
+        details: 2500,
+        history: 2500,
+        carryOverReason: 10000,
+        whatNeedsToHappen: 2500, // exp
+        howItShouldHappen: 2500, // exp
+        whenHowOften: 10000, // exp
+        whenHowOftenOther: 10000, // exp
+        whatWillHappen: 2500, // rev
+        whenToCheckIn: 10000, // rev
       },
       servicesSupports: {
-        scopeOfService: 2500, // paid supp
-        fundingSourceOther: 1000, // paid supp
+        scopeOfService: 10000, // paid supp
+        fundingSourceOther: 2500, // paid supp
         howOftenHowMuch: 255, // paid supp
-        howOftenOther: 1000, // paid supp
-        whatSupportLooksLike: 2500, // add supp
-        whenHowOften: 255, // add supp
-        whenHowOftenOther: 1000, // add supp
-        reasonForReferral: 1000, // prof ref
+        howOftenOther: 2500, // paid supp
+        whatSupportLooksLike: 10000, // add supp
+        whenHowOften: 10000, // add supp
+        whenHowOftenOther: 10000, // add supp
+        reasonForReferral: 2500, // prof ref
       },
       summary: {
-        aloneTime: 32768,
-        importantTo: 1000,
-        importantFor: 1000,
-        skillsAndAbilities: 1000,
+        aloneTime: 10000,
+        importantTo: 2500,
+        importantFor: 2500,
+        skillsAndAbilities: 10000,
         whatIsRisk: 10000,
-        whatSupportLooksLike: 1000,
+        whatSupportLooksLike: 10000,
       },
     },
   };
