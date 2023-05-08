@@ -383,7 +383,8 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: extraSpace,
-          isp: true, //new
+            isp: true, //new
+          signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
 
@@ -455,7 +456,8 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: 'false',
-          isp: true, //
+            isp: true, //
+          signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
 
