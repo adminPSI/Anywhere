@@ -329,7 +329,7 @@ namespace Anywhere.service.Data.DocumentConversion
                 byte[] introReport = new byte[intro.Length];
                 byte[] assessmentReport = new byte[intro.Length];
 
-                if (signatureOnly == true)
+                if (signatureOnly == false)
                 {
                     introReport = StreamExtensions.ToByteArray(intro);
                     intro.Close();
