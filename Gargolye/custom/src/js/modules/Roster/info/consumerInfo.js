@@ -62,10 +62,10 @@ var consumerInfo = (function () {
     );
     var rosterPic = consumerCardFromRosterList.querySelector('img');
     var infoCardPic = consumerInfoCard.querySelector('img');
-    rosterPic.setAttribute('src', './images/portraits/${consumerId}.png');
-    infoCardPic.setAttribute('src', './images/portraits/${consumerId}.png');
-    rosterPic.setAttribute('onerror', './images/portraits/${consumerId}.png');
-    infoCardPic.setAttribute('onerror', './images/portraits/${consumerId}.png');
+    rosterPic.setAttribute('src', './images/new-icons/default.jpg');
+    infoCardPic.setAttribute('src', './images/new-icons/default.jpg');
+    rosterPic.setAttribute('onerror', './images/new-icons/default.jpg');
+    infoCardPic.setAttribute('onerror', './images/new-icons/default.jpg');
   }
   async function updateConsumerPhoto(event) {
     event.preventDefault();
