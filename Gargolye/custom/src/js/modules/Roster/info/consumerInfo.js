@@ -55,6 +55,18 @@ var consumerInfo = (function () {
 
     return newPath;
   }
+  function updatePhotoToDefault() {
+    var targetConsumerId = consumerInfoCard.dataset.consumerid;
+    var consumerCardFromRosterList = document.querySelector(
+      `[data-consumer-id="${targetConsumerId}"]`,
+    );
+    var rosterPic = consumerCardFromRosterList.querySelector('img');
+    var infoCardPic = consumerInfoCard.querySelector('img');
+    rosterPic.setAttribute('src', './images/portraits/${consumerId}.png');
+    infoCardPic.setAttribute('src', './images/portraits/${consumerId}.png');
+    rosterPic.setAttribute('onerror', './images/portraits/${consumerId}.png');
+    infoCardPic.setAttribute('onerror', './images/portraits/${consumerId}.png');
+  }
   async function updateConsumerPhoto(event) {
     event.preventDefault();
     var targetConsumerId = consumerInfoCard.dataset.consumerid;
@@ -338,9 +350,15 @@ var consumerInfo = (function () {
           '',
           parseInt(consumerId),
           formatPortraitPath($.session.portraitPath),
+          () => {
+            updatePhotoToDefault();
+          },
         );
       },
     });
+    if (!$.session.DemographicsPictureDelete) {
+      removePhotoBtn.classList.add('disabled');
+    }
 
     var photoInput = input.build({
       label: 'Choose Image',

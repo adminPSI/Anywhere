@@ -758,7 +758,7 @@ const servicesSupports = (() => {
       if (multiSaveUpdateData.endDate !== '') {
         tableData.endDate = multiSaveUpdateData.endDate;
       }
-      if (multiSaveUpdateData.providerId !== '0') {
+      if (multiSaveUpdateData.providerId !== '0' && multiSaveUpdateData.providerId !== '') {
         tableData.providerId = multiSaveUpdateData.providerId;
       }
 
@@ -767,7 +767,7 @@ const servicesSupports = (() => {
       });
       const rowId = `ps${psData.paidSupportsId}`;
 
-      if (multiSaveUpdateData.providerId !== '0') {
+      if (multiSaveUpdateData.providerId !== '0' && multiSaveUpdateData.providerId !== '') {
         tableValues.providerName = multiSaveUpdateData.providerName;
         psData.providerName = multiSaveUpdateData.providerName;
       }
@@ -857,7 +857,6 @@ const servicesSupports = (() => {
     updateBtn.classList.remove('disabled');
   }
   function showMultiEditPopup() {
-    debugger;
     let multiSaveUpdateData = {
       beginDate: '',
       endDate: '',

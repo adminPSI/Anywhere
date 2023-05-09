@@ -14,6 +14,7 @@ $.session.DemographicsUpdate = false;
 $.session.DemographicsBasicDataView = false;
 $.session.DemographicsRelationshipsView = false;
 $.session.DemographicsPictureUpdate = false;
+$.session.DemographicsPictureDelete = false;
 $.session.DemographicsNotesView = false;
 $.session.DemographicsViewAttachments = false;
 $.session.viewLocationSchedulesKey = false;
@@ -502,9 +503,7 @@ function setSessionVariables() {
       }
     }
     //Demographics
-    //TODO: ash - TJ sec keys
     if (tmpWindow == 'Anywhere Demographics') {
-      //debugger;
       if (tmpPerm == 'View') {
         $.session.DemographicsView = true;
       }
@@ -522,6 +521,9 @@ function setSessionVariables() {
 
       if (tmpPerm == 'Update Picture') {
         $.session.DemographicsPictureUpdate = true;
+      }
+      if (tmpPerm == 'Delete Picture') {
+        $.session.DemographicsPictureDelete = true;
       }
 
       if (tmpPerm == 'View Notes') {
@@ -1200,8 +1202,6 @@ function checkChangePasswordLoginValues() {
   var pass2 = document.getElementById('newpassword2');
 
   if (user.value === '' || pass.value === '') {
-    // message.innerHTML = 'Please enter current login name and password.';
-    // message.classList.add('password-error');
     document.getElementById('changebutton').classList.add('disabled');
     return 0;
   } else if (pass1 === '' || pass2.value === '') {
@@ -1260,7 +1260,6 @@ function checkPass() {
       pass2.value.length === 0 &&
       $.session.changePasswordLinkSelected === ''
     ) {
-      document.getElementById('changebutton').classList.add('disabled');
       message.innerHTML = 'Your password has expired, please enter and confirm a new password.';
       document.getElementById('changebutton').classList.add('disabled');
       return 0;
