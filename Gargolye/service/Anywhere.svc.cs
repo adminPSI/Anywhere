@@ -3187,6 +3187,11 @@ namespace Anywhere
             return cf.deleteCFAttachment(token, attachmentId);
         }
 
+        public OODWorker.ActiveEmployee[] getActiveUsedBy(string token)
+        {
+            return cf.getActiveUsedBy(token);
+        }
+
         public void viewCFAttachment(System.IO.Stream testInput)
         {
             string token;

@@ -4328,6 +4328,14 @@ namespace Anywhere
         //void viewCaseNoteAttachment(string attachmentId);
         void viewCFAttachment(System.IO.Stream testInput);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getActiveUsedBy/")]
+        OODWorker.ActiveEmployee[] getActiveUsedBy(string token);
+
     }
 
 

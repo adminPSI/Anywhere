@@ -3,6 +3,7 @@ using System;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.OODWorker;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {
@@ -471,6 +472,25 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     return Odg.deleteCFAttachment(token, attachmentId, transaction);
 
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ActiveEmployee[] getActiveUsedBy(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    ActiveEmployee[] usedby = js.Deserialize<ActiveEmployee[]>(Odg.getActiveUsedBy(transaction));
+                    return usedby;
                 }
                 catch (Exception ex)
                 {

@@ -464,9 +464,9 @@ const NewEntryCF = (() => {
         });
         newCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
-            category = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            category = event.target.options[event.target.selectedIndex].text;      
             populateSubCategoryDropdown(category);
+            checkRequiredFieldsOfNewEntry();
         });
         newSubCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
@@ -529,7 +529,7 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        //disabledUpdateBtn(); 
     }
 
     // Populate the Account DDL 
@@ -596,9 +596,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+        //if (regId > 0) { 
+        //    disabledUpdateBtn(); 
+        //}
     }
 
 
