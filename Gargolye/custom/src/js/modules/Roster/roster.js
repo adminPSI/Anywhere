@@ -1085,9 +1085,16 @@ const roster2 = (function () {
     };
     rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
     // I am not sure why consumer location was being set to the selected location ID?
-    // rosterConsumers.forEach((consumer) => {
-    //   consumer.conL = selectedLocationId;
-    // });
+    const seenIds = {};
+
+    rosterConsumers = rosterConsumers.filter((consumer) => {
+      if (seenIds[consumer.id]) {
+        return false;
+      } else {
+        seenIds[consumer.id] = true;
+        return true;
+      }
+    });
     groupRosterConsumers();
 
     if (selectedLocationId !== '0') {
