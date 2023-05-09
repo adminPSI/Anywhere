@@ -1012,6 +1012,7 @@ const plan = (function () {
         const spinner = PROGRESS.SPINNER.get('Building Report...');
         const screenInner = reportsScreen.querySelector('.attachmentsWrap');
         reportsScreen.removeChild(doneBtn);
+        reportsScreen.removeChild(checkboxArea);
         reportsScreen.removeChild(screenInner);
         reportsScreen.appendChild(spinner);
         // generate report
