@@ -224,7 +224,7 @@ const rosterAjax = (function () {
       },
     });
   }
-  async function updatePortrait(imageFile, id, portraitPath) {
+  async function updatePortrait(imageFile, id, portraitPath, callback) {
     await $.ajax({
       type: 'POST',
       url:
@@ -252,6 +252,7 @@ const rosterAjax = (function () {
       dataType: 'json',
       success: function (response, status, xhr) {
         var res = JSON.stringify(response);
+        callback();
       },
       error: function (xhr, status, error) {
         console.log(status);
