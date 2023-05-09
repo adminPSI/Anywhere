@@ -107,7 +107,7 @@ namespace Anywhere.service.Data
             DataTable dt = ars.AssesmentHeader(ID).Tables[0];
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.OpenSubreport("Header").SetDataSource(dt);
-            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(ID));
+            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(ID, Advisor));
 
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
 
