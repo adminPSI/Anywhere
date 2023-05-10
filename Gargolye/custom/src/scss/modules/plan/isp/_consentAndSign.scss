@@ -282,6 +282,16 @@
     }
   }
 }
+#clearSignConfirmPopup {
+  background: $bg-warning;
+
+  p {
+    color: $font-dark;
+    font-weight: $normal;
+    text-align: center;
+    padding-bottom: 10px;
+  }
+}
 
 // Import Popups
 #importRelationshipPopup,

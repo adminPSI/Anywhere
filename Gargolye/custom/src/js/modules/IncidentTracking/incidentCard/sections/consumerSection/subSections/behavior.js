@@ -173,7 +173,8 @@ const consumerBehavior = (function () {
     endTimeInput.addEventListener('change', e => {
       tmpEndTime = e.target.value;
     });
-    occurrencesInput.addEventListener('change', e => {
+    occurrencesInput.addEventListener('keyup', e => {
+      console.log(`${e.code} ${e.keyCode} ${e.charCode}`);
       tmpOccurrences = e.target.value;
     });
 
@@ -264,7 +265,7 @@ const consumerBehavior = (function () {
 
     data.unshift({ value: '%', text: '' });
 
-    dropdown.populate(behaviortypeDrop, data, followUpTypeId);
+    dropdown.populate(behaviortypeDrop, data, behaviorTypeId);
 
     return behaviortypeDrop;
   }
@@ -301,8 +302,18 @@ const consumerBehavior = (function () {
   function buildOccurrencesInput() {
     var opts = {
       label: 'No. of Occurrences',
-      type: 'time',
+      type: 'number',
       style: 'secondary',
+      attributes: [
+        {
+          key: 'min',
+          value: 1,
+        },
+        {
+          key: 'step',
+          value: 1,
+        },
+      ],
     };
 
     if (isEdit && formReadOnly) {

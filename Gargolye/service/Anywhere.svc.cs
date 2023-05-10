@@ -1568,9 +1568,9 @@ namespace Anywhere
         }
 
         //Incident Tracking Consumer Behavior specific alters
-        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        public string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId)
         {
-            return iTW.itDeleteConsumerFollowUp(token, itConsumerFollowUpId);
+            return iTW.itDeleteConsumerBehavior(token, itConsumerBehaviorId);
         }
 
         public string saveUpdateITConsumerBehavior(string token, List<String> consumerBehaviorIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray, List<String> endTimeArray, List<String> occurrencesArray)

@@ -386,19 +386,19 @@ namespace Anywhere.service.Data
         }
 
         //Consumer Behavior Alter Specific Calls
-        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        public string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId)
         {
-            dg.itDeleteConsumerBehavior(token, itConsumerFollowUpId);
+            dg.itDeleteConsumerBehavior(token, itConsumerBehaviorId);
             return "success";
         }
 
-        public string saveUpdateITConsumerBehavior(string token, List<String> consumerFollowUpIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray,
+        public string saveUpdateITConsumerBehavior(string token, List<String> consumerBehaviorIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray,
                                                     List<String> endTimeArray, List<String> occurrencesArray)
         {
             int i = 0;
             foreach (string behaviorTypeId in behaviorTypeIdArray)
             {
-                dg.saveUpdateITConsumerBehavior(token, consumerFollowUpIdArray[i], consumerInvolvedId, behaviorTypeId, startTimeArray[i], endTimeArray[i], occurrencesArray[i]);
+                dg.saveUpdateITConsumerBehavior(token, consumerBehaviorIdArray[i], consumerInvolvedId, behaviorTypeId, startTimeArray[i], endTimeArray[i], occurrencesArray[i]);
                 i++;
             }
             return "Success";

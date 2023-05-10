@@ -242,6 +242,7 @@
         border-bottom: $w-sm solid rgba($black, 0.12);
         padding: 10px 5px;
         margin: 0 0 5px;
+        cursor: pointer;
 
         &.removeConsumer {
           background: $font-error;

@@ -5431,13 +5431,13 @@ namespace Anywhere.Data
         }
 
         //Incident Tracking Consumer Behavior Alter Specific Calls
-        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        public string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("itDeleteConsumerBehavior ");
             List<string> list = new List<string>();
             list.Add(token);
-            list.Add(itConsumerFollowUpId);
+            list.Add(itConsumerBehaviorId);
             string text = "CALL DBA.ANYW_IncidentTracking_DeleteConsumerBehavior(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -5450,14 +5450,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string saveUpdateITConsumerBehavior(string token, string consumerFollowUpId, string consumerInvolvedId, string behaviorTypeId, string startTime,
+        public string saveUpdateITConsumerBehavior(string token, string consumerBehaviorId, string consumerInvolvedId, string behaviorTypeId, string startTime,
                                                      string endTime, string occurrences)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("saveUpdateITConsumerBehavior");
             List<string> list = new List<string>();
             list.Add(token);
-            list.Add(consumerFollowUpId);
+            list.Add(consumerBehaviorId);
             list.Add(consumerInvolvedId);
             list.Add(behaviorTypeId);
             list.Add(startTime);
