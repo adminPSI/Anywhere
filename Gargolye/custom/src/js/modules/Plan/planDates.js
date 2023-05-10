@@ -216,7 +216,7 @@ const planDates = (function () {
     effectiveStartDate = origEffectiveStartDate;
     effectiveEndDate = origEffectiveEndDate;
     planReviewDate = origPlanReviewDate;
-
+    
     dateChanged = false;
     reviewDateChanged = false;
   }
@@ -310,6 +310,13 @@ const planDates = (function () {
     }
   }
   function validateRevisionDates() {
+    // cache original dates
+    origPlanYearStartDate = planYearStartDate;
+    origPlanYearEndDate = planYearEndDate;
+    origEffectiveStartDate = effectiveStartDate;
+    origEffectiveEndDate = effectiveEndDate;
+    origPlanReviewDate = planReviewDate;
+
     const effectiveStartInput = effectiveStartDateInput.querySelector('input');
     const effectiveEndInput = effectiveEndDateInput.querySelector('input');
     const priorEffectiveStartTime = priorEffectiveStartDate && priorEffectiveStartDate.getTime();
@@ -402,10 +409,10 @@ const planDates = (function () {
           newEndDate = dates.subDays(newEndDate, 1);
 
           // cache original dates
-          origPlanYearStartDate = planYearStartDate;
-          origPlanYearEndDate = planYearEndDate;
-          origEffectiveStartDate = effectiveStartDate;
-          origEffectiveEndDate = effectiveEndDate;
+          // origPlanYearStartDate = planYearStartDate;
+          // origPlanYearEndDate = planYearEndDate;
+          // origEffectiveStartDate = effectiveStartDate;
+          // origEffectiveEndDate = effectiveEndDate;
           // set new dates
           planYearStartDate = newStartDate;
           planYearEndDate = newEndDate;
@@ -436,10 +443,10 @@ const planDates = (function () {
         break;
       }
       case effectiveStartDateInput: {
-        if (e.target.value) {
           if (!isValidDate) {
             const effectiveStartInput = effectiveStartDateInput.querySelector('input');
             effectiveStartInput.classList.add('error');
+            if (onChangeCallback) onChangeCallback(false);
             hasError = true;
             return;
           }
@@ -453,14 +460,14 @@ const planDates = (function () {
           );
 
           dateChanged = true;
-        }
+
         break;
       }
       case effectiveEndDateInput: {
-        if (e.target.value) {
           if (!isValidDate) {
             const effectiveEndInput = effectiveEndDateInput.querySelector('input');
             effectiveEndInput.classList.add('error');
+            if (onChangeCallback) onChangeCallback(false);
             hasError = true;
             return;
           }
@@ -474,17 +481,18 @@ const planDates = (function () {
           );
 
           dateChanged = true;
-        }
+          
         break;
       }
       case reviewDateInput: {
         // effectiveStartDate = planYearStartDate;
         // effectiveEndDate = planYearEndDate;
-        if (e.target.value) {
           if (!isValidDate) {
-            // reviewDateInput.classList.add('error');
+            dateErrorMessage.innerText = `Review date must fall between effective start date and effective end date.`;
+            dateErrorMessage.classList.remove('hidden');
+            reviewDateInput.classList.add('error');
             hasError = true;
-            return;
+            break;
           }
 
           let newReviewDate = e.target.value.split('-');
@@ -506,14 +514,13 @@ const planDates = (function () {
           }
 
           // cache original date
-          origPlanReviewDate = planReviewDate;
+          // origPlanReviewDate = planReviewDate;
           // set new date
           planReviewDate = newReviewDate;
 
           const reviewInput = reviewDateInput.querySelector('input');
           reviewInput.value = UTIL.formatDateFromDateObj(newReviewDate);
           reviewDateChanged = true;
-        }
       }
     }
 

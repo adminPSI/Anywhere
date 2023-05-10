@@ -2949,8 +2949,7 @@ namespace Anywhere
         {
             //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "crystal", "466", "1", "false", true);
             bool signatureOnly = false;
-            string include = "N";
-            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             return osw.oneSpanBuildSigners(token, assessmentID, ms);
         }
 
@@ -3185,6 +3184,11 @@ namespace Anywhere
         public string deleteCFAttachment(string token, string attachmentId)
         {
             return cf.deleteCFAttachment(token, attachmentId);
+        }
+
+        public OODWorker.ActiveEmployee[] getActiveUsedBy(string token)
+        {
+            return cf.getActiveUsedBy(token);
         }
 
         public void viewCFAttachment(System.IO.Stream testInput)

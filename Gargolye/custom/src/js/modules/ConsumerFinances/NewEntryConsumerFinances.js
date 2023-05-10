@@ -23,7 +23,9 @@ const NewEntryCF = (() => {
     let IsDisabledBtn = false;
     let lastUpdateBy;
     let IsReconciled = 'N';
-
+    let IsAddNewPayDisable = true;
+    let IsSaveDisable = true;
+    let IsDeleteDisable = true; 
     let inputElement;
 
     async function init() {
@@ -131,7 +133,6 @@ const NewEntryCF = (() => {
             text: 'ADD NEW PAYEE',
             style: 'secondary',
             type: 'contained',
-            callback: () => buildNewPayeePopUp()
         });
 
         newCategoryDropdown = dropdown.build({
@@ -174,7 +175,6 @@ const NewEntryCF = (() => {
             text: BtnName,
             style: 'secondary',
             type: 'contained',
-            callback: () => saveNewAccount()
         });
         NEW_CANCEL_BTN = button.build({
             text: 'Cancel',
@@ -187,7 +187,6 @@ const NewEntryCF = (() => {
             text: 'Delete',
             style: 'secondary',
             type: 'outlined',
-            callback: () => deleteAccount()
         });
 
         // Billing Radios //
@@ -439,6 +438,39 @@ const NewEntryCF = (() => {
     }
 
     function eventListeners() {
+        ADD_NEW_PAYEE_BTN.addEventListener('keypress', event => { 
+            if (event.keyCode === 13 && ADD_NEW_PAYEE_BTN.classList.contains('disabled')) { 
+                IsAddNewPayDisable = false;
+            }
+        });
+        ADD_NEW_PAYEE_BTN.addEventListener('click', event => {
+            if (IsAddNewPayDisable) {
+                buildNewPayeePopUp();  
+            }
+            IsAddNewPayDisable = true; 
+        });
+        NEW_SAVE_BTN.addEventListener('keypress', event => {
+            if (event.keyCode === 13 && NEW_SAVE_BTN.classList.contains('disabled')) {
+                IsSaveDisable = false;
+            }
+        });
+        NEW_SAVE_BTN.addEventListener('click', event => {
+            if (IsSaveDisable) {
+                saveNewAccount();
+            }
+            IsSaveDisable = true;
+        });
+        NEW_DELETE_BTN.addEventListener('keypress', event => {
+            if (event.keyCode === 13 && NEW_DELETE_BTN.classList.contains('disabled')) {
+                IsDeleteDisable = false;
+            }
+        });
+        NEW_DELETE_BTN.addEventListener('click', event => { 
+            if (IsDeleteDisable) {
+                deleteAccount();
+            }
+            IsDeleteDisable = true;
+        });
         newDateInput.addEventListener('input', event => {
             date = event.target.value;
             checkRequiredFieldsOfNewEntry();
@@ -464,9 +496,9 @@ const NewEntryCF = (() => {
         });
         newCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
-            category = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            category = event.target.options[event.target.selectedIndex].text;      
             populateSubCategoryDropdown(category);
+            checkRequiredFieldsOfNewEntry();
         });
         newSubCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
@@ -529,7 +561,7 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        //disabledUpdateBtn(); 
     }
 
     // Populate the Account DDL 
@@ -596,9 +628,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+        //if (regId > 0) { 
+        //    disabledUpdateBtn(); 
+        //}
     }
 
 
@@ -812,5 +844,5 @@ const NewEntryCF = (() => {
         populatePayeeDropdown,
         populateCategoryDropdown,
         populateAccountDropdown,
-    };
+    };  
 })(); 

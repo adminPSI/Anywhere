@@ -339,6 +339,21 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
+        public string getActiveUsedBy(DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getActiveUsedBy");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getActiveUsedBy", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getActiveUsedBy()");
+                throw ex;
+            }
+        }
+
 
 
     }

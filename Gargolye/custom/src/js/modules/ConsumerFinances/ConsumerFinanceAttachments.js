@@ -40,7 +40,7 @@ const consumerFinanceAttachment = (() => {
             const attachmentsForQuestion = this.attachmentsForQuestion;
             const attachmentsToDelete = [];
             const attachmentsAdded = [];
-           
+
             // PERMISSIONS
             let ro;
             const planStatus = plan.getPlanStatus();
@@ -59,7 +59,7 @@ const consumerFinanceAttachment = (() => {
                 attachmentsForQuestion.forEach(attachment => {
                     const fileContainer = document.createElement('div');
                     fileContainer.classList.add('reviewAttachmentContainer');
-                    fileContainer.setAttribute('id', attachment.attachmentID); 
+                    fileContainer.setAttribute('id', attachment.attachmentID);
                     fileContainer.setAttribute('delete', false);
                     const removeAttachmentBtn = button.build({
                         style: 'secondary',
@@ -147,7 +147,7 @@ const consumerFinanceAttachment = (() => {
                     attachmentArray.forEach(attachment => {
                         const saveProm = new Promise(resolve => {
                             const saveData = {
-                                token: $.session.Token,                             
+                                token: $.session.Token,
                                 attachmentType: attachment.type,
                                 attachment: attachment.arrayBuffer,
                                 regId: regId,
@@ -163,13 +163,13 @@ const consumerFinanceAttachment = (() => {
                         attachmentsAdded.push(att);
                     });
 
-                    POPUP.hide(popup); 
+                    POPUP.hide(popup);
                     NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded)
-                    
+
                 }
                 // DELETE ATTACHMENTS
                 attachmentsToDelete.forEach(attachment => {
-                    ConsumerFinancesAjax.deleteCFAttachment(attachment);                 
+                    ConsumerFinancesAjax.deleteCFAttachment(attachment);
                 });
 
                 // ADD ATTACHMENTS
@@ -178,9 +178,9 @@ const consumerFinanceAttachment = (() => {
                     console.log('no attachments to add');
                     return;
                 }
- 
+
                 let attachmentProms = [];
-  
+
                 attachmentInputs.forEach(inputElement => {
                     if (inputElement.value === '') {
                         return;
@@ -207,7 +207,7 @@ const consumerFinanceAttachment = (() => {
                 await saveAttachmentsToDB();
 
                 POPUP.hide(popup);
-                NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded) 
+                NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded)
             }
             //===========================================
             //===========================================
@@ -261,15 +261,15 @@ const consumerFinanceAttachment = (() => {
                 },
             });
 
-            if (this.IsDisabledBtn == true) { 
-                removeAttachmentBtn.classList.add('disabled'); 
+            if (this.IsDisabledBtn == true) {
+                removeAttachmentBtn.classList.add('disabled');
                 saveBtn.classList.add('disabled');
                 addAttachmentBtn.classList.add('disabled');
             }
             else {
                 removeAttachmentBtn.classList.remove('disabled');
                 saveBtn.classList.remove('disabled');
-                addAttachmentBtn.classList.remove('disabled');  
+                addAttachmentBtn.classList.remove('disabled');
             }
 
             const reviewAttachmentList = document.createElement('div');
@@ -304,7 +304,7 @@ const consumerFinanceAttachment = (() => {
                 btnWrap.appendChild(saveBtn);
             }
 
-            btnWrap.appendChild(cancelBtn); 
+            btnWrap.appendChild(cancelBtn);
             popup.appendChild(btnWrap);
 
             if (attachmentsForQuestion.length > 0) populateExistingAttachments();
@@ -351,17 +351,19 @@ const consumerFinanceAttachment = (() => {
         }
     }
 
-    async function getConsumerFinanceAttachments(regID) { 
+    async function getConsumerFinanceAttachments(regID) {
         const retData = {
-            token: $.session.Token, 
+            token: $.session.Token,
             regId: regID,
         };
         const res = await ConsumerFinancesAjax.getCFAttachmentsList(retData);
         let attArray = [];
-        res.forEach(attachment => {           
-            attArray.push(attachment); 
-        });
-        return attArray; 
+        if (res != undefined) {
+            res.forEach(attachment => {
+                attArray.push(attachment);
+            });
+        }
+        return attArray;
     }
 
     return {

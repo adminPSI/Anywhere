@@ -206,8 +206,8 @@ const ConsumerFinances = (() => {
             accountName: '%',
             payee: '%',
             category: '%',
-            minamount: '-10000',
-            maxamount: '10000',
+            minamount: '-10000.00',
+            maxamount: '10000.00',
             checkNo: '',
             Balance: '',
             enteredBy: '%',
@@ -279,7 +279,7 @@ const ConsumerFinances = (() => {
             type: 'date',
             label: 'From Date', 
             style: 'secondary',
-            value: UTIL.formatDateFromDateObj(filterValues.activityStartDate),
+            value:filterValues.activityStartDate,
         });
  
  
@@ -288,7 +288,7 @@ const ConsumerFinances = (() => {
             type: 'date',
             label: 'To Date',
             style: 'secondary',
-            value: UTIL.formatDateFromDateObj(filterValues.activityEndDate),
+            value: filterValues.activityEndDate,  
         });
 
         minAmountInput = input.build({
@@ -327,13 +327,13 @@ const ConsumerFinances = (() => {
 
         lastUpdateDropdown = dropdown.build({
             id: 'lastUpdateDropdown',
-            label: "Last Update By",
+            label: "Last Updated By",
             dropdownId: "lastUpdateDropdown",
         });
 
         isAttachedDropdown = dropdown.build({
             id: 'isAttachedDropdown',
-            label: "Has Attachment ?",
+            label: "Has Attachment?",
             dropdownId: "isAttachedDropdown",
         });
 
@@ -480,7 +480,7 @@ const ConsumerFinances = (() => {
         dropdown.populate("categoryDropdown", categoryData, filterValues.category);
 
         const {
-            getActiveEmployeesResult: employees,
+            getActiveUsedByResult: employees,
         } = await ConsumerFinancesAjax.getActiveEmployeesAsync();
         let data = employees.map((employee) => ({
             id: employee.userId,
@@ -488,7 +488,7 @@ const ConsumerFinances = (() => {
             text: employee.userName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
-        dropdown.populate("lastUpdateDropdown", data, filterValues.enteredBy);
+        dropdown.populate("lastUpdateDropdown", data, filterValues.enteredBy); 
 
         const condfidentialDropdownData = ([ 
             { text: 'Yes', value: 'Yes' },

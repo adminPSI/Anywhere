@@ -329,11 +329,11 @@ var ConsumerFinancesAjax = (function () {
                     $.webServer.port +
                     '/' +
                     $.webServer.serviceName +
-                    '/getActiveEmployees/',
+                    '/getActiveUsedBy/',
                 data: JSON.stringify({
                     token: $.session.Token,
 
-                }),
+                }),              
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
