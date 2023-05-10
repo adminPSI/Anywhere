@@ -6,11 +6,11 @@ namespace Anywhere.service.Data.DocumentConversion
     {
         PlanReport planRep = new PlanReport();
 
-        public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, string include)
         {
 
             MemoryStream ms = null;
-            ms = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+            ms = planRep.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
             //ms.Flush();
             //ms.Close();
             //ms.Dispose();
@@ -28,11 +28,11 @@ namespace Anywhere.service.Data.DocumentConversion
             return ms;
         }
 
-        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly, string include)
+        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly)
         {
 
             MemoryStream ms = null;
-            ms = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+            ms = planRep.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             //ms.Flush();
             //ms.Close();
             //ms.Dispose();

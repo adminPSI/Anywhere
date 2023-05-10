@@ -206,16 +206,15 @@ namespace Anywhere.service.Data.DocumentConversion
                 MemoryStream intro = new MemoryStream();
                 MemoryStream plan = new MemoryStream();
 
-                foreach (ReportSectionOrder ord in order)
+                if (false == signatureOnly)
                 {
-
-                    if (false == signatureOnly)
-                    {
+                    foreach (ReportSectionOrder ord in order)
+                    {                    
                         if (ord.setting_value == "1")
                         {
                             if (ord.setting_key == "Assessment")
                             {
-                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
                             }
                             if (ord.setting_key == "All About Me")
                             {
@@ -224,7 +223,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
 
                             }
                         }
@@ -232,7 +231,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         {
                             if (ord.setting_key == "Assessment")
                             {
-                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
 
                             }
                             if (ord.setting_key == "All About Me")
@@ -242,7 +241,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
 
                             }
                         }
@@ -250,7 +249,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         {
                             if (ord.setting_key == "Assessment")
                             {
-                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
 
                             }
                             if (ord.setting_key == "All About Me")
@@ -260,7 +259,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
 
                             }
                         }
@@ -268,7 +267,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         {
                             if (ord.setting_key == "Assessment")
                             {
-                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
 
                             }
                             if (ord.setting_key == "All About Me")
@@ -278,7 +277,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
 
 
                             }
@@ -287,7 +286,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         {
                             if (ord.setting_key == "Assessment")
                             {
-                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
 
                             }
                             if (ord.setting_key == "All About Me")
@@ -297,7 +296,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
 
                             }
                         }
@@ -305,7 +304,7 @@ namespace Anywhere.service.Data.DocumentConversion
                         {
                             if (ord.setting_key == "Assessment")
                             {
-                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
 
                             }
                             if (ord.setting_key == "All About Me")
@@ -315,17 +314,16 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
 
                             }
                         }
-
 
                     }                    
                 }
                 if (signatureOnly == true)
                 {
-                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
                 }
 
                 byte[] introReport = new byte[intro.Length];
@@ -341,7 +339,17 @@ namespace Anywhere.service.Data.DocumentConversion
                     assessment.Close();
                     intro.Flush();
                     assessment.Dispose();
-                    
+
+                }
+                else
+                {
+                    intro.Close();
+                    intro.Flush();
+                    intro.Dispose();
+                    assessment.Close();
+                    intro.Flush();
+                    assessment.Dispose();
+
                 }
 
                 byte[] planReport = StreamExtensions.ToByteArray(plan);
@@ -365,11 +373,11 @@ namespace Anywhere.service.Data.DocumentConversion
                     }
                 }
 
-                foreach (ReportSectionOrder ord in order)
+                
+                if (false == signatureOnly)
                 {
-                    if (false == signatureOnly)
+                    foreach (ReportSectionOrder ord in order)
                     {
-
                         if (ord.setting_value == "1")
                         {
                             if (ord.setting_key == "Assessment")
