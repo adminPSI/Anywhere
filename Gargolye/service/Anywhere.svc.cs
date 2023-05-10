@@ -1568,9 +1568,9 @@ namespace Anywhere
         }
 
         //Incident Tracking Consumer Behavior specific alters
-        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        public string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId)
         {
-            return iTW.itDeleteConsumerFollowUp(token, itConsumerFollowUpId);
+            return iTW.itDeleteConsumerBehavior(token, itConsumerBehaviorId);
         }
 
         public string saveUpdateITConsumerBehavior(string token, List<String> consumerBehaviorIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray, List<String> endTimeArray, List<String> occurrencesArray)
@@ -2949,8 +2949,7 @@ namespace Anywhere
         {
             //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "crystal", "466", "1", "false", true);
             bool signatureOnly = false;
-            string include = "N";
-            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly, include);
+            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             return osw.oneSpanBuildSigners(token, assessmentID, ms);
         }
 

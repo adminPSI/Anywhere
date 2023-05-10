@@ -6,6 +6,11 @@ const csSignature = (() => {
   let showConsentStatments;
   // dom
   let signaturePopup;
+  let changeMindQ;
+  let complaintQ;
+  let dissentAreaDisagree;
+  let dissentHowToAddress;
+  let standardQuestions; // these are all the radio questions
   let sigPad;
   let saveBtn;
   // other
@@ -51,7 +56,7 @@ const csSignature = (() => {
       selectedMemberData.dateSigned = UTIL.formatDateToIso(
         dates.removeTimestamp(selectedMemberData.dateSigned),
       );
-      await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
+      await planConsentAndSign.updateTeamMember(selectedMemberData);
       insertSuccess = true;
     }
 
@@ -107,6 +112,31 @@ const csSignature = (() => {
 
     return false;
   }
+  function clearInputsOnSignatureClear() {
+    const dissentAreaInput = dissentAreaDisagree.querySelector('.input-field__input');
+    const dissentHowToInput = dissentHowToAddress.querySelector('.input-field__input');
+    const changeMindRadios = [...changeMindQ.querySelectorAll('.radio')];
+    const complaintRadios = [...complaintQ.querySelectorAll('.radio')];
+    const standardRadios = [...standardQuestions.querySelectorAll('.ic_questionRadioContainer')];
+    debugger;
+    dissentAreaInput.value = '';
+    dissentHowToInput.value = '';
+    changeMindRadios.forEach(radio => {
+      const input = radio.querySelector('input');
+      input.checked = false;
+    });
+    complaintRadios.forEach(radio => {
+      const input = radio.querySelector('input');
+      input.checked = false;
+    });
+    standardRadios.forEach(radio => {
+      const radios = [...radio.querySelectorAll('.radio')];
+      radios.forEach(radio => {
+        const input = radio.querySelector('input');
+        input.checked = false;
+      });
+    });
+  }
 
   //*------------------------------------------------------
   //* MARKUP
@@ -123,10 +153,11 @@ const csSignature = (() => {
       text: 'yes',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        // TODO: if clear button is pressed remove signature, dissenting opinions and consents
-        // TODO: after clearing out fields refresh popup so they can insert new values
+      callback: async () => {
         clearSignature = true;
+        clearInputsOnSignatureClear();
+        //await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
+        DOM.ACTIONCENTER.removeChild(confirmPop);
       },
     });
     const noBtn = button.build({
@@ -134,7 +165,7 @@ const csSignature = (() => {
       style: 'secondary',
       type: 'outlined',
       callback: () => {
-        POPUP.hide(confirmPop);
+        DOM.ACTIONCENTER.removeChild(confirmPop);
       },
     });
     const btnWrap = document.createElement('div');
@@ -349,7 +380,7 @@ const csSignature = (() => {
     dissentTitle.classList.add('h3Title');
     dissentTitle.innerText = 'Dissenting Opinion';
     // questions
-    const dissentAreaDisagree = input.build({
+    dissentAreaDisagree = input.build({
       label: 'Area Team Member Disagrees',
       value: selectedMemberData.dissentAreaDisagree,
       type: 'textarea',
@@ -361,7 +392,7 @@ const csSignature = (() => {
         selectedMemberData.dissentAreaDisagree = event.target.value;
       },
     });
-    const dissentHowToAddress = input.build({
+    dissentHowToAddress = input.build({
       label: 'How to Address',
       value: selectedMemberData.dissentHowToAddress,
       type: 'textarea',
@@ -581,11 +612,11 @@ const csSignature = (() => {
     consentHeader.innerText = 'Consent Statements';
     consentWrap.appendChild(consentHeader);
 
-    const standardQuestions = buildStandardQuestionSet();
+    standardQuestions = buildStandardQuestionSet();
 
     if (showConsentStatments) {
-      const changeMindQ = getChangeMindMarkup();
-      const complaintQ = getContactMarkup();
+      changeMindQ = getChangeMindMarkup();
+      complaintQ = getContactMarkup();
       consentWrap.appendChild(changeMindQ);
       consentWrap.appendChild(complaintQ);
     }
