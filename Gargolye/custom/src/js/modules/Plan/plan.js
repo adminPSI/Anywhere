@@ -1375,7 +1375,7 @@ const plan = (function () {
           targetScreen = 'reportsAttachmentScreen';
           retrieveData = {
             token: $.session.Token,
-            assessmentId: '19',
+            assessmentId: getCurrentPlanId(),
           };
           break;
         }
@@ -1388,7 +1388,7 @@ const plan = (function () {
           targetScreen = 'DODDScreen';
           retrieveData = {
             token: $.session.Token,
-            assessmentId: '19',
+            assessmentId: getCurrentPlanId(),
           };
           break;
         }
