@@ -639,10 +639,12 @@ var incident = (function () {
 
     var consumerIdKeys = Object.keys(data);
     consumerIdKeys.forEach(key => {
+      debugger;
       var saveData = {
         token: $.session.Token,
         consumerInvolvedId: '',
-        itConsumerBehaviorIdArray: [],
+        consumerBehaviorIdArray: [],
+        behaviorTypeIdArray: [],
         startTimeArray: [],
         endTimeArray: [],
         occurrencesArray: [],
@@ -662,11 +664,13 @@ var incident = (function () {
         var isNew = idKey.includes('new');
 
         var itConsumerBehaviorId = isNew ? '' : idKey;
+        var behaviorTypeId = rData.behaviorTypeId ? rData.behaviorTypeId : '';
         var startTime = rData.startTime ? rData.startTime : '';
         var endTime = rData.endTime ? rData.endTime : '';
         var occurrences = rData.occurrences ? rData.occurrences : '';
 
-        saveData.itConsumerBehaviorIdArray.push(itConsumerBehaviorId);
+        saveData.consumerBehaviorIdArray.push(itConsumerBehaviorId);
+        saveData.behaviorTypeIdArray.push(behaviorTypeId);
         saveData.startTimeArray.push(startTime);
         saveData.endTimeArray.push(endTime);
         saveData.occurrencesArray.push(occurrences);

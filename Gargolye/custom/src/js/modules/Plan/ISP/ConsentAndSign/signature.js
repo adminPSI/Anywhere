@@ -121,10 +121,22 @@ const csSignature = (() => {
     const changeMindRadios = [...changeMindQ.querySelectorAll('.radio')];
     const complaintRadios = [...complaintQ.querySelectorAll('.radio')];
     const standardRadios = [...standardQuestions.querySelectorAll('.ic_questionRadioContainer')];
-    // sigPad;
+    const allRadios = [...signaturePopup.querySelectorAll('.ic_questionRadioContainer')];
 
+    // if this works remove below for each's
     dissentAreaInput.value = '';
     dissentHowToInput.value = '';
+    dissentAreaDisagree.classList.remove('disabled');
+    dissentHowToAddress.classList.remove('disabled');
+    allRadios.forEach(radio => {
+      radio.classList.remove('disabled');
+      const radios = [...radio.querySelectorAll('.radio')];
+      radios.forEach(radio => {
+        const input = radio.querySelector('input');
+        input.checked = false;
+      });
+    });
+
     changeMindRadios.forEach(radio => {
       const input = radio.querySelector('input');
       input.checked = false;
@@ -134,6 +146,7 @@ const csSignature = (() => {
       input.checked = false;
     });
     standardRadios.forEach(radio => {
+      radio.classList.remove('disabled');
       const radios = [...radio.querySelectorAll('.radio')];
       radios.forEach(radio => {
         const input = radio.querySelector('input');
@@ -698,7 +711,6 @@ const csSignature = (() => {
 
     //* SAVE/CANCEL BUTTONS
     //*------------------------------
-    //debugger;
     const allowSignClear = checkForAllowClearSignature(memberData.signatureType);
     const clearSignatureBtn = button.build({
       id: 'clearSigBtn',
