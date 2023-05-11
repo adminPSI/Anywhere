@@ -994,7 +994,8 @@ const plan = (function () {
  
     // checkbox
     includeCheckbox = input.buildCheckbox({
-      // text: '',
+      id: 'reportCheckbox',
+      // className: 'reportCheckbox', 
       isChecked: include === 'Y' ? true : false,
     });
 
@@ -1055,23 +1056,23 @@ const plan = (function () {
 
         // remove spinner
         reportsScreen.removeChild(spinner);
-        reportsScreen.appendChild(screenInner);
+       reportsScreen.appendChild(screenInner);
         reportsScreen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
       },
     });
 
     // add checkbox 
-    const checkboxCheck = document.createElement('div');
-    checkboxCheck.appendChild(includeCheckbox);
+   // const checkboxCheck = document.createElement('div');
+  //  checkboxCheck.appendChild(includeCheckbox);
     const checkboxText = document.createElement('div');
     checkboxText.innerHTML = 'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
     const checkboxArea = document.createElement('div');
-    checkboxArea.classList.add('checkboxWrap');
-    checkboxArea.appendChild(checkboxCheck);
-    checkboxArea.appendChild(checkboxText);
+     checkboxArea.classList.add('checkboxWrap');
+    checkboxArea.appendChild(includeCheckbox);
+   checkboxArea.appendChild(checkboxText);
     reportsScreen.appendChild(checkboxArea);
-    reportsScreen.appendChild(doneBtn);
+     reportsScreen.appendChild(doneBtn);
   }
 
   async function runDODDScreen(extraSpace) {
@@ -1375,7 +1376,7 @@ const plan = (function () {
           targetScreen = 'reportsAttachmentScreen';
           retrieveData = {
             token: $.session.Token,
-            assessmentId: '19',
+            assessmentId: getCurrentPlanId(),
           };
           break;
         }
@@ -1388,7 +1389,7 @@ const plan = (function () {
           targetScreen = 'DODDScreen';
           retrieveData = {
             token: $.session.Token,
-            assessmentId: '19',
+            assessmentId: getCurrentPlanId(),
           };
           break;
         }

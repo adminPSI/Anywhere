@@ -529,13 +529,26 @@ button.evv-highlight {
 }
 
 .actioncenter[data-active-section="timeEntry-approval"] {
-  .totalhoursdiv {
-    position: absolute;
-    margin-top: 30px;
-    margin-left: -90px;
-    font-weight: 500;
-    color: $font-dark;
-  }
+    .totalhoursdiv {
+        position: absolute;
+        margin-top: 30px;
+        margin-left: -90px;
+        font-weight: 500;
+        color: $font-dark;
+    }
+
+    .dateWrap {
+        justify-content: space-between;
+        margin-bottom: -10px;
+
+        > div {
+            width: 48%;
+
+            > input {
+                font-size: .87rem;
+            }
+        }
+    }
 }
 
 .timeApprovalWarningPopup {

@@ -429,6 +429,7 @@ namespace Anywhere.service.Data
             public string oneSpan { get; set; }
             public string anywhereResetPasswordPermission { get; set; }
             public string anywhereConsumerFinancesPermission { get; set; }
+            public string anywhereEmploymentPermission { get; set; }
 
         }
 

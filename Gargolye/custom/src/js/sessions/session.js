@@ -168,6 +168,7 @@ $.session.passwordResetPermission = '';
 // $.session.OODPermission = '';
 $.session.anywhereResetPasswordPermission = '';
 $.session.anywhereConsumerFinancesPermission = '';
+$.session.anywhereEmploymentPermission = '';
 $.session.selectedConsumerIdForGoalsDateBack = '';
 $.session.caseNoteEdit = false;
 $.session.consumerIdToEdit = '';
@@ -289,6 +290,10 @@ $.session.CFEditAccountEntries = false; //
 // Reset Password
 $.session.ResetPasswordView = false;
 $.session.ResetPasswordUpdate = false;
+
+// Employment
+$.session.EmploymentView = false;
+$.session.EmploymentUpdate = false;
 
 $.session.consumerId = '';
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
@@ -661,6 +666,298 @@ function setSessionVariables() {
       if ($.session.isPSI == true) {
         $.session.formsCaseload = false;
       }
+    }
+
+    if (tmpPerm.length > 9) {
+      if (tmpPerm.substring(0, 9) == 'Form Type') {
+        $.session.formsFormtype = true;
+        if (tmpWindow == 'IsAnAdmin') {
+          if (tmpPerm == 'Y') $.session.isAdmin = true;
+        }
+      }
+    }
+
+    if (tmpWindow == 'SEShowServiceLocations') {
+      if (tmpPerm == 'Y') {
+        //Require a consumer to be picked
+        $.session.singleEntryUseServiceLocations = true;
+      }
+    }
+
+    if (tmpWindow == 'SEAddConsumerOnBillable') {
+      if (tmpPerm == 'P') {
+        //Require a consumer to be picked
+        $.session.singleEntryAddConsumersOnBillable = 'P';
+      } else if (tmpPerm == 'Y') {
+        //Do not require a consumer to be picked, but give a warning
+        $.session.singleEntryAddConsumersOnBillable = 'Y';
+      } else {
+        //Do not require a consumerto be picked, and give no warning
+        $.session.singleEntryAddConsumersOnBillable = 'N';
+      }
+    }
+
+    if (tmpWindow == 'SEDocumentTime') {
+      if (tmpPerm == 'Y') {
+        //Enable 15 minutes intervals
+        $.session.singleEntry15minDoc = 'Y';
+      } else {
+        //Do not enable/disable 15 minute document intervals
+        $.session.singleEntry15minDoc = 'N';
+      }
+    }
+
+    if (tmpWindow == 'Anywhere Day Services') {
+      if (tmpPerm == 'View') {
+        $.session.DayServiceView = true;
+        $.session.Roster = true;
+        $('#dayservicesettingsbutton').removeClass('disabledModule');
+      }
+
+      if (tmpPerm == 'Override location requirement') {
+        $.session.DayServiceOverRide = true;
+      }
+
+      if (tmpPerm == 'Update') {
+        $.session.DayServiceUpdate = true;
+      }
+
+      if (tmpPerm == 'Delete') {
+        $.session.DayServiceDelete = true;
+      }
+
+      if (tmpPerm == 'Insert') {
+        $.session.DayServiceInsert = true;
+      }
+
+      if (tmpPerm == 'Deny TimeClock Change') {
+        $.session.DenyClockUpdate = true;
+      }
+    }
+
+    //Goals Permissions
+    if (tmpWindow == 'Anywhere Service Activity') {
+      if (tmpPerm == 'View') {
+        $.session.GoalsView = true;
+        $('#goalssettingsbutton').removeClass('disabledModule');
+      }
+      if (tmpPerm == 'Update') {
+        $.session.GoalsUpdate = true;
+      }
+    }
+
+    //Single Entry Permissions
+    if (tmpWindow == 'Anywhere Single Entry') {
+      if (tmpPerm == 'View') {
+        $.session.SingleEntryView = true;
+        $('#singleentrybutton').removeClass('disabledModule');
+      }
+      if (tmpPerm == 'Update') {
+        $.session.SingleEntryUpdate = true;
+      }
+      if (tmpPerm == 'Edit Time Entry') {
+        $.session.SingleEntryEditTimeEntry = true;
+      }
+    }
+
+    //Workshop Module
+    if (tmpWindow == 'Anywhere Workshop') {
+      if (tmpPerm == 'View') {
+        $.session.WorkshopView = true;
+        $('#workshopbutton').removeClass('disabledModule');
+      }
+      if (tmpPerm == 'Update') {
+        $.session.WorkshopUpdate = true;
+      }
+    }
+
+    if (tmpWindow == 'Anywhere Case Notes') {
+      if (tmpPerm == 'View') {
+        $('#casenotessettingsdiv').removeClass('disabledModule');
+        $.session.CaseNotesView = true;
+      }
+      if (tmpPerm == 'View Entered') {
+        $.session.CaseNotesViewEntered = true;
+      }
+      if (tmpPerm == 'Update Entered') {
+        $.session.CaseNotesUpdateEntered = true;
+      }
+      if (tmpPerm == 'Update') {
+        $.session.CaseNotesUpdate = true;
+      }
+      if (tmpPerm == 'Caseload Only') {
+        $.session.CaseNotesCaseloadRestriction = true;
+      }
+      if (tmpPerm == 'SSA Notes') {
+        $.session.CaseNotesSSANotes = true;
+      }
+    }
+
+    //Absent and progress notes/
+    if (tmpWindow == 'Anywhere Roster') {
+      if (tmpPerm == 'Delete Absent') {
+        $.session.RosterDeleteAbsent = true;
+      }
+      if (tmpPerm == 'Hide Progress Notes') {
+        $.session.HideProgressNotes = true;
+      }
+    }
+    //Demographics
+    if (tmpWindow == 'Anywhere Demographics') {
+      if (tmpPerm == 'View') {
+        $.session.DemographicsView = true;
+      }
+      if (tmpPerm == 'Update') {
+        $.session.DemographicsUpdate = true;
+      }
+
+      if (tmpPerm == 'View Relationships') {
+        $.session.DemographicsRelationshipsView = true;
+      }
+
+      if (tmpPerm == 'View General') {
+        $.session.DemographicsBasicDataView = true;
+      }
+
+      if (tmpPerm == 'Update Picture') {
+        $.session.DemographicsPictureUpdate = true;
+      }
+      if (tmpPerm == 'Delete Picture') {
+        $.session.DemographicsPictureDelete = true;
+      }
+
+      if (tmpPerm == 'View Notes') {
+        $.session.DemographicsNotesView = true;
+      }
+
+      if (tmpPerm == 'View Attachments') {
+        $.session.DemographicsViewAttachments = true;
+      }
+
+      if (tmpPerm == 'View Location Schedule') {
+        $.session.viewLocationSchedulesKey = true;
+      }
+      if (tmpPerm == 'View DOB') {
+        $.session.DemographicsViewDOB = true;
+      }
+      if (tmpPerm == 'View Medicaid Number') {
+        $.session.DemographicsViewMedicaid = true;
+      }
+      if (tmpPerm == 'View Medicare Number') {
+        $.session.DemographicsViewMedicare = true;
+      }
+      if (tmpPerm == 'View Resident Number') {
+        $.session.DemographicsViewResident = true;
+      }
+      if (tmpPerm == 'View SSN') {
+        $.session.DemographicsViewSSN = true;
+      }
+    }
+
+    //Incident Tracking Permissons
+    if (tmpWindow == 'Anywhere Incident Tracking') {
+      if (tmpPerm == 'View Case Load') {
+        $.session.incidentTrackingViewCaseLoad = true;
+      }
+      if (tmpPerm == 'Delete') {
+        $.session.incidentTrackingDelete = true;
+      }
+      if (tmpPerm == 'Insert') {
+        $.session.incidentTrackingInsert = true;
+      }
+      if (tmpPerm == 'Update') {
+        $.session.incidentTrackingUpdate = true;
+      }
+      if (tmpPerm == 'View') {
+        $.session.incidentTrackingView = true;
+      }
+      if (tmpPerm == 'Reviewed By User') {
+        $.session.incidentTrackingReviewedBy = true;
+      }
+      if (tmpPerm == 'Email Incident') {
+        $.session.incidentTrackingEmailIncident = true;
+      }
+    }
+
+    //Anywhere Plan
+    if (tmpWindow == 'Anywhere Plan' || $.session.isPSI == true) {
+      //plansettingsdiv
+      if (tmpPerm == 'Update' || $.session.isPSI == true) {
+        $.session.planUpdate = true;
+      }
+      if (tmpPerm == 'Delete Plan' || $.session.isPSI == true) {
+        $.session.planDelete = true;
+      }
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $.session.planView = true;
+      }
+      if (tmpPerm == 'Send to DODD' || $.session.isPSI == true) {
+        $.session.sendToDODD = true;
+      }
+      if (tmpPerm == 'Insert New Team Member' || $.session.isPSI == true) {
+        $.session.planInsertNewTeamMember = true;
+      }
+      if (tmpPerm == 'Assign Case Load' || $.session.isPSI == true) {
+        $.session.planAssignCaseload = true;
+      }
+      if (tmpPerm == 'Update DOB' || $.session.isPSI == true) {
+        $.session.planSignatureUpdateDOB = true;
+      }
+      if (tmpPerm == 'Update Building Number' || $.session.isPSI == true) {
+        $.session.planSignatureUpdateBuildingNumber = true;
+      }
+    }
+    //AeMAR
+    if (tmpWindow == 'Anywhere eMAR' || $.session.isPSI == true) {
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $.session.emarView = true;
+      }
+    }
+    //Anywhere Transportation
+    if (tmpWindow == 'Anywhere Transportation' || $.session.isPSI == true) {
+      if (tmpPerm == 'Update') {
+        $.session.transportationUpdate = true;
+      }
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $.session.transportationView = true;
+      }
+      if (tmpPerm == 'Manage Routes' || $.session.isPSI == true) {
+        $.session.transportationManageRoute = true;
+      }
+      if (tmpPerm == 'Add Routes' || $.session.isPSI == true) {
+        $.session.transportationAddRoute = true;
+      }
+    }
+
+    if (tmpWindow == 'Anywhere Scheduling' || $.session.isPSI == true) {
+      if (tmpPerm == 'Update') {
+        $.session.schedulingUpdate = true;
+      }
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $.session.schedulingView = true;
+      }
+    }
+
+    // Anywhere Forms
+    if (tmpWindow == 'Anywhere Forms' || $.session.isPSI == true) {
+      if (tmpPerm == 'Update' || $.session.isPSI == true) {
+        $.session.formsUpdate = true;
+      }
+      if (tmpPerm == 'Delete' || $.session.isPSI == true) {
+        $.session.formsDelete = true;
+      }
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $.session.formsView = true;
+      }
+      if (tmpPerm == 'Insert' || $.session.isPSI == true) {
+        $.session.formsInsert = true;
+      }
+      if (tmpPerm == 'Case Load') {
+        $.session.formsCaseload = true;
+      }
+      if ($.session.isPSI == true) {
+        $.session.formsCaseload = false;
+      }
 
       if (tmpPerm.length > 9) {
         if (tmpPerm.substring(0, 9) == 'Form Type') {
@@ -719,6 +1016,17 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Update' || $.session.isPSI == true) {
         $.session.ResetPasswordUpdate = true;
+      }
+    }
+
+    //Employment
+    if (tmpWindow == 'Employment') {
+      if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $('#Employmentsettingsdiv').removeClass('disabledModule');
+        $.session.EmploymentView = true;
+      }
+      if (tmpPerm == 'Update' || $.session.isPSI == true) {
+        $.session.EmploymentUpdate = true;
       }
     }
 
@@ -1582,11 +1890,12 @@ function checkModulePermissions() {
   if ($.session.OODView == false) {
     $('#OODsettingsdiv').addClass('disabledModule');
   }
-
   if ($.session.ResetPasswordView == false) {
     $('#Adminsettingdiv').addClass('disabledModule');
   }
-
+  if ($.session.EmploymentView == false) {
+    $('#Employmentsettingsdiv').addClass('disabledModule');
+  }
   if ($.session.CFView == false) {
     $('#consumerfinancessettingsdiv').addClass('disabledModule');
   }
@@ -1712,6 +2021,12 @@ function disableModules() {
     //Leave module on
   } else {
     $('#consumerfinancessettingsdiv').css('display', 'none');
+  }
+
+  if ($.session.anywhereEmploymentPermission == 'Employment') {
+    //Leave module on
+  } else {
+    $('#Employmentsettingsdiv').css('display', 'none');
   }
 }
 
