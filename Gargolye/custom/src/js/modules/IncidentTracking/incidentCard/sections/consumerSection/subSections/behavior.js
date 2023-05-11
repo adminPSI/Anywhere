@@ -77,7 +77,8 @@ const consumerBehavior = (function () {
     populateReviewTable();
   }
   function getTimeLength(start, end) {
-    //TODO: ash - calc time
+    const totalTime = UTIL.calculateTotalHours(start, end);
+    return totalTime;
   }
 
   function getDropdownData() {
@@ -175,6 +176,8 @@ const consumerBehavior = (function () {
     });
     occurrencesInput.addEventListener('keyup', e => {
       console.log(`${e.code} ${e.keyCode} ${e.charCode}`);
+    });
+    occurrencesInput.addEventListener('change', e => {
       tmpOccurrences = e.target.value;
     });
 
@@ -207,7 +210,7 @@ const consumerBehavior = (function () {
           behaviorData[selectedConsumerId][selectedBehaviorId].updated = true;
         }
 
-        if (tmpCompletedDate) {
+        if (tmpBehaviorTypeId) {
           behaviorData[selectedConsumerId][selectedBehaviorId].behaviorTypeId = tmpBehaviorTypeId;
         }
         if (tmpStartTime) {
@@ -415,8 +418,8 @@ const consumerBehavior = (function () {
         type => type.itFollowUpTypeId === behaviorDATA.followUpTypeId,
       );
       let behaviorType = filterBehaviorTypes[0] ? filterBehaviorTypes[0].behaviorTypeName : '';
-      let timeLength = getTimeLength(data.startTime, data.endTime);
-      let occurrencesNum = data.occurrences;
+      let timeLength = getTimeLength(behaviorDATA.startTime, behaviorDATA.endTime);
+      let occurrencesNum = behaviorDATA.occurrences;
 
       tableData.push({
         id: key,

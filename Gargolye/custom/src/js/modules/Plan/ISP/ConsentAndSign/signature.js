@@ -6,6 +6,7 @@ const csSignature = (() => {
   let showConsentStatments;
   // dom
   let signaturePopup;
+  let signatureSection;
   let changeMindQ;
   let complaintQ;
   let dissentAreaDisagree;
@@ -97,6 +98,8 @@ const csSignature = (() => {
     });
   }
   function checkForAllowClearSignature(sigType) {
+    if (isNew) return false;
+
     const planStatus = plan.getPlanStatus();
     const activePlan = plan.getPlanActiveStatus();
     $.session.planClearSignature = true; // temp
@@ -118,7 +121,8 @@ const csSignature = (() => {
     const changeMindRadios = [...changeMindQ.querySelectorAll('.radio')];
     const complaintRadios = [...complaintQ.querySelectorAll('.radio')];
     const standardRadios = [...standardQuestions.querySelectorAll('.ic_questionRadioContainer')];
-    debugger;
+    // sigPad;
+
     dissentAreaInput.value = '';
     dissentHowToInput.value = '';
     changeMindRadios.forEach(radio => {
@@ -136,6 +140,23 @@ const csSignature = (() => {
         input.checked = false;
       });
     });
+  }
+  function clearMemberDataOnClear() {
+    isSigned = false;
+
+    selectedMemberData.dateSigned = '';
+    selectedMemberData.description = '';
+    selectedMemberData.csChangeMind = '';
+    selectedMemberData.csContact = '';
+    selectedMemberData.csSupportsHealthNeeds = '';
+    selectedMemberData.csRightsReviewed = '';
+    selectedMemberData.csAgreeToPlan = '';
+    selectedMemberData.csTechnology = '';
+    selectedMemberData.csFCOPExplained = '';
+    selectedMemberData.csDueProcess = '';
+    selectedMemberData.csResidentialOptions = '';
+    selectedMemberData.dissentAreaDisagree = '';
+    selectedMemberData.dissentHowToAddress = '';
   }
 
   //*------------------------------------------------------
@@ -155,9 +176,13 @@ const csSignature = (() => {
       type: 'contained',
       callback: async () => {
         clearSignature = true;
+        clearMemberDataOnClear(); // this is so popup dosen't need to be refreshed
         clearInputsOnSignatureClear();
-        //await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
+        const updatedSignatureSection = buildSignatureSection();
+        signaturePopup.replaceChild(updatedSignatureSection, signatureSection);
+        await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
         DOM.ACTIONCENTER.removeChild(confirmPop);
+        planConsentAndSign.refreshTable();
       },
     });
     const noBtn = button.build({
@@ -663,7 +688,7 @@ const csSignature = (() => {
     prompt.style.marginBottom = '14px';
 
     //* SIGNATURE
-    const signatureSection = buildSignatureSection();
+    signatureSection = buildSignatureSection();
 
     //* DISSENT
     const dissentSection = buildDissentSection();

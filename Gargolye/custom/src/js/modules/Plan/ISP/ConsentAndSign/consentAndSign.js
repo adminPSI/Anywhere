@@ -230,7 +230,9 @@ const planConsentAndSign = (() => {
       csTechnology: selectedMemberData.csTechnology,
     };
     await consentAndSignAjax.updateTeamMember(data);
-    await consentAndSignAjax.updatePlanConsentStatements(data2);
+    if (!clearSignature) {
+      await consentAndSignAjax.updatePlanConsentStatements(data2);
+    }
 
     // triggers event listener for one span button
     oneSpan.fireDataUpdateEvent(planId);

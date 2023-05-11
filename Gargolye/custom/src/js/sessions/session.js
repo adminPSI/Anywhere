@@ -254,6 +254,7 @@ $.session.planInsertNewTeamMember = false;
 $.session.planAssignCaseload = false;
 $.session.planSignatureUpdateDOB = false;
 $.session.planSignatureUpdateBuildingNumber = false;
+$.session.planClearSignature = false;
 // Transportation
 $.session.transportationUpdate = false;
 $.session.transportationView = false;
@@ -581,7 +582,6 @@ function setSessionVariables() {
 
     //Anywhere Plan
     if (tmpWindow == 'Anywhere Plan' || $.session.isPSI == true) {
-      //plansettingsdiv
       if (tmpPerm == 'Update' || $.session.isPSI == true) {
         $.session.planUpdate = true;
       }
@@ -605,6 +605,9 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Update Building Number' || $.session.isPSI == true) {
         $.session.planSignatureUpdateBuildingNumber = true;
+      }
+      if (tmpPerm == 'Clear Signatures' || $.session.isPSI == true) {
+        $.session.planClearSignature = true;
       }
     }
     //AeMAR
