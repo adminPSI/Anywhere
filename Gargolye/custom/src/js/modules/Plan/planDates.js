@@ -295,6 +295,13 @@ const planDates = (function () {
     }
   }
   function validateAnnualDates() {
+    // cache original dates
+    origPlanYearStartDate = planYearStartDate;
+    origPlanYearEndDate = planYearEndDate;
+    origEffectiveStartDate = effectiveStartDate;
+    origEffectiveEndDate = effectiveEndDate;
+    origPlanReviewDate = planReviewDate;
+    
     const startInput = startDateInput.querySelector('input');
     const planStartTime = planYearStartDate.getTime();
     const templateStartDate = new Date('2020', '0', '1', 0).getTime();

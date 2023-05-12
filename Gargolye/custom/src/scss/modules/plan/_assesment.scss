@@ -191,6 +191,7 @@
 
     #editDatesScreen {
         transform: translateX(10%);
+        overflow-x: hidden;
 
         &.visible {
             transform: translateX(-100%);
