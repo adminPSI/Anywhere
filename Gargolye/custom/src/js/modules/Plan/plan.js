@@ -305,6 +305,7 @@ const plan = (function () {
       type: 'outlined',
       callback: () => {
         planDates.resetPlanDatesToOriginal();
+        planDates.updateBoxDateValues();
         screen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
       },

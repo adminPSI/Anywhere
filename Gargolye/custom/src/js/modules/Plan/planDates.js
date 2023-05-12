@@ -29,6 +29,7 @@ const planDates = (function () {
   let priorPlanYearEndDate;
   let priorPlanYearStartDate;
   let priorEffectiveStartDate;
+   let reviewDateOpts
 
   let onChangeCallback;
 
@@ -295,13 +296,6 @@ const planDates = (function () {
     }
   }
   function validateAnnualDates() {
-    // cache original dates
-    origPlanYearStartDate = planYearStartDate;
-    origPlanYearEndDate = planYearEndDate;
-    origEffectiveStartDate = effectiveStartDate;
-    origEffectiveEndDate = effectiveEndDate;
-    origPlanReviewDate = planReviewDate;
-    
     const startInput = startDateInput.querySelector('input');
     const planStartTime = planYearStartDate.getTime();
     const templateStartDate = new Date('2020', '0', '1', 0).getTime();
@@ -317,13 +311,6 @@ const planDates = (function () {
     }
   }
   function validateRevisionDates() {
-    // cache original dates
-    origPlanYearStartDate = planYearStartDate;
-    origPlanYearEndDate = planYearEndDate;
-    origEffectiveStartDate = effectiveStartDate;
-    origEffectiveEndDate = effectiveEndDate;
-    origPlanReviewDate = planReviewDate;
-
     const effectiveStartInput = effectiveStartDateInput.querySelector('input');
     const effectiveEndInput = effectiveEndDateInput.querySelector('input');
     const priorEffectiveStartTime = priorEffectiveStartDate && priorEffectiveStartDate.getTime();
@@ -415,11 +402,6 @@ const planDates = (function () {
           let newEndDate = dates.addYears(newStartDate, 1);
           newEndDate = dates.subDays(newEndDate, 1);
 
-          // cache original dates
-          // origPlanYearStartDate = planYearStartDate;
-          // origPlanYearEndDate = planYearEndDate;
-          // origEffectiveStartDate = effectiveStartDate;
-          // origEffectiveEndDate = effectiveEndDate;
           // set new dates
           planYearStartDate = newStartDate;
           planYearEndDate = newEndDate;
@@ -521,7 +503,7 @@ const planDates = (function () {
           }
 
           // cache original date
-          // origPlanReviewDate = planReviewDate;
+          origPlanReviewDate = planReviewDate;
           // set new date
           planReviewDate = newReviewDate;
 
@@ -560,29 +542,34 @@ const planDates = (function () {
       type: 'date',
       attributes: [{ key: 'data-plan-date-input', value: 'effectiveEndDateInput' }],
     };
-    let reviewDateOpts = {
+    reviewDateOpts = {
       label: 'Review',
       type: 'date',
       attributes: [{ key: 'data-plan-date-input', value: 'reviewDateInput' }],
     };
 
     if (planYearStartDate) {
+      origPlanYearStartDate = planYearStartDate;
       const formatedSD = UTIL.formatDateFromDateObj(planYearStartDate);
       startDateOpts.value = formatedSD;
     }
     if (effectiveStartDate) {
+      origEffectiveStartDate = effectiveStartDate;
       const formatedESD = UTIL.formatDateFromDateObj(effectiveStartDate);
       effectiveStartDateOpts.value = formatedESD;
     }
     if (planYearEndDate) {
+      origPlanYearEndDate = planYearEndDate;
       const formatedED = UTIL.formatDateFromDateObj(planYearEndDate);
       endDateOpts.value = formatedED;
     }
     if (effectiveEndDate) {
+      origEffectiveEndDate = effectiveEndDate;
       const formatedEED = UTIL.formatDateFromDateObj(effectiveEndDate);
       effectiveEndDateOpts.value = formatedEED;
     }
     if (planReviewDate) {
+      origPlanReviewDate = planReviewDate;
       const formatedRD = UTIL.formatDateFromDateObj(planReviewDate);
       reviewDateOpts.value = formatedRD;
     }
@@ -610,8 +597,31 @@ const planDates = (function () {
     return datesBoxDiv;
   }
 
+  function updateBoxDateValues() {
+    const startDateInput = document.querySelector('[data-plan-date-input="startDateInput"]');
+    const formatedSD = UTIL.formatDateFromDateObj(origPlanYearStartDate);
+    startDateInput.value = formatedSD;
+
+    const endDateIinput = document.querySelector('[data-plan-date-input="endDateInput"]');
+    const formatedED = UTIL.formatDateFromDateObj(origPlanYearEndDate);
+    endDateIinput.value = formatedED;
+
+    const effectiveStartDateInput = document.querySelector('[data-plan-date-input="effectiveStartDateInput"]');
+    const formatedESD = UTIL.formatDateFromDateObj(origEffectiveStartDate);
+    effectiveStartDateInput.value = formatedESD;
+
+    const effectiveEndDateInput = document.querySelector('[data-plan-date-input="effectiveEndDateInput"]');
+    const formatedEED = UTIL.formatDateFromDateObj(origEffectiveEndDate);
+    effectiveEndDateInput.value = formatedEED;
+
+    const reviewDateInput = document.querySelector('[data-plan-date-input="reviewDateInput"]');
+    const formatedRD = UTIL.formatDateFromDateObj(origPlanReviewDate);
+    reviewDateInput.value = formatedRD;
+  }
+
   return {
     buildDatesBox,
+    updateBoxDateValues,
     clearData,
     checkRequiredFields,
     dashHandler,
