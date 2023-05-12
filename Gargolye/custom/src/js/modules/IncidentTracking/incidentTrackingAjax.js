@@ -465,8 +465,6 @@
       },
     });
   }
-  //TODO: ash - c# and SQL
-  //TODO: ash - itBehaviorTypeId, behaviorTypeName
   function getitConsumerBehaviorTypes(callback) {
     $.ajax({
       type: 'POST',
@@ -682,7 +680,7 @@
         $.webServer.port +
         '/' +
         $.webServer.serviceName +
-        '/getitConsumerBehavior/',
+        '/getitConsumerBehaviors/',
       data:
         '{"token":"' +
         $.session.Token +
@@ -698,7 +696,7 @@
         callback(res);
       },
       error: function (xhr, status, error) {
-        console.log(xhr, status, error);
+        console.log(xhr.responseText);
       },
     });
   }

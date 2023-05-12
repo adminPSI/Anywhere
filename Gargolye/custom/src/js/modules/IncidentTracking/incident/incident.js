@@ -639,7 +639,6 @@ var incident = (function () {
 
     var consumerIdKeys = Object.keys(data);
     consumerIdKeys.forEach(key => {
-      debugger;
       var saveData = {
         token: $.session.Token,
         consumerInvolvedId: '',
