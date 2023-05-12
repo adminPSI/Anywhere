@@ -53,11 +53,20 @@ namespace Anywhere.service.Data
         {
             string companyWorkWeekStart = dg.getCompanyWorkWeekStartFromDB(token);
             StartDayOfWeek[] startDay = js.Deserialize<StartDayOfWeek[]>(companyWorkWeekStart);
-            //string workWeekStart = startDay[0].Day_of_Week.ToString();
-            string workWeekStart = startDay.Length != 0 ? startDay[0].Day_of_Week.ToString() : "S";
-            int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
-            DateTime weekStart = DateTime.Today.AddDays(-ded);
-            return weekStart;
+            if (startDay[0].Day_of_Week.Length > 3)
+            {
+                DateTime weekStart = DateTime.Parse(startDay[0].Day_of_Week.ToString());
+                return weekStart;
+            }
+            else
+            {
+                //string workWeekStart = startDay[0].Day_of_Week.ToString();
+                string workWeekStart = startDay.Length != 0 ? startDay[0].Day_of_Week.ToString() : "S";
+                int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
+                DateTime weekStart = DateTime.Today.AddDays(-ded);
+                return weekStart;
+            }
+            
         }
 
         public int DayOfWeekDeductionJD(DateTime date, string workWeekShort)
