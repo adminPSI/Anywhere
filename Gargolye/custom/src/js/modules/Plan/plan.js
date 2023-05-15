@@ -931,7 +931,7 @@ const plan = (function () {
     return idArray;
   }
 
-  async function runReportScreen(extraSpace) {
+  async function runReportScreen(extraSpace, attachments) {
     const selectedAttachmentsPlan = {};
     const selectedAttachmentsWorkflow = {};
     const selectedAttachmentsSignature = {};
@@ -942,10 +942,10 @@ const plan = (function () {
     signatureAttBody.innerHTML = '';
 
     // Show Attachements
-    const attachments = await planAjax.getPlanAndWorkFlowAttachments({
-      token: $.session.Token,
-      assessmentId: planId, //TODO
-    });
+    // const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+    //   token: $.session.Token,
+    //   assessmentId: planId, //TODO
+    // });
 
     let index = 0;
 
@@ -1076,7 +1076,7 @@ const plan = (function () {
      reportsScreen.appendChild(doneBtn);
   }
 
-  async function runDODDScreen(extraSpace) {
+  async function runDODDScreen(extraSpace, attachments) {
     const selectedAttachmentsPlan = {};
     const selectedAttachmentsWorkflow = {};
     const selectedAttachmentsSignature = {};
@@ -1087,10 +1087,10 @@ const plan = (function () {
     DODDworkflowAttBody.innerHTML = '';
 
     // Show Attachements
-    const attachments = await planAjax.getPlanAndWorkFlowAttachments({
-      token: $.session.Token,
-      assessmentId: planId, //TODO
-    });
+    // const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+    //   token: $.session.Token,
+    //   assessmentId: planId, //TODO
+    // });
 
     let index = 0;
 
@@ -1227,7 +1227,7 @@ const plan = (function () {
     POPUP.show(alertPopup);
   }
 
-  function buildMorePopupMenu() {
+  function buildMorePopupMenu(attachments) {
     const morepopupmenu = document.createElement('div');
     morepopupmenu.classList.add('moreMenuPopup__menu', 'visible');
 
@@ -1366,6 +1366,7 @@ const plan = (function () {
         case reportBtn:
         case reportBtn2: {
           targetScreen = 'reportsScreen';
+          attachments
           break;
         }
         case reportSignatureBtn: {
@@ -1379,6 +1380,7 @@ const plan = (function () {
             token: $.session.Token,
             assessmentId: getCurrentPlanId(),
           };
+          attachments
           break;
         }
         case sendtoPortalBtn: {
@@ -1392,6 +1394,7 @@ const plan = (function () {
             token: $.session.Token,
             assessmentId: getCurrentPlanId(),
           };
+          attachments
           break;
         }
         case editDatesBtn: {
@@ -1428,12 +1431,12 @@ const plan = (function () {
       if (targetScreen === 'DODDScreen') {
         const extraSpace = e.target === sendToDODDBtn ? 'false' : 'true';
         //  DODDScreen = buildDODDScreen();
-        runDODDScreen(extraSpace);
+        runDODDScreen(extraSpace, attachments);
       }
 
       if (targetScreen === 'reportsScreen') {
         const extraSpace = e.target === reportBtn ? 'false' : 'true';
-        runReportScreen(extraSpace);
+        runReportScreen(extraSpace, attachments);
       }
     });
 
@@ -1444,10 +1447,15 @@ const plan = (function () {
       classNames: 'moreMenuPopup',
     });
 
+    const attachments = await planAjax.getPlanAndWorkFlowAttachments({
+      token: $.session.Token,
+      assessmentId: planId,
+    }); 
+
     menuInnerWrap = document.createElement('div');
     menuInnerWrap.classList.add('moreMenuPopup__innerWrap');
 
-    morePopupMenu = buildMorePopupMenu();
+    morePopupMenu = buildMorePopupMenu(attachments);
     editDatesScreen = buildEditDatesScreen();
     updateStatusScreen = buildUpdateStatusScreen();
     deleteScreen = buildDeleteScreen();
