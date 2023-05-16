@@ -58,7 +58,7 @@ const dayServices = (function () {
     let selectedGroupId;
     let locationDropdownData;
     let enableMultiEdit = false;
-
+    let IsSaveBtnDisable = true;
     //permission
     // var PERMISSION__viewOnly = !$.session.DayServiceUpdate;
 
@@ -840,24 +840,27 @@ const dayServices = (function () {
             type: 'contained',
             icon: 'save',
             callback: function () {
-                dsTypeDropdown = document.getElementById('dsTypeDropdown');
-                //ciStaffDropdown = document.getElementById('ciDropdown');
-                groupDropdown = document.getElementById('groupDropdown');
-                //if (ciStaffDropdown) ciStaffID = ciStaffDropdown.options[ciStaffDropdown.selectedIndex].value;
-                if (groupDropdown)
-                    selectedGroupId = groupDropdown.options[groupDropdown.selectedIndex].value;
-                selectedDSType = dsTypeDropdown.options[dsTypeDropdown.selectedIndex].value;
-                saveTypeAndCi(
-                    consumer,
-                    inTime,
-                    newInTime,
-                    outTime,
-                    newOutTime,
-                    selectedDSType,
-                    ciStaffID,
-                    selectedGroupId,
-                );
-                POPUP.hide(popup);
+                if (IsSaveBtnDisable) {
+                    dsTypeDropdown = document.getElementById('dsTypeDropdown');
+                    //ciStaffDropdown = document.getElementById('ciDropdown');
+                    groupDropdown = document.getElementById('groupDropdown');
+                    //if (ciStaffDropdown) ciStaffID = ciStaffDropdown.options[ciStaffDropdown.selectedIndex].value;
+                    if (groupDropdown)
+                        selectedGroupId = groupDropdown.options[groupDropdown.selectedIndex].value;
+                    selectedDSType = dsTypeDropdown.options[dsTypeDropdown.selectedIndex].value;
+                    saveTypeAndCi(
+                        consumer,
+                        inTime,
+                        newInTime,
+                        outTime,
+                        newOutTime,
+                        selectedDSType,
+                        ciStaffID,
+                        selectedGroupId,
+                    );
+                    POPUP.hide(popup);
+                }
+                IsSaveBtnDisable = true;
             },
         });
         var deleteBtn = button.build({
@@ -902,6 +905,12 @@ const dayServices = (function () {
             //}
         });
 
+        saveBtn.addEventListener('keypress', event => {
+            if (event.keyCode === 13 && saveBtn.classList.contains('disabled')) {
+                IsSaveBtnDisable = false;
+            }
+        });
+
         groupDropdown.addEventListener('change', () => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             selectedGroup = selectedOption.innerText;
@@ -926,6 +935,7 @@ const dayServices = (function () {
         dropdown.populate(dsTypeDropdown, dsDropdownData, dsType);
         //dropdown.populate(ciDropdown, ciDropdownData, ciStaffID);
         dropdown.populate(groupDropdown, groupDropdownData, groupID);
+        checkRequiredFieldsOfNewEntry();
     }
 
     //====== POPUP WARNING WHEN CONSUMER HAS EXISTING DAY SERVICE ACTIVITY ===========
@@ -1004,7 +1014,7 @@ const dayServices = (function () {
         } else {
             saveBtn.classList.remove('disabled');
         }
-    }
+    } 
 
     //====== POPUP DISPLAYING OPTION TO CLOCKIN OR CLOCK OUT =========================
     function clockInOutChoicePopup() {

@@ -9,9 +9,9 @@ var timeApproval = (function () {
     // dropdowns
     var employees;
     var locations;
-    var supervisors; 
+    var supervisors;
     // filter data
-    var payPeriodText; 
+    var payPeriodText;
     var supervisorId;
     var supervisorName;
     var locationId;
@@ -77,10 +77,11 @@ var timeApproval = (function () {
     var selectedRows = []; // array of row ids
     var sortedSelectedRows;
     var rejectOrApprove;
-    let totalHours = 0; 
+    let totalHours = 0;
     //-TABLE DATA------------------
     let showMap = false;
     // const LSKEY_showMap = "se_showMap"
+    let IsFilterDisable = true;
 
     function clearAllGlobalVariables() {
         selectedRows = [];
@@ -258,8 +259,7 @@ var timeApproval = (function () {
             var pMessageWrap = document.createElement('div');
             pMessageWrap.classList.add('timeApprovalWarningPopup__messageWrap');
             var pMessage = document.createElement('p');
-      pMessage.innerHTML = `You have selected ${pCount} ${
-        pCount === 1 ? `entry` : 'entries'
+            pMessage.innerHTML = `You have selected ${pCount} ${pCount === 1 ? `entry` : 'entries'
                 } with a status of Pending, to be submitted.`;
             pMessageWrap.appendChild(pMessage);
 
@@ -275,8 +275,7 @@ var timeApproval = (function () {
             var aMessageWrap = document.createElement('div');
             aMessageWrap.classList.add('timeApprovalWarningPopup__messageWrap');
             var aMessage = document.createElement('p');
-      aMessage.innerHTML = `You have selected ${aCount} ${
-        aCount === 1 ? `entry` : 'entries'
+            aMessage.innerHTML = `You have selected ${aCount} ${aCount === 1 ? `entry` : 'entries'
                 } with a status of Awaiting Approval.`;
             aMessageWrap.appendChild(aMessage);
 
@@ -284,8 +283,7 @@ var timeApproval = (function () {
             aMessage2Wrap.classList.add('timeApprovalWarningPopup__messageWrap', 'messageWithBtns');
             var aMessage2 = document.createElement('p');
 
-      aMessage2.innerHTML = `Would you like to Approve or Reject ${
-        aCount === 1 ? `this entry` : 'these entries'
+            aMessage2.innerHTML = `Would you like to Approve or Reject ${aCount === 1 ? `this entry` : 'these entries'
                 }?`;
             var aMessageBtnWrap = document.createElement('div');
             aMessageBtnWrap.classList.add('btnWrap');
@@ -535,7 +533,7 @@ var timeApproval = (function () {
             filteredBy = document.createElement('div');
             filteredBy.classList.add('widgetFilteredBy');
         }
-        
+
 
         const StartDate = moment(startDate, 'YYYY-MM-DD').format('M/D/YYYY');
         const EndDate = moment(endDate, 'YYYY-MM-DD').format('M/D/YYYY');
@@ -778,34 +776,36 @@ var timeApproval = (function () {
         });
 
         applyBtn.addEventListener('click', () => {
-            POPUP.hide(filterPopup);
+ 
+            if (IsFilterDisable) {
+                POPUP.hide(filterPopup);
 
-            // if (tmpEmployeeId !== "") {
-            //   showMap = true
-            // } else showMap = false
+                // if (tmpEmployeeId !== "") {
+                //   showMap = true
+                // } else showMap = false
 
-            if (tmpWorkCodeId) workCodeId = tmpWorkCodeId;
-            if (tmpWorkCodeName) workCodeName = tmpWorkCodeName;
+                if (tmpWorkCodeId) workCodeId = tmpWorkCodeId;
+                if (tmpWorkCodeName) workCodeName = tmpWorkCodeName;
 
-            updateFilterData({
-                tmpSupervisorId,
-                tmpSupervisorName,
-                tmpLocationId,
-                tmpLocationName,
-                tmpEmployeeId,
-                tmpEmployeeName,
-                tmpStatus,
-                tmpStatusText,
-                tmpWorkCodeId,
-                tmpWorkCodeName,
-            });
+                updateFilterData({
+                    tmpSupervisorId,
+                    tmpSupervisorName,
+                    tmpLocationId,
+                    tmpLocationName,
+                    tmpEmployeeId,
+                    tmpEmployeeName,
+                    tmpStatus,
+                    tmpStatusText,
+                    tmpWorkCodeId,
+                    tmpWorkCodeName,
+                });
 
-            //reformat startDate
-            const StartDate = moment(startDate, 'YYYY-MM-DD').format('M/D/YYYY');
-            const EndDate = moment(endDate, 'YYYY-MM-DD').format('M/D/YYYY');
+                //reformat startDate
+                const StartDate = moment(startDate, 'YYYY-MM-DD').format('M/D/YYYY');
+                const EndDate = moment(endDate, 'YYYY-MM-DD').format('M/D/YYYY');
 
-            var filteredBy = document.querySelector('.widgetFilteredBy');
-            filteredBy.innerHTML = `<div class="filteredByData">
+                var filteredBy = document.querySelector('.widgetFilteredBy');
+                filteredBy.innerHTML = `<div class="filteredByData">
         <p><span>From Date:</span> ${StartDate}</p>
 	    <p><span>To Date:</span> ${EndDate}</p> 
         <p><span>Supervisor:</span> ${supervisorName}</p>
@@ -815,25 +815,38 @@ var timeApproval = (function () {
         <p><span>Work Code:</span> ${workCodeName}</p>
       </div>`;
 
-            mulitSelectBtn.classList.remove('disabled');
-            mulitSelectBtn.classList.remove('enabled');
-            selectAllBtn.classList.remove('enabled');
+                mulitSelectBtn.classList.remove('disabled');
+                mulitSelectBtn.classList.remove('enabled');
+                selectAllBtn.classList.remove('enabled');
 
-            enableMultiEdit = false;
-            enableSelectAll = false;
+                enableMultiEdit = false;
+                enableSelectAll = false;
 
-            selectedRows = [];
-            var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
-            highlightedRows.forEach(row => row.classList.remove('selected'));
+                selectedRows = [];
+                var highlightedRows = [].slice.call(document.querySelectorAll('.table__row.selected'));
+                highlightedRows.forEach(row => row.classList.remove('selected'));
 
-            startDate = payPeriod.start;
-            endDate = payPeriod.end;
+                startDate = payPeriod.start;
+                endDate = payPeriod.end; 
 
-            getDropdownData(function () {
-                loadReviewPage();
-            });
+                getDropdownData(function () {
+                    loadReviewPage();
+                });
+
+
+            }
+            IsFilterDisable = true;
         });
+
+        applyBtn.addEventListener('keypress', event => {
+            if (event.keyCode === 13 && applyBtn.classList.contains('disabled')) {
+                IsFilterDisable = false;
+            }
+        });
+
         cancelBtn.addEventListener('click', () => {
+            endDate = endDate;
+            startDate = startDate; 
             POPUP.hide(filterPopup);
         });
     }
@@ -852,7 +865,7 @@ var timeApproval = (function () {
             type: 'date',
             style: 'secondary',
             value: startDate,
-        }); 
+        });
         endDateInput = input.build({
             id: 'endDateInput',
             label: 'To',
@@ -864,7 +877,7 @@ var timeApproval = (function () {
         applyBtn = button.build({
             text: 'Apply',
             style: 'secondary',
-            type: 'contained', 
+            type: 'contained',
         });
         cancelBtn = button.build({
             text: 'Cancel',
@@ -1221,7 +1234,7 @@ var timeApproval = (function () {
     function populateTable(results) {
         totalHours = 0;
         var tableData = results.map(entry => {
-      var isOrginUser = $.session.PeopleId === entry.peopleId ? 'Y' : 'N';
+            var isOrginUser = $.session.PeopleId === entry.peopleId ? 'Y' : 'N';
 
             var entryId = entry.Single_Entry_ID;
             var status = statusLookup[entry.Anywhere_status];
@@ -1234,7 +1247,7 @@ var timeApproval = (function () {
             var hours = parseFloat(entry.check_hours);
             var location = entry.Location_Name;
             var workcode = entry.WCCode;
-      var comments = entry.comments;
+            var comments = entry.comments;
             const consumersPresent = entry.Number_Consumers_Present;
             const transportationUnits = entry.transportation_units;
             let isValid;
@@ -1253,22 +1266,22 @@ var timeApproval = (function () {
             additionalInformation.innerHTML = consumersPresent;
             if (transportationUnits !== '') additionalInformation.innerHTML += icons.car;
 
-      const iconsBox = document.createElement('div');
-      iconsBox.classList.add('iconsBox');
-      iconsBox.appendChild(additionalInformation);
+            const iconsBox = document.createElement('div');
+            iconsBox.classList.add('iconsBox');
+            iconsBox.appendChild(additionalInformation);
 
-      if (comments !== "" && comments !== null) {
-        const commentsBox = document.createElement('div');
-        commentsBox.classList.add('commentsBox');
-        commentsBox.innerHTML = icons.note;
-        iconsBox.appendChild(commentsBox);
+            if (comments !== "" && comments !== null) {
+                const commentsBox = document.createElement('div');
+                commentsBox.classList.add('commentsBox');
+                commentsBox.innerHTML = icons.note;
+                iconsBox.appendChild(commentsBox);
 
-        if (isValid === 'false'){
-          const svgElement = commentsBox.querySelector('svg');
-          svgElement.style.color = 'white';
-        }
-      }
-     
+                if (isValid === 'false') {
+                    const svgElement = commentsBox.querySelector('svg');
+                    svgElement.style.color = 'white';
+                }
+            }
+
             return {
                 id: entryId,
                 values: [
@@ -1280,7 +1293,7 @@ var timeApproval = (function () {
                     hours,
                     location,
                     workcode,
-          iconsBox.outerHTML
+                    iconsBox.outerHTML
                 ],
                 attributes: [
                     { key: 'data-status', value: entry.Anywhere_status },
@@ -1466,7 +1479,7 @@ var timeApproval = (function () {
         if (!statusText) statusText = 'All';
         if (!workCodeId) workCodeId = '%';
         if (!workCodeName) workCodeName = 'All';
-        
+
         buildReviewPage();
         getReviewTableData(populateTable);
     }
@@ -1485,7 +1498,7 @@ var timeApproval = (function () {
         startDate = startDateIso;
         endDate = endDateIso;
         status = dashStatus;
-    workCodeData = await timeEntry.getWorkCodes();
+        workCodeData = await timeEntry.getWorkCodes();
 
         payPeriod = timeEntry.setSelectedPayPeriod(
             startDateIso,
@@ -1535,12 +1548,12 @@ var timeApproval = (function () {
         GOOGLE_MAP.initMap(10, center, markers);
     }
 
-  async function refreshPage(payperiod) {
+    async function refreshPage(payperiod) {
         payPeriodData = timeEntry.getPayPeriods(false);
         payPeriod = payperiod ? payperiod : timeEntry.getCurrentPayPeriod(false);
         locationData = timeEntry.getLocations();
         setActiveModuleSectionAttribute('timeEntry-approval');
-    workCodeData = await timeEntry.getWorkCodes();
+        workCodeData = await timeEntry.getWorkCodes();
 
         loadReviewPage();
     }
@@ -1574,8 +1587,8 @@ var timeApproval = (function () {
         //displayPayPeriodPopup();
         //startDate = payPeriod.start;
         //endDate = payPeriod.end;
-        endDate = UTIL.formatDateFromDateObj(dates.addDays(new Date(), 5));  
-        startDate = UTIL.formatDateFromDateObj(dates.subDays(new Date(), 1));   
+        endDate = UTIL.formatDateFromDateObj(dates.addDays(new Date(), 5));
+        startDate = UTIL.formatDateFromDateObj(dates.subDays(new Date(), 1));
 
         getDropdownData(function () {
             loadReviewPage();
