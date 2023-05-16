@@ -635,7 +635,7 @@
     let questionInput;
     let hasStaticText;
 
-    let textAreaCharLimit = 1000;
+    let textAreaCharLimit = 10000;
 
     switch (answerStyle) {
       case 'TEXTAREA': {
@@ -660,7 +660,7 @@
           style: 'secondary',
           id: answerId,
           value: answerText ? answerText : '',
-          charLimit: 1000,
+          charLimit: 10000,
           forceCharLimit: true,
         });
         break;
@@ -1002,7 +1002,7 @@
             const gridCell = document.createElement('div');
             gridCell.classList.add('grid__cell');
 
-            let textAreaCharLimit = 1000;
+            let textAreaCharLimit = 10000;
 
             switch (answerStyle) {
               case 'TEXTAREA': {
@@ -1170,7 +1170,7 @@
       style: 'secondary',
       id: answerId,
       value: answerText,
-      charLimit: 2000,
+      charLimit: 10000,
       forceCharLimit: true,
     });
 
@@ -1213,10 +1213,10 @@
       questionId,
     } = data;
 
-    let charLimit = 2000;
-    if (data.text && data.text === 'List other tools:') {
-      charLimit = 1000;
-    }
+    let charLimit = 10000;
+    // if (data.text && data.text === 'List other tools:') {
+    //   charLimit = 1000;
+    // }
 
     const questionInputMarkup = input.build({
       type: 'textarea',
