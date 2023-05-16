@@ -226,8 +226,11 @@ namespace Anywhere.service.Data
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
             ApplicationName[] appName = js.Deserialize<ApplicationName[]>(applicationName);
-            
-            
+            if (appName[0].setting.ToUpper() == "ADVISOR")
+            {
+                Advisor = true;
+            }
+
             ReportDocument cr = new ReportDocument();
             bool eS = false;
             long ID = long.Parse(assessmentID);
