@@ -526,7 +526,7 @@ const planOutcomes = (() => {
     const outcomeId = saveData.outcomeId;
     const whatHappened = saveData.whatHappened;
     const howHappened = saveData.howHappened;
-    const experienceOrder = `${saveData.experienceOrder}`;
+    const experienceOrder = saveData.experienceOrder;
 
     //* Insert Experience
     //*---------------------------
@@ -597,28 +597,26 @@ const planOutcomes = (() => {
       }
     });
 
-    //* New Table
+    const tableID = 'experiencesTableDummy';
+    const rowId = `experiences${experienceId}`;
+
+    //* Add Rows
     //*---------------------------
-    const tableOptions = {
-      tableId: `experiencesTable${experienceId}`,
-      headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
-      columnHeadings: [
-        'What needs to happen',
-        'How should it happen?',
-        'Who is responsible?',
-        'When / How Often?',
+    table.addRows(
+      tableID,
+      [
+        {
+          id: rowId,
+          values:  [newTableData[0].values[0], newTableData[0].values[1], newTableData[0].values[2], newTableData[0].values[3]],
+          onClick: () => {
+            showExperiencesPopup({ ...saveData }, false)
+          },
+        },
       ],
-      sortable: false,
-      callback: () => showExperiencesPopup({ ...saveData }, false),
-    };
-    //* Build Table
-    const experiencesTable = table.build(tableOptions);
-    experiencesTable.classList.add(`experiencesTable`);
-    //* Populate Table
-    table.populate(experiencesTable, newTableData, false);
-    //* Append Table
-    const addExpTableBtn = expTableWrap.querySelector('.btn');
-    expTableWrap.insertBefore(experiencesTable, addExpTableBtn);
+      isSortable,
+    );
+
+    
   }
   async function updateOutcomeExperience(updateData, respPartysToDelete) {
     const newTableData = [];
@@ -721,28 +719,45 @@ const planOutcomes = (() => {
 
     await planOutcomesAjax.updatePlanOutcomeExperienceResponsibility(respData);
 
-    //* Build New Table
-    //*---------------------------
-    const tableOptions = {
-      tableId: `experiencesTable${experienceIds}`,
-      headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
-      columnHeadings: [
-        'What needs to happen',
-        'How should it happen?',
-        'Who is responsible?',
-        'When / How Often?',
+    const tableID = 'experiencesTableDummy';
+    const rowId = `experiences${experienceId}`;
+
+    table.updateRows(
+      tableID,
+      [
+        {
+          id: rowId,
+          values:  [whatHappened, howHappened, newTableData[0].values[2], newTableData[0].values[3]],
+          onClick: () => {
+            showExperiencesPopup({ ...updateData }, false)
+          },
+        },
       ],
-      sortable: false,
-      callback: () => showExperiencesPopup({ ...updateData }, false),
-    };
-    //* Build Table
-    const newExperiencesTable = table.build(tableOptions);
-    newExperiencesTable.classList.add(`experiencesTable`);
-    //* Populate Table
-    table.populate(newExperiencesTable, newTableData, false);
-    //* Replace Old Table w/New Table
-    const oldExperiencesTable = document.getElementById(`experiencesTable${experienceIds}`);
-    oldExperiencesTable.parentNode.replaceChild(newExperiencesTable, oldExperiencesTable);
+      isSortable,
+    );
+
+    // //* Build New Table
+    // //*---------------------------
+    // const tableOptions = {
+    //   tableId: `experiencesTable${experienceIds}`,
+    //   headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
+    //   columnHeadings: [
+    //     'What needs to happen',
+    //     'How should it happen?',
+    //     'Who is responsible?',
+    //     'When / How Often?',
+    //   ],
+    //   sortable: false,
+    //   callback: () => showExperiencesPopup({ ...updateData }, false),
+    // };
+    // //* Build Table
+    // const newExperiencesTable = table.build(tableOptions);
+    // newExperiencesTable.classList.add(`experiencesTable`);
+    // //* Populate Table
+    // table.populate(newExperiencesTable, newTableData, false);
+    // //* Replace Old Table w/New Table
+    // const oldExperiencesTable = document.getElementById(`experiencesTable${experienceIds}`);
+    // oldExperiencesTable.parentNode.replaceChild(newExperiencesTable, oldExperiencesTable);
   }
   async function deleteOutcomeExperience(outcomeId, experienceId) {
     await planOutcomesAjax.deletePlanOutcomeExperience({
@@ -751,11 +766,11 @@ const planOutcomes = (() => {
       experienceId: experienceId,
     });
 
-    const outcomeDiv = document.querySelector(`.outcome${outcomeId}`);
-    const expTableWrap = outcomeDiv.querySelector('.experiencesTablesWrap');
-    const expTable = expTableWrap.querySelector(`#experiencesTable${experienceId}`);
+    const experiencesTableDummy = document.querySelector('#experiencesTableDummy');
+    const tableBody = experiencesTableDummy.querySelector('.table__body');
+    const expTable = tableBody.querySelector(`#experiences${experienceId}`);
 
-    expTableWrap.removeChild(expTable);
+    tableBody.removeChild(expTable);
   }
   //-- Helpers --------
   function getColTextForWhenHowOften(freq, value, text) {
@@ -1172,11 +1187,10 @@ const planOutcomes = (() => {
         doneBtn.classList.add('disabled');
 
         if (isNew) {
-          const outcome = document.querySelector(`.outcome${saveUpdateData.outcomeId}`);
-          const expTableWrap = outcome.querySelector('.experiencesTablesWrap');
-          const expTables = [...expTableWrap.querySelectorAll('.table')];
-          saveUpdateData.experienceOrder = expTables.length;
-          insertOutcomeExperience({ ...saveUpdateData }, expTableWrap);
+          const expDummyTable = document.getElementById('experiencesTableDummy');
+          const rowOrder = table.getRowCount('experiencesTableDummy') + 1;
+          saveUpdateData.experienceOrder = rowOrder;
+          insertOutcomeExperience({ ...saveUpdateData }, expDummyTable);
         } else {
           updateOutcomeExperience({ ...saveUpdateData }, respPartysToDelete);
         }
@@ -1283,14 +1297,26 @@ const planOutcomes = (() => {
         'Who is responsible?',
         'When / How Often?',
       ],
-      sortable: false,
+      sortable: isSortable,
+      onSortCallback: async sortData => {
+        const experienceId = sortData.row.id.replace('experiences', '');
+        sortData.newIndex = sortData.newIndex + 1;
+        sortData.oldIndex = sortData.oldIndex + 1;
+        await planOutcomesAjax.updatePlanOutcomesExperienceOrder({
+          token: $.session.Token,
+          outcomeId: parseInt(outcomeId),
+          experienceId: parseInt(experienceId),
+          newPos: parseInt(sortData.newIndex),
+          oldPos: parseInt(sortData.oldIndex),
+        });
+      },
     });
     experiencesDummyTable.classList.add(`experiencesTable`);
     experiencesDiv.appendChild(experiencesDummyTable);
     // end dummy table
 
     if (outcomesData[outcomeId] && outcomesData[outcomeId].experiences) {
-      Object.values(outcomesData[outcomeId].experiences)
+      const tableData = Object.values(outcomesData[outcomeId].experiences)
         .sort((a, b) => {
           return a.experienceOrder < b.experienceOrder
             ? -1
@@ -1298,69 +1324,44 @@ const planOutcomes = (() => {
             ? 1
             : 0;
         })
-        .map((td, index) => {
-          const tableData = [];
+        .map(td => {
           const whatHappened = td.whatHappened;
           const howHappened = td.howHappened;
           const respObj = {};
-
+          let responsibilityText = "";
+          let whenHowOften = "";
+          
           // checking for responsibilities
           Object.values(td.responsibilities).forEach((resp, index) => {
-            const respId = resp.responsibilityIds;
             const responsibleContact = resp.responsibleContact;
             const responsibleProvider = resp.responsibleProvider;
             const whenHowOftenValue = resp.whenHowOftenValue;
             const whenHowOftenFrequency = resp.whenHowOftenFrequency;
             const whenHowOftenText = resp.whenHowOftenText;
-
+    
             respObj[index] = {
-              responsibilityIds: respId,
               responsibleContact: responsibleContact,
               responsibleProvider: responsibleProvider,
-              whenHowOftenValue: whenHowOftenValue,
-              whenHowOftenFrequency: whenHowOftenFrequency,
-              whenHowOftenText: whenHowOftenText,
             };
-
+    
             const whoResponsible = getColTextForWhoResponsible(
               responsibleContact,
               responsibleProvider,
             );
-            const whenHowOften = getColTextForWhenHowOften(
+            whenHowOften = getColTextForWhenHowOften(
               whenHowOftenFrequency,
               whenHowOftenValue,
               whenHowOftenText,
             );
-
-            if (index === 0) {
-              tableData.push({
-                // id: `resp${respId}`,
-                attributes: [{ key: 'data-mainrow', value: 'true' }],
-                values: [whatHappened, howHappened, whoResponsible, whenHowOften],
-              });
-            } else {
-              tableData.push({
-                // id: `resp${respId}`,
-                attributes: [{ key: 'data-mainrow', value: 'false' }],
-                values: ['', '', whoResponsible, whenHowOften],
-              });
-            }
+    
+            responsibilityText += `${whoResponsible} \n`;
           });
-
-          //*--------------------------------
-          //* Table
-          //*--------------------------------
-          const tableOptions = {
-            tableId: `experiencesTable${td.experienceIds}`,
-            headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
-            columnHeadings: [
-              'What needs to happen',
-              'How should it happen?',
-              'Who is responsible?',
-              'When / How Often?',
-            ],
-            sortable: false,
-            callback: () =>
+    
+          const rowId = `experiences${td.experienceIds}`;
+          return {
+            id: rowId,
+            values: [whatHappened, howHappened, responsibilityText, whenHowOften],
+            onClick: () =>
               showExperiencesPopup(
                 {
                   outcomeId: td.outcomeId,
@@ -1375,16 +1376,12 @@ const planOutcomes = (() => {
                 false,
               ),
           };
-          //* Build Table
-          const experiencesTable = table.build(tableOptions);
-          experiencesTable.classList.add(`experiencesTable`);
-          //* Populate Table
-          table.populate(experiencesTable, tableData, false);
-
-          experiencesDiv.appendChild(experiencesTable);
         });
+    
+      table.populate(experiencesDummyTable, tableData, isSortable);
     }
-
+    
+    
     experiencesDiv.appendChild(addExpTableBtn);
 
     return experiencesDiv;
