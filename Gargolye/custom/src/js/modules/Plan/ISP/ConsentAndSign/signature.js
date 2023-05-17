@@ -696,7 +696,8 @@ const csSignature = (() => {
     //* PROMPT
     //*------------------------------
     const prompt = document.createElement('p');
-    prompt.innerText = `I agree this plan reflects actions, services, and supports requested by me and may be sent to those providing services to me.`;
+      prompt.innerText = `By checking the boxes below, I agree that this plan reflects actions, services, and supports as requested by the person listed. As a provider, 
+                            I agree to the services listed in this plan for which I am named a responsible party. I understand that I may revoke my consent at any time verbally or in writing in accordance with DODD rules.`;
 
     prompt.style.marginBottom = '14px';
 
