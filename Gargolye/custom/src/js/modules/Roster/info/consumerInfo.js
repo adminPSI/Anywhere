@@ -346,6 +346,10 @@ var consumerInfo = (function () {
       style: 'secondary',
       type: 'contained',
       callback: e => {
+        if (!$.session.DemographicsPictureDelete) {
+          return;
+        }
+
         rosterAjax.updatePortrait(
           '',
           parseInt(consumerId),
