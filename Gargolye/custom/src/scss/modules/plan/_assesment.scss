@@ -360,7 +360,17 @@
 
           .checkbox.checkbox-mtd {
             transform: none !important;
-            //-webkit-transform: none !important;
+            -webkit-transform: none !important;
+
+            #reportCheckbox {
+              transform: none !important;
+              -webkit-transform: none !important;
+             }
+             span {
+              transform: none !important;
+              -webkit-transform: none !important;
+             }
+            .checkbox-mtd>span:after { top: 7px; }
           }
         }
     }
