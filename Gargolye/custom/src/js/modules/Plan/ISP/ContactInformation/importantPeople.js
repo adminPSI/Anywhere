@@ -141,13 +141,7 @@ const isp_ci_importantPeople = (() => {
     } else {
       phoneInput.classList.remove('error');
     }
-    // EMAIL
-    emailInput.querySelector('input').value = opts.email;
-    if (opts.email === '') {
-      emailInput.classList.add('error');
-    } else {
-      emailInput.classList.remove('error');
-    }
+    
     checkForErrors();
   }
 
@@ -380,7 +374,6 @@ const isp_ci_importantPeople = (() => {
       readonly: readOnly,
       type: 'email',
     });
-    if (popupData.email === '') emailInput.classList.add('error');
 
     // Wrap up Phones w/Ext.
     const phoneWrap = document.createElement('div');
@@ -536,14 +529,6 @@ const isp_ci_importantPeople = (() => {
       checkForErrors();
     });
 
-    emailInput.addEventListener('input', event => {
-      if (event.target.value === '') {
-        emailInput.classList.add('error');
-      } else {
-        emailInput.classList.remove('error');
-      }
-      checkForErrors();
-    });
   }
 
   function checkForErrors() {
