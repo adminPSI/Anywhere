@@ -85,6 +85,7 @@ var timeEntryCard = (function () {
   var endLatitude;
   var endLongitude;
   // transportation
+  var transportationSaved = false;
   var isTransportationValid;
   var destination = null;
   var odometerEnd = null;
@@ -706,10 +707,12 @@ var timeEntryCard = (function () {
   // Transportation
   //------------------------------------
   function saveTransportation() {
+    transportationSaved = true;
     POPUP.hide(transportationPopup);
     transportationBtn.classList.add('success');
   }
   function deleteTransportation() {
+    transportationSaved = false;
     POPUP.hide(transportationPopup);
     clearTransportationValues();
     transportationBtn.classList.remove('success');
@@ -796,8 +799,8 @@ var timeEntryCard = (function () {
 
         if (!startValue && !endValue && !totalValue) {
           // blank slate, clear all errors
-        // odometerTotalInput.classList.remove('disabled');
-        // odometerTotalInput.classList.remove('error');
+          // odometerTotalInput.classList.remove('disabled');
+          // odometerTotalInput.classList.remove('error');
           odometerTotalInput.classList.add('error');
           odometerStartInput.classList.remove('disabled');
           odometerStartInput.classList.remove('error');
@@ -882,7 +885,7 @@ var timeEntryCard = (function () {
       }
     }
 
-     checkTotalMiles();
+    checkTotalMiles();
     checkOdometer();
     checkReason();
     checkDestination();
@@ -958,17 +961,20 @@ var timeEntryCard = (function () {
     });
     deleteTransBtn.addEventListener('click', deleteTransportation);
     cancelTransBtn.addEventListener('click', () => {
-      transportationType = oldTransportationType ? oldTransportationType : transportationType;
-      transportationReimbursable = oldTransportationReimbursable
-        ? oldTransportationReimbursable
-        : transportationReimbursable;
-      odometerStart =
-        oldOdometerStart || oldOdometerStart === '' ? oldOdometerStart : odometerStart;
-      odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
-      // transportationUnits = oldTransportationUnits ? oldTransportationUnits : transportationUnits;
-      destination = oldDestination ? oldDestination : destination;
-      reason = oldReason ? oldReason : reason;
-      licensePlateNumber = oldlicenseplate ? oldlicenseplate : licensePlateNumber;
+      if (transportationSaved) {
+        transportationType = oldTransportationType ? oldTransportationType : transportationType;
+        transportationReimbursable = oldTransportationReimbursable
+          ? oldTransportationReimbursable
+          : transportationReimbursable;
+        odometerStart =
+          oldOdometerStart || oldOdometerStart === '' ? oldOdometerStart : odometerStart;
+        odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
+        destination = oldDestination ? oldDestination : destination;
+        reason = oldReason ? oldReason : reason;
+        licensePlateNumber = oldlicenseplate ? oldlicenseplate : licensePlateNumber;
+      } else {
+        clearTransportationValues();
+      }
 
       POPUP.hide(transportationPopup);
     });
@@ -1294,12 +1300,18 @@ var timeEntryCard = (function () {
       if (isDisabled) {
         reasonDropdown.classList.remove('error');
       } else {
-        if (currentValue === '%' || currentValue === '' && (reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged)) {
+        if (
+          currentValue === '%' ||
+          (currentValue === '' &&
+            reasonRequired &&
+            (!evvReasonCode || evvReasonCode === '%') &&
+            defaultTimesChanged)
+        ) {
           reasonDropdown.classList.add('error');
-         // roster2.toggleMiniRosterBtnVisible(false);
+          // roster2.toggleMiniRosterBtnVisible(false);
         } else {
           reasonDropdown.classList.remove('error');
-         // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
+          // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
         }
       }
     }
