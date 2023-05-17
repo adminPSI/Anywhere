@@ -83,6 +83,16 @@ var itPeopleSection = (function () {
       classNames: ['name'],
       attributes: [{ key: 'maxlength', value: '50' }],
       value: name,
+      callbackType: 'input',
+      callback: event => {
+        // Name input is required, else disable the save button
+        if (event.target.value === '') {
+          nameInput.classList.add('error');
+        } else {
+          nameInput.classList.remove('error');
+        }
+        incidentCard.checkEntireIncidentCardforErrors();
+      }
     });
     var involvementDropdown = dropdown.build({
       label: 'Involvement Type',
@@ -165,6 +175,8 @@ var itPeopleSection = (function () {
         incidentCard.checkEntireIncidentCardforErrors();
       },
     });
+
+    nameInput.classList.add('error');
 
     // populate drodowns
     var involvementTypes = incidentTracking.getInvolvementTypes();
