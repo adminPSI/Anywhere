@@ -5,6 +5,7 @@ var consumerInfo = (function () {
   var consumerInfoCard;
   var currentlyVisibleSection;
   var hasUnreadNote;
+  var modalOverlay;
 
   function getImageOrientation(file, callback) {
     var reader = new FileReader();
@@ -210,12 +211,13 @@ var consumerInfo = (function () {
     var rosterList = document.querySelector('.roster');
     rosterList.classList.add('fadeOut');
     DOM.toggleHeaderOpacity();
-
+  
     setTimeout(function () {
       consumerInfoCard.classList.add('visible');
       if (!isMobile) {
         bodyScrollLock.disableBodyScroll(consumerInfoCard);
       }
+      modalOverlay.classList.add('visibleModal');
     }, 300);
   }
   function closeCard() {
@@ -242,6 +244,7 @@ var consumerInfo = (function () {
       if (!isMobile) {
         bodyScrollLock.enableBodyScroll(consumerInfoCard);
       }
+      modalOverlay.classList.remove('visibleModal');
     }, 200);
 
     currentlyVisibleSection = null;
@@ -937,7 +940,7 @@ var consumerInfo = (function () {
   function buildCard() {
     consumerInfoCard = document.createElement('div');
     consumerInfoCard.classList.add('consumerInfoCard');
-
+  
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     var backBtn = button.build({
@@ -958,17 +961,17 @@ var consumerInfo = (function () {
     });
     btnWrap.appendChild(backBtn);
     btnWrap.appendChild(closeBtn);
-
+  
     var cardInner = document.createElement('div');
     cardInner.classList.add('cardInner');
     var cardHeading = document.createElement('div');
     cardHeading.classList.add('consumerInfoCard__heading');
     var cardBody = document.createElement('div');
     cardBody.classList.add('consumerInfoCard__body');
-
+  
     var cardMenu = buildMenu();
     cardBody.appendChild(cardMenu);
-
+  
     var sections = buildSections([
       'absent',
       'photo',
@@ -984,18 +987,32 @@ var consumerInfo = (function () {
     sections.forEach(section => {
       cardBody.appendChild(section);
     });
-
-    // build card
+  
+    // Build card
     cardInner.appendChild(cardHeading);
     cardInner.appendChild(cardBody);
-
+  
     consumerInfoCard.appendChild(btnWrap);
     consumerInfoCard.appendChild(cardInner);
-
+  
     setupCardEvents(cardMenu);
-
+  
+    // Create overlay element
+    modalOverlay = document.createElement('div');
+    modalOverlay.classList.add('modalOverlay');
+  
+    // Add event listener to close the card when clicking outside of it
+    modalOverlay.addEventListener('click', function(event) {
+      closeCard();
+    });
+  
+    // Append overlay and card to the body
+    document.body.appendChild(modalOverlay);
+    document.body.appendChild(consumerInfoCard);
+  
     return consumerInfoCard;
   }
+  
 
   return {
     buildCard,
