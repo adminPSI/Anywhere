@@ -2204,6 +2204,12 @@ namespace Anywhere
             return poW.getPlanSpecificOutcomes(token, assessmentId, targetAssessmentVersionId);
         }
 
+        public AnywhereAssessmentWorker.ServiceVendors[] getPlanOutcomesPaidSupportProviders(string assessmentId)
+        {
+            return poW.getPlanOutcomesPaidSupportProviders(assessmentId);
+        }
+
+
         public string insertPlanOutcomeProgressSummary(string token, long planId, string progressSummary)
         {
             return poW.insertPlanOutcomeProgressSummary(token, planId, progressSummary);
