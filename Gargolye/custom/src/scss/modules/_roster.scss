@@ -424,6 +424,13 @@
         pointer-events: none;
         cursor: default;
       }
+      .demoPhones{
+        pointer-events: all;
+      }
+
+      svg {
+        width: 24px;
+      }
 
       .view {
         &.hidden {
