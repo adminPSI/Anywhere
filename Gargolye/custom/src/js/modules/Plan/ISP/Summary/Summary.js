@@ -1975,7 +1975,7 @@ const planSummary = (function () {
       id: 'backupPlan',
       type: 'textarea',
       value: additionalSummaryData.providerBackUp,
-      charLimit: 2000,
+      charLimit: 10000,
       classNames: 'autosize',
       forceCharLimit: true,
       onBlurCallback: event => {

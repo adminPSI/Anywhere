@@ -53,8 +53,8 @@ const planData = (() => {
       },
       summary: {
         aloneTime: 10000,
-        importantTo: 2500,
-        importantFor: 2500,
+        importantTo: 10000,
+        importantFor: 10000,
         skillsAndAbilities: 10000,
         whatIsRisk: 10000,
         whatSupportLooksLike: 10000,
