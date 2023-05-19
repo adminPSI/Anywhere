@@ -1007,7 +1007,8 @@ var consumerInfo = (function () {
     });
   
     // Append overlay and card to the body
-    document.body.appendChild(modalOverlay);
+    const actionCenter = document.getElementById('actioncenter');
+    actionCenter.appendChild(modalOverlay);
     document.body.appendChild(consumerInfoCard);
   
     return consumerInfoCard;

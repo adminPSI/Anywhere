@@ -387,6 +387,24 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
+        public string getPlanOutcomesPaidSupportProviders(string assessmentId)
+        {
+            logger.debug("getServiceVendors ");
+            List<string> list = new List<string>();
+            list.Add(assessmentId);
+            
+            string text = "CALL DBA.ANYW_ISP_GetPlanOutcomesPaidSupportProviders(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("8ADG", ex.Message + "ANYW_ISP_GetPlanOutcomesPaidSupportProviders(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "8ADG: error ANYW_ISP_GetPlanOutcomesPaidSupportProviders";
+            }
+        }
+
         public string getPlanExperiences(string token, string assessmentId)
         {
             if (tokenValidator(token) == false) return null;
