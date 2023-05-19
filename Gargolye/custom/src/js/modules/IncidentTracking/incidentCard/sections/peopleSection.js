@@ -85,7 +85,7 @@ var itPeopleSection = (function () {
       value: name,
       callbackType: 'input',
       callback: event => {
-        // Name input is required, else disable the save button
+          // Name input is required, else disable the save button
         if (event.target.value === '') {
           nameInput.classList.add('error');
         } else {
@@ -176,7 +176,9 @@ var itPeopleSection = (function () {
       },
     });
 
-    nameInput.classList.add('error');
+    if(!name) {
+      nameInput.classList.add('error');
+    }
 
     // populate drodowns
     var involvementTypes = incidentTracking.getInvolvementTypes();
