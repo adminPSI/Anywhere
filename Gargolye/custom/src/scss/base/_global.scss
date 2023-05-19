@@ -54,6 +54,12 @@ svg {
   &.visible {
     display: block;
   }
+
+  &.modal {
+    display: block;
+    z-index: 100;
+    background: transparent;
+  }
 }
 
 .error {
