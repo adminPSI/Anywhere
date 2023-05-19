@@ -217,7 +217,7 @@ var consumerInfo = (function () {
       if (!isMobile) {
         bodyScrollLock.disableBodyScroll(consumerInfoCard);
       }
-      modalOverlay.classList.add('visibleModal');
+      modalOverlay.classList.add('modal');
     }, 300);
   }
   function closeCard() {
@@ -244,7 +244,7 @@ var consumerInfo = (function () {
       if (!isMobile) {
         bodyScrollLock.enableBodyScroll(consumerInfoCard);
       }
-      modalOverlay.classList.remove('visibleModal');
+      modalOverlay.classList.remove('modal');
     }, 200);
 
     currentlyVisibleSection = null;
@@ -997,18 +997,13 @@ var consumerInfo = (function () {
   
     setupCardEvents(cardMenu);
   
-    // Create overlay element
-    modalOverlay = document.createElement('div');
-    modalOverlay.classList.add('modalOverlay');
+    modalOverlay = document.querySelector('.overlay');
   
     // Add event listener to close the card when clicking outside of it
     modalOverlay.addEventListener('click', function(event) {
       closeCard();
     });
   
-    // Append overlay and card to the body
-    const actionCenter = document.getElementById('actioncenter');
-    actionCenter.appendChild(modalOverlay);
     document.body.appendChild(consumerInfoCard);
   
     return consumerInfoCard;
