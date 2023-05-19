@@ -639,10 +639,11 @@
 
     switch (answerStyle) {
       case 'TEXTAREA': {
-        if (data.colName === 'What is the risk, what it looks like, where it occurs:') {
-          textAreaCharLimit = 10000;
-        }
-
+        // For text areas with colName "What’s Working" and "What's Not Working"
+        if (colName.trim().split(' ').pop() === 'Working') {
+          textAreaCharLimit = 1000;
+        }        
+        
         questionInput = input.build({
           type: 'textarea',
           style: 'secondary',
@@ -1006,8 +1007,8 @@
 
             switch (answerStyle) {
               case 'TEXTAREA': {
-                if (colName === 'What is the risk, what it looks like, where it occurs:') {
-                  textAreaCharLimit = 10000;
+                if (data.colName === "What’s Working" || data.colName === "What’s Not Working") {
+                  textAreaCharLimit = 1000;
                 }
 
                 const questionInput = input.build({
