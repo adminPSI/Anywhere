@@ -692,7 +692,7 @@
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
-        var res = response.getitConsumerBehaviorResult;
+        var res = response.getitConsumerBehaviorsResult;
         callback(res);
       },
       error: function (xhr, status, error) {

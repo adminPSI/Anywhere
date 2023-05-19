@@ -80,10 +80,13 @@ const consumerBehavior = (function () {
     dirtyTime.replace('-', '');
     const splitTime = dirtyTime.split('.');
     const hours = splitTime[0].length === 1 ? `0${splitTime[0]}` : splitTime[0];
-    const minutes = parseInt(splitTime[1]) * 60;
-    return `${hours}:${minutes.toString().slice(0, 2)}`;
+    let minutes = parseInt(splitTime[1]) * 60;
+    minutes = minutes.toString().slice(0, 2);
+    minutes = minutes.length === 1 ? `0${minutes}` : minutes;
+    return `${hours}:${minutes}`;
   }
   function getTimeLength(start, end) {
+    if (!start || !end) return '';
     let totalTime = UTIL.calculateTotalHours(start, end);
     totalTime = formatTime(totalTime);
     return totalTime;
@@ -519,7 +522,6 @@ const consumerBehavior = (function () {
         }
       });
     }
-    console.table(behaviorData);
 
     clearReviewTable();
     populateReviewTable();

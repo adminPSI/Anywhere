@@ -159,6 +159,7 @@ const csSignature = (() => {
   function clearMemberDataOnClear() {
     isSigned = false;
 
+    selectedMemberData.attachmentId = '';
     selectedMemberData.dateSigned = '';
     selectedMemberData.description = '';
     selectedMemberData.csChangeMind = '';
@@ -190,13 +191,18 @@ const csSignature = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
+        const planId = plan.getCurrentPlanId();
+        const attachmentId = selectedMemberData.attachmentId;
         clearSignature = true;
-        clearMemberDataOnClear(); // this is so popup dosen't need to be refreshed
+        clearMemberDataOnClear();
         clearInputsOnSignatureClear();
         const updatedSignatureSection = buildSignatureSection();
         signaturePopup.replaceChild(updatedSignatureSection, signatureSection);
         signatureSection = updatedSignatureSection;
         await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
+        if (signatureType === '2') {
+          planAjax.deletePlanAttachment(planId, attachmentId);
+        }
         DOM.ACTIONCENTER.removeChild(confirmPop);
         planConsentAndSign.refreshTable();
       },

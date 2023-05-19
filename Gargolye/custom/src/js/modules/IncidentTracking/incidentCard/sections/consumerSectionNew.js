@@ -431,7 +431,6 @@ var consumerSubSections = (function () {
         }
         case 'Behavior Details': {
           incidentTrackingAjax.getitConsumerBehavior(selectedConsumerId, incidentId, res => {
-            console.log(res);
             consumerBehavior.populate(res, selectedConsumerId);
           });
           break;
@@ -2437,8 +2436,6 @@ var consumerInvolvement = (function () {
             consumerLocationData[consumerId].length === 1
               ? consumerLocationData[consumerId][0].value
               : '';
-
-          console.log(`Location Id for consumer${consumerId} = ${locationId}`);
 
           involvementsData[consumerId] = {
             includeInCount,
