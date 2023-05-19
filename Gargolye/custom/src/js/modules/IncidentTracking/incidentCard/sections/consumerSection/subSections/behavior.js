@@ -76,8 +76,16 @@ const consumerBehavior = (function () {
     clearFormDataDefaults();
     populateReviewTable();
   }
+  function formatTime(dirtyTime) {
+    dirtyTime.replace('-', '');
+    const splitTime = dirtyTime.split('.');
+    const hours = splitTime[0].length === 1 ? `0${splitTime[0]}` : splitTime[0];
+    const minutes = parseInt(splitTime[1]) * 60;
+    return `${hours}:${minutes.toString().slice(0, 2)}`;
+  }
   function getTimeLength(start, end) {
-    const totalTime = UTIL.calculateTotalHours(start, end);
+    let totalTime = UTIL.calculateTotalHours(start, end);
+    totalTime = formatTime(totalTime);
     return totalTime;
   }
 
@@ -266,6 +274,10 @@ const consumerBehavior = (function () {
       };
     });
 
+    data.sort((a, b) => {
+      return a.text.toLowerCase() < b.text.toLowerCase() ? -1 : 1;
+    });
+
     data.unshift({ value: '%', text: '' });
 
     dropdown.populate(behaviortypeDrop, data, behaviorTypeId);
@@ -277,6 +289,7 @@ const consumerBehavior = (function () {
       label: 'Start Time',
       type: 'time',
       style: 'secondary',
+      value: startTime,
     };
 
     if (isEdit && formReadOnly) {
@@ -292,6 +305,7 @@ const consumerBehavior = (function () {
       label: 'End Time',
       type: 'time',
       style: 'secondary',
+      value: endTime,
     };
 
     if (isEdit && formReadOnly) {
@@ -307,6 +321,7 @@ const consumerBehavior = (function () {
       label: 'No. of Occurrences',
       type: 'number',
       style: 'secondary',
+      value: occurrences,
       attributes: [
         {
           key: 'min',
