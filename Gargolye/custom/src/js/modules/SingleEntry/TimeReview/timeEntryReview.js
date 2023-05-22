@@ -671,14 +671,27 @@ var timeEntryReview = (function () {
           );
           break;
         case 'S':  // Submitted (and Approved)
+          if (entry.approved_time != '') {
+            createElement(
+              'Record Approved',
+              entry.approvedUser,
+              entry.approved_time,
+              entry.Single_Entry_ID,
+              false,
+            );
+            break;
+
+          } else {
             createElement(
               'Record Submitted',
               entry.submittedUser,
               entry.submit_date,
               entry.Single_Entry_ID,
               false,
-            );
-        break;
+            ); 
+            break;
+          }
+          
         case 'I':  // Imported into Advisor
         case 'D':  // Duplicate 
           createElement(
