@@ -138,6 +138,7 @@ namespace Anywhere.service.Data
             dt.Rows.Add(rowNew);
             dt.AcceptChanges();
 
+
             return dt.DataSet;
         }
 
@@ -298,7 +299,6 @@ namespace Anywhere.service.Data
             return dt.DataSet;
         }
 
-
         public DataSet ISPServices(long AssesmentID, Boolean Advisor = false)
 
         {
@@ -402,8 +402,7 @@ namespace Anywhere.service.Data
             sb.Append("LEFT OUTER JOIN DBA.People ON DBA.ANYW_ISP_Consumer_Informed_Consent.CS_Change_Mind_SSA_People_ID = DBA.People.ID ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Consumer_Informed_Consent.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
-            //dt.WriteXmlSchema(@"C:\Work\OComReports\AssesmentXML\ISPTeamMembers.xml");
-            //MessageBox.Show("ISPTeamMembers");
+
             return dt.DataSet;
         }
 
