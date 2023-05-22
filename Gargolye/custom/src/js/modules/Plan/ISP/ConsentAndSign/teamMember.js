@@ -1144,6 +1144,13 @@ const csTeamMember = (() => {
       saveTeamMemberBtn.classList.add('disabled'); //
     }
 
+    if ($.session.planUpdate) {
+      participatedYesRadio.classList.remove('disabled');
+      participatedNoRadio.classList.remove('disabled');
+      signatureTypeDropdown.classList.remove('disabled');
+      saveTeamMemberBtn.classList.remove('disabled');
+    }
+
     //* Required Fields
     //*------------------------------
     if ($.session.planInsertNewTeamMember) {
