@@ -3145,6 +3145,15 @@ namespace Anywhere
             UriTemplate = "/getPlanSpecificOutcomes/")]
         PlanOutcomesWorker.PlanTotalOutcome getPlanSpecificOutcomes(string token, string assessmentId, int targetAssessmentVersionId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                    BodyStyle = WebMessageBodyStyle.Wrapped,
+                    ResponseFormat = WebMessageFormat.Json,
+                    RequestFormat = WebMessageFormat.Json,
+                    UriTemplate = "/getPlanOutcomesPaidSupportProviders/")]
+        AnywhereAssessmentWorker.ServiceVendors[] getPlanOutcomesPaidSupportProviders(string assessmentId);
+
+
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,

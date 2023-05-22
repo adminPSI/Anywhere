@@ -182,7 +182,8 @@ const planOutcomes = (() => {
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
-  function populateResponsibleProviderDropdown(dropdownEle, defaultValue) {
+  
+  async function populateResponsibleProviderDropdown(dropdownEle, defaultValue) {
     const data = dropdownData.serviceVendors.map(dd => {
       return {
         value: dd.vendorId,
@@ -190,14 +191,96 @@ const planOutcomes = (() => {
       };
     });
 
-    data.sort((a, b) => {
+   // const selectedVendorIds = servicesSupports.getSelectedVendorIds();
+
+    const { getPlanOutcomesPaidSupportProvidersResult: selectedVendors } =
+      await planOutcomesAjax.getPlanOutcomesPaidSupportProviders(
+        planId
+      );
+
+      const selectedVendorIds = getSelectedVendorIds()
+
+    const nonPaidSupportData = data.filter(
+      provider => !selectedVendorIds.includes(provider.value)
+    );
+    const paidSupportData = data.filter(
+      provider => selectedVendorIds.includes(provider.value)
+    );
+
+    const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
+      return {
+        value: dd.value,
+        text: dd.text,
+      };
+    });
+    const paidSupportDropdownData = paidSupportData.map(dd => {
+      return {
+        value: dd.value,
+        text: dd.text,
+      };
+    });
+
+    nonPaidSupportDropdownData.sort((a, b) => {
       const textA = a.text.toUpperCase();
       const textB = b.text.toUpperCase();
       return textA < textB ? -1 : textA > textB ? 1 : 0;
     });
-    data.unshift({ value: '%', text: '' });
+    paidSupportDropdownData.sort((a, b) => {
+      const textA = a.text.toUpperCase();
+      const textB = b.text.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
 
-    dropdown.populate(dropdownEle, data, defaultValue);
+    const nonGroupedDropdownData = [{ value: '', text: '[SELECT A PROVIDER]' }];
+    const paidSupportGroup = {
+      groupLabel: 'Paid Support Providers',
+      groupId: 'isp_ss_providerDropdown_paidSupportProviders',
+      dropdownValues: paidSupportDropdownData,
+    };
+    const nonPaidSupportGroup = {
+      groupLabel: 'Other Providers',
+      groupId: 'isp_ss_providerDropdown_nonPaidSupportProviders',
+      dropdownValues: nonPaidSupportDropdownData,
+    };
+
+    const groupDropdownData = [];
+    if (paidSupportDropdownData.length > 0) {
+      groupDropdownData.push(paidSupportGroup);
+    }
+
+    //if there's no default value, and only one option, make that option the default
+    if (!defaultValue) {
+      const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
+      if (tempData.length === 1) {
+        defaultValue = tempData[0].value;
+        saveUpdateProvider = defaultValue;
+        dropdownEle.classList.remove('error');
+      }
+    }
+
+    groupDropdownData.push(nonPaidSupportGroup);
+
+    dropdown.groupingPopulate({
+      dropdown: dropdownEle,
+      data: groupDropdownData,
+      nonGroupedData: nonGroupedDropdownData,
+      defaultVal: defaultValue,
+    });
+
+    function getSelectedVendorIds() {
+      return selectedVendors.reduce((acc, vendor) => {
+        acc.push(vendor.vendorId);
+        return acc;
+      }, []);
+    }
+    // data.sort((a, b) => {
+    //   const textA = a.text.toUpperCase();
+    //   const textB = b.text.toUpperCase();
+    //   return textA < textB ? -1 : textA > textB ? 1 : 0;
+    // });
+    // data.unshift({ value: '%', text: '' });
+
+    // dropdown.populate(dropdownEle, data, defaultValue);
   }
   function populateResponsibleContactDropdown(dropdownEle, defaultValue) {
     const data = dropdownData.relationships.map(dd => {

@@ -53,8 +53,8 @@ const planData = (() => {
       },
       summary: {
         aloneTime: 10000,
-        importantTo: 2500,
-        importantFor: 2500,
+        importantTo: 10000,
+        importantFor: 10000,
         skillsAndAbilities: 10000,
         whatIsRisk: 10000,
         whatSupportLooksLike: 10000,
@@ -389,113 +389,113 @@ const planData = (() => {
     }
   }
   function populateRelationshipDropdown(dropdownEle, defaultValue, includeSupports = false) {
-    if ($.session.areInSalesForce) {
-      // group populate
-      const teamMemberGroup = {
-        groupLabel: 'Plan Team Member',
-        groupId: 'teamMemberGroup',
-        dropdownValues: [],
-      };
-      const nonTeamMemberGroup = {
-        groupLabel: 'Not a Team Member on this Plan',
-        groupId: 'nonTeamMemberGroup',
-        dropdownValues: [],
-      };
-      const paidSupportsGroup = {
-        groupLabel: 'Providers on this Plan',
-        groupId: 'paidSupportsGroup',
-        dropdownValues: [],
-      };
+    //if ($.session.areInSalesForce) {
+    // group populate
+    const teamMemberGroup = {
+      groupLabel: 'Plan Team Member',
+      groupId: 'teamMemberGroup',
+      dropdownValues: [],
+    };
+    const nonTeamMemberGroup = {
+      groupLabel: 'Not a Team Member on this Plan',
+      groupId: 'nonTeamMemberGroup',
+      dropdownValues: [],
+    };
+    const paidSupportsGroup = {
+      groupLabel: 'Providers on this Plan',
+      groupId: 'paidSupportsGroup',
+      dropdownValues: [],
+    };
 
-      dropdowns.relationships.forEach(dd => {
-        if (dd.signatureId) {
-          teamMemberGroup.dropdownValues.push({
-            value: dd.contactId,
-            text: `${dd.lastName}, ${dd.firstName}`,
-          });
-        } else {
-          nonTeamMemberGroup.dropdownValues.push({
-            value: dd.contactId,
-            text: `${dd.lastName}, ${dd.firstName}`,
-          });
-        }
-      });
-
-      teamMemberGroup.dropdownValues = removeDups(teamMemberGroup.dropdownValues);
-      nonTeamMemberGroup.dropdownValues = removeDups(nonTeamMemberGroup.dropdownValues);
-
-      teamMemberGroup.dropdownValues.sort((a, b) => {
-        const textA = a.text.toUpperCase();
-        const textB = b.text.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-      nonTeamMemberGroup.dropdownValues.sort((a, b) => {
-        const textA = a.text.toUpperCase();
-        const textB = b.text.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-
-      const groupDropdownData = [];
-      groupDropdownData.push(teamMemberGroup);
-      groupDropdownData.push(nonTeamMemberGroup);
-
-      if (includeSupports) {
-        const supportData = servicesSupports.getSelectedVendors();
-        paidSupportsGroup.dropdownValues = supportData.map(ps => {
-          return {
-            value: `${ps.providerId}V`,
-            text: ps.providerName,
-          };
-        });
-
-        paidSupportsGroup.dropdownValues = removeDups(paidSupportsGroup.dropdownValues);
-        paidSupportsGroup.dropdownValues.sort((a, b) => {
-          const textA = a.text.toUpperCase();
-          const textB = b.text.toUpperCase();
-          return textA < textB ? -1 : textA > textB ? 1 : 0;
-        });
-        groupDropdownData.push(paidSupportsGroup);
-      }
-
-      dropdown.groupingPopulate({
-        dropdown: dropdownEle,
-        data: groupDropdownData,
-        nonGroupedData: [{ value: '', text: '' }],
-        defaultVal: defaultValue,
-      });
-    } else {
-      let data;
-      // normal populate
-      const data1 = dropdowns.relationships.map(dd => {
-        return {
+    dropdowns.relationships.forEach(dd => {
+      if (dd.signatureId) {
+        teamMemberGroup.dropdownValues.push({
           value: dd.contactId,
           text: `${dd.lastName}, ${dd.firstName}`,
+        });
+      } else {
+        nonTeamMemberGroup.dropdownValues.push({
+          value: dd.contactId,
+          text: `${dd.lastName}, ${dd.firstName}`,
+        });
+      }
+    });
+
+    teamMemberGroup.dropdownValues = removeDups(teamMemberGroup.dropdownValues);
+    nonTeamMemberGroup.dropdownValues = removeDups(nonTeamMemberGroup.dropdownValues);
+
+    teamMemberGroup.dropdownValues.sort((a, b) => {
+      const textA = a.text.toUpperCase();
+      const textB = b.text.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
+    nonTeamMemberGroup.dropdownValues.sort((a, b) => {
+      const textA = a.text.toUpperCase();
+      const textB = b.text.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
+
+    const groupDropdownData = [];
+    groupDropdownData.push(teamMemberGroup);
+    groupDropdownData.push(nonTeamMemberGroup);
+
+    if (includeSupports) {
+      const supportData = servicesSupports.getSelectedVendors();
+      paidSupportsGroup.dropdownValues = supportData.map(ps => {
+        return {
+          value: `${ps.providerId}V`,
+          text: ps.providerName,
         };
       });
 
-      if (includeSupports) {
-        const supportData = servicesSupports.getSelectedVendors();
-        const data2 = supportData.map(ps => {
-          return {
-            value: `${ps.providerId}V`,
-            text: ps.providerName,
-          };
-        });
-
-        data = [...data1, ...data2];
-      } else {
-        data = data1;
-      }
-
-      data.sort((a, b) => {
+      paidSupportsGroup.dropdownValues = removeDups(paidSupportsGroup.dropdownValues);
+      paidSupportsGroup.dropdownValues.sort((a, b) => {
         const textA = a.text.toUpperCase();
         const textB = b.text.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
-      data.unshift({ value: '', text: '' });
-
-      dropdown.populate(dropdownEle, removeDups(data), defaultValue);
+      groupDropdownData.push(paidSupportsGroup);
     }
+
+    dropdown.groupingPopulate({
+      dropdown: dropdownEle,
+      data: groupDropdownData,
+      nonGroupedData: [{ value: '', text: '' }],
+      defaultVal: defaultValue,
+    });
+    // } else {
+    //   let data;
+    //   // normal populate
+    //   const data1 = dropdowns.relationships.map(dd => {
+    //     return {
+    //       value: dd.contactId,
+    //       text: `${dd.lastName}, ${dd.firstName}`,
+    //     };
+    //   });
+
+    //   if (includeSupports) {
+    //     const supportData = servicesSupports.getSelectedVendors();
+    //     const data2 = supportData.map(ps => {
+    //       return {
+    //         value: `${ps.providerId}V`,
+    //         text: ps.providerName,
+    //       };
+    //     });
+
+    //     data = [...data1, ...data2];
+    //   } else {
+    //     data = data1;
+    //   }
+
+    //   data.sort((a, b) => {
+    //     const textA = a.text.toUpperCase();
+    //     const textB = b.text.toUpperCase();
+    //     return textA < textB ? -1 : textA > textB ? 1 : 0;
+    //   });
+    //   data.unshift({ value: '', text: '' });
+
+    //   dropdown.populate(dropdownEle, removeDups(data), defaultValue);
+    // }
   }
   async function init(planID) {
     planId = planID;

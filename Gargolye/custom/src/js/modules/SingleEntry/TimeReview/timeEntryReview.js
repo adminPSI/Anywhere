@@ -661,7 +661,7 @@ var timeEntryReview = (function () {
     }
     seData.forEach(entry => {
       switch (entry.Anywhere_Status) {
-        case 'A':
+        case 'A': // Submitted needs approval
           createElement(
             'Record Submitted',
             entry.submittedUser,
@@ -670,9 +670,30 @@ var timeEntryReview = (function () {
             false,
           );
           break;
-        case 'S':
-        case 'I':
-        case 'D':
+        case 'S':  // Submitted (and Approved)
+          if (entry.approved_time != '') {
+            createElement(
+              'Record Approved',
+              entry.approvedUser,
+              entry.approved_time,
+              entry.Single_Entry_ID,
+              false,
+            );
+            break;
+
+          } else {
+            createElement(
+              'Record Submitted',
+              entry.submittedUser,
+              entry.submit_date,
+              entry.Single_Entry_ID,
+              false,
+            ); 
+            break;
+          }
+          
+        case 'I':  // Imported into Advisor
+        case 'D':  // Duplicate 
           createElement(
             'Record Approved',
             entry.approvedUser,
@@ -681,7 +702,7 @@ var timeEntryReview = (function () {
             false,
           );
           break;
-        case 'R':
+        case 'R':  // Rejected
           createElement(
             'Record Rejected',
             entry.rejectedUser,

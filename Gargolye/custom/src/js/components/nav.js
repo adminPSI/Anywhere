@@ -112,17 +112,29 @@ const UTIL_MENU = (function () {
   function init() {
     const utilMenu = document.querySelector('.util-menu');
     const utilMenuBtn = document.querySelector('.desktopUtilMenuBtn');
+    const modalOverlay = document.querySelector('.overlay');
 
     utilMenuBtn.addEventListener('click', () => {
       if (utilMenu.classList.contains('menu-visible')) {
         var subMenu = document.getElementsByClassName('submenu menu-visible');
         utilMenu.classList.remove('menu-visible');
         utilMenuBtn.classList.remove('menu-visible');
+        modalOverlay.classList.remove('modal')
         if (subMenu && subMenu.length) subMenu[0].classList.remove('menu-visible');
         bodyScrollLock.enableBodyScroll(utilMenu);
-      } else {
+      } else {  
+    // Add event listener to overlay close the menu when clicking outside of it
+    modalOverlay.addEventListener('click', function(event) {
+        var subMenu = document.getElementsByClassName('submenu menu-visible');
+        utilMenu.classList.remove('menu-visible');
+        utilMenuBtn.classList.remove('menu-visible');
+        modalOverlay.classList.remove('modal');
+        if (subMenu && subMenu.length) subMenu[0].classList.remove('menu-visible');
+        bodyScrollLock.enableBodyScroll(utilMenu);        
+    });
         utilMenu.classList.add('menu-visible');
         utilMenuBtn.classList.add('menu-visible');
+        modalOverlay.classList.add('modal');
         bodyScrollLock.disableBodyScroll(utilMenu);
       }
     });

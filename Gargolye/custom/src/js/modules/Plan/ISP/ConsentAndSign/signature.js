@@ -4,6 +4,7 @@ const csSignature = (() => {
   let isSigned;
   let readOnly;
   let showConsentStatments;
+  let signatureType;
   // dom
   let signaturePopup;
   let signatureSection;
@@ -97,16 +98,14 @@ const csSignature = (() => {
       },
     });
   }
-  function checkForAllowClearSignature(sigType) {
+  function checkForAllowClearSignature() {
     if (isNew) return false;
 
     const planStatus = plan.getPlanStatus();
     const activePlan = plan.getPlanActiveStatus();
-    $.session.planClearSignature = true; // temp
-    $.session.oneSpan = true; // temp
 
     if ($.session.planClearSignature && planStatus === 'D' && activePlan === true) {
-      if ($.session.oneSpan && sigType === '2') {
+      if ($.session.oneSpan && signatureType === '2') {
         return false;
       }
 
@@ -118,41 +117,44 @@ const csSignature = (() => {
   function clearInputsOnSignatureClear() {
     const dissentAreaInput = dissentAreaDisagree.querySelector('.input-field__input');
     const dissentHowToInput = dissentHowToAddress.querySelector('.input-field__input');
-    const changeMindRadios = [...changeMindQ.querySelectorAll('.radio')];
-    const complaintRadios = [...complaintQ.querySelectorAll('.radio')];
-    const standardRadios = [...standardQuestions.querySelectorAll('.ic_questionRadioContainer')];
-    const allRadios = [...signaturePopup.querySelectorAll('.ic_questionRadioContainer')];
-
-    // if this works remove below for each's
     dissentAreaInput.value = '';
     dissentHowToInput.value = '';
     dissentAreaDisagree.classList.remove('disabled');
     dissentHowToAddress.classList.remove('disabled');
-    allRadios.forEach(radio => {
-      radio.classList.remove('disabled');
-      const radios = [...radio.querySelectorAll('.radio')];
-      radios.forEach(radio => {
-        const input = radio.querySelector('input');
-        input.checked = false;
-      });
-    });
 
-    changeMindRadios.forEach(radio => {
-      const input = radio.querySelector('input');
-      input.checked = false;
-    });
-    complaintRadios.forEach(radio => {
-      const input = radio.querySelector('input');
-      input.checked = false;
-    });
-    standardRadios.forEach(radio => {
-      radio.classList.remove('disabled');
-      const radios = [...radio.querySelectorAll('.radio')];
-      radios.forEach(radio => {
+    if (signatureType === '1') {
+      const changeMindRadios = [...changeMindQ.querySelectorAll('.radio')];
+      const complaintRadios = [...complaintQ.querySelectorAll('.radio')];
+      const standardRadios = [...standardQuestions.querySelectorAll('.ic_questionRadioContainer')];
+      const allRadios = [...signaturePopup.querySelectorAll('.ic_questionRadioContainer')];
+
+      // if this works remove below for each's
+      allRadios.forEach(radio => {
+        radio.classList.remove('disabled');
+        const radios = [...radio.querySelectorAll('.radio')];
+        radios.forEach(radio => {
+          const input = radio.querySelector('input');
+          input.checked = false;
+        });
+      });
+
+      changeMindRadios.forEach(radio => {
         const input = radio.querySelector('input');
         input.checked = false;
       });
-    });
+      complaintRadios.forEach(radio => {
+        const input = radio.querySelector('input');
+        input.checked = false;
+      });
+      standardRadios.forEach(radio => {
+        radio.classList.remove('disabled');
+        const radios = [...radio.querySelectorAll('.radio')];
+        radios.forEach(radio => {
+          const input = radio.querySelector('input');
+          input.checked = false;
+        });
+      });
+    }
   }
   function clearMemberDataOnClear() {
     isSigned = false;
@@ -193,6 +195,7 @@ const csSignature = (() => {
         clearInputsOnSignatureClear();
         const updatedSignatureSection = buildSignatureSection();
         signaturePopup.replaceChild(updatedSignatureSection, signatureSection);
+        signatureSection = updatedSignatureSection;
         await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
         DOM.ACTIONCENTER.removeChild(confirmPop);
         planConsentAndSign.refreshTable();
@@ -672,6 +675,7 @@ const csSignature = (() => {
     const prevDateSigned = memberData.dateSigned;
     isSigned = memberData.dateSigned !== '';
     clearSignature = false;
+    signatureType = memberData.signatureType;
 
     if (memberData.signatureType === '2' && memberData.description === '') {
       isSigned = false;
@@ -696,8 +700,7 @@ const csSignature = (() => {
     //* PROMPT
     //*------------------------------
     const prompt = document.createElement('p');
-      prompt.innerText = `By checking the boxes below, I agree that this plan reflects actions, services, and supports as requested by the person listed. As a provider, 
-                            I agree to the services listed in this plan for which I am named a responsible party. I understand that I may revoke my consent at any time verbally or in writing in accordance with DODD rules.`;
+    prompt.innerText = `By checking the boxes below, I agree that this plan reflects actions, services, and supports as requested by the person listed. As a provider, I agree to the services listed in this plan for which I am named a responsible party. I understand that I may revoke my consent at any time verbally or in writing in accordance with DODD rules.`;
 
     prompt.style.marginBottom = '14px';
 

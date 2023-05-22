@@ -200,10 +200,12 @@
     opacity: 0;
   }
 }
+
 .consumerInfoCard {
   transform: translateX(10%);
   transition: all 400ms ease-out;
   padding: 0 5px;
+  z-index: 999;
 
   &.visible {
     transform: translateX(-100%);
@@ -407,6 +409,13 @@
       &.unEditabled {
         pointer-events: none;
         cursor: default;
+      }
+      .demoPhones{
+        pointer-events: all;
+      }
+
+      svg {
+        width: 24px;
       }
 
       .view {
