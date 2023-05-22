@@ -87,6 +87,9 @@ const consumerBehavior = (function () {
   }
   function getTimeLength(start, end) {
     if (!start || !end) return '';
+    if (start.includes('/')) {
+      start = start.split(' ')[1];
+    }
     let totalTime = UTIL.calculateTotalHours(start, end);
     totalTime = formatTime(totalTime);
     return totalTime;
