@@ -811,7 +811,7 @@ const planConsentAndSign = (() => {
           ];
         }
 
-        if (!isSigned && !readOnly) {
+        if (!isSigned || readOnly) {
           tableOBJ.attributes.push({
             key: 'data-hideDeleteicon',
             value: true,
