@@ -99,7 +99,7 @@ const csSignature = (() => {
     });
   }
   function checkForAllowClearSignature() {
-    if (isNew) return false;
+    if (!isSigned) return false;
 
     const planStatus = plan.getPlanStatus();
     const activePlan = plan.getPlanActiveStatus();

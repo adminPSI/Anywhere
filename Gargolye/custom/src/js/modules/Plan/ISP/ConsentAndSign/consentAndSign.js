@@ -702,6 +702,7 @@ const planConsentAndSign = (() => {
       columnHeadings: ['Team Member', 'Name', 'Participated', 'Signature Type'],
       headline: 'Team Members',
       endIcon: true,
+      secondendIcon: true,
       sortable: isSortable,
       onSortCallback: res => {
         consentAndSignAjax.updateTableRowOrder({
@@ -753,9 +754,6 @@ const planConsentAndSign = (() => {
             }
           },
         };
-
-        if (!isSigned && !readOnly) {
-        }
 
         if (signatureType !== 'No Signature Required') {
           // set icon callback
@@ -811,6 +809,13 @@ const planConsentAndSign = (() => {
             { key: 'data-signed', value: true },
             { key: 'data-hideicon', value: true },
           ];
+        }
+
+        if (!isSigned && !readOnly) {
+          tableOBJ.attributes.push({
+            key: 'data-hideDeleteicon',
+            value: true,
+          });
         }
 
         return tableOBJ;
