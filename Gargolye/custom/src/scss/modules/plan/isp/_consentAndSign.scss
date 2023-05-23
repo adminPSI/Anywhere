@@ -76,6 +76,9 @@
     }
   }
   .table__row[data-hideDeleteicon] {
+    .endIcon {
+      order: 9;
+    }
     .secondendIcon svg {
       cursor: none;
       opacity: 0;

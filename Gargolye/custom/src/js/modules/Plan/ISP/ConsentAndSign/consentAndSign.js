@@ -755,6 +755,45 @@ const planConsentAndSign = (() => {
           },
         };
 
+        tableOBJ.secondendIconCallback = e => {
+          // deelte row
+          UTIL.warningPopup({
+            message: 'Are you sure you would like to remove this team member?',
+            accept: {
+              text: 'Yes',
+              callback: async () => {
+                pendingSave.show('Deleting...');
+
+                const res = await consentAndSignAjax.deleteTeamMember({
+                  token: $.session.Token,
+                  signatureId: m.signatureId,
+                });
+
+                // triggers event listener for one span button
+                oneSpan.fireDataUpdateEvent(planId);
+
+                if (res === '[]') {
+                  pendingSave.fulfill('Deleted');
+                  setTimeout(() => {
+                    successfulSave.hide();
+                    refreshTable();
+                  }, 700);
+                } else {
+                  pendingSave.reject('Failed to delete. Please try again.');
+                  console.error(res);
+                  setTimeout(() => {
+                    failSave.hide();
+                  }, 1000);
+                }
+              },
+            },
+            reject: {
+              text: 'No',
+              callback: () => {},
+            },
+          });
+        };
+
         if (signatureType !== 'No Signature Required') {
           // set icon callback
           tableOBJ.endIconCallback = e => {
@@ -762,44 +801,6 @@ const planConsentAndSign = (() => {
               isNewMember: false,
               isReadOnly: readOnly,
               memberData: m,
-            });
-          };
-          tableOBJ.secondendIconCallback = e => {
-            // deelte row
-            UTIL.warningPopup({
-              message: 'Are you sure you would like to remove this team member?',
-              accept: {
-                text: 'Yes',
-                callback: async () => {
-                  pendingSave.show('Deleting...');
-
-                  const res = await consentAndSignAjax.deleteTeamMember({
-                    token: $.session.Token,
-                    signatureId: id,
-                  });
-
-                  // triggers event listener for one span button
-                  oneSpan.fireDataUpdateEvent(planId);
-
-                  if (res === '[]') {
-                    pendingSave.fulfill('Deleted');
-                    setTimeout(() => {
-                      successfulSave.hide();
-                      refreshTable();
-                    }, 700);
-                  } else {
-                    pendingSave.reject('Failed to delete. Please try again.');
-                    console.error(res);
-                    setTimeout(() => {
-                      failSave.hide();
-                    }, 1000);
-                  }
-                },
-              },
-              reject: {
-                text: 'No',
-                callback: () => {},
-              },
             });
           };
           // set isSigned to true
@@ -811,7 +812,8 @@ const planConsentAndSign = (() => {
           ];
         }
 
-        if (!isSigned || readOnly) {
+        // hide/show delete icon
+        if (isSigned || readOnly || !$.session.planUpdate) {
           tableOBJ.attributes.push({
             key: 'data-hideDeleteicon',
             value: true,
