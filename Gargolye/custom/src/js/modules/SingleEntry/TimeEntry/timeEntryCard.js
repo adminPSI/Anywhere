@@ -7,6 +7,7 @@ var timeEntryCard = (function () {
   var crossMidnightTimeData;
   var saveUserId; // userID used for cross midnight entries (eg, "charles")
   var personId; // Id of originator of entry (e.g., 37)
+  var supervisorId;
   //-DOM------------------
   var card; // time entry card
   // dropdowns
@@ -103,7 +104,8 @@ var timeEntryCard = (function () {
   var tmpTransportationUnits = null;
   var tmpDestination = null;
   var tmpReason = null;
-  var tmpLicenseplate = null;
+    var tmpLicenseplate = null;
+    var lock = false;
 
   // Action Nav
   //------------------------------------
@@ -399,7 +401,7 @@ var timeEntryCard = (function () {
 
     evvAttest = ed.attest;
     evvCommunity = ed.community;
-
+    supervisorId = ed.supervisorId;
     destination = ed.destination;
     odometerEnd = ed.odometerend;
     odometerStart = ed.odometerstart;
@@ -1314,6 +1316,7 @@ var timeEntryCard = (function () {
           // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
         }
       }
+        
     }
 
     checkDates();
@@ -1925,13 +1928,15 @@ var timeEntryCard = (function () {
       const res = await singleEntryAjax.getEvvEligibilityAsync(id, entryDate);
       if (res.length > 0) {
         reasonRequired = true;
-        eligibleConsumersObj[id] = true;
-        checkAttestStatus();
+          eligibleConsumersObj[id] = true;
+          lock = true;
+          checkAttestStatus();
+          
       } else {
         eligibleConsumersObj[id] = false;
       }
     });
-
+      
     checkRequiredFields();
   }
 
@@ -1954,6 +1959,10 @@ var timeEntryCard = (function () {
       attestCheckbox.classList.add('redButNotError');
     } else {
       attestCheckbox.classList.remove('redButNotError');
+    }
+      if (lock && isEdit && isBillable && ((personId === $.session.PeopleId) || (supervisorId === $.session.PeopleId))) {//maybe isAdminEdit
+        reasonDropdown.classList.add('disabled');
+        //TODO: JOE
     }
   }
 
