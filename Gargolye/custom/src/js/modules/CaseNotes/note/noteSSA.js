@@ -101,7 +101,7 @@ var noteSSA = (function () {
   var advServiceRequired = '';
   var advNeedRequired = '';
   var advContactRequired = '';
-  // case note inputs 
+  // case note inputs
   var isReadOnly;
 
   // Utils
@@ -276,16 +276,15 @@ var noteSSA = (function () {
     return cnBatched !== '' ? true : false;
   }
 
-  
   function checkIfCredit() {
-    return (credit === 'Y' || credit === '1')   ? true : false;  //ADVUNIT: 1 and GKUNIT: 'Y'
+    return credit === 'Y' || credit === '1' ? true : false; //ADVUNIT: 1 and GKUNIT: 'Y'
   }
 
   function isCaseNoteReadOnly() {
     if (credit === 'Y' || credit === '-1') {
       isReadOnly = true;
-   // } else if (caseManagerId !== $.session.PeopleId) {
-    //  isReadOnly = true;
+      // } else if (caseManagerId !== $.session.PeopleId) {
+      //  isReadOnly = true;
     } else {
       isReadOnly = false;
     }
@@ -603,109 +602,110 @@ var noteSSA = (function () {
 
   // autopopulate Biller Code DDL after Service Code select
   function populateBillerDropdown(servicename, servicepersonapproved) {
-    caseNotesAjax.getSSABillCodesFromService(servicename, servicepersonapproved, function (
-      results,
-      person,
-    ) {
-      let filteredResult = results.filter(arrItem =>
-        arrItem.noteType === person || arrItem.noteType === 'G' ? true : false,
-      );
-      if (filteredResult.length < 1) filteredResult = results;
-      var data = filteredResult.map(r => {
-        return {
-          value: r.service_id,
-          text: r.fullName,
-          attributes: [{ key: 'serviceCode', value: r.serviceCode }],
-        };
-      });
+    caseNotesAjax.getSSABillCodesFromService(
+      servicename,
+      servicepersonapproved,
+      function (results, person) {
+        let filteredResult = results.filter(arrItem =>
+          arrItem.noteType === person || arrItem.noteType === 'G' ? true : false,
+        );
+        if (filteredResult.length < 1) filteredResult = results;
+        var data = filteredResult.map(r => {
+          return {
+            value: r.service_id,
+            text: r.fullName,
+            attributes: [{ key: 'serviceCode', value: r.serviceCode }],
+          };
+        });
 
-      var defaultVal = defaultServiceCode;
+        var defaultVal = defaultServiceCode;
 
-      // there should always be one Billing Code (else clause is defensive coding)
-      if (data.length === 1) {
-        if (pageLoaded === 'review') {
-          // when auto populating the Billing DDL
-          // if the saved Billing value is not equal to the selected value, update Billing DDL and related DDLs
-          if (data[0].value !== rd.mainbillingorservicecodeid) {
-            //GROUP NOTE CODE: ADD the saved (previous) value to DDL
-            data.unshift({
-              id: '0',
-              value: rd.mainbillingorservicecodeid,
-              text: rd.mainbillingorservicecodename,
-            });
+        // there should always be one Billing Code (else clause is defensive coding)
+        if (data.length === 1) {
+          if (pageLoaded === 'review') {
+            // when auto populating the Billing DDL
+            // if the saved Billing value is not equal to the selected value, update Billing DDL and related DDLs
+            if (data[0].value !== rd.mainbillingorservicecodeid) {
+              //GROUP NOTE CODE: ADD the saved (previous) value to DDL
+              data.unshift({
+                id: '0',
+                value: rd.mainbillingorservicecodeid,
+                text: rd.mainbillingorservicecodename,
+              });
 
-            // saved service equal to selected service (initial view of a review CN)
-            if (servicename === rd.servicename) {
-              defaultVal = rd.mainbillingorservicecodeid;
-              serviceCode = rd.mainbillingorservicecodeid;
-              data.splice(1, 1); //remove unused item from serviceCodeDropDown
+              // saved service equal to selected service (initial view of a review CN)
+              if (servicename === rd.servicename) {
+                defaultVal = rd.mainbillingorservicecodeid;
+                serviceCode = rd.mainbillingorservicecodeid;
+                data.splice(1, 1); //remove unused item from serviceCodeDropDown
+              } else {
+                // user has selected new service
+                defaultVal = data[1].value;
+                serviceCode = data[1].value;
+                data.splice(0, 1); //remove unused item from serviceCodeDropDown
+                checkGKRequiredFields();
+                displayDocTimeSection();
+              }
+              populateBillerRelatedDropdowns();
+
+              //	if saved Billing value equal to selected
             } else {
-              // user has selected new service
-              defaultVal = data[1].value;
-              serviceCode = data[1].value;
-              data.splice(0, 1); //remove unused item from serviceCodeDropDown
+              defaultVal = data[0].value;
+              serviceCode = data[0].value;
+              populateBillerRelatedDropdowns();
               checkGKRequiredFields();
-              displayDocTimeSection();
+              if (!suppressDocTimePopup) displayDocTimeSection();
             }
-            populateBillerRelatedDropdowns();
-
-            //	if saved Billing value equal to selected
           } else {
+            //new CN
             defaultVal = data[0].value;
             serviceCode = data[0].value;
             populateBillerRelatedDropdowns();
-            checkGKRequiredFields();
-            if (!suppressDocTimePopup) displayDocTimeSection();
+            clearBillerRelatedDropdowns();
           }
         } else {
-          //new CN
-          defaultVal = data[0].value;
-          serviceCode = data[0].value;
-          populateBillerRelatedDropdowns();
-          clearBillerRelatedDropdowns();
+          //defensive -- should only be one item in data
+          data.unshift({ id: '0', value: '', text: '' }); //ADD Blank value
+          data.sort(function (a, b) {
+            // alphabetize
+            if (a.text < b.text) {
+              return -1;
+            }
+            if (a.text > b.text) {
+              return 1;
+            }
+            return 0;
+          });
         }
-      } else {
-        //defensive -- should only be one item in data
-        data.unshift({ id: '0', value: '', text: '' }); //ADD Blank value
-        data.sort(function (a, b) {
-          // alphabetize
-          if (a.text < b.text) {
-            return -1;
-          }
-          if (a.text > b.text) {
-            return 1;
-          }
-          return 0;
-        });
-      }
 
-      dropdown.populate(serviceCodeDropdown, data, defaultVal);
+        dropdown.populate(serviceCodeDropdown, data, defaultVal);
 
-      // if Billing Code DDL has no item selected, then error condition
-      if (defaultVal === '') {
-        serviceCodeDropdown.classList.add('error');
-        saveNoteBtn.classList.add('disabled');
-        saveAndNewNoteBtn.classList.add('disabled');
-      } else {
-        serviceCodeDropdown.classList.remove('error');
-        // saveNoteBtn.classList.remove('disabled');
-        checkRequiredFields();
-      }
+        // if Billing Code DDL has no item selected, then error condition
+        if (defaultVal === '') {
+          serviceCodeDropdown.classList.add('error');
+          saveNoteBtn.classList.add('disabled');
+          saveAndNewNoteBtn.classList.add('disabled');
+        } else {
+          serviceCodeDropdown.classList.remove('error');
+          // saveNoteBtn.classList.remove('disabled');
+          checkRequiredFields();
+        }
 
-      // reset this flag
-      suppressDocTimePopup = false;
+        // reset this flag
+        suppressDocTimePopup = false;
 
-      serviceCodeDropdown.querySelector('.dropdown__select').setAttribute('disabled', true);
+        serviceCodeDropdown.querySelector('.dropdown__select').setAttribute('disabled', true);
 
-      // TCM selected on a Group NOte
-      // if (isGroupNote && dropdownData[serviceCode].docTimeRequired === 'Y') {
-      // 	serviceCodeDropdown.classList.add('error');
-      // 	warningPopup('You have selected a bill code that does not allow group notes. Please select only one consumer.', null, null, false);
-      // 	var checkGKRequiredFields = false;
-      // 	 clearBillerRelatedDropdowns(checkGKRequiredFields);
-      // 	checkRequiredFields();
-      // }
-    });
+        // TCM selected on a Group NOte
+        // if (isGroupNote && dropdownData[serviceCode].docTimeRequired === 'Y') {
+        // 	serviceCodeDropdown.classList.add('error');
+        // 	warningPopup('You have selected a bill code that does not allow group notes. Please select only one consumer.', null, null, false);
+        // 	var checkGKRequiredFields = false;
+        // 	 clearBillerRelatedDropdowns(checkGKRequiredFields);
+        // 	checkRequiredFields();
+        // }
+      },
+    );
   }
 
   function alphabetizeDDL(data) {
@@ -873,27 +873,29 @@ var noteSSA = (function () {
   }
 
   function populateVendorDropdown() {
-    caseNotesAjax.getConsumerSpecificVendors(selectedConsumerIds[0], serviceDate, function (
-      results,
-    ) {
-      var data = results.map(r => {
-        return {
-          value: r.vendorId,
-          text: r.vendorName,
-        };
-      });
-      //			if ($.session.applicationName === 'Gatekeeper') data.unshift({ value: '', text: '' }); // add blank value in vendor dropdown for GK only
-      var defaultVal;
+    caseNotesAjax.getConsumerSpecificVendors(
+      selectedConsumerIds[0],
+      serviceDate,
+      function (results) {
+        var data = results.map(r => {
+          return {
+            value: r.vendorId,
+            text: r.vendorName,
+          };
+        });
+        //			if ($.session.applicationName === 'Gatekeeper') data.unshift({ value: '', text: '' }); // add blank value in vendor dropdown for GK only
+        var defaultVal;
 
-      if (rd && rd.vendorid) {
-        defaultVal = rd.vendorid;
-      } else {
-        vendorId = data[1] && data[1].value ? data[1].value : '';
-        defaultVal = vendorId;
-      }
+        if (rd && rd.vendorid) {
+          defaultVal = rd.vendorid;
+        } else {
+          vendorId = data[1] && data[1].value ? data[1].value : '';
+          defaultVal = vendorId;
+        }
 
-      dropdown.populate(vendorDropdown, data, defaultVal);
-    });
+        dropdown.populate(vendorDropdown, data, defaultVal);
+      },
+    );
   }
 
   function populateServiceLocations() {
@@ -1112,6 +1114,7 @@ var noteSSA = (function () {
             saveNoteBtn.classList.add('disabled');
             saveAndNewNoteBtn.classList.add('disabled');
             preSave();
+            // validate times
             noteSaveUpdate(saveAndNew);
           },
           () => {
@@ -1122,6 +1125,7 @@ var noteSSA = (function () {
         saveNoteBtn.classList.add('disabled');
         saveAndNewNoteBtn.classList.add('disabled');
         preSave();
+        // validate times
         noteSaveUpdate(saveAndNew);
       }
     }
@@ -1356,7 +1360,7 @@ var noteSSA = (function () {
     //Hide Mileage Input if they don't have a bill/service code
     // if (serviceId === '' || serviceId === '0') mileageInput.classList.add('hidden');
 
-    if (pageLoaded === 'review') {   
+    if (pageLoaded === 'review') {
       if (groupNoteId !== 0) grid_col_2.appendChild(groupNoteDisplay);
 
       //Last Updated by message (only on review)
@@ -1394,35 +1398,34 @@ var noteSSA = (function () {
           break;
       }
 
-      if (reviewRequired === 'Y' && $.session.applicationName === 'Gatekeeper') {   
+      if (reviewRequired === 'Y' && $.session.applicationName === 'Gatekeeper') {
         var reviewMessage = document.createElement('p');
         reviewMessage.classList.add('reviewMessage');
         reviewMessage.innerHTML = `
         <br>Review Required for this Case Note <br> Review Results: ${reviewText} 
         ${reviewRejectReason === '' ? '' : `<br> Rejection Reason: ${reviewRejectReason}`}`;
         if (reviewResults === 'R') reviewMessage.appendChild(correctedCheckboxDiv);
-      }  
+      }
 
       ////ADV does not have a rejection reason
-      if (reviewRequired === 'Y' && $.session.applicationName === 'Advisor') {  
+      if (reviewRequired === 'Y' && $.session.applicationName === 'Advisor') {
         var reviewMessage = document.createElement('p');
         reviewMessage.classList.add('reviewMessage');
         reviewMessage.innerHTML = `
         <br>Review Required for this Case Note <br> Review Results: ${reviewText}`;
         reviewMessage.appendChild(correctedCheckboxDiv);
-      } 
-     } 
+      }
+    }
 
     grid_col_2.appendChild(btnWrap);
     grid_col_2.appendChild(btnWrap2);
     details.appendChild(grid_col_1);
     details.appendChild(grid_col_2);
 
-    if (pageLoaded === 'review') {   
-      grid_col_2.appendChild(lastUpdatedDisplay); 
+    if (pageLoaded === 'review') {
+      grid_col_2.appendChild(lastUpdatedDisplay);
       if (reviewRequired === 'Y') grid_col_2.appendChild(reviewMessage);
-      
-    } 
+    }
 
     // if ($.session.applicationName === 'Gatekeeper') buildDocTime();
 
@@ -1616,7 +1619,7 @@ var noteSSA = (function () {
       //popup doctime required popup
       var docTimePopup = document.getElementById('docTImeRequiredPopup');
       if (!docTimePopup && !suppressDocTimePopup) {
-        if (!isReadOnly) docTimeRequiredPopup(); 
+        if (!isReadOnly) docTimeRequiredPopup();
       }
     }
 
@@ -2027,7 +2030,7 @@ var noteSSA = (function () {
     confidentialCheckbox.addEventListener('change', event => {
       confidential = event.target.checked ? 'Y' : 'N';
     });
-    if (pageLoaded === 'review' && reviewRequired === 'Y' && reviewResults === 'R') { 
+    if (pageLoaded === 'review' && reviewRequired === 'Y' && reviewResults === 'R') {
       correctedCheckbox.addEventListener('change', event => {
         corrected = event.target.checked ? 'Y' : 'N';
       });
@@ -2068,9 +2071,7 @@ var noteSSA = (function () {
       saveNoteBtn.classList.add('disabled');
       saveAndNewNoteBtn.classList.add('disabled');
       deleteNoteBtn.classList.add('disabled');
-
     }
-
   }
 
   function checkConsumerForMileage() {
@@ -2199,28 +2200,29 @@ var noteSSA = (function () {
     // IF view only permisisons OR the note is batched (batched notes are read only). A batched case note has the batched ID in cnBatched
     //if cnBatched is not "" it IS batched
     if (viewOnly || (cnBatched && cnBatched !== '')) setInputstoReadOnly();
-    
+
     // if case note is NOT batched, then check if the caseNote is readOnly and check that user has the Case Notes Update Entered permission
-   // if (!cnBatched && cnBatched !== '' && cnBatched != null) {
+    // if (!cnBatched && cnBatched !== '' && cnBatched != null) {
     //  if (isReadOnly || !$.session.CaseNotesUpdateEntered) setInputstoReadOnly();
-   // } 
+    // }
 
- // CHECKING IF IT IS NOT BATCHED -- EMPTY STRING IS NOT BATCHED
- if (!cnBatched || cnBatched === '') {
-  if ($.session.CaseNotesUpdate) {
-          if ((!$.session.CaseNotesUpdateEntered) || ($.session.CaseNotesUpdateEntered && (caseManagerId === $.session.PeopleId)))  {
-            isReadOnly = false;  //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
-          } else {
-              isReadOnly = true;  //can not edit (with UpdateEntered permission, can't edit other people's case notes)
-          }
-  } else {
-    isReadOnly = true;  //can not edit (no overall update permission)
-  }
-     
-}
+    // CHECKING IF IT IS NOT BATCHED -- EMPTY STRING IS NOT BATCHED
+    if (!cnBatched || cnBatched === '') {
+      if ($.session.CaseNotesUpdate) {
+        if (
+          !$.session.CaseNotesUpdateEntered ||
+          ($.session.CaseNotesUpdateEntered && caseManagerId === $.session.PeopleId)
+        ) {
+          isReadOnly = false; //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
+        } else {
+          isReadOnly = true; //can not edit (with UpdateEntered permission, can't edit other people's case notes)
+        }
+      } else {
+        isReadOnly = true; //can not edit (no overall update permission)
+      }
+    }
 
-if (isReadOnly) setInputstoReadOnly();
-
+    if (isReadOnly) setInputstoReadOnly();
 
     //Set Permissions is the last thing that gets called. Adding Dashboard New CN Events here
     if (fromDashboard) {

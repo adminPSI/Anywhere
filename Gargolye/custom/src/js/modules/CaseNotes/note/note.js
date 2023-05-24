@@ -1129,6 +1129,7 @@ var note = (function () {
             saveNoteBtn.classList.add('disabled');
             saveAndNewNoteBtn.classList.add('disabled');
             preSave();
+            // validate times
             await noteSaveUpdate(saveAndNew);
           },
           () => {
@@ -1139,9 +1140,11 @@ var note = (function () {
         saveNoteBtn.classList.add('disabled');
         saveAndNewNoteBtn.classList.add('disabled');
         preSave();
+        // validate times
         await noteSaveUpdate(saveAndNew);
       }
     }
+    //----------------------------------------------------------------------
 
     var details = document.createElement('div');
     details.classList.add('card__body', 'caseNoteCard__details');
