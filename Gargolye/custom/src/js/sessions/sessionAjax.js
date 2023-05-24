@@ -946,7 +946,7 @@ function getDefaultAnywhereSettings() {
       //Set session peopleId for use in ADV Plan
       $.session.planPeopleId = res.planPeopleId;
 
-      if ($.session.applicationName) {
+      if ($.session.applicationName === 'Gatekeeper') {
         $.session.caseNotesWarningStartTime = res.warningStartTime;
         $.session.caseNotesWarningEndTime = res.warningEndTime;
       }

@@ -500,6 +500,8 @@ namespace Anywhere.service.Data
             public string anywhereResetPasswordPermission { get; set; }
             public string anywhereConsumerFinancesPermission { get; set; }
             public string anywhereEmploymentPermission { get; set; }
+            public string warningStartTime { get; set; }
+            public string warningEndTime { get; set; }
 
         }
 

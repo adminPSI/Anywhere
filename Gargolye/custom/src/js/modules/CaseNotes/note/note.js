@@ -1101,6 +1101,10 @@ var note = (function () {
 
     return docTime;
   }
+  function checkTimesAreWithinWorkHours() {
+    // check startTime against $.session.caseNotesWarningStartTime
+    // check endTime against $.session.caseNotesWarningEndTime
+  }
   function buildCardDetailsSection() {
     async function saveBtnAction(saveAndNew) {
       function preSave() {
@@ -1129,7 +1133,9 @@ var note = (function () {
             saveNoteBtn.classList.add('disabled');
             saveAndNewNoteBtn.classList.add('disabled');
             preSave();
-            // validate times
+            if ($.session.applicationName === 'Gatekeeper') {
+              const hoursAreWithinWorkHours = checkTimesAreWithinWorkHours();
+            }
             await noteSaveUpdate(saveAndNew);
           },
           () => {
