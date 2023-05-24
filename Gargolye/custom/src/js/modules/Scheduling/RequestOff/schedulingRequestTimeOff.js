@@ -128,7 +128,7 @@ var schedulingRequestTimeOff = (function() {
 
     // Create the alert message
     const alertMessage = document.createElement('p');
-    alertMessage.innerHTML = `This request overlaps an existing day off or request on ${Date} ${startTime}-${endTime} and could not be processed.`;
+    alertMessage.innerHTML = `This request overlaps an existing day off request on ${Date} ${startTime}-${endTime} and could not be processed.`;
     
     // Append the alert message and button wrapper to the alert popup
     alertPopup.appendChild(alertMessage);
