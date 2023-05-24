@@ -369,10 +369,10 @@ const contactInformation = (() => {
     heading.innerHTML = 'Contact Information';
 
     const refreshWrap = document.createElement('div');
-    contactSection.classList.add('refreshWrap');
+    refreshWrap.classList.add('refreshWrap');
     const refreshBtn = button.build({
       text: '',
-      icon: 'microphone',
+      icon: 'refresh',
       style: 'secondary',
       type: 'contained',
       callback: async () => {

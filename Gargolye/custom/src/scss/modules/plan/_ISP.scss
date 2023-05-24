@@ -83,14 +83,20 @@
 
       .refreshWrap {
         display: flex;
+        align-items: center;
         margin-left: auto;
 
         span {
           font-size: 14px;
+          margin-right: 10px;
         }
-        btn.btn-icon {
+        button.btn-icon {
           margin: 0;
           padding: 0;
+
+          svg {
+            fill: $font-light;
+          }
         }
       }
     }
