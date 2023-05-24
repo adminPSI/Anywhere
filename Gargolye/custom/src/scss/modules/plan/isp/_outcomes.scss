@@ -57,12 +57,16 @@
   background: $bg-dark;
   border-radius: 4px;
   color: $font-light;
-  padding: 10px;
+  padding: 15px;
 
   &.error {
     .textarea {
       color: $font-error;
     }
+  }
+
+  .inputCharCount {
+    color: white;
   }
 
   .textarea {

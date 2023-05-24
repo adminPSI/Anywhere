@@ -1,6 +1,7 @@
 const contactInformation = (() => {
   let mainCIData;
   let bestWayToConnectData;
+  let peopleId;
   let contactId;
   let assessmentId;
   let readOnly;
@@ -121,6 +122,7 @@ const contactInformation = (() => {
       label: 'Marital Status',
       readonly: true,
     });
+    // Name, Preferred Name, Address, City, State, Zip, County, Email, Phone, Sex, and Marital Status
 
     const inputContainer1 = document.createElement('div');
     inputContainer1.classList.add('isp_ci_inputContainer1');
@@ -359,13 +361,43 @@ const contactInformation = (() => {
     const contactSection = document.createElement('div');
     contactSection.classList.add('contactInformation');
     contactSection.id = 'isp_contactInformationSection';
+
+    const headingWrap = document.createElement('div');
+    headingWrap.classList.add('sectionHeading', 'contactInfo');
+
     const heading = document.createElement('h2');
     heading.innerHTML = 'Contact Information';
-    heading.classList.add('sectionHeading');
-    heading.style.marginBottom = '15px';
-    contactSection.appendChild(heading);
+
+    const refreshWrap = document.createElement('div');
+    refreshWrap.classList.add('refreshWrap');
+    const refreshBtn = button.build({
+      text: '',
+      icon: 'refresh',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        gkDemographicsData = await contactInformationAjax.importExistingContactInfo({
+          token: $.session.Token,
+          peopleId: peopleId,
+        });
+        updateInputsWithDeomgraphicsData();
+        let now = new Date();
+        now = now.toTimeString();
+        now = now.split(' ');
+        now = now[0];
+        now = UTIL.convertFromMilitary(now);
+        lastrefresh.innerText = `Updated: ${now}`;
+      },
+    });
+    const lastrefresh = document.createElement('span');
 
     const inputSection = buildContactInputs();
+
+    refreshWrap.appendChild(lastrefresh);
+    refreshWrap.appendChild(refreshBtn);
+    headingWrap.appendChild(heading);
+    headingWrap.appendChild(refreshWrap);
+    contactSection.appendChild(headingWrap);
     contactSection.appendChild(inputSection);
 
     updateInputsWithDeomgraphicsData();
@@ -376,18 +408,19 @@ const contactInformation = (() => {
       readOnly,
       gkRelationships,
     );
-    contactSection.appendChild(importantPeopleSection);
     const importantGroupsSection = isp_ci_importantGroups.buildSection(
       importantGroupsData,
       contactId,
       readOnly,
     );
-    contactSection.appendChild(importantGroupsSection);
     const importantPlacesSection = isp_ci_importantPlaces.buildSection(
       importantPlacesData,
       contactId,
       readOnly,
     );
+
+    contactSection.appendChild(importantPeopleSection);
+    contactSection.appendChild(importantGroupsSection);
     contactSection.appendChild(importantPlacesSection);
 
     return contactSection;
@@ -415,7 +448,7 @@ const contactInformation = (() => {
     const planStatus = plan.getPlanStatus();
     const planActiveStatus = plan.getPlanActiveStatus();
     const consumer = plan.getSelectedConsumer();
-    const peopleId = consumer.id;
+    peopleId = consumer.id;
     gkRelationships = planData.getDropdownData().relationships;
     communicationType = planData.getDropdownData().communicationType;
     charLimits = planData.getISPCharacterLimits('contactInfo');

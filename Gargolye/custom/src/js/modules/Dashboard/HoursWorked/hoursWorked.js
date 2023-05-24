@@ -16,6 +16,7 @@
   var cancelFilterBtn;
 
   function populateWeeksDropdown(results) {
+    console.log(results);
     // value
     var currStart = moment(results.curr_start_date).format('MM-DD-YYYY');
     var currEnd = moment(results.curr_end_date).format('MM-DD-YYYY');

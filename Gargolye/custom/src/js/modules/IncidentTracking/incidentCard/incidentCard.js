@@ -35,8 +35,10 @@ var incidentCard = (function () {
   function toggleSaveBtnStatus(disableBtn) {
     if (disableBtn) {
       saveBtn.classList.add('disabled');
+      saveBtn.disabled = true;
     } else {
       saveBtn.classList.remove('disabled');
+      saveBtn.disabled = false;
     }
   }
   function toggleActionBtns(hide) {

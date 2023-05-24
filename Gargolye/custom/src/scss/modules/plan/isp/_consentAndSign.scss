@@ -75,6 +75,16 @@
       pointer-events: none;
     }
   }
+  .table__row[data-hideDeleteicon] {
+    .endIcon {
+      order: 9;
+    }
+    .secondendIcon svg {
+      cursor: none;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 
   margin-bottom: 20px;
 }

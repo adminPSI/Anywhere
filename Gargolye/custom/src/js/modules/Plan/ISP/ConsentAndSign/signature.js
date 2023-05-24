@@ -99,7 +99,7 @@ const csSignature = (() => {
     });
   }
   function checkForAllowClearSignature() {
-    if (isNew) return false;
+    if (!isSigned) return false;
 
     const planStatus = plan.getPlanStatus();
     const activePlan = plan.getPlanActiveStatus();
@@ -123,9 +123,9 @@ const csSignature = (() => {
     dissentHowToAddress.classList.remove('disabled');
 
     if (signatureType === '1') {
-      const changeMindRadios = [...changeMindQ.querySelectorAll('.radio')];
-      const complaintRadios = [...complaintQ.querySelectorAll('.radio')];
-      const standardRadios = [...standardQuestions.querySelectorAll('.ic_questionRadioContainer')];
+      // const changeMindRadios = [...changeMindQ.querySelectorAll('.radio')];
+      // const complaintRadios = [...complaintQ.querySelectorAll('.radio')];
+      // const standardRadios = [...standardQuestions.querySelectorAll('.ic_questionRadioContainer')];
       const allRadios = [...signaturePopup.querySelectorAll('.ic_questionRadioContainer')];
 
       // if this works remove below for each's
@@ -138,27 +138,28 @@ const csSignature = (() => {
         });
       });
 
-      changeMindRadios.forEach(radio => {
-        const input = radio.querySelector('input');
-        input.checked = false;
-      });
-      complaintRadios.forEach(radio => {
-        const input = radio.querySelector('input');
-        input.checked = false;
-      });
-      standardRadios.forEach(radio => {
-        radio.classList.remove('disabled');
-        const radios = [...radio.querySelectorAll('.radio')];
-        radios.forEach(radio => {
-          const input = radio.querySelector('input');
-          input.checked = false;
-        });
-      });
+      // changeMindRadios.forEach(radio => {
+      //   const input = radio.querySelector('input');
+      //   input.checked = false;
+      // });
+      // complaintRadios.forEach(radio => {
+      //   const input = radio.querySelector('input');
+      //   input.checked = false;
+      // });
+      // standardRadios.forEach(radio => {
+      //   radio.classList.remove('disabled');
+      //   const radios = [...radio.querySelectorAll('.radio')];
+      //   radios.forEach(radio => {
+      //     const input = radio.querySelector('input');
+      //     input.checked = false;
+      //   });
+      // });
     }
   }
   function clearMemberDataOnClear() {
     isSigned = false;
 
+    selectedMemberData.attachmentId = '';
     selectedMemberData.dateSigned = '';
     selectedMemberData.description = '';
     selectedMemberData.csChangeMind = '';
@@ -190,13 +191,18 @@ const csSignature = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
+        const planId = plan.getCurrentPlanId();
+        const attachmentId = selectedMemberData.attachmentId;
         clearSignature = true;
-        clearMemberDataOnClear(); // this is so popup dosen't need to be refreshed
+        clearMemberDataOnClear();
         clearInputsOnSignatureClear();
         const updatedSignatureSection = buildSignatureSection();
         signaturePopup.replaceChild(updatedSignatureSection, signatureSection);
         signatureSection = updatedSignatureSection;
         await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
+        if (signatureType === '2') {
+          planAjax.deletePlanAttachment(planId, attachmentId);
+        }
         DOM.ACTIONCENTER.removeChild(confirmPop);
         planConsentAndSign.refreshTable();
       },
