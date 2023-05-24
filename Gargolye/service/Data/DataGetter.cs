@@ -2854,6 +2854,24 @@ namespace Anywhere.Data
             }
         }
 
+        public string getCompanyWorkWeekEndFromDB(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getCompanyWorkWeekStartFromDB" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Dashboard_GetCompanyWorkWeekEndFromDB(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("629", ex.Message + "ANYW_Dashboard_GetCompanyWorkWeekEndFromDB(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "629: error ANYW_Dashboard_GetCompanyWorkWeekEndFromDB";
+            }
+        }
+
         public string getWeekHoursWorked(string token, string startDate, string endDate, string prevWeekStart, string prevWeekEnd)
         {
             if (tokenValidator(token) == false) return null;

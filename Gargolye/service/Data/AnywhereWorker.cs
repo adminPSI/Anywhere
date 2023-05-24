@@ -2,9 +2,11 @@
 using Anywhere.service.Data.PlanInformedConsent;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.IncidentTrackingWorker;
 
 namespace Anywhere.service.Data
 {
@@ -18,14 +20,34 @@ namespace Anywhere.service.Data
         //Below code is for hours worked widget
         public WorkWeek GetWorkWeeks(String token)
         {
-            DateTime currentWeekStart = GetCompanyCurrentWorkWeekStart(token);
-            DateTime currentWeekEnd = currentWeekStart.AddDays(6);
-            DateTime previousWeekStart = currentWeekStart.AddDays(-7);
-            DateTime previousWeekEnd = currentWeekStart.AddDays(-1);
-            string currWS = currentWeekStart.ToString("yyyy-MM-dd");
-            string currWE = currentWeekEnd.ToString("yyyy-MM-dd");
-            string prevWS = previousWeekStart.ToString("yyyy-MM-dd");
-            string prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+            StartAndEndWeek startAndEnd = GetCompanyCurrentWorkWeekStart(token);
+            double daysOfPayPeriod = (startAndEnd.endOfWeek - startAndEnd.startOfWeek).TotalDays;
+            string currWS = "";
+            string currWE = "";
+            string prevWS = "";
+            string prevWE = "";
+            if (daysOfPayPeriod > 7)
+            {
+                DateTime currentWeekStart = startAndEnd.startOfWeek;
+                DateTime currentWeekEnd = currentWeekStart.AddDays(13);
+                DateTime previousWeekStart = currentWeekStart.AddDays(-14);
+                DateTime previousWeekEnd = currentWeekStart.AddDays(-8);
+                currWS = currentWeekStart.ToString("yyyy-MM-dd");
+                currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+                prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+                prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                DateTime currentWeekStart = startAndEnd.startOfWeek;
+                DateTime currentWeekEnd = currentWeekStart.AddDays(6);
+                DateTime previousWeekStart = currentWeekStart.AddDays(-7);
+                DateTime previousWeekEnd = currentWeekStart.AddDays(-1);
+                currWS = currentWeekStart.ToString("yyyy-MM-dd");
+                currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+                prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+                prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+            }
             WorkWeek workWeek = new WorkWeek();
             workWeek.curr_start_date = currWS;
             workWeek.curr_end_date = currWE;
@@ -36,27 +58,53 @@ namespace Anywhere.service.Data
         }
         public DaysAndHours[] GetDatesAndHoursWorked(String token)
         {
-            DateTime currentWeekStart = GetCompanyCurrentWorkWeekStart(token);
-            DateTime currentWeekEnd = currentWeekStart.AddDays(6);
-            DateTime previousWeekStart = currentWeekStart.AddDays(-7);
-            DateTime previousWeekEnd = currentWeekStart.AddDays(-1);
-            string currWS = currentWeekStart.ToString("yyyy-MM-dd");
-            string currWE = currentWeekEnd.ToString("yyyy-MM-dd");
-            string prevWS = previousWeekStart.ToString("yyyy-MM-dd");
-            string prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
-            string currentWeekHoursWorkedString = dg.getWeekHoursWorked(token, currWS, currWE, prevWS, prevWE);
-            DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
-            return daysAndHours;
+            StartAndEndWeek startAndEnd = GetCompanyCurrentWorkWeekStart(token);
+            double daysOfPayPeriod = (startAndEnd.endOfWeek - startAndEnd.startOfWeek).TotalDays;
+            if(daysOfPayPeriod > 7)
+            {
+                DateTime currentWeekStart = startAndEnd.startOfWeek;
+                DateTime currentWeekEnd = currentWeekStart.AddDays(13);
+                DateTime previousWeekStart = currentWeekStart.AddDays(-14);
+                DateTime previousWeekEnd = currentWeekStart.AddDays(-8);
+                string currWS = currentWeekStart.ToString("yyyy-MM-dd");
+                string currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+                string prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+                string prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+                string currentWeekHoursWorkedString = dg.getWeekHoursWorked(token, currWS, currWE, prevWS, prevWE);
+                DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
+                return daysAndHours;
+            }
+            else
+            {
+                DateTime currentWeekStart = startAndEnd.startOfWeek;
+                DateTime currentWeekEnd = currentWeekStart.AddDays(6);
+                DateTime previousWeekStart = currentWeekStart.AddDays(-7);
+                DateTime previousWeekEnd = currentWeekStart.AddDays(-1);
+                string currWS = currentWeekStart.ToString("yyyy-MM-dd");
+                string currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+                string prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+                string prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+                string currentWeekHoursWorkedString = dg.getWeekHoursWorked(token, currWS, currWE, prevWS, prevWE);
+                DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
+                return daysAndHours;
+            }
+            
         }
         //todaysDate = dateTime.ToString("yyyy/MM/dd");
-        public DateTime GetCompanyCurrentWorkWeekStart(String token)
+        public StartAndEndWeek GetCompanyCurrentWorkWeekStart(String token)
         {
             string companyWorkWeekStart = dg.getCompanyWorkWeekStartFromDB(token);
+            string companyWorkWeekEnd = dg.getCompanyWorkWeekEndFromDB(token);
             StartDayOfWeek[] startDay = js.Deserialize<StartDayOfWeek[]>(companyWorkWeekStart);
+            EndDayOfWeek[] endDay = js.Deserialize<EndDayOfWeek[]>(companyWorkWeekEnd);
             if (startDay[0].Day_of_Week.Length > 3)
             {
                 DateTime weekStart = DateTime.Parse(startDay[0].Day_of_Week.ToString());
-                return weekStart;
+                DateTime weekEnd = DateTime.Parse(endDay[0].Day_of_Week.ToString());
+                StartAndEndWeek startAndEnd = new StartAndEndWeek();
+                startAndEnd.startOfWeek = weekStart;
+                startAndEnd.endOfWeek = weekEnd;
+                return startAndEnd;
             }
             else
             {
@@ -64,7 +112,9 @@ namespace Anywhere.service.Data
                 string workWeekStart = startDay.Length != 0 ? startDay[0].Day_of_Week.ToString() : "S";
                 int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
                 DateTime weekStart = DateTime.Today.AddDays(-ded);
-                return weekStart;
+                StartAndEndWeek startAndEnd = new StartAndEndWeek();
+                startAndEnd.startOfWeek = weekStart;
+                return startAndEnd;
             }
             
         }
@@ -149,7 +199,18 @@ namespace Anywhere.service.Data
             return dg.validateToken(token);
         }
 
+        public class StartAndEndWeek
+        {
+            public DateTime startOfWeek { get; set; }
+            public DateTime endOfWeek { get; set; }
+        }
+
         public class StartDayOfWeek
+        {
+            public string Day_of_Week { get; set; }
+        }
+
+        public class EndDayOfWeek
         {
             public string Day_of_Week { get; set; }
         }
