@@ -163,6 +163,13 @@ const planDates = (function () {
     effectiveStartDate = effectiveStart;
     effectiveEndDate = effectiveEnd;
     planReviewDate = reviewDate;
+
+
+    origPlanYearStartDate = startDate;
+    origPlanYearEndDate = endDate;
+    origEffectiveStartDate = effectiveStart;
+    origEffectiveEndDate = effectiveEnd;
+    origPlanReviewDate = reviewDate;
   }
   async function updatePlanDates(planId, planType) {
     let success;
@@ -174,6 +181,7 @@ const planDates = (function () {
         planId: parseInt(planId),
         reviewDate: newPlanReviewDate,
       });
+      origPlanReviewDate = planReviewDate;
     }
 
     if ((planType === 'Annual' || planType === 'a') && dateChanged) {
@@ -183,6 +191,7 @@ const planDates = (function () {
         consumerPlanId: planId,
         newPlanYearStart: newPlanYearStartDate,
       });
+      origPlanYearStartDate = planYearStartDate;
       // let cache13 = {eventTypeId : planId, eventType : "plan", eventId : 13};
       //  let processEvent = await WorkflowViewerAjax.processStepEventsAsync(cache13);
       //  let cache20 = {eventTypeId : planId, eventType : "plan", eventId : 20};
@@ -198,6 +207,8 @@ const planDates = (function () {
         newEffectiveStart: newEffectiveStartDate,
         newEffectiveEnd: newEffectiveEndDate,
       });
+      origEffectiveStartDate = effectiveStartDate;
+      origEffectiveEndDate = effectiveEndDate;
       // let cache14 = {eventTypeId : planId, eventType : "plan", eventId : 14};
       //  let processEvent = await WorkflowViewerAjax.processStepEventsAsync(cache14);
       //  let cache19 = {eventTypeId : planId, eventType : "plan", eventId : 19};
@@ -440,7 +451,6 @@ const planDates = (function () {
             return;
           }
           const newEffectiveStartDate = e.target.value.split('-');
-          origEffectiveStartDate = effectiveStartDate;
           effectiveStartDate = new Date(
             newEffectiveStartDate[0],
             newEffectiveStartDate[1] - 1,
@@ -461,7 +471,6 @@ const planDates = (function () {
             return;
           }
           const newEffectiveEndDate = e.target.value.split('-');
-          origEffectiveEndDate = effectiveEndDate;
           effectiveEndDate = new Date(
             newEffectiveEndDate[0],
             newEffectiveEndDate[1] - 1,
@@ -503,7 +512,7 @@ const planDates = (function () {
           }
 
           // cache original date
-          origPlanReviewDate = planReviewDate;
+          //origPlanReviewDate = planReviewDate;
           // set new date
           planReviewDate = newReviewDate;
 
@@ -549,28 +558,24 @@ const planDates = (function () {
     };
 
     if (planYearStartDate) {
-      origPlanYearStartDate = planYearStartDate;
-      const formatedSD = UTIL.formatDateFromDateObj(planYearStartDate);
+      const formatedSD = UTIL.formatDateFromDateObj(origPlanYearStartDate);
       startDateOpts.value = formatedSD;
     }
     if (effectiveStartDate) {
-      origEffectiveStartDate = effectiveStartDate;
-      const formatedESD = UTIL.formatDateFromDateObj(effectiveStartDate);
+      const formatedESD = UTIL.formatDateFromDateObj(origEffectiveStartDate);
       effectiveStartDateOpts.value = formatedESD;
     }
     if (planYearEndDate) {
-      origPlanYearEndDate = planYearEndDate;
-      const formatedED = UTIL.formatDateFromDateObj(planYearEndDate);
+      const formatedED = UTIL.formatDateFromDateObj(origPlanYearEndDate);
       endDateOpts.value = formatedED;
     }
     if (effectiveEndDate) {
-      origEffectiveEndDate = effectiveEndDate;
-      const formatedEED = UTIL.formatDateFromDateObj(effectiveEndDate);
+
+      const formatedEED = UTIL.formatDateFromDateObj(origEffectiveEndDate);
       effectiveEndDateOpts.value = formatedEED;
     }
-    if (planReviewDate) {
-      origPlanReviewDate = planReviewDate;
-      const formatedRD = UTIL.formatDateFromDateObj(planReviewDate);
+    if (origPlanReviewDate) {
+      const formatedRD = UTIL.formatDateFromDateObj(origPlanReviewDate);
       reviewDateOpts.value = formatedRD;
     }
 

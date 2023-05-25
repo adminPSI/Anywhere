@@ -257,8 +257,10 @@ const plan = (function () {
     const validDates = isValid => {
       if (isValid) {
         updateBtn.classList.remove('disabled');
+        updateBtn.disabled = false;
       } else {
         updateBtn.classList.add('disabled');
+        updateBtn.disabled = true;
       }
     };
     const dateBoxDiv = planDates.buildDatesBox(validDates);
