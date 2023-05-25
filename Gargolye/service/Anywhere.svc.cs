@@ -518,6 +518,10 @@ namespace Anywhere
         {
             return rosterWorker.getConsumerDemographicsJSON(token, consumerId);
         }
+        public RosterWorker.DemographicInformation[] GetDemographicInformation(string token)
+        {
+            return rosterWorker.GetDemographicInformation(token);
+        }
         public RosterWorker.ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
