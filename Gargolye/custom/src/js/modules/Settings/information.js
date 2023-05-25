@@ -16,13 +16,13 @@ const information = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/getStaffDemographicInformation/',
+          '/GetDemographicInformation/',
         data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
 
-      return data.getStaffDemographicInformationResult;
+      return data.GetDemographicInformationResult;
     } catch (error) {
       console.log(error);
     }
