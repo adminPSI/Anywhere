@@ -105,7 +105,7 @@ const csSignature = (() => {
     const activePlan = plan.getPlanActiveStatus();
 
     if ($.session.planClearSignature && planStatus === 'D' && activePlan === true) {
-      if ($.session.oneSpan && signatureType === '2') {
+      if ($.session.oneSpan && signatureType === '1') {
         return false;
       }
 
@@ -119,6 +119,10 @@ const csSignature = (() => {
     const dissentHowToInput = dissentHowToAddress.querySelector('.input-field__input');
     dissentAreaInput.value = '';
     dissentHowToInput.value = '';
+    dissentAreaInput.style.pointerEvents = 'all';
+    dissentHowToInput.style.pointerEvents = 'all';
+    dissentAreaInput.removeAttribute('readonly');
+    dissentHowToInput.removeAttribute('readonly');
     dissentAreaDisagree.classList.remove('disabled');
     dissentHowToAddress.classList.remove('disabled');
 

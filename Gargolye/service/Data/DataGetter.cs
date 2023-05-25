@@ -1160,6 +1160,20 @@ namespace Anywhere.Data
             }
         }
 
+        public string GetDemographicInformation(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getDemographicsInformation" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_GetDemographicInformation('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_GetDemographicInformation('" + token + "')");
+                return "547: Error Getting Consumer Demographics";
+            }
+        }
         public string getConsumerDemographicsJSON(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;

@@ -604,6 +604,15 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getConsumerDemographicsJSON/")]
         RosterWorker.ConsumerDemographics[] getConsumerDemographicsJSON(string token, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/GetDemographicInformation/")]
+        RosterWorker.DemographicInformation[] GetDemographicInformation(string token);
+
         [OperationContract]
         [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,

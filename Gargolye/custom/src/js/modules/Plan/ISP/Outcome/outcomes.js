@@ -768,6 +768,7 @@ const planOutcomes = (() => {
 
       if (index === 0) {
         newTableData.push({
+          // id: `resp${id}`,
           attributes: [{ key: 'data-mainrow', value: 'true' }],
           values: [whatHappened, howHappened, whoResponsible, whenHowOften],
         });
@@ -835,7 +836,7 @@ const planOutcomes = (() => {
     });
 
     const outcomeDiv = document.querySelector(`.outcome${outcomeId}`);
-    const expTableWrap = outcomeDiv.querySelector('.experiencesTablesWrap');
+    const expTableWrap = outcomeDiv.querySelector('#experiencesTableDummy');
     const expTable = expTableWrap.querySelector(`#experiencesTable${experienceId}`);
 
     expTableWrap.removeChild(expTable);
@@ -1256,7 +1257,7 @@ const planOutcomes = (() => {
 
         if (isNew) {
           const outcome = document.querySelector(`.outcome${saveUpdateData.outcomeId}`);
-          const expTableWrap = outcome.querySelector('.experiencesTablesWrap');
+          const expTableWrap = document.querySelector('#experiencesTableDummy');
           const expTables = [...expTableWrap.querySelectorAll('.table')];
           saveUpdateData.experienceOrder = expTables.length;
           insertOutcomeExperience({ ...saveUpdateData }, expTableWrap);
@@ -1366,7 +1367,7 @@ const planOutcomes = (() => {
         'Who is responsible?',
         'When / How Often?',
       ],
-      sortable: false,
+      sortable: isSortable,
     });
     experiencesDummyTable.classList.add(`experiencesTable`);
     experiencesDiv.appendChild(experiencesDummyTable);
@@ -1458,13 +1459,32 @@ const planOutcomes = (() => {
                 false,
               ),
           };
-          //* Build Table
           const experiencesTable = table.build(tableOptions);
-          experiencesTable.classList.add(`experiencesTable`);
-          //* Populate Table
-          table.populate(experiencesTable, tableData, false);
+          experiencesTable.classList.add('experiencesTable');
 
-          experiencesDiv.appendChild(experiencesTable);
+          // Populate Table
+          table.populate(experiencesTable, tableData, isSortable);
+
+          // Append experiencesTable to experiencesDummyTable
+          experiencesDummyTable.appendChild(experiencesTable);
+
+          // Make tables sortable
+          Sortable.create(experiencesDummyTable, {
+            handle: '.dragHandle', // Set the handle to the table class
+            draggable: '.experiencesTable', // Set the draggable elements to the table class
+            onEnd: async sortData => {
+              const experienceId = sortData.item.id.replace('experiencesTable', '');
+              await planOutcomesAjax.updatePlanOutcomesExperienceOrder({
+                token: $.session.Token,
+                outcomeId: parseInt(outcomeId),
+                experienceId: parseInt(experienceId),
+                newPos: parseInt(sortData.newDraggableIndex),
+                oldPos: parseInt(sortData.oldDraggableIndex),
+              });
+            },
+          });
+
+          experiencesDummyTable.appendChild(experiencesTable);
         });
     }
 
