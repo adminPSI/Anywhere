@@ -44,7 +44,6 @@
 }
 
 // Widget Settings
-
 .util-menu__widgetSettings {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
@@ -158,5 +157,40 @@
       max-height: fit-content;
       opacity: 1;
     }
+  }
+}
+
+
+// MOVE TO NEW FILE LATER
+.util-menu__info {
+  .informationSection {
+    margin: 0 0 10px;
+
+    p {
+      background: $secondary;
+      padding: 6px;
+      font-weight: 500;
+    }
+
+    > div {
+      background: $bg-light;
+      padding: 12px 10px 6px;
+    }
+  }
+
+  .stateZipWrap {
+    display: flex;
+
+    .state {
+      max-width: 100px;
+    }
+    .zip {
+      flex-grow: 1;
+    }
+  }
+
+  .updateInformationBtn {
+    background: $secondary;
+    width: 100%;
   }
 }

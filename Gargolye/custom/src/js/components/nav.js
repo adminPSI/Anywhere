@@ -119,19 +119,19 @@ const UTIL_MENU = (function () {
         var subMenu = document.getElementsByClassName('submenu menu-visible');
         utilMenu.classList.remove('menu-visible');
         utilMenuBtn.classList.remove('menu-visible');
-        modalOverlay.classList.remove('modal')
-        if (subMenu && subMenu.length) subMenu[0].classList.remove('menu-visible');
-        bodyScrollLock.enableBodyScroll(utilMenu);
-      } else {  
-    // Add event listener to overlay close the menu when clicking outside of it
-    modalOverlay.addEventListener('click', function(event) {
-        var subMenu = document.getElementsByClassName('submenu menu-visible');
-        utilMenu.classList.remove('menu-visible');
-        utilMenuBtn.classList.remove('menu-visible');
         modalOverlay.classList.remove('modal');
         if (subMenu && subMenu.length) subMenu[0].classList.remove('menu-visible');
-        bodyScrollLock.enableBodyScroll(utilMenu);        
-    });
+        bodyScrollLock.enableBodyScroll(utilMenu);
+      } else {
+        // Add event listener to overlay close the menu when clicking outside of it
+        modalOverlay.addEventListener('click', function (event) {
+          var subMenu = document.getElementsByClassName('submenu menu-visible');
+          utilMenu.classList.remove('menu-visible');
+          utilMenuBtn.classList.remove('menu-visible');
+          modalOverlay.classList.remove('modal');
+          if (subMenu && subMenu.length) subMenu[0].classList.remove('menu-visible');
+          bodyScrollLock.enableBodyScroll(utilMenu);
+        });
         utilMenu.classList.add('menu-visible');
         utilMenuBtn.classList.add('menu-visible');
         modalOverlay.classList.add('modal');
@@ -142,6 +142,7 @@ const UTIL_MENU = (function () {
     if (utilMenu) {
       const mainMenu = document.querySelector('.util-menu__main');
       const defaultsMenu = document.querySelector('.util-menu__defaults');
+      const informationMenu = document.querySelector('.util-menu__info');
       const settings = document.querySelector('.util-menu__settings');
       const widgetSettingsMenu = document.querySelector('.util-menu__widgetSettings');
       const helpMenu = document.querySelector('.util-menu__help');
@@ -156,7 +157,7 @@ const UTIL_MENU = (function () {
             $.session.applicationName === 'Advisor'
               ? 'http://www.primarysolutions.net/customercare/65465489432134874230-2/'
               : 'http://www.primarysolutions.net/customercare/6546541321877453120-14861520/';
-          // var win = window.open('http://www.primarysolutions.net/customercare/?page_id=109545', '_blank');
+
           const win = window.open(url, '_blank');
           win.focus();
         }
@@ -172,10 +173,17 @@ const UTIL_MENU = (function () {
             targetMenu = helpMenu;
             help.buildPage();
             break;
-          case 'settings': //Currently settings window goes straight ot widget settings
+          case 'settings': {
+            //Currently settings window goes straight ot widget settings
             targetMenu = widgetSettingsMenu;
             widgetSettings.init();
             break;
+          }
+          case 'information': {
+            targetMenu = informationMenu;
+            information.init();
+            break;
+          }
           default:
             break;
         }
