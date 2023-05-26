@@ -196,4 +196,9 @@
   }
 }
 
+[data-mainrow="false"] {
+  .dragHandle {
+    visibility: hidden;
+  }
+}
 
