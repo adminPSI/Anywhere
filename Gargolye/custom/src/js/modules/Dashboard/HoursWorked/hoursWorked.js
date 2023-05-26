@@ -113,31 +113,33 @@
     }
 
     var weekRange = Object.keys(dataObj[selectedWeekView]);
-    weekRange.forEach(week => {
-      var div = document.createElement('div');
+    if (weekRange) {
+      weekRange.forEach(week => {
+        var div = document.createElement('div');
 
-      var totalHours = 0;
+        var totalHours = 0;
 
-      var locations = Object.keys(dataObj[selectedWeekView][week]);
-      locations.forEach(location => {
-        var hours = dataObj[selectedWeekView][week][location].hours;
-        hours = parseFloat(hours);
-        totalHours += hours;
+        var locations = Object.keys(dataObj[selectedWeekView][week]);
+        locations.forEach(location => {
+          var hours = dataObj[selectedWeekView][week][location].hours;
+          hours = parseFloat(hours);
+          totalHours += hours;
 
-        var locationText = document.createElement('p');
-        locationText.innerHTML = `${location} - ${hours} hours`;
+          var locationText = document.createElement('p');
+          locationText.innerHTML = `${location} - ${hours} hours`;
 
-        div.appendChild(locationText);
+          div.appendChild(locationText);
+        });
+
+        var dateText = document.createElement('h4');
+        dateText.classList.add('dateDisp');
+        var isoWeek = UTIL.formatDateToIso(week);
+        dateText.innerHTML = `${moment(isoWeek).format('dddd, MMMM D')} - ${totalHours} hours`;
+
+        div.insertBefore(dateText, div.firstChild);
+        hoursList.appendChild(div);
       });
-
-      var dateText = document.createElement('h4');
-      dateText.classList.add('dateDisp');
-      var isoWeek = UTIL.formatDateToIso(week);
-      dateText.innerHTML = `${moment(isoWeek).format('dddd, MMMM D')} - ${totalHours} hours`;
-
-      div.insertBefore(dateText, div.firstChild);
-      hoursList.appendChild(div);
-    });
+    }
 
     displayFilteredBy();
   }
