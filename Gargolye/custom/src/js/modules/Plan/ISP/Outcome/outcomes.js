@@ -700,7 +700,27 @@ const planOutcomes = (() => {
     experiencesTable.classList.add('sortableTable');
     //* Populate Table
     table.populate(experiencesTable, newTableData, isSortable);
-    //* Append Table
+
+    const experiencesDummyTable = document.querySelector(`#experiencesTableDummy${outcomeId}`);
+
+    // Make tables sortable
+    Sortable.create(experiencesDummyTable, {
+      handle: '.experiencesTable', // Set the handle to the table class
+      draggable: '.experiencesTable', // Set the draggable elements to the table class
+      onEnd: async sortData => {
+        const experienceId = sortData.item.id.replace('experiencesTable', '');
+        await planOutcomesAjax.updatePlanOutcomesExperienceOrder({
+          token: $.session.Token,
+          outcomeId: parseInt(outcomeId),
+          experienceId: parseInt(experienceId),
+          newPos: parseInt(sortData.newDraggableIndex),
+          oldPos: parseInt(sortData.oldDraggableIndex),
+        });
+      },
+    });
+
+     //* Append Table
+    experiencesDummyTable.appendChild(experiencesTable);
     const addExpTableBtn = expTableWrap.querySelector('.btn');
     expTableWrap.insertBefore(experiencesTable, addExpTableBtn);
   }
@@ -838,7 +858,7 @@ const planOutcomes = (() => {
     });
 
     const outcomeDiv = document.querySelector(`.outcome${outcomeId}`);
-    const expTableWrap = outcomeDiv.querySelector('#experiencesTableDummy');
+    const expTableWrap = outcomeDiv.querySelector(`#experiencesTableDummy${outcomeId}`);
     const expTable = expTableWrap.querySelector(`#experiencesTable${experienceId}`);
 
     expTableWrap.removeChild(expTable);
@@ -1259,7 +1279,7 @@ const planOutcomes = (() => {
 
         if (isNew) {
           const outcome = document.querySelector(`.outcome${saveUpdateData.outcomeId}`);
-          const expTableWrap = document.querySelector('#experiencesTableDummy');
+          const expTableWrap = document.querySelector(`#experiencesTableDummy${saveUpdateData.outcomeId}`);
           const expTables = [...expTableWrap.querySelectorAll('.table')];
           saveUpdateData.experienceOrder = expTables.length;
           insertOutcomeExperience({ ...saveUpdateData }, expTableWrap);
@@ -1360,8 +1380,8 @@ const planOutcomes = (() => {
     }
 
     // adding dummy top table so col headings always show
-    const experiencesDummyTable = table.build({
-      tableId: `experiencesTableDummy`,
+    experiencesDummyTable = table.build({
+      tableId: `experiencesTableDummy${outcomeId}`,
       headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
       columnHeadings: [
         'What needs to happen',
