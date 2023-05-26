@@ -1113,8 +1113,6 @@ var note = (function () {
     }
   }
   function checkTimesAreWithinWorkHours() {
-    // check startTime against $.session.caseNotesWarningStartTime
-    // check endTime against $.session.caseNotesWarningEndTime
     const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
     const start = UTIL.convertToMilitary(startTime);

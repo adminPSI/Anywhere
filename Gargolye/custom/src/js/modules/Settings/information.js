@@ -1,10 +1,5 @@
 const information = (function () {
   async function getStaffDemographicInformation() {
-    const retrieveData = {
-      token: $.session.Token,
-      consumerId: $.session.UserId,
-    };
-
     try {
       const data = await $.ajax({
         type: 'POST',
@@ -17,12 +12,40 @@ const information = (function () {
           '/' +
           $.webServer.serviceName +
           '/GetDemographicInformation/',
-        data: JSON.stringify(retrieveData),
+        data: JSON.stringify({
+          token: $.session.Token,
+        }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
 
       return data.GetDemographicInformationResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function updateStaffDemographicInformation(data) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/UpdateDemographicInformation/',
+        data: JSON.stringify({
+          token: $.session.Token,
+          ...data,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.UpdateDemographicInformationResult;
     } catch (error) {
       console.log(error);
     }
