@@ -1883,18 +1883,18 @@ var timeEntryCard = (function () {
       wcServiceType = wcObj[0].serviceType;
       let ppObj = payPeriodData.filter(pp => pp.dateString === payPeriod.dateString);
       sendEvvData = ppObj[0].sendEvvData;
-
+      await evvCheckConsumerEligibilityExistingConsumers();
       if (
         isBillable === 'Y' &&
         defaultTimesChanged &&
         wcServiceType === 'A' &&
         sendEvvData === 'Y' &&
-        reasonRequired === true
+        (reasonRequired === true || isEVVSingleEntry)
       ) {
         if (defaultEndTimeChanged || defaultTimesChanged) {
           showEvv();
           // checkRequiredFields();
-          await evvCheckConsumerEligibilityExistingConsumers();
+          // await evvCheckConsumerEligibilityExistingConsumers();
         } else {
           reasonRequired = false;
           document.querySelector('.timeCard__evv').style.display = 'none';
