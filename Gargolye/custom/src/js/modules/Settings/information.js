@@ -197,7 +197,8 @@ const information = (function () {
       label: 'Carrier',
       style: 'secondary',
       callback: e => {
-        updateData.carrier = e.target.value;
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        updateData.carrier = selectedOption.value;
       },
     });
 
