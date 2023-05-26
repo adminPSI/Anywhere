@@ -127,38 +127,21 @@ const csSignature = (() => {
     dissentHowToAddress.classList.remove('disabled');
 
     if (signatureType === '1') {
-      // const changeMindRadios = [...changeMindQ.querySelectorAll('.radio')];
-      // const complaintRadios = [...complaintQ.querySelectorAll('.radio')];
-      // const standardRadios = [...standardQuestions.querySelectorAll('.ic_questionRadioContainer')];
       const allRadios = [...signaturePopup.querySelectorAll('.ic_questionRadioContainer')];
 
       // if this works remove below for each's
       allRadios.forEach(radio => {
         radio.classList.remove('disabled');
+        radio.classList.add('error');
         const radios = [...radio.querySelectorAll('.radio')];
         radios.forEach(radio => {
           const input = radio.querySelector('input');
           input.checked = false;
         });
       });
-
-      // changeMindRadios.forEach(radio => {
-      //   const input = radio.querySelector('input');
-      //   input.checked = false;
-      // });
-      // complaintRadios.forEach(radio => {
-      //   const input = radio.querySelector('input');
-      //   input.checked = false;
-      // });
-      // standardRadios.forEach(radio => {
-      //   radio.classList.remove('disabled');
-      //   const radios = [...radio.querySelectorAll('.radio')];
-      //   radios.forEach(radio => {
-      //     const input = radio.querySelector('input');
-      //     input.checked = false;
-      //   });
-      // });
     }
+
+    checkSignautrePopupForErrors();
   }
   function clearMemberDataOnClear() {
     isSigned = false;

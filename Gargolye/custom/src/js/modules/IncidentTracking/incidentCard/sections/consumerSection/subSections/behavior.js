@@ -436,7 +436,7 @@ const consumerBehavior = (function () {
       let behaviorDATA = behaviorData[selectedConsumerId][key];
 
       let filterBehaviorTypes = behaviorTypes.filter(
-        type => type.itFollowUpTypeId === behaviorDATA.followUpTypeId,
+        type => type.itBehaviorTypeId === behaviorDATA.behaviorTypeId,
       );
       let behaviorType = filterBehaviorTypes[0] ? filterBehaviorTypes[0].behaviorTypeName : '';
       let timeLength = getTimeLength(behaviorDATA.startTime, behaviorDATA.endTime);
