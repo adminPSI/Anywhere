@@ -16,7 +16,6 @@
   var cancelFilterBtn;
 
   function populateWeeksDropdown(results) {
-    console.log(results);
     // value
     var currStart = moment(results.curr_start_date).format('MM-DD-YYYY');
     var currEnd = moment(results.curr_end_date).format('MM-DD-YYYY');
@@ -54,46 +53,48 @@
 
     if (!Object.keys(hoursWorkedList).length) {
       dataObj = {};
-      results.forEach(r => {
-        var date = r.workdate.split(' ')[0].split('/');
-        date = `${UTIL.leadingZero(date[0])}/${UTIL.leadingZero(date[1])}/${date[2]}`;
-        var location = r.location;
-        var hours;
+      if (results) {
+        results.forEach(r => {
+          var date = r.workdate.split(' ')[0].split('/');
+          date = `${UTIL.leadingZero(date[0])}/${UTIL.leadingZero(date[1])}/${date[2]}`;
+          var location = r.location;
+          var hours;
 
-        if ($.session.applicationName === 'Advisor') {
-          if (r.check_hours !== '' && r.check_hours !== '0.00') {
-            hours = parseFloat(r.check_hours).toFixed(2);
-          } else if (r.hours !== '' && r.hours !== '0.000000000') {
-            hours = parseFloat(r.hours).toFixed(2);
+          if ($.session.applicationName === 'Advisor') {
+            if (r.check_hours !== '' && r.check_hours !== '0.00') {
+              hours = parseFloat(r.check_hours).toFixed(2);
+            } else if (r.hours !== '' && r.hours !== '0.000000000') {
+              hours = parseFloat(r.hours).toFixed(2);
+            } else {
+              hours = 0;
+            }
           } else {
-            hours = 0;
+            if (r.check_hours !== '' && r.check_hours !== '0') {
+              hours = parseFloat(r.check_hours).toFixed(2);
+            } else if (r.hours !== '' && r.hours !== '0.000000000') {
+              hours = parseFloat(r.hours).toFixed(2);
+            } else {
+              hours = 0;
+            }
           }
-        } else {
-          if (r.check_hours !== '' && r.check_hours !== '0') {
-            hours = parseFloat(r.check_hours).toFixed(2);
-          } else if (r.hours !== '' && r.hours !== '0.000000000') {
-            hours = parseFloat(r.hours).toFixed(2);
-          } else {
-            hours = 0;
-          }
-        }
 
-        if (!dataObj[r.week]) {
-          dataObj[r.week] = {};
-        }
-        if (!dataObj[r.week][date]) {
-          dataObj[r.week][date] = {};
-        }
-        if (!dataObj[r.week][date][location]) {
-          dataObj[r.week][date][location] = {
-            hours: parseFloat(hours).toFixed(2),
-            name: location,
-          };
-        } else {
-          var newHours = parseFloat(dataObj[r.week][date][location].hours) + parseFloat(hours);
-          dataObj[r.week][date][location].hours = parseFloat(newHours).toFixed(2);
-        }
-      });
+          if (!dataObj[r.week]) {
+            dataObj[r.week] = {};
+          }
+          if (!dataObj[r.week][date]) {
+            dataObj[r.week][date] = {};
+          }
+          if (!dataObj[r.week][date][location]) {
+            dataObj[r.week][date][location] = {
+              hours: parseFloat(hours).toFixed(2),
+              name: location,
+            };
+          } else {
+            var newHours = parseFloat(dataObj[r.week][date][location].hours) + parseFloat(hours);
+            dataObj[r.week][date][location].hours = parseFloat(newHours).toFixed(2);
+          }
+        });
+      }
       // cache data
       hoursWorkedList = dataObj;
     } else {
