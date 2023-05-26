@@ -29,6 +29,8 @@ const information = (function () {
     }
   }
   async function updateStaffDemographicInformation() {
+    const mergeUpdateWithDemo = [...demographicInfo, ...updateData];
+
     try {
       const data = await $.ajax({
         type: 'POST',
@@ -43,7 +45,7 @@ const information = (function () {
           '/UpdateDemographicInformation/',
         data: JSON.stringify({
           token: $.session.Token,
-          ...updateData,
+          ...mergeUpdateWithDemo,
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',

@@ -1092,6 +1092,16 @@ function setSessionVariables() {
       $.session.defaultDayServiceLocation = tmpPerm;
     }
   });
+
+  if ($.session.UserId === 'ash' || $.session.UserId === 'mike') {
+    $.session.ViewMyInformation = true;
+    $.session.UpdateMyInformation = true;
+  }
+  // TODO-ASH: move this somewhere else eventually
+  if (!$.session.ViewMyInformation) {
+    const informationMenuBtn = document.querySelector(`[data-menu='information']`);
+    informationMenuBtn.style.display = 'none';
+  }
 }
 
 function setSession(callback) {
