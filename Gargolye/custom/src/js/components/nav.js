@@ -114,6 +114,14 @@ const UTIL_MENU = (function () {
     const utilMenuBtn = document.querySelector('.desktopUtilMenuBtn');
     const modalOverlay = document.querySelector('.overlay');
 
+    debugger;
+    const informationMenuBtn = document.querySelector(`[data-menu='information']`);
+    informationMenuBtn.style.display = 'none';
+    if (!$.session.ViewMyInformation) {
+      // hide myinformation button
+      // reset styles on other buttons
+    }
+
     utilMenuBtn.addEventListener('click', () => {
       if (utilMenu.classList.contains('menu-visible')) {
         var subMenu = document.getElementsByClassName('submenu menu-visible');

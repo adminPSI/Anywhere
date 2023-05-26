@@ -19,13 +19,15 @@
     // value
     var currStart = moment(results.curr_start_date).format('MM-DD-YYYY');
     var currEnd = moment(results.curr_end_date).format('MM-DD-YYYY');
-    var prevStart = moment(results.prev_start_date).format('MM-DD-YYYY');
-    var prevEnd = moment(results.prev_end_date).format('MM-DD-YYYY');
+    var prevStart = results.prev_start_date
+      ? moment(results.prev_start_date).format('MM-DD-YYYY')
+      : null;
+    var prevEnd = results.prev_end_date ? moment(results.prev_end_date).format('MM-DD-YYYY') : null;
     // text
     var newCurrStart = currStart.split('-').join('/');
     var newCurrEnd = currEnd.split('-').join('/');
-    var newPrevStart = prevStart.split('-').join('/');
-    var newPrevEnd = prevEnd.split('-').join('/');
+    var newPrevStart = prevStart ? prevStart.split('-').join('/') : null;
+    var newPrevEnd = prevEnd ? prevEnd.split('-').join('/') : null;
 
     var data = [
       {
@@ -33,12 +35,15 @@
         value: `${currStart} - ${currEnd}`,
         text: `${newCurrStart} - ${newCurrEnd}`,
       },
-      {
+    ];
+
+    if (prevStart && prevEnd) {
+      data.push({
         id: 'prevweek',
         value: `${prevStart} - ${prevEnd}`,
         text: `${newPrevStart} - ${newPrevEnd}`,
-      },
-    ];
+      });
+    }
 
     if (!selectedWeekRange) selectedWeekRange = data[0].value;
     if (!selectedWeekRangeTxt) selectedWeekRangeTxt = data[0].text;

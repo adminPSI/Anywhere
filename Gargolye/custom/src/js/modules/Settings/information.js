@@ -268,7 +268,9 @@ const information = (function () {
 
     infoPage.appendChild(currMenu);
     infoPage.appendChild(backButton);
-    infoPage.appendChild(updateButton);
+    if ($.session.UpdateMyInformation) {
+      infoPage.appendChild(updateButton);
+    }
 
     if ($.session.applicationName === 'Advisor') {
       const addressSection = buildAddressSection();
