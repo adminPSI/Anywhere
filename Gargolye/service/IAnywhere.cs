@@ -623,6 +623,14 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getMobileCarrierDropdown/")]
+        RosterWorker.MobileCarrierDropdown[] getMobileCarrierDropdown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,

@@ -46,6 +46,12 @@ namespace Anywhere.service.Data
             DemographicInformation[] demoInfoObj = js.Deserialize<DemographicInformation[]>(demoInfoString);
             return demoInfoObj;
         }
+        public MobileCarrierDropdown[] getMobileCarrierDropdown(string token)
+        {
+            string mobileCarrierDropdownString = dg.getMobileCarrierDropdown(token);
+            MobileCarrierDropdown[] mobileCarrierDropdownData = js.Deserialize<MobileCarrierDropdown[]>(mobileCarrierDropdownString);
+            return mobileCarrierDropdownData;
+        }
         public ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             string consumerRelString = dg.getConsumerRelationshipsJSON(token, consumerId);
@@ -58,6 +64,12 @@ namespace Anywhere.service.Data
             string consumerPlanYearInfoString = dg.getConsumerPlanYearInfo(token, consumerId);
             ConsumerPlanYearInfo[] consumerPlanYearInfoObj = js.Deserialize<ConsumerPlanYearInfo[]>(consumerPlanYearInfoString);
             return consumerPlanYearInfoObj[0];
+        }
+
+        public class MobileCarrierDropdown
+        {
+            public string carrierName { get; set; }
+            public string carrierId { get; set; }
         }
 
         public class CheckForIndividualAbsent
