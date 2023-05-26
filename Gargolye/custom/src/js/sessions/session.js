@@ -1092,6 +1092,11 @@ function setSessionVariables() {
       $.session.defaultDayServiceLocation = tmpPerm;
     }
   });
+
+  if ($.session.UserId === 'ash' || $.session.UserId === 'mike') {
+    $.session.ViewMyInformation = true;
+    $.session.UpdateMyInformation = true;
+  }
 }
 
 function setSession(callback) {
