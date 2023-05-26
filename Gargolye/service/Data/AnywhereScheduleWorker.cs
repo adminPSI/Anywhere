@@ -54,7 +54,7 @@ namespace Anywhere.service.Data
 
         public DayOfWeek[] getDayOfWeekSchedule(string token)
         {
-            string dayOfWeekString = dg.getCompanyWorkWeekStartFromDB(token);
+            string dayOfWeekString = dg.getCompanyWorkWeekStartFromDBSch(token);
             DayOfWeek[] dayOfWeekObj = js.Deserialize<DayOfWeek[]>(dayOfWeekString);
             return dayOfWeekObj;
         }

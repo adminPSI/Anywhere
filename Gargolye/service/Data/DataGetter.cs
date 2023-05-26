@@ -2850,12 +2850,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getCompanyWorkWeekStartFromDB(string token)
+        public string getCompanyWorkWeekStartFromDB(string token, char weekTwo)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getCompanyWorkWeekStartFromDB" + token);
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(weekTwo.ToString());
             string text = "CALL DBA.ANYW_Dashboard_GetCompanyWorkWeekStartFromDB(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -2868,12 +2869,31 @@ namespace Anywhere.Data
             }
         }
 
-        public string getCompanyWorkWeekEndFromDB(string token)
+        public string getCompanyWorkWeekStartFromDBSch(string token)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getCompanyWorkWeekStartFromDB" + token);
             List<string> list = new List<string>();
             list.Add(token);
+            string text = "CALL DBA.ANYW_Dashboard_GetCompanyWorkWeekStartFromDBSch(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("629.5", ex.Message + "ANYW_Dashboard_GetCompanyWorkWeekStartFromDBSch(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "629.5: error ANYW_Dashboard_GetCompanyWorkWeekStartFromDBSch";
+            }
+        }
+
+        public string getCompanyWorkWeekEndFromDB(string token, char weekTwo)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getCompanyWorkWeekStartFromDB" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(weekTwo.ToString());
             string text = "CALL DBA.ANYW_Dashboard_GetCompanyWorkWeekEndFromDB(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
