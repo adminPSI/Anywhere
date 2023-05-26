@@ -1087,6 +1087,20 @@ var noteSSA = (function () {
 
     return docTime;
   }
+  function checkTimesAreWithinWorkHours() {
+    // check startTime against $.session.caseNotesWarningStartTime
+    // check endTime against $.session.caseNotesWarningEndTime
+    const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
+    const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
+    const start = UTIL.convertToMilitary(startTime);
+    const end = UTIL.convertToMilitary(endTime);
+
+    if (start < warnStart || start > warnEnd || end < warnStart || end > warnEnd) {
+      return false;
+    }
+
+    return true;
+  }
   function buildCardDetailsSection() {
     function saveBtnAction(saveAndNew) {
       function preSave() {
@@ -1114,8 +1128,25 @@ var noteSSA = (function () {
             saveNoteBtn.classList.add('disabled');
             saveAndNewNoteBtn.classList.add('disabled');
             preSave();
-            // validate times
-            noteSaveUpdate(saveAndNew);
+            if ($.session.applicationName === 'Gatekeeper') {
+              const hoursAreWithinWorkHours = checkTimesAreWithinWorkHours();
+              if (hoursAreWithinWorkHours) {
+                noteSaveUpdate(saveAndNew);
+              } else {
+                warningPopup(
+                  `The times you have entered are outside the current normal working hours.
+                  Click OK to proceed or cancel to return to the form.`,
+                  () => {
+                    noteSaveUpdate(saveAndNew);
+                  },
+                  () => {
+                    return;
+                  },
+                );
+              }
+            } else {
+              noteSaveUpdate(saveAndNew);
+            }
           },
           () => {
             return;
@@ -1125,8 +1156,25 @@ var noteSSA = (function () {
         saveNoteBtn.classList.add('disabled');
         saveAndNewNoteBtn.classList.add('disabled');
         preSave();
-        // validate times
-        noteSaveUpdate(saveAndNew);
+        if ($.session.applicationName === 'Gatekeeper') {
+          const hoursAreWithinWorkHours = checkTimesAreWithinWorkHours();
+          if (hoursAreWithinWorkHours) {
+            noteSaveUpdate(saveAndNew);
+          } else {
+            warningPopup(
+              `The times you have entered are outside the current normal working hours.
+              Click OK to proceed or cancel to return to the form.`,
+              () => {
+                noteSaveUpdate(saveAndNew);
+              },
+              () => {
+                return;
+              },
+            );
+          }
+        } else {
+          noteSaveUpdate(saveAndNew);
+        }
       }
     }
     var details = document.createElement('div');
