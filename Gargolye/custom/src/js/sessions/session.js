@@ -1,5 +1,7 @@
 $.session = {};
 $.session.firstRunShit = true;
+$.session.ViewMyInformation = false;
+$.session.UpdateMyInformation = false;
 //$.session.firstRunShitLocationAbsentWidget = true;
 $.session.DayServiceView = false;
 $.session.DayServiceInsert = false;
@@ -1033,6 +1035,12 @@ function setSessionVariables() {
     if (tmpWindow == 'Anywhere User Home') {
       if (tmpPerm == 'Deny Staff TimeClock Change') {
         $.session.DenyStaffClockUpdate = true;
+      }
+      if (tmpPerm == 'View My Information') {
+        $.session.ViewMyInformation = true;
+      }
+      if (tmpPerm == 'Update My Information') {
+        $.session.UpdateMyInformation = true;
       }
     }
 

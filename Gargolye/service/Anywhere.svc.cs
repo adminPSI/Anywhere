@@ -522,9 +522,18 @@ namespace Anywhere
         {
             return rosterWorker.GetDemographicInformation(token);
         }
+        public RosterWorker.MobileCarrierDropdown[] getMobileCarrierDropdown(string token)
+        {
+            return rosterWorker.getMobileCarrierDropdown(token);
+        }
         public RosterWorker.ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
+        }
+
+        public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
+        {
+            return dg.updateDemographicInformation(token, addressOne, addressTwo, city, state, zipCode, mobilePhone, email, carrier);
         }
 
         public string updateDemographicsRecord(string consumerId, string field, string newValue, string applicationName)

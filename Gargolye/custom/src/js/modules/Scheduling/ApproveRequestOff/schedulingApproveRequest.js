@@ -545,6 +545,8 @@ var schedulingApproveRequest = (function () {
             // alert("Overlap found. Please review the days off requests NOT processed. These requests are in conflict with already approved requests.")
             overlapIds.push(approveDenyResponse);
             daysOffOverlapConfirmed = true;
+          } else {
+            daysOffOverlapConfirmed = false;
           }
         }
       }

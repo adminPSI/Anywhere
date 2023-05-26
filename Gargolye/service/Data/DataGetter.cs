@@ -1174,6 +1174,36 @@ namespace Anywhere.Data
                 return "547: Error Getting Consumer Demographics";
             }
         }
+
+        public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateDemographicInformation");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_UpdateDemographicInformation('" + token + "', '" + addressOne + "', '" + addressTwo + "', '" + city + "', '" + state + "', '" + zipCode + "', '" + mobilePhone + "', '" + email + "', '" + carrier + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_UpdateDemographicInformation('" + token + "', '" + addressOne + "', '" + addressTwo + "', '" + city + "', '" + state + "', '" + zipCode + "', '" + mobilePhone + "', '" + email + "', '" + carrier + "')", token);
+                return "584: Error updating demographics information";
+            }
+        }
+        public string getMobileCarrierDropdown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getMobileCarrierDropdown" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_GetMobileCarriers('" + token + "')");
+            }
+            catch (Exception ex)
+            {
+                logger.error("719", ex.Message + " ANYW_GetMobileCarriers('" + token + "')");
+                return "719: getMobileCarrierDropdown";
+            }
+        }
         public string getConsumerDemographicsJSON(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;
