@@ -697,6 +697,7 @@ const planOutcomes = (() => {
     //* Build Table
     const experiencesTable = table.build(tableOptions);
     experiencesTable.classList.add(`experiencesTable`);
+    experiencesTable.classList.add('sortableTable');
     //* Populate Table
     table.populate(experiencesTable, newTableData, isSortable);
     //* Append Table
@@ -822,8 +823,9 @@ const planOutcomes = (() => {
     //* Build Table
     const newExperiencesTable = table.build(tableOptions);
     newExperiencesTable.classList.add(`experiencesTable`);
+    newExperiencesTable.classList.add('sortableTable');
     //* Populate Table
-    table.populate(newExperiencesTable, newTableData, false);
+    table.populate(newExperiencesTable, newTableData, isSortable);
     //* Replace Old Table w/New Table
     const oldExperiencesTable = document.getElementById(`experiencesTable${experienceIds}`);
     oldExperiencesTable.parentNode.replaceChild(newExperiencesTable, oldExperiencesTable);
@@ -1438,6 +1440,7 @@ const planOutcomes = (() => {
             tableId: `experiencesTable${td.experienceIds}`,
             headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
             columnHeadings: [
+              '<div class="draghandle"></div>',
               'What needs to happen',
               'How should it happen?',
               'Who is responsible?',
@@ -1461,6 +1464,7 @@ const planOutcomes = (() => {
           };
           const experiencesTable = table.build(tableOptions);
           experiencesTable.classList.add('experiencesTable');
+          experiencesTable.classList.add('sortableTable');
 
           // Populate Table
           table.populate(experiencesTable, tableData, isSortable);
@@ -1470,7 +1474,7 @@ const planOutcomes = (() => {
 
           // Make tables sortable
           Sortable.create(experiencesDummyTable, {
-            handle: '.dragHandle', // Set the handle to the table class
+            handle: '.experiencesTable', // Set the handle to the table class
             draggable: '.experiencesTable', // Set the draggable elements to the table class
             onEnd: async sortData => {
               const experienceId = sortData.item.id.replace('experiencesTable', '');
