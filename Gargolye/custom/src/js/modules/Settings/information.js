@@ -1,4 +1,8 @@
 const information = (function () {
+  let demographicInfo;
+  let updateData;
+  let mobileCarriersData;
+
   async function getStaffDemographicInformation() {
     try {
       const data = await $.ajax({
@@ -24,7 +28,7 @@ const information = (function () {
       console.log(error);
     }
   }
-  async function updateStaffDemographicInformation(data) {
+  async function updateStaffDemographicInformation() {
     try {
       const data = await $.ajax({
         type: 'POST',
@@ -39,7 +43,7 @@ const information = (function () {
           '/UpdateDemographicInformation/',
         data: JSON.stringify({
           token: $.session.Token,
-          ...data,
+          ...updateData,
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
@@ -49,6 +53,43 @@ const information = (function () {
     } catch (error) {
       console.log(error);
     }
+  }
+  async function getMobileCarrierDropdown() {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getMobileCarrierDropdown/',
+        data: JSON.stringify({
+          token: $.session.Token,
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.getMobileCarrierDropdownResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function populateCarrierDropdown(dropdownEle) {
+    const data = mobileCarriersData.map(carrier => {
+      return {
+        value: carrier.carrierId,
+        text: carrier.carrierName,
+      };
+    });
+    data.sort((a, b) => (a.text < b.text ? -1 : 1));
+
+    dropdown.populate(dropdownEle, data, demographicInfo.carrier);
   }
 
   function buildAddressSection() {
@@ -66,9 +107,9 @@ const information = (function () {
       style: 'secondary',
       classNames: ['address1'],
       attributes: [{ key: 'maxlength', value: '50' }],
-      value: '',
+      value: demographicInfo.addressOne,
       callback: e => {
-        address1 = e.target.value;
+        updateData.addressOne = e.target.value;
       },
     });
     const address2Input = input.build({
@@ -77,9 +118,9 @@ const information = (function () {
       style: 'secondary',
       classNames: ['address2'],
       attributes: [{ key: 'maxlength', value: '50' }],
-      value: '',
+      value: demographicInfo.addressTwo,
       callback: e => {
-        address2 = e.target.value;
+        updateData.addressTwo = e.target.value;
       },
     });
     const cityInput = input.build({
@@ -88,9 +129,9 @@ const information = (function () {
       style: 'secondary',
       classNames: ['city'],
       attributes: [{ key: 'maxlength', value: '27' }],
-      value: '',
+      value: demographicInfo.city,
       callback: e => {
-        city = e.target.value;
+        updateData.city = e.target.value;
       },
     });
     const stateInput = input.build({
@@ -99,9 +140,9 @@ const information = (function () {
       style: 'secondary',
       classNames: ['state'],
       attributes: [{ key: 'maxlength', value: '2' }],
-      value: '',
+      value: demographicInfo.state,
       callback: e => {
-        state = e.target.value;
+        updateData.state = e.target.value;
       },
     });
     const zipInput = input.build({
@@ -110,9 +151,9 @@ const information = (function () {
       style: 'secondary',
       classNames: ['zip'],
       attributes: [{ key: 'maxlength', value: '9' }],
-      value: '',
+      value: demographicInfo.zipCode,
       callback: e => {
-        zipcode = e.target.value;
+        updateData.zipCode = e.target.value;
       },
     });
 
@@ -146,22 +187,24 @@ const information = (function () {
       style: 'secondary',
       classNames: ['phone'],
       attributes: [{ key: 'maxlength', value: '14' }],
-      value: '',
+      value: demographicInfo.mobilePhone,
       callback: e => {
-        phone = e.target.value;
+        updateData.mobilePhone = e.target.value;
       },
     });
-    const carrierInput = dropdown.build({
+    const carrierDropdown = dropdown.build({
       dropdownId: 'carrierDropdown',
       label: 'Carrier',
       style: 'secondary',
       callback: e => {
-        carrier = e.target.value;
+        updateData.carrier = e.target.value;
       },
     });
 
+    populateCarrierDropdown(carrierDropdown);
+
     body.appendChild(phoneInput);
-    body.appendChild(carrierInput);
+    body.appendChild(carrierDropdown);
 
     numberSection.appendChild(heading);
     numberSection.appendChild(body);
@@ -181,8 +224,9 @@ const information = (function () {
       label: 'Email',
       type: 'email',
       style: 'secondary',
+      value: demographicInfo.email,
       callback: e => {
-        email = e.target.value;
+        updateData.email = e.target.value;
       },
     });
 
@@ -215,7 +259,7 @@ const information = (function () {
       type: 'contained',
       classNames: 'updateInformationBtn',
       callback: () => {
-        // update information
+        updateStaffDemographicInformation();
       },
     });
 
@@ -236,7 +280,9 @@ const information = (function () {
   }
 
   async function init() {
-    await getStaffDemographicInformation();
+    demographicInfo = await getStaffDemographicInformation();
+    mobileCarriersData = await getMobileCarrierDropdown();
+    updateData = {};
     buildPage();
   }
 
