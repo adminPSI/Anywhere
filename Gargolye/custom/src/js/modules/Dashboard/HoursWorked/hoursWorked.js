@@ -16,17 +16,18 @@
   var cancelFilterBtn;
 
   function populateWeeksDropdown(results) {
-    console.log(results);
     // value
     var currStart = moment(results.curr_start_date).format('MM-DD-YYYY');
     var currEnd = moment(results.curr_end_date).format('MM-DD-YYYY');
-    var prevStart = moment(results.prev_start_date).format('MM-DD-YYYY');
-    var prevEnd = moment(results.prev_end_date).format('MM-DD-YYYY');
+    var prevStart = results.prev_start_date
+      ? moment(results.prev_start_date).format('MM-DD-YYYY')
+      : null;
+    var prevEnd = results.prev_end_date ? moment(results.prev_end_date).format('MM-DD-YYYY') : null;
     // text
     var newCurrStart = currStart.split('-').join('/');
     var newCurrEnd = currEnd.split('-').join('/');
-    var newPrevStart = prevStart.split('-').join('/');
-    var newPrevEnd = prevEnd.split('-').join('/');
+    var newPrevStart = prevStart ? prevStart.split('-').join('/') : null;
+    var newPrevEnd = prevEnd ? prevEnd.split('-').join('/') : null;
 
     var data = [
       {
@@ -34,12 +35,15 @@
         value: `${currStart} - ${currEnd}`,
         text: `${newCurrStart} - ${newCurrEnd}`,
       },
-      {
+    ];
+
+    if (prevStart && prevEnd) {
+      data.push({
         id: 'prevweek',
         value: `${prevStart} - ${prevEnd}`,
         text: `${newPrevStart} - ${newPrevEnd}`,
-      },
-    ];
+      });
+    }
 
     if (!selectedWeekRange) selectedWeekRange = data[0].value;
     if (!selectedWeekRangeTxt) selectedWeekRangeTxt = data[0].text;
@@ -54,46 +58,48 @@
 
     if (!Object.keys(hoursWorkedList).length) {
       dataObj = {};
-      results.forEach(r => {
-        var date = r.workdate.split(' ')[0].split('/');
-        date = `${UTIL.leadingZero(date[0])}/${UTIL.leadingZero(date[1])}/${date[2]}`;
-        var location = r.location;
-        var hours;
+      if (results) {
+        results.forEach(r => {
+          var date = r.workdate.split(' ')[0].split('/');
+          date = `${UTIL.leadingZero(date[0])}/${UTIL.leadingZero(date[1])}/${date[2]}`;
+          var location = r.location;
+          var hours;
 
-        if ($.session.applicationName === 'Advisor') {
-          if (r.check_hours !== '' && r.check_hours !== '0.00') {
-            hours = parseFloat(r.check_hours).toFixed(2);
-          } else if (r.hours !== '' && r.hours !== '0.000000000') {
-            hours = parseFloat(r.hours).toFixed(2);
+          if ($.session.applicationName === 'Advisor') {
+            if (r.check_hours !== '' && r.check_hours !== '0.00') {
+              hours = parseFloat(r.check_hours).toFixed(2);
+            } else if (r.hours !== '' && r.hours !== '0.000000000') {
+              hours = parseFloat(r.hours).toFixed(2);
+            } else {
+              hours = 0;
+            }
           } else {
-            hours = 0;
+            if (r.check_hours !== '' && r.check_hours !== '0') {
+              hours = parseFloat(r.check_hours).toFixed(2);
+            } else if (r.hours !== '' && r.hours !== '0.000000000') {
+              hours = parseFloat(r.hours).toFixed(2);
+            } else {
+              hours = 0;
+            }
           }
-        } else {
-          if (r.check_hours !== '' && r.check_hours !== '0') {
-            hours = parseFloat(r.check_hours).toFixed(2);
-          } else if (r.hours !== '' && r.hours !== '0.000000000') {
-            hours = parseFloat(r.hours).toFixed(2);
-          } else {
-            hours = 0;
-          }
-        }
 
-        if (!dataObj[r.week]) {
-          dataObj[r.week] = {};
-        }
-        if (!dataObj[r.week][date]) {
-          dataObj[r.week][date] = {};
-        }
-        if (!dataObj[r.week][date][location]) {
-          dataObj[r.week][date][location] = {
-            hours: parseFloat(hours).toFixed(2),
-            name: location,
-          };
-        } else {
-          var newHours = parseFloat(dataObj[r.week][date][location].hours) + parseFloat(hours);
-          dataObj[r.week][date][location].hours = parseFloat(newHours).toFixed(2);
-        }
-      });
+          if (!dataObj[r.week]) {
+            dataObj[r.week] = {};
+          }
+          if (!dataObj[r.week][date]) {
+            dataObj[r.week][date] = {};
+          }
+          if (!dataObj[r.week][date][location]) {
+            dataObj[r.week][date][location] = {
+              hours: parseFloat(hours).toFixed(2),
+              name: location,
+            };
+          } else {
+            var newHours = parseFloat(dataObj[r.week][date][location].hours) + parseFloat(hours);
+            dataObj[r.week][date][location].hours = parseFloat(newHours).toFixed(2);
+          }
+        });
+      }
       // cache data
       hoursWorkedList = dataObj;
     } else {
@@ -112,31 +118,33 @@
     }
 
     var weekRange = Object.keys(dataObj[selectedWeekView]);
-    weekRange.forEach(week => {
-      var div = document.createElement('div');
+    if (weekRange) {
+      weekRange.forEach(week => {
+        var div = document.createElement('div');
 
-      var totalHours = 0;
+        var totalHours = 0;
 
-      var locations = Object.keys(dataObj[selectedWeekView][week]);
-      locations.forEach(location => {
-        var hours = dataObj[selectedWeekView][week][location].hours;
-        hours = parseFloat(hours);
-        totalHours += hours;
+        var locations = Object.keys(dataObj[selectedWeekView][week]);
+        locations.forEach(location => {
+          var hours = dataObj[selectedWeekView][week][location].hours;
+          hours = parseFloat(hours);
+          totalHours += hours;
 
-        var locationText = document.createElement('p');
-        locationText.innerHTML = `${location} - ${hours} hours`;
+          var locationText = document.createElement('p');
+          locationText.innerHTML = `${location} - ${hours} hours`;
 
-        div.appendChild(locationText);
+          div.appendChild(locationText);
+        });
+
+        var dateText = document.createElement('h4');
+        dateText.classList.add('dateDisp');
+        var isoWeek = UTIL.formatDateToIso(week);
+        dateText.innerHTML = `${moment(isoWeek).format('dddd, MMMM D')} - ${totalHours} hours`;
+
+        div.insertBefore(dateText, div.firstChild);
+        hoursList.appendChild(div);
       });
-
-      var dateText = document.createElement('h4');
-      dateText.classList.add('dateDisp');
-      var isoWeek = UTIL.formatDateToIso(week);
-      dateText.innerHTML = `${moment(isoWeek).format('dddd, MMMM D')} - ${totalHours} hours`;
-
-      div.insertBefore(dateText, div.firstChild);
-      hoursList.appendChild(div);
-    });
+    }
 
     displayFilteredBy();
   }

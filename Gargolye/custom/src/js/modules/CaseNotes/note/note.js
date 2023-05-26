@@ -1101,9 +1101,30 @@ var note = (function () {
 
     return docTime;
   }
+  function parseSessionTimes(dirtyTime) {
+    const isAMorPM = dirtyTime.includes('A') ? 'am' : 'pm';
+
+    if (isAMorPM === 'am') {
+      const time = `${dirtyTime.split('A')[0]} AM`;
+      return UTIL.convertToMilitary(time);
+    } else {
+      const time = `${dirtyTime.split('P')[0]} PM`;
+      return UTIL.convertToMilitary(time);
+    }
+  }
   function checkTimesAreWithinWorkHours() {
-    // check startTime against $.session.caseNotesWarningStartTime
-    // check endTime against $.session.caseNotesWarningEndTime
+    const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
+    const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
+    const start = UTIL.convertToMilitary(startTime);
+    const end = UTIL.convertToMilitary(endTime);
+
+    console.log(warnStart, warnEnd, start, end);
+
+    if (start < warnStart || start > warnEnd || end < warnStart || end > warnEnd) {
+      return false;
+    }
+
+    return true;
   }
   function buildCardDetailsSection() {
     async function saveBtnAction(saveAndNew) {
@@ -1135,8 +1156,23 @@ var note = (function () {
             preSave();
             if ($.session.applicationName === 'Gatekeeper') {
               const hoursAreWithinWorkHours = checkTimesAreWithinWorkHours();
+              if (hoursAreWithinWorkHours) {
+                await noteSaveUpdate(saveAndNew);
+              } else {
+                warningPopup(
+                  `The times you have entered are outside the current normal working hours.
+                  Click OK to proceed or cancel to return to the form.`,
+                  async () => {
+                    await noteSaveUpdate(saveAndNew);
+                  },
+                  () => {
+                    return;
+                  },
+                );
+              }
+            } else {
+              await noteSaveUpdate(saveAndNew);
             }
-            await noteSaveUpdate(saveAndNew);
           },
           () => {
             return;
@@ -1146,8 +1182,25 @@ var note = (function () {
         saveNoteBtn.classList.add('disabled');
         saveAndNewNoteBtn.classList.add('disabled');
         preSave();
-        // validate times
-        await noteSaveUpdate(saveAndNew);
+        if ($.session.applicationName === 'Gatekeeper') {
+          const hoursAreWithinWorkHours = checkTimesAreWithinWorkHours();
+          if (hoursAreWithinWorkHours) {
+            await noteSaveUpdate(saveAndNew);
+          } else {
+            warningPopup(
+              `The times you have entered are outside the current normal working hours.
+              Click OK to proceed or cancel to return to the form.`,
+              async () => {
+                await noteSaveUpdate(saveAndNew);
+              },
+              () => {
+                return;
+              },
+            );
+          }
+        } else {
+          await noteSaveUpdate(saveAndNew);
+        }
       }
     }
     //----------------------------------------------------------------------
