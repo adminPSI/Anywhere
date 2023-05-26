@@ -574,7 +574,7 @@ const planDates = (function () {
       const formatedEED = UTIL.formatDateFromDateObj(origEffectiveEndDate);
       effectiveEndDateOpts.value = formatedEED;
     }
-    if (origPlanReviewDate) {
+    if (planReviewDate) {
       const formatedRD = UTIL.formatDateFromDateObj(origPlanReviewDate);
       reviewDateOpts.value = formatedRD;
     }

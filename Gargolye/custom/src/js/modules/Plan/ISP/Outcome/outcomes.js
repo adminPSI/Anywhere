@@ -698,7 +698,7 @@ const planOutcomes = (() => {
     const experiencesTable = table.build(tableOptions);
     experiencesTable.classList.add(`experiencesTable`);
     //* Populate Table
-    table.populate(experiencesTable, newTableData, false);
+    table.populate(experiencesTable, newTableData, isSortable);
     //* Append Table
     const addExpTableBtn = expTableWrap.querySelector('.btn');
     expTableWrap.insertBefore(experiencesTable, addExpTableBtn);
