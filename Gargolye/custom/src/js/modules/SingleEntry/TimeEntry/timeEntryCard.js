@@ -1862,15 +1862,17 @@ var timeEntryCard = (function () {
     if (!isEdit) {
       if (startTime) {
         // const timeChanged = startTime !== `${nowHour}:${nowMinutes}`
+        await evvCheckConsumerEligibilityExistingConsumers();
         if (
+          
           isBillable === 'Y' &&
           defaultTimesChanged &&
           wcServiceType === 'A' &&
           sendEvvData === 'Y' &&
-          reasonRequired === true
+          (reasonRequired === true || isEVVSingleEntry)
         ) {
           showEvv();
-          evvCheckConsumerEligibilityExistingConsumers();
+          // evvCheckConsumerEligibilityExistingConsumers();
         } else {
           document.querySelector('.timeCard__evv').style.display = 'none';
           reasonRequired = false;
