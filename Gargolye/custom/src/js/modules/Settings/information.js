@@ -118,6 +118,9 @@ const information = (function () {
       }
     }
   }
+  function stringAdd(string, start, newSubStr) {
+    return string.slice(0, start) + newSubStr + string.slice(start);
+  }
 
   function populateCarrierDropdown(dropdownEle) {
     const data = mobileCarriersData.map(carrier => {
@@ -194,7 +197,7 @@ const information = (function () {
       style: 'secondary',
       classNames: ['zip'],
       attributes: [{ key: 'maxlength', value: '9' }],
-      value: demographicInfo.zipCode,
+      value: formatZipCode(demographicInfo.zipCode),
       callback: e => {
         updateData.zipCode = e.target.value;
       },
@@ -238,7 +241,7 @@ const information = (function () {
       style: 'secondary',
       classNames: ['phone'],
       attributes: [{ key: 'maxlength', value: '14' }],
-      value: demographicInfo.mobilePhone,
+      value: formatPhoneNumber(demographicInfo.mobilePhone),
       callback: e => {
         const splitNumber = e.target.value.split(' ');
         const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
