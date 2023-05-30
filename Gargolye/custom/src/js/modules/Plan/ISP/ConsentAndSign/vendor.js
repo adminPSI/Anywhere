@@ -52,17 +52,28 @@ const csVendor = (() => {
       });
     }
   }
-
+  const removeDups = data => {
+    const flag = {};
+    const unique = [];
+    data.forEach(id => {
+      if (!flag[id]) {
+        flag[id] = true;
+        unique.push(id);
+      }
+    });
+    return unique;
+  };
   function populateVendorDropdownData(vendorData, vendorDropdown, teamMember) {
     // get vendors from the following
     // (Add Risk -> Who Is Responsible) on the Summary tab
     // (Add Experience -> Responsible Provider) on the Outcomes tab
     // (Add Paid Support -> Provider Name) on the Services tab
     const summaryVendors = planSummary.getSelectedVendors();
-    const outcomesVendors = planSummary.getSelectedVendors();
+    const outcomesVendors = planOutcomes.getSelectedVendors();
     const servicesVendors = servicesSupports.getSelectedVendorIds();
 
-    const selectedVendors = [...summaryVendors];
+    let selectedVendors = [...summaryVendors, ...outcomesVendors, ...servicesVendors];
+    selectedVendors = removeDups(selectedVendors);
 
     const vendorGroup = {
       groupLabel: 'Plan Vendor',

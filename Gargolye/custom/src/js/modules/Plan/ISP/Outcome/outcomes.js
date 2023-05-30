@@ -17,7 +17,7 @@ const planOutcomes = (() => {
   let selectedVendors = {};
 
   function getSelectedVendors() {
-    console.log(selectedVendors);
+    return Object.values(selectedVendors);
   }
   //*------------------------------------------------------
   //* UTILS
@@ -868,9 +868,9 @@ const planOutcomes = (() => {
       experienceId: experienceId,
     });
 
-    debugger;
-    // const respId = resp.responsibilityIds;
-    // delete selectedVendors[respId];
+    outcomesData[outcomeId].experiences[experienceId].responsibilities.forEach(resp => {
+      delete selectedVendors[resp.responsibilityIds];
+    });
 
     const outcomeDiv = document.querySelector(`.outcome${outcomeId}`);
     const expTableWrap = outcomeDiv.querySelector(`#experiencesTableDummy${outcomeId}`);
