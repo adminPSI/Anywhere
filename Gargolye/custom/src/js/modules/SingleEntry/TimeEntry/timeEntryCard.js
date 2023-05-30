@@ -466,6 +466,7 @@ var timeEntryCard = (function () {
 
     eligibleConsumersObj = {};
     reasonRequired = false;
+    isEVVSingleEntry = false;
     defaultTimesChanged = false;
     defaultStartTimeChanged = false;
     defaultEndTimeChanged = false;
