@@ -161,8 +161,11 @@
 }
 
 
-// MOVE TO NEW FILE LATER
+// My Information
 .util-menu__info {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+
   .informationSection {
     margin: 0 0 10px;
 

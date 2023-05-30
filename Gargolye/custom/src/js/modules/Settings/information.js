@@ -82,6 +82,43 @@ const information = (function () {
     }
   }
 
+  function formatPhoneNumber(number) {
+    if (!number) return;
+    const splitNumber = number
+      .replace(/[^\w\s]/gi, '')
+      .replaceAll(' ', '')
+      .replaceAll('x', '');
+
+    const phoneNumber = UTIL.formatPhoneNumber(splitNumber.substr(0, 10));
+    const phoneExt = splitNumber.substr(10);
+
+    const phone = phoneExt ? `${phoneNumber} (${phoneExt})` : `${phoneNumber}`;
+
+    return phone;
+  }
+  function formatZipCode(zipCode) {
+    const zip = zipCode.replace(/[^\w\s]/gi, '').replaceAll(' ', '');
+    if (zip.length <= 5) {
+      return zip;
+    } else {
+      return zip.slice(0, 5) + '-' + zip.slice(5);
+    }
+  }
+  function setCaretPosition(elem, caretPos) {
+    if (elem != null) {
+      if (elem.createTextRange) {
+        var range = elem.createTextRange();
+        range.move('character', caretPos);
+        range.select();
+      } else {
+        if (elem.selectionStart) {
+          elem.focus();
+          elem.setSelectionRange(caretPos, caretPos);
+        } else elem.focus();
+      }
+    }
+  }
+
   function populateCarrierDropdown(dropdownEle) {
     const data = mobileCarriersData.map(carrier => {
       return {
@@ -163,6 +200,14 @@ const information = (function () {
       },
     });
 
+    if (!$.session.UpdateMyInformation) {
+      input.disableInputField(address1Input);
+      input.disableInputField(address2Input);
+      input.disableInputField(cityInput);
+      input.disableInputField(stateInput);
+      input.disableInputField(zipInput);
+    }
+
     const stateZipWrap = document.createElement('div');
     stateZipWrap.classList.add('stateZipWrap');
     stateZipWrap.appendChild(stateInput);
@@ -195,9 +240,51 @@ const information = (function () {
       attributes: [{ key: 'maxlength', value: '14' }],
       value: demographicInfo.mobilePhone,
       callback: e => {
-        updateData.mobilePhone = e.target.value;
+        const splitNumber = e.target.value.split(' ');
+        const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
+        let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+
+        saveValue = `${phoneNumber}${phoneExt}`;
+
+        updateData.mobilePhone = saveValue;
       },
     });
+    phoneInput.addEventListener('keyup', e => {
+      let validPhone = false;
+      let value = e.target.value
+        .replace(/[^\w\s]/gi, '')
+        .replaceAll(' ', '')
+        .slice(0, 15);
+
+      let phoneNumber;
+
+      if (value.length >= 4 && value.length <= 6) {
+        phoneNumber = stringAdd(value, 3, '-');
+        e.target.value = phoneNumber;
+      }
+      if (value.length >= 7 && value.length <= 10) {
+        phoneNumber = stringAdd(value, 3, '-');
+        phoneNumber = stringAdd(phoneNumber, 7, '-');
+        e.target.value = phoneNumber;
+      }
+      if (value.length > 10) {
+        phoneNumber = stringAdd(value, 3, '-');
+        phoneNumber = stringAdd(phoneNumber, 7, '-');
+        phoneNumber = stringAdd(phoneNumber, 12, ' (');
+        phoneNumber = stringAdd(phoneNumber, phoneNumber.length + 1, ')');
+        e.target.value = phoneNumber;
+
+        setCaretPosition(e.target, phoneNumber.length - 1);
+
+        validPhone = true;
+      }
+      if (!validPhone) {
+        phoneInput.classList.add('invalid');
+      } else {
+        phoneInput.classList.remove('invalid');
+      }
+    });
+
     const carrierDropdown = dropdown.build({
       dropdownId: 'carrierDropdown',
       label: 'Carrier',
@@ -207,6 +294,11 @@ const information = (function () {
         updateData.carrier = selectedOption.value;
       },
     });
+
+    if (!$.session.UpdateMyInformation) {
+      input.disableInputField(phoneInput);
+      input.disableInputField(carrierDropdown);
+    }
 
     populateCarrierDropdown(carrierDropdown);
 
@@ -236,6 +328,9 @@ const information = (function () {
         updateData.email = e.target.value;
       },
     });
+    if (!$.session.UpdateMyInformation) {
+      input.disableInputField(emailInput);
+    }
 
     body.appendChild(emailInput);
 
@@ -265,8 +360,13 @@ const information = (function () {
       style: 'secondary',
       type: 'contained',
       classNames: 'updateInformationBtn',
-      callback: () => {
-        updateStaffDemographicInformation();
+      callback: async () => {
+        await updateStaffDemographicInformation();
+        const saveEle = successfulSave.get('Information Updated.', true);
+        infoPage.appendChild(saveEle);
+        setTimeout(() => {
+          infoPage.removeChild(saveEle);
+        }, 1000);
       },
     });
 
