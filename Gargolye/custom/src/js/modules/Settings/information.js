@@ -23,13 +23,13 @@ const information = (function () {
         dataType: 'json',
       });
 
-      return data.GetDemographicInformationResult;
+      return data.GetDemographicInformationResult[0];
     } catch (error) {
       console.log(error);
     }
   }
   async function updateStaffDemographicInformation() {
-    const mergeUpdateWithDemo = [...demographicInfo, ...updateData];
+    const mergeUpdateWithDemo = { ...demographicInfo, ...updateData };
 
     try {
       const data = await $.ajax({
@@ -90,6 +90,10 @@ const information = (function () {
       };
     });
     data.sort((a, b) => (a.text < b.text ? -1 : 1));
+    data.unshift({
+      value: '',
+      text: '',
+    });
 
     dropdown.populate(dropdownEle, data, demographicInfo.carrier);
   }
@@ -288,6 +292,18 @@ const information = (function () {
     demographicInfo = await getStaffDemographicInformation();
     mobileCarriersData = await getMobileCarrierDropdown();
     updateData = {};
+    if (!demographicInfo) {
+      demographicInfo = {
+        addressOne: '',
+        addressTwo: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        mobilePhone: '',
+        carrier: '',
+        email: '',
+      };
+    }
     buildPage();
   }
 

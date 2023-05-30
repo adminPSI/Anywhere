@@ -180,11 +180,13 @@
 
   .stateZipWrap {
     display: flex;
+    width: 100%;
 
-    .state {
+    > div:first-child {
       max-width: 100px;
+      margin-right: 10px;
     }
-    .zip {
+    > div:last-child {
       flex-grow: 1;
     }
   }

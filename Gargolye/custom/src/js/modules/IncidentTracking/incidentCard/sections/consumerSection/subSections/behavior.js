@@ -78,11 +78,9 @@ const consumerBehavior = (function () {
   }
   function formatTime(dirtyTime) {
     dirtyTime.replace('-', '');
-    const splitTime = dirtyTime.split('.');
+    const splitTime = dirtyTime.split(':');
     const hours = splitTime[0].length === 1 ? `0${splitTime[0]}` : splitTime[0];
-    let minutes = parseInt(splitTime[1]) * 60;
-    minutes = minutes.toString().slice(0, 2);
-    minutes = minutes.length === 1 ? `0${minutes}` : minutes;
+    const minutes = splitTime[1].length === 1 ? `0${splitTime[1]}` : splitTime[1];
     return `${hours}:${minutes}`;
   }
   function getTimeLength(start, end) {
