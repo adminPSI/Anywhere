@@ -13,7 +13,12 @@ const planOutcomes = (() => {
   let teamMembers;
   let hasPreviousPlan;
   let charLimits;
+  // Selected Vendors => Experiences/WhoResponsible
+  let selectedVendors = {};
 
+  function getSelectedVendors() {
+    console.log(selectedVendors);
+  }
   //*------------------------------------------------------
   //* UTILS
   //*------------------------------------------------------
@@ -182,7 +187,7 @@ const planOutcomes = (() => {
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
-  
+
   async function populateResponsibleProviderDropdown(dropdownEle, defaultValue) {
     const data = dropdownData.serviceVendors.map(dd => {
       return {
@@ -191,21 +196,15 @@ const planOutcomes = (() => {
       };
     });
 
-   // const selectedVendorIds = servicesSupports.getSelectedVendorIds();
+    // const selectedVendorIds = servicesSupports.getSelectedVendorIds();
 
     const { getPlanOutcomesPaidSupportProvidersResult: selectedVendors } =
-      await planOutcomesAjax.getPlanOutcomesPaidSupportProviders(
-        planId
-      );
+      await planOutcomesAjax.getPlanOutcomesPaidSupportProviders(planId);
 
-      const selectedVendorIds = getSelectedVendorIds()
+    const selectedVendorIds = getSelectedVendorIds();
 
-    const nonPaidSupportData = data.filter(
-      provider => !selectedVendorIds.includes(provider.value)
-    );
-    const paidSupportData = data.filter(
-      provider => selectedVendorIds.includes(provider.value)
-    );
+    const nonPaidSupportData = data.filter(provider => !selectedVendorIds.includes(provider.value));
+    const paidSupportData = data.filter(provider => selectedVendorIds.includes(provider.value));
 
     const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
       return {
@@ -665,6 +664,13 @@ const planOutcomes = (() => {
         saveData.responsibilities[index].whenHowOftenText,
       );
 
+      const vendorID =
+        saveData.responsibilities[index].responsibleContact === '%'
+          ? saveData.responsibilities[index].responsibleProvider
+          : saveData.responsibilities[index].responsibleContact;
+      const respId = saveData.responsibilities[index].responsibilityIds;
+      selectedVendors[respId] = vendorID;
+
       if (index === 0) {
         newTableData.push({
           // id: `resp${id}`,
@@ -719,7 +725,7 @@ const planOutcomes = (() => {
       },
     });
 
-     //* Append Table
+    //* Append Table
     experiencesDummyTable.appendChild(experiencesTable);
     const addExpTableBtn = expTableWrap.querySelector('.btn');
     expTableWrap.insertBefore(experiencesTable, addExpTableBtn);
@@ -786,6 +792,11 @@ const planOutcomes = (() => {
         whenHowOftenValue,
         whenHowOftenText,
       );
+
+      const vendorID =
+        resp.responsibleContact === '%' ? resp.responsibleProvider : resp.responsibleContact;
+      const respId = resp.responsibilityIds;
+      selectedVendors[respId] = vendorID;
 
       if (index === 0) {
         newTableData.push({
@@ -857,6 +868,10 @@ const planOutcomes = (() => {
       experienceId: experienceId,
     });
 
+    debugger;
+    // const respId = resp.responsibilityIds;
+    // delete selectedVendors[respId];
+
     const outcomeDiv = document.querySelector(`.outcome${outcomeId}`);
     const expTableWrap = outcomeDiv.querySelector(`#experiencesTableDummy${outcomeId}`);
     const expTable = expTableWrap.querySelector(`#experiencesTable${experienceId}`);
@@ -906,7 +921,6 @@ const planOutcomes = (() => {
   }
   function showExperiencesPopup(data, isNew) {
     let hasInitialErros;
-
     const saveUpdateData = {
       outcomeId: data.outcomeId,
       experienceOrder: data.experienceOrder,
@@ -1279,7 +1293,9 @@ const planOutcomes = (() => {
 
         if (isNew) {
           const outcome = document.querySelector(`.outcome${saveUpdateData.outcomeId}`);
-          const expTableWrap = document.querySelector(`#experiencesTableDummy${saveUpdateData.outcomeId}`);
+          const expTableWrap = document.querySelector(
+            `#experiencesTableDummy${saveUpdateData.outcomeId}`,
+          );
           const expTables = [...expTableWrap.querySelectorAll('.table')];
           saveUpdateData.experienceOrder = expTables.length;
           insertOutcomeExperience({ ...saveUpdateData }, expTableWrap);
@@ -1427,6 +1443,9 @@ const planOutcomes = (() => {
               whenHowOftenFrequency: whenHowOftenFrequency,
               whenHowOftenText: whenHowOftenText,
             };
+
+            const vendorID = responsibleContact === '%' ? responsibleProvider : responsibleContact;
+            selectedVendors[respId] = vendorID;
 
             const whoResponsible = getColTextForWhoResponsible(
               responsibleContact,
@@ -2308,5 +2327,6 @@ const planOutcomes = (() => {
     getMarkup,
     showAddNewOutcomePopup,
     refreshDropdownData,
+    getSelectedVendors,
   };
 })();

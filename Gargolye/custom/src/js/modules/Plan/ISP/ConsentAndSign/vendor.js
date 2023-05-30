@@ -59,9 +59,8 @@ const csVendor = (() => {
     // (Add Experience -> Responsible Provider) on the Outcomes tab
     // (Add Paid Support -> Provider Name) on the Services tab
     const summaryVendors = planSummary.getSelectedVendors();
-    // const outcomesVendors = planSummary.getSelectedVendors();
+    const outcomesVendors = planSummary.getSelectedVendors();
     const servicesVendors = servicesSupports.getSelectedVendorIds();
-    console.log(servicesVendors);
 
     const selectedVendors = [...summaryVendors];
 
