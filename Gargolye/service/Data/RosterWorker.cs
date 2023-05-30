@@ -146,7 +146,7 @@ namespace Anywhere.service.Data
             public string city { get; set; }
             public string state { get; set; }
             public string zipCode { get; set; }
-            public string mobileNumber { get; set; }
+            public string mobilePhone { get; set; }
             public string carrier { get; set; }
             public string email { get; set; }
         }
