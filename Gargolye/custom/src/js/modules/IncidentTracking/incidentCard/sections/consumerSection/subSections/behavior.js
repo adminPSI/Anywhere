@@ -88,7 +88,7 @@ const consumerBehavior = (function () {
     if (start.includes('/')) {
       start = start.split(' ')[1];
     }
-    let totalTime = UTIL.calculateTotalHours(start, end);
+    let totalTime = UTIL.calculateTotalHours(start, end, 'hh:mm');
     totalTime = formatTime(totalTime);
     return totalTime;
   }
