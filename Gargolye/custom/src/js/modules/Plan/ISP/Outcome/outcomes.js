@@ -609,7 +609,7 @@ const planOutcomes = (() => {
     const outcomeId = saveData.outcomeId;
     const whatHappened = saveData.whatHappened;
     const howHappened = saveData.howHappened;
-    const experienceOrder = `${saveData.experienceOrder}`;
+    const experienceOrder = `${saveData.experienceOrder + 1}`;
 
     //* Insert Experience
     //*---------------------------
@@ -1502,8 +1502,8 @@ const planOutcomes = (() => {
                 token: $.session.Token,
                 outcomeId: parseInt(outcomeId),
                 experienceId: parseInt(experienceId),
-                newPos: parseInt(sortData.newDraggableIndex),
-                oldPos: parseInt(sortData.oldDraggableIndex),
+                newPos: parseInt(sortData.newDraggableIndex) + 1,
+                oldPos: parseInt(sortData.oldDraggableIndex) + 1,
               });
             },
           });
