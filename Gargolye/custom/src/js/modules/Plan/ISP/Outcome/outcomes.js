@@ -379,8 +379,8 @@ const planOutcomes = (() => {
       outcomeId,
     });
 
-    outcomesData[outcomeId].experiences.forEach(exp => {
-      exp.responsibilities.forEach(resp => {
+    Object.values(outcomesData[outcomeId].experiences).forEach(exp => {
+      Object.values(exp.responsibilities).forEach(resp => {
         delete selectedVendors[resp.responsibilityIds];
       });
     });
