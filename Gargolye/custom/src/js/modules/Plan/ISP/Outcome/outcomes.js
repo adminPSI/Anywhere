@@ -13,7 +13,7 @@ const planOutcomes = (() => {
   let teamMembers;
   let hasPreviousPlan;
   let charLimits;
-  let responseIdCache;
+  let responseIdCache = {};
   // Selected Vendors => Experiences/WhoResponsible
   let selectedVendors = {};
 
@@ -381,10 +381,14 @@ const planOutcomes = (() => {
     });
 
     if (outcomesData[outcomeId].experiences) {
-      outcomesData[outcomeId].experiences[experienceId].responsibilities.forEach(resp => {
-        delete selectedVendors[resp.responsibilityIds];
+      Object.values(outcomesData[outcomeId].experiences).forEach(exp => {
+        Object.values(exp.responsibilities).forEach(resp => {
+          delete selectedVendors[resp.responsibilityIds];
+        });
       });
-    } else {
+    }
+
+    if (responseIdCache[outcomeId]) {
       responseIdCache[outcomeId].forEach(respId => {
         delete selectedVendors[respId];
       });
@@ -889,8 +893,10 @@ const planOutcomes = (() => {
     });
 
     if (outcomesData[outcomeId].experiences) {
-      outcomesData[outcomeId].experiences[experienceId].responsibilities.forEach(resp => {
-        delete selectedVendors[resp.responsibilityIds];
+      Object.values(outcomesData[outcomeId].experiences).forEach(exp => {
+        Object.values(exp.responsibilities).forEach(resp => {
+          delete selectedVendors[resp.responsibilityIds];
+        });
       });
     }
 
