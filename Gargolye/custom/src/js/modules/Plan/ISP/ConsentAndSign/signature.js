@@ -772,9 +772,6 @@ const csSignature = (() => {
     if (allowSignClear) {
       saveCancelWrap.appendChild(clearSignatureBtn);
       saveCancelWrap.appendChild(saveBtn);
-      if (isSigned || readOnly) {
-        saveBtn.classList.add('disabled');
-      }
     } else {
       if (!isSigned && !readOnly) saveCancelWrap.appendChild(saveBtn);
     }
@@ -809,6 +806,9 @@ const csSignature = (() => {
     DOM.autosizeTextarea();
 
     checkSignautrePopupForErrors();
+    if (allowSignClear && (isSigned || readOnly)) {
+      saveBtn.classList.add('disabled');
+    }
   }
 
   return {
