@@ -378,6 +378,12 @@ const planOutcomes = (() => {
       token: $.session.Token,
       outcomeId,
     });
+
+    outcomesData[outcomeId].experiences.forEach(exp => {
+      exp.responsibilities.forEach(resp => {
+        delete selectedVendors[resp.responsibilityIds];
+      });
+    });
   }
   //-- Markup ---------
   function toggleAddNewOutcomePopupDoneBtn() {
