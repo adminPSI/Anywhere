@@ -2,6 +2,16 @@ const information = (function () {
   let demographicInfo;
   let updateData;
   let mobileCarriersData;
+  let emailChanged = false;
+  // DOM
+  let address1Input;
+  let address2Input;
+  let cityInput;
+  let stateInput;
+  let zipInput;
+  let phoneInput;
+  let carrierDropdown;
+  let emailInput;
 
   async function getStaffDemographicInformation() {
     try {
@@ -82,6 +92,30 @@ const information = (function () {
     }
   }
 
+  async function updateInformationData() {
+    const newDemoInfo = await getStaffDemographicInformation();
+
+    if (updateData.email && updateData.email !== newDemoInfo.email) {
+      // show error by email
+      const emailSectionBody = document.querySelector('.emailSection .informationSection__body');
+      const errorEle = document.createElement('p');
+      errorEle.innerText = 'Unable to update email due to EMAR';
+      emailSectionBody.appendChild(errorEle);
+    }
+
+    demographicInfo = newDemoInfo;
+    updateData = {};
+
+    address1Input.querySelector('input').value = demographicInfo.addressOne;
+    address2Input.querySelector('input').value = demographicInfo.addressTwo;
+    cityInput.querySelector('input').value = demographicInfo.city;
+    stateInput.querySelector('input').value = demographicInfo.state;
+    zipInput.querySelector('input').value = demographicInfo.zipCode;
+    phoneInput.querySelector('input').value = demographicInfo.mobilePhone;
+    //carrierDropdown.querySelector('input').value = demographicInfo.carrier;
+    emailInput.querySelector('input').value = demographicInfo.email;
+  }
+
   function formatPhoneNumber(number) {
     if (!number) return;
     const splitNumber = number
@@ -146,8 +180,9 @@ const information = (function () {
     heading.innerText = 'Address';
 
     const body = document.createElement('div');
+    body.classList.add('informationSection__body');
 
-    const address1Input = input.build({
+    address1Input = input.build({
       label: 'Address 1',
       type: 'text',
       style: 'secondary',
@@ -158,7 +193,7 @@ const information = (function () {
         updateData.addressOne = e.target.value;
       },
     });
-    const address2Input = input.build({
+    address2Input = input.build({
       label: 'Address 2',
       type: 'text',
       style: 'secondary',
@@ -169,7 +204,7 @@ const information = (function () {
         updateData.addressTwo = e.target.value;
       },
     });
-    const cityInput = input.build({
+    cityInput = input.build({
       label: 'City',
       type: 'text',
       style: 'secondary',
@@ -180,7 +215,7 @@ const information = (function () {
         updateData.city = e.target.value;
       },
     });
-    const stateInput = input.build({
+    stateInput = input.build({
       label: 'State',
       type: 'text',
       style: 'secondary',
@@ -191,7 +226,7 @@ const information = (function () {
         updateData.state = e.target.value;
       },
     });
-    const zipInput = input.build({
+    zipInput = input.build({
       label: 'Zip Code',
       type: 'text',
       style: 'secondary',
@@ -234,8 +269,9 @@ const information = (function () {
     heading.innerText = 'Phone Numbers';
 
     const body = document.createElement('div');
+    body.classList.add('informationSection__body');
 
-    const phoneInput = input.build({
+    phoneInput = input.build({
       label: 'Mobile',
       type: 'tel',
       style: 'secondary',
@@ -282,13 +318,13 @@ const information = (function () {
         validPhone = true;
       }
       if (!validPhone) {
-        phoneInput.classList.add('invalid');
+        phoneInput.classList.add('error');
       } else {
-        phoneInput.classList.remove('invalid');
+        phoneInput.classList.remove('error');
       }
     });
 
-    const carrierDropdown = dropdown.build({
+    carrierDropdown = dropdown.build({
       dropdownId: 'carrierDropdown',
       label: 'Carrier',
       style: 'secondary',
@@ -321,8 +357,9 @@ const information = (function () {
     heading.innerText = 'Email Address';
 
     const body = document.createElement('div');
+    body.classList.add('informationSection__body');
 
-    const emailInput = input.build({
+    emailInput = input.build({
       label: 'Email',
       type: 'email',
       style: 'secondary',
@@ -369,6 +406,7 @@ const information = (function () {
         infoPage.appendChild(saveEle);
         setTimeout(() => {
           infoPage.removeChild(saveEle);
+          updateInformationData();
         }, 1000);
       },
     });
