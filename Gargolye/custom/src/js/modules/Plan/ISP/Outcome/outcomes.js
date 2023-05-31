@@ -380,7 +380,11 @@ const planOutcomes = (() => {
       outcomeId,
     });
 
-    if (responseIdCache[outcomeId]) {
+    if (outcomesData[outcomeId].experiences) {
+      outcomesData[outcomeId].experiences[experienceId].responsibilities.forEach(resp => {
+        delete selectedVendors[resp.responsibilityIds];
+      });
+    } else {
       responseIdCache[outcomeId].forEach(respId => {
         delete selectedVendors[respId];
       });
