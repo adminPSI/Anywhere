@@ -770,6 +770,9 @@ const planOutcomes = (() => {
             token: $.session.Token,
             responsibilityId: parseInt(resp.responsibilityIds),
           });
+
+          const respId = resp.responsibilityIds;
+          delete selectedVendors[respId];
         }
       }
     });
