@@ -92,6 +92,11 @@ const consumerBehavior = (function () {
     totalTime = formatTime(totalTime);
     return totalTime;
   }
+  function parseStartTime(dirtyStart) {
+    const splittime = dirtyStart.split(' ');
+    const time = `${splittime[1]} ${splittime[2]}`;
+    return UTIL.convertToMilitary(time);
+  }
 
   function getDropdownData() {
     incidentTrackingAjax.getitConsumerBehaviorTypes(function (res) {
@@ -513,6 +518,8 @@ const consumerBehavior = (function () {
 
     if (data) {
       data.forEach(d => {
+        d.startTime = parseStartTime(d.startTime);
+
         if (!behaviorData[selectedConsumerId]) {
           behaviorData[selectedConsumerId] = {};
         }
