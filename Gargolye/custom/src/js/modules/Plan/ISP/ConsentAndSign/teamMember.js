@@ -104,7 +104,7 @@ const csTeamMember = (() => {
     selectedMemberData.buildingNumber = relData.buildingNumber;
     selectedMemberData.name = relData.firstName;
     selectedMemberData.lastName = relData.lastName;
-    selectedMemberData.relationshipType = relData.relationshipType;
+    selectedMemberData.relationship = relData.relationship;
 
     // update inputs with selected data
     nameInput.childNodes[0].value = selectedMemberData.name;
@@ -117,11 +117,11 @@ const csTeamMember = (() => {
     // build new relationship type input
     relationshipTypeInput = input.build({
       label: 'Relationship Type',
-      value: selectedMemberData.relationshipType,
+      value: selectedMemberData.relationship,
       readonly: isSigned || readOnly,
       callbackType: 'input',
       callback: event => {
-        selectedMemberData.relationshipType = event.target.value;
+        selectedMemberData.relationship = event.target.value;
 
         checkTeamMemberPopupForErrors();
       },
@@ -137,6 +137,7 @@ const csTeamMember = (() => {
     // make name and relationship readonly
     nameInput.classList.add('disabled');
     lNameInput.classList.add('disabled');
+    relationshipTypeInput.classList.add('disabled');
     if (!$.session.planSignatureUpdateDOB) {
       dateOfBirthInput.classList.add('disabled');
     }

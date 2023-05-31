@@ -1682,27 +1682,30 @@ const planSummary = (function () {
               answers: [whatIsRisk, whatSupportLooksLike, riskSupervision, whoResponsible],
             });
 
-            updateRisksTableRow({
-              sectionTitle,
-              row,
-              questionSetId: setId,
-              whatIsRisk: {
-                answer: whatIsRisk,
-                answerId: whatIsRiskId,
+            updateRisksTableRow(
+              {
+                sectionTitle,
+                row,
+                questionSetId: setId,
+                whatIsRisk: {
+                  answer: whatIsRisk,
+                  answerId: whatIsRiskId,
+                },
+                whatSupportLooksLike: {
+                  answer: whatSupportLooksLike,
+                  answerId: whatSupportLooksLikeId,
+                },
+                riskSupervision: {
+                  answer: riskSupervision,
+                  answerId: riskSupervisionId,
+                },
+                whoResponsible: {
+                  answer: whoResponsible,
+                  answerId: whoResponsibleId,
+                },
               },
-              whatSupportLooksLike: {
-                answer: whatSupportLooksLike,
-                answerId: whatSupportLooksLikeId,
-              },
-              riskSupervision: {
-                answer: riskSupervision,
-                answerId: riskSupervisionId,
-              },
-              whoResponsible: {
-                answer: whoResponsible,
-                answerId: whoResponsibleId,
-              },
-            });
+              dataCache,
+            );
           }
         });
       },

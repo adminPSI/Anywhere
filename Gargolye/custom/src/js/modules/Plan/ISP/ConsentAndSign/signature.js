@@ -806,6 +806,9 @@ const csSignature = (() => {
     DOM.autosizeTextarea();
 
     checkSignautrePopupForErrors();
+    if (allowSignClear && (isSigned || readOnly)) {
+      saveBtn.classList.add('disabled');
+    }
   }
 
   return {

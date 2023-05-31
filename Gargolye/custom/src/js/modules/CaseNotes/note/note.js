@@ -1115,12 +1115,8 @@ var note = (function () {
   function checkTimesAreWithinWorkHours() {
     const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
-    const start = UTIL.convertToMilitary(startTime);
-    const end = UTIL.convertToMilitary(endTime);
 
-    console.log(warnStart, warnEnd, start, end);
-
-    if (start < warnStart || start > warnEnd || end < warnStart || end > warnEnd) {
+    if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
       return false;
     }
 

@@ -1087,15 +1087,22 @@ var noteSSA = (function () {
 
     return docTime;
   }
+  function parseSessionTimes(dirtyTime) {
+    const isAMorPM = dirtyTime.includes('A') ? 'am' : 'pm';
+
+    if (isAMorPM === 'am') {
+      const time = `${dirtyTime.split('A')[0]} AM`;
+      return UTIL.convertToMilitary(time);
+    } else {
+      const time = `${dirtyTime.split('P')[0]} PM`;
+      return UTIL.convertToMilitary(time);
+    }
+  }
   function checkTimesAreWithinWorkHours() {
-    // check startTime against $.session.caseNotesWarningStartTime
-    // check endTime against $.session.caseNotesWarningEndTime
     const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
-    const start = UTIL.convertToMilitary(startTime);
-    const end = UTIL.convertToMilitary(endTime);
 
-    if (start < warnStart || start > warnEnd || end < warnStart || end > warnEnd) {
+    if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
       return false;
     }
 
