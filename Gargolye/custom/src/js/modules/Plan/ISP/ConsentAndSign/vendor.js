@@ -63,6 +63,9 @@ const csVendor = (() => {
     });
     return unique;
   };
+  function removeV(ids) {
+    return ids.map(id => id.replace('V', ''));
+  }
   function populateVendorDropdownData(vendorData, vendorDropdown, teamMember) {
     // get vendors from the following
     // (Add Risk -> Who Is Responsible) on the Summary tab
@@ -70,7 +73,7 @@ const csVendor = (() => {
     // (Add Paid Support -> Provider Name) on the Services tab
     const summaryVendors = planSummary.getSelectedVendors();
     const outcomesVendors = planOutcomes.getSelectedVendors();
-    const servicesVendors = servicesSupports.getSelectedVendorIds();
+    const servicesVendors = removeV(servicesSupports.getSelectedVendorIds());
 
     let selectedVendors = [...summaryVendors, ...outcomesVendors, ...servicesVendors];
     selectedVendors = removeDups(selectedVendors);
