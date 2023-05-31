@@ -301,12 +301,12 @@ const information = (function () {
         phoneNumber = stringAdd(value, 3, '-');
         e.target.value = phoneNumber;
       }
-      if (value.length >= 7 && value.length <= 10) {
+      if (value.length >= 7 && value.length < 10) {
         phoneNumber = stringAdd(value, 3, '-');
         phoneNumber = stringAdd(phoneNumber, 7, '-');
         e.target.value = phoneNumber;
       }
-      if (value.length > 10) {
+      if (value.length >= 10) {
         phoneNumber = stringAdd(value, 3, '-');
         phoneNumber = stringAdd(phoneNumber, 7, '-');
         phoneNumber = stringAdd(phoneNumber, 12, ' (');
