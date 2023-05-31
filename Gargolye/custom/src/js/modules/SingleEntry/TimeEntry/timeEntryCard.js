@@ -963,6 +963,7 @@ var timeEntryCard = (function () {
 
     saveTransBtn.addEventListener('click', () => {
       saveTransportation();
+      checkPermissions();
     });
     deleteTransBtn.addEventListener('click', deleteTransportation);
     cancelTransBtn.addEventListener('click', () => {
@@ -980,7 +981,7 @@ var timeEntryCard = (function () {
       } else {
         clearTransportationValues();
       }
-
+      
       POPUP.hide(transportationPopup);
     });
   }
@@ -1345,12 +1346,13 @@ var timeEntryCard = (function () {
         }
       } else {
         saveBtn.classList.add('disabled');
-        deleteBtn.classList.add('disabled');
+       // deleteBtn.classList.add('disabled');
         saveAndSumbitBtn.classList.add('disabled');
       }
     } else {
       saveBtn.classList.remove('disabled');
       deleteBtn.classList.remove('disabled');
+
       if (keyStartStop === 'Y') {
         // if 'Y' then end time is enabled and we need to check for it
         if (endTime) {
@@ -1412,7 +1414,7 @@ var timeEntryCard = (function () {
       if (
         $.session.editSingleEntryCardStatus === 'S' ||
         $.session.editSingleEntryCardStatus === 'I' ||
-      //  $.session.editSingleEntryCardStatus === 'R' ||
+       // $.session.editSingleEntryCardStatus === 'R' ||
         $.session.SingleEntryUpdate === false
       ) {
         saveBtn.classList.add('disabled');
@@ -1842,7 +1844,7 @@ var timeEntryCard = (function () {
       rejectionReasonInput.classList.add('disabled');
     }
     // initially when editing a rejected/Non-Billable, the Save btns are disabled, they become enabled after the first edit of the form
-    if (status === 'R' && isBillable == "N" && ((personId === $.session.PeopleId) || (supervisorId === $.session.PeopleId))) {
+    if (status === 'R' && ((personId === $.session.PeopleId) || (supervisorId === $.session.PeopleId))) {
       saveBtn.classList.add('disabled');
       saveAndSumbitBtn.classList.add('disabled');
     }
@@ -1964,7 +1966,7 @@ var timeEntryCard = (function () {
       disableCardFields();
     });
     
-    checkRequiredFields();
+    // checkRequiredFields();
 
   }
   // under following conditions, the form imputs disabled (except time inputs): 1) entry is rejected, 2) workcode = Billable, 3) user is creator/supervisor, 4) this entry requires EVV 
