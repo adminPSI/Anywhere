@@ -16,6 +16,7 @@ const csSignature = (() => {
   let sigPad;
   let saveBtn;
   // other
+  let allowSignClear;
   let clearSignature = false;
   let characterLimits;
   let prevDissentData = {};
@@ -712,7 +713,7 @@ const csSignature = (() => {
 
     //* SAVE/CANCEL BUTTONS
     //*------------------------------
-    const allowSignClear = checkForAllowClearSignature(memberData.signatureType);
+    allowSignClear = checkForAllowClearSignature(memberData.signatureType);
     const clearSignatureBtn = button.build({
       id: 'clearSigBtn',
       text: 'clear',
