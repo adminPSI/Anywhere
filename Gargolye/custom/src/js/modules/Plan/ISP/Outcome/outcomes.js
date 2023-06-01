@@ -857,7 +857,7 @@ const planOutcomes = (() => {
     });
 
     //* Cache responsIDs
-    responseIdCache[outcomeId] = [...respData.respIds];
+    responseIdCache[outcomeId] = [...respData.responsibilityIds];
 
     await planOutcomesAjax.updatePlanOutcomeExperienceResponsibility(respData);
 
