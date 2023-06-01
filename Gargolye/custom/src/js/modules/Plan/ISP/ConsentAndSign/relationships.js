@@ -97,7 +97,7 @@ const csRelationship = (() => {
     const name = contactInformation.cleanName(rel);
     const dob = dates.removeTimestamp(rel.dateOfBirth);
     const adress = `${rel.buildingNumber}`;
-    const relationshipType = rel.relationshipType ? rel.relationshipType : '';
+    const relationshipType = rel.relationship ? rel.relationship : '';
 
     const relationshipDiv = document.createElement('div');
     relationshipDiv.classList.add('relationship');
@@ -118,6 +118,7 @@ const csRelationship = (() => {
     relationshipDiv.appendChild(nameEle);
     relationshipDiv.appendChild(dobEle);
     relationshipDiv.appendChild(addressEle);
+    relationshipDiv.appendChild(relationshipTypeEle);
 
     relationshipDiv.addEventListener('click', e => {
       if (!name) {

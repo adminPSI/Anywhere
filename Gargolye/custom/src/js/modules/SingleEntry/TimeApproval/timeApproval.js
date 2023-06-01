@@ -904,7 +904,7 @@ var timeApproval = (function () {
         filterPopup.appendChild(btnWrap);
 
         setupFilterEvents();
-
+        checkDateValidation();
         POPUP.show(filterPopup);
     }
 

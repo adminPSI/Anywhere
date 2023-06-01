@@ -13,6 +13,7 @@ const planOutcomes = (() => {
   let teamMembers;
   let hasPreviousPlan;
   let charLimits;
+  let responseIdCache = {};
   // Selected Vendors => Experiences/WhoResponsible
   let selectedVendors = {};
 
@@ -378,6 +379,20 @@ const planOutcomes = (() => {
       token: $.session.Token,
       outcomeId,
     });
+
+    if (outcomesData[outcomeId].experiences) {
+      Object.values(outcomesData[outcomeId].experiences).forEach(exp => {
+        Object.values(exp.responsibilities).forEach(resp => {
+          delete selectedVendors[resp.responsibilityIds];
+        });
+      });
+    }
+
+    if (responseIdCache[outcomeId]) {
+      responseIdCache[outcomeId].forEach(respId => {
+        delete selectedVendors[respId];
+      });
+    }
   }
   //-- Markup ---------
   function toggleAddNewOutcomePopupDoneBtn() {
@@ -686,6 +701,9 @@ const planOutcomes = (() => {
       }
     });
 
+    //* Cache responsIDs
+    responseIdCache[outcomeId] = [...respIds];
+
     //* New Table
     //*---------------------------
     const tableOptions = {
@@ -770,6 +788,9 @@ const planOutcomes = (() => {
             token: $.session.Token,
             responsibilityId: parseInt(resp.responsibilityIds),
           });
+
+          const respId = resp.responsibilityIds;
+          delete selectedVendors[respId];
         }
       }
     });
@@ -835,6 +856,9 @@ const planOutcomes = (() => {
       }
     });
 
+    //* Cache responsIDs
+    responseIdCache[outcomeId] = [...respData.respIds];
+
     await planOutcomesAjax.updatePlanOutcomeExperienceResponsibility(respData);
 
     //* Build New Table
@@ -868,9 +892,13 @@ const planOutcomes = (() => {
       experienceId: experienceId,
     });
 
-    outcomesData[outcomeId].experiences[experienceId].responsibilities.forEach(resp => {
-      delete selectedVendors[resp.responsibilityIds];
-    });
+    if (outcomesData[outcomeId].experiences) {
+      Object.values(outcomesData[outcomeId].experiences).forEach(exp => {
+        Object.values(exp.responsibilities).forEach(resp => {
+          delete selectedVendors[resp.responsibilityIds];
+        });
+      });
+    }
 
     const outcomeDiv = document.querySelector(`.outcome${outcomeId}`);
     const expTableWrap = outcomeDiv.querySelector(`#experiencesTableDummy${outcomeId}`);

@@ -1103,24 +1103,29 @@ var note = (function () {
   }
   function parseSessionTimes(dirtyTime) {
     const isAMorPM = dirtyTime.includes('A') ? 'am' : 'pm';
+    let time;
 
     if (isAMorPM === 'am') {
-      const time = `${dirtyTime.split('A')[0]} AM`;
-      return UTIL.convertToMilitary(time);
+      time = `${dirtyTime.split('A')[0]} AM`;
     } else {
-      const time = `${dirtyTime.split('P')[0]} PM`;
-      return UTIL.convertToMilitary(time);
+      time = `${dirtyTime.split('P')[0]} PM`;
     }
+
+    time = UTIL.convertToMilitary(time);
+    return time.slice(0, -3);
   }
   function checkTimesAreWithinWorkHours() {
     const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
-    const start = UTIL.convertToMilitary(startTime);
-    const end = UTIL.convertToMilitary(endTime);
 
-    console.log(warnStart, warnEnd, start, end);
+    if (
+      $.session.caseNotesWarningStartTime === '00:00' ||
+      $.session.caseNotesWarningEndTime === '00:00'
+    ) {
+      return true;
+    }
 
-    if (start < warnStart || start > warnEnd || end < warnStart || end > warnEnd) {
+    if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
       return false;
     }
 
@@ -1166,6 +1171,8 @@ var note = (function () {
                     await noteSaveUpdate(saveAndNew);
                   },
                   () => {
+                    saveNoteBtn.classList.remove('disabled');
+                    saveAndNewNoteBtn.classList.remove('disabled');
                     return;
                   },
                 );
@@ -1194,6 +1201,8 @@ var note = (function () {
                 await noteSaveUpdate(saveAndNew);
               },
               () => {
+                saveNoteBtn.classList.remove('disabled');
+                saveAndNewNoteBtn.classList.remove('disabled');
                 return;
               },
             );

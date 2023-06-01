@@ -1087,15 +1087,31 @@ var noteSSA = (function () {
 
     return docTime;
   }
+  function parseSessionTimes(dirtyTime) {
+    const isAMorPM = dirtyTime.includes('A') ? 'am' : 'pm';
+    let time;
+
+    if (isAMorPM === 'am') {
+      time = `${dirtyTime.split('A')[0]} AM`;
+    } else {
+      time = `${dirtyTime.split('P')[0]} PM`;
+    }
+
+    time = UTIL.convertToMilitary(time);
+    return time.slice(0, -3);
+  }
   function checkTimesAreWithinWorkHours() {
-    // check startTime against $.session.caseNotesWarningStartTime
-    // check endTime against $.session.caseNotesWarningEndTime
     const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
-    const start = UTIL.convertToMilitary(startTime);
-    const end = UTIL.convertToMilitary(endTime);
 
-    if (start < warnStart || start > warnEnd || end < warnStart || end > warnEnd) {
+    if (
+      $.session.caseNotesWarningStartTime === '00:00' ||
+      $.session.caseNotesWarningEndTime === '00:00'
+    ) {
+      return true;
+    }
+
+    if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
       return false;
     }
 
@@ -1140,6 +1156,8 @@ var noteSSA = (function () {
                     noteSaveUpdate(saveAndNew);
                   },
                   () => {
+                    saveNoteBtn.classList.remove('disabled');
+                    saveAndNewNoteBtn.classList.remove('disabled');
                     return;
                   },
                 );
@@ -1168,6 +1186,8 @@ var noteSSA = (function () {
                 noteSaveUpdate(saveAndNew);
               },
               () => {
+                saveNoteBtn.classList.remove('disabled');
+                saveAndNewNoteBtn.classList.remove('disabled');
                 return;
               },
             );

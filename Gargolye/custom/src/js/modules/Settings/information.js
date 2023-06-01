@@ -2,6 +2,16 @@ const information = (function () {
   let demographicInfo;
   let updateData;
   let mobileCarriersData;
+  let emailError = false;
+  // DOM
+  let address1Input;
+  let address2Input;
+  let cityInput;
+  let stateInput;
+  let zipInput;
+  let phoneInput;
+  let carrierDropdown;
+  let emailInput;
 
   async function getStaffDemographicInformation() {
     try {
@@ -82,6 +92,32 @@ const information = (function () {
     }
   }
 
+  async function updateInformationData() {
+    const newDemoInfo = await getStaffDemographicInformation();
+
+    if (updateData.email && updateData.email !== newDemoInfo.email && !emailError) {
+      emailError = true;
+      // show error by email
+      const emailSectionBody = document.querySelector('.emailSection .informationSection__body');
+      const errorEle = document.createElement('p');
+      errorEle.innerText = 'Unable to update email due to EMAR';
+      emailSectionBody.appendChild(errorEle);
+      input.disableInputField(emailInput);
+    }
+
+    demographicInfo = newDemoInfo;
+    updateData = {};
+
+    address1Input.querySelector('input').value = demographicInfo.addressOne;
+    address2Input.querySelector('input').value = demographicInfo.addressTwo;
+    cityInput.querySelector('input').value = demographicInfo.city;
+    stateInput.querySelector('input').value = demographicInfo.state;
+    zipInput.querySelector('input').value = demographicInfo.zipCode;
+    phoneInput.querySelector('input').value = demographicInfo.mobilePhone;
+    //carrierDropdown.querySelector('input').value = demographicInfo.carrier;
+    emailInput.querySelector('input').value = demographicInfo.email;
+  }
+
   function formatPhoneNumber(number) {
     if (!number) return;
     const splitNumber = number
@@ -146,8 +182,9 @@ const information = (function () {
     heading.innerText = 'Address';
 
     const body = document.createElement('div');
+    body.classList.add('informationSection__body');
 
-    const address1Input = input.build({
+    address1Input = input.build({
       label: 'Address 1',
       type: 'text',
       style: 'secondary',
@@ -158,7 +195,7 @@ const information = (function () {
         updateData.addressOne = e.target.value;
       },
     });
-    const address2Input = input.build({
+    address2Input = input.build({
       label: 'Address 2',
       type: 'text',
       style: 'secondary',
@@ -169,7 +206,7 @@ const information = (function () {
         updateData.addressTwo = e.target.value;
       },
     });
-    const cityInput = input.build({
+    cityInput = input.build({
       label: 'City',
       type: 'text',
       style: 'secondary',
@@ -180,7 +217,7 @@ const information = (function () {
         updateData.city = e.target.value;
       },
     });
-    const stateInput = input.build({
+    stateInput = input.build({
       label: 'State',
       type: 'text',
       style: 'secondary',
@@ -191,7 +228,7 @@ const information = (function () {
         updateData.state = e.target.value;
       },
     });
-    const zipInput = input.build({
+    zipInput = input.build({
       label: 'Zip Code',
       type: 'text',
       style: 'secondary',
@@ -227,6 +264,8 @@ const information = (function () {
     return addressSection;
   }
   function buildNumbersSection() {
+    let validPhone = false;
+
     const numberSection = document.createElement('div');
     numberSection.classList.add('numberSection', 'informationSection');
 
@@ -234,8 +273,9 @@ const information = (function () {
     heading.innerText = 'Phone Numbers';
 
     const body = document.createElement('div');
+    body.classList.add('informationSection__body');
 
-    const phoneInput = input.build({
+    phoneInput = input.build({
       label: 'Mobile',
       type: 'tel',
       style: 'secondary',
@@ -243,17 +283,22 @@ const information = (function () {
       attributes: [{ key: 'maxlength', value: '14' }],
       value: formatPhoneNumber(demographicInfo.mobilePhone),
       callback: e => {
-        const splitNumber = e.target.value.split(' ');
-        const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
-        let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+        if (e.target.value === '' || !validPhone) {
+          updateData.mobilePhone = '';
+          return;
+        }
 
-        saveValue = `${phoneNumber}${phoneExt}`;
+        let splitNumber = e.target.value.split(' ');
+
+        let phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
+        let phoneExt = splitNumber[1] ? splitNumber[1].replace('(', '').replace(')', '') : '';
+
+        saveValue = phoneExt ? `${phoneNumber}${phoneExt}` : `${phoneNumber}`;
 
         updateData.mobilePhone = saveValue;
       },
     });
     phoneInput.addEventListener('keyup', e => {
-      let validPhone = false;
       let value = e.target.value
         .replace(/[^\w\s]/gi, '')
         .replaceAll(' ', '')
@@ -261,16 +306,20 @@ const information = (function () {
 
       let phoneNumber;
 
+      if (value.length === 0) {
+        validPhone = true;
+        return;
+      }
       if (value.length >= 4 && value.length <= 6) {
         phoneNumber = stringAdd(value, 3, '-');
         e.target.value = phoneNumber;
       }
-      if (value.length >= 7 && value.length <= 10) {
+      if (value.length >= 7 && value.length < 10) {
         phoneNumber = stringAdd(value, 3, '-');
         phoneNumber = stringAdd(phoneNumber, 7, '-');
         e.target.value = phoneNumber;
       }
-      if (value.length > 10) {
+      if (value.length >= 10) {
         phoneNumber = stringAdd(value, 3, '-');
         phoneNumber = stringAdd(phoneNumber, 7, '-');
         phoneNumber = stringAdd(phoneNumber, 12, ' (');
@@ -282,13 +331,13 @@ const information = (function () {
         validPhone = true;
       }
       if (!validPhone) {
-        phoneInput.classList.add('invalid');
+        phoneInput.classList.add('error');
       } else {
-        phoneInput.classList.remove('invalid');
+        phoneInput.classList.remove('error');
       }
     });
 
-    const carrierDropdown = dropdown.build({
+    carrierDropdown = dropdown.build({
       dropdownId: 'carrierDropdown',
       label: 'Carrier',
       style: 'secondary',
@@ -321,8 +370,9 @@ const information = (function () {
     heading.innerText = 'Email Address';
 
     const body = document.createElement('div');
+    body.classList.add('informationSection__body');
 
-    const emailInput = input.build({
+    emailInput = input.build({
       label: 'Email',
       type: 'email',
       style: 'secondary',
@@ -369,6 +419,7 @@ const information = (function () {
         infoPage.appendChild(saveEle);
         setTimeout(() => {
           infoPage.removeChild(saveEle);
+          updateInformationData();
         }, 1000);
       },
     });

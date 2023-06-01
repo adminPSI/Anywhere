@@ -170,15 +170,19 @@
   .informationSection {
     margin: 0 0 10px;
 
-    p {
+    > p {
       background: $secondary;
       padding: 6px;
       font-weight: 500;
     }
 
-    > div {
+    &__body {
       background: $bg-light;
       padding: 12px 10px 6px;
+
+      p {
+        color: $font-error;
+      }
     }
   }
 
