@@ -701,7 +701,13 @@ const planConsentAndSign = (() => {
 
     const teamMemberTable = table.build({
       tableId: 'signaturesTable',
-      columnHeadings: ['Team Member', 'Name', 'Participated', 'Signature Type'],
+      columnHeadings: [
+        'Team Member',
+        'Relationship Type',
+        'Name',
+        'Participated',
+        'Signature Type',
+      ],
       headline: 'Team Members',
       endIcon: true,
       secondendIcon: true,
@@ -721,6 +727,7 @@ const planConsentAndSign = (() => {
         const inPersonSignature = m.description;
 
         const teamMember = m.teamMember;
+        const relationshipType = m.relationship;
         const name = contactInformation.cleanName({
           lastName: m.lastName,
           firstName: m.name,
@@ -735,7 +742,7 @@ const planConsentAndSign = (() => {
         names.push(name);
 
         const tableOBJ = {
-          values: [teamMember, name, participated, signatureType],
+          values: [teamMember, relationshipType, name, participated, signatureType],
           id: `sig-${m.signatureId}`,
           endIcon: icons.edit,
           secondendIcon: icons.delete,
