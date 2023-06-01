@@ -176,10 +176,10 @@ const consumerBehavior = (function () {
   }
   // events
   function setupFormEvents() {
-    let tmpBehaviorTypeId;
-    let tmpStartTime;
-    let tmpEndTime;
-    let tmpOccurrences;
+    let tmpBehaviorTypeId = null;
+    let tmpStartTime = null;
+    let tmpEndTime = null;
+    let tmpOccurrences = null;
 
     behaviorTypeDropdown.addEventListener('change', e => {
       tmpBehaviorTypeId = e.target.value;
@@ -223,20 +223,25 @@ const consumerBehavior = (function () {
           };
         }
 
-        if (tmpBehaviorTypeId || tmpStartTime || tmpEndTime || tmpOccurrences) {
+        if (
+          tmpBehaviorTypeId !== null ||
+          tmpStartTime !== null ||
+          tmpEndTime !== null ||
+          tmpOccurrences !== null
+        ) {
           behaviorData[selectedConsumerId][selectedBehaviorId].updated = true;
         }
 
-        if (tmpBehaviorTypeId) {
+        if (tmpBehaviorTypeId !== null) {
           behaviorData[selectedConsumerId][selectedBehaviorId].behaviorTypeId = tmpBehaviorTypeId;
         }
-        if (tmpStartTime) {
+        if (tmpStartTime !== null) {
           behaviorData[selectedConsumerId][selectedBehaviorId].startTime = tmpStartTime;
         }
-        if (tmpEndTime) {
+        if (tmpEndTime !== null) {
           behaviorData[selectedConsumerId][selectedBehaviorId].endTime = tmpEndTime;
         }
-        if (tmpOccurrences) {
+        if (tmpOccurrences !== null) {
           behaviorData[selectedConsumerId][selectedBehaviorId].occurrences = tmpOccurrences;
         }
 
