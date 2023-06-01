@@ -110,9 +110,11 @@ const csTeamMember = (() => {
     nameInput.childNodes[0].value = selectedMemberData.name;
     lNameInput.childNodes[0].value = selectedMemberData.lastName;
     buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber;
-    dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
-      dates.removeTimestamp(selectedMemberData.dateOfBirth),
-    );
+    if (selectedMemberData.dateOfBirth) {
+      dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
+        dates.removeTimestamp(selectedMemberData.dateOfBirth),
+      );
+    }
 
     // build new relationship type input
     relationshipTypeInput = input.build({

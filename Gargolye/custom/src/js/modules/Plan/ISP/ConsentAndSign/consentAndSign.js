@@ -86,6 +86,7 @@ const planConsentAndSign = (() => {
       name: selectedMemberData.name,
       lastName: selectedMemberData.lastName,
       participated: selectedMemberData.participated,
+      relationship: selectedMemberData.relationship ? selectedMemberData.relationship : '',
       // sign/disent
       signature: selectedMemberData.signature,
       signatureType: selectedMemberData.signatureType,
@@ -175,6 +176,7 @@ const planConsentAndSign = (() => {
       name: selectedMemberData.name,
       lastName: selectedMemberData.lastName,
       participated: selectedMemberData.participated,
+      relationship: selectedMemberData.relationship ? selectedMemberData.relationship : '',
       // sign/disent
       signatureId: selectedMemberData.signatureId,
       signature: selectedMemberData.signature,
@@ -980,8 +982,9 @@ const planConsentAndSign = (() => {
       teamMemberTable.classList.add('disableDrag');
       addMemberBtn.classList.add('disabled');
       addVendorBtn.classList.add('disabled');
-      if ($.session.oneSpan) {//
-          sendDocumentToOneSpanBtn.classList.add('disabled');
+      if ($.session.oneSpan) {
+        //
+        sendDocumentToOneSpanBtn.classList.add('disabled');
       }
     }
 
