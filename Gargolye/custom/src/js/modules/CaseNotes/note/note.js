@@ -1116,6 +1116,13 @@ var note = (function () {
     const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
 
+    if (
+      $.session.caseNotesWarningStartTime === '00:00' ||
+      $.session.caseNotesWarningEndTime === '00:00'
+    ) {
+      return true;
+    }
+
     if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
       return false;
     }
@@ -1162,6 +1169,8 @@ var note = (function () {
                     await noteSaveUpdate(saveAndNew);
                   },
                   () => {
+                    saveNoteBtn.classList.remove('disabled');
+                    saveAndNewNoteBtn.classList.remove('disabled');
                     return;
                   },
                 );

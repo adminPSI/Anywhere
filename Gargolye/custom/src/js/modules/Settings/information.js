@@ -2,7 +2,7 @@ const information = (function () {
   let demographicInfo;
   let updateData;
   let mobileCarriersData;
-  let emailChanged = false;
+  let emailError = false;
   // DOM
   let address1Input;
   let address2Input;
@@ -95,12 +95,14 @@ const information = (function () {
   async function updateInformationData() {
     const newDemoInfo = await getStaffDemographicInformation();
 
-    if (updateData.email && updateData.email !== newDemoInfo.email) {
+    if (updateData.email && updateData.email !== newDemoInfo.email && !emailError) {
+      emailError = true;
       // show error by email
       const emailSectionBody = document.querySelector('.emailSection .informationSection__body');
       const errorEle = document.createElement('p');
       errorEle.innerText = 'Unable to update email due to EMAR';
       emailSectionBody.appendChild(errorEle);
+      input.disableInputField(emailInput);
     }
 
     demographicInfo = newDemoInfo;
@@ -262,6 +264,8 @@ const information = (function () {
     return addressSection;
   }
   function buildNumbersSection() {
+    let validPhone = false;
+
     const numberSection = document.createElement('div');
     numberSection.classList.add('numberSection', 'informationSection');
 
@@ -279,17 +283,22 @@ const information = (function () {
       attributes: [{ key: 'maxlength', value: '14' }],
       value: formatPhoneNumber(demographicInfo.mobilePhone),
       callback: e => {
-        const splitNumber = e.target.value.split(' ');
-        const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
-        let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+        if (e.target.value === '' || !validPhone) {
+          updateData.mobilePhone = '';
+          return;
+        }
 
-        saveValue = `${phoneNumber}${phoneExt}`;
+        let splitNumber = e.target.value.split(' ');
+
+        let phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
+        let phoneExt = splitNumber[1] ? splitNumber[1].replace('(', '').replace(')', '') : '';
+
+        saveValue = phoneExt ? `${phoneNumber}${phoneExt}` : `${phoneNumber}`;
 
         updateData.mobilePhone = saveValue;
       },
     });
     phoneInput.addEventListener('keyup', e => {
-      let validPhone = false;
       let value = e.target.value
         .replace(/[^\w\s]/gi, '')
         .replaceAll(' ', '')
@@ -297,6 +306,10 @@ const information = (function () {
 
       let phoneNumber;
 
+      if (value.length === 0) {
+        validPhone = true;
+        return;
+      }
       if (value.length >= 4 && value.length <= 6) {
         phoneNumber = stringAdd(value, 3, '-');
         e.target.value = phoneNumber;
