@@ -158,7 +158,7 @@ namespace Anywhere.service.Data.DocumentConversion
             }
             catch (Exception)
             {
-                return "There was failure in the send process. Please contact your adminitrator.";
+                return "There was failure in the send process. Please contact your administrator.";
             }
 
             if (wfAttachmentIds.Length == 0 && sigAttachmentIds.Length == 0 && planAttachmentIds.Length == 0)

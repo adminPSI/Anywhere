@@ -980,7 +980,9 @@ const planConsentAndSign = (() => {
       teamMemberTable.classList.add('disableDrag');
       addMemberBtn.classList.add('disabled');
       addVendorBtn.classList.add('disabled');
-      sendDocumentToOneSpanBtn.classList.add('disabled');
+      if ($.session.oneSpan) {
+          sendDocumentToOneSpanBtn.classList.add('disabled');
+      }
     }
 
     // build it
