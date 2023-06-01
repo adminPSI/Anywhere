@@ -1089,14 +1089,16 @@ var noteSSA = (function () {
   }
   function parseSessionTimes(dirtyTime) {
     const isAMorPM = dirtyTime.includes('A') ? 'am' : 'pm';
+    let time;
 
     if (isAMorPM === 'am') {
-      const time = `${dirtyTime.split('A')[0]} AM`;
-      return UTIL.convertToMilitary(time);
+      time = `${dirtyTime.split('A')[0]} AM`;
     } else {
-      const time = `${dirtyTime.split('P')[0]} PM`;
-      return UTIL.convertToMilitary(time);
+      time = `${dirtyTime.split('P')[0]} PM`;
     }
+
+    time = UTIL.convertToMilitary(time);
+    return time.slice(0, -3);
   }
   function checkTimesAreWithinWorkHours() {
     const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
