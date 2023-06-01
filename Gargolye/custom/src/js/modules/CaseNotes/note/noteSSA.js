@@ -1184,6 +1184,8 @@ var noteSSA = (function () {
                 noteSaveUpdate(saveAndNew);
               },
               () => {
+                saveNoteBtn.classList.remove('disabled');
+                saveAndNewNoteBtn.classList.remove('disabled');
                 return;
               },
             );

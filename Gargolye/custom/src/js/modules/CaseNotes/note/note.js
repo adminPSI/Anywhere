@@ -1199,6 +1199,8 @@ var note = (function () {
                 await noteSaveUpdate(saveAndNew);
               },
               () => {
+                saveNoteBtn.classList.remove('disabled');
+                saveAndNewNoteBtn.classList.remove('disabled');
                 return;
               },
             );
