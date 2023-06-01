@@ -359,15 +359,47 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (userId == null) throw new Exception("userId is required");
 
 
+                    ConsumerFinancesEntry[] PastRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getPastAccountRunningBalance(date, account, transaction));
+
+                    string runningBalance = amount;
+                    if (PastRunningBal.Length > 0)
+                    {
+                        if (amountType == "E")
+                        {
+                            runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) - Convert.ToDecimal(runningBalance)).ToString();
+                        }
+                        else
+                        {
+                            runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) + Convert.ToDecimal(runningBalance)).ToString();
+                        }
+                    }
+
                     String RegisterID;
 
                     if (eventType == "UPDATE")
                     {
-                        RegisterID = Odg.updateAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, regId);
+                        RegisterID = Odg.updateAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, regId, runningBalance);
                     }
                     else
                     {
-                        RegisterID = Odg.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction);
+                        RegisterID = Odg.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, runningBalance);
+                    }
+
+                    ConsumerFinancesEntry[] nextRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getNextAccountRunningBalance(date, account, transaction));
+
+                    foreach (ConsumerFinancesEntry updateAmount in nextRunningBal)
+                    {
+                        string balance;
+                        if (amountType == "E")
+                        {
+                            balance = (Convert.ToDecimal(updateAmount.balance) - Convert.ToDecimal(runningBalance)).ToString();
+                        }
+                        else
+                        {
+                            balance = (Convert.ToDecimal(updateAmount.balance) + Convert.ToDecimal(runningBalance)).ToString();
+                        }
+
+                        Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
                     }
 
                     if (attachmentId != null)
