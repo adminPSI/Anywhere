@@ -1108,7 +1108,9 @@ var noteSSA = (function () {
       $.session.caseNotesWarningStartTime === '00:00' ||
       $.session.caseNotesWarningEndTime === '00:00' ||
       !$.session.caseNotesWarningStartTime ||
-      !$.session.caseNotesWarningEndTime
+      !$.session.caseNotesWarningEndTime ||
+      $.session.caseNotesWarningStartTime === 'Null' ||
+      $.session.caseNotesWarningEndTime === 'Null'
     ) {
       return true;
     }
