@@ -1098,6 +1098,18 @@ const csTeamMember = (() => {
         checkTeamMemberPopupForErrors();
       },
     });
+    // Relationship Type
+    relationshipTypeInput = input.build({
+      label: 'Relationship Type',
+      value: selectedMemberData.relationship,
+      readonly: isSigned || readOnly,
+      callbackType: 'input',
+      callback: event => {
+        selectedMemberData.relationship = event.target.value;
+
+        checkTeamMemberPopupForErrors();
+      },
+    });
     // Participate Yes/NO
     const participationRadios = buildParticipationRadios();
 
@@ -1228,6 +1240,10 @@ const csTeamMember = (() => {
     }
     teamMemberPopup.appendChild(dateOfBirthInput);
     teamMemberPopup.appendChild(buildingNumberInput);
+    if (!isNew && selectedMemberData.relationship) {
+      teamMemberPopup.appendChild(relationshipTypeInput);
+      relationshipTypeInput.classList.add('disabled');
+    }
     teamMemberPopup.appendChild(participationRadios);
     teamMemberPopup.appendChild(signatureTypeDropdown);
 
