@@ -291,7 +291,6 @@ const information = (function () {
       type: 'tel',
       style: 'secondary',
       classNames: ['phone'],
-      attributes: [{ key: 'maxlength', value: '14' }],
       value: formatPhoneNumber(demographicInfo.mobilePhone),
       callback: e => {
         if (e.target.value === '' || !validPhone) {
