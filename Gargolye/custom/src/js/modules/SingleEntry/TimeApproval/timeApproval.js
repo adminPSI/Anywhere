@@ -561,6 +561,11 @@ var timeApproval = (function () {
         if (data.tmpStatusText) statusText = data.tmpStatusText;
         if (data.tmpWorkCodeId || data.tmpWorkCodeId === '') workCodeId = data.tmpWorkCodeId;
         if (data.tmpWorkCodeName) workCodeName = data.tmpWorkCodeName;
+        if (data.tmpStartDate) startDate = data.tmpStartDate;
+        if (data.tmpEndDate) endDate = data.tmpEndDate;
+        if (data.tmpStartDate) payPeriod.start = data.tmpStartDate;
+        if (data.tmpEndDate) payPeriod.end = data.tmpEndDate; 
+        
     }
     function buildSupervisorDropdown() {
         var select = dropdown.build({
@@ -726,6 +731,8 @@ var timeApproval = (function () {
         var tmpEmployeeName;
         var tmpStatus;
         var tmpStatusText;
+        var tmpStartDate;
+        var tmpEndDate;
 
         supervisorDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -758,20 +765,18 @@ var timeApproval = (function () {
         });
         startDateInput.addEventListener('change', event => {
             if (isValidDate(event.target.value)) {
-                startDate = event.target.value;
-                payPeriod.start = event.target.value;
+                tmpStartDate = event.target.value;
                 checkDateValidation();
             } else {
-                event.target.value = startDate;
+                event.target.value = tmpStartDate; 
             }
         });
         endDateInput.addEventListener('change', event => {
             if (isValidDate(event.target.value)) {
-                endDate = event.target.value;
-                payPeriod.end = event.target.value;
+                tmpEndDate = event.target.value;
                 checkDateValidation();
             } else {
-                event.target.value = endDate;
+                event.target.value = tmpEndDate;
             }
         });
 
@@ -798,6 +803,8 @@ var timeApproval = (function () {
                     tmpStatusText,
                     tmpWorkCodeId,
                     tmpWorkCodeName,
+                    tmpStartDate,
+                    tmpEndDate
                 });
 
                 //reformat startDate
@@ -844,9 +851,7 @@ var timeApproval = (function () {
             }
         });
 
-        cancelBtn.addEventListener('click', () => {
-            endDate = endDate;
-            startDate = startDate; 
+        cancelBtn.addEventListener('click', () => { 
             POPUP.hide(filterPopup);
         });
     }

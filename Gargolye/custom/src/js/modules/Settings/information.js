@@ -4,6 +4,7 @@ const information = (function () {
   let mobileCarriersData;
   let emailError = false;
   // DOM
+  let infoPage;
   let address1Input;
   let address2Input;
   let cityInput;
@@ -105,6 +106,17 @@ const information = (function () {
       input.disableInputField(emailInput);
     }
 
+    const updatedKeys = Object.keys(updateData);
+    if (updatedKeys.length === 1 && updatedKeys[0] === 'email' && emailError) {
+      // do nothing
+    } else {
+      const saveEle = successfulSave.get('Information Updated.', true);
+      infoPage.appendChild(saveEle);
+      setTimeout(() => {
+        infoPage.removeChild(saveEle);
+      }, 1000);
+    }
+
     demographicInfo = newDemoInfo;
     updateData = {};
 
@@ -113,8 +125,7 @@ const information = (function () {
     cityInput.querySelector('input').value = demographicInfo.city;
     stateInput.querySelector('input').value = demographicInfo.state;
     zipInput.querySelector('input').value = demographicInfo.zipCode;
-    phoneInput.querySelector('input').value = demographicInfo.mobilePhone;
-    //carrierDropdown.querySelector('input').value = demographicInfo.carrier;
+    phoneInput.querySelector('input').value = formatPhoneNumber(demographicInfo.mobilePhone);
     emailInput.querySelector('input').value = demographicInfo.email;
   }
 
@@ -394,7 +405,7 @@ const information = (function () {
   }
 
   function buildPage() {
-    const infoPage = document.querySelector('.util-menu__info');
+    infoPage = document.querySelector('.util-menu__info');
     infoPage.innerHTML = '';
 
     const currMenu = document.createElement('p');
@@ -415,12 +426,7 @@ const information = (function () {
       classNames: 'updateInformationBtn',
       callback: async () => {
         await updateStaffDemographicInformation();
-        const saveEle = successfulSave.get('Information Updated.', true);
-        infoPage.appendChild(saveEle);
-        setTimeout(() => {
-          infoPage.removeChild(saveEle);
-          updateInformationData();
-        }, 1000);
+        await updateInformationData();
       },
     });
 
