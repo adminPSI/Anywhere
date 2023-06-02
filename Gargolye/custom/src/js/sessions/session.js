@@ -2041,7 +2041,7 @@ function disableModules() {
     $('#consumerfinancessettingsdiv').css('display', 'none');
   }
 
-  if ($.session.anywhereEmploymentPermission == 'Employment') {
+  if ($.session.anywhereEmploymentPermission == 'Anywhere_Employment') {
     //Leave module on
   } else {
     $('#Employmentsettingsdiv').css('display', 'none');
