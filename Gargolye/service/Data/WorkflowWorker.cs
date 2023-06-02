@@ -130,6 +130,7 @@ namespace Anywhere.service.Data
             public string IndivNameFirstL { get; set; }
             public string IndivNameFLast5 { get; set; }
             public string ResidentNumber { get; set; }
+            public string serviceProviders { get; set; }
 
         }
 
@@ -1380,6 +1381,9 @@ namespace Anywhere.service.Data
                     break;
                 case "[Indiv. Resident Number]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.ResidentNumber);
+                    break;
+                case "[Service Providers]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisPlan.serviceProviders);
                     break;
             }
             return dictPlaceHolderValuesforPlan;
