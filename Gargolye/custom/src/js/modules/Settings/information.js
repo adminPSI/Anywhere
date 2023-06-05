@@ -101,7 +101,7 @@ const information = (function () {
       // show error by email
       const emailSectionBody = document.querySelector('.emailSection .informationSection__body');
       const errorEle = document.createElement('p');
-      errorEle.innerText = 'Unable to update email due to EMAR';
+      errorEle.innerText = 'Unable to update email due to eMAR';
       emailSectionBody.appendChild(errorEle);
       input.disableInputField(emailInput);
     }
@@ -131,6 +131,7 @@ const information = (function () {
 
   function formatPhoneNumber(number) {
     if (!number) return;
+
     const splitNumber = number
       .replace(/[^\w\s]/gi, '')
       .replaceAll(' ', '')
@@ -141,7 +142,7 @@ const information = (function () {
 
     const phone = phoneExt ? `${phoneNumber} (${phoneExt})` : `${phoneNumber}`;
 
-    return phone;
+    return !phone ? '' : phone;
   }
   function formatZipCode(zipCode) {
     const zip = zipCode.replace(/[^\w\s]/gi, '').replaceAll(' ', '');
@@ -312,7 +313,7 @@ const information = (function () {
       let value = e.target.value
         .replace(/[^\w\s]/gi, '')
         .replaceAll(' ', '')
-        .slice(0, 15);
+        .slice(0, 14);
 
       let phoneNumber;
 
