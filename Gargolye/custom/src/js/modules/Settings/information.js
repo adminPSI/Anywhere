@@ -130,7 +130,7 @@ const information = (function () {
   }
 
   function formatPhoneNumber(number) {
-    if (!number) return;
+    if (!number) return '';
 
     const splitNumber = number
       .replace(/[^\w\s]/gi, '')
@@ -142,7 +142,7 @@ const information = (function () {
 
     const phone = phoneExt ? `${phoneNumber} (${phoneExt})` : `${phoneNumber}`;
 
-    return !phone ? '' : phone;
+    return phone;
   }
   function formatZipCode(zipCode) {
     const zip = zipCode.replace(/[^\w\s]/gi, '').replaceAll(' ', '');
