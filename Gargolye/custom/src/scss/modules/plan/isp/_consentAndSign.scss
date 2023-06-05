@@ -6,26 +6,26 @@
       > div:nth-child(2) {
         flex-basis: 90px; // Team Member
       }
+      // > div:nth-child(3) {
+      //   flex-basis: 90px; // Relatioship Type
+      // }
       > div:nth-child(3) {
-        flex-basis: 90px; // Relatioship Type
-      }
-      > div:nth-child(4) {
         // Name
         flex-basis: 80px;
         max-width: 212px;
         word-break: break-all;
       }
-      > div:nth-child(5) {
+      > div:nth-child(4) {
         // Participated
         display: none;
         flex-basis: 80px;
       }
-      > div:nth-child(6) {
+      > div:nth-child(5) {
         // signature type
         flex-basis: 40px;
       }
       @media screen and (min-width: 560px) {
-        > div:nth-child(5) {
+        > div:nth-child(4) {
           // Participated
           display: block;
         }
@@ -46,26 +46,26 @@
     > div:nth-child(1) {
       flex-basis: 90px; // Team Member
     }
+    // > div:nth-child(2) {
+    //   flex-basis: 90px; // Relationship Type
+    // }
     > div:nth-child(2) {
-      flex-basis: 90px; // Relationship Type
-    }
-    > div:nth-child(3) {
       // Name
       flex-basis: 80px;
       max-width: 212px;
       word-break: break-all;
     }
-    > div:nth-child(4) {
+    > div:nth-child(3) {
       // Participated
       display: none;
       flex-basis: 80px;
     }
-    > div:nth-child(5) {
+    > div:nth-child(4) {
       // signature type
       flex-basis: 40px;
     }
     @media screen and (min-width: 560px) {
-      > div:nth-child(4) {
+      > div:nth-child(3) {
         display: block;
       }
     }

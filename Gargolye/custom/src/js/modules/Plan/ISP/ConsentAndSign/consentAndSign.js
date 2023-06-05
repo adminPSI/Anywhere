@@ -703,7 +703,7 @@ const planConsentAndSign = (() => {
       tableId: 'signaturesTable',
       columnHeadings: [
         'Team Member',
-        'Relationship Type',
+        //'Relationship Type',
         'Name',
         'Participated',
         'Signature Type',
@@ -742,7 +742,7 @@ const planConsentAndSign = (() => {
         names.push(name);
 
         const tableOBJ = {
-          values: [teamMember, relationshipType, name, participated, signatureType],
+          values: [teamMember, name, participated, signatureType],
           id: `sig-${m.signatureId}`,
           endIcon: icons.edit,
           secondendIcon: icons.delete,
