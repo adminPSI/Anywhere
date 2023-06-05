@@ -558,24 +558,38 @@ const planDates = (function () {
     };
 
     if (planYearStartDate) {
-      const formatedSD = UTIL.formatDateFromDateObj(origPlanYearStartDate);
+      let formatedSD = UTIL.formatDateFromDateObj(origPlanYearStartDate);
+      if (!origPlanYearStartDate) {
+        formatedSD = UTIL.formatDateFromDateObj(planYearStartDate);
+      }
       startDateOpts.value = formatedSD;
     }
     if (effectiveStartDate) {
-      const formatedESD = UTIL.formatDateFromDateObj(origEffectiveStartDate);
+      let formatedESD = UTIL.formatDateFromDateObj(origEffectiveStartDate);
+      if (!origEffectiveStartDate) {
+        formatedESD = UTIL.formatDateFromDateObj(effectiveStartDate);
+      }
       effectiveStartDateOpts.value = formatedESD;
     }
     if (planYearEndDate) {
-      const formatedED = UTIL.formatDateFromDateObj(origPlanYearEndDate);
+      let formatedED = UTIL.formatDateFromDateObj(origPlanYearEndDate);
+      if (!origPlanYearEndDate) {
+        formatedED = UTIL.formatDateFromDateObj(planYearEndDate);
+      }
       endDateOpts.value = formatedED;
     }
     if (effectiveEndDate) {
-
-      const formatedEED = UTIL.formatDateFromDateObj(origEffectiveEndDate);
+      let formatedEED = UTIL.formatDateFromDateObj(origEffectiveEndDate);
+      if (!origEffectiveEndDate) {
+        formatedEED = UTIL.formatDateFromDateObj(effectiveEndDate);
+      }
       effectiveEndDateOpts.value = formatedEED;
     }
     if (planReviewDate) {
-      const formatedRD = UTIL.formatDateFromDateObj(origPlanReviewDate);
+      let formatedRD = UTIL.formatDateFromDateObj(origPlanReviewDate);
+      if (!origPlanReviewDate) {
+        formatedRD = UTIL.formatDateFromDateObj(planReviewDate);
+      }
       reviewDateOpts.value = formatedRD;
     }
 
