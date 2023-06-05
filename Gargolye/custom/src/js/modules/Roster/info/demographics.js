@@ -352,7 +352,14 @@ const demographics = (function () {
         value = '';
       } else {
         if (name.includes('Phone')) {
-          value = value.replace(' ', '');
+          const phoneNumberEndIndex = value.indexOf('<a class="demoPhones"');
+          if (phoneNumberEndIndex !== -1) {
+            const phoneNumberStartIndex = 0;
+            value = value.slice(phoneNumberStartIndex, phoneNumberEndIndex - 1);
+            value = value.trim();
+          } else {
+            value = '';
+          }
         }
         if (name === 'dateOfBirth') {
           value = UTIL.formatDateToIso(value);
@@ -461,8 +468,12 @@ const demographics = (function () {
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
           const splitNumber = e.target.value.split(' ');
           const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
-          let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
+          let phoneExt;
+          if (splitNumber[1] !== undefined) {
+            phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+          }
+        
           saveValue = `${phoneNumber}${phoneExt}`;
         }
         if (name === 'ssn') {
