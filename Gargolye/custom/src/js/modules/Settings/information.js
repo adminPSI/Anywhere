@@ -310,6 +310,8 @@ const information = (function () {
       },
     });
     phoneInput.addEventListener('keyup', e => {
+      if (e.code === 'Backspace') return;
+
       let value = e.target.value
         .replace(/[^\w\s]/gi, '')
         .replaceAll(' ', '')
