@@ -10,6 +10,7 @@ using Anywhere.service.Data.ConsumerFinances;
 using Anywhere.service.Data.Covid;
 using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.DocumentConversion;
+using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.PDF_Forms;
 using Anywhere.service.Data.Plan;
@@ -24,6 +25,7 @@ using Anywhere.service.Data.PlanSignature;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
+using Bytescout.PDF;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,6 +33,7 @@ using System.IO.Compression;
 using System.Text;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using static Anywhere.service.Data.Employment.EmploymentWorker;
 
 namespace Anywhere
 {
@@ -88,6 +91,7 @@ namespace Anywhere
         ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
         ConsumerFinancesWorker cf = new ConsumerFinancesWorker();
         DemographicsWoker cdw = new DemographicsWoker();
+        EmploymentWorker emp = new EmploymentWorker();  
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure(); 
@@ -3222,6 +3226,26 @@ namespace Anywhere
             attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
             section = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
             anywhereAttachmentWorker.viewCFAttachment(token, attachmentId, section);
+        }
+
+        public EmploymentEntries[] getEmploymentEntries(string token, string consumerIds, string employer, string position, string positionStartDate, string positionEndDate, string jobStanding)
+        {
+            return emp.getEmploymentEntries(token, consumerIds, employer, position, positionStartDate, positionEndDate, jobStanding);
+        }
+
+        public Employer[] getEmployers(string token)
+        {
+            return emp.getEmployers(token);
+        }
+
+        public Position[] getPositions(string token)
+        {
+            return emp.getPositions(token);
+        }
+
+        public JobStanding[] getJobStandings(string token)
+        {
+            return emp.getJobStandings(token);
         }
 
     }

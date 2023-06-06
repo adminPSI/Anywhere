@@ -4,6 +4,7 @@ using Anywhere.service.Data.CaseNoteSSA;
 using Anywhere.service.Data.ConsumerFinances;
 using Anywhere.service.Data.Covid;
 using Anywhere.service.Data.Defaults;
+using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.Plan;
 using Anywhere.service.Data.Plan.Assessment;
@@ -4370,6 +4371,38 @@ namespace Anywhere
           UriTemplate = "/getActiveUsedBy/")]
         OODWorker.ActiveEmployee[] getActiveUsedBy(string token);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getEmploymentEntries/")]
+        EmploymentWorker.EmploymentEntries[] getEmploymentEntries(string token, string consumerIds, string employer, string position, string positionStartDate, string positionEndDate, string jobStanding);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getEmployers/")]
+        EmploymentWorker.Employer[] getEmployers(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getPositions/")]
+        EmploymentWorker.Position[] getPositions(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getJobStandings/")]
+        EmploymentWorker.JobStanding[] getJobStandings(string token);
     }
 
 
