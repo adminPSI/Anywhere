@@ -2789,9 +2789,9 @@ namespace Anywhere
             return Ow.getIndicators(token);
         }
 
-        public OODWorker.OODDDLItem[] getPositions(string consumerId, string token)
+        public OODWorker.OODDDLItem[] getOODPositions(string consumerId, string token)
         {
-            return Ow.getPositions(consumerId, token);
+            return Ow.getOODPositions(consumerId, token);
         }
 
 

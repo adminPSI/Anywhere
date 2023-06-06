@@ -4065,8 +4065,8 @@ namespace Anywhere
           BodyStyle = WebMessageBodyStyle.Wrapped,
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
-          UriTemplate = "/getPositions/")]
-        OODWorker.OODDDLItem[] getPositions(string consumerId, string token);
+          UriTemplate = "/getOODPositions/")]
+        OODWorker.OODDDLItem[] getOODPositions(string consumerId, string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
