@@ -560,7 +560,8 @@
         left: -24px;  
     }
 }
-[data-active-module="resetPassword"] {
+[data-active-module="resetPassword"],
+[data-active-module="Employment"] {
 
     h3 {
         font-size: 1rem;
@@ -568,25 +569,25 @@
 
     #singleEntryAdminReviewTable {
 
-         .table__row {
+        .table__row {
             > div {
-                height: 26px; 
+                height: 26px;
                 margin-top: 10px;
             }
         }
 
         .endIcon {
-            max-width: 200px !important;   
+            max-width: 200px !important;
             cursor: pointer;
-            margin-right: 100px !important;   
+            margin-right: 100px !important;
         }
 
         .secondendIcon {
             max-width: 40px !important;
             cursor: pointer;
-            margin-right: 20px;      
-        } 
-    } 
+            margin-right: 20px;
+        }
+    }
 
     .resetPasswordPopup {
         padding-top: 16px;
