@@ -295,7 +295,7 @@ $.session.ResetPasswordUpdate = false;
 
 // Employment
 $.session.EmploymentView = false;
-$.session.EmploymentUpdate = false;
+$.session.EmploymentUpdate = false; 
 
 $.session.consumerId = '';
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
@@ -1014,7 +1014,7 @@ function setSessionVariables() {
         if (tmpWindow == 'Anywhere Reset Passwords') {
             if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $('#Adminsettingdiv').removeClass('disabledModule');
-                $.session.ResetPasswordView = true;
+                $.session.ResetPasswordView = true; 
             }
             if (tmpPerm == 'Update' || $.session.isPSI == true) {
                 $.session.ResetPasswordUpdate = true;
@@ -1022,7 +1022,7 @@ function setSessionVariables() {
         }
 
         //Employment
-        if (tmpWindow == 'Employment' || tmpWindow == 'Anywhere Employment' || $.session.isPSI == true) {
+        if (tmpWindow == 'Anywhere Employment' || $.session.isPSI == true) {
             if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $('#Employmentsettingsdiv').removeClass('disabledModule');
                 $.session.EmploymentView = true;

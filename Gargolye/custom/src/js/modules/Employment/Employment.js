@@ -41,10 +41,6 @@ const Employment = (() => {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
 
-        //if (value) {
-        //    filterValues.accountName = value;
-        //}
-
         if (!document.querySelector('.consumerListBtn')) roster2.miniRosterinit();
 
         landingPage = document.createElement('div');
@@ -83,41 +79,53 @@ const Employment = (() => {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
             headline: 'Consumer: ' + selectedConsumersName,
-            columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing', ''],
+            columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing'],
+            endIcon: true,
         };
 
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
+
         let EmploymentsEntries = await EmploymentAjax.getEmploymentEntriesAsync(
             selectedConsumerIds.join(", "),
             filterValues.employer,
             filterValues.position,
             filterValues.positionStartDate,
-            filterValues.positionEndDate,                    
+            filterValues.positionEndDate == null ? UTIL.getTodaysDate() : filterValues.positionEndDate,
             filterValues.jobStanding,
         );
 
-        //EmploymentsEntries.getEmploymentEntriesResult.forEach(function (entry) {
-        //    let newDate = new Date(entry.activityDate);
-        //    let theMonth = newDate.getMonth() + 1;
-        //    let formatActivityDate = UTIL.leadingZero(theMonth) + '/' + UTIL.leadingZero(newDate.getDate()) + '/' + newDate.getFullYear();
-        //    entry.activityDate = formatActivityDate;
-        //}); 
+        const additionalInformation = newODDEntryBtn();
+        additionalInformation.innerHTML = '+ NEW ODD ENTRY';
+
+        additionalInformation.style = 'margin-top: -10px; width: 200px;'; 
 
         let tableData = EmploymentsEntries.getEmploymentEntriesResult.map((entry) => ({
-            values: [entry.employer, entry.position, entry.positionStartDate, entry.positionEndDate, entry.jobStanding, entry.jobStanding == 0 ? '' : `${icons['attachmentSmall']}`],
+            values: [entry.employer, entry.position, entry.positionStartDate, entry.positionEndDate, entry.jobStanding],
             attributes: [{ key: 'employer', value: entry.employer }],
             onClick: (e) => {
                 //handleAccountTableEvents(e.target.attributes.registerId.value)
-            },   
+            },
+            endIcon: additionalInformation.outerHTML,
+            endIconCallback: e => {
+                //buildChangePasswordPopup(userID, FirstName, LastName);
+            },
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
 
-        return oTable; 
+        return oTable;
     }
 
     function handleAccountTableEvents(registerId) {
-        //NewEntryCF.buildNewEntryForm(registerId);
+        //NewEntryCF.buildNewEntryForm(registerId); 
+    }
+
+    function newODDEntryBtn() {
+        return button.build({
+            text: '+ NEW ODD ENTRY',
+            style: 'secondary',
+            type: 'contained',
+        });
     }
 
     // build display of Account and button
@@ -152,7 +160,7 @@ const Employment = (() => {
             classNames: 'newEntryBtn',
             callback: async () => { NewEntryCF.init() },
         });
-        if ($.session.CFInsert) {
+        if ($.session.EmploymentUpdate) {
             newPositionBtn.classList.remove('disabled');
         }
         else {
@@ -181,7 +189,7 @@ const Employment = (() => {
             employer: '%',
             position: '%',
             positionStartDate: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 365)),
-            positionEndDate: UTIL.getTodaysDate(),           
+            positionEndDate: null,// UTIL.getTodaysDate(),           
             jobStanding: '%',
         }
 
@@ -205,7 +213,7 @@ const Employment = (() => {
 
         filteredBy.style.maxWidth = '100%';
         const startDate = moment(filterValues.positionStartDate, 'YYYY-MM-DD').format('M/D/YYYY');
-        const endDate = moment(filterValues.positionEndDate, 'YYYY-MM-DD').format('M/D/YYYY');
+        const endDate = filterValues.positionEndDate == null ? 'none' : moment(filterValues.positionEndDate, 'YYYY-MM-DD').format('M/D/YYYY');
 
         filteredBy.innerHTML = `<div class="filteredByData">
 			<p>                         
@@ -312,7 +320,6 @@ const Employment = (() => {
         });
         EmployerDropdown.addEventListener('change', event => {
             filterValues.employer = event.target.value;
-            filterValues.employer = event.target.options[event.target.selectedIndex].innerHTML;
         });
         positionDropdown.addEventListener('change', event => {
             filterValues.position = event.target.value;
@@ -325,26 +332,26 @@ const Employment = (() => {
     async function populateFilterDropdown() {
 
         const {
-            getpositionsResult: Positions,
+            getPositionsResult: Positions,
         } = await EmploymentAjax.getPositionsAsync();
         let positionsData = Positions.map((positions) => ({
             id: positions.positionId,
-            value: positions.positionId,
+            value: positions.positionName,
             text: positions.positionName
         }));
         positionsData.unshift({ id: null, value: '%', text: 'ALL' });
-        dropdown.populate("positionDropdown", positionsData, filterValues.positions);
+        dropdown.populate("positionDropdown", positionsData, filterValues.position);
 
         const {
             getEmployersResult: Employer,
         } = await EmploymentAjax.getEmployersAsync();
         let data = Employer.map((employer) => ({
             id: employer.employerId,
-            value: employer.employerId,
+            value: employer.employerName,
             text: employer.employerName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
-        dropdown.populate("employerDropdown", data, filterValues.enteredBy);
+        dropdown.populate("employerDropdown", data, filterValues.employer);
 
         const {
             getJobStandingsResult: JobStanding,
