@@ -458,6 +458,21 @@ const planDates = (function () {
             0,
           );
 
+          // make sure review date falls between effective start and effective end dates
+          const isBeforeEnd = dates.isBefore(planReviewDate, effectiveEndDate);
+          const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
+          if (!isBeforeEnd || !isAfterStart) {
+            dateErrorMessage.innerText = `Review date must fall between effective start date and effective end date.`;
+            dateErrorMessage.classList.remove('hidden');
+            reviewDateInput.classList.add('error');
+            hasError = true;
+            break;
+          } else {
+            reviewDateInput.classList.remove('error');
+            dateErrorMessage.innerText = '';
+            dateErrorMessage.classList.add('hidden');
+          }
+
           dateChanged = true;
 
         break;
@@ -477,6 +492,21 @@ const planDates = (function () {
             newEffectiveEndDate[2],
             0,
           );
+
+          // make sure review date falls between effective start and effective end dates
+          const isBeforeEnd = dates.isBefore(planReviewDate, effectiveEndDate);
+          const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
+          if (!isBeforeEnd || !isAfterStart) {
+            dateErrorMessage.innerText = `Review date must fall between effective start date and effective end date.`;
+            dateErrorMessage.classList.remove('hidden');
+            reviewDateInput.classList.add('error');
+            hasError = true;
+            break;
+          } else {
+            reviewDateInput.classList.remove('error');
+            dateErrorMessage.innerText = '';
+            dateErrorMessage.classList.add('hidden');
+          }
 
           dateChanged = true;
           
