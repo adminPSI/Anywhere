@@ -84,10 +84,15 @@
     .endIcon {
       order: 9;
     }
-    .secondendIcon svg {
-      cursor: none;
-      opacity: 0;
+    .secondendIcon {
       pointer-events: none;
+      cursor: none;
+      
+      svg {
+        cursor: none;
+        opacity: 0;
+        pointer-events: none;
+      }
     }
   }
 
