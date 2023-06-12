@@ -792,6 +792,7 @@ const csTeamMember = (() => {
     isNew = isNewMember;
     isSigned = memberData.dateSigned !== '';
     readOnly = isReadOnly;
+    importedFromRelationship = false;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     showStateGuardians = planConsentAndSign.isTeamMemberGuardian(memberData.teamMember);
     selectedMemberData = { ...memberData };
