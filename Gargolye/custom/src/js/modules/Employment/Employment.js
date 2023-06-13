@@ -97,7 +97,7 @@ const Employment = (() => {
         const additionalInformation = newODDEntryBtn();
         additionalInformation.innerHTML = '+ NEW ODD ENTRY';
 
-        additionalInformation.style = 'margin-top: -10px; width: 200px;'; 
+        additionalInformation.style = 'margin-top: -10px; width: 200px;';
 
         let tableData = EmploymentsEntries.getEmploymentEntriesResult.map((entry) => ({
             values: [entry.employer, entry.position, entry.positionStartDate, entry.positionEndDate, entry.jobStanding],
@@ -276,7 +276,6 @@ const Employment = (() => {
             text: 'Apply',
             style: 'secondary',
             type: 'contained',
-            callback: async () => filterPopupDoneBtn()
         });
         CANCEL_BTN = button.build({
             text: 'Cancel',
@@ -312,21 +311,50 @@ const Employment = (() => {
 
     // binding filter events 
     function eventListeners() {
+
+        var tmpEmployer;
+        var tmpPosition;
+        var tmpJobStanding;
+        var tmpStartDate;
+        var tmpEndDate;
+
         positionStartDate.addEventListener('change', event => {
-            filterValues.positionStartDate = event.target.value;
+            tmpStartDate = event.target.value;
         });
         positionEndDate.addEventListener('change', event => {
-            filterValues.positionEndDate = event.target.value;
+            tmpEndDate = event.target.value;
         });
         EmployerDropdown.addEventListener('change', event => {
-            filterValues.employer = event.target.value;
+            tmpEmployer = event.target.value;
         });
         positionDropdown.addEventListener('change', event => {
-            filterValues.position = event.target.value;
+            tmpPosition = event.target.value;
         });
         jobStandingDropdown.addEventListener('change', event => {
-            filterValues.jobStanding = event.target.value;
+            tmpJobStanding = event.target.value;
         });
+
+        APPLY_BTN.addEventListener('click', () => {
+            updateFilterData({
+                tmpEmployer,
+                tmpPosition,
+                tmpJobStanding,
+                tmpStartDate,
+                tmpEndDate 
+            });
+
+            POPUP.hide(filterPopup);
+            eventListeners();
+            loadEmploymentLanding();
+        });
+    }
+
+    function updateFilterData(data) {
+        if (data.tmpEmployer) filterValues.employer = data.tmpEmployer;
+        if (data.tmpPosition) filterValues.position = data.tmpPosition;
+        if (data.tmpJobStanding) filterValues.jobStanding = data.tmpJobStanding;      
+        if (data.tmpStartDate) filterValues.positionStartDate = data.tmpStartDate;
+        if (data.tmpEndDate) filterValues.positionEndDate = data.tmpEndDate;
     }
 
     async function populateFilterDropdown() {
@@ -364,12 +392,6 @@ const Employment = (() => {
         jobStandingData.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("jobStandingDropdown", jobStandingData, filterValues.jobStanding);
 
-    }
-
-    async function filterPopupDoneBtn() {
-        POPUP.hide(filterPopup);
-        eventListeners();
-        loadEmploymentLanding();
     }
 
     function filterPopupCancelBtn() {

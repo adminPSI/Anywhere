@@ -35,6 +35,8 @@ var timeApproval = (function () {
     var applyBtn;
     var startDateInput;
     var endDateInput
+    var tmpStartDate;
+    var tmpEndDate;
     // action nav items
     var cancelBtn;
     var approveNavBtn;
@@ -564,8 +566,8 @@ var timeApproval = (function () {
         if (data.tmpStartDate) startDate = data.tmpStartDate;
         if (data.tmpEndDate) endDate = data.tmpEndDate;
         if (data.tmpStartDate) payPeriod.start = data.tmpStartDate;
-        if (data.tmpEndDate) payPeriod.end = data.tmpEndDate; 
-        
+        if (data.tmpEndDate) payPeriod.end = data.tmpEndDate;
+
     }
     function buildSupervisorDropdown() {
         var select = dropdown.build({
@@ -731,8 +733,8 @@ var timeApproval = (function () {
         var tmpEmployeeName;
         var tmpStatus;
         var tmpStatusText;
-        var tmpStartDate;
-        var tmpEndDate;
+        tmpStartDate;
+        tmpEndDate;
 
         supervisorDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
@@ -766,14 +768,16 @@ var timeApproval = (function () {
         startDateInput.addEventListener('change', event => {
             if (isValidDate(event.target.value)) {
                 tmpStartDate = event.target.value;
+                payPeriod.start = event.target.value;
                 checkDateValidation();
             } else {
-                event.target.value = tmpStartDate; 
+                event.target.value = tmpStartDate;
             }
         });
         endDateInput.addEventListener('change', event => {
             if (isValidDate(event.target.value)) {
                 tmpEndDate = event.target.value;
+                payPeriod.end = event.target.value;  
                 checkDateValidation();
             } else {
                 event.target.value = tmpEndDate;
@@ -781,7 +785,7 @@ var timeApproval = (function () {
         });
 
         applyBtn.addEventListener('click', () => {
- 
+
             if (IsFilterDisable) {
                 POPUP.hide(filterPopup);
 
@@ -834,7 +838,7 @@ var timeApproval = (function () {
                 highlightedRows.forEach(row => row.classList.remove('selected'));
 
                 startDate = payPeriod.start;
-                endDate = payPeriod.end; 
+                endDate = payPeriod.end;
 
                 getDropdownData(function () {
                     loadReviewPage();
@@ -842,7 +846,7 @@ var timeApproval = (function () {
 
 
             }
-            IsFilterDisable = true;
+            IsFilterDisable = true; 
         });
 
         applyBtn.addEventListener('keypress', event => {
@@ -851,8 +855,10 @@ var timeApproval = (function () {
             }
         });
 
-        cancelBtn.addEventListener('click', () => { 
+        cancelBtn.addEventListener('click', () => {
             POPUP.hide(filterPopup);
+            tmpStartDate = startDate;
+            tmpEndDate = endDate; 
         });
     }
     function showFilterPopup() {
@@ -898,7 +904,7 @@ var timeApproval = (function () {
         const dateWrap = document.createElement('div');
         dateWrap.classList.add('dateWrap', 'btnWrap');
         dateWrap.appendChild(startDateInput);
-        dateWrap.appendChild(endDateInput);
+        dateWrap.appendChild(endDateInput); 
 
         filterPopup.appendChild(supervisorDropdown);
         filterPopup.appendChild(employeeDropdown);
@@ -915,7 +921,7 @@ var timeApproval = (function () {
 
 
     function checkDateValidation() {
-        if (payPeriod.start > payPeriod.end) {
+        if (tmpStartDate > tmpEndDate) {
             endDateInput.classList.add('error');
         } else {
             endDateInput.classList.remove('error');
@@ -1349,8 +1355,8 @@ var timeApproval = (function () {
                         false,
                     );
                     break;
-                    case 'S':  // Submitted (and Approved)
-                        if (entry.approved_time != '') {
+                case 'S':  // Submitted (and Approved)
+                    if (entry.approved_time != '') {
                         createElement(
                             'Record Approved',
                             entry.approvedUser,
@@ -1359,18 +1365,18 @@ var timeApproval = (function () {
                             false,
                         );
                         break;
-            
-                        } else {
+
+                    } else {
                         createElement(
                             'Record Submitted',
                             entry.submittedUser,
                             entry.submit_date,
                             entry.Single_Entry_ID,
                             false,
-                        ); 
+                        );
                         break;
-                        }
-                    
+                    }
+
                 case 'I':  // Imported into Advisor
                 case 'D': // Duplicate 
                     createElement(
@@ -1615,6 +1621,9 @@ var timeApproval = (function () {
         //endDate = payPeriod.end;
         endDate = UTIL.formatDateFromDateObj(dates.addDays(new Date(), 5));
         startDate = UTIL.formatDateFromDateObj(dates.subDays(new Date(), 1));
+
+        tmpStartDate = startDate;
+        tmpEndDate = endDate;
 
         getDropdownData(function () {
             loadReviewPage();
