@@ -252,6 +252,7 @@ const csTeamMember = (() => {
                 DOM.ACTIONCENTER.removeChild(savePopup);
                 POPUP.hide(teamMemberPopup);
                 planConsentAndSign.refreshTable();
+                consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
               }, 700);
             } else {
               pendingSave.reject('Failed to save, please try again.');
@@ -278,6 +279,7 @@ const csTeamMember = (() => {
 
             POPUP.hide(teamMemberPopup);
             planConsentAndSign.refreshTable();
+            consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
           }, 700);
         } else {
           pendingSave.reject('Failed to save, please try again.');
@@ -300,6 +302,7 @@ const csTeamMember = (() => {
           DOM.ACTIONCENTER.removeChild(savePopup);
           POPUP.hide(teamMemberPopup);
           planConsentAndSign.refreshTable();
+          consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
         }, 700);
       } else {
         pendingSave.reject('Failed to save, please try again.');
