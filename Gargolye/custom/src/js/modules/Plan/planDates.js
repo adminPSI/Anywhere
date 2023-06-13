@@ -119,12 +119,15 @@ const planDates = (function () {
 
     if (previousPlans && previousPlans.length > 0) {
       const activeConsumerPlans = previousPlans.filter(p => p.active === 'True');
-      latestActivePlan = activeConsumerPlans.reduce((a, b) => {
-        return new Date(a.planYearStart) > new Date(b.planYearStart) ? a : b;
-      });
 
-      previousPlanStartDate = new Date(latestActivePlan.planYearStart);
-      previousPlanCreatedOnDate = new Date(latestActivePlan.createdOn);
+      if (activeConsumerPlans.length > 0) {
+        latestActivePlan = activeConsumerPlans.reduce((a, b) => {
+          return new Date(a.planYearStart) > new Date(b.planYearStart) ? a : b;
+        });
+  
+        previousPlanStartDate = new Date(latestActivePlan.planYearStart);
+        previousPlanCreatedOnDate = new Date(latestActivePlan.createdOn);
+      }
     }
 
     if (previousPlanStartDate) {
@@ -588,35 +591,35 @@ const planDates = (function () {
     };
 
     if (planYearStartDate) {
-      let formatedSD = UTIL.formatDateFromDateObj(origPlanYearStartDate);
+      let formatedSD = UTIL.formatDateFromDateObj(planYearStartDate);
       if (!origPlanYearStartDate) {
         formatedSD = UTIL.formatDateFromDateObj(planYearStartDate);
       }
       startDateOpts.value = formatedSD;
     }
     if (effectiveStartDate) {
-      let formatedESD = UTIL.formatDateFromDateObj(origEffectiveStartDate);
+      let formatedESD = UTIL.formatDateFromDateObj(effectiveStartDate);
       if (!origEffectiveStartDate) {
         formatedESD = UTIL.formatDateFromDateObj(effectiveStartDate);
       }
       effectiveStartDateOpts.value = formatedESD;
     }
     if (planYearEndDate) {
-      let formatedED = UTIL.formatDateFromDateObj(origPlanYearEndDate);
+      let formatedED = UTIL.formatDateFromDateObj(planYearEndDate);
       if (!origPlanYearEndDate) {
         formatedED = UTIL.formatDateFromDateObj(planYearEndDate);
       }
       endDateOpts.value = formatedED;
     }
     if (effectiveEndDate) {
-      let formatedEED = UTIL.formatDateFromDateObj(origEffectiveEndDate);
+      let formatedEED = UTIL.formatDateFromDateObj(effectiveEndDate);
       if (!origEffectiveEndDate) {
         formatedEED = UTIL.formatDateFromDateObj(effectiveEndDate);
       }
       effectiveEndDateOpts.value = formatedEED;
     }
     if (planReviewDate) {
-      let formatedRD = UTIL.formatDateFromDateObj(origPlanReviewDate);
+      let formatedRD = UTIL.formatDateFromDateObj(planReviewDate);
       if (!origPlanReviewDate) {
         formatedRD = UTIL.formatDateFromDateObj(planReviewDate);
       }
