@@ -8,7 +8,7 @@ var timeEntryCard = (function () {
   var saveUserId; // userID used for cross midnight entries (eg, "charles")
   var personId; // Id of originator of entry (e.g., 37)
   var supervisorId;
-  var rejectedTime; 
+  var rejectedTime;
   //-DOM------------------
   var card; // time entry card
   // dropdowns
@@ -105,8 +105,8 @@ var timeEntryCard = (function () {
   var tmpTransportationUnits = null;
   var tmpDestination = null;
   var tmpReason = null;
-    var tmpLicenseplate = null;
-    var isEVVSingleEntry = false;
+  var tmpLicenseplate = null;
+  var isEVVSingleEntry = false;
 
   // Action Nav
   //------------------------------------
@@ -981,7 +981,7 @@ var timeEntryCard = (function () {
       } else {
         clearTransportationValues();
       }
-      
+
       POPUP.hide(transportationPopup);
     });
   }
@@ -1316,11 +1316,10 @@ var timeEntryCard = (function () {
           reasonDropdown.classList.add('error');
           // roster2.toggleMiniRosterBtnVisible(false);
         } else {
-           reasonDropdown.classList.remove('error');
+          reasonDropdown.classList.remove('error');
           // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
         }
       }
-        
     }
 
     checkDates();
@@ -1346,7 +1345,7 @@ var timeEntryCard = (function () {
         }
       } else {
         saveBtn.classList.add('disabled');
-       // deleteBtn.classList.add('disabled');
+        // deleteBtn.classList.add('disabled');
         saveAndSumbitBtn.classList.add('disabled');
       }
     } else {
@@ -1414,7 +1413,7 @@ var timeEntryCard = (function () {
       if (
         $.session.editSingleEntryCardStatus === 'S' ||
         $.session.editSingleEntryCardStatus === 'I' ||
-       // $.session.editSingleEntryCardStatus === 'R' ||
+        // $.session.editSingleEntryCardStatus === 'R' ||
         $.session.SingleEntryUpdate === false
       ) {
         saveBtn.classList.add('disabled');
@@ -1844,11 +1843,13 @@ var timeEntryCard = (function () {
       rejectionReasonInput.classList.add('disabled');
     }
     // initially when editing a rejected/Non-Billable, the Save btns are disabled, they become enabled after the first edit of the form
-    if (status === 'R' && ((personId === $.session.PeopleId) || (supervisorId === $.session.PeopleId))) {
+    if (
+      status === 'R' &&
+      (personId === $.session.PeopleId || supervisorId === $.session.PeopleId)
+    ) {
       saveBtn.classList.add('disabled');
       saveAndSumbitBtn.classList.add('disabled');
     }
-
   }
   // EVV
   // -----------------------------------
@@ -1867,7 +1868,6 @@ var timeEntryCard = (function () {
         // const timeChanged = startTime !== `${nowHour}:${nowMinutes}`
         await evvCheckConsumerEligibilityExistingConsumers();
         if (
-          
           isBillable === 'Y' &&
           defaultTimesChanged &&
           wcServiceType === 'A' &&
@@ -1881,7 +1881,8 @@ var timeEntryCard = (function () {
           reasonRequired = false;
         }
       }
-    } else { //isEdit is true
+    } else {
+      //isEdit is true
       let wcObj = workCodeData.filter(wc => wc.workcodeid === workCode);
       wcServiceType = wcObj[0].serviceType;
       let ppObj = payPeriodData.filter(pp => pp.dateString === payPeriod.dateString);
@@ -1905,7 +1906,7 @@ var timeEntryCard = (function () {
       } else {
         reasonRequired = false;
         document.querySelector('.timeCard__evv').style.display = 'none';
-      }  
+      }
     }
   }
 
@@ -1957,22 +1958,25 @@ var timeEntryCard = (function () {
       const res = await singleEntryAjax.getEvvEligibilityAsync(id, entryDate);
       if (res.length > 0) {
         reasonRequired = true;
-          eligibleConsumersObj[id] = true;
-          isEVVSingleEntry = true;
-          
+        eligibleConsumersObj[id] = true;
+        isEVVSingleEntry = true;
       } else {
         eligibleConsumersObj[id] = false;
       }
       disableCardFields();
     });
-    
-    // checkRequiredFields();
 
+    // checkRequiredFields();
   }
-  // under following conditions, the form imputs disabled (except time inputs): 1) entry is rejected, 2) workcode = Billable, 3) user is creator/supervisor, 4) this entry requires EVV 
+  // under following conditions, the form imputs disabled (except time inputs): 1) entry is rejected, 2) workcode = Billable, 3) user is creator/supervisor, 4) this entry requires EVV
   function disableCardFields() {
-    
-    if (isEVVSingleEntry && isEdit && isBillable && status == "R" && ((personId === $.session.PeopleId) || (supervisorId === $.session.PeopleId))) {
+    if (
+      isEVVSingleEntry &&
+      isEdit &&
+      isBillable &&
+      status == 'R' &&
+      (personId === $.session.PeopleId || supervisorId === $.session.PeopleId)
+    ) {
       roster2.toggleMiniRosterBtnVisible(false);
       workCodeDropdown.classList.add('disabled');
       locationDropdown.classList.add('disabled');
@@ -1982,7 +1986,6 @@ var timeEntryCard = (function () {
       noteInput.classList.add('disabled');
       rejectionReasonInput.classList.add('disabled');
     }
-  
   }
 
   async function evvCheckRemainingConsumers() {
@@ -2005,7 +2008,6 @@ var timeEntryCard = (function () {
     } else {
       attestCheckbox.classList.remove('redButNotError');
     }
-
   }
 
   // Build
@@ -2290,6 +2292,7 @@ var timeEntryCard = (function () {
     var opts = options;
     isEdit = opts.isEdit;
     isAdminEdit = opts.isAdminEdit;
+    transportationSaved = false;
 
     if (editData && editData.length > 0) {
       setEditDataValues(editData);
