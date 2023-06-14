@@ -193,7 +193,7 @@ const consumerBehavior = (function () {
       if (e.target.value < 0) {
         occurrencesInput.classList.add('error');
       } else {
-        occurrencesInput.classList.add('error');
+        occurrencesInput.classList.remove('error');
       }
     });
     occurrencesInput.addEventListener('change', e => {
