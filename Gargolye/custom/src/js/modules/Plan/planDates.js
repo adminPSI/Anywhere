@@ -50,6 +50,11 @@ const planDates = (function () {
     priorPlanYearEndDate = undefined;
     priorEffectiveStartDate = undefined;
     priorPlanYearStartDate = undefined;
+    origEffectiveEndDate = undefined;
+    origEffectiveStartDate = undefined;
+    origPlanReviewDate = undefined;
+    origPlanYearEndDate = undefined;
+    origPlanYearStartDate = undefined;
   }
   function showReviewDateWarningPopup() {
     const warningPop = POPUP.build({
@@ -119,15 +124,12 @@ const planDates = (function () {
 
     if (previousPlans && previousPlans.length > 0) {
       const activeConsumerPlans = previousPlans.filter(p => p.active === 'True');
+      latestActivePlan = activeConsumerPlans.reduce((a, b) => {
+        return new Date(a.planYearStart) > new Date(b.planYearStart) ? a : b;
+      });
 
-      if (activeConsumerPlans.length > 0) {
-        latestActivePlan = activeConsumerPlans.reduce((a, b) => {
-          return new Date(a.planYearStart) > new Date(b.planYearStart) ? a : b;
-        });
-  
-        previousPlanStartDate = new Date(latestActivePlan.planYearStart);
-        previousPlanCreatedOnDate = new Date(latestActivePlan.createdOn);
-      }
+      previousPlanStartDate = new Date(latestActivePlan.planYearStart);
+      previousPlanCreatedOnDate = new Date(latestActivePlan.createdOn);
     }
 
     if (previousPlanStartDate) {
@@ -461,21 +463,6 @@ const planDates = (function () {
             0,
           );
 
-          // make sure review date falls between effective start and effective end dates
-          const isBeforeEnd = dates.isBefore(planReviewDate, effectiveEndDate);
-          const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
-          if (!isBeforeEnd || !isAfterStart) {
-            dateErrorMessage.innerText = `Review date must fall between effective start date and effective end date.`;
-            dateErrorMessage.classList.remove('hidden');
-            reviewDateInput.classList.add('error');
-            hasError = true;
-            break;
-          } else {
-            reviewDateInput.classList.remove('error');
-            dateErrorMessage.innerText = '';
-            dateErrorMessage.classList.add('hidden');
-          }
-
           dateChanged = true;
 
         break;
@@ -495,21 +482,6 @@ const planDates = (function () {
             newEffectiveEndDate[2],
             0,
           );
-
-          // make sure review date falls between effective start and effective end dates
-          const isBeforeEnd = dates.isBefore(planReviewDate, effectiveEndDate);
-          const isAfterStart = dates.isAfter(planReviewDate, effectiveStartDate);
-          if (!isBeforeEnd || !isAfterStart) {
-            dateErrorMessage.innerText = `Review date must fall between effective start date and effective end date.`;
-            dateErrorMessage.classList.remove('hidden');
-            reviewDateInput.classList.add('error');
-            hasError = true;
-            break;
-          } else {
-            reviewDateInput.classList.remove('error');
-            dateErrorMessage.innerText = '';
-            dateErrorMessage.classList.add('hidden');
-          }
 
           dateChanged = true;
           
@@ -592,36 +564,36 @@ const planDates = (function () {
 
     if (planYearStartDate) {
       let formatedSD = UTIL.formatDateFromDateObj(planYearStartDate);
-      if (!origPlanYearStartDate) {
-        formatedSD = UTIL.formatDateFromDateObj(planYearStartDate);
+      if (origPlanYearStartDate) {
+        formatedSD = UTIL.formatDateFromDateObj(origPlanYearStartDate);
       }
       startDateOpts.value = formatedSD;
     }
     if (effectiveStartDate) {
       let formatedESD = UTIL.formatDateFromDateObj(effectiveStartDate);
-      if (!origEffectiveStartDate) {
-        formatedESD = UTIL.formatDateFromDateObj(effectiveStartDate);
+      if (origEffectiveStartDate) {
+        formatedESD = UTIL.formatDateFromDateObj(origEffectiveStartDate);
       }
       effectiveStartDateOpts.value = formatedESD;
     }
     if (planYearEndDate) {
       let formatedED = UTIL.formatDateFromDateObj(planYearEndDate);
-      if (!origPlanYearEndDate) {
-        formatedED = UTIL.formatDateFromDateObj(planYearEndDate);
+      if (origPlanYearEndDate) {
+        formatedED = UTIL.formatDateFromDateObj(origPlanYearEndDate);
       }
       endDateOpts.value = formatedED;
     }
     if (effectiveEndDate) {
       let formatedEED = UTIL.formatDateFromDateObj(effectiveEndDate);
-      if (!origEffectiveEndDate) {
-        formatedEED = UTIL.formatDateFromDateObj(effectiveEndDate);
+      if (origEffectiveEndDate) {
+        formatedEED = UTIL.formatDateFromDateObj(origEffectiveEndDate);
       }
       effectiveEndDateOpts.value = formatedEED;
     }
     if (planReviewDate) {
       let formatedRD = UTIL.formatDateFromDateObj(planReviewDate);
-      if (!origPlanReviewDate) {
-        formatedRD = UTIL.formatDateFromDateObj(planReviewDate);
+      if (origPlanReviewDate) {
+        formatedRD = UTIL.formatDateFromDateObj(origPlanReviewDate);
       }
       reviewDateOpts.value = formatedRD;
     }
