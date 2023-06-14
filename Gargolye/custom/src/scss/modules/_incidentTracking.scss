@@ -264,9 +264,11 @@
     flex-shrink: 0;
     width: 100%;
     transform: translateX(10%);
+    visibility: hidden;
 
     &.visible {
       height: auto;
+      visibility: visible;
     }
 
     &__home {

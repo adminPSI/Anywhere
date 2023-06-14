@@ -206,6 +206,8 @@ const consumerBehavior = (function () {
 
     formButtons.addEventListener('click', e => {
       if (e.target === saveBtn) {
+        if (e.target.classList.contains('disabled')) return;
+
         if (!behaviorData[selectedConsumerId]) {
           behaviorData[selectedConsumerId] = {};
         }
