@@ -142,20 +142,12 @@ const consumerBehavior = (function () {
     POPUP.show(deleteWarningPopup);
   }
   function checkRequiredFields() {
-    var hasErrors = false;
+    var hasErrors = [].slice.call(section.querySelectorAll('.error'));
 
-    var behaviorTypeSelect = behaviorTypeDropdown.querySelector('.dropdown__select');
-    if (!behaviorTypeSelect.value || behaviorTypeSelect.value === '%') {
-      behaviorTypeDropdown.classList.add('error');
-      hasErrors = true;
-    } else {
-      behaviorTypeDropdown.classList.remove('error');
-    }
-
-    if (hasErrors) {
-      saveBtn.classList.add('disabled');
-    } else {
+    if (hasErrors.length === 0) {
       saveBtn.classList.remove('disabled');
+    } else {
+      saveBtn.classList.add('disabled');
     }
   }
   function clearFormDataDefaults() {
@@ -182,6 +174,12 @@ const consumerBehavior = (function () {
     let tmpOccurrences = null;
 
     behaviorTypeDropdown.addEventListener('change', e => {
+      if (!e.target.value || e.target.value === '%') {
+        behaviorTypeDropdown.classList.add('error');
+      } else {
+        behaviorTypeDropdown.classList.remove('error');
+      }
+
       tmpBehaviorTypeId = e.target.value;
       checkRequiredFields();
     });
@@ -192,7 +190,11 @@ const consumerBehavior = (function () {
       tmpEndTime = e.target.value;
     });
     occurrencesInput.addEventListener('keyup', e => {
-      console.log(`${e.code} ${e.keyCode} ${e.charCode}`);
+      if (e.target.value < 0) {
+        occurrencesInput.classList.add('error');
+      } else {
+        occurrencesInput.classList.add('error');
+      }
     });
     occurrencesInput.addEventListener('change', e => {
       tmpOccurrences = e.target.value;
