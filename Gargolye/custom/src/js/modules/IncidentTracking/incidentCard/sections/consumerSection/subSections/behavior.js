@@ -142,7 +142,7 @@ const consumerBehavior = (function () {
     POPUP.show(deleteWarningPopup);
   }
   function checkRequiredFields() {
-    var hasErrors = [].slice.call(section.querySelectorAll('.error'));
+    var hasErrors = [].slice.call(section.querySelectorAll('.error:not(button)'));
 
     if (hasErrors.length === 0) {
       saveBtn.classList.remove('disabled');
@@ -190,11 +190,12 @@ const consumerBehavior = (function () {
       tmpEndTime = e.target.value;
     });
     occurrencesInput.addEventListener('keyup', e => {
-      if (e.target.value < 0) {
+      if (e.target.value < 0 || e.target.value.includes('-')) {
         occurrencesInput.classList.add('error');
       } else {
         occurrencesInput.classList.remove('error');
       }
+      checkRequiredFields();
     });
     occurrencesInput.addEventListener('change', e => {
       tmpOccurrences = e.target.value;
@@ -299,6 +300,12 @@ const consumerBehavior = (function () {
     data.unshift({ value: '%', text: '' });
 
     dropdown.populate(behaviortypeDrop, data, behaviorTypeId);
+
+    if (!behaviorTypeId || behaviorTypeId === '%') {
+      behaviortypeDrop.classList.add('error');
+    } else {
+      behaviortypeDrop.classList.remove('error');
+    }
 
     return behaviortypeDrop;
   }
