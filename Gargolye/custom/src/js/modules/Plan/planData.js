@@ -9,8 +9,8 @@ const planData = (() => {
     assessment: {},
     isp: {
       consentAndSign: {
-        dissentAreaDisagree: 10000,
-        dissentHowToAddress: 10000,
+        dissentAreaDisagree: 2500,
+        dissentHowToAddress: 2500,
       },
       contactInfo: {
         moreDetail: 10000,
@@ -24,31 +24,31 @@ const planData = (() => {
         rmOtherWayHelpBad: 10000,
       },
       introduction: {
-        likeAdmire: 2500,
-        thingsImportantTo: 2500,
-        thingsImportantFor: 2500,
-        howToSupport: 2500,
+        likeAdmire: 2464,
+        thingsImportantTo: 2464,
+        thingsImportantFor: 2464,
+        howToSupport: 2464,
       },
       outcomes: {
-        description: 10000,
+        description: 2500,
         details: 2500,
         history: 2500,
-        carryOverReason: 10000,
+        carryOverReason: 255,
         whatNeedsToHappen: 2500, // exp
         howItShouldHappen: 2500, // exp
-        whenHowOften: 10000, // exp
-        whenHowOftenOther: 10000, // exp
+        whenHowOften: 2500, // exp
+        whenHowOftenOther: 2500, // exp
         whatWillHappen: 2500, // rev
-        whenToCheckIn: 10000, // rev
+        whenToCheckIn: 2500, // rev
       },
       servicesSupports: {
-        scopeOfService: 10000, // paid supp
+        scopeOfService: 2500, // paid supp
         fundingSourceOther: 2500, // paid supp
         howOftenHowMuch: 255, // paid supp
         howOftenOther: 2500, // paid supp
-        whatSupportLooksLike: 10000, // add supp
-        whenHowOften: 10000, // add supp
-        whenHowOftenOther: 10000, // add supp
+        whatSupportLooksLike: 2500, // add supp
+        whenHowOften: 2500, // add supp
+        whenHowOftenOther: 2500, // add supp
         reasonForReferral: 2500, // prof ref
       },
       summary: {
