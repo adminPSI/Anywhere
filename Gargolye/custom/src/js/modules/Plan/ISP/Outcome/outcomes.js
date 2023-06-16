@@ -2247,7 +2247,7 @@ const planOutcomes = (() => {
       text: 'Summary of Progress Outcomes:',
       prompt: 'Share accomplishments, progress, how success is to be celebrated.',
       awnser: progressSummary,
-      maxChars: 10000,
+      maxChars: 2500,
       callback: e => {
         progressSummary = e.target.value;
         checkIfSummaryRequired();
