@@ -136,6 +136,7 @@ const plan = (function () {
         if ($.session.applicationName === 'Advisor') {
           planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
             $.session.planPeopleId = results[0].id;
+            selectedConsumer.consumerId = selectedConsumer.id;
             selectedConsumer.id = $.session.planPeopleId;
             loadLandingPage();
             DOM.toggleNavLayout();
@@ -994,11 +995,11 @@ const plan = (function () {
         index++;
       }
     }
- 
+
     // checkbox
     includeCheckbox = input.buildCheckbox({
       id: 'reportCheckbox',
-      // className: 'reportCheckbox', 
+      // className: 'reportCheckbox',
       isChecked: include === 'Y' ? true : false,
     });
 
@@ -1035,9 +1036,9 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',  //DODDFlag
-            'false',   //signatureOnly
-            include,  // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
+            'false', //DODDFlag
+            'false', //signatureOnly
+            include, // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
           );
         } else {
           //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
@@ -1051,31 +1052,32 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-              'false', //DODDFlag
-            'false',  //signatureOnly
-            include,  // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
+            'false', //DODDFlag
+            'false', //signatureOnly
+            include, // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
           );
         }
 
         // remove spinner
         reportsScreen.removeChild(spinner);
-       reportsScreen.appendChild(screenInner);
+        reportsScreen.appendChild(screenInner);
         reportsScreen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
       },
     });
 
-    // add checkbox 
-   // const checkboxCheck = document.createElement('div');
-  //  checkboxCheck.appendChild(includeCheckbox);
+    // add checkbox
+    // const checkboxCheck = document.createElement('div');
+    //  checkboxCheck.appendChild(includeCheckbox);
     const checkboxText = document.createElement('div');
-    checkboxText.innerHTML = 'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
+    checkboxText.innerHTML =
+      'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
     const checkboxArea = document.createElement('div');
-     checkboxArea.classList.add('checkboxWrap');
+    checkboxArea.classList.add('checkboxWrap');
     checkboxArea.appendChild(includeCheckbox);
-   checkboxArea.appendChild(checkboxText);
+    checkboxArea.appendChild(checkboxText);
     reportsScreen.appendChild(checkboxArea);
-     reportsScreen.appendChild(doneBtn);
+    reportsScreen.appendChild(doneBtn);
   }
 
   async function runDODDScreen(extraSpace) {
@@ -1265,20 +1267,20 @@ const plan = (function () {
         // reportsScreen.removeChild(screenInner);
         //  reportsScreen.appendChild(spinner);
         // generate report
-          const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
-          const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
-          const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
-          isSuccess = assessment.generateReportWithAttachments(
-            planId,
-            '1',
-            extraSpace,
-            planAttachmentIds,
-            wfAttachmentIds,
-            sigAttachmentIds,
-            'false',  //DODDFlag
-            'true',  //signatureOnly
-            'N',  // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
-          );
+        const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+        const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+        const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+        isSuccess = assessment.generateReportWithAttachments(
+          planId,
+          '1',
+          extraSpace,
+          planAttachmentIds,
+          wfAttachmentIds,
+          sigAttachmentIds,
+          'false', //DODDFlag
+          'true', //signatureOnly
+          'N', // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
+        );
       },
     });
 
