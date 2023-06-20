@@ -1023,12 +1023,12 @@ var timeEntryCard = (function () {
       transportationUnits = event.target.value;
       checkTransportationRequiredFields();
     });
-    destinationInput.addEventListener('keyup', event => {
+    destinationInput.addEventListener('change', event => {
       oldDestination = destination;
       destination = event.target.value;
       checkTransportationRequiredFields();
     });
-    reasonInput.addEventListener('keyup', event => {
+    reasonInput.addEventListener('change', event => {
       oldReason = reason;
       reason = event.target.value;
       checkTransportationRequiredFields();
