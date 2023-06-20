@@ -2366,12 +2366,6 @@ var timeEntryCard = (function () {
     isEdit = opts.isEdit;
     isAdminEdit = opts.isAdminEdit;
 
-    if ((isEdit || isAdminEdit) && isTransportationValid) {
-      transportationSaved = true;
-    } else {
-      transportationSaved = false;
-    }
-
     if (editData && editData.length > 0) {
       setEditDataValues(editData);
       payPeriod = payperiod;
@@ -2385,6 +2379,12 @@ var timeEntryCard = (function () {
       entryDate = timeEntry.getCurrentDate(false);
       roster2.updateSelectedDate(entryDate);
       payPeriod = timeEntry.getCurrentPayPeriod(false);
+    }
+
+    if ((isEdit || isAdminEdit) && isTransportationValid) {
+      transportationSaved = true;
+    } else {
+      transportationSaved = false;
     }
 
     await setAllowedConsumers();
