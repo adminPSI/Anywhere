@@ -787,26 +787,33 @@ var timeEntryCard = (function () {
 
       if (requiredFields.isOdometerRequired === 'Y') {
         // only allowed to use odo start & stop inputs
-       // odometerTotalInput.classList.add('disabled');
+        // odometerTotalInput.classList.add('disabled');
         isStartValid = checkStartVal();
         isEndValid = checkEndVal();
         if (isStartValid !== 'error' && isEndValid !== 'error') {
           setToalMiles();
         }
 
-        if (transportationUnits !== ''  && (odometerEnd == '' || odometerEnd == null) && (odometerStart == '' || odometerStart == null )) {
+        if (
+          transportationUnits !== '' &&
+          (odometerEnd == '' || odometerEnd == null) &&
+          (odometerStart == '' || odometerStart == null)
+        ) {
           odometerTotalInput.classList.remove('error');
           odometerStartInput.classList.remove('error');
           odometerEndInput.classList.remove('error');
         }
 
-        if (transportationUnits == null  && (odometerEnd == '' || odometerEnd == null) && (odometerStart == '' || odometerStart == null )) {
+        if (
+          transportationUnits == null &&
+          (odometerEnd == '' || odometerEnd == null) &&
+          (odometerStart == '' || odometerStart == null)
+        ) {
           odometerTotalInput.classList.add('error');
           odometerStartInput.classList.add('error');
           odometerEndInput.classList.add('error');
         }
 
-        
         return;
       }
 
@@ -842,56 +849,52 @@ var timeEntryCard = (function () {
             odometerStartInput.classList.add('error');
             odometerStartInput.classList.remove('disabled');
             odometerTotalInput.classList.add('disabled');
-          //  odometerTotalInput.classList.add('error');
+            //  odometerTotalInput.classList.add('error');
             odoTotal.value = '';
             totalValue = false;
             odoTotalVal = '';
-
           }
           if (!endValue && startValue) {
-           // var odoEndInput = odometerEndInput.querySelector('input');
+            // var odoEndInput = odometerEndInput.querySelector('input');
             odometerStartInput.classList.remove('error');
             odometerStartInput.classList.remove('disabled');
             odometerEndInput.classList.add('error');
             odometerEndInput.classList.remove('disabled');
             odometerTotalInput.classList.add('disabled');
-           // odometerTotalInput.classList.add('error');
+            // odometerTotalInput.classList.add('error');
             odoTotal.value = '';
             totalValue = false;
             odoTotalVal = '';
-
-          }  
+          }
 
           if (!endValue && !startValue && odoTotal.value !== '') {
             // var odoEndInput = odometerEndInput.querySelector('input');
-             odometerEndInput.classList.remove('error');
-             odometerEndInput.classList.add('disabled');
-             odometerStartInput.classList.remove('error');
-             odometerStartInput.classList.add('disabled');
-             odometerTotalInput.classList.remove('disabled');
-             odometerTotalInput.classList.remove('error');
+            odometerEndInput.classList.remove('error');
+            odometerEndInput.classList.add('disabled');
+            odometerStartInput.classList.remove('error');
+            odometerStartInput.classList.add('disabled');
+            odometerTotalInput.classList.remove('disabled');
+            odometerTotalInput.classList.remove('error');
             // odoTotal.value = '';
-           //  totalValue = false;
-           //  odoTotalVal = '';
- 
-           }
-           
-           if (!endValue && !startValue && odoTotal.value === '') {
+            //  totalValue = false;
+            //  odoTotalVal = '';
+          }
+
+          if (!endValue && !startValue && odoTotal.value === '') {
             // var odoEndInput = odometerEndInput.querySelector('input');
-             odometerEndInput.classList.add('error');
-             odometerEndInput.classList.remove('disabled');
-             odometerStartInput.classList.add('error');
-             odometerStartInput.classList.remove('disabled');
-             odometerTotalInput.classList.remove('disabled');
-             odometerTotalInput.classList.add('error');
-             odoTotal.value = '';
-             totalValue = false;
-             odoTotalVal = '';
- 
-           }
+            odometerEndInput.classList.add('error');
+            odometerEndInput.classList.remove('disabled');
+            odometerStartInput.classList.add('error');
+            odometerStartInput.classList.remove('disabled');
+            odometerTotalInput.classList.remove('disabled');
+            odometerTotalInput.classList.add('error');
+            odoTotal.value = '';
+            totalValue = false;
+            odoTotalVal = '';
+          }
           //odoStartInput.value = '';
-         // odoEndInput.value = '';
-          
+          // odoEndInput.value = '';
+
           return;
         }
 
@@ -907,9 +910,7 @@ var timeEntryCard = (function () {
 
           return;
         }
-
       }
-
     } // end of odometer check
 
     function checkTotalMiles() {
@@ -2364,7 +2365,12 @@ var timeEntryCard = (function () {
     var opts = options;
     isEdit = opts.isEdit;
     isAdminEdit = opts.isAdminEdit;
-    transportationSaved = false;
+
+    if ((isEdit || isAdminEdit) && isTransportationValid) {
+      transportationSaved = true;
+    } else {
+      transportationSaved = false;
+    }
 
     if (editData && editData.length > 0) {
       setEditDataValues(editData);
