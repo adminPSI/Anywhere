@@ -1003,7 +1003,7 @@ var timeEntryCard = (function () {
       checkTransportationRequiredFields();
     });
 
-    licenseplateInput.addEventListener('keyup', event => {
+    licenseplateInput.addEventListener('change', event => {
       oldlicenseplate = licensePlateNumber;
       licensePlateNumber = event.target.value;
       checkTransportationRequiredFields();
