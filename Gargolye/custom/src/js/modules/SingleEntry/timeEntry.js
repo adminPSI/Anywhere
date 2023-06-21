@@ -994,7 +994,7 @@ var timeEntry = (function () {
       currentAdminDate = adminDefaultDates.start;
       currentAdminPayPeriod = adminDefaultDates;
     }
-    if (!datesSet) {
+    if (!datesSet && defaultDates) {
       currentDate = defaultDates.start;
       currentPayPeriod = defaultDates;
     }
