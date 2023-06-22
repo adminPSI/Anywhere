@@ -20,8 +20,8 @@ const planData = (() => {
         rmFadeRestriction: 10000,
         rmWhatCouldHappenGood: 2500,
         rmWhatCouldHappenBad: 2500,
-        rmOtherWayHelpGood: 10000,
-        rmOtherWayHelpBad: 10000,
+        rmOtherWayHelpGood: 2500,
+        rmOtherWayHelpBad: 2500,
       },
       introduction: {
         likeAdmire: 2464,
