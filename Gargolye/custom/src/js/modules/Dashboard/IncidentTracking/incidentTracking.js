@@ -38,7 +38,7 @@ var incidentTrackingWidget = (function () {
       var viewedOn = r.viewedOn ? true : false;
       var orginUser =
         obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
-      var userHasViewed = (obj.viewedBy).includes('dale') ? true : false;
+      var userHasViewed = (obj.viewedBy).includes($.session.UserId) ? true : false;
       var showBold;
 
       if (!orginUser && !userHasViewed) {
