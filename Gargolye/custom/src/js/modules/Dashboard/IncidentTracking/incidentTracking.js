@@ -14,27 +14,45 @@ var incidentTrackingWidget = (function () {
     widgetBody.innerHTML = '';
     widgetBody.appendChild(itTable);
 
-    var data = res.map(r => {
-      var name = r.consumerName.split(',');
+    var incidents = {};
+    res.forEach(r => {
+      if (!incidents[r.incidentId]) {
+        incidents[r.incidentId] = r;
+      } else {
+        const dupName = incidents[r.incidentId].consumerName.includes(r.consumerName);
+        if (!dupName) {
+          incidents[r.incidentId].consumerName += `, ${r.consumerName}`;
+        }
+        incidents[r.incidentId].viewedBy += `, ${r.viewedBy}`;
+      }
+    });
+    
+    var keys = Object.keys(incidents);
+
+    var data = keys.map(r => {
+      var obj = incidents[r];
+      
+      var name = obj.consumerName.split(',');
       name = `${name[1]}, ${name[0]}`;
-      var date = UTIL.abbreviateDateYear(r.incidentDate.split(' ')[0]);
+      var date = UTIL.abbreviateDateYear(obj.incidentDate.split(' ')[0]);
       var viewedOn = r.viewedOn ? true : false;
       var orginUser =
-        r.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
+        obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
+      var userHasViewed = (obj.viewedBy).includes('dale') ? true : false;
       var showBold;
 
-      if (!orginUser && !viewedOn) {
+      if (!orginUser && !userHasViewed) {
         showBold = true;
       }
 
       return {
-        values: [name, date, r.incidentCategory],
+        values: [name, date, obj.incidentCategory],
         attributes: [{ key: 'data-viewed', value: showBold }],
-        id: r.incidentId,
+        id: obj.incidentId,
         onClick: async () => {
           await incidentTrackingAjax.updateIncidentViewByUser({
             token: $.session.Token,
-            incidentId: r.incidentId,
+            incidentId: obj.incidentId,
             userId: $.session.UserId,
           });
 
@@ -42,7 +60,7 @@ var incidentTrackingWidget = (function () {
             setActiveModuleSectionAttribute('incidentTracking-overview');
             UTIL.toggleMenuItemHighlight('incidenttracking');
             actioncenter.dataset.activeModule = 'incidenttracking';
-            reviewIncident.init(r.incidentId);
+            reviewIncident.init(obj.incidentId);
           });
         },
       };

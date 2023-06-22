@@ -662,6 +662,7 @@ namespace Anywhere.service.Data
             public string incidentDate { get; set; }
             public string viewedOn { get; set; }
             public string originallyEnteredBy { get; set; }
+            public string viewedBy { get; set; }
         }
 
         public class IncidentTrackingReviewTableData
@@ -679,6 +680,7 @@ namespace Anywhere.service.Data
             public string incidentTime { get; set; }
             public string viewedOn { get; set; }
             public string originallyEnteredBy { get; set; }
+            public string viewedBy { get; set; }
         }
 
         public class IncidentTrackingReviewLocations

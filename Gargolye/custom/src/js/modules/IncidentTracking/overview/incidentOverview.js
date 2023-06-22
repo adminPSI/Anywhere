@@ -622,6 +622,7 @@ var incidentOverview = (function () {
         if (!dupName) {
           incidents[r.incidentId].consumerName += `, ${r.consumerName}`;
         }
+        incidents[r.incidentId].viewedBy += `, ${r.viewedBy}`;
       }
     });
 
@@ -640,9 +641,10 @@ var incidentOverview = (function () {
       var viewedOn = obj.viewedOn ? true : false;
       var orginUser =
         obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
+      var userHasViewed = (obj.viewedBy).includes('dale') ? true : false;
       var showBold;
 
-      if (!orginUser && !viewedOn) {
+      if (!orginUser && !userHasViewed) {
         showBold = true;
       }
       

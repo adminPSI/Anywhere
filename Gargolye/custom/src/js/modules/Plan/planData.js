@@ -16,10 +16,10 @@ const planData = (() => {
         moreDetail: 10000,
       },
       restrictiveMeasures: {
-        rmKeepSelfSafe: 10000,
+        rmKeepSelfSafe: 2500,
         rmFadeRestriction: 10000,
-        rmWhatCouldHappenGood: 10000,
-        rmWhatCouldHappenBad: 10000,
+        rmWhatCouldHappenGood: 2500,
+        rmWhatCouldHappenBad: 2500,
         rmOtherWayHelpGood: 10000,
         rmOtherWayHelpBad: 10000,
       },
@@ -36,8 +36,8 @@ const planData = (() => {
         carryOverReason: 255,
         whatNeedsToHappen: 2500, // exp
         howItShouldHappen: 2500, // exp
-        whenHowOften: 2500, // exp
-        whenHowOftenOther: 2500, // exp
+        whenHowOften: 255, // exp
+        whenHowOftenOther: 255, // exp
         whatWillHappen: 2500, // rev
         whenToCheckIn: 2500, // rev
       },
