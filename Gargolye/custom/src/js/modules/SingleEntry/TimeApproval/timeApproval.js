@@ -627,7 +627,6 @@ var timeApproval = (function () {
         return select;
     }
     function repopulateEmployeeDropdown() {
-        employeeId = 0;
         var data = employees.map(emp => {
             return {
                 value: emp.Person_ID,
@@ -649,7 +648,7 @@ var timeApproval = (function () {
             text: 'All',
         });
 
-        dropdown.populate('subEmployeeList', data);
+        dropdown.populate('subEmployeeList', data, employeeId); 
     }
     function buildLocationDropdown() {
         var select = dropdown.build({
@@ -865,7 +864,7 @@ var timeApproval = (function () {
         filterPopup = POPUP.build({ hideX: true });
 
         supervisorDropdown = buildSupervisorDropdown();
-        employeeDropdown = buildEmployeeDropdown();
+        employeeDropdown = buildEmployeeDropdown(); 
         locationDropdown = buildLocationDropdown();
         statusDropdown = buildStatusDropdown();
         workCodeDropdown = buildWorkCodeDropdown();
@@ -915,6 +914,12 @@ var timeApproval = (function () {
         filterPopup.appendChild(btnWrap);
 
         setupFilterEvents();
+
+        singleEntryAjax.getSubEmployeeListAndCountInfo(supervisorId, function (results) {
+            employees = results;
+            repopulateEmployeeDropdown();
+        });
+
         checkDateValidation();
         POPUP.show(filterPopup);
     }
