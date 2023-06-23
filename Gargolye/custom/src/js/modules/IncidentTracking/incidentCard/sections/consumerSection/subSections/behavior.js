@@ -534,8 +534,6 @@ const consumerBehavior = (function () {
 
     if (data) {
       data.forEach(d => {
-        d.startTime = parseStartTime(d.startTime);
-
         if (!behaviorData[selectedConsumerId]) {
           behaviorData[selectedConsumerId] = {};
         }

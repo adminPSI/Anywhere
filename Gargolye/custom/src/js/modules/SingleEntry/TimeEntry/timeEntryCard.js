@@ -1389,7 +1389,7 @@ var timeEntryCard = (function () {
           if (document.querySelector('.timeCard__evv').style.display !== 'none') {
             reasonDropdown.classList.add('error');
           }
-          
+
           // roster2.toggleMiniRosterBtnVisible(false);
         } else {
           reasonDropdown.classList.remove('error');
