@@ -195,7 +195,7 @@ const planData = (() => {
         { value: '26', text: 'Money Management', showWith: ['1', '2', '8'] },
         {
           value: '27',
-          text: 'Non-Medical Transportation - Commercial  (CNMT)',
+          text: 'Non-Medical Transportation - Commercial (CNMT)',
           showWith: ['1', '2', '3', '6', '8'],
         },
         {
