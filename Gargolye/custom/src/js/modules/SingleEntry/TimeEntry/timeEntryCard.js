@@ -1004,17 +1004,17 @@ var timeEntryCard = (function () {
     });
 
     licenseplateInput.addEventListener('change', event => {
-      oldlicenseplate = licensePlateNumber;
+      if (!oldlicenseplate) oldlicenseplate = licensePlateNumber;
       licensePlateNumber = event.target.value;
       checkTransportationRequiredFields();
     });
     odometerStartInput.addEventListener('change', event => {
-      oldOdometerStart = odometerStart;
+      if (!oldOdometerStart) oldOdometerStart = odometerStart;
       odometerStart = event.target.value;
       checkTransportationRequiredFields();
     });
     odometerEndInput.addEventListener('change', event => {
-      oldOdometerEnd = odometerEnd;
+      if (!oldOdometerEnd) oldOdometerEnd = odometerEnd;
       odometerEnd = event.target.value;
       checkTransportationRequiredFields();
     });
@@ -1024,12 +1024,12 @@ var timeEntryCard = (function () {
       checkTransportationRequiredFields();
     });
     destinationInput.addEventListener('change', event => {
-      oldDestination = destination;
+      if (!oldDestination) oldDestination = destination;
       destination = event.target.value;
       checkTransportationRequiredFields();
     });
     reasonInput.addEventListener('change', event => {
-      oldReason = reason;
+      if (!oldReason) oldReason = reason;
       reason = event.target.value;
       checkTransportationRequiredFields();
     });
@@ -1389,7 +1389,7 @@ var timeEntryCard = (function () {
           if (document.querySelector('.timeCard__evv').style.display !== 'none') {
             reasonDropdown.classList.add('error');
           }
-          
+
           // roster2.toggleMiniRosterBtnVisible(false);
         } else {
           reasonDropdown.classList.remove('error');
