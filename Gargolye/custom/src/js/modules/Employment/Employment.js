@@ -37,7 +37,7 @@ const Employment = (() => {
     }
 
     // Build Employment Module Landing Page 
-    async function loadEmploymentLanding(value) {
+    async function loadEmploymentLanding() {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
 
@@ -101,9 +101,9 @@ const Employment = (() => {
 
         let tableData = EmploymentsEntries.getEmploymentEntriesResult.map((entry) => ({
             values: [entry.employer, entry.position, entry.positionStartDate, entry.positionEndDate, entry.jobStanding],
-            attributes: [{ key: 'employer', value: entry.employer }],
+            attributes: [{ key: 'positionId', value: entry.positionId }],
             onClick: (e) => {
-                //handleAccountTableEvents(e.target.attributes.registerId.value)
+                handleAccountTableEvents(e.target.attributes.positionId.value)
             },
             endIcon: additionalInformation.outerHTML,
             endIconCallback: e => {
@@ -116,8 +116,8 @@ const Employment = (() => {
         return oTable;
     }
 
-    function handleAccountTableEvents(registerId) {
-        //NewEntryCF.buildNewEntryForm(registerId); 
+    function handleAccountTableEvents(empId) {
+        EmploymentInformation.buildNewEmploymentForm(empId)
     }
 
     function newODDEntryBtn() {
@@ -158,7 +158,7 @@ const Employment = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'newEntryBtn',
-            callback: async () => { NewEntryCF.init() },
+            callback: async () => { EmploymentInformation.init() },
         });
         if ($.session.EmploymentUpdate) {
             newPositionBtn.classList.remove('disabled');
@@ -340,7 +340,7 @@ const Employment = (() => {
                 tmpPosition,
                 tmpJobStanding,
                 tmpStartDate,
-                tmpEndDate 
+                tmpEndDate
             });
 
             POPUP.hide(filterPopup);
@@ -352,7 +352,7 @@ const Employment = (() => {
     function updateFilterData(data) {
         if (data.tmpEmployer) filterValues.employer = data.tmpEmployer;
         if (data.tmpPosition) filterValues.position = data.tmpPosition;
-        if (data.tmpJobStanding) filterValues.jobStanding = data.tmpJobStanding;      
+        if (data.tmpJobStanding) filterValues.jobStanding = data.tmpJobStanding;
         if (data.tmpStartDate) filterValues.positionStartDate = data.tmpStartDate;
         if (data.tmpEndDate) filterValues.positionEndDate = data.tmpEndDate;
     }
