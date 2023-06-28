@@ -44,7 +44,6 @@
 }
 
 // Widget Settings
-
 .util-menu__widgetSettings {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
@@ -158,5 +157,59 @@
       max-height: fit-content;
       opacity: 1;
     }
+  }
+}
+
+
+// My Information
+.util-menu__info {
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+
+  .informationSection {
+    margin: 0 0 10px;
+
+    > p {
+      background: $secondary;
+      padding: 6px;
+      font-weight: 500;
+    }
+
+    &__body {
+      background: $bg-light;
+      padding: 12px 10px 6px;
+
+      p {
+        color: $font-error;
+      }
+    }
+  }
+
+  .stateZipWrap {
+    display: flex;
+    width: 100%;
+
+    > div:first-child {
+      max-width: 100px;
+      margin-right: 10px;
+    }
+    > div:last-child {
+      flex-grow: 1;
+    }
+  }
+
+  .updateInformationBtn {
+    background: $secondary;
+    width: 100%;
+  }
+
+  .successfulSavePopup {
+    position: absolute;
+    background: $primary;
+    color: $font-light;
+    left: 0px;
+    top: 20%;
+    width: 100%
   }
 }

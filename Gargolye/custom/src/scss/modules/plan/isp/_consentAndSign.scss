@@ -6,6 +6,9 @@
       > div:nth-child(2) {
         flex-basis: 90px; // Team Member
       }
+      // > div:nth-child(3) {
+      //   flex-basis: 90px; // Relatioship Type
+      // }
       > div:nth-child(3) {
         // Name
         flex-basis: 80px;
@@ -23,7 +26,7 @@
       }
       @media screen and (min-width: 560px) {
         > div:nth-child(4) {
-          // signature type
+          // Participated
           display: block;
         }
       }
@@ -43,6 +46,9 @@
     > div:nth-child(1) {
       flex-basis: 90px; // Team Member
     }
+    // > div:nth-child(2) {
+    //   flex-basis: 90px; // Relationship Type
+    // }
     > div:nth-child(2) {
       // Name
       flex-basis: 80px;
@@ -60,7 +66,6 @@
     }
     @media screen and (min-width: 560px) {
       > div:nth-child(3) {
-        // signature type
         display: block;
       }
     }
@@ -73,6 +78,21 @@
       cursor: none;
       opacity: 0;
       pointer-events: none;
+    }
+  }
+  .table__row[data-hideDeleteicon] {
+    .endIcon {
+      order: 9;
+    }
+    .secondendIcon {
+      pointer-events: none;
+      cursor: none;
+      
+      svg {
+        cursor: none;
+        opacity: 0;
+        pointer-events: none;
+      }
     }
   }
 
@@ -274,6 +294,22 @@
     .signAttachmentDesc {
       margin-right: 10px;
     }
+  }
+  .btnWrap {
+    #clearSigBtn {
+      width: 100%;
+      margin: 0 0 10px 0;
+    }
+  }
+}
+#clearSignConfirmPopup {
+  background: $bg-warning;
+
+  p {
+    color: $font-dark;
+    font-weight: $normal;
+    text-align: center;
+    padding-bottom: 10px;
   }
 }
 

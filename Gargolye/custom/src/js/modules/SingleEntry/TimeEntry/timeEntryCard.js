@@ -7,6 +7,8 @@ var timeEntryCard = (function () {
   var crossMidnightTimeData;
   var saveUserId; // userID used for cross midnight entries (eg, "charles")
   var personId; // Id of originator of entry (e.g., 37)
+  var supervisorId;
+  var rejectedTime;
   //-DOM------------------
   var card; // time entry card
   // dropdowns
@@ -85,6 +87,7 @@ var timeEntryCard = (function () {
   var endLatitude;
   var endLongitude;
   // transportation
+  var transportationSaved = false;
   var isTransportationValid;
   var destination = null;
   var odometerEnd = null;
@@ -103,6 +106,7 @@ var timeEntryCard = (function () {
   var tmpDestination = null;
   var tmpReason = null;
   var tmpLicenseplate = null;
+  var isEVVSingleEntry = false;
 
   // Action Nav
   //------------------------------------
@@ -398,7 +402,8 @@ var timeEntryCard = (function () {
 
     evvAttest = ed.attest;
     evvCommunity = ed.community;
-
+    supervisorId = ed.supervisorId;
+    rejectedTime = ed.rejected_time;
     destination = ed.destination;
     odometerEnd = ed.odometerend;
     odometerStart = ed.odometerstart;
@@ -461,6 +466,7 @@ var timeEntryCard = (function () {
 
     eligibleConsumersObj = {};
     reasonRequired = false;
+    isEVVSingleEntry = false;
     defaultTimesChanged = false;
     defaultStartTimeChanged = false;
     defaultEndTimeChanged = false;
@@ -706,10 +712,12 @@ var timeEntryCard = (function () {
   // Transportation
   //------------------------------------
   function saveTransportation() {
+    transportationSaved = true;
     POPUP.hide(transportationPopup);
     transportationBtn.classList.add('success');
   }
   function deleteTransportation() {
+    transportationSaved = false;
     POPUP.hide(transportationPopup);
     clearTransportationValues();
     transportationBtn.classList.remove('success');
@@ -769,19 +777,41 @@ var timeEntryCard = (function () {
         if (totalMiles !== 'error') {
           odoTotal.value = totalMiles;
           transportationUnits = totalMiles;
+          odometerTotalInput.classList.remove('error');
         } else {
           odometerStartInput.classList.add('error');
           odometerEndInput.classList.add('error');
+          odometerTotalInput.classList.add('error');
         }
       }
 
       if (requiredFields.isOdometerRequired === 'Y') {
         // only allowed to use odo start & stop inputs
-        odometerTotalInput.classList.add('disabled');
+        // odometerTotalInput.classList.add('disabled');
         isStartValid = checkStartVal();
         isEndValid = checkEndVal();
         if (isStartValid !== 'error' && isEndValid !== 'error') {
           setToalMiles();
+        }
+
+        if (
+          transportationUnits !== '' &&
+          (odometerEnd == '' || odometerEnd == null) &&
+          (odometerStart == '' || odometerStart == null)
+        ) {
+          odometerTotalInput.classList.remove('error');
+          odometerStartInput.classList.remove('error');
+          odometerEndInput.classList.remove('error');
+        }
+
+        if (
+          transportationUnits == null &&
+          (odometerEnd == '' || odometerEnd == null) &&
+          (odometerStart == '' || odometerStart == null)
+        ) {
+          odometerTotalInput.classList.add('error');
+          odometerStartInput.classList.add('error');
+          odometerEndInput.classList.add('error');
         }
 
         return;
@@ -795,14 +825,13 @@ var timeEntryCard = (function () {
 
         if (!startValue && !endValue && !totalValue) {
           // blank slate, clear all errors
-         odometerTotalInput.classList.remove('disabled');
-         odometerTotalInput.classList.remove('error');
-         // TODO JOE -- 99417 -- add the line below and comment out the two lines above
-         // odometerTotalInput.classList.add('error');
+          // odometerTotalInput.classList.remove('disabled');
+          // odometerTotalInput.classList.remove('error');
+          odometerTotalInput.classList.add('error');
           odometerStartInput.classList.remove('disabled');
-          odometerStartInput.classList.remove('error');
+          odometerStartInput.classList.add('error');
           odometerEndInput.classList.remove('disabled');
-          odometerEndInput.classList.remove('error');
+          odometerEndInput.classList.add('error');
 
           return;
         }
@@ -812,8 +841,60 @@ var timeEntryCard = (function () {
           (odoStartVal === '0' && odoEndVal === '0')
         ) {
           // use total miles input
-          odometerStartInput.classList.add('disabled');
-          odometerEndInput.classList.add('disabled');
+          // var odometerTotalInput = odometerTotalInput.querySelector('input');
+          if (!startValue && endValue) {
+            //var odoStartInput = odometerStartInput.querySelector('input');
+            odometerEndInput.classList.remove('error');
+            odometerEndInput.classList.remove('disabled');
+            odometerStartInput.classList.add('error');
+            odometerStartInput.classList.remove('disabled');
+            odometerTotalInput.classList.add('disabled');
+            //  odometerTotalInput.classList.add('error');
+            odoTotal.value = '';
+            totalValue = false;
+            odoTotalVal = '';
+          }
+          if (!endValue && startValue) {
+            // var odoEndInput = odometerEndInput.querySelector('input');
+            odometerStartInput.classList.remove('error');
+            odometerStartInput.classList.remove('disabled');
+            odometerEndInput.classList.add('error');
+            odometerEndInput.classList.remove('disabled');
+            odometerTotalInput.classList.add('disabled');
+            // odometerTotalInput.classList.add('error');
+            odoTotal.value = '';
+            totalValue = false;
+            odoTotalVal = '';
+          }
+
+          if (!endValue && !startValue && odoTotal.value !== '') {
+            // var odoEndInput = odometerEndInput.querySelector('input');
+            odometerEndInput.classList.remove('error');
+            odometerEndInput.classList.add('disabled');
+            odometerStartInput.classList.remove('error');
+            odometerStartInput.classList.add('disabled');
+            odometerTotalInput.classList.remove('disabled');
+            odometerTotalInput.classList.remove('error');
+            // odoTotal.value = '';
+            //  totalValue = false;
+            //  odoTotalVal = '';
+          }
+
+          if (!endValue && !startValue && odoTotal.value === '') {
+            // var odoEndInput = odometerEndInput.querySelector('input');
+            odometerEndInput.classList.add('error');
+            odometerEndInput.classList.remove('disabled');
+            odometerStartInput.classList.add('error');
+            odometerStartInput.classList.remove('disabled');
+            odometerTotalInput.classList.remove('disabled');
+            odometerTotalInput.classList.add('error');
+            odoTotal.value = '';
+            totalValue = false;
+            odoTotalVal = '';
+          }
+          //odoStartInput.value = '';
+          // odoEndInput.value = '';
+
           return;
         }
 
@@ -830,23 +911,19 @@ var timeEntryCard = (function () {
           return;
         }
       }
+    } // end of odometer check
+
+    function checkTotalMiles() {
+      var totalMilesVal = transportationUnits;
+
+      if (requiredFields.isOdometerRequired === 'N') {
+        if (totalMilesVal === '' || !totalMilesVal) {
+          odometerTotalInput.classList.add('error');
+        } else {
+          odometerTotalInput.classList.remove('error');
+        }
+      }
     }
-
-    // TODO JOE -- 99417 -- add the following function 
-    // NOTE: that isOdometerRequired covers all THREE odometer inputs and below is just fudged so it will work
-    // NOTE : Do we need to rewrite the code above to handle two Scenarios: 1. just type in total miles  2. type in start and Stop and calculate
-    // NOTE : DO we need an additional isTotalMilesREquired (and then furter define how that would work with isodometerREquired)
-    // function checkTotalMiles() {
-    //   var totalMilesVal = transportationUnits;
-
-    //   if (requiredFields.isOdometerRequired === 'N') {
-    //     if (totalMilesVal === '' || !totalMilesVal) {
-    //       odometerTotalInput.classList.add('error');
-    //     } else {
-    //       odometerTotalInput.classList.remove('error');
-    //     }
-    //   }
-    // }
 
     // reason
     function checkReason() {
@@ -886,8 +963,7 @@ var timeEntryCard = (function () {
       }
     }
 
-    // TODO JOE -- 99417 -- add the following function call below
-    // checkTotalMiles();
+    checkTotalMiles();
     checkOdometer();
     checkReason();
     checkDestination();
@@ -927,18 +1003,18 @@ var timeEntryCard = (function () {
       checkTransportationRequiredFields();
     });
 
-    licenseplateInput.addEventListener('keyup', event => {
-      oldlicenseplate = licensePlateNumber;
+    licenseplateInput.addEventListener('change', event => {
+      if (!oldlicenseplate) oldlicenseplate = licensePlateNumber;
       licensePlateNumber = event.target.value;
       checkTransportationRequiredFields();
     });
     odometerStartInput.addEventListener('change', event => {
-      oldOdometerStart = odometerStart;
+      if (!oldOdometerStart) oldOdometerStart = odometerStart;
       odometerStart = event.target.value;
       checkTransportationRequiredFields();
     });
     odometerEndInput.addEventListener('change', event => {
-      oldOdometerEnd = odometerEnd;
+      if (!oldOdometerEnd) oldOdometerEnd = odometerEnd;
       odometerEnd = event.target.value;
       checkTransportationRequiredFields();
     });
@@ -947,33 +1023,37 @@ var timeEntryCard = (function () {
       transportationUnits = event.target.value;
       checkTransportationRequiredFields();
     });
-    destinationInput.addEventListener('keyup', event => {
-      oldDestination = destination;
+    destinationInput.addEventListener('change', event => {
+      if (!oldDestination) oldDestination = destination;
       destination = event.target.value;
       checkTransportationRequiredFields();
     });
-    reasonInput.addEventListener('keyup', event => {
-      oldReason = reason;
+    reasonInput.addEventListener('change', event => {
+      if (!oldReason) oldReason = reason;
       reason = event.target.value;
       checkTransportationRequiredFields();
     });
 
     saveTransBtn.addEventListener('click', () => {
       saveTransportation();
+      checkPermissions();
     });
     deleteTransBtn.addEventListener('click', deleteTransportation);
     cancelTransBtn.addEventListener('click', () => {
-      transportationType = oldTransportationType ? oldTransportationType : transportationType;
-      transportationReimbursable = oldTransportationReimbursable
-        ? oldTransportationReimbursable
-        : transportationReimbursable;
-      odometerStart =
-        oldOdometerStart || oldOdometerStart === '' ? oldOdometerStart : odometerStart;
-      odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
-      // transportationUnits = oldTransportationUnits ? oldTransportationUnits : transportationUnits;
-      destination = oldDestination ? oldDestination : destination;
-      reason = oldReason ? oldReason : reason;
-      licensePlateNumber = oldlicenseplate ? oldlicenseplate : licensePlateNumber;
+      if (transportationSaved) {
+        transportationType = oldTransportationType ? oldTransportationType : transportationType;
+        transportationReimbursable = oldTransportationReimbursable
+          ? oldTransportationReimbursable
+          : transportationReimbursable;
+        odometerStart =
+          oldOdometerStart || oldOdometerStart === '' ? oldOdometerStart : odometerStart;
+        odometerEnd = oldOdometerEnd || oldOdometerEnd === '' ? oldOdometerEnd : odometerEnd;
+        destination = oldDestination ? oldDestination : destination;
+        reason = oldReason ? oldReason : reason;
+        licensePlateNumber = oldlicenseplate ? oldlicenseplate : licensePlateNumber;
+      } else {
+        clearTransportationValues();
+      }
 
       POPUP.hide(transportationPopup);
     });
@@ -1299,12 +1379,21 @@ var timeEntryCard = (function () {
       if (isDisabled) {
         reasonDropdown.classList.remove('error');
       } else {
-        if (currentValue === '%' || currentValue === '' && (reasonRequired && (!evvReasonCode || evvReasonCode === '%') && defaultTimesChanged)) {
-          reasonDropdown.classList.add('error');
-         // roster2.toggleMiniRosterBtnVisible(false);
+        if (
+          currentValue === '%' ||
+          (currentValue === '' &&
+            reasonRequired &&
+            (!evvReasonCode || evvReasonCode === '%') &&
+            defaultTimesChanged)
+        ) {
+          if (document.querySelector('.timeCard__evv').style.display !== 'none') {
+            reasonDropdown.classList.add('error');
+          }
+
+          // roster2.toggleMiniRosterBtnVisible(false);
         } else {
           reasonDropdown.classList.remove('error');
-         // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
+          // if (isBillable === 'Y') roster2.toggleMiniRosterBtnVisible(true);
         }
       }
     }
@@ -1332,12 +1421,13 @@ var timeEntryCard = (function () {
         }
       } else {
         saveBtn.classList.add('disabled');
-        deleteBtn.classList.add('disabled');
+        // deleteBtn.classList.add('disabled');
         saveAndSumbitBtn.classList.add('disabled');
       }
     } else {
       saveBtn.classList.remove('disabled');
       deleteBtn.classList.remove('disabled');
+
       if (keyStartStop === 'Y') {
         // if 'Y' then end time is enabled and we need to check for it
         if (endTime) {
@@ -1399,7 +1489,7 @@ var timeEntryCard = (function () {
       if (
         $.session.editSingleEntryCardStatus === 'S' ||
         $.session.editSingleEntryCardStatus === 'I' ||
-        $.session.editSingleEntryCardStatus === 'R' ||
+        // $.session.editSingleEntryCardStatus === 'R' ||
         $.session.SingleEntryUpdate === false
       ) {
         saveBtn.classList.add('disabled');
@@ -1490,6 +1580,14 @@ var timeEntryCard = (function () {
         reasonRequired = false;
       }
 
+      if (isEdit && defaultStartTimeChanged) {
+        reasonDropdown.classList.remove('disabled');
+        const reasonCodeDropdown = reasonDropdown.querySelector('select');
+        reasonCodeDropdown.value = '%';
+        evvReasonCode = '%';
+        reasonDropdown.classList.add('error');
+      }
+
       await evvCheck();
       setTotalHours();
       checkPermissions();
@@ -1539,6 +1637,14 @@ var timeEntryCard = (function () {
       } else {
         defaultEndTimeChanged = false;
         reasonRequired = false;
+      }
+
+      if (isEdit && defaultTimesChanged) {
+        reasonDropdown.classList.remove('disabled');
+        const reasonCodeDropdown = reasonDropdown.querySelector('select');
+        reasonCodeDropdown.value = '%';
+        evvReasonCode = '%';
+        reasonDropdown.classList.add('error');
       }
 
       await evvCheck();
@@ -1812,6 +1918,14 @@ var timeEntryCard = (function () {
       noteInput.classList.add('disabled');
       rejectionReasonInput.classList.add('disabled');
     }
+    // initially when editing a rejected/Non-Billable, the Save btns are disabled, they become enabled after the first edit of the form
+    if (
+      status === 'R' &&
+      (personId === $.session.PeopleId || supervisorId === $.session.PeopleId)
+    ) {
+      saveBtn.classList.add('disabled');
+      saveAndSumbitBtn.classList.add('disabled');
+    }
   }
   // EVV
   // -----------------------------------
@@ -1828,37 +1942,39 @@ var timeEntryCard = (function () {
     if (!isEdit) {
       if (startTime) {
         // const timeChanged = startTime !== `${nowHour}:${nowMinutes}`
+        await evvCheckConsumerEligibilityExistingConsumers();
         if (
           isBillable === 'Y' &&
           defaultTimesChanged &&
           wcServiceType === 'A' &&
           sendEvvData === 'Y' &&
-          reasonRequired === true
+          (reasonRequired === true || isEVVSingleEntry)
         ) {
           showEvv();
-          evvCheckConsumerEligibilityExistingConsumers();
+          // evvCheckConsumerEligibilityExistingConsumers();
         } else {
           document.querySelector('.timeCard__evv').style.display = 'none';
           reasonRequired = false;
         }
       }
     } else {
+      //isEdit is true
       let wcObj = workCodeData.filter(wc => wc.workcodeid === workCode);
       wcServiceType = wcObj[0].serviceType;
       let ppObj = payPeriodData.filter(pp => pp.dateString === payPeriod.dateString);
       sendEvvData = ppObj[0].sendEvvData;
-
+      await evvCheckConsumerEligibilityExistingConsumers();
       if (
         isBillable === 'Y' &&
         defaultTimesChanged &&
         wcServiceType === 'A' &&
         sendEvvData === 'Y' &&
-        reasonRequired === true
+        (reasonRequired === true || isEVVSingleEntry)
       ) {
         if (defaultEndTimeChanged || defaultTimesChanged) {
           showEvv();
           // checkRequiredFields();
-          await evvCheckConsumerEligibilityExistingConsumers();
+          // await evvCheckConsumerEligibilityExistingConsumers();
         } else {
           reasonRequired = false;
           document.querySelector('.timeCard__evv').style.display = 'none';
@@ -1919,13 +2035,33 @@ var timeEntryCard = (function () {
       if (res.length > 0) {
         reasonRequired = true;
         eligibleConsumersObj[id] = true;
-        checkAttestStatus();
+        isEVVSingleEntry = true;
       } else {
         eligibleConsumersObj[id] = false;
       }
+      disableCardFields();
     });
 
-    checkRequiredFields();
+    // checkRequiredFields();
+  }
+  // under following conditions, the form imputs disabled (except time inputs): 1) entry is rejected, 2) workcode = Billable, 3) user is creator/supervisor, 4) this entry requires EVV
+  function disableCardFields() {
+    if (
+      isEVVSingleEntry &&
+      isEdit &&
+      isBillable &&
+      status == 'R' &&
+      (personId === $.session.PeopleId || supervisorId === $.session.PeopleId)
+    ) {
+      roster2.toggleMiniRosterBtnVisible(false);
+      workCodeDropdown.classList.add('disabled');
+      locationDropdown.classList.add('disabled');
+      attestCheckbox.classList.add('disabled');
+      transportationBtn.classList.add('disabled');
+      dateInput.classList.add('disabled');
+      noteInput.classList.add('disabled');
+      rejectionReasonInput.classList.add('disabled');
+    }
   }
 
   async function evvCheckRemainingConsumers() {
@@ -2246,6 +2382,12 @@ var timeEntryCard = (function () {
       entryDate = timeEntry.getCurrentDate(false);
       roster2.updateSelectedDate(entryDate);
       payPeriod = timeEntry.getCurrentPayPeriod(false);
+    }
+
+    if ((isEdit || isAdminEdit) && isTransportationValid) {
+      transportationSaved = true;
+    } else {
+      transportationSaved = false;
     }
 
     await setAllowedConsumers();

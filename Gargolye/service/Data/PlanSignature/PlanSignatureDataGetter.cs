@@ -54,9 +54,10 @@ namespace Anywhere.service.Data.PlanSignature
 
         public string insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
-               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType, string vendorId)
+               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType, string vendorId, string relationship)
         {
             if (tokenValidator(token) == false) return null;
+            //if (stringInjectionValidator(relationship) == false) return null;
             logger.debug("getPlanTeamMember ");
             List<string> list = new List<string>();
             list.Add(token);
@@ -88,6 +89,7 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(relationshipImport);
             list.Add(salesForceId);
             list.Add(signatureType);
+            list.Add(relationship);
             string text = "CALL DBA.ANYW_ISP_InsertTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -147,7 +149,7 @@ namespace Anywhere.service.Data.PlanSignature
             }
         }
         //UPDATE
-        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string signatureType, string dateSigned, string vendorId)
+        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string signatureType, string dateSigned, string vendorId, string clear)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updateTeamMember ");
@@ -167,6 +169,7 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(salesForceId);
             list.Add(signatureType);
             list.Add(dateSigned);
+            list.Add(clear);
             string text = "CALL DBA.ANYW_ISP_UpdateTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -405,6 +408,22 @@ namespace Anywhere.service.Data.PlanSignature
                 logger.error("5PSDG", ex.Message + "ANYW_ISP_DeletePlanSignature(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "6APSDG: error ANYW_ISP_DeletePlanSignature";
             }
+        }
+
+        public bool stringInjectionValidator(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            if (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
         }
 
         public string removeUnsavableNoteText(string note)

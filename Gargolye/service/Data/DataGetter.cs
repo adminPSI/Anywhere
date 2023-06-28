@@ -1037,9 +1037,17 @@ namespace Anywhere.Data
             if (tokenValidator(token) == false) return null;
             try
             {
-                //File.WriteAllBytes(@"\\solo\wwwroot\testGkAnywhere\webroot\Images\portraits\" + id + ".png", Convert.FromBase64String(imageFile));
-                // File.WriteAllBytes(@"C:\\Projects\\anywhere-4\\Gargolye\\webroot\\Images\\portraits\\" + id + ".png", Convert.FromBase64String(imageFile));
-                File.WriteAllBytes(@portraitPath + id + ".png", Convert.FromBase64String(imageFile));
+                if(imageFile == "")
+                {
+                    File.Delete(@portraitPath + id + ".png");
+                }
+                else
+                {
+                    //File.WriteAllBytes(@"\\solo\wwwroot\testGkAnywhere\webroot\Images\portraits\" + id + ".png", Convert.FromBase64String(imageFile));
+                    // File.WriteAllBytes(@"C:\\Projects\\anywhere-4\\Gargolye\\webroot\\Images\\portraits\\" + id + ".png", Convert.FromBase64String(imageFile));
+                    File.WriteAllBytes(@portraitPath + id + ".png", Convert.FromBase64String(imageFile));
+                }
+                
 
                 return executeDataBaseCall("CALL DBA.ANYW_Roster_UpdatePortrait('" + token + "', '" + employeeUserName + "', '" + imageFile + "', '" + id + "');", "results", "results");
             }
@@ -1152,6 +1160,50 @@ namespace Anywhere.Data
             }
         }
 
+        public string GetDemographicInformation(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getDemographicsInformation" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_GetDemographicInformation('" + token + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_GetDemographicInformation('" + token + "')");
+                return "547: Error Getting Consumer Demographics";
+            }
+        }
+
+        public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateDemographicInformation");
+
+            try
+            {
+                return executeDataBaseCall("CALL DBA.ANYW_Demographics_UpdateDemographicInformation('" + token + "', '" + addressOne + "', '" + addressTwo + "', '" + city + "', '" + state + "', '" + zipCode + "', '" + mobilePhone + "', '" + email + "', '" + carrier + "');", "results", "result");
+            }
+            catch (Exception ex)
+            {
+                logger.error("584", ex.Message + " ANYW_Demographics_UpdateDemographicInformation('" + token + "', '" + addressOne + "', '" + addressTwo + "', '" + city + "', '" + state + "', '" + zipCode + "', '" + mobilePhone + "', '" + email + "', '" + carrier + "')", token);
+                return "584: Error updating demographics information";
+            }
+        }
+        public string getMobileCarrierDropdown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getMobileCarrierDropdown" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_GetMobileCarriers('" + token + "')");
+            }
+            catch (Exception ex)
+            {
+                logger.error("719", ex.Message + " ANYW_GetMobileCarriers('" + token + "')");
+                return "719: getMobileCarrierDropdown";
+            }
+        }
         public string getConsumerDemographicsJSON(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;
@@ -2828,12 +2880,13 @@ namespace Anywhere.Data
             }
         }
 
-        public string getCompanyWorkWeekStartFromDB(string token)
+        public string getCompanyWorkWeekStartFromDB(string token, char weekTwo)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getCompanyWorkWeekStartFromDB" + token);
             List<string> list = new List<string>();
             list.Add(token);
+            list.Add(weekTwo.ToString());
             string text = "CALL DBA.ANYW_Dashboard_GetCompanyWorkWeekStartFromDB(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -2843,6 +2896,43 @@ namespace Anywhere.Data
             {
                 logger.error("629", ex.Message + "ANYW_Dashboard_GetCompanyWorkWeekStartFromDB(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "629: error ANYW_Dashboard_GetCompanyWorkWeekStartFromDB";
+            }
+        }
+
+        public string getCompanyWorkWeekStartFromDBSch(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getCompanyWorkWeekStartFromDB" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Dashboard_GetCompanyWorkWeekStartFromDBSch(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("629.5", ex.Message + "ANYW_Dashboard_GetCompanyWorkWeekStartFromDBSch(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "629.5: error ANYW_Dashboard_GetCompanyWorkWeekStartFromDBSch";
+            }
+        }
+
+        public string getCompanyWorkWeekEndFromDB(string token, char weekTwo)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getCompanyWorkWeekStartFromDB" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(weekTwo.ToString());
+            string text = "CALL DBA.ANYW_Dashboard_GetCompanyWorkWeekEndFromDB(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("629", ex.Message + "ANYW_Dashboard_GetCompanyWorkWeekEndFromDB(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "629: error ANYW_Dashboard_GetCompanyWorkWeekEndFromDB";
             }
         }
 
@@ -4788,6 +4878,45 @@ namespace Anywhere.Data
             }
         }
 
+        public string RequestDaysOffOverlapCheck(string token, string personId, string date, string startTime, string endTime)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ApproveDenyDaysOffOverlapCheck ");
+            List<string> list = new List<string>();
+            list.Add(personId);
+            list.Add(date);
+            list.Add(startTime);
+            list.Add(endTime);
+            string text = "CALL DBA.ANYW_Scheduling_RequestDaysOffOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("703", ex.Message + "ANYW_Scheduling_RequestDaysOffRequestOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return ex.Message;
+            }
+        }
+
+        public string approveDenyDaysOffOverlapCheck(string token, string daysOffId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("ApproveDenyDaysOffOverlapCheck ");
+            List<string> list = new List<string>();
+            list.Add(daysOffId);
+            string text = "CALL DBA.ANYW_Scheduling_ApproveDenyDaysOffOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("703", ex.Message + "ANYW_Scheduling_RequestDaysOffRequestOverlapCheck(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return ex.Message;
+            }
+        }
+
         public string approveDenyDaysOffRequestSchedulingNotification(string token, string dayOffId, string decision)
         {
             if (tokenValidator(token) == false) return null;
@@ -5384,13 +5513,13 @@ namespace Anywhere.Data
         }
 
         //Incident Tracking Consumer Behavior Alter Specific Calls
-        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        public string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("itDeleteConsumerBehavior ");
             List<string> list = new List<string>();
             list.Add(token);
-            list.Add(itConsumerFollowUpId);
+            list.Add(itConsumerBehaviorId);
             string text = "CALL DBA.ANYW_IncidentTracking_DeleteConsumerBehavior(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -5403,14 +5532,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string saveUpdateITConsumerBehavior(string token, string consumerFollowUpId, string consumerInvolvedId, string behaviorTypeId, string startTime,
+        public string saveUpdateITConsumerBehavior(string token, string consumerBehaviorId, string consumerInvolvedId, string behaviorTypeId, string startTime,
                                                      string endTime, string occurrences)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("saveUpdateITConsumerBehavior");
             List<string> list = new List<string>();
             list.Add(token);
-            list.Add(consumerFollowUpId);
+            list.Add(consumerBehaviorId);
             list.Add(consumerInvolvedId);
             list.Add(behaviorTypeId);
             list.Add(startTime);

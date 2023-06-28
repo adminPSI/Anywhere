@@ -175,7 +175,7 @@
 
     .screen {
         flex-shrink: 0;
-        max-height: 500px;
+        max-height: 600px;
         overflow: auto;
         padding: 10px 0 0 0;
         width: 100%;
@@ -191,6 +191,7 @@
 
     #editDatesScreen {
         transform: translateX(10%);
+        overflow-x: hidden;
 
         &.visible {
             transform: translateX(-100%);
@@ -306,9 +307,10 @@
         }
 
         .attachmentsWrap {
+            min-height: 400px;
             margin: 0 0 15px;
             max-height: 400px;
-            overflow-y: scroll;
+            overflow-y: auto;
 
             .attachmentsHeading {
                 margin: 0 0 10px;
@@ -350,6 +352,27 @@
 
         .okBtn {
             width: 100%;
+        }
+        .checkboxWrap {
+          display: flex;
+          flex-flow: row nowrap;
+          flex-grow: 1;
+          width: 100%;
+
+          .checkbox.checkbox-mtd {
+            transform: none !important;
+            -webkit-transform: none !important;
+
+            #reportCheckbox {
+              transform: none !important;
+              -webkit-transform: none !important;
+             }
+             span {
+              transform: none !important;
+              -webkit-transform: none !important;
+             }
+            .checkbox-mtd>span:after { top: 7px; }
+          }
         }
     }
 

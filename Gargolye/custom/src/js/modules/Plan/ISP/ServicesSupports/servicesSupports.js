@@ -758,19 +758,19 @@ const servicesSupports = (() => {
       if (multiSaveUpdateData.endDate !== '') {
         tableData.endDate = multiSaveUpdateData.endDate;
       }
-      // if (multiSaveUpdateData.providerId !== '0') {
-      //   tableData.providerId = multiSaveUpdateData.providerId;
-      // }
+      if (multiSaveUpdateData.providerId !== '0' && multiSaveUpdateData.providerId !== '') {
+        tableData.providerId = multiSaveUpdateData.providerId;
+      }
 
       const { tableValues, psData } = mapPaidSupportDataForTable({
         ...tableData,
       });
       const rowId = `ps${psData.paidSupportsId}`;
 
-      // if (multiSaveUpdateData.providerId !== '0') {
-      //   tableValues.providerName = multiSaveUpdateData.providerName;
-      //   psData.providerName = multiSaveUpdateData.providerName;
-      // }
+      if (multiSaveUpdateData.providerId !== '0' && multiSaveUpdateData.providerId !== '') {
+        tableValues.providerName = multiSaveUpdateData.providerName;
+        psData.providerName = multiSaveUpdateData.providerName;
+      }
 
       table.updateRows(
         paidSupportsTable,
@@ -835,6 +835,14 @@ const servicesSupports = (() => {
       });
     });
   }
+  function checkForMatchingFundingSourceAndSeriviceNames(paidSupportRows) {
+    // grab the first row to set values
+    const fundingSource = paidSupportRows[0].fundingSource;
+    const serviceNameId = paidSupportRows[0].serviceNameId;
+    return paidSupportRows.every(psRow => {
+      return psRow.fundingSource === fundingSource && psRow.serviceNameId === serviceNameId;
+    });
+  }
   //-- Markup ---------
   function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
     if (
@@ -866,16 +874,29 @@ const servicesSupports = (() => {
     message.classList.add('popupMessage');
     message.innerText = `Fields left blank will not be updated`;
 
-    // const providerNameDropdown = dropdown.build({
-    //   dropdownId: 'providerNameDropdownPS',
-    //   label: 'Provider Name',
-    //   style: 'secondary',
-    //   callback: (e, selectedOption) => {
-    //     multiSaveUpdateData.providerId = selectedOption.value;
-    //     multiSaveUpdateData.providerName = selectedOption.innerText;
-    //     toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
-    //   },
-    // });
+    // set fundingSourceDropdownSelectedText & servicesDropdownSelectedText
+    const fundingSource = getFundingSourceById(selectedPaidSupportRows[0].fundingSource);
+    const serviceName = getServiceNameById(selectedPaidSupportRows[0].serviceNameId);
+    fundingSourceDropdownSelectedText = fundingSource;
+    servicesDropdownSelectedText = serviceName;
+
+    // check for matching funding source and service names
+    const matchingRows = checkForMatchingFundingSourceAndSeriviceNames(selectedPaidSupportRows);
+
+    const providerNameDropdown = dropdown.build({
+      dropdownId: 'providerNameDropdownPS',
+      label: 'Provider Name',
+      style: 'secondary',
+      callback: (e, selectedOption) => {
+        multiSaveUpdateData.providerId = selectedOption.value;
+        multiSaveUpdateData.providerName = selectedOption.innerText;
+        toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
+      },
+    });
+    if (!matchingRows) {
+      input.disableInputField(providerNameDropdown);
+    }
+
     const beginDateInput = input.build({
       label: 'Begin Date',
       type: 'date',
@@ -931,6 +952,8 @@ const servicesSupports = (() => {
         POPUP.hide(multiEditPopup);
 
         enableMultiEdit = false;
+        fundingSourceDropdownSelectedText = '';
+        servicesDropdownSelectedText = '';
       },
     });
     const cancelBtn = button.build({
@@ -948,8 +971,10 @@ const servicesSupports = (() => {
     multiEditPopup.appendChild(message);
     multiEditPopup.appendChild(beginDateInput);
     multiEditPopup.appendChild(endDateInput);
-    // multiEditPopup.appendChild(providerNameDropdown);
+    multiEditPopup.appendChild(providerNameDropdown);
     multiEditPopup.appendChild(wrap);
+
+    populateServiceVendorsDropdown(providerNameDropdown, multiSaveUpdateData.providerId);
 
     POPUP.show(multiEditPopup);
   }

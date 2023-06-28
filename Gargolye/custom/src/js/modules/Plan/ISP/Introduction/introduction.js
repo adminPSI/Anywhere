@@ -6,6 +6,7 @@ const planIntroduction = (() => {
   let thingsImportantFor;
   let howToSupport;
   let usePlanImage;
+  let consumerIdForPhoto;
   let selectedConsumerId;
   let consumerImage;
   let consumerImageURL;
@@ -279,7 +280,7 @@ const planIntroduction = (() => {
 
   function displayDemographicsPhoto() {
     // if portrait exists in image/portraits, then enable demoPhotoRadio; otherwise, disable it
-    var id = selectedConsumerId;
+    var id = consumerIdForPhoto;
     id = parseInt(id);
     var fullpath = `./images/portraits/${id}.png`;
     var myImage = new Image();
@@ -289,7 +290,7 @@ const planIntroduction = (() => {
       demoPhotoRadio.disabled = isReadOnly;
       // display Demographics photo
       if (demoPhotoRadio.checked == true) {
-        var fullpath = `./images/portraits/${selectedConsumerId}.png`;
+        var fullpath = `./images/portraits/${consumerIdForPhoto}.png`;
         var imgElement = document.getElementsByClassName('imageContainer');
         imgElement[0].setAttribute('src', fullpath);
       }
@@ -384,6 +385,10 @@ const planIntroduction = (() => {
 
     var activeConsumers = roster2.getActiveConsumers();
     selectedConsumerId = activeConsumers[activeConsumers.length - 1].id;
+
+    const selectedConsumer = plan.getSelectedConsumer();
+    consumerIdForPhoto =
+      $.session.applicationName === 'Advisor' ? selectedConsumer.consumerId : selectedConsumer.id;
 
     const planIntroductionData = await planIntroductionAjax.getPlanIntroduction({
       token: $.session.Token,

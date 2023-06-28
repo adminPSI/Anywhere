@@ -357,11 +357,11 @@
         successfulSave.show();
         setTimeout(function () {
           successfulSave.hide();
-            for (let i = 0; i < notifyArr.length; i++) {
-                if (notifyArr[i] === 'Y') {
-                    sendNotification(notificationType, employeeIdArr[i], incidentData);
-                }
+          for (let i = 0; i < notifyArr.length; i++) {
+            if (notifyArr[i] === 'Y') {
+              sendNotification(notificationType, employeeIdArr[i], incidentData);
             }
+          }
           //notifyArr.forEach((notify, index) => {
           //  if (notify === 'Y') {
           //    sendNotification(notificationType, employeeIdArr[index], incidentData);
@@ -465,8 +465,6 @@
       },
     });
   }
-  //TODO: ash - c# and SQL
-  //TODO: ash - itBehaviorTypeId, behaviorTypeName
   function getitConsumerBehaviorTypes(callback) {
     $.ajax({
       type: 'POST',
@@ -682,7 +680,7 @@
         $.webServer.port +
         '/' +
         $.webServer.serviceName +
-        '/getitConsumerBehavior/',
+        '/getitConsumerBehaviors/',
       data:
         '{"token":"' +
         $.session.Token +
@@ -694,8 +692,11 @@
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
-        var res = response.getitConsumerBehaviorResult;
+        var res = response.getitConsumerBehaviorsResult;
         callback(res);
+      },
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
       },
     });
   }
@@ -990,7 +991,7 @@
         $.webServer.port +
         '/' +
         $.webServer.serviceName +
-        '/itDeleteConsumerBehaviors/',
+        '/itDeleteConsumerBehavior/',
       data:
         '{"token":"' + $.session.Token + '","itConsumerBehaviorId":"' + itConsumerBehaviorId + '"}',
       contentType: 'application/json; charset=utf-8',
@@ -1020,13 +1021,16 @@
         $.webServer.port +
         '/' +
         $.webServer.serviceName +
-        '/saveUpdateITConsumerBehaviors/',
+        '/saveUpdateITConsumerBehavior/',
       data: JSON.stringify(data),
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
         var res = response.saveUpdateITConsumerBehaviorsResult;
         if (callback) callback(res);
+      },
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
       },
     });
   }
@@ -1058,7 +1062,7 @@
   function generateIncidentTrackingReport(incidentId, callback) {
     data = {
       token: $.session.Token,
-      incidentId: incidentId
+      incidentId: incidentId,
     };
     $.ajax({
       type: 'POST',
@@ -1122,7 +1126,7 @@
       ccAddresses: incidentTrackingEmailReportData.ccAddresses,
       bccAddresses: incidentTrackingEmailReportData.bccAddresses,
       emailSubject: incidentTrackingEmailReportData.emailSubject,
-      emailBody: incidentTrackingEmailReportData.emailBody
+      emailBody: incidentTrackingEmailReportData.emailBody,
     };
     $.ajax({
       type: 'POST',
@@ -1190,6 +1194,6 @@
     updateIncidentViewByUser,
     generateIncidentTrackingReport,
     checkIfITReportExists,
-    sendIncidentTrackingReport
+    sendIncidentTrackingReport,
   };
 })();

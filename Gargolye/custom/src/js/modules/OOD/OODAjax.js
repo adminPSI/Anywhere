@@ -449,7 +449,7 @@ var OODAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/getPositions/',
+          '/getOODPositions/',
         data: JSON.stringify({
           token: $.session.Token,
           consumerId: consumerId,

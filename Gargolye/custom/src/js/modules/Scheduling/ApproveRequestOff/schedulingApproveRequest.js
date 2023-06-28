@@ -6,6 +6,8 @@ var schedulingApproveRequest = (function () {
   var overlapWrap;
   var overlapsExist = false;
   var overlapApprovalData;
+  var overlapIds = [];
+  var daysOffOverlapConfirmed = false;
   // var openShiftRequests;
 
   //UTIL
@@ -273,10 +275,13 @@ var schedulingApproveRequest = (function () {
         icon: 'send',
         callback: async function () {
           await submitApproveDenyRequest();
+
           // overlaps exist in approved shifts selected by user
           if (overlapApprovalData !== 'NoOverLap') {
             displayApprovedOverlapPopup();
-          } else {
+          } else if (daysOffOverlapConfirmed) {
+            overlapAlert(overlapIds)
+          }else {
             // overlaps exist between selected shifts and shifts already approved (ie, shifts saved in DB)
             if (overlapsExist) {
               displayOverlapPopup(overlapsExist, overlapWrap);
@@ -524,30 +529,31 @@ var schedulingApproveRequest = (function () {
     }
 
     if (daysOffRequests) {
-      //let responseMessage;
-     await daysOffRequests.forEach(async request => {
+      for (const request of daysOffRequests) {
         var shiftIds = request.id;
         var decision = request.dataset.approvalStatus;
         decision = decision === 'approve' ? 'A' : decision === 'deny' ? 'D' : '';
         if (decision !== '') {
           //token, daysOffIdString(comma separated), decision
-          const { approveDenyDaysOffRequestSchedulingResult: approveDenyResponse } = await schedulingAjax.approveDenyDaysOffRequestSchedulingAjax({
+          const approveDenyResponse = await schedulingAjax.approveDenyDaysOffRequestSchedulingAjax({
             token: $.session.Token,
             daysOffIdString: shiftIds,
             decision: decision,
           });
-
-          if (approveDenyResponse == 'OverlapFound.') {
-           // alert("Overlap found. Please review the days off requests NOT processed. These requests are in conflict with already approved requests.")
-           overlapAlert();
+    
+          if (approveDenyResponse !== 'Success') {
+            // alert("Overlap found. Please review the days off requests NOT processed. These requests are in conflict with already approved requests.")
+            overlapIds.push(approveDenyResponse);
+            daysOffOverlapConfirmed = true;
+          } else {
+            daysOffOverlapConfirmed = false;
           }
         }
-      });
-    }
+      }
+    }      
   }
 
-  function overlapAlert() {
-
+  function overlapAlert(idArray) {
     var alertPopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
@@ -559,20 +565,65 @@ var schedulingApproveRequest = (function () {
       style: 'secondary',
       type: 'contained',
       icon: 'checkmark',
-      callback: async function() {
+      callback: async function () {
         POPUP.hide(alertPopup);
-       // overlay.show();
-        
+
+        // Reset the overlap Ids
+        overlapIds = [];
+
+        ACTION_NAV.hide();
+        DOM.clearActionCenter();
+        scheduling.init();
       },
     });
 
+    let requestDataText = [];
+
+    // Loop through each id in the array
+    idArray.forEach(id => {
+      // Get the parent div element with the current id
+      const parentDiv = document.getElementById(id);
+
+      // Get all the nested div elements inside the parent div
+      const nestedDivs = parentDiv.getElementsByTagName('div');
+
+      // Create an empty object to store the text content of each nested div
+      const nestedDivsObject = {};
+
+      // Loop through each nested div element and add its text content as a property to the object
+      for (let i = 0; i < nestedDivs.length; i++) {
+        const textContent = nestedDivs[i].textContent;
+        nestedDivsObject[`nestedDiv${i + 1}`] = textContent;
+      }
+
+      const requestData = `Employee: ${nestedDivsObject.nestedDiv1}, ${nestedDivsObject.nestedDiv2} - ${nestedDivsObject.nestedDiv3}`
+      requestDataText.push(requestData);
+    });
+
     alertbtnWrap.appendChild(alertokBtn);
-    var alertMessage = document.createElement('p');
-    alertMessage.innerHTML = "Overlap found. Please review the days off requests NOT processed. These requests are in conflict with already approved requests.";
+
+    const paragraphs = requestDataText.map(item => {
+      return `<p>${item}</p>`;
+    });
+
+    // Create the alert message
+    const alertMessage = document.createElement('p');
+    alertMessage.innerHTML =
+      'The following requests overlap an existing time off request and could not be approved:';
+
+    // Append each paragraph to the alert message
+    paragraphs.forEach(paragraph => {
+      const p = document.createElement('p');
+      p.innerHTML = paragraph;
+      alertMessage.appendChild(p);
+    });
+
+    // Append the alert message and button wrapper to the alert popup
     alertPopup.appendChild(alertMessage);
     alertPopup.appendChild(alertbtnWrap);
+
+    // Show the alert popup
     POPUP.show(alertPopup);
-	
   }
 
   function init() {

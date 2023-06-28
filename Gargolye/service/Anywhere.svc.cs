@@ -10,6 +10,7 @@ using Anywhere.service.Data.ConsumerFinances;
 using Anywhere.service.Data.Covid;
 using Anywhere.service.Data.Defaults;
 using Anywhere.service.Data.DocumentConversion;
+using Anywhere.service.Data.Employment;
 using Anywhere.service.Data.eSignature___OneSpan;
 using Anywhere.service.Data.PDF_Forms;
 using Anywhere.service.Data.Plan;
@@ -24,6 +25,7 @@ using Anywhere.service.Data.PlanSignature;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
+using Bytescout.PDF;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,6 +33,7 @@ using System.IO.Compression;
 using System.Text;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
+using static Anywhere.service.Data.Employment.EmploymentWorker;
 
 namespace Anywhere
 {
@@ -88,9 +91,10 @@ namespace Anywhere
         ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
         ConsumerFinancesWorker cf = new ConsumerFinancesWorker();
         DemographicsWoker cdw = new DemographicsWoker();
+        EmploymentWorker emp = new EmploymentWorker();  
         public AnywhereService()
         {
-            log4net.Config.XmlConfigurator.Configure();
+            log4net.Config.XmlConfigurator.Configure(); 
         }
 
         public string getLocations(string token)//MAT need to see if I can remove
@@ -518,9 +522,22 @@ namespace Anywhere
         {
             return rosterWorker.getConsumerDemographicsJSON(token, consumerId);
         }
+        public RosterWorker.DemographicInformation[] GetDemographicInformation(string token)
+        {
+            return rosterWorker.GetDemographicInformation(token);
+        }
+        public RosterWorker.MobileCarrierDropdown[] getMobileCarrierDropdown(string token)
+        {
+            return rosterWorker.getMobileCarrierDropdown(token);
+        }
         public RosterWorker.ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             return rosterWorker.getConsumerRelationshipsJSON(token, consumerId);
+        }
+
+        public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
+        {
+            return dg.updateDemographicInformation(token, addressOne, addressTwo, city, state, zipCode, mobilePhone, email, carrier);
         }
 
         public string updateDemographicsRecord(string consumerId, string field, string newValue, string applicationName)
@@ -1415,7 +1432,7 @@ namespace Anywhere
             return anywhereScheduleWorker.approveDenyDaysOffRequestScheduling(token, daysOffIdString, decision);
         }
 
-        public string requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
+        public AnywhereScheduleWorker.OverlapData[] requestDaysOffScheduling(string token, string personId, string dates, string fromTime, string toTime, string reasonId, string employeeNotifiedId, string status)
         {
             return anywhereScheduleWorker.requestDaysOffScheduling(token, personId, dates, fromTime, toTime, reasonId, employeeNotifiedId, status);
         }
@@ -1568,9 +1585,9 @@ namespace Anywhere
         }
 
         //Incident Tracking Consumer Behavior specific alters
-        public string itDeleteConsumerBehavior(string token, string itConsumerFollowUpId)
+        public string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId)
         {
-            return iTW.itDeleteConsumerFollowUp(token, itConsumerFollowUpId);
+            return iTW.itDeleteConsumerBehavior(token, itConsumerBehaviorId);
         }
 
         public string saveUpdateITConsumerBehavior(string token, List<String> consumerBehaviorIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray, List<String> endTimeArray, List<String> occurrencesArray)
@@ -1791,9 +1808,9 @@ namespace Anywhere
             return wfw.deleteWorkflow(token, workflowId);
         }
 
-        public WorkflowWorker.PeopleName[] getPeopleNames(string token)
+        public WorkflowWorker.PeopleName[] getPeopleNames(string token, string peopleId)
         {
-            return wfw.getPeopleNames(token);
+            return wfw.getPeopleNames(token, peopleId);
         }
 
         public WorkflowWorker.ResponsiblePartyRelationship[] getWFResponsiblePartyRelationships(string token, string workflowId)
@@ -2155,9 +2172,9 @@ namespace Anywhere
         {
             return trW.getVehicleInspectionDetails(token, vehicleInspectionId);
         }
-        public TransportationWorker.Trips[] getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId)
+        public TransportationWorker.Trips[] getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId, string vehicleId)
         {
-            return trW.getTrips(token, serviceDateStart, serviceDateStop, personId, locationId);
+            return trW.getTrips(token, serviceDateStart, serviceDateStop, personId, locationId, vehicleId);
         }
         public TransportationWorker.TripConsumers[] getTripConsumers(string token, string tripsCompletedId)
         {
@@ -2203,6 +2220,12 @@ namespace Anywhere
         {
             return poW.getPlanSpecificOutcomes(token, assessmentId, targetAssessmentVersionId);
         }
+
+        public AnywhereAssessmentWorker.ServiceVendors[] getPlanOutcomesPaidSupportProviders(string assessmentId)
+        {
+            return poW.getPlanOutcomesPaidSupportProviders(assessmentId);
+        }
+
 
         public string insertPlanOutcomeProgressSummary(string token, long planId, string progressSummary)
         {
@@ -2488,18 +2511,18 @@ namespace Anywhere
         public PlanSignatureWorker.SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
-               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId)
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId, string relationship)
         {
             return psw.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact,
                                 csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
                                 csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, consumerId, createRelationship, salesforceId,
-                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType, vendorId);
+                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType, vendorId, relationship);
         }
         public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
-                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId)
+                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear)
         {
             return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, consumerId,
-                                         hasWetSignature, description, attachmentType, attachment, section, questionId, assessmentId, signatureType, dateSigned, vendorId);
+                                         hasWetSignature, description, attachmentType, attachment, section, questionId, assessmentId, signatureType, dateSigned, vendorId, clear);
         }
         public string updatePlanSignatureOrder(long assessmentId, long signatureId, int newPos)
         {
@@ -2766,9 +2789,9 @@ namespace Anywhere
             return Ow.getIndicators(token);
         }
 
-        public OODWorker.OODDDLItem[] getPositions(string consumerId, string token)
+        public OODWorker.OODDDLItem[] getOODPositions(string consumerId, string token)
         {
-            return Ow.getPositions(consumerId, token);
+            return Ow.getOODPositions(consumerId, token);
         }
 
 
@@ -2879,6 +2902,8 @@ namespace Anywhere
             string isp;
             string doddFlag;
             string oneSpan;
+            string signatureOnly;
+            string include;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -2889,6 +2914,9 @@ namespace Anywhere
             extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             oneSpan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            signatureOnly = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+            include = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[8], "=")[1];
+
 
             string[] words = fullInput.Split('&');
             var index = Array.FindIndex(words, row => row.Contains("planAttachmentIds"));
@@ -2909,7 +2937,7 @@ namespace Anywhere
             attIdThree = attIdThree.Replace("%2C", ",");
             sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp), bool.Parse(oneSpan));
+            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly), include);
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
@@ -2943,7 +2971,8 @@ namespace Anywhere
         public string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp, bool oneSpan)
         {
             //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "crystal", "466", "1", "false", true);
-            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan);
+            bool signatureOnly = false;
+            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             return osw.oneSpanBuildSigners(token, assessmentID, ms);
         }
 
@@ -3125,6 +3154,11 @@ namespace Anywhere
             return cf.getCatogories(token, categoryID);
         }
 
+        public Category[] getCategoriesSubCategories(string token, string categoryID)
+        {
+            return cf.getCategoriesSubCategories(token, categoryID);
+        }
+
         public SubCategory[] getSubCatogories(string token, string category)
         {
             return cf.getSubCatogories(token, category);
@@ -3175,6 +3209,11 @@ namespace Anywhere
             return cf.deleteCFAttachment(token, attachmentId);
         }
 
+        public OODWorker.ActiveEmployee[] getActiveUsedBy(string token)
+        {
+            return cf.getActiveUsedBy(token);
+        }
+
         public void viewCFAttachment(System.IO.Stream testInput)
         {
             string token;
@@ -3187,6 +3226,31 @@ namespace Anywhere
             attachmentId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
             section = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
             anywhereAttachmentWorker.viewCFAttachment(token, attachmentId, section);
+        }
+
+        public EmploymentEntries[] getEmploymentEntries(string token, string consumerIds, string employer, string position, string positionStartDate, string positionEndDate, string jobStanding)
+        {
+            return emp.getEmploymentEntries(token, consumerIds, employer, position, positionStartDate, positionEndDate, jobStanding);
+        }
+
+        public Employer[] getEmployers(string token)
+        {
+            return emp.getEmployers(token);
+        }
+
+        public Position[] getPositions(string token)
+        {
+            return emp.getPositions(token);
+        }
+
+        public JobStanding[] getJobStandings(string token)
+        {
+            return emp.getJobStandings(token);
+        }
+
+        public EmploymentEntriesByID[] getEmployeeInfoByID(string token, string positionId)
+        {
+            return emp.getEmployeeInfoByID(token, positionId);
         }
 
     }

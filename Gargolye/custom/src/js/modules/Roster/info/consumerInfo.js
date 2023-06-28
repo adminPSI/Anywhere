@@ -5,6 +5,7 @@ var consumerInfo = (function () {
   var consumerInfoCard;
   var currentlyVisibleSection;
   var hasUnreadNote;
+  var modalOverlay;
 
   function getImageOrientation(file, callback) {
     var reader = new FileReader();
@@ -54,6 +55,18 @@ var consumerInfo = (function () {
     });
 
     return newPath;
+  }
+  function updatePhotoToDefault() {
+    var targetConsumerId = consumerInfoCard.dataset.consumerid;
+    var consumerCardFromRosterList = document.querySelector(
+      `[data-consumer-id="${targetConsumerId}"]`,
+    );
+    var rosterPic = consumerCardFromRosterList.querySelector('img');
+    var infoCardPic = consumerInfoCard.querySelector('img');
+    rosterPic.setAttribute('src', './images/new-icons/default.jpg');
+    infoCardPic.setAttribute('src', './images/new-icons/default.jpg');
+    rosterPic.setAttribute('onerror', './images/new-icons/default.jpg');
+    infoCardPic.setAttribute('onerror', './images/new-icons/default.jpg');
   }
   async function updateConsumerPhoto(event) {
     event.preventDefault();
@@ -198,12 +211,13 @@ var consumerInfo = (function () {
     var rosterList = document.querySelector('.roster');
     rosterList.classList.add('fadeOut');
     DOM.toggleHeaderOpacity();
-
+  
     setTimeout(function () {
       consumerInfoCard.classList.add('visible');
       if (!isMobile) {
         bodyScrollLock.disableBodyScroll(consumerInfoCard);
       }
+      modalOverlay.classList.add('modal');
     }, 300);
   }
   function closeCard() {
@@ -230,6 +244,7 @@ var consumerInfo = (function () {
       if (!isMobile) {
         bodyScrollLock.enableBodyScroll(consumerInfoCard);
       }
+      modalOverlay.classList.remove('modal');
     }, 200);
 
     currentlyVisibleSection = null;
@@ -329,6 +344,29 @@ var consumerInfo = (function () {
     var sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
 
+    var removePhotoBtn = button.build({
+      text: 'Remove Photo',
+      style: 'secondary',
+      type: 'contained',
+      callback: e => {
+        if (!$.session.DemographicsPictureDelete) {
+          return;
+        }
+
+        rosterAjax.updatePortrait(
+          '',
+          parseInt(consumerId),
+          formatPortraitPath($.session.portraitPath),
+          () => {
+            updatePhotoToDefault();
+          },
+        );
+      },
+    });
+    if (!$.session.DemographicsPictureDelete) {
+      removePhotoBtn.classList.add('disabled');
+    }
+
     var photoInput = input.build({
       label: 'Choose Image',
       type: 'file',
@@ -337,6 +375,7 @@ var consumerInfo = (function () {
       attributes: [{ key: 'multiple', value: 'false' }],
     });
 
+    sectionInner.appendChild(removePhotoBtn);
     sectionInner.appendChild(photoInput);
 
     photoInput.addEventListener('change', updateConsumerPhoto);
@@ -881,7 +920,8 @@ var consumerInfo = (function () {
           });
           break;
         }
-        case 'Intellivue': {//
+        case 'Intellivue': {
+          //
           targetSection = consumerInfoCard.querySelector('.intellivueSection');
           intellivue.getApplicationListHostedWithUser(function (results) {
             populateIntellivueSection(targetSection, results);
@@ -900,7 +940,7 @@ var consumerInfo = (function () {
   function buildCard() {
     consumerInfoCard = document.createElement('div');
     consumerInfoCard.classList.add('consumerInfoCard');
-
+  
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     var backBtn = button.build({
@@ -921,17 +961,17 @@ var consumerInfo = (function () {
     });
     btnWrap.appendChild(backBtn);
     btnWrap.appendChild(closeBtn);
-
+  
     var cardInner = document.createElement('div');
     cardInner.classList.add('cardInner');
     var cardHeading = document.createElement('div');
     cardHeading.classList.add('consumerInfoCard__heading');
     var cardBody = document.createElement('div');
     cardBody.classList.add('consumerInfoCard__body');
-
+  
     var cardMenu = buildMenu();
     cardBody.appendChild(cardMenu);
-
+  
     var sections = buildSections([
       'absent',
       'photo',
@@ -947,18 +987,28 @@ var consumerInfo = (function () {
     sections.forEach(section => {
       cardBody.appendChild(section);
     });
-
-    // build card
+  
+    // Build card
     cardInner.appendChild(cardHeading);
     cardInner.appendChild(cardBody);
-
+  
     consumerInfoCard.appendChild(btnWrap);
     consumerInfoCard.appendChild(cardInner);
-
+  
     setupCardEvents(cardMenu);
-
+  
+    modalOverlay = document.querySelector('.overlay');
+  
+    // Add event listener to close the card when clicking outside of it
+    modalOverlay.addEventListener('click', function(event) {
+      closeCard();
+    });
+  
+    document.body.appendChild(consumerInfoCard);
+  
     return consumerInfoCard;
   }
+  
 
   return {
     buildCard,

@@ -23,7 +23,9 @@ const NewEntryCF = (() => {
     let IsDisabledBtn = false;
     let lastUpdateBy;
     let IsReconciled = 'N';
-
+    let IsAddNewPayDisable = true;
+    let IsSaveDisable = true;
+    let IsDeleteDisable = true; 
     let inputElement;
 
     async function init() {
@@ -68,7 +70,7 @@ const NewEntryCF = (() => {
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
-            BtnName = 'SAVE'; 
+            BtnName = 'SAVE';
         }
         else {
             regId = 0;
@@ -110,7 +112,7 @@ const NewEntryCF = (() => {
             type: 'number',
             label: 'Amount',
             style: 'secondary',
-            value: (amount) ? amount : '',
+            value:  (amount) ? amount : '',            
         });
 
         newAccountDropdown = dropdown.build({
@@ -131,7 +133,6 @@ const NewEntryCF = (() => {
             text: 'ADD NEW PAYEE',
             style: 'secondary',
             type: 'contained',
-            callback: () => buildNewPayeePopUp()
         });
 
         newCategoryDropdown = dropdown.build({
@@ -174,7 +175,6 @@ const NewEntryCF = (() => {
             text: BtnName,
             style: 'secondary',
             type: 'contained',
-            callback: () => saveNewAccount()
         });
         NEW_CANCEL_BTN = button.build({
             text: 'Cancel',
@@ -187,7 +187,6 @@ const NewEntryCF = (() => {
             text: 'Delete',
             style: 'secondary',
             type: 'outlined',
-            callback: () => deleteAccount()
         });
 
         // Billing Radios //
@@ -226,6 +225,12 @@ const NewEntryCF = (() => {
         else {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_CANCEL_BTN);
+            if ($.session.CFADDPayee) {
+                ADD_NEW_PAYEE_BTN.classList.remove('disabled');
+            }
+            else {
+                ADD_NEW_PAYEE_BTN.classList.add('disabled');
+            }
         }
 
         var dropWrap = document.createElement('div');
@@ -290,13 +295,12 @@ const NewEntryCF = (() => {
         populateAccountDropdown();
         populatePayeeDropdown();
         populateCategoryDropdown(categoryID);
-        populateSubCategoryDropdown(category);   
+        populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
         disabledUpdateBtn();
     }
 
     function enableDisabledInputs() {
-
         if (IsReconciled == 'Y') {
             DisabledAllInputs();
         } else if (IsReconciled == 'N') {
@@ -364,7 +368,6 @@ const NewEntryCF = (() => {
         newAmountInput.classList.remove('disabled');
         newAccountDropdown.classList.remove('disabled');
         newPayeeDropdown.classList.remove('disabled');
-        ADD_NEW_PAYEE_BTN.classList.remove('disabled');
         newCategoryDropdown.classList.remove('disabled');
         newSubCategoryDropdown.classList.remove('disabled');
         newCheckNoInput.classList.remove('disabled');
@@ -394,8 +397,8 @@ const NewEntryCF = (() => {
         } else {
             newDateInput.classList.remove('error');
         }
-
-        if (amount.value === '') {
+          
+        if (amount.value === '') {   
             newAmountInput.classList.add('error');
         } else {
             newAmountInput.classList.remove('error');
@@ -418,11 +421,6 @@ const NewEntryCF = (() => {
         } else {
             newCategoryDropdown.classList.remove('error');
         }
-        //if (subCategory.value === '') {
-        //    newSubCategoryDropdown.classList.add('error');
-        //} else {
-        //    newSubCategoryDropdown.classList.remove('error');
-        //} 
 
         if (IsReconciled == 'N') {
             setBtnStatusOfNewEntry();
@@ -440,12 +438,49 @@ const NewEntryCF = (() => {
     }
 
     function eventListeners() {
+        ADD_NEW_PAYEE_BTN.addEventListener('keypress', event => { 
+            if (event.keyCode === 13 && ADD_NEW_PAYEE_BTN.classList.contains('disabled')) { 
+                IsAddNewPayDisable = false;
+            }
+        });
+        ADD_NEW_PAYEE_BTN.addEventListener('click', event => {
+            if (IsAddNewPayDisable) {
+                buildNewPayeePopUp();  
+            }
+            IsAddNewPayDisable = true; 
+        });
+        NEW_SAVE_BTN.addEventListener('keypress', event => {
+            if (event.keyCode === 13 && NEW_SAVE_BTN.classList.contains('disabled')) {
+                IsSaveDisable = false;
+            }
+        });
+        NEW_SAVE_BTN.addEventListener('click', event => {
+            if (IsSaveDisable) {
+                saveNewAccount();
+            }
+            IsSaveDisable = true;
+        });
+        NEW_DELETE_BTN.addEventListener('keypress', event => {
+            if (event.keyCode === 13 && NEW_DELETE_BTN.classList.contains('disabled')) {
+                IsDeleteDisable = false;
+            }
+        });
+        NEW_DELETE_BTN.addEventListener('click', event => { 
+            if (IsDeleteDisable) {
+                deleteAccount();
+            }
+            IsDeleteDisable = true;
+        });
         newDateInput.addEventListener('input', event => {
             date = event.target.value;
             checkRequiredFieldsOfNewEntry();
         });
         newAmountInput.addEventListener('input', event => {
             amount = event.target.value;
+            if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
+                document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
+                return;
+            }  
             checkRequiredFieldsOfNewEntry();
         });
         newPayeeDropdown.addEventListener('change', event => {
@@ -461,29 +496,34 @@ const NewEntryCF = (() => {
         });
         newCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
-            category = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            category = event.target.options[event.target.selectedIndex].text;      
             populateSubCategoryDropdown(category);
+            checkRequiredFieldsOfNewEntry();
         });
         newSubCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             subCategory = event.target.options[event.target.selectedIndex].text;
-            //checkRequiredFieldsOfNewEntry();
+            checkRequiredFieldsOfNewEntry();
         });
         newCheckNoInput.addEventListener('input', event => {
             checkNo = event.target.value;
+            checkRequiredFieldsOfNewEntry();
         });
         newDescriptionInput.addEventListener('input', event => {
             description = event.target.value;
+            checkRequiredFieldsOfNewEntry();
         });
         newReceiptInput.addEventListener('input', event => {
             receipt = event.target.value;
+            checkRequiredFieldsOfNewEntry();
         });
         expenseRadio.addEventListener('change', event => {
             accountType = 'E';
+            checkRequiredFieldsOfNewEntry();
         });
         depositRadio.addEventListener('change', event => {
-            accountType = 'D'; 
+            accountType = 'D';
+            checkRequiredFieldsOfNewEntry();
         });
     }
 
@@ -521,7 +561,7 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
+        //disabledUpdateBtn(); 
     }
 
     // Populate the Account DDL 
@@ -588,9 +628,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+        //if (regId > 0) { 
+        //    disabledUpdateBtn(); 
+        //}
     }
 
 
@@ -650,9 +690,9 @@ const NewEntryCF = (() => {
             type: 'text',
             style: 'secondary',
             classNames: ['zip'],
-            attributes: [{ key: 'maxlength', value: '9' }],
+            attributes: [{ key: 'maxlength', value: '10' }],
             value: (payeezipcode) ? payeezipcode : '',
-        });
+        }); 
 
         saveBtn = button.build({
             id: "addpayeeSaveBtn",
@@ -722,6 +762,16 @@ const NewEntryCF = (() => {
 
         zipcodeInput.addEventListener('input', event => {
             payeezipcode = event.target.value;
+            var reg = new RegExp('^[0-9 -]+$');
+            if (payeezipcode) {
+                if (!reg.test(payeezipcode)) {
+                    document.getElementById('zipcodeInput').value = payeezipcode.substring(0, payeezipcode.length - 1);
+                    return;
+                }
+                payeezipcode = payeezipcode.split('-').join('');
+                let finalVal = payeezipcode.match(/.{1,5}/g).join('-');
+                document.getElementById('zipcodeInput').value = finalVal;
+            }
             checkRequiredFields();
         });
 
@@ -784,6 +834,7 @@ const NewEntryCF = (() => {
         const { insertPayeeResult } = result;
         let regionID = insertPayeeResult.RegionID;
         POPUP.hide(addPayeePopup);
+        payee = payeeName;  
         populatePayeeDropdown();
     }
 
@@ -793,5 +844,5 @@ const NewEntryCF = (() => {
         populatePayeeDropdown,
         populateCategoryDropdown,
         populateAccountDropdown,
-    };
+    };  
 })(); 

@@ -383,7 +383,8 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: extraSpace,
-          isp: true, //new
+            isp: true, //new
+          signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
 
@@ -411,6 +412,8 @@ const assessment = (function () {
     wfAttachmentIds,
     sigAttachmentIds,
     DODDFlag,
+    signatureOnly,
+    include,
   ) {
     assessmentAjax.getPlanAssessmentReportWithAttachments(//Testgd
       {
@@ -425,6 +428,8 @@ const assessment = (function () {
         wfAttachmentIds,
         sigAttachmentIds,
         DODDFlag,
+        signatureOnly,
+        include,
       },
       () => {
         const arr = success._buffer;
@@ -453,7 +458,8 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: 'false',
-          isp: true, //
+            isp: true, //
+          signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
 

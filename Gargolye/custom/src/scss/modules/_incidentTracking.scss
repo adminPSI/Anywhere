@@ -242,6 +242,7 @@
         border-bottom: $w-sm solid rgba($black, 0.12);
         padding: 10px 5px;
         margin: 0 0 5px;
+        cursor: pointer;
 
         &.removeConsumer {
           background: $font-error;
@@ -263,9 +264,11 @@
     flex-shrink: 0;
     width: 100%;
     transform: translateX(10%);
+    visibility: hidden;
 
     &.visible {
       height: auto;
+      visibility: visible;
     }
 
     &__home {
@@ -300,7 +303,7 @@
   }
   .followUpSection {
     &.visible {
-      transform: translateX(-100%);
+      transform: translateX(-200%);
     }
     .table__row {
       > div {
@@ -319,7 +322,7 @@
   }
   .injuriesSection {
     &.visible {
-      transform: translateX(-200%);
+      transform: translateX(-300%);
     }
     .table__row {
       > div {
@@ -338,7 +341,7 @@
   }
   .interventionSection {
     &.visible {
-      transform: translateX(-300%);
+      transform: translateX(-400%);
     }
     .table__row {
       > div {
@@ -357,12 +360,12 @@
   }
   .involvementSection {
     &.visible {
-      transform: translateX(-400%);
+      transform: translateX(-500%);
     }
   }
   .reportingSection {
     &.visible {
-    transform: translateX(-500%);
+    transform: translateX(-600%);
     }
     .table__row {
       > div {
@@ -381,7 +384,7 @@
   }
   .reviewSection {
     &.visible {
-      transform: translateX(-600%);
+      transform: translateX(-700%);
     }
     .table__row {
       > div {

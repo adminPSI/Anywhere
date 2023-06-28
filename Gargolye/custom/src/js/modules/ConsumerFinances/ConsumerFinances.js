@@ -56,17 +56,13 @@ const ConsumerFinances = (() => {
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
                 token: $.session.Token,
-                consumerId :selectedConsumersId, 
+                consumerId: selectedConsumersId,
             })
         ).getConsumerNameByIDResult;
-
-
 
         selectedConsumersName = name[0].FullName;
         const topButton = buildHeaderButton(selectedConsumers[0]);
         landingPage.appendChild(topButton);
-
-
         filterRow = document.createElement('div');
         filterRow.classList.add('filterElement');
 
@@ -88,7 +84,7 @@ const ConsumerFinances = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            headline: 'Consumer: '+ selectedConsumersName, 
+            headline: 'Consumer: ' + selectedConsumersName,
             columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By', ''],
         };
 
@@ -102,7 +98,7 @@ const ConsumerFinances = (() => {
             filterValues.category,
             filterValues.minamount,
             filterValues.maxamount,
-            filterValues.checkNo,
+            filterValues.checkNo, 
             filterValues.Balance,
             filterValues.enteredBy,
             filterValues.isattachment,
@@ -116,7 +112,7 @@ const ConsumerFinances = (() => {
         });
 
         let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
-            values: [entry.activityDate, entry.account, entry.payee, entry.category, entry.amount, entry.checkno, entry.balance, entry.enteredby, entry.AttachmentsID == 0 ? '' : `${icons['attachmentSmall']}`],
+            values: [entry.activityDate, entry.account, entry.payee, entry.category, '$' + entry.amount, entry.checkno, '$' + entry.balance, entry.enteredby, entry.AttachmentsID == 0 ? '' : `${icons['attachmentSmall']}`],
             attributes: [{ key: 'registerId', value: entry.ID }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.registerId.value)
@@ -129,7 +125,7 @@ const ConsumerFinances = (() => {
     }
 
     function handleAccountTableEvents(registerId) {
-        NewEntryCF.buildNewEntryForm(registerId); 
+        NewEntryCF.buildNewEntryForm(registerId);
     }
 
     // build display of Account and button
@@ -176,7 +172,7 @@ const ConsumerFinances = (() => {
             callback: async () => { NewEntryCF.init() },
         });
         if ($.session.CFInsert) {
-            entryBtn.classList.remove('disabled'); 
+            entryBtn.classList.remove('disabled');
         }
         else {
             entryBtn.classList.add('disabled');
@@ -210,12 +206,12 @@ const ConsumerFinances = (() => {
             accountName: '%',
             payee: '%',
             category: '%',
-            minamount: '-10000',
-            maxamount: '10000',
+            minamount: '-10000.00',
+            maxamount: '10000.00',
             checkNo: '',
             Balance: '',
             enteredBy: '%',
-            isattachment: 'No'
+            isattachment: '%', 
         }
 
         return button.build({
@@ -242,7 +238,7 @@ const ConsumerFinances = (() => {
 
     // build the display of the current Filter Settings (next to the Filter button) 
     function buildFilteredBy() {
-        var filteredBy = document.querySelector('.widgetFilteredBy'); 
+        var filteredBy = document.querySelector('.widgetFilteredBy');
 
         if (!filteredBy) {
             filteredBy = document.createElement('div');
@@ -250,12 +246,6 @@ const ConsumerFinances = (() => {
         }
 
         filteredBy.style.maxWidth = '100%';
-        // var splitDate = selectedDate.split('-');
-        var splitDate = "2021-12-28".split('-');
-        var filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(
-            splitDate[2],
-        )}/${splitDate[0].slice(2, 4)}`;
-
         const startDate = moment(filterValues.activityStartDate, 'YYYY-MM-DD').format('M/D/YYYY');
         const endDate = moment(filterValues.activityEndDate, 'YYYY-MM-DD').format('M/D/YYYY');
 
@@ -268,15 +258,14 @@ const ConsumerFinances = (() => {
                 <span>Account:</span> ${(filterValues.accountName == '%') ? 'ALL' : filterValues.accountName}&nbsp;&nbsp;
 			    <span>Payee:</span> ${(filterValues.payee == '%') ? 'ALL' : filterValues.payee}&nbsp;&nbsp;
 			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category} &nbsp;&nbsp;
-                <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;&nbsp; 
-                <span>Has Attachment:</span>  ${filterValues.isattachment}
+                <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;
+                <span>Has Attachment:</span>${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment} 
             </p>
 		  </div>`;
 
         return filteredBy;
     }
 
-    // ToDO:
     // build Filter pop-up that displays when an "Filter" button is clicked
     function buildFilterPopUp(filterValues) {
         // popup
@@ -285,36 +274,37 @@ const ConsumerFinances = (() => {
             hideX: true,
         });
 
-        fromDateInput = input.build({
+        fromDateInput = input.build({ 
             id: 'fromDateInput',
             type: 'date',
-            label: 'From Date',
+            label: 'From Date', 
             style: 'secondary',
-            value: (filterValues.activityStartDate) ? filterValues.activityStartDate : '',
+            value:filterValues.activityStartDate,
         });
-
+ 
+ 
         toDateInput = input.build({
             id: 'toDateInput',
             type: 'date',
             label: 'To Date',
             style: 'secondary',
-            value: (filterValues.activityEndDate) ? filterValues.activityEndDate : '',
+            value: filterValues.activityEndDate,  
         });
 
         minAmountInput = input.build({
             id: 'minAmountInput',
-            type: 'number',
+            type: 'text',  
             label: 'Min Amount',
             style: 'secondary',
-            value: (filterValues.minamount) ? filterValues.minamount : '',
+            value: '$' + ((filterValues.minamount) ? filterValues.minamount : ''), 
         });
 
         maxAmountInput = input.build({
             id: 'maxAmountInput',
-            type: 'number',
+            type: 'text',
             label: 'Max Amount',
             style: 'secondary',
-            value: (filterValues.maxamount) ? filterValues.maxamount : '',
+            value: '$' + ((filterValues.maxamount) ? filterValues.maxamount : ''),
         });
 
         // dropdowns & inputs
@@ -337,15 +327,14 @@ const ConsumerFinances = (() => {
 
         lastUpdateDropdown = dropdown.build({
             id: 'lastUpdateDropdown',
-            label: "Last Update By",
+            label: "Last Updated By",
             dropdownId: "lastUpdateDropdown",
         });
 
-        isAttachedChkBox = input.buildCheckbox({
-            isChecked: false,
-            text: "Has Attachment ?",
-            isChecked: filterValues.isattachment === 'Yes' ? true : false,
-            callback: () => setIsAttachedChkBox(event.target)
+        isAttachedDropdown = dropdown.build({
+            id: 'isAttachedDropdown',
+            label: "Has Attachment?",
+            dropdownId: "isAttachedDropdown",
         });
 
         // apply filters button
@@ -392,7 +381,7 @@ const ConsumerFinances = (() => {
         filterPopup.appendChild(payeeDropdown);
         filterPopup.appendChild(categoryDropdown);
         filterPopup.appendChild(lastUpdateDropdown);
-        filterPopup.appendChild(isAttachedChkBox);
+        filterPopup.appendChild(isAttachedDropdown);
 
         filterPopup.appendChild(btnWrap);
         eventListeners();
@@ -400,37 +389,41 @@ const ConsumerFinances = (() => {
         POPUP.show(filterPopup);
     }
 
-    function setIsAttachedChkBox(input) {
-        if (input.checked) {
-            filterValues.isattachment = 'Yes';
-        } else {
-            filterValues.isattachment = 'No';
-        }
-    }
-
     // binding filter events 
     function eventListeners() {
         fromDateInput.addEventListener('change', event => {
-            if (UTIL.validateDateFromInput(event.target.value)) {
-                filterValues.activityStartDate = event.target.value;
-            } else {
-                event.target.value = filterValues.activityStartDate;
-            }
+            filterValues.activityStartDate = event.target.value;
         });
         toDateInput.addEventListener('change', event => {
-            if (UTIL.validateDateFromInput(event.target.value)) {
-                filterValues.activityEndDate = event.target.value;
-            } else {
-                event.target.value = filterValues.activityEndDate;
-            }
+            filterValues.activityEndDate = event.target.value;   
         });
 
         minAmountInput.addEventListener('keyup', event => {
-            filterValues.minamount = event.target.value;
+            minAmount = event.target.value;
+            var reg = new RegExp('^[0-9 . $ -]+$');
+            if (!reg.test(minAmount)) {
+                document.getElementById('minAmountInput').value = minAmount.substring(0, minAmount.length - 1);
+                return;
+            }
+            else if (minAmount.includes('.') && (minAmount.match(/\./g).length > 1 || minAmount.toString().split('.')[1].length > 2)) {
+                document.getElementById('minAmountInput').value = minAmount.substring(0, minAmount.length - 1);
+                return;
+            }  
+            filterValues.minamount = minAmount.replace('$', '');
         });
 
         maxAmountInput.addEventListener('keyup', event => {
-            filterValues.maxamount = event.target.value;
+            maxAmount = event.target.value;
+            var reg = new RegExp('^[0-9 . $ -]+$');     
+            if (!reg.test(maxAmount)) {
+                document.getElementById('maxAmountInput').value = maxAmount.substring(0, maxAmount.length - 1);
+                return;
+            }
+            else if (maxAmount.includes('.') && (maxAmount.match(/\./g).length > 1 || maxAmount.toString().split('.')[1].length > 2)) {
+                document.getElementById('maxAmountInput').value = maxAmount.substring(0, maxAmount.length - 1);
+                return;
+            }   
+            filterValues.maxamount = maxAmount.replace('$', ''); 
         });
 
         accountFilterDropdown.addEventListener('change', event => {
@@ -446,6 +439,10 @@ const ConsumerFinances = (() => {
         categoryDropdown.addEventListener('change', event => {
             filterValues.category = event.target.value;
         });
+        isAttachedDropdown.addEventListener('change', event => {
+            filterValues.isattachment = event.target.value; 
+        });
+
     }
 
     async function populateFilterDropdown() {
@@ -472,18 +469,18 @@ const ConsumerFinances = (() => {
         dropdown.populate("payeeDropdown", payeeData, filterValues.payee);
         let categoryID;
         const {
-            getCatogoriesResult: Category,
-        } = await ConsumerFinancesAjax.getCategoriesAsync(categoryID);
+            getCategoriesSubCategoriesResult: Category,
+        } = await ConsumerFinancesAjax.getCategoriesSubCategoriesAsync(categoryID);
         let categoryData = Category.map((category) => ({
             id: category.CategoryID,
             value: category.CategoryDescription,
             text: category.CategoryDescription
-        }));
+        })); 
         categoryData.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("categoryDropdown", categoryData, filterValues.category);
 
         const {
-            getActiveEmployeesResult: employees,
+            getActiveUsedByResult: employees,
         } = await ConsumerFinancesAjax.getActiveEmployeesAsync();
         let data = employees.map((employee) => ({
             id: employee.userId,
@@ -491,7 +488,14 @@ const ConsumerFinances = (() => {
             text: employee.userName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
-        dropdown.populate("lastUpdateDropdown", data, filterValues.enteredBy);
+        dropdown.populate("lastUpdateDropdown", data, filterValues.enteredBy); 
+
+        const condfidentialDropdownData = ([ 
+            { text: 'Yes', value: 'Yes' },
+            { text: 'No', value: 'No' },
+        ]);
+        condfidentialDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
+        dropdown.populate("isAttachedDropdown", condfidentialDropdownData, filterValues.isattachment);   
     }
 
     async function filterPopupDoneBtn() {

@@ -635,14 +635,15 @@
     let questionInput;
     let hasStaticText;
 
-    let textAreaCharLimit = 1000;
+    let textAreaCharLimit = 10000;
 
     switch (answerStyle) {
       case 'TEXTAREA': {
-        if (data.colName === 'What is the risk, what it looks like, where it occurs:') {
-          textAreaCharLimit = 10000;
-        }
-
+        // For text areas with colName "What’s Working" and "What's Not Working"
+        if (colName.trim().split(' ').pop() === 'Working') {
+          textAreaCharLimit = 1000;
+        }        
+        
         questionInput = input.build({
           type: 'textarea',
           style: 'secondary',
@@ -660,7 +661,7 @@
           style: 'secondary',
           id: answerId,
           value: answerText ? answerText : '',
-          charLimit: 1000,
+          charLimit: 10000,
           forceCharLimit: true,
         });
         break;
@@ -1002,12 +1003,12 @@
             const gridCell = document.createElement('div');
             gridCell.classList.add('grid__cell');
 
-            let textAreaCharLimit = 1000;
+            let textAreaCharLimit = 10000;
 
             switch (answerStyle) {
               case 'TEXTAREA': {
-                if (colName === 'What is the risk, what it looks like, where it occurs:') {
-                  textAreaCharLimit = 10000;
+                if (data.colName === "What’s Working" || data.colName === "What’s Not Working") {
+                  textAreaCharLimit = 1000;
                 }
 
                 const questionInput = input.build({
@@ -1104,6 +1105,16 @@
 
           gridBody.appendChild(gridRow);
           DOM.autosizeTextarea();
+
+          let firstCol;
+
+          if (isSortable) {
+            firstCol = gridRow.children[1];
+          } else {
+            firstCol = gridRow.children[0];
+          }
+          const colInput = firstCol.querySelector('.input-field__input');
+          colInput.focus();
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
@@ -1160,7 +1171,7 @@
       style: 'secondary',
       id: answerId,
       value: answerText,
-      charLimit: 2000,
+      charLimit: 10000,
       forceCharLimit: true,
     });
 
@@ -1203,10 +1214,10 @@
       questionId,
     } = data;
 
-    let charLimit = 2000;
-    if (data.text && data.text === 'List other tools:') {
-      charLimit = 1000;
-    }
+    let charLimit = 10000;
+    // if (data.text && data.text === 'List other tools:') {
+    //   charLimit = 1000;
+    // }
 
     const questionInputMarkup = input.build({
       type: 'textarea',

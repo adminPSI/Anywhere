@@ -231,6 +231,8 @@ namespace Anywhere.service.Data
             public string credit { get; set; }
             public string originaluserid { get; set; }
             public string batched { get; set; }
+
+            public string originaluserfullname { get; set; }
             public string casemanagerid { get; set; }
             public string totalmiles { get; set; }
             public string traveltime { get; set; }

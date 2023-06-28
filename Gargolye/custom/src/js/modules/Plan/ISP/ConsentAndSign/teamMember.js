@@ -20,7 +20,7 @@ const csTeamMember = (() => {
   let lNameInput;
   let dateOfBirthInput;
   let buildingNumberInput;
-  let relationshipInput;
+  let relationshipTypeInput;
   let signatureTypeDropdown;
   let radioDiv;
   let participatedYesRadio;
@@ -104,14 +104,31 @@ const csTeamMember = (() => {
     selectedMemberData.buildingNumber = relData.buildingNumber;
     selectedMemberData.name = relData.firstName;
     selectedMemberData.lastName = relData.lastName;
+    selectedMemberData.relationship = relData.relationship;
 
     // update inputs with selected data
     nameInput.childNodes[0].value = selectedMemberData.name;
     lNameInput.childNodes[0].value = selectedMemberData.lastName;
     buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber;
-    dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
-      dates.removeTimestamp(selectedMemberData.dateOfBirth),
-    );
+    if (selectedMemberData.dateOfBirth) {
+      dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
+        dates.removeTimestamp(selectedMemberData.dateOfBirth),
+      );
+    }
+
+    // build new relationship type input
+    relationshipTypeInput = input.build({
+      label: 'Relationship Type',
+      value: selectedMemberData.relationship,
+      readonly: isSigned || readOnly,
+      callbackType: 'input',
+      callback: event => {
+        selectedMemberData.relationship = event.target.value;
+
+        checkTeamMemberPopupForErrors();
+      },
+    });
+    buildingNumberInput.after(relationshipTypeInput);
 
     // remove errors from inputs
     nameInput.classList.remove('error');
@@ -122,6 +139,7 @@ const csTeamMember = (() => {
     // make name and relationship readonly
     nameInput.classList.add('disabled');
     lNameInput.classList.add('disabled');
+    relationshipTypeInput.classList.add('disabled');
     if (!$.session.planSignatureUpdateDOB) {
       dateOfBirthInput.classList.add('disabled');
     }
@@ -191,7 +209,8 @@ const csTeamMember = (() => {
   async function saveTeamMember() {
     if (
       (selectedMemberData.teamMember === 'Guardian' ||
-        selectedMemberData.teamMember === 'Parent/Guardian') && $.session.areInSalesForce === true
+        selectedMemberData.teamMember === 'Parent/Guardian') &&
+      $.session.areInSalesForce === true
     ) {
       var continueGuardianSave = await continueSaveofGuardianTeamMember();
       if (!continueGuardianSave) return;
@@ -233,6 +252,7 @@ const csTeamMember = (() => {
                 DOM.ACTIONCENTER.removeChild(savePopup);
                 POPUP.hide(teamMemberPopup);
                 planConsentAndSign.refreshTable();
+                consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
               }, 700);
             } else {
               pendingSave.reject('Failed to save, please try again.');
@@ -259,6 +279,7 @@ const csTeamMember = (() => {
 
             POPUP.hide(teamMemberPopup);
             planConsentAndSign.refreshTable();
+            consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
           }, 700);
         } else {
           pendingSave.reject('Failed to save, please try again.');
@@ -281,6 +302,7 @@ const csTeamMember = (() => {
           DOM.ACTIONCENTER.removeChild(savePopup);
           POPUP.hide(teamMemberPopup);
           planConsentAndSign.refreshTable();
+          consentAndSignAjax.GetSalesForceId(selectedMemberData.peopleId);
         }, 700);
       } else {
         pendingSave.reject('Failed to save, please try again.');
@@ -297,7 +319,10 @@ const csTeamMember = (() => {
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian
   async function continueSaveofGuardianTeamMember() {
     // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
-      if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId) && $.session.areInSalesForce === true ) {
+    if (
+      hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId) &&
+      $.session.areInSalesForce === true
+    ) {
       alert(
         `This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`,
       );
@@ -305,7 +330,7 @@ const csTeamMember = (() => {
     }
 
     // A -- No State Guardian in Dropdown (stateGuardianDropdown) -- you can't save
-      if (!selectedStateGuardianSalesForceId && $.session.areInSalesForce === true ) {
+    if (!selectedStateGuardianSalesForceId && $.session.areInSalesForce === true) {
       alert(
         `A Guardian is not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
       );
@@ -315,7 +340,8 @@ const csTeamMember = (() => {
     // B -- Imported Guardian and Selected State Guardian have matching SaleForceIDs
     if (
       selectedStateGuardianSalesForceId &&
-        selectedMemberData.salesForceId === selectedStateGuardianSalesForceId && $.session.areInSalesForce === true
+      selectedMemberData.salesForceId === selectedStateGuardianSalesForceId &&
+      $.session.areInSalesForce === true
     ) {
       return true;
     }
@@ -327,7 +353,8 @@ const csTeamMember = (() => {
       selectedStateGuardianSalesForceId !== '' &&
       selectedMemberData.salesForceId !== selectedStateGuardianSalesForceId &&
       DBteamMemberswithStateSalesForceId &&
-        DBteamMemberswithStateSalesForceId.length === 1 && $.session.areInSalesForce === true
+      DBteamMemberswithStateSalesForceId.length === 1 &&
+      $.session.areInSalesForce === true
     ) {
       // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
       if (hasSalesForceIdBeenUsed(DBteamMemberswithStateSalesForceId[0].salesForceId)) {
@@ -768,6 +795,7 @@ const csTeamMember = (() => {
     isNew = isNewMember;
     isSigned = memberData.dateSigned !== '';
     readOnly = isReadOnly;
+    importedFromRelationship = false;
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     showStateGuardians = planConsentAndSign.isTeamMemberGuardian(memberData.teamMember);
     selectedMemberData = { ...memberData };
@@ -974,7 +1002,7 @@ const csTeamMember = (() => {
         // show guardan DDL only if it's not there
         if (!showStateGuardians) {
           showStateGuardians = true;
-         populateGuardiansDropDown();
+          populateGuardiansDropDown();
           teamMemberPopup.insertBefore(stateGuardianDropdown, nameInput);
           if (selectedStateGuardian === '') stateGuardianDropdown.classList.add('error');
         }
@@ -1074,6 +1102,18 @@ const csTeamMember = (() => {
         checkTeamMemberPopupForErrors();
       },
     });
+    // Relationship Type
+    relationshipTypeInput = input.build({
+      label: 'Relationship Type',
+      value: selectedMemberData.relationship,
+      readonly: isSigned || readOnly,
+      callbackType: 'input',
+      callback: event => {
+        selectedMemberData.relationship = event.target.value;
+
+        checkTeamMemberPopupForErrors();
+      },
+    });
     // Participate Yes/NO
     const participationRadios = buildParticipationRadios();
 
@@ -1144,6 +1184,13 @@ const csTeamMember = (() => {
       saveTeamMemberBtn.classList.add('disabled'); //
     }
 
+    if ($.session.planUpdate) {
+      participatedYesRadio.classList.remove('disabled');
+      participatedNoRadio.classList.remove('disabled');
+      signatureTypeDropdown.classList.remove('disabled');
+      saveTeamMemberBtn.classList.remove('disabled');
+    }
+
     //* Required Fields
     //*------------------------------
     if ($.session.planInsertNewTeamMember) {
@@ -1197,6 +1244,10 @@ const csTeamMember = (() => {
     }
     teamMemberPopup.appendChild(dateOfBirthInput);
     teamMemberPopup.appendChild(buildingNumberInput);
+    if (!isNew && selectedMemberData.relationship) {
+      teamMemberPopup.appendChild(relationshipTypeInput);
+      relationshipTypeInput.classList.add('disabled');
+    }
     teamMemberPopup.appendChild(participationRadios);
     teamMemberPopup.appendChild(signatureTypeDropdown);
 
@@ -1218,7 +1269,7 @@ const csTeamMember = (() => {
 
     populateTeamMemberDropdown(teamMemberDropdown, selectedMemberData.teamMember);
     populateSignatureTypeDropdown(signatureTypeDropdown, selectedMemberData.signatureType);
-    
+
     if (showStateGuardians) {
       populateGuardiansDropDown();
     }

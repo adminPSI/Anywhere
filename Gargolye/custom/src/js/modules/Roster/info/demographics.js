@@ -211,10 +211,15 @@ const demographics = (function () {
     const zip = data.mailzipcode ? formatZipCode(data.mailzipcode) : '';
 
     // Contact Info
-    const primaryPhone = formatPhoneNumber(data.primaryphone);
-    const secondaryPhone = formatPhoneNumber(data.secondaryphone);
-    let cellPhone = data.cellphone ? data.cellphone.trim() : undefined;
-    cellPhone = cellPhone !== '%' ? formatPhoneNumber(cellPhone) : '';
+    const formattedPrimaryPhone = formatPhoneNumber(data.primaryphone);
+    primaryPhone = `${formattedPrimaryPhone} <a class="demoPhones" href=tel:+1${data.primaryphone}>${icons.phone}</a>`;
+
+    const formattedSecondaryPhone = formatPhoneNumber(data.secondaryphone);
+    secondaryPhone =`${formattedSecondaryPhone} <a class="demoPhones" href=tel:+1${data.secondaryphone}>${icons.phone}</a>`;
+
+    cellPhone = data.cellphone ? formatPhoneNumber(data.cellphone) : undefined;
+    cellPhone = cellPhone !== '%' ? `${cellPhone} <a class="demoPhones" href=tel:+1${data.cellphone}>${icons.phone}</a>` : '';
+
     const email = data.email;
 
     // Additional Info
@@ -234,7 +239,8 @@ const demographics = (function () {
       data.orgState,
       data.orgZipCode,
     );
-    const organizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
+    const formattedOrganizationPhone = formatPhoneNumber(data.orgPrimaryPhone);
+    organizationPhone =`${formattedOrganizationPhone} <a class="demoPhones" href=tel:+1-${data.orgPrimaryPhone}>${icons.phone}</a>`;
 
     // Demographic Info
     const name = formatName(data.firstname, data.middlename, data.lastname);
@@ -346,7 +352,14 @@ const demographics = (function () {
         value = '';
       } else {
         if (name.includes('Phone')) {
-          value = value.replace(' ', '');
+          const phoneNumberEndIndex = value.indexOf('<a class="demoPhones"');
+          if (phoneNumberEndIndex !== -1) {
+            const phoneNumberStartIndex = 0;
+            value = value.slice(phoneNumberStartIndex, phoneNumberEndIndex - 1);
+            value = value.trim();
+          } else {
+            value = '';
+          }
         }
         if (name === 'dateOfBirth') {
           value = UTIL.formatDateToIso(value);
@@ -455,8 +468,12 @@ const demographics = (function () {
         if (name === 'primaryPhone' || name === 'secondaryPhone' || name === 'cellPhone') {
           const splitNumber = e.target.value.split(' ');
           const phoneNumber = splitNumber[0].replace(/[^\w\s]/gi, '');
-          let phoneExt = splitNumber[1].replace('(', '').replace(')', '');
 
+          let phoneExt;
+          if (splitNumber[1] !== undefined) {
+            phoneExt = splitNumber[1].replace('(', '').replace(')', '');
+          }
+        
           saveValue = `${phoneNumber}${phoneExt}`;
         }
         if (name === 'ssn') {
@@ -655,7 +672,11 @@ const demographics = (function () {
     sectionInner.appendChild(contactInfo);
     sectionInner.appendChild(additionalInfo);
     sectionInner.appendChild(organizationInfo);
-    sectionInner.appendChild(demographicInfo);
+    sectionInner.appendChild(demographicInfo); 
+    
+    document.querySelector(".demoPhones").addEventListener("click", function(event) {
+      event.stopPropagation(); // Stop event propagation to the outer div
+    });
 
     section.addEventListener('click', e => {
       if (

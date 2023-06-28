@@ -329,11 +329,11 @@ var ConsumerFinancesAjax = (function () {
                     $.webServer.port +
                     '/' +
                     $.webServer.serviceName +
-                    '/getActiveEmployees/',
+                    '/getActiveUsedBy/',
                 data: JSON.stringify({
                     token: $.session.Token,
 
-                }),
+                }),              
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
@@ -484,6 +484,32 @@ var ConsumerFinancesAjax = (function () {
         form.remove();
     }
 
+    async function getCategoriesSubCategoriesAsync(CategoryID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getCategoriesSubCategories/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    categoryID: CategoryID,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     return {
         getAccountTransectionEntriesAsync,
         getActiveAccountAsync,
@@ -501,5 +527,6 @@ var ConsumerFinancesAjax = (function () {
         getCFAttachmentsList,
         getConsumerNameByID, 
         viewCFAttachment,
+        getCategoriesSubCategoriesAsync,   
     };
 })();

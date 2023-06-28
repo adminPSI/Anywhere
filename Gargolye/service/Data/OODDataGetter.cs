@@ -313,12 +313,12 @@ namespace Anywhere.service.Data
         }
 
         //  Form 8 Community Based Assessment Form -- Positions data for DDL
-        public string getPositions(string consumerId, DistributedTransaction transaction)
+        public string getOODPositions(string consumerId, DistributedTransaction transaction)
         {
 
             try
             {
-                logger.debug("getPositions ");
+                logger.debug("getOODPositions ");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
                 //args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hasAssignedFormTypes", DbType.String, hasAssignedFormTypes);

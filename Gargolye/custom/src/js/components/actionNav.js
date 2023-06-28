@@ -193,6 +193,12 @@ var ACTION_NAV = (function () {
                 hide();
                 break;
             }
+            case 'Employment': { 
+                Employment.handleActionNavEvent(target);
+                clear();
+                hide();
+                break;
+            }
         }
 
         var miniRosterBtn = document.querySelector('.consumerListBtn');

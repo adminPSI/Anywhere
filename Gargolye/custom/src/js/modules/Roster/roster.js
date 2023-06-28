@@ -928,10 +928,12 @@ const roster2 = (function () {
     const activeSection = DOM.ACTIONCENTER.dataset.activeSection;
     //buttons need to be disabled. This will need to
     // be modified if more modules need these buttons disabled
+
     if (
       $.loadedApp === 'outcomes' ||
       $.loadedApp === 'plan' ||
       $.loadedApp === 'ConsumerFinances' || 
+      $.loadedApp === 'employment' ||  
       $.loadedApp === 'covid' ||
       $.loadedApp === 'forms' ||
       activeSection === 'caseNotesSSA-new' ||
@@ -989,7 +991,7 @@ const roster2 = (function () {
       // classNames: ['floatingActionBtn', 'consumerListBtn', 'disabled'],
       classNames: ['floatingActionBtn', 'consumerListBtn'],
         callback: async () => {          
-        if ($.loadedApp === 'ConsumerFinances') {
+            if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'employment') {
             clearSelectedConsumers(); 
             clearActiveConsumers();   
         }
@@ -1085,9 +1087,16 @@ const roster2 = (function () {
     };
     rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
     // I am not sure why consumer location was being set to the selected location ID?
-    // rosterConsumers.forEach((consumer) => {
-    //   consumer.conL = selectedLocationId;
-    // });
+    const seenIds = {};
+
+    rosterConsumers = rosterConsumers.filter((consumer) => {
+      if (seenIds[consumer.id]) {
+        return false;
+      } else {
+        seenIds[consumer.id] = true;
+        return true;
+      }
+    });
     groupRosterConsumers();
 
     if (selectedLocationId !== '0') {
@@ -1182,7 +1191,8 @@ const roster2 = (function () {
       if (
         $.loadedApp === 'outcomes' ||
         $.loadedApp === 'plan' ||
-        $.loadedApp === 'ConsumerFinances' || 
+        $.loadedApp === 'ConsumerFinances' ||  
+        $.loadedApp === 'employment' ||  
         $.loadedApp === 'covid' ||
         $.loadedApp === 'forms' ||
         // $.loadedApp === 'OOD' ||

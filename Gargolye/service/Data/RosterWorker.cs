@@ -40,6 +40,18 @@ namespace Anywhere.service.Data
             ConsumerDemographics[] consumerDemoObj = js.Deserialize<ConsumerDemographics[]>(consumerDemoString);
             return consumerDemoObj;
         }
+        public DemographicInformation[] GetDemographicInformation(string token)
+        {
+            string demoInfoString = dg.GetDemographicInformation(token);
+            DemographicInformation[] demoInfoObj = js.Deserialize<DemographicInformation[]>(demoInfoString);
+            return demoInfoObj;
+        }
+        public MobileCarrierDropdown[] getMobileCarrierDropdown(string token)
+        {
+            string mobileCarrierDropdownString = dg.getMobileCarrierDropdown(token);
+            MobileCarrierDropdown[] mobileCarrierDropdownData = js.Deserialize<MobileCarrierDropdown[]>(mobileCarrierDropdownString);
+            return mobileCarrierDropdownData;
+        }
         public ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             string consumerRelString = dg.getConsumerRelationshipsJSON(token, consumerId);
@@ -52,6 +64,12 @@ namespace Anywhere.service.Data
             string consumerPlanYearInfoString = dg.getConsumerPlanYearInfo(token, consumerId);
             ConsumerPlanYearInfo[] consumerPlanYearInfoObj = js.Deserialize<ConsumerPlanYearInfo[]>(consumerPlanYearInfoString);
             return consumerPlanYearInfoObj[0];
+        }
+
+        public class MobileCarrierDropdown
+        {
+            public string carrierName { get; set; }
+            public string carrierId { get; set; }
         }
 
         public class CheckForIndividualAbsent
@@ -120,6 +138,17 @@ namespace Anywhere.service.Data
             public string maritalStatus { get; set; }
             public string educationLevel { get; set; }
             public string orgState { get; set; }
+        }
+        public class DemographicInformation
+        {
+            public string addressOne { get; set; }
+            public string addressTwo { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zipCode { get; set; }
+            public string mobilePhone { get; set; }
+            public string carrier { get; set; }
+            public string email { get; set; }
         }
         public class ConsumerRelationships
         {

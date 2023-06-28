@@ -76,6 +76,30 @@
     font-size: 1.35rem;
     padding: 8px 5px 5px;
     margin: 0 0 20px 0;
+
+    &.contactInfo {
+      display: flex;
+      justify-content: space-between;
+
+      .refreshWrap {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+
+        span {
+          font-size: 14px;
+          margin-right: 10px;
+        }
+        button.btn-icon {
+          margin: 0;
+          padding: 0;
+
+          svg {
+            fill: $font-light;
+          }
+        }
+      }
+    }
   }
 }
 

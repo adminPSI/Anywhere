@@ -21,7 +21,7 @@ var itConsumerSection = (function () {
     consumerInvolvement.clearData();
     consumerReporting.clearData();
     consumerReview.clearData();
-    // consumerBehavior.clearData();
+    consumerBehavior.clearData();
     activeConsumers = [];
   }
   function deleteConsumerData(consumerId) {
@@ -31,7 +31,7 @@ var itConsumerSection = (function () {
     consumerInvolvement.deleteConsumerData(consumerId);
     consumerReporting.deleteConsumerData(consumerId);
     consumerReview.deleteConsumerData(consumerId);
-    // consumerBehavior.deleteConsumerData(consumerId);
+    consumerBehavior.deleteConsumerData(consumerId);
   }
 
   function getConsumersInvolved() {
@@ -311,7 +311,7 @@ var consumerSubSections = (function () {
   // var consumersInvolved;
   var sections = [
     { id: 0, name: 'Remove Consumer' },
-    //{ id: 1, name: 'Behavior Details' },
+    { id: 1, name: 'Behavior Details' },
     { id: 2, name: 'Follow Up' },
     { id: 3, name: 'Injuries' },
     { id: 4, name: 'Intervention' },
@@ -378,10 +378,10 @@ var consumerSubSections = (function () {
         targetSection = reviewSection;
         break;
       }
-      // case 'Behavior Details': {
-      //   targetSection = behaviorSection;
-      //   break;
-      // }
+      case 'Behavior Details': {
+        targetSection = behaviorSection;
+        break;
+      }
     }
 
     sectionsMenu.classList.remove('visible');
@@ -429,13 +429,12 @@ var consumerSubSections = (function () {
           });
           break;
         }
-        // case 'Behavior Details': {
-        //   incidentTrackingAjax.getitConsumerBehavior(selectedConsumerId, incidentId, res => {
-        //     console.log(res);
-        //     consumerBehavior.populate(res, selectedConsumerId);
-        //   });
-        //   break;
-        // }
+        case 'Behavior Details': {
+          incidentTrackingAjax.getitConsumerBehavior(selectedConsumerId, incidentId, res => {
+            consumerBehavior.populate(res, selectedConsumerId);
+          });
+          break;
+        }
       }
     } else {
       switch (sectionName) {
@@ -463,10 +462,10 @@ var consumerSubSections = (function () {
           consumerReview.populate(null, selectedConsumerId);
           break;
         }
-        // case 'Behavior Details': {
-        //   consumerBehavior.populate(null, selectedConsumerId);
-        //   break;
-        // }
+        case 'Behavior Details': {
+          consumerBehavior.populate(null, selectedConsumerId);
+          break;
+        }
       }
     }
   }
@@ -551,10 +550,10 @@ var consumerSubSections = (function () {
     involvementSection = consumerInvolvement.build(consumersInvolvedData);
     reportingSection = consumerReporting.build();
     reviewSection = consumerReview.build();
-    // behaviorSection = consumerBehavior.build();
+    behaviorSection = consumerBehavior.build();
 
     sectionsInner.appendChild(sectionsMenu);
-    // sectionsInner.appendChild(behaviorSection);
+    sectionsInner.appendChild(behaviorSection);
     sectionsInner.appendChild(followUpSection);
     sectionsInner.appendChild(injuriesSection);
     sectionsInner.appendChild(interventionSection);
@@ -2437,8 +2436,6 @@ var consumerInvolvement = (function () {
             consumerLocationData[consumerId].length === 1
               ? consumerLocationData[consumerId][0].value
               : '';
-
-          console.log(`Location Id for consumer${consumerId} = ${locationId}`);
 
           involvementsData[consumerId] = {
             includeInCount,

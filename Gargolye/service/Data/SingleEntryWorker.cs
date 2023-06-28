@@ -463,6 +463,7 @@ namespace Anywhere.service.Data
             public string approved_time { get; set; }
             public string submit_date { get; set; }
             public string rejected_time { get; set; }
+            public string supervisorId { get; set; }
         }
 
         public class SEFilteredListResults

@@ -56,6 +56,21 @@
     fill: $red;
   }
 }
+
+.eyeInputIcon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 22px !important;
+    margin: 0px;
+    background: $white !important;
+     transition: 0.2s; 
+
+    svg {
+        margin: 0px;
+    }
+}
+
 .input-field--secondary {
   color: $input-blur--dark;
 

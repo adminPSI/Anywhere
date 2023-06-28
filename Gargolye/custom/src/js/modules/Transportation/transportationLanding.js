@@ -96,6 +96,9 @@ const TRANS_mainLanding = (function() {
   function locationLookup(id) {
     return locations.get(id)
   }
+   function vehicleFilteredLookup(id) {
+     return vehicles.get(id)
+   }
 
   async function getData() {
     PROGRESS.init()
@@ -185,6 +188,7 @@ const TRANS_mainLanding = (function() {
     getLocations,
     getAlternateAddress,
     locationLookup,
+    vehicleFilteredLookup,
     updateAltAddress
   }
 })();

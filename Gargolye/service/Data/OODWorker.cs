@@ -575,7 +575,7 @@ namespace Anywhere.service.Data
         }
 
         //  Form 8 Community Based Assessment Form -- Positions data for DDLs
-        public OODDDLItem[] getPositions(string consumerId, string token)
+        public OODDDLItem[] getOODPositions(string consumerId, string token)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -583,7 +583,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    OODDDLItem[] positions = js.Deserialize<OODDDLItem[]>(Odg.getPositions(consumerId, transaction));
+                    OODDDLItem[] positions = js.Deserialize<OODDDLItem[]>(Odg.getOODPositions(consumerId, transaction));
                     return positions;
                 }
                 catch (Exception ex)

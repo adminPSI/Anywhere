@@ -107,7 +107,7 @@ namespace Anywhere.service.Data
             DataTable dt = ars.AssesmentHeader(ID).Tables[0];
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.OpenSubreport("Header").SetDataSource(dt);
-            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(ID));
+            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(ID, Advisor));
 
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
 
@@ -136,11 +136,25 @@ namespace Anywhere.service.Data
             //return allAttachments;
         }
 
-        public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, string include)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
             ApplicationName[] appName = js.Deserialize<ApplicationName[]>(applicationName);
+            string SuppressImportantFor = "";
+            if (appName[0].setting.ToUpper() == "ADVISOR")
+            {
+                Advisor = true;
+            }
+            if (include == "Y")
+            {
+                SuppressImportantFor = "false";
+            }
+            else
+            {
+                SuppressImportantFor = "true";
+            }
+
             if (appName[0].setting.ToUpper() == "ADVISOR")
             {
                 Advisor = true;
@@ -190,6 +204,7 @@ namespace Anywhere.service.Data
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = eS.ToString(); // Option for expanded text for editing
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
+            cr.DataDefinition.FormulaFields["SuppressImportantFor"].Text = SuppressImportantFor.ToString();
             crViewer.ReportSource = cr;
             crViewer.ShowLastPage();
             TotalPage += crViewer.GetCurrentPageNumber();
@@ -206,7 +221,7 @@ namespace Anywhere.service.Data
             //return msa2;
         }
 
-        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan)
+        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly )
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -215,6 +230,7 @@ namespace Anywhere.service.Data
             {
                 Advisor = true;
             }
+
             ReportDocument cr = new ReportDocument();
             bool eS = false;
             long ID = long.Parse(assessmentID);
@@ -259,9 +275,10 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("Header").SetDataSource(dt);
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
+            cr.DataDefinition.FormulaFields["SignatureOnly"].Text = signatureOnly.ToString();           
+            
 
-            //cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
-
+            
             cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUMMARY", Advisor));
             cr.OpenSubreport("Skills").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SKILLS", Advisor));
             cr.OpenSubreport("Supervision").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUPERVISION", Advisor));
@@ -275,7 +292,8 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
             cr.OpenSubreport("Dissenting").SetDataSource(ars.Dissenting(long.Parse(assessmentID), oneSpan));
             cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(long.Parse(assessmentID), Advisor));
-            cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));
+            cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));          
+
             cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(long.Parse(assessmentID)));
             cr.OpenSubreport("Places").SetDataSource(ars.ISPPlaces(long.Parse(assessmentID)));
 

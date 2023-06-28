@@ -98,12 +98,12 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
-  async function GetSalesForceId() {
+  async function GetSalesForceId(peopleId) {
     // token, signatureId
     const retrieveData = {
       token: $.session.Token,
-      consumerId: parseInt('17080'),
-      peopleId: parseInt('1'),
+      consumerId: parseInt(plan.getSelectedConsumer().id),
+      peopleId: parseInt(peopleId),
     };
     try {
       const data = await $.ajax({
@@ -203,7 +203,6 @@ const consentAndSignAjax = (() => {
       console.log(error);
     }
   }
-
 
   async function assignStateCaseManagertoConsumers(peopleIdData) {
     //cosumerId as a string in retrieveData
@@ -573,6 +572,6 @@ const consentAndSignAjax = (() => {
     getStateGuardiansforConsumer,
     getStateCaseManagerforConsumer,
     assignStateCaseManagertoConsumers,
-    getAllActiveVendors
+    getAllActiveVendors,
   };
 })();

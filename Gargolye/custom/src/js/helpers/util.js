@@ -64,7 +64,7 @@ const UTIL = (function () {
    * @param {string} dirtyEnd End Time (24hr military time)
    * @returns {string} Total number of hours
    */
-  function calculateTotalHours(dirtyStart, dirtyEnd) {
+  function calculateTotalHours(dirtyStart, dirtyEnd, format) {
     // must be military time
     if (dirtyStart === '' || dirtyEnd === '' || !dirtyStart || !dirtyEnd) {
       return;
@@ -89,6 +89,10 @@ const UTIL = (function () {
     var timeDiff = endDate - startDate;
     var hoursDiff = Math.floor((timeDiff % 86400000) / 3600000);
     var minutesDiff = Math.floor(((timeDiff % 86400000) % 3600000) / 60000);
+
+    if (format === 'hh:mm') {
+      return `${hoursDiff}:${minutesDiff}`;
+    }
 
     return (parseInt(hoursDiff, 10) + parseFloat((minutesDiff / 60).toFixed(2))).toFixed(2);
   }
@@ -702,7 +706,7 @@ const UTIL = (function () {
    * Highlights the module in the hamburger menu or side menu, signifying the module is active.
    * @param {string} appName Proper module name
    */
-    function toggleMenuItemHighlight(appName) { 
+  function toggleMenuItemHighlight(appName) {
     var current = document.querySelector('.menu__button.active');
     var target;
 
@@ -773,16 +777,20 @@ const UTIL = (function () {
         target = document.getElementById('PDFFormssettingsdiv');
         break;
       }
+      case 'employment': {
+        target = document.getElementById('Employmentsettingsdiv');
+        break;
+      }
       case 'OOD': {
         target = document.getElementById('OODsettingsdiv');
         break;
       }
       case 'resetPassword': {
-            target = document.getElementById('Adminsettingdiv'); 
+        target = document.getElementById('resetPw');
         break;
       }
-        case 'ConsumerFinances': {
-            target = document.getElementById('consumerfinancessettingsdiv');
+      case 'ConsumerFinances': {
+        target = document.getElementById('consumerfinancessettingsdiv');
         break;
       }
       default: {

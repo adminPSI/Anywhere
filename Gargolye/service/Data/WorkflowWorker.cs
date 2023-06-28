@@ -130,6 +130,7 @@ namespace Anywhere.service.Data
             public string IndivNameFirstL { get; set; }
             public string IndivNameFLast5 { get; set; }
             public string ResidentNumber { get; set; }
+            public string serviceProviders { get; set; }
 
         }
 
@@ -507,7 +508,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public PeopleName[] getPeopleNames(string token)
+        public PeopleName[] getPeopleNames(string token, string peopleId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -515,7 +516,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    PeopleName[] people = js.Deserialize<PeopleName[]>(wfdg.getPeopleNames(transaction));
+                    PeopleName[] people = js.Deserialize<PeopleName[]>(wfdg.getPeopleNames(peopleId, transaction));
                     return people;
                 }
                 catch (Exception ex)
@@ -1380,6 +1381,9 @@ namespace Anywhere.service.Data
                     break;
                 case "[Indiv. Resident Number]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.ResidentNumber);
+                    break;
+                case "[Service Providers]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisPlan.serviceProviders);
                     break;
             }
             return dictPlaceHolderValuesforPlan;

@@ -113,13 +113,30 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
-        public string  getCategoriesSubCategoriesByPayee(DistributedTransaction transaction, string categoryID)
+        public string getCategoriesSubCategories(DistributedTransaction transaction, string categoryID)
         {
             List<string> list = new List<string>();
             list.Add(categoryID);
             try
             {
-                logger.debug("getSubCatogories");
+                logger.debug("getCategoriesSubCategories");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getCategoriesSubCategories(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getCategoriesSubCategories()");
+                throw ex;
+            }
+        }
+
+        public string getCategoriesSubCategoriesByPayee(DistributedTransaction transaction, string categoryID)
+        {
+            List<string> list = new List<string>();
+            list.Add(categoryID);
+            try
+            {
+                logger.debug("getCategoriesSubCategoriesByPayee");
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getCategoriesSubCategoriesByPayee(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
@@ -154,12 +171,12 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public string updateAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string receipt, string userId, DistributedTransaction transaction, string regId)
+        public string updateAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string receipt, string userId, DistributedTransaction transaction, string regId, string runningBalance)
         {
             try
             {
                 logger.debug("updateAccount");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[12];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[13];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@date", DbType.String, date);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amount", DbType.Double, amount);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amountType", DbType.String, amountType);
@@ -172,8 +189,8 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@receipt", DbType.String, receipt);
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@regId", DbType.String, regId);
-
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updateAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                args[12] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@runningBalance", DbType.String, runningBalance);
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updateAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
@@ -183,12 +200,12 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
-        public string insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string receipt, string userId, DistributedTransaction transaction)
+        public string insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string receipt, string userId, DistributedTransaction transaction, string runningBalance)
         {
             try
             {
                 logger.debug("insertAccount");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[11];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[12];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@date", DbType.String, date);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amount", DbType.String, amount);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amountType", DbType.String, amountType);
@@ -200,8 +217,8 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@description", DbType.String, description);
                 args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@receipt", DbType.String, receipt);
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
-
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@runningBalance", DbType.String, runningBalance);
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
@@ -320,6 +337,81 @@ namespace Anywhere.service.Data.ConsumerFinances
                 logger.error("WFDG", ex.Message + "ANYW_deleteCFAttachment(" + attachmentId + ")");
                 throw ex;
             }
+        }
+
+        public string getActiveUsedBy(DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getActiveUsedBy");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getActiveUsedBy", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getActiveUsedBy()");
+                throw ex;
+            }
+        }
+
+        public string getPastAccountRunningBalance(string date, string account, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getPastAccountRunningBalance");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@date", DbType.String, date);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@account", DbType.Double, account);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_GetPastAccountRunningBalance(?, ?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_GetPastAccountRunningBalance(" + date + "," + account + ")");
+                throw ex;
+            }
+
+        }
+
+        public string getNextAccountRunningBalance(string date, string account, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getNextAccountRunningBalance"); 
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@date", DbType.String, date);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@account", DbType.Double, account);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_GetNextAccountRunningBalance(?, ?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_GetNextAccountRunningBalance(" + date + "," + account + ")");
+                throw ex;
+            }
+
+        }
+
+        public string updateRunningBalance(string amount, DistributedTransaction transaction, string regId)
+        {
+            try
+            {
+                logger.debug("updateRunningBalance");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amount", DbType.Double, amount);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@regId", DbType.String, regId);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updateRunningBalance(?,?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_updateRunningBalance(" + amount + "," + regId + ")");
+                throw ex;
+            }
+
         }
 
 

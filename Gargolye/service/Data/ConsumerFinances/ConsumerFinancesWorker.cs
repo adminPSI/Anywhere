@@ -3,6 +3,7 @@ using System;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.OODWorker;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {
@@ -244,6 +245,25 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
+        public Category[] getCategoriesSubCategories(string token, string categoryID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    Category[] category = js.Deserialize<Category[]>(Odg.getCategoriesSubCategories(transaction, categoryID));
+                    return category;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
         public CategorySubCategory[] getCategoriesSubCategoriesByPayee(string token, string categoryID)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
@@ -339,15 +359,47 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (userId == null) throw new Exception("userId is required");
 
 
+                    ConsumerFinancesEntry[] PastRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getPastAccountRunningBalance(date, account, transaction));
+
+                    string runningBalance = amount;
+                    if (PastRunningBal.Length > 0)
+                    {
+                        if (amountType == "E")
+                        {
+                            runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) - Convert.ToDecimal(runningBalance)).ToString();
+                        }
+                        else
+                        {
+                            runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) + Convert.ToDecimal(runningBalance)).ToString();
+                        }
+                    }
+
                     String RegisterID;
 
                     if (eventType == "UPDATE")
                     {
-                        RegisterID = Odg.updateAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, regId);
+                        RegisterID = Odg.updateAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, regId, runningBalance);
                     }
                     else
                     {
-                        RegisterID = Odg.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction);
+                        RegisterID = Odg.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, runningBalance);
+                    }
+
+                    ConsumerFinancesEntry[] nextRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getNextAccountRunningBalance(date, account, transaction));
+
+                    foreach (ConsumerFinancesEntry updateAmount in nextRunningBal)
+                    {
+                        string balance;
+                        if (amountType == "E")
+                        {
+                            balance = (Convert.ToDecimal(updateAmount.balance) - Convert.ToDecimal(runningBalance)).ToString();
+                        }
+                        else
+                        {
+                            balance = (Convert.ToDecimal(updateAmount.balance) + Convert.ToDecimal(runningBalance)).ToString();
+                        }
+
+                        Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
                     }
 
                     if (attachmentId != null)
@@ -452,6 +504,25 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     return Odg.deleteCFAttachment(token, attachmentId, transaction);
 
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ActiveEmployee[] getActiveUsedBy(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    ActiveEmployee[] usedby = js.Deserialize<ActiveEmployee[]>(Odg.getActiveUsedBy(transaction));
+                    return usedby;
                 }
                 catch (Exception ex)
                 {

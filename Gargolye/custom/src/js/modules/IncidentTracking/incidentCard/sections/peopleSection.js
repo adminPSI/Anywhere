@@ -16,6 +16,18 @@ var itPeopleSection = (function () {
     countHolder.innerHTML = `( ${count} )`;
   }
 
+  function checkRequiredFields() {
+    if (!section) return false;
+
+    var hasErrors = [].slice.call(section.querySelectorAll('.error'));
+
+    if (hasErrors.length !== 0) {
+      return true; // true means to disable the Save BTN
+    } else {
+      return false; // false means don't disable the Save BTN
+    }
+  }
+
   function addNewPersonRow() {
     var peopleCard = buildOtherPersonCard();
     sectionBody.appendChild(peopleCard);
@@ -71,11 +83,29 @@ var itPeopleSection = (function () {
       classNames: ['name'],
       attributes: [{ key: 'maxlength', value: '50' }],
       value: name,
+      callbackType: 'input',
+      callback: event => {
+          // Name input is required, else disable the save button
+        if (event.target.value === '') {
+          nameInput.classList.add('error');
+        } else {
+          nameInput.classList.remove('error');
+        }
+        incidentCard.checkEntireIncidentCardforErrors();
+      }
     });
     var involvementDropdown = dropdown.build({
       label: 'Involvement Type',
       style: 'secondary',
       className: 'involvmentTypeDropdown',
+      callback: e => {
+        if (!e.target.value || e.target.value === '%') {
+          involvementDropdown.classList.add('error');
+        } else {
+          involvementDropdown.classList.remove('error');
+        }
+        incidentCard.checkEntireIncidentCardforErrors();
+      },
     });
     var companyInput = input.build({
       label: 'Company',
@@ -146,6 +176,10 @@ var itPeopleSection = (function () {
       },
     });
 
+    if(!name) {
+      nameInput.classList.add('error');
+    }
+
     // populate drodowns
     var involvementTypes = incidentTracking.getInvolvementTypes();
     var involvementDropdownData = involvementTypes.map(it => {
@@ -155,6 +189,10 @@ var itPeopleSection = (function () {
     var defaultValue = { value: '', text: '' };
     involvementDropdownData.unshift(defaultValue);
     dropdown.populate(involvementDropdown, involvementDropdownData, involvementId);
+
+    if (!involvementId) {
+      involvementDropdown.classList.add('error');
+    }
 
     // build card
     var wrap1 = document.createElement('div');
@@ -222,5 +260,6 @@ var itPeopleSection = (function () {
 
   return {
     build: buildSection,
+    checkRequiredFields,
   };
 })();

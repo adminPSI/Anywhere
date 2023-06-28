@@ -55,6 +55,9 @@ const plan = (function () {
   let DODDplanAttBody;
   let DODDsignAttBody;
   let DODDworkflowAttBody;
+  // runReports screen
+  let include = 'N';
+  let includeCheckbox;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -133,6 +136,7 @@ const plan = (function () {
         if ($.session.applicationName === 'Advisor') {
           planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
             $.session.planPeopleId = results[0].id;
+            selectedConsumer.consumerId = selectedConsumer.id;
             selectedConsumer.id = $.session.planPeopleId;
             loadLandingPage();
             DOM.toggleNavLayout();
@@ -254,8 +258,10 @@ const plan = (function () {
     const validDates = isValid => {
       if (isValid) {
         updateBtn.classList.remove('disabled');
+        updateBtn.disabled = false;
       } else {
         updateBtn.classList.add('disabled');
+        updateBtn.disabled = true;
       }
     };
     const dateBoxDiv = planDates.buildDatesBox(validDates);
@@ -302,6 +308,7 @@ const plan = (function () {
       type: 'outlined',
       callback: () => {
         planDates.resetPlanDatesToOriginal();
+        planDates.updateBoxDateValues();
         screen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
       },
@@ -989,6 +996,17 @@ const plan = (function () {
       }
     }
 
+    // checkbox
+    includeCheckbox = input.buildCheckbox({
+      id: 'reportCheckbox',
+      // className: 'reportCheckbox',
+      isChecked: include === 'Y' ? true : false,
+    });
+
+    includeCheckbox.addEventListener('change', event => {
+      include = event.target.checked ? 'Y' : 'N';
+    });
+
     const doneBtn = button.build({
       text: 'Done',
       style: 'secondary',
@@ -999,6 +1017,7 @@ const plan = (function () {
         const spinner = PROGRESS.SPINNER.get('Building Report...');
         const screenInner = reportsScreen.querySelector('.attachmentsWrap');
         reportsScreen.removeChild(doneBtn);
+        reportsScreen.removeChild(checkboxArea);
         reportsScreen.removeChild(screenInner);
         reportsScreen.appendChild(spinner);
         // generate report
@@ -1017,7 +1036,9 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',
+            'false', //DODDFlag
+            'false', //signatureOnly
+            include, // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
           );
         } else {
           //isSuccess = await assessment.generateReport(planId, '1', extraSpace);
@@ -1031,7 +1052,9 @@ const plan = (function () {
             planAttachmentIds,
             wfAttachmentIds,
             sigAttachmentIds,
-            'false',
+            'false', //DODDFlag
+            'false', //signatureOnly
+            include, // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
           );
         }
 
@@ -1043,6 +1066,17 @@ const plan = (function () {
       },
     });
 
+    // add checkbox
+    // const checkboxCheck = document.createElement('div');
+    //  checkboxCheck.appendChild(includeCheckbox);
+    const checkboxText = document.createElement('div');
+    checkboxText.innerHTML =
+      'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
+    const checkboxArea = document.createElement('div');
+    checkboxArea.classList.add('checkboxWrap');
+    checkboxArea.appendChild(includeCheckbox);
+    checkboxArea.appendChild(checkboxText);
+    reportsScreen.appendChild(checkboxArea);
     reportsScreen.appendChild(doneBtn);
   }
 
@@ -1213,6 +1247,43 @@ const plan = (function () {
       type: 'contained',
       classNames: ['reportBtn2'],
     });
+
+    const reportSignatureBtn = button.build({
+      text: 'Print Signature Page',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['reportBtn2'],
+      callback: async () => {
+        let isSuccess;
+        const selectedAttachmentsPlan = {};
+        const selectedAttachmentsWorkflow = {};
+        const selectedAttachmentsSignature = {};
+        let extraSpace = 'false';
+
+        // build & show spinner
+        //  const spinner = PROGRESS.SPINNER.show('Building Report...');
+        //const screenInner = reportsScreen.querySelector('.attachmentsWrap');
+        // reportsScreen.removeChild(doneBtn);
+        // reportsScreen.removeChild(screenInner);
+        //  reportsScreen.appendChild(spinner);
+        // generate report
+        const planAttachmentIds = getAttachmentIds(selectedAttachmentsPlan);
+        const wfAttachmentIds = getAttachmentIds(selectedAttachmentsWorkflow);
+        const sigAttachmentIds = getAttachmentIds(selectedAttachmentsSignature);
+        isSuccess = assessment.generateReportWithAttachments(
+          planId,
+          '1',
+          extraSpace,
+          planAttachmentIds,
+          wfAttachmentIds,
+          sigAttachmentIds,
+          'false', //DODDFlag
+          'true', //signatureOnly
+          'N', // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
+        );
+      },
+    });
+
     const reportBtn3 = button.build({
       text: 'Report with attachments',
       style: 'secondary',
@@ -1281,7 +1352,7 @@ const plan = (function () {
     //morepopupmenu.appendChild(addWorkflowBtn);
     morepopupmenu.appendChild(reportBtn);
     morepopupmenu.appendChild(reportBtn2);
-    //morepopupmenu.appendChild(reportBtn3);
+    morepopupmenu.appendChild(reportSignatureBtn);
     morepopupmenu.appendChild(sendtoPortalBtn);
     morepopupmenu.appendChild(sendToDODDBtn);
     morepopupmenu.appendChild(editDatesBtn);
@@ -1301,12 +1372,16 @@ const plan = (function () {
           targetScreen = 'reportsScreen';
           break;
         }
+        case reportSignatureBtn: {
+          //targetScreen = 'reportsScreen';
+          break;
+        }
         case reportBtn3: {
           // Below 'targetScreen' will be for when we need to select attatchments
           targetScreen = 'reportsAttachmentScreen';
           retrieveData = {
             token: $.session.Token,
-            assessmentId: '19',
+            assessmentId: getCurrentPlanId(),
           };
           break;
         }
@@ -1319,7 +1394,7 @@ const plan = (function () {
           targetScreen = 'DODDScreen';
           retrieveData = {
             token: $.session.Token,
-            assessmentId: '19',
+            assessmentId: getCurrentPlanId(),
           };
           break;
         }
@@ -1457,6 +1532,7 @@ const plan = (function () {
 
     generalInfoBar = document.createElement('div');
     generalInfoBar.classList.add('generalInfo');
+    generalInfoBar.setAttribute('data-people-id', `${selectedConsumer.id}`);
 
     const consumerName = `<p>${getConsumerNameFromCard(selectedConsumer.card)}</p>`;
     const dateSpan = `<p>Span: ${starDate} - ${endDate}</p>`;
@@ -1709,7 +1785,13 @@ const plan = (function () {
     if (planType === 'a') {
       await planDates.setAnnualPlanDates(previousPlansData);
       plan.setPlanType('a');
-      datesBoxDiv = planDates.buildDatesBox();
+      datesBoxDiv = planDates.buildDatesBox(isValid => {
+        if (isValid) {
+          doneBtn.classList.remove('disabled');
+        } else {
+          doneBtn.classList.add('disabled');
+        }
+      });
       setupWrap.insertBefore(datesBoxDiv, doneBtn);
       doneBtn.classList.remove('disabled');
     }
@@ -1722,6 +1804,10 @@ const plan = (function () {
     }
   }
   async function handleDoneBtnClick(selectedConsumer) {
+    if (doneBtn.classList.contains('disabled')) {
+      return;
+    }
+
     PROGRESS__BTN.SPINNER.show('annualRevisionDoneBtn', '', true);
     const processId = planWorkflow.getProcessId(planType);
     const wfvData = await planWorkflow.getWorkflowList(processId, 0);
@@ -1756,7 +1842,6 @@ const plan = (function () {
       peopleId: selectedConsumer.id,
     });
 
-   
     if (planType === 'a') {
       const planYearStartDate = planDates.getPlanYearStartDate();
       const planYearReviewDate = planDates.getPlanReviewDate();
@@ -1832,7 +1917,7 @@ const plan = (function () {
     planActiveStatus = true;
     revisionNumber = undefined;
 
-    if (salesForceCaseManagerId === "0") {
+    if (salesForceCaseManagerId === '0') {
       // const wfvPopup = document.querySelector('.workflowListPopup');
       // if (wfvPopup) {
       //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
@@ -1843,8 +1928,8 @@ const plan = (function () {
         POPUP.hide(addedMemberNoCaseManagerPopup);
         planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
         buildPlanPage();
-      });   
-    } else if (salesForceCaseManagerId === "-1") {
+      });
+    } else if (salesForceCaseManagerId === '-1') {
       // const wfvPopup = document.querySelector('.workflowListPopup');
       // if (wfvPopup) {
       //   // PROGRESS__BTN.SPINNER.hide('workflowContinueBtn');
@@ -1855,7 +1940,7 @@ const plan = (function () {
         POPUP.hide(addedMemberPopup);
         planWorkflow.displayWFwithMissingResponsibleParties(workflowIds);
         buildPlanPage();
-      });   
+      });
     } else {
       const consumer = getSelectedConsumerName(selectedConsumer);
       showAddedToTeamMemberPopup(consumer, insertedSSA, () => {
@@ -1864,7 +1949,6 @@ const plan = (function () {
         buildPlanPage();
       });
     }
-    
   }
 
   function buildPreviousPlansTable() {
@@ -1902,7 +1986,11 @@ const plan = (function () {
 
             if (setupWrap.contains(datesBoxDiv)) setupWrap.removeChild(datesBoxDiv);
             datesBoxDiv = planDates.buildDatesBox(isValid => {
-              if (isValid) doneBtn.classList.remove('disabled');
+              if (isValid) {
+                doneBtn.classList.remove('disabled');
+              } else {
+                doneBtn.classList.add('disabled');
+              }
             });
             setupWrap.insertBefore(datesBoxDiv, prevPlanTable);
           },
@@ -1966,7 +2054,13 @@ const plan = (function () {
     if (!hasPreviousPlans) {
       plan.setPlanType('a');
       await planDates.setAnnualPlanDates(previousPlansData);
-      datesBoxDiv = planDates.buildDatesBox();
+      datesBoxDiv = planDates.buildDatesBox(isValid => {
+        if (isValid) {
+          doneBtn.classList.remove('disabled');
+        } else {
+          doneBtn.classList.add('disabled');
+        }
+      });
       setupWrap.appendChild(datesBoxDiv);
     }
 

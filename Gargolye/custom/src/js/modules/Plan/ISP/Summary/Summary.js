@@ -17,6 +17,8 @@ const planSummary = (function () {
   let amountOfTimeQuestion;
   let backupPlanQuestion;
   let hasPaidSupports;
+  // Selected Vendors => Risks/WhoResponsible
+  let selectedVendors = {};
 
   // UTILS
   //----------------------------------
@@ -181,6 +183,9 @@ const planSummary = (function () {
       }
       // if no gap do nothing
     });
+  }
+  function getSelectedVendors() {
+    return Object.keys(selectedVendors);
   }
 
   // DROPDOWNS
@@ -1227,6 +1232,14 @@ const planSummary = (function () {
     const questionSetId = data.questionSetId;
     const rowId = `planRisksTable${secTitle}${row}`;
 
+    if (whoResponsible) {
+      if (selectedVendors[whoResponsible]) {
+        selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+      } else {
+        selectedVendors[whoResponsible] = 1;
+      }
+    }
+
     table.addRows(
       `planRisksTable${secTitle}`,
       [
@@ -1287,7 +1300,7 @@ const planSummary = (function () {
       isSortable,
     );
   }
-  function updateRisksTableRow(data) {
+  function updateRisksTableRow(data, oldData) {
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -1299,6 +1312,25 @@ const planSummary = (function () {
     const levelOfSupervision = getLevelOfSupervisionById(riskSupervision);
     const questionSetId = data.questionSetId;
     const rowId = `planRisksTable${secTitle}${row}`;
+
+    if (oldData.whoResponsible.answer !== whoResponsible) {
+      // remove old
+      if (oldData.whoResponsible.answer !== '') {
+        if (selectedVendors[oldData.whoResponsible.answer] === 1) {
+          delete selectedVendors[oldData.whoResponsible.answer];
+        } else {
+          selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
+        }
+      }
+      // add new
+      if (whoResponsible) {
+        if (selectedVendors[whoResponsible]) {
+          selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+        } else {
+          selectedVendors[whoResponsible] = 1;
+        }
+      }
+    }
 
     table.updateRows(
       `planRisksTable${secTitle}`,
@@ -1372,6 +1404,8 @@ const planSummary = (function () {
   }
   function showRisksTablePopup(popupData, isNew, isCopy) {
     let hasInitialErros;
+
+    let dataCache = popupData;
 
     let sectionTitle = popupData.sectionTitle ? popupData.sectionTitle : '';
     let whatIsRisk = popupData.whatIsRisk ? popupData.whatIsRisk.answer : '';
@@ -1577,27 +1611,30 @@ const planSummary = (function () {
             ],
           });
 
-          updateRisksTableRow({
-            sectionTitle,
-            row,
-            questionSetId,
-            whatIsRisk: {
-              answer: whatIsRisk,
-              answerId: whatIsRiskId,
+          updateRisksTableRow(
+            {
+              sectionTitle,
+              row,
+              questionSetId,
+              whatIsRisk: {
+                answer: whatIsRisk,
+                answerId: whatIsRiskId,
+              },
+              whatSupportLooksLike: {
+                answer: whatSupportLooksLike,
+                answerId: whatSupportLooksLikeId,
+              },
+              riskSupervision: {
+                answer: riskSupervision,
+                answerId: riskSupervisionId,
+              },
+              whoResponsible: {
+                answer: whoResponsible,
+                answerId: whoResponsibleId,
+              },
             },
-            whatSupportLooksLike: {
-              answer: whatSupportLooksLike,
-              answerId: whatSupportLooksLikeId,
-            },
-            riskSupervision: {
-              answer: riskSupervision,
-              answerId: riskSupervisionId,
-            },
-            whoResponsible: {
-              answer: whoResponsible,
-              answerId: whoResponsibleId,
-            },
-          });
+            dataCache,
+          );
         }
 
         doneBtn.classList.remove('disabled');
@@ -1645,27 +1682,30 @@ const planSummary = (function () {
               answers: [whatIsRisk, whatSupportLooksLike, riskSupervision, whoResponsible],
             });
 
-            updateRisksTableRow({
-              sectionTitle,
-              row,
-              questionSetId: setId,
-              whatIsRisk: {
-                answer: whatIsRisk,
-                answerId: whatIsRiskId,
+            updateRisksTableRow(
+              {
+                sectionTitle,
+                row,
+                questionSetId: setId,
+                whatIsRisk: {
+                  answer: whatIsRisk,
+                  answerId: whatIsRiskId,
+                },
+                whatSupportLooksLike: {
+                  answer: whatSupportLooksLike,
+                  answerId: whatSupportLooksLikeId,
+                },
+                riskSupervision: {
+                  answer: riskSupervision,
+                  answerId: riskSupervisionId,
+                },
+                whoResponsible: {
+                  answer: whoResponsible,
+                  answerId: whoResponsibleId,
+                },
               },
-              whatSupportLooksLike: {
-                answer: whatSupportLooksLike,
-                answerId: whatSupportLooksLikeId,
-              },
-              riskSupervision: {
-                answer: riskSupervision,
-                answerId: riskSupervisionId,
-              },
-              whoResponsible: {
-                answer: whoResponsible,
-                answerId: whoResponsibleId,
-              },
-            });
+              dataCache,
+            );
           }
         });
       },
@@ -1761,6 +1801,14 @@ const planSummary = (function () {
         const levelOfSupervision = getLevelOfSupervisionById(riskSupervision);
         const secTitle = sectionTitle.replaceAll(' ', '');
         const questionSetId = val.whatIsRisk.questionSetId;
+
+        if (whoResponsible) {
+          if (selectedVendors[whoResponsible]) {
+            selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+          } else {
+            selectedVendors[whoResponsible] = 1;
+          }
+        }
 
         const isRowEmpty = [
           whatIsRisk,
@@ -1975,7 +2023,7 @@ const planSummary = (function () {
       id: 'backupPlan',
       type: 'textarea',
       value: additionalSummaryData.providerBackUp,
-      charLimit: 2000,
+      charLimit: 10000,
       classNames: 'autosize',
       forceCharLimit: true,
       onBlurCallback: event => {
@@ -2105,5 +2153,6 @@ const planSummary = (function () {
     getMarkup,
     checkForPaidSupports,
     refreshDropdownData,
+    getSelectedVendors,
   };
 })();

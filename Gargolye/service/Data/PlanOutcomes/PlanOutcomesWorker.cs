@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAssessmentWorker;
 
 namespace Anywhere.service.Data.PlanOutcomes
 {
@@ -245,6 +246,14 @@ namespace Anywhere.service.Data.PlanOutcomes
             totalOutcome.planProgressSummary = planOutcomesProgressSummaryObj;
 
             return totalOutcome;
+        }
+
+        public ServiceVendors[] getPlanOutcomesPaidSupportProviders(string assessmentId)
+        {
+            string vendorString = pdg.getPlanOutcomesPaidSupportProviders(assessmentId);
+            ServiceVendors[] vendorObj = js.Deserialize<ServiceVendors[]>(vendorString);
+
+            return vendorObj;
         }
 
         public void carryOverOutcomesToNewPlan(string consumerPlanId, string priorConsumerPlanId, string targetAssessmentVersionId, string token)

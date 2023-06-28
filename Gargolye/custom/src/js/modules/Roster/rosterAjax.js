@@ -1,4 +1,4 @@
-var rosterAjax = (function () {
+const rosterAjax = (function () {
   function getRosterLocations(callback) {
     return $.ajax({
       type: 'POST',
@@ -224,7 +224,7 @@ var rosterAjax = (function () {
       },
     });
   }
-  async function updatePortrait(imageFile, id, portraitPath) {
+  async function updatePortrait(imageFile, id, portraitPath, callback) {
     await $.ajax({
       type: 'POST',
       url:
@@ -252,6 +252,12 @@ var rosterAjax = (function () {
       dataType: 'json',
       success: function (response, status, xhr) {
         var res = JSON.stringify(response);
+        callback();
+      },
+      error: function (xhr, status, error) {
+        console.log(status);
+        console.log(error);
+        console.log(xhr.responseText);
       },
     });
   }
@@ -306,6 +312,32 @@ var rosterAjax = (function () {
       console.log(error);
     }
   }
+  async function removeConsumerPhoto(retrieveData) {
+    // consumerId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/removeConsumerPhoto/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return {
+        ...data.removeConsumerPhotoResult,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return {
     getRosterLocations,
@@ -320,5 +352,6 @@ var rosterAjax = (function () {
     getConsumerRelationships,
     getPSIUserOptionList,
     updateConsumerDemographics,
+    removeConsumerPhoto,
   };
 })();

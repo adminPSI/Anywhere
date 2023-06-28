@@ -321,14 +321,14 @@ var incident = (function () {
     var interventionsData = consumerIntervention.getData();
     var reviewData = consumerReview.getData();
     var reportData = consumerReporting.getData();
-    //var behaviorData = consumerBehavior.getData();
+    var behaviorData = consumerBehavior.getData();
 
     var fupPromises = saveConsumerFollowUps(followUpData);
     var injPromises = saveConsumerInjuries(injuryData);
     var intPromises = saveConsumerInterventions(interventionsData);
     var revPromises = saveConsumerReviews(reviewData);
     var repPromises = saveConsumerReports(reportData);
-    //var behavPromises = saveConsumerBehaviors(behaviorData);
+    var behavPromises = saveConsumerBehaviors(behaviorData);
 
     var consumerDataSavePromises = [
       ...fupPromises,
@@ -336,7 +336,7 @@ var incident = (function () {
       ...intPromises,
       ...revPromises,
       ...repPromises,
-      //...behavPromises,
+      ...behavPromises,
     ];
 
     Promise.all(consumerDataSavePromises).then(() => {
@@ -642,7 +642,8 @@ var incident = (function () {
       var saveData = {
         token: $.session.Token,
         consumerInvolvedId: '',
-        itConsumerBehaviorIdArray: [],
+        consumerBehaviorIdArray: [],
+        behaviorTypeIdArray: [],
         startTimeArray: [],
         endTimeArray: [],
         occurrencesArray: [],
@@ -662,11 +663,13 @@ var incident = (function () {
         var isNew = idKey.includes('new');
 
         var itConsumerBehaviorId = isNew ? '' : idKey;
+        var behaviorTypeId = rData.behaviorTypeId ? rData.behaviorTypeId : '';
         var startTime = rData.startTime ? rData.startTime : '';
         var endTime = rData.endTime ? rData.endTime : '';
         var occurrences = rData.occurrences ? rData.occurrences : '';
 
-        saveData.itConsumerBehaviorIdArray.push(itConsumerBehaviorId);
+        saveData.consumerBehaviorIdArray.push(itConsumerBehaviorId);
+        saveData.behaviorTypeIdArray.push(behaviorTypeId);
         saveData.startTimeArray.push(startTime);
         saveData.endTimeArray.push(endTime);
         saveData.occurrencesArray.push(occurrences);
@@ -690,7 +693,7 @@ var incident = (function () {
     var interventionDeletes = consumerIntervention.getDeleteData();
     var reviewDeletes = consumerReview.getDeleteData();
     var reportDeletes = consumerReporting.getDeleteData();
-    //var behaviorDeletes = consumerBehavior.getDeleteData();
+    var behaviorDeletes = consumerBehavior.getDeleteData();
 
     if (followUpDeletes) {
       var fuKeys = Object.keys(followUpDeletes);
@@ -737,15 +740,15 @@ var incident = (function () {
         });
       });
     }
-    // if (behaviorDeletes) {
-    //   var bhKeys = Object.keys(behaviorDeletes);
-    //   bhKeys.forEach(fuKey => {
-    //     var keys = Object.keys(behaviorDeletes[fuKey]);
-    //     keys.forEach(key => {
-    //       incidentTrackingAjax.itDeleteConsumerBehavior(key, () => {});
-    //     });
-    //   });
-    // }
+    if (behaviorDeletes) {
+      var bhKeys = Object.keys(behaviorDeletes);
+      bhKeys.forEach(fuKey => {
+        var keys = Object.keys(behaviorDeletes[fuKey]);
+        keys.forEach(key => {
+          incidentTrackingAjax.itDeleteConsumerBehavior(key, () => {});
+        });
+      });
+    }
   }
 
   return {
