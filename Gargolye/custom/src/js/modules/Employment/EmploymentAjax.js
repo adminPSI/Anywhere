@@ -1,6 +1,6 @@
 var EmploymentAjax = (function () {
     // Employment Main/Landing Page
-    async function getEmploymentEntriesAsync(consumerIds, employer, position, positionStartDate, positionEndDate, jobStanding) { 
+    async function getEmploymentEntriesAsync(consumerIds, employer, position, positionStartDate, positionEndDate, jobStanding) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -32,6 +32,7 @@ var EmploymentAjax = (function () {
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
+
             return result;
         } catch (error) {
             throw new Error(error.responseText);
@@ -116,11 +117,40 @@ var EmploymentAjax = (function () {
         }
     }
 
+    async function getEmployeeInfoByIDAsync(positionId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getEmployeeInfoByID/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "positionId":"' +
+                    positionId +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
 
     return {
         getEmploymentEntriesAsync,
         getEmployersAsync,
         getPositionsAsync,
         getJobStandingsAsync,
+        getEmployeeInfoByIDAsync,
     };
 })();
