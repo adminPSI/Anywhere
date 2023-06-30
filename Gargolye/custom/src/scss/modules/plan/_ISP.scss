@@ -49,9 +49,43 @@
     margin-right: 30px;
     padding-right: 10px;
     text-align: center;
+    display: flex;
 
     &.active {
       font-weight: $bold;
+    }
+  }
+  
+  .outcomesAlertDiv {
+    svg {
+      height: 24px;
+      color: red;
+      position: relative;
+      bottom: 3px;
+    }
+
+    .tooltip {
+      .tooltiptext {
+          box-shadow: $shadow-m1;
+          background-color: $primary;
+          border-radius: 6px;
+          color: $white;
+          height: 100px;
+          opacity: 0;
+          padding: 5px;
+          position: fixed;
+          text-align: center;
+          transition: opacity .3s;
+          visibility: hidden;
+          width: 120px;
+          z-index: 1;
+        }
+      &:hover {
+        .tooltiptext {
+          visibility: visible;
+          opacity: 1;
+        }
+      }
     }
   }
 

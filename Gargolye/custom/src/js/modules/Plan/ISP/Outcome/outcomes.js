@@ -16,7 +16,7 @@ const planOutcomes = (() => {
   let responseIdCache = {};
   // Selected Vendors => Experiences/WhoResponsible
   let selectedVendors = {};
-
+  let validationCheck;
   function getSelectedVendors() {
     return Object.values(selectedVendors);
   }
@@ -393,6 +393,9 @@ const planOutcomes = (() => {
         delete selectedVendors[respId];
       });
     }
+
+    validationCheck = await planValidation.outcomesValidation(planId);
+    planValidation.outcomeTabsValidationCheck(validationCheck);
   }
   //-- Markup ---------
   function toggleAddNewOutcomePopupDoneBtn() {
@@ -500,13 +503,15 @@ const planOutcomes = (() => {
       forceCharLimit: true,
     });
     detailsTextInput.classList.add('detailsTextInput');
-    detailsTextInput.addEventListener('input', e => {
+    detailsTextInput.addEventListener('onchange', e => {
       detailsText = e.target.value;
 
       if (detailsText === '') {
         detailsTextInput.classList.add('error');
+        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck, true, true);
       } else {
         detailsTextInput.classList.remove('error');
+        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck, true, false);
       }
 
       toggleAddNewOutcomePopupDoneBtn();
@@ -905,6 +910,18 @@ const planOutcomes = (() => {
     const expTable = expTableWrap.querySelector(`#experiencesTable${experienceId}`);
 
     expTableWrap.removeChild(expTable);
+    
+     // grabs the review alert for this specific outcome
+     const alertDiv = document.getElementById(`experienceAlert${outcomeId}`);
+
+     // checks for missing data
+     validationCheck = await planValidation.outcomesValidation(planId);
+
+     // displays or removes alert depending on validationCheck
+     planValidation.experiencesValidationCheck(validationCheck, outcomeId, alertDiv);
+
+     // displays or removes alerts for tabs in the navs depending on validationCheck
+     planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck);
   }
   //-- Helpers --------
   function getColTextForWhenHowOften(freq, value, text) {
@@ -1316,7 +1333,7 @@ const planOutcomes = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: () => {
+      callback: async() => {
         doneBtn.classList.add('disabled');
 
         if (isNew) {
@@ -1333,6 +1350,18 @@ const planOutcomes = (() => {
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(experiencesPopup);
+
+        // grabs the experience alert for this specific outcome
+        const alertDiv = document.getElementById(`experienceAlert${saveUpdateData.outcomeId}`);
+
+        // checks for missing data
+        validationCheck = await planValidation.outcomesValidation(planId);
+
+        // displays or removes alert depending on validationCheck
+        planValidation.experiencesValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
+
+        // displays or removes alerts for tabs in the navs depending on validationCheck
+        planValidation.outcomeTabsValidationCheck(saveUpdateData.outcomeId, validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -1347,7 +1376,7 @@ const planOutcomes = (() => {
       text: 'Delete Experience',
       style: 'danger',
       type: 'contained',
-      callback: () => {
+      callback: async () => {
         const message = 'Do you want to delete this Experience?';
         ISP.showDeleteWarning(experiencesPopup, message, () => {
           deleteOutcomeExperience(saveUpdateData.outcomeId, saveUpdateData.experienceIds);
@@ -1559,7 +1588,25 @@ const planOutcomes = (() => {
         });
     }
 
-    experiencesDiv.appendChild(addExpTableBtn);
+    // create wrapper div for button and alert
+    const experienceBtnAlertDiv = document.createElement('div');
+    experienceBtnAlertDiv.classList.add('btnAlertContainer');
+
+    // create div for the alert
+    const experienceAlertDiv = document.createElement('div');
+    experienceAlertDiv.innerHTML = `${icons.error}`;
+    experienceAlertDiv.id = `experienceAlert${outcomeId}`;
+    experienceAlertDiv.classList.add(`experiencesAlert`);
+
+    // creates and shows a tip when hovering over the visible alert div
+    planValidation.createTooltip('At least one experience must be entered for each outcome', experienceAlertDiv);
+
+    experienceBtnAlertDiv.appendChild(addExpTableBtn);
+    experienceBtnAlertDiv.appendChild(experienceAlertDiv);
+    experiencesDiv.appendChild(experienceBtnAlertDiv);
+   
+    // checks if alert should be visible
+    planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv); 
 
     return experiencesDiv;
   }
@@ -1668,6 +1715,18 @@ const planOutcomes = (() => {
     });
 
     table.deleteRow(`reviews${reviewId}`);
+
+    // grabs the review alert for this specific outcome
+    const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
+
+    // checks for missing data
+    validationCheck = await planValidation.outcomesValidation(planId);
+
+    // displays or removes alert depending on validationCheck
+    planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
+
+    // displays or removes alerts for tabs in the navs depending on validationCheck
+    planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck);
   }
   //-- Markup ---------
   function toggleReviewsPopupDoneBtn() {
@@ -1768,7 +1827,7 @@ const planOutcomes = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: () => {
+      callback: async() => {
         doneBtn.classList.add('disabled');
         if (isNew) {
           const tableId = `reviewsTable${saveUpdateData.outcomeId}`;
@@ -1781,6 +1840,18 @@ const planOutcomes = (() => {
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(reviewsPopup);
+
+    // grabs the review alert for this specific outcome
+    const alertDiv = document.getElementById(`reviewsAlert${saveUpdateData.outcomeId}`);
+
+    // checks for missing data
+    validationCheck = await planValidation.outcomesValidation(planId);
+
+    // displays or removes alert depending on validationCheck
+    planValidation.reviewsValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
+
+    // displays or removes alerts for tabs in the navs depending on validationCheck
+    planValidation.outcomeTabsValidationCheck(saveUpdateData.outcomeId, validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -1915,7 +1986,23 @@ const planOutcomes = (() => {
     }
 
     reviewsDiv.appendChild(reviewsTable);
-    reviewsDiv.appendChild(addRowBtn);
+
+    const reviewsBtnAlertDiv = document.createElement('div');
+    reviewsBtnAlertDiv.classList.add('btnAlertContainer');
+
+    const reviewAlertDiv = document.createElement('div');
+    reviewAlertDiv.innerHTML = `${icons.error}`;
+    reviewAlertDiv.id = `reviewsAlert${outcomeId}`;
+    reviewAlertDiv.classList.add('reviewsAlert');
+
+    // creates and shows a tip when hovering over the visible alert div
+    planValidation.createTooltip('At least one review must be entered for each outcome', reviewAlertDiv);
+    
+    reviewsBtnAlertDiv.appendChild(addRowBtn);
+    reviewsBtnAlertDiv.appendChild(reviewAlertDiv);
+    reviewsDiv.appendChild(reviewsBtnAlertDiv);
+
+    planValidation.reviewsValidationCheck(validationCheck, outcomeId, reviewAlertDiv)
 
     return reviewsDiv;
   }
@@ -2147,8 +2234,10 @@ const planOutcomes = (() => {
       outcomesUpdateData.details = e.target.value;
       if (outcomesUpdateData.details === '') {
         detailsInput.classList.add('error');
+        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck, true, true);
       } else {
         detailsInput.classList.remove('error');
+        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck, true, false);
       }
     });
     // History
@@ -2283,6 +2372,8 @@ const planOutcomes = (() => {
           outcomeOrder: 0, //need this to  keep from first one defaulting to 2
         });
 
+        validationCheck = await planValidation.outcomesValidation(planId);
+        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck);
         const outcome = buildOutcome({ outcomeId, outcomeOrder, status: '0' });
         outcomesWrap.insertBefore(outcome, addOutcomeBtn);
         checkIfSummaryRequired();
@@ -2320,10 +2411,14 @@ const planOutcomes = (() => {
       isSortable = isReadOnly ? false : true;
     }
 
-    const planOutcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
-      token: $.session.Token,
-      assessmentId: planId,
-    });
+    // const planOutcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
+    //   token: $.session.Token,
+    //   assessmentId: planId,
+    // });
+
+    validationCheck = await planValidation.outcomesValidation(planId);
+     
+    const planOutcomesData = validationCheck.outcomesData;
 
     if (
       !planOutcomesData.planProgressSummary ||
@@ -2348,6 +2443,8 @@ const planOutcomes = (() => {
     dropdownData = planData.getDropdownData();
     outcomesData = mapOutcomesDetails(planOutcomesData);
     hasPreviousPlan = plan.getHasPreviousPlans();
+
+    return validationCheck;
   }
 
   return {
