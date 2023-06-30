@@ -648,7 +648,7 @@ var timeApproval = (function () {
             text: 'All',
         });
 
-        dropdown.populate('subEmployeeList', data, employeeId); 
+        dropdown.populate('subEmployeeList', data, employeeId);
     }
     function buildLocationDropdown() {
         var select = dropdown.build({
@@ -776,7 +776,7 @@ var timeApproval = (function () {
         endDateInput.addEventListener('change', event => {
             if (isValidDate(event.target.value)) {
                 tmpEndDate = event.target.value;
-                payPeriod.end = event.target.value;  
+                payPeriod.end = event.target.value;
                 checkDateValidation();
             } else {
                 event.target.value = tmpEndDate;
@@ -845,7 +845,7 @@ var timeApproval = (function () {
 
 
             }
-            IsFilterDisable = true; 
+            IsFilterDisable = true;
         });
 
         applyBtn.addEventListener('keypress', event => {
@@ -857,14 +857,14 @@ var timeApproval = (function () {
         cancelBtn.addEventListener('click', () => {
             POPUP.hide(filterPopup);
             tmpStartDate = startDate;
-            tmpEndDate = endDate; 
+            tmpEndDate = endDate;
         });
     }
     function showFilterPopup() {
         filterPopup = POPUP.build({ hideX: true });
 
         supervisorDropdown = buildSupervisorDropdown();
-        employeeDropdown = buildEmployeeDropdown(); 
+        employeeDropdown = buildEmployeeDropdown();
         locationDropdown = buildLocationDropdown();
         statusDropdown = buildStatusDropdown();
         workCodeDropdown = buildWorkCodeDropdown();
@@ -903,7 +903,7 @@ var timeApproval = (function () {
         const dateWrap = document.createElement('div');
         dateWrap.classList.add('dateWrap', 'btnWrap');
         dateWrap.appendChild(startDateInput);
-        dateWrap.appendChild(endDateInput); 
+        dateWrap.appendChild(endDateInput);
 
         filterPopup.appendChild(supervisorDropdown);
         filterPopup.appendChild(employeeDropdown);
@@ -1622,10 +1622,14 @@ var timeApproval = (function () {
         workCodeData = await timeEntry.getWorkCodes();
 
         //displayPayPeriodPopup();
-        //startDate = payPeriod.start;
-        //endDate = payPeriod.end;
-        endDate = UTIL.formatDateFromDateObj(dates.addDays(new Date(), 5));
-        startDate = UTIL.formatDateFromDateObj(dates.subDays(new Date(), 1));
+        if (payPeriod.start && payPeriod.end) { 
+            startDate = payPeriod.start;
+            endDate = payPeriod.end;
+        }
+        else {
+            endDate = UTIL.formatDateFromDateObj(dates.addDays(new Date(), 5));
+            startDate = UTIL.formatDateFromDateObj(dates.subDays(new Date(), 1));
+        }
 
         tmpStartDate = startDate;
         tmpEndDate = endDate;
