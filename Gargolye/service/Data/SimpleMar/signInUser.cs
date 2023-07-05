@@ -1,19 +1,10 @@
-﻿using System;
-using System.Data;
-using System.Data.Common;
-using System.Configuration;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Data.SqlClient;
-using RestSharp;
-using System.Net;
+﻿using Anywhere.Data;
 using System.IO;
-using Anywhere.Data;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
-using System.Collections.Generic;
 
 namespace Anywhere.service.Data.SimpleMar
 {
@@ -22,12 +13,13 @@ namespace Anywhere.service.Data.SimpleMar
         JavaScriptSerializer js = new JavaScriptSerializer();
         DataGetter dg = new DataGetter();
         static HttpClient client = new HttpClient();
-        Task <string> Gtoken = null;
+        Task<string> Gtoken = null;
         string url = "";
         string urlLogin = "";
 
         public string createSimpleMarLoginURL(string anywhereToken)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3 ;
             string userId = getUserId(anywhereToken);
             string password = getCred(userId);
             string userName = getUserName(anywhereToken);
@@ -50,8 +42,8 @@ namespace Anywhere.service.Data.SimpleMar
             StreamReader reader = new StreamReader(dataStream);
             string responseFromServer = reader.ReadToEnd();
             return formatToken(responseFromServer);
-        }  
-        
+        }
+
         public string getUserId(string token)
         {
             string userIdString = dg.getUserByTokenJSON(token);

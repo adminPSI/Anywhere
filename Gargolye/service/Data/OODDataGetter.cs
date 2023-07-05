@@ -1,10 +1,8 @@
 ﻿using Anywhere.Log;
 using System;
-using System.Data;
-using System.Data.Odbc;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Web;
 
 namespace Anywhere.service.Data
 {
@@ -12,10 +10,10 @@ namespace Anywhere.service.Data
     {
         private static Loger logger = new Loger();
         Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
-         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
+        Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
 
         //data for OOD Entries Listing on OOD Module Landing Page
-        public string getOODEntries(string consumerIds, string serviceStartDate, string serviceEndDate, string userId,  string serviceCode, string referenceNumber, DistributedTransaction transaction)
+        public string getOODEntries(string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber, DistributedTransaction transaction)
         {
             try
             {
@@ -27,7 +25,7 @@ namespace Anywhere.service.Data
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@serviceCode", DbType.String, serviceCode);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@referenceNumber", DbType.String, referenceNumber);
-                
+
                 // returns the workflow document descriptions for the given workflowId
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getOODEntries(?, ?, ?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
@@ -163,7 +161,7 @@ namespace Anywhere.service.Data
 
         public string getEmployerJSON(string token, string employerId)
         {
-           if (tokenValidator(token) == false) return null;
+            if (tokenValidator(token) == false) return null;
 
             logger.debug("getEmployer" + token);
             try
@@ -198,19 +196,20 @@ namespace Anywhere.service.Data
         }
 
         // Reference Numbers for the selected Consumers data for OOD Entries Listing Filter
-        public string getConsumerReferenceNumbers(string consumerIds, string startDate, string endDate, DistributedTransaction transaction)
+        public string getConsumerReferenceNumbers(string consumerIds, string startDate, string endDate, string serviceType, DistributedTransaction transaction)
         {
 
             try
             {
                 logger.debug("getConsumerReferenceNumbers ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[4];
                 //args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerIds", DbType.String, consumerIds);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDate", DbType.String, startDate);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDate", DbType.String, endDate);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@serviceType", DbType.String, serviceType);
                 //args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hasAssignedFormTypes", DbType.String, hasAssignedFormTypes);
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getConsumerReferenceNumbers(?, ?, ?)", args, ref transaction);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getConsumerReferenceNumbers(?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -249,13 +248,13 @@ namespace Anywhere.service.Data
             try
             {
                 logger.debug("getContactTypes ");
-               
+
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getContactTypes()", ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_OOD_getContactTypes");
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getContactTypes");
                 throw ex;
             }
         }
@@ -273,7 +272,63 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_OOD_getOutcomes");
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getOutcomes");
+                throw ex;
+            }
+        }
+        //  Form 8 Community Based Assessment Form -- Contact Methods data for DDL
+        public string getContactMethods(DistributedTransaction transaction)
+        {
+
+            try
+            {
+                logger.debug("getContactMethods ");
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getContactMethods()", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getContactMethods");
+                throw ex;
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Indicatorss data for DDLs
+        public string getIndicators(DistributedTransaction transaction)
+        {
+
+            try
+            {
+                logger.debug("getIndicators ");
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getIndicators()", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getIndicators");
+                throw ex;
+            }
+        }
+
+        //  Form 8 Community Based Assessment Form -- Positions data for DDL
+        public string getOODPositions(string consumerId, DistributedTransaction transaction)
+        {
+
+            try
+            {
+                logger.debug("getOODPositions ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
+                //args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hasAssignedFormTypes", DbType.String, hasAssignedFormTypes);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getPositions(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("OODDG", ex.Message + "ANYW_OOD_getPositions");
                 throw ex;
             }
         }
@@ -334,7 +389,7 @@ namespace Anywhere.service.Data
 
         public string insertForm4MonthlyPlacementEditData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string employer, string contactType, string jobSeekerPresent, string outcome, string TSCNotified, string bilingualSupplement, string notes, string caseManagerId, string userId, string serviceId, string referenceNumber, string application, string interview)
         {
-             if (tokenValidator(token) == false) return null;
+            if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
             logger.debug("insertForm4MonthlyPlacementEditData" + token);
 
@@ -374,11 +429,11 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string deleteForm4MonthlyPlacementEditData(string caseNoteId, DistributedTransaction transaction)
+        public string deleteOODFormEntry(string caseNoteId, DistributedTransaction transaction)
         {
             try
             {
-                logger.debug("deleteForm4MonthlyPlacementEditData ");
+                logger.debug("deleteOODFormEntry ");
 
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@caseNoteId", DbType.String, caseNoteId);
@@ -409,9 +464,9 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm4MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emEmploymentGoal, string emReferralQuestions, string emIndivInputonSearch, string emPotentialIssueswithProgress, string emPlanGoalsNextMonth, string emNumberofConsumerContacts, string emNumberEmployerContactsbyConsumer, string emNumberEmployerContactsbyStaff, string emNumberMonthsJobDevelopment, string userId)   
+        public string updateForm4MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emEmploymentGoal, string emReferralQuestions, string emIndivInputonSearch, string emPotentialIssueswithProgress, string emPlanGoalsNextMonth, string emNumberofConsumerContacts, string emNumberEmployerContactsbyConsumer, string emNumberEmployerContactsbyStaff, string emNumberMonthsJobDevelopment, string userId)
         {
-             if (tokenValidator(token) == false) return null;
+            if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
             logger.debug("updateForm4MonthlySummary" + token);
 
@@ -447,7 +502,7 @@ namespace Anywhere.service.Data
 
         public string insertForm4MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emEmploymentGoal, string emReferralQuestions, string emIndivInputonSearch, string emPotentialIssueswithProgress, string emPlanGoalsNextMonth, string emNumberofConsumerContacts, string emNumberEmployerContactsbyConsumer, string emNumberEmployerContactsbyStaff, string emNumberMonthsJobDevelopment, string userId, string serviceId)
         {
-             if (tokenValidator(token) == false) return null;
+            if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
             logger.debug("insertForm4MonthlySummary" + token);
 
@@ -482,11 +537,11 @@ namespace Anywhere.service.Data
 
         }
 
-        public string deleteForm4MonthlySummary(string emReviewId, DistributedTransaction transaction)
+        public string deleteFormMonthlySummary(string emReviewId, DistributedTransaction transaction)
         {
             try
             {
-                logger.debug("deleteForm4MonthlySummary ");
+                logger.debug("deleteFormMonthlySummary ");
 
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@emReviewId", DbType.String, emReviewId);
@@ -495,9 +550,187 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("ODG", ex.Message + "deleteForm4MonthlySummary(" + emReviewId + ")");
+                logger.error("ODG", ex.Message + "deleteFormMonthlySummary(" + emReviewId + ")");
                 throw ex;
             }
+        }
+
+        // Form 8 Community Based Assessment
+        public string getForm8CommunityBasedAssessment(string token, string caseNoteId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm8CommunityBasedAssessment" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm8CommunityBasedAssessment('" + token + "', '" + caseNoteId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm8CommunityBasedAssessment('" + token + "', '" + caseNoteId + "')");
+                return "537: Error getting Form8CommunityBasedAssessment";
+            }
+        }
+
+        public string updateForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm8CommunityBasedAssessment" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(SAMLevel);
+            list.Add(position);
+            list.Add(contactMethod);
+            list.Add(behavioralIndicators);
+            list.Add(jobTaskQualityIndicators);
+            list.Add(jobTaskQuantityIndicators);
+            list.Add(narrative);
+            list.Add(interventions);
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm8CommunityBasedAssessment(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                //return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_updateForm4MonthlyPlacementEditData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + userId +  "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm8CommunityBasedAssessment('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + contactMethod + "', '" + behavioralIndicators + "', '" + jobTaskQualityIndicators + "', '" + jobTaskQuantityIndicators + "', '" + narrative + "', '" + interventions + "')");
+                return "536: Error saving Form8CommunityBasedAssessment";
+            }
+        }
+
+        public string insertForm8CommunityBasedAssessment(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string position, string contactMethod, string behavioralIndicators, string jobTaskQualityIndicators, string jobTaskQuantityIndicators, string narrative, string interventions, string userId, string serviceId, string referenceNumber, string caseManagerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm8CommunityBasedAssessment" + token);
+
+            List<string> list = new List<string>();
+
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(caseNoteId);
+            list.Add(serviceDate);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(SAMLevel);
+            list.Add(position);
+            list.Add(contactMethod);
+            list.Add(behavioralIndicators);
+            list.Add(jobTaskQualityIndicators);
+            list.Add(jobTaskQuantityIndicators);
+            list.Add(narrative);
+            list.Add(interventions);
+            list.Add(userId);
+            list.Add(serviceId);
+            list.Add(referenceNumber);
+            list.Add(caseManagerId);
+
+            string text = "CALL DBA.ANYW_OOD_insertForm8CommunityBasedAssessment(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                // return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_insertForm4MonthlyPlacementEditData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + caseManagerId + "', '" + userId + "', '" + serviceId + "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm8CommunityBasedAssessment('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + contactMethod + "', '" + behavioralIndicators + "', '" + jobTaskQualityIndicators + "', '" + jobTaskQuantityIndicators + "', '" + narrative + "', '" + interventions + "')");
+                return "536: Error saving case note";
+            }
+        }
+
+        // Form 8 Monthly Summary -- edit data
+        public string getForm8MonthlySummary(string token, string emReviewId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm8MonthlySummary" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm8MonthlySummary('" + token + "', '" + emReviewId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm8MonthlySummary('" + token + "', '" + emReviewId + "')");
+                return "537: Error getting emREview to edit";
+            }
+        }
+
+        public string updateForm8MonthlySummary(string token, string consumerId, string emReviewId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm8MonthlySummary" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(emReviewId);
+            list.Add(emReviewDate);
+            list.Add(emReferenceNumber);
+            list.Add(emNextScheduledReview);
+            list.Add(emSummaryIndivSelfAssessment);
+            list.Add(emSummaryIndivEmployerAssessment);
+            list.Add(emSummaryIndivProviderAssessment);
+            list.Add(emSupportandTransition);
+            list.Add(emReviewVTS);
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm8MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4PODG", ex.Message + "ANYW_OOD_updateForm8MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4APODG: error ANYW_OOD_updateForm8MonthlySummary";
+            }
+
+        }
+
+        public string insertForm8MonthlySummary(string token, string consumerId, string emReviewDate, string emReferenceNumber, string emNextScheduledReview, string emSummaryIndivSelfAssessment, string emSummaryIndivEmployerAssessment, string emSummaryIndivProviderAssessment, string emSupportandTransition, string emReviewVTS, string userId, string serviceId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm8MonthlySummary" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(emReviewDate);
+            list.Add(emReferenceNumber);
+            list.Add(emNextScheduledReview);
+            list.Add(emSummaryIndivSelfAssessment);
+            list.Add(emSummaryIndivEmployerAssessment);
+            list.Add(emSummaryIndivProviderAssessment);
+            list.Add(emSupportandTransition);
+            list.Add(emReviewVTS);
+            list.Add(userId);
+            list.Add(serviceId);
+
+            string text = "CALL DBA.ANYW_OOD_insertForm8MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4PODG", ex.Message + "ANYW_OOD_insertForm8MonthlySummary(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4APODG: error ANYW_OOD_insertForm8MonthlySummary";
+            }
+
         }
 
         public bool tokenValidator(string token)

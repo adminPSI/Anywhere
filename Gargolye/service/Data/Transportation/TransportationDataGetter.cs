@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 namespace Anywhere.service.Data.Transportation
 {
@@ -15,7 +14,7 @@ namespace Anywhere.service.Data.Transportation
         private static Loger logger = new Loger();
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
-        public string getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId)
+        public string getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId, string vehicleId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getMyRoutes " + token);
@@ -25,6 +24,7 @@ namespace Anywhere.service.Data.Transportation
             list.Add(serviceDateStop);
             list.Add(personId);
             list.Add(locationId);
+            list.Add(vehicleId);
             string text = "CALL DBA.ANYW_Transportation_getTrips(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.Transportation
@@ -154,9 +151,9 @@ namespace Anywhere.service.Data.Transportation
             public string routeId { get; set; }
             public string note { get; set; }
         }
-        public Trips[] getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId)
+        public Trips[] getTrips(string token, string serviceDateStart, string serviceDateStop, string personId, string locationId, string vehicleId)
         {
-            string tripsString = tdg.getTrips(token, serviceDateStart, serviceDateStop, personId, locationId);
+            string tripsString = tdg.getTrips(token, serviceDateStart, serviceDateStop, personId, locationId, vehicleId);
             Trips[] tripsObj = js.Deserialize<Trips[]>(tripsString);
             return tripsObj;
         }

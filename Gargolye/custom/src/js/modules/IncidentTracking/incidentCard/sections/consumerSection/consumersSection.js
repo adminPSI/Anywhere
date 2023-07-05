@@ -1,287 +1,293 @@
-var itConsumerSection = (function() {
-	// DOM
-  //---------------------
-  var section;
-  var sectionBody;
-  var consumerError;
-  var consumersWrap;
-  var consumerSections;
-	// DATA
-  //---------------------
-  var activeConsumers = [];
-  var consumersInvolved;
-  var consumerInvolvedIdArray;
-	// Values
-  //---------------------
+// var itConsumerSection = (function () {
+//   // DOM
+//   // ---------------------
+//   var section;
+//   var sectionBody;
+//   var consumerError;
+//   var consumersWrap;
+//   var consumerSections;
+//   // DATA
+//   //---------------------
+//   var activeConsumers = [];
+//   var consumersInvolved;
+//   var consumerInvolvedIdArray;
+//   // Values
+//   // ---------------------
 
-  function clearData(){
-    consumerFollowUp.clearData();
-    consumerInjuries.clearData();
-    consumerIntervention.clearData();
-    consumerInvolvement.clearData();
-    consumerReporting.clearData();
-    consumerReview.clearData();
-    activeConsumers = [];
-  }
-  function deleteConsumerData(consumerId) {
-    consumerFollowUp.deleteConsumerData(consumerId);
-    consumerInjuries.deleteConsumerData(consumerId);
-    consumerIntervention.deleteConsumerData(consumerId);
-    consumerInvolvement.deleteConsumerData(consumerId);
-    consumerReporting.deleteConsumerData(consumerId);
-    consumerReview.deleteConsumerData(consumerId);
-  }
+//   function clearData() {
+//     consumerFollowUp.clearData();
+//     consumerInjuries.clearData();
+//     consumerIntervention.clearData();
+//     consumerInvolvement.clearData();
+//     consumerReporting.clearData();
+//     consumerReview.clearData();
+//     // consumerBehavior.clearData();
+//     activeConsumers = [];
+//   }
+//   function deleteConsumerData(consumerId) {
+//     consumerFollowUp.deleteConsumerData(consumerId);
+//     consumerInjuries.deleteConsumerData(consumerId);
+//     consumerIntervention.deleteConsumerData(consumerId);
+//     consumerInvolvement.deleteConsumerData(consumerId);
+//     consumerReporting.deleteConsumerData(consumerId);
+//     consumerReview.deleteConsumerData(consumerId);
+//     // consumerBehavior.deleteConsumerData(consumerId);
+//   }
 
-  function getConsumersInvolved() {
-    if (consumersInvolved) return [...consumersInvolved];
-  }
-  function getConsumersInvolvedIds() {
-    if (consumerInvolvedIdArray && consumerInvolvedIdArray.length > 0) {
-      return [...consumerInvolvedIdArray];
-    }
-  }
+//   function getConsumersInvolved() {
+//     if (consumersInvolved) return [...consumersInvolved];
+//   }
+//   function getConsumersInvolvedIds() {
+//     if (consumerInvolvedIdArray && consumerInvolvedIdArray.length > 0) {
+//       return [...consumerInvolvedIdArray];
+//     }
+//   }
 
-  function showConsumersWrap() {
-    consumersWrap.classList.add('visible');
-    consumerSections.classList.remove('visible');
-  }
-  function displayCount() {
-    var count = activeConsumers.length;
-    var countHolder = section.querySelector('span[data-count="consumers"]');
-		countHolder.innerHTML = `( ${count} )`;
-  }
-  function checkForRequiredConsumer() {
-    if (activeConsumers.length === 0) {
-      consumerError.classList.remove('hidden');
-      consumersWrap.classList.remove('visible');
-      consumerSections.classList.remove('visible');
+//   function showConsumersWrap() {
+//     consumersWrap.classList.add('visible');
+//     consumerSections.classList.remove('visible');
+//   }
+//   function displayCount() {
+//     var count = activeConsumers.length;
+//     var countHolder = section.querySelector('span[data-count="consumers"]');
+//     countHolder.innerHTML = `( ${count} )`;
+//   }
+//   function checkForRequiredConsumer() {
+//     if (activeConsumers.length === 0) {
+//       consumerError.classList.remove('hidden');
+//       consumersWrap.classList.remove('visible');
+//       consumerSections.classList.remove('visible');
 
-      incidentCard.toggleSave(true);
-			return;
-    }
+//       incidentCard.toggleSave(true);
+//       return;
+//     }
 
-    consumerError.classList.add('hidden');
-    consumersWrap.classList.add('visible');
-  }
-  function removeConsumerErrors() {
-    var consumerCards = [].slice.call(consumersWrap.querySelectorAll('.consumerCard'));
-    consumerCards.forEach(card => card.classList.remove('error'));
+//     consumerError.classList.add('hidden');
+//     consumersWrap.classList.add('visible');
+//   }
+//   function removeConsumerErrors() {
+//     var consumerCards = [].slice.call(consumersWrap.querySelectorAll('.consumerCard'));
+//     consumerCards.forEach(card => card.classList.remove('error'));
 
-    var cardHasErrors = itDetailsSection.checkRequiredFields();
-    
-    if (cardHasErrors) {
-      incidentCard.toggleSave(true);
-    } else {
-      incidentCard.toggleSave(false);
-    }
-   
-  }
-  function showConsumerError(consumerIdArray) {
-    incidentCard.toggleSave(true);
+//     var cardHasErrors = itDetailsSection.checkRequiredFields();
 
-    var consumerCards = [].slice.call(consumersWrap.querySelectorAll('.consumerCard'));
+//     if (cardHasErrors) {
+//       incidentCard.toggleSave(true);
+//     } else {
+//       incidentCard.toggleSave(false);
+//     }
+//   }
+//   function showConsumerError(consumerIdArray) {
+//     incidentCard.toggleSave(true);
 
-    if (consumerIdArray[0] === '%') {
-      // mark all
-      // show error "At least one consumer must have PPI checked."
-      consumerCards.forEach(card => card.classList.add('error'));
-      return;
-    }
+//     var consumerCards = [].slice.call(consumersWrap.querySelectorAll('.consumerCard'));
 
-    consumerCards.forEach(card => {
-      var cardId = card.dataset.consumerId;
-      if (consumerIdArray.includes(cardId)) {
-        card.classList.add('error');
-      } else {
-        card.classList.remove('error');
-      }
-    });
-  }
+//     if (consumerIdArray[0] === '%') {
+//       // mark all
+//       // show error "At least one consumer must have PPI checked."
+//       consumerCards.forEach(card => card.classList.add('error'));
+//       return;
+//     }
 
-  function moveConsumersToConsumersInvolved(consumers) {
-    var initPromises = [];
+//     consumerCards.forEach(card => {
+//       var cardId = card.dataset.consumerId;
+//       if (consumerIdArray.includes(cardId)) {
+//         card.classList.add('error');
+//       } else {
+//         card.classList.remove('error');
+//       }
+//     });
+//   }
 
-    consumersWrap.classList.add('visible');
+//   function moveConsumersToConsumersInvolved(consumers) {
+//     var initPromises = [];
 
-    consumers.forEach(consumer => {
-      //If consumer is already on the selected consumer list ignore
-			if (activeConsumers.filter(actConsumer => actConsumer.id === consumer.id).length > 0) return
-			consumer.card.classList.remove('highlighted');
-			var clone = consumer.card.cloneNode(true);
-			var card = buildConsumer(clone);
-      consumersWrap.appendChild(card);
-      var initPromise = consumerInvolvement.initConsumerData(consumer.id);
-      initPromises.push(initPromise);
-    });
+//     consumersWrap.classList.add('visible');
 
-    activeConsumers = roster2.getActiveConsumers();
-    checkForRequiredConsumer();
-    displayCount();
+//     consumers.forEach(consumer => {
+//       //If consumer is already on the selected consumer list ignore
+//       if (activeConsumers.filter(actConsumer => actConsumer.id === consumer.id).length > 0) return;
+//       consumer.card.classList.remove('highlighted');
+//       var clone = consumer.card.cloneNode(true);
+//       var card = buildConsumer(clone);
+//       consumersWrap.appendChild(card);
+//       var initPromise = consumerInvolvement.initConsumerData(consumer.id);
+//       initPromises.push(initPromise);
+//     });
 
-    Promise.all(initPromises).then(() => {
-      consumerInvolvement.checkRequiredFields();
-    });
+//     activeConsumers = roster2.getActiveConsumers();
+//     checkForRequiredConsumer();
+//     displayCount();
 
-    // Event when you add a consumer
-    // 1. Ensure that all required fields are filled in on the  details section
-    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+//     Promise.all(initPromises).then(() => {
+//       consumerInvolvement.checkRequiredFields();
+//     });
 
-    if (detailSectionHasErrors) {
-      incidentCard.toggleSave(true);
-    } else {
-      incidentCard.toggleSave(false);
-    }
+//     // Event when you add a consumer
+//     // 1. Ensure that all required fields are filled in on the  details section
+//     var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
 
-  }
-  function removeConsumerFromConsumersInvolved(selectedConsumerId) {
-    var consumerCard = document.querySelector(`[data-consumer-id="${selectedConsumerId}"]`).parentElement;
-    consumersWrap.removeChild(consumerCard);
+//     if (detailSectionHasErrors) {
+//       incidentCard.toggleSave(true);
+//     } else {
+//       incidentCard.toggleSave(false);
+//     }
+//   }
+//   function removeConsumerFromConsumersInvolved(selectedConsumerId) {
+//     var consumerCard = document.querySelector(
+//       `[data-consumer-id="${selectedConsumerId}"]`,
+//     ).parentElement;
+//     consumersWrap.removeChild(consumerCard);
 
-    consumerSections.classList.remove('visible');
-    
-    incidentCard.toggleActionBtns(false);
+//     consumerSections.classList.remove('visible');
 
-    roster2.removeConsumerFromActiveConsumers(selectedConsumerId);
-    activeConsumers = roster2.getActiveConsumers();
+//     incidentCard.toggleActionBtns(false);
 
-    deleteConsumerData(selectedConsumerId);
+//     roster2.removeConsumerFromActiveConsumers(selectedConsumerId);
+//     activeConsumers = roster2.getActiveConsumers();
 
-    checkForRequiredConsumer();
-    consumerInvolvement.checkRequiredFields();
-    displayCount();
-    roster2.toggleMiniRosterBtnVisible(true)
+//     deleteConsumerData(selectedConsumerId);
 
-    // Event when you remove a consumer
-    // 1. Ensure that at least one consumer is selected
-    // 2. Ensure that all required fields are filled in on the  details section
-    var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
-    //var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
-   // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
+//     checkForRequiredConsumer();
+//     consumerInvolvement.checkRequiredFields();
+//     displayCount();
+//     roster2.toggleMiniRosterBtnVisible(true);
 
-    if (detailSectionHasErrors || activeConsumers.length === 0) {
-      incidentCard.toggleSave(true);
-    } else {
-      incidentCard.toggleSave(false);
-    }
+//     // Event when you remove a consumer
+//     // 1. Ensure that at least one consumer is selected
+//     // 2. Ensure that all required fields are filled in on the  details section
+//     var detailSectionHasErrors = itDetailsSection.checkRequiredFields();
+//     //var consumerSectionHasErrors = incidentCard.checkforRequiredConsumer();
+//     // var consumerSectionConsumers = itConsumerSection.getConsumersInvolvedIds();
 
-  }
-  
-  // Populate
-  //-----------------------------------------------
-  function populateConsumersWrap() {
-    consumerInvolvedIdArray = [];
+//     if (detailSectionHasErrors || activeConsumers.length === 0) {
+//       incidentCard.toggleSave(true);
+//     } else {
+//       incidentCard.toggleSave(false);
+//     }
+//   }
 
-    consumersInvolved.forEach(c => {
-      consumerInvolvedIdArray.push({id: c.consumerId, involvedId: c.consumerInvolvedId});
-      // build consumer card
-      var consumer = roster2.buildConsumerCard({
-        FN: c.firstName,
-        LN: c.lastName,
-        id: c.consumerId
-      });
-      // build incident card
-      var card = buildConsumer(consumer);
-      consumersWrap.appendChild(card);
-      // move consumer to avtive list
-      roster2.addConsumerToActiveConsumers(consumer);
-    });
+//   // Populate
+//   //-----------------------------------------------
+//   function populateConsumersWrap() {
+//     consumerInvolvedIdArray = [];
 
-    activeConsumers = roster2.getActiveConsumers();
+//     consumersInvolved.forEach(c => {
+//       consumerInvolvedIdArray.push({ id: c.consumerId, involvedId: c.consumerInvolvedId });
+//       // build consumer card
+//       var consumer = roster2.buildConsumerCard({
+//         FN: c.firstName,
+//         LN: c.lastName,
+//         id: c.consumerId,
+//       });
+//       // build incident card
+//       var card = buildConsumer(consumer);
+//       consumersWrap.appendChild(card);
+//       // move consumer to avtive list
+//       roster2.addConsumerToActiveConsumers(consumer);
+//     });
 
-    consumersWrap.classList.add('visible');
+//     activeConsumers = roster2.getActiveConsumers();
 
-    checkForRequiredConsumer();
-    consumerInvolvement.checkRequiredFields();
-    displayCount();
-  }
+//     consumersWrap.classList.add('visible');
 
-  // Consumer Card
-  //-----------------------------------------------
-	function buildConsumer(consumerCard) {
-    function checkInvolvedRequirements() {
-      const locationId = consumerInvolvement.involvementDataLookup(consumerCard.dataset.consumerId).locationId;
-      const involvementSec = document.querySelector("[data-sectionid='4']");
-      if (locationId === "" || consumerInvolvement.checkOneHasPPI() === false) {
-        involvementSec.classList.add('sectionError');
-      } else {
-        involvementSec.classList.remove('sectionError');
-      }
-    }    
-		consumerCard.classList.remove('highlighted');
+//     checkForRequiredConsumer();
+//     consumerInvolvement.checkRequiredFields();
+//     displayCount();
+//   }
 
-		var cardWrap = document.createElement('div');
-		cardWrap.classList.add('incidentCard__consumer');
-    
-		// build card
-		cardWrap.appendChild(consumerCard);
+//   // Consumer Card
+//   //-----------------------------------------------
+//   function buildConsumer(consumerCard) {
+//     function checkInvolvedRequirements() {
+//       const locationId = consumerInvolvement.involvementDataLookup(
+//         consumerCard.dataset.consumerId,
+//       ).locationId;
 
-		// card event
-		cardWrap.addEventListener('click', function() {
-			if (event.target === consumerCard) {
-        incidentCard.toggleActionBtns(true);
-        consumersWrap.classList.remove('visible');
-        consumerSections.classList.add('visible');
-        consumerSubSections.showMenu(consumerCard);
-        checkInvolvedRequirements()
-        if (document.querySelector('.consumerListBtn')) roster2.toggleMiniRosterBtnVisible(false);
-			}
-		});
+//       const involvementSec = document.querySelector("[data-sectionid='4']");
 
-		return cardWrap;
-	}
+//       if (locationId === '' || consumerInvolvement.checkOneHasPPI() === false) {
+//         involvementSec.classList.add('sectionError');
+//       } else {
+//         involvementSec.classList.remove('sectionError');
+//       }
+//     }
 
-  // Section
-  //-----------------------------------------------
-  function buildSection(options, consumersInvolvedData) {
-    var opts = options;
-    consumersInvolved = consumersInvolvedData;
+//     consumerCard.classList.remove('highlighted');
 
-		section = document.createElement('div');
-		section.classList.add('incidentSection', 'visible');
-		section.setAttribute('data-card-page', 'consumers');
-		section.setAttribute('data-page-num', opts.pageNumber);
+//     var cardWrap = document.createElement('div');
+//     cardWrap.classList.add('incidentCard__consumer');
 
-		var heading = document.createElement('div');
-    heading.classList.add('incidentSection__header');
-		heading.innerHTML = `<h3>Consumers Involved <span data-count="consumers"></span></h3>`;
+//     // build card
+//     cardWrap.appendChild(consumerCard);
 
-		sectionBody = document.createElement('div');
-    sectionBody.classList.add('incidentSection__body');
-    
-		consumerError = document.createElement('p');
-		consumerError.classList.add('consumerError');
-    consumerError.innerHTML = 'You must select at least one consumer';
-    
-    consumersWrap = document.createElement('div');
-    consumersWrap.classList.add('consumersWrap');
+//     // card event
+//     cardWrap.addEventListener('click', function (event) {
+//       if (event.target === consumerCard) {
+//         incidentCard.toggleActionBtns(true);
+//         consumersWrap.classList.remove('visible');
+//         consumerSections.classList.add('visible');
+//         consumerSubSections.showMenu(consumerCard);
+//         checkInvolvedRequirements();
+//         if (document.querySelector('.consumerListBtn')) roster2.toggleMiniRosterBtnVisible(false);
+//       }
+//     });
 
-    consumerSections = consumerSubSections.build(consumersInvolved);
+//     return cardWrap;
+//   }
 
-    sectionBody.appendChild(consumerError);
-    sectionBody.appendChild(consumersWrap);
-    sectionBody.appendChild(consumerSections);
-    
-    section.appendChild(heading);
-    section.appendChild(sectionBody);
+//   // Section
+//   //-----------------------------------------------
+//   function buildSection(options, consumersInvolvedData) {
+//     var opts = options;
+//     consumersInvolved = consumersInvolvedData;
 
-    if (consumersInvolved) {
-      populateConsumersWrap();
-    } else {
-      consumerInvolvedIdArray = undefined;
-    }
-    
-    return section;
-  }
-  
-  return {
-    build: buildSection,
-    addConsumers: moveConsumersToConsumersInvolved,
-    removeConsumer: removeConsumerFromConsumersInvolved,
-    showConsumersWrap,
-    getConsumersInvolved,
-    getConsumersInvolvedIds,
-    removeConsumerErrors,
-    showConsumerError,
-    clearData,
-  }
-})();
+//     section = document.createElement('div');
+//     section.classList.add('incidentSection', 'visible');
+//     section.setAttribute('data-card-page', 'consumers');
+//     section.setAttribute('data-page-num', opts.pageNumber);
+
+//     var heading = document.createElement('div');
+//     heading.classList.add('incidentSection__header');
+//     heading.innerHTML = `<h3>Consumers Involved <span data-count="consumers"></span></h3>`;
+
+//     sectionBody = document.createElement('div');
+//     sectionBody.classList.add('incidentSection__body');
+
+//     consumerError = document.createElement('p');
+//     consumerError.classList.add('consumerError');
+//     consumerError.innerHTML = 'You must select at least one consumer';
+
+//     consumersWrap = document.createElement('div');
+//     consumersWrap.classList.add('consumersWrap');
+
+//     consumerSections = consumerSubSections.build(consumersInvolved);
+
+//     sectionBody.appendChild(consumerError);
+//     sectionBody.appendChild(consumersWrap);
+//     sectionBody.appendChild(consumerSections);
+
+//     section.appendChild(heading);
+//     section.appendChild(sectionBody);
+
+//     if (consumersInvolved) {
+//       populateConsumersWrap();
+//     } else {
+//       consumerInvolvedIdArray = undefined;
+//     }
+
+//     return section;
+//   }
+
+//   return {
+//     build: buildSection,
+//     addConsumers: moveConsumersToConsumersInvolved,
+//     removeConsumer: removeConsumerFromConsumersInvolved,
+//     showConsumersWrap,
+//     getConsumersInvolved,
+//     getConsumersInvolvedIds,
+//     removeConsumerErrors,
+//     showConsumerError,
+//     clearData,
+//   };
+// })();

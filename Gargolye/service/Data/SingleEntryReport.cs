@@ -1,17 +1,9 @@
-﻿using Anywhere.Log;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.VisualBasic;
-using System.Collections;
-using System.Data;
-using System.Diagnostics;
-using CrystalDecisions;
-using System.IO;
+﻿using Anywhere.Data;
+using Anywhere.Log;
 using CrystalDecisions.CrystalReports.Engine;
+using System;
 using System.Data;
-using Anywhere.Data;
+using System.IO;
 
 
 namespace Anywhere.service.Data
@@ -62,7 +54,7 @@ namespace Anywhere.service.Data
         public MemoryStream createRegReport(string token, string userId, string startDate, string endDate)
         {
             ReportDocument cr = new ReportDocument();
-            
+
             string crName = string.Empty;
             string crPath = string.Empty;
             string crFinal = string.Empty;
@@ -70,8 +62,8 @@ namespace Anywhere.service.Data
             crPath = dg.getSingleEntryReportPath(token);
             var startPath = crPath.IndexOf("<path>");
             var endPath = crPath.IndexOf("</path>");
-            crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));                 
-            
+            crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
+
             crName = "SingleEntry.rpt";
             //string test = string.Format(crPath, crName);
             try
@@ -80,12 +72,12 @@ namespace Anywhere.service.Data
                 cr.Load(string.Format(crPath, crName));
             }
             catch (Exception ex)
-            {                
+            {
                 var builder = new System.Text.StringBuilder();
                 WriteExceptionDetails(ex, builder, 0);
                 logger.debug(builder.ToString());
             }
-            
+
             cr.SetDataSource(obj.TimeDetail(userId, startDate, endDate));
             string Region = string.Empty;
             string Name = string.Empty;
@@ -156,6 +148,6 @@ namespace Anywhere.service.Data
             return ms;
 
         }
-       
+
     }
 }

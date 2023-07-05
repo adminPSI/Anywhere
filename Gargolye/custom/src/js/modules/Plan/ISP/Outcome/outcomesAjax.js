@@ -27,6 +27,32 @@ const planOutcomesAjax = (() => {
     }
   }
 
+  async function getPlanOutcomesPaidSupportProviders(assessmentId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getPlanOutcomesPaidSupportProviders/',
+        data: JSON.stringify({
+          assessmentId: assessmentId,
+          
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
   // INSERT
   //------------------------------------
   async function insertPlanOutcomeProgressSummary(retrieveData) {
@@ -521,6 +547,7 @@ const planOutcomesAjax = (() => {
   }
 
   return {
+    getPlanOutcomesPaidSupportProviders,
     getPlanSpecificOutcomes,
     insertPlanOutcome,
     insertPlanOutcomesExperience,

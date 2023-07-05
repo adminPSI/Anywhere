@@ -100,7 +100,46 @@ var schedulingRequestTimeOff = (function() {
     reasonId = dropdownData[0].id;
   }
 
-  function submitRequest() {
+  function overlapAlert(requestData) {
+
+    var alertPopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+    });
+    var alertbtnWrap = document.createElement('div');
+    alertbtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      icon: 'checkmark',
+      callback: async function() {
+        POPUP.hide(alertPopup);
+       // overlay.show();
+        
+      },
+    });
+
+    alertbtnWrap.appendChild(alertokBtn);
+
+    var Date = `${requestData.serviceDate.split(' ')[0]}`;
+    var startTime = `${UTIL.convertFromMilitary(requestData.startTime)}`;
+    var endTime = `${UTIL.convertFromMilitary(requestData.endTime)}`;
+
+    // Create the alert message
+    const alertMessage = document.createElement('p');
+    alertMessage.innerHTML = `This request overlaps an existing day off request on ${Date} ${startTime}-${endTime} and could not be processed.`;
+    
+    // Append the alert message and button wrapper to the alert popup
+    alertPopup.appendChild(alertMessage);
+    alertPopup.appendChild(alertbtnWrap);
+    
+    // Show the alert popup
+    POPUP.show(alertPopup);
+	
+  }
+
+  async function submitRequest() {
     reasonId = reasonId === "%" ? null : reasonId;
     employeeId = employeeId === "%" ? null : employeeId;
     if (reasonId === null || employeeId === null) {
@@ -170,10 +209,15 @@ var schedulingRequestTimeOff = (function() {
       employeeNotifiedId: employeeId,
       status: "P"
     };
-    schedulingAjax.requestDaysOffSchedulingAjax(data);
-    // Add verification/popup that the request has been sent?
+    const requestResult = await schedulingAjax.requestDaysOffSchedulingAjax(data);
+    if (requestResult.requestDaysOffSchedulingResult.length > 0)
+    {
+      overlapAlert(requestResult.requestDaysOffSchedulingResult[0])
+    } else {
+      // Add verification/popup that the request has been sent?
     DOM.clearActionCenter();
     scheduling.init();
+    }
   }
 
   function buildRequestTimeOff() {

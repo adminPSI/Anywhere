@@ -78,6 +78,7 @@
 
   &.menu-visible {
     transform: translateY(0);
+    z-index: 101;
   }
 }
 .submenu {
@@ -180,21 +181,15 @@
       margin-bottom: 0;
       border-bottom: $w-sm solid rgba($white, 0.3);
     }
-    [data-menu='defaults'] {
+    [data-menu='information'] {
       padding: 0 0 15px;
     }
   }
   // defaults menu
   &__defaults,
   &__widgetSettings,
-  &__settings {
-    transform: translateX(100%);
-
-    &.menu-visible {
-      transform: translateX(0);
-    }
-  }
-
+  &__settings,
+  &__info,
   &__help {
     transform: translateX(100%);
 
@@ -202,6 +197,14 @@
       transform: translateX(0);
     }
   }
+
+  // &__help {
+  //   transform: translateX(100%);
+
+  //   &.menu-visible {
+  //     transform: translateX(0);
+  //   }
+  // }
 }
 // Default Settings Submenu
 .defaultLocation {

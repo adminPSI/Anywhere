@@ -13,7 +13,13 @@ const planOutcomes = (() => {
   let teamMembers;
   let hasPreviousPlan;
   let charLimits;
+  let responseIdCache = {};
+  // Selected Vendors => Experiences/WhoResponsible
+  let selectedVendors = {};
 
+  function getSelectedVendors() {
+    return Object.values(selectedVendors);
+  }
   //*------------------------------------------------------
   //* UTILS
   //*------------------------------------------------------
@@ -182,7 +188,8 @@ const planOutcomes = (() => {
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
-  function populateResponsibleProviderDropdown(dropdownEle, defaultValue) {
+
+  async function populateResponsibleProviderDropdown(dropdownEle, defaultValue) {
     const data = dropdownData.serviceVendors.map(dd => {
       return {
         value: dd.vendorId,
@@ -190,14 +197,90 @@ const planOutcomes = (() => {
       };
     });
 
-    data.sort((a, b) => {
+    // const selectedVendorIds = servicesSupports.getSelectedVendorIds();
+
+    const { getPlanOutcomesPaidSupportProvidersResult: selectedVendors } =
+      await planOutcomesAjax.getPlanOutcomesPaidSupportProviders(planId);
+
+    const selectedVendorIds = getSelectedVendorIds();
+
+    const nonPaidSupportData = data.filter(provider => !selectedVendorIds.includes(provider.value));
+    const paidSupportData = data.filter(provider => selectedVendorIds.includes(provider.value));
+
+    const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
+      return {
+        value: dd.value,
+        text: dd.text,
+      };
+    });
+    const paidSupportDropdownData = paidSupportData.map(dd => {
+      return {
+        value: dd.value,
+        text: dd.text,
+      };
+    });
+
+    nonPaidSupportDropdownData.sort((a, b) => {
       const textA = a.text.toUpperCase();
       const textB = b.text.toUpperCase();
       return textA < textB ? -1 : textA > textB ? 1 : 0;
     });
-    data.unshift({ value: '%', text: '' });
+    paidSupportDropdownData.sort((a, b) => {
+      const textA = a.text.toUpperCase();
+      const textB = b.text.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
 
-    dropdown.populate(dropdownEle, data, defaultValue);
+    const nonGroupedDropdownData = [{ value: '', text: '[SELECT A PROVIDER]' }];
+    const paidSupportGroup = {
+      groupLabel: 'Paid Support Providers',
+      groupId: 'isp_ss_providerDropdown_paidSupportProviders',
+      dropdownValues: paidSupportDropdownData,
+    };
+    const nonPaidSupportGroup = {
+      groupLabel: 'Other Providers',
+      groupId: 'isp_ss_providerDropdown_nonPaidSupportProviders',
+      dropdownValues: nonPaidSupportDropdownData,
+    };
+
+    const groupDropdownData = [];
+    if (paidSupportDropdownData.length > 0) {
+      groupDropdownData.push(paidSupportGroup);
+    }
+
+    //if there's no default value, and only one option, make that option the default
+    if (!defaultValue) {
+      const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
+      if (tempData.length === 1) {
+        defaultValue = tempData[0].value;
+        saveUpdateProvider = defaultValue;
+        dropdownEle.classList.remove('error');
+      }
+    }
+
+    groupDropdownData.push(nonPaidSupportGroup);
+
+    dropdown.groupingPopulate({
+      dropdown: dropdownEle,
+      data: groupDropdownData,
+      nonGroupedData: nonGroupedDropdownData,
+      defaultVal: defaultValue,
+    });
+
+    function getSelectedVendorIds() {
+      return selectedVendors.reduce((acc, vendor) => {
+        acc.push(vendor.vendorId);
+        return acc;
+      }, []);
+    }
+    // data.sort((a, b) => {
+    //   const textA = a.text.toUpperCase();
+    //   const textB = b.text.toUpperCase();
+    //   return textA < textB ? -1 : textA > textB ? 1 : 0;
+    // });
+    // data.unshift({ value: '%', text: '' });
+
+    // dropdown.populate(dropdownEle, data, defaultValue);
   }
   function populateResponsibleContactDropdown(dropdownEle, defaultValue) {
     const data = dropdownData.relationships.map(dd => {
@@ -238,6 +321,10 @@ const planOutcomes = (() => {
   //* OUTCOME, DETAILS & HISTORY
   //*------------------------------------------------------
   async function insertOutcome(saveData, fromAssessment) {
+    if (fromAssessment) {
+      planId = plan.getCurrentPlanId();
+    }
+
     const outcomeId = await planOutcomesAjax.insertPlanOutcome({
       token: $.session.Token,
       assessmentId: planId,
@@ -292,6 +379,20 @@ const planOutcomes = (() => {
       token: $.session.Token,
       outcomeId,
     });
+
+    if (outcomesData[outcomeId].experiences) {
+      Object.values(outcomesData[outcomeId].experiences).forEach(exp => {
+        Object.values(exp.responsibilities).forEach(resp => {
+          delete selectedVendors[resp.responsibilityIds];
+        });
+      });
+    }
+
+    if (responseIdCache[outcomeId]) {
+      responseIdCache[outcomeId].forEach(respId => {
+        delete selectedVendors[respId];
+      });
+    }
   }
   //-- Markup ---------
   function toggleAddNewOutcomePopupDoneBtn() {
@@ -522,7 +623,7 @@ const planOutcomes = (() => {
     const outcomeId = saveData.outcomeId;
     const whatHappened = saveData.whatHappened;
     const howHappened = saveData.howHappened;
-    const experienceOrder = `${saveData.experienceOrder}`;
+    const experienceOrder = `${saveData.experienceOrder + 1}`;
 
     //* Insert Experience
     //*---------------------------
@@ -578,6 +679,13 @@ const planOutcomes = (() => {
         saveData.responsibilities[index].whenHowOftenText,
       );
 
+      const vendorID =
+        saveData.responsibilities[index].responsibleContact === '%'
+          ? saveData.responsibilities[index].responsibleProvider
+          : saveData.responsibilities[index].responsibleContact;
+      const respId = saveData.responsibilities[index].responsibilityIds;
+      selectedVendors[respId] = vendorID;
+
       if (index === 0) {
         newTableData.push({
           // id: `resp${id}`,
@@ -592,6 +700,9 @@ const planOutcomes = (() => {
         });
       }
     });
+
+    //* Cache responsIDs
+    responseIdCache[outcomeId] = [...respIds];
 
     //* New Table
     //*---------------------------
@@ -610,9 +721,30 @@ const planOutcomes = (() => {
     //* Build Table
     const experiencesTable = table.build(tableOptions);
     experiencesTable.classList.add(`experiencesTable`);
+    experiencesTable.classList.add('sortableTable');
     //* Populate Table
-    table.populate(experiencesTable, newTableData, false);
+    table.populate(experiencesTable, newTableData, isSortable);
+
+    const experiencesDummyTable = document.querySelector(`#experiencesTableDummy${outcomeId}`);
+
+    // Make tables sortable
+    Sortable.create(experiencesDummyTable, {
+      handle: '.experiencesTable', // Set the handle to the table class
+      draggable: '.experiencesTable', // Set the draggable elements to the table class
+      onEnd: async sortData => {
+        const experienceId = sortData.item.id.replace('experiencesTable', '');
+        await planOutcomesAjax.updatePlanOutcomesExperienceOrder({
+          token: $.session.Token,
+          outcomeId: parseInt(outcomeId),
+          experienceId: parseInt(experienceId),
+          newPos: parseInt(sortData.newDraggableIndex),
+          oldPos: parseInt(sortData.oldDraggableIndex),
+        });
+      },
+    });
+
     //* Append Table
+    experiencesDummyTable.appendChild(experiencesTable);
     const addExpTableBtn = expTableWrap.querySelector('.btn');
     expTableWrap.insertBefore(experiencesTable, addExpTableBtn);
   }
@@ -656,6 +788,9 @@ const planOutcomes = (() => {
             token: $.session.Token,
             responsibilityId: parseInt(resp.responsibilityIds),
           });
+
+          const respId = resp.responsibilityIds;
+          delete selectedVendors[respId];
         }
       }
     });
@@ -679,8 +814,14 @@ const planOutcomes = (() => {
         whenHowOftenText,
       );
 
+      const vendorID =
+        resp.responsibleContact === '%' ? resp.responsibleProvider : resp.responsibleContact;
+      const respId = resp.responsibilityIds;
+      selectedVendors[respId] = vendorID;
+
       if (index === 0) {
         newTableData.push({
+          // id: `resp${id}`,
           attributes: [{ key: 'data-mainrow', value: 'true' }],
           values: [whatHappened, howHappened, whoResponsible, whenHowOften],
         });
@@ -715,6 +856,9 @@ const planOutcomes = (() => {
       }
     });
 
+    //* Cache responsIDs
+    responseIdCache[outcomeId] = [...respData.responsibilityIds];
+
     await planOutcomesAjax.updatePlanOutcomeExperienceResponsibility(respData);
 
     //* Build New Table
@@ -734,8 +878,9 @@ const planOutcomes = (() => {
     //* Build Table
     const newExperiencesTable = table.build(tableOptions);
     newExperiencesTable.classList.add(`experiencesTable`);
+    newExperiencesTable.classList.add('sortableTable');
     //* Populate Table
-    table.populate(newExperiencesTable, newTableData, false);
+    table.populate(newExperiencesTable, newTableData, isSortable);
     //* Replace Old Table w/New Table
     const oldExperiencesTable = document.getElementById(`experiencesTable${experienceIds}`);
     oldExperiencesTable.parentNode.replaceChild(newExperiencesTable, oldExperiencesTable);
@@ -747,8 +892,16 @@ const planOutcomes = (() => {
       experienceId: experienceId,
     });
 
+    if (outcomesData[outcomeId].experiences) {
+      Object.values(outcomesData[outcomeId].experiences).forEach(exp => {
+        Object.values(exp.responsibilities).forEach(resp => {
+          delete selectedVendors[resp.responsibilityIds];
+        });
+      });
+    }
+
     const outcomeDiv = document.querySelector(`.outcome${outcomeId}`);
-    const expTableWrap = outcomeDiv.querySelector('.experiencesTablesWrap');
+    const expTableWrap = outcomeDiv.querySelector(`#experiencesTableDummy${outcomeId}`);
     const expTable = expTableWrap.querySelector(`#experiencesTable${experienceId}`);
 
     expTableWrap.removeChild(expTable);
@@ -796,7 +949,6 @@ const planOutcomes = (() => {
   }
   function showExperiencesPopup(data, isNew) {
     let hasInitialErros;
-
     const saveUpdateData = {
       outcomeId: data.outcomeId,
       experienceOrder: data.experienceOrder,
@@ -1169,7 +1321,9 @@ const planOutcomes = (() => {
 
         if (isNew) {
           const outcome = document.querySelector(`.outcome${saveUpdateData.outcomeId}`);
-          const expTableWrap = outcome.querySelector('.experiencesTablesWrap');
+          const expTableWrap = document.querySelector(
+            `#experiencesTableDummy${saveUpdateData.outcomeId}`,
+          );
           const expTables = [...expTableWrap.querySelectorAll('.table')];
           saveUpdateData.experienceOrder = expTables.length;
           insertOutcomeExperience({ ...saveUpdateData }, expTableWrap);
@@ -1270,8 +1424,8 @@ const planOutcomes = (() => {
     }
 
     // adding dummy top table so col headings always show
-    const experiencesDummyTable = table.build({
-      tableId: `experiencesTableDummy`,
+    experiencesDummyTable = table.build({
+      tableId: `experiencesTableDummy${outcomeId}`,
       headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
       columnHeadings: [
         'What needs to happen',
@@ -1279,7 +1433,7 @@ const planOutcomes = (() => {
         'Who is responsible?',
         'When / How Often?',
       ],
-      sortable: false,
+      sortable: isSortable,
     });
     experiencesDummyTable.classList.add(`experiencesTable`);
     experiencesDiv.appendChild(experiencesDummyTable);
@@ -1318,6 +1472,9 @@ const planOutcomes = (() => {
               whenHowOftenText: whenHowOftenText,
             };
 
+            const vendorID = responsibleContact === '%' ? responsibleProvider : responsibleContact;
+            selectedVendors[respId] = vendorID;
+
             const whoResponsible = getColTextForWhoResponsible(
               responsibleContact,
               responsibleProvider,
@@ -1350,6 +1507,7 @@ const planOutcomes = (() => {
             tableId: `experiencesTable${td.experienceIds}`,
             headline: `Experiences: <span>In order to accomplish the outcome, what experiences does the person need to have?</span>`,
             columnHeadings: [
+              '<div class="draghandle"></div>',
               'What needs to happen',
               'How should it happen?',
               'Who is responsible?',
@@ -1371,13 +1529,33 @@ const planOutcomes = (() => {
                 false,
               ),
           };
-          //* Build Table
           const experiencesTable = table.build(tableOptions);
-          experiencesTable.classList.add(`experiencesTable`);
-          //* Populate Table
-          table.populate(experiencesTable, tableData, false);
+          experiencesTable.classList.add('experiencesTable');
+          experiencesTable.classList.add('sortableTable');
 
-          experiencesDiv.appendChild(experiencesTable);
+          // Populate Table
+          table.populate(experiencesTable, tableData, isSortable);
+
+          // Append experiencesTable to experiencesDummyTable
+          experiencesDummyTable.appendChild(experiencesTable);
+
+          // Make tables sortable
+          Sortable.create(experiencesDummyTable, {
+            handle: '.experiencesTable', // Set the handle to the table class
+            draggable: '.experiencesTable', // Set the draggable elements to the table class
+            onEnd: async sortData => {
+              const experienceId = sortData.item.id.replace('experiencesTable', '');
+              await planOutcomesAjax.updatePlanOutcomesExperienceOrder({
+                token: $.session.Token,
+                outcomeId: parseInt(outcomeId),
+                experienceId: parseInt(experienceId),
+                newPos: parseInt(sortData.newDraggableIndex) + 1,
+                oldPos: parseInt(sortData.oldDraggableIndex) + 1,
+              });
+            },
+          });
+
+          experiencesDummyTable.appendChild(experiencesTable);
         });
     }
 
@@ -2069,6 +2247,7 @@ const planOutcomes = (() => {
       text: 'Summary of Progress Outcomes:',
       prompt: 'Share accomplishments, progress, how success is to be celebrated.',
       awnser: progressSummary,
+      maxChars: 2500,
       callback: e => {
         progressSummary = e.target.value;
         checkIfSummaryRequired();
@@ -2176,5 +2355,6 @@ const planOutcomes = (() => {
     getMarkup,
     showAddNewOutcomePopup,
     refreshDropdownData,
+    getSelectedVendors,
   };
 })();

@@ -1,26 +1,14 @@
 ﻿using Anywhere.Data;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using pdftron.Filters;
+using pdftron.PDF;
+using pdftron.SDF;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
-using System.Text;
 using System.Web.Script.Serialization;
-using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
-using static Anywhere.service.Data.SimpleMar.SignInUser;
-using static PSIOISP.Deserialize;
-using System.Web.Services.Description;
-using pdftron.PDF;
-using pdftron.Filters;
-using pdftron.SDF;
-using pdftron.FDF;
-using System.Collections;
-using iTextSharp.text.pdf;
-using iTextSharp.text;
-using pdftron;
-using System.Management.Automation.Language;
-using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
-using iTextSharp.text.pdf.qrcode;
 
 namespace Anywhere.service.Data.DocumentConversion
 {
@@ -35,7 +23,8 @@ namespace Anywhere.service.Data.DocumentConversion
         JavaScriptSerializer js = new JavaScriptSerializer();
         GetReportsStreams grs = new GetReportsStreams();
         PDFGenerator.Data obj = new PDFGenerator.Data();
-      //  PDFDoc doc = new PDFDoc();
+
+        //  PDFDoc doc = new PDFDoc();
 
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
         {
@@ -48,18 +37,18 @@ namespace Anywhere.service.Data.DocumentConversion
                 string planAttachments = aadg.getPlanAttachmentsWithOrdering(assessmentId);
                 js.MaxJsonLength = Int32.MaxValue;
                 PlanAttachments[] planAttachmentsObj = js.Deserialize<PlanAttachments[]>(planAttachments);
-                
+
                 string workflowAttachments = aadg.getWorkFlowAttachmentswithOrdering(assessmentId);
                 js.MaxJsonLength = Int32.MaxValue;
                 WorkFlowAttachments[] workflowAttachmentsObj = js.Deserialize<WorkFlowAttachments[]>(workflowAttachments);
-                
+
                 int wfL = workflowAttachmentsObj.Length;
                 int planL = planAttachmentsObj.Length;
                 int total = wfL + planL;
                 string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
                 PlanAndWorkflowAttachments[] pAWAttachObj = js.Deserialize<PlanAndWorkflowAttachments[]>(pAWAttach);
                 int i = 0;
-                foreach(WorkFlowAttachments wfa in workflowAttachmentsObj)
+                foreach (WorkFlowAttachments wfa in workflowAttachmentsObj)
                 {
                     pAWAttachObj[i].attachmentId = wfa.attachmentId;
                     pAWAttachObj[i].description = wfa.description;
@@ -68,6 +57,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                    //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 foreach (PlanAttachments wfa in planAttachmentsObj)
@@ -79,6 +69,7 @@ namespace Anywhere.service.Data.DocumentConversion
                     pAWAttachObj[i].orderOrStep = wfa.orderOrStep;
                     pAWAttachObj[i].whereFrom = wfa.whereFrom;
                     pAWAttachObj[i].sigAttachmentId = wfa.sigAttachmentId;
+                    //    pAWAttachObj[i].workflowstepdocId = wfa.workflowstepdocId;
                     i++;
                 }
                 //string pAWAttach = aadg.getPlanAndWorkFlowAttachments(assessmentId);
@@ -90,15 +81,109 @@ namespace Anywhere.service.Data.DocumentConversion
                 return null;
             }
         }
-
-        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, string doddFlag)
+        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
+            string sendtoDODDResult = string.Empty;
+
+            try
+            {
+                var psiOispDT = new PSIOISP.ISPDTData();
+                WorkflowDataGetter wfdg = new WorkflowDataGetter();
+                PlanDataGetter pdg = new PlanDataGetter();
+                string sendPlanResult;
+                //string noAttachmentsMessage = string.Empty;
+
+                long lngPlanId = long.Parse(planId);
+                long lngConsumerId = long.Parse(consumerId);
+
+                sendtoDODDResult = psiOispDT.UploadISP(lngConsumerId, lngPlanId);
+            
+                if (sendtoDODDResult != "ISP Successfully Uploaded.")
+                {
+                    return "Error uploading ISP. Error details: <br><br> " + sendtoDODDResult;
+                }
+
+                if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                {
+                    long wfAttachId;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string wfAttachmentId in wfAttachmentIds)
+                    {
+                        //Type cast wfAttachmentId from string to long
+                        wfAttachId = long.Parse(wfAttachmentId);
+
+                        // success -- Successful
+                        sendtoDODDResult = psiOispDT.Attachment(wfAttachId, true);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Workflow Attachment. Please try again.";
+                        }
+
+                    }
+                }
+                if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
+                {
+                    long sigAttachId;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string sigAttachmentId in sigAttachmentIds)
+                    {
+                        //Type cast sigAttachmentId from string to long
+                        sigAttachId = long.Parse(sigAttachmentId);
+
+                        sendtoDODDResult = psiOispDT.Attachment(sigAttachId, false);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Signature Attachment. Please try again.";
+                        }
+
+                    }
+                }
+                if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
+                {
+                    long planAttachId;
+                    //Repeatedly call this function to send attachments to DODD
+                    foreach (string planAttachmentId in planAttachmentIds)
+                    {
+                        //Type cast planAttachmentId from string to long
+                        planAttachId = long.Parse(planAttachmentId);
+
+                        sendtoDODDResult = psiOispDT.Attachment(planAttachId, false);
+                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        {
+                            return "Error uploading Plan Attachment. Please try again.";
+                        }
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return "There was failure in the send process. Please contact your administrator.";
+            }
+
+            if (wfAttachmentIds.Length == 0 && sigAttachmentIds.Length == 0 && planAttachmentIds.Length == 0)
+            {
+                return "Successfully sent Plan to DODD.";
+            }
+            else
+            {
+                return "Successfully sent Plan and selected Attachments to DODD.";
+            }
+
+            // }
+
+        }
+
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly, string include)
+        {
+
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
             bool isTokenValid = aadg.ValidateToken(token);
             pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20230512):99A5675D0437C60AF320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
             PDFDoc new_doc;
+
             if (isTokenValid)//
             {
                 Attachment attachment = new Attachment();
@@ -111,445 +196,476 @@ namespace Anywhere.service.Data.DocumentConversion
                 MemoryStream assessment = new MemoryStream();
                 MemoryStream intro = new MemoryStream();
                 MemoryStream plan = new MemoryStream();
-                foreach (ReportSectionOrder ord in order)
+
+                if (false == signatureOnly)
                 {
-                    if (true == true)
+                    foreach (ReportSectionOrder ord in order)
+                    {                    
+                        if (ord.setting_value == "1")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+
+                            }
+                        }
+                        if (ord.setting_value == "2")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
+
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+
+                            }
+                        }
+                        if (ord.setting_value == "3")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
+
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+
+                            }
+                        }
+                        if (ord.setting_value == "4")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
+
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+
+
+                            }
+                        }
+                        if (ord.setting_value == "5")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
+
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+
+                            }
+                        }
+                        if (ord.setting_value == "6")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
+
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+
+                            }
+                        }
+
+                    }                    
+                }
+                if (signatureOnly == true)
+                {
+                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                }
+
+                byte[] introReport = new byte[intro.Length];
+                byte[] assessmentReport = new byte[intro.Length];
+
+                if (signatureOnly == false)
+                {
+                    introReport = StreamExtensions.ToByteArray(intro);
+                    intro.Close();
+                    intro.Flush();
+                    intro.Dispose();
+                    assessmentReport = StreamExtensions.ToByteArray(assessment);
+                    assessment.Close();
+                    intro.Flush();
+                    assessment.Dispose();
+
+                }
+                else
+                {
+                    intro.Close();
+                    intro.Flush();
+                    intro.Dispose();
+                    assessment.Close();
+                    intro.Flush();
+                    assessment.Dispose();
+
+                }
+
+                byte[] planReport = StreamExtensions.ToByteArray(plan);
+                plan.Close();
+                intro.Flush();
+                plan.Dispose();
+
+                if (false == signatureOnly) { 
+                                
+                    if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                     {
+                        wfAttRep = wfAttReport(wfAttachmentIds);
+                    }
+                    if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
+                    {
+                        sigAttRep = sigAttReport(sigAttachmentIds);
+                    }
+                    if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
+                    {
+                        planAttRep = planAttReport(planAttachmentIds);
+                    }
+                }
+
+                
+                if (false == signatureOnly)
+                {
+                    foreach (ReportSectionOrder ord in order)
                     {
                         if (ord.setting_value == "1")
                         {
                             if (ord.setting_key == "Assessment")
                             {
-                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
+                                allAttachments.Add(assessmentReport);
                             }
                             if (ord.setting_key == "All About Me")
                             {
-                               intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
+                                allAttachments.Add(introReport);
                             }
                             if (ord.setting_key == "Plan")
                             {
-                                 plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
+                                allAttachments.Add(planReport);
+                            }
+                            if (ord.setting_key == "Assessment Attachments")
+                            {
+                                if (planAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in planAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
 
+                            }
+                            if (ord.setting_key == "Signature Attachments")
+                            {
+                                if (sigAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in sigAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
+                            }
+                            if (ord.setting_key == "Workflow Attachments")
+                            {
+                                if (wfAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in wfAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
                             }
                         }
-                            if (ord.setting_value == "2")
+                        if (ord.setting_value == "2")
+                        {
+                            if (ord.setting_key == "Assessment")
                             {
-                                if (ord.setting_key == "Assessment")
+                                allAttachments.Add(assessmentReport);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                allAttachments.Add(introReport);
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                allAttachments.Add(planReport);
+                            }
+                            if (ord.setting_key == "Assessment Attachments")
+                            {
+                                if (planAttRep.Count != 0)
                                 {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-
+                                    foreach (byte[] att in planAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
                                 }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                }
-                                if (ord.setting_key == "Plan")
+                            }
+                            if (ord.setting_key == "Signature Attachments")
+                            {
+                                if (sigAttRep.Count != 0)
                                 {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
+                                    foreach (byte[] att in sigAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
                                 }
                             }
-                            if (ord.setting_value == "3")
+                            if (ord.setting_key == "Workflow Attachments")
                             {
-                                if (ord.setting_key == "Assessment")
+                                if (wfAttRep.Count != 0)
                                 {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "Plan")
-                                {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
+                                    foreach (byte[] att in wfAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
                                 }
                             }
-                            if (ord.setting_value == "4")
+                        }
+                        if (ord.setting_value == "3")
+                        {
+                            if (ord.setting_key == "Assessment")
                             {
-                                if (ord.setting_key == "Assessment")
+                                allAttachments.Add(assessmentReport);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                allAttachments.Add(introReport);
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                allAttachments.Add(planReport);
+                            }
+                            if (ord.setting_key == "Assessment Attachments")
+                            {
+                                if (planAttRep.Count != 0)
                                 {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-
+                                    foreach (byte[] att in planAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
                                 }
-                                if (ord.setting_key == "All About Me")
+
+                            }
+                            if (ord.setting_key == "Signature Attachments")
+                            {
+                                if (sigAttRep.Count != 0)
                                 {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "Plan")
-                                {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
-
+                                    foreach (byte[] att in sigAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
                                 }
                             }
-                            if (ord.setting_value == "5")
+                            if (ord.setting_key == "Workflow Attachments")
                             {
-                                if (ord.setting_key == "Assessment")
+                                if (wfAttRep.Count != 0)
                                 {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
-
-                                }
-                                if (ord.setting_key == "Plan")
-                                {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
+                                    foreach (byte[] att in wfAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
                                 }
                             }
-                            if (ord.setting_value == "6")
+                        }
+                        if (ord.setting_value == "4")
+                        {
+                            if (ord.setting_key == "Assessment")
                             {
-                                if (ord.setting_key == "Assessment")
+                                allAttachments.Add(assessmentReport);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                allAttachments.Add(introReport);
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                allAttachments.Add(planReport);
+                            }
+                            if (ord.setting_key == "Assessment Attachments")
+                            {
+                                if (planAttRep.Count != 0)
                                 {
-                                    assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp);
-
+                                    foreach (byte[] att in planAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
                                 }
-                                if (ord.setting_key == "All About Me")
-                                {
-                                    intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
 
-                                }
-                                if (ord.setting_key == "Plan")
+                            }
+                            if (ord.setting_key == "Signature Attachments")
+                            {
+                                if (sigAttRep.Count != 0)
                                 {
-                                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp);
-
+                                    foreach (byte[] att in sigAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
                                 }
                             }
-                        
+                            if (ord.setting_key == "Workflow Attachments")
+                            {
+                                if (wfAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in wfAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
+                            }
+                        }
+                        if (ord.setting_value == "5")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                allAttachments.Add(assessmentReport);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                allAttachments.Add(introReport);
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                allAttachments.Add(planReport);
+                            }
+                            if (ord.setting_key == "Assessment Attachments")
+                            {
+                                if (planAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in planAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
 
+                            }
+                            if (ord.setting_key == "Signature Attachments")
+                            {
+                                if (sigAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in sigAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
+                            }
+                            if (ord.setting_key == "Workflow Attachments")
+                            {
+                                if (wfAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in wfAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
+                            }
+                        }
+                        if (ord.setting_value == "6")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                allAttachments.Add(assessmentReport);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                allAttachments.Add(introReport);
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                allAttachments.Add(planReport);
+                            }
+                            if (ord.setting_key == "Assessment Attachments")
+                            {
+                                if (planAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in planAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
+
+                            }
+                            if (ord.setting_key == "Signature Attachments")
+                            {
+                                if (sigAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in sigAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
+                            }
+                            if (ord.setting_key == "Workflow Attachments")
+                            {
+                                if (wfAttRep.Count != 0)
+                                {
+                                    foreach (byte[] att in wfAttRep)
+                                    {
+                                        allAttachments.Add(att);
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
+                                      
 
-                
-                byte[] introReport = StreamExtensions.ToByteArray(intro);
-                intro.Close();
-                intro.Flush();
-                intro.Dispose();
-                byte[] assessmentReport = StreamExtensions.ToByteArray(assessment);
-                assessment.Close();
-                intro.Flush();
-                assessment.Dispose();
-                byte[] planReport = StreamExtensions.ToByteArray(plan);                
-                plan.Close();
-                intro.Flush();
-                plan.Dispose();
-                //NATHAN TODO Add if to show where to send
-                if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                }
+                if (signatureOnly == true)
                 {
-                    wfAttRep = wfAttReport(wfAttachmentIds);
-                }
-                if(sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
-                {
-                    sigAttRep = sigAttReport(sigAttachmentIds);
-                }
-                if(planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
-                {
-                    planAttRep = planAttReport(planAttachmentIds);
-                }
-                
-                
-
-                foreach (ReportSectionOrder ord in order)
-                {
-                    if(ord.setting_value == "1")
-                    {
-                        if (ord.setting_key == "Assessment")
-                        {
-                            allAttachments.Add(assessmentReport);
-                        }
-                        if (ord.setting_key == "All About Me")
-                        {
-                            allAttachments.Add(introReport);
-                        }
-                        if (ord.setting_key == "Plan")
-                        {
-                            allAttachments.Add(planReport);
-                        }
-                        if (ord.setting_key == "Assessment Attachments")
-                        {
-                            if(planAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in planAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                                                       
-                        }
-                        if (ord.setting_key == "Signature Attachments")
-                        {
-                            if(sigAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in sigAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }                            
-                        }
-                        if (ord.setting_key == "Workflow Attachments")
-                        {
-                            if(wfAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in wfAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }                            
-                        }
-                    }
-                    if (ord.setting_value == "2")
-                    {
-                        if (ord.setting_key == "Assessment")
-                        {
-                            allAttachments.Add(assessmentReport);
-                        }
-                        if (ord.setting_key == "All About Me")
-                        {
-                            allAttachments.Add(introReport);
-                        }
-                        if (ord.setting_key == "Plan")
-                        {
-                            allAttachments.Add(planReport);
-                        }
-                        if (ord.setting_key == "Assessment Attachments")
-                        {
-                            if (planAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in planAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-
-                        }
-                        if (ord.setting_key == "Signature Attachments")
-                        {
-                            if (sigAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in sigAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                        if (ord.setting_key == "Workflow Attachments")
-                        {
-                            if (wfAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in wfAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                    }
-                    if (ord.setting_value == "3")
-                    {
-                        if (ord.setting_key == "Assessment")
-                        {
-                            allAttachments.Add(assessmentReport);
-                        }
-                        if (ord.setting_key == "All About Me")
-                        {
-                            allAttachments.Add(introReport);
-                        }
-                        if (ord.setting_key == "Plan")
-                        {
-                            allAttachments.Add(planReport);
-                        }
-                        if (ord.setting_key == "Assessment Attachments")
-                        {
-                            if (planAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in planAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-
-                        }
-                        if (ord.setting_key == "Signature Attachments")
-                        {
-                            if (sigAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in sigAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                        if (ord.setting_key == "Workflow Attachments")
-                        {
-                            if (wfAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in wfAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                    }
-                    if (ord.setting_value == "4")
-                    {
-                        if (ord.setting_key == "Assessment")
-                        {
-                            allAttachments.Add(assessmentReport);
-                        }
-                        if (ord.setting_key == "All About Me")
-                        {
-                            allAttachments.Add(introReport);
-                        }
-                        if (ord.setting_key == "Plan")
-                        {
-                            allAttachments.Add(planReport);
-                        }
-                        if (ord.setting_key == "Assessment Attachments")
-                        {
-                            if (planAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in planAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-
-                        }
-                        if (ord.setting_key == "Signature Attachments")
-                        {
-                            if (sigAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in sigAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                        if (ord.setting_key == "Workflow Attachments")
-                        {
-                            if (wfAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in wfAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                    }
-                    if (ord.setting_value == "5")
-                    {
-                        if (ord.setting_key == "Assessment")
-                        {
-                            allAttachments.Add(assessmentReport);
-                        }
-                        if (ord.setting_key == "All About Me")
-                        {
-                            allAttachments.Add(introReport);
-                        }
-                        if (ord.setting_key == "Plan")
-                        {
-                            allAttachments.Add(planReport);
-                        }
-                        if (ord.setting_key == "Assessment Attachments")
-                        {
-                            if (planAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in planAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-
-                        }
-                        if (ord.setting_key == "Signature Attachments")
-                        {
-                            if (sigAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in sigAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                        if (ord.setting_key == "Workflow Attachments")
-                        {
-                            if (wfAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in wfAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                    }
-                    if (ord.setting_value == "6")
-                    {
-                        if (ord.setting_key == "Assessment")
-                        {
-                            allAttachments.Add(assessmentReport);
-                        }
-                        if (ord.setting_key == "All About Me")
-                        {
-                            allAttachments.Add(introReport);
-                        }
-                        if (ord.setting_key == "Plan")
-                        {
-                            allAttachments.Add(planReport);
-                        }
-                        if (ord.setting_key == "Assessment Attachments")
-                        {
-                            if (planAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in planAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-
-                        }
-                        if (ord.setting_key == "Signature Attachments")
-                        {
-                            if (sigAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in sigAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                        if (ord.setting_key == "Workflow Attachments")
-                        {
-                            if (wfAttRep.Count != 0)
-                            {
-                                foreach (byte[] att in wfAttRep)
-                                {
-                                    allAttachments.Add(att);
-                                }
-                            }
-                        }
-                    }
-
+                    allAttachments.Add(planReport);
                 }
 
-                
+
                 byte[] finalMergedArray = concatAndAddContent(allAttachments);
                 response.Clear();
                 response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
-                response.ContentType = "application/pdf";                
+                response.ContentType = "application/pdf";
                 response.BinaryWrite(finalMergedArray);
 
             }
 
         }
 
-        
+
 
         public List<byte[]> wfAttReport(string[] wfAttachmentIds)
         {
@@ -654,7 +770,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-       
+
 
 
         public List<byte[]> sigAttReport(string[] wfAttachmentIds)
@@ -760,8 +876,8 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-       public List<byte[]> planAttReport(string[] planAttachmentIds)
-       {
+        public List<byte[]> planAttReport(string[] planAttachmentIds)
+        {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
@@ -858,14 +974,14 @@ namespace Anywhere.service.Data.DocumentConversion
                             }
                         }
                     }
-                    
+
                 }
 
             }
             return allAttachments;
 
         }
-       
+
 
         public static byte[] concatAndAddContent(List<byte[]> pdfByteContent)
         {
@@ -885,7 +1001,7 @@ namespace Anywhere.service.Data.DocumentConversion
                             //Create a PdfReader bound to that byte array
                             using (var reader = new PdfReader(p))
                             {
-                                //PdfReader.unethicalreading = true;
+                                PdfReader.unethicalreading = true;
                                 //Add the entire document instead of page-by-page
                                 copy.AddDocument(reader);
                             }
@@ -1012,7 +1128,7 @@ namespace Anywhere.service.Data.DocumentConversion
             }
         }
 
-        
+
 
         public byte[] getISPReportStream(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
@@ -1022,7 +1138,7 @@ namespace Anywhere.service.Data.DocumentConversion
             byte[] planReport = StreamExtensions.ToByteArray(ms);
             ms.Close();
             ms.Dispose();
-            
+
             return planReport;
         }
 
@@ -1056,6 +1172,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
+            public string workflowstepdocId { get; set; }
 
         }
 
@@ -1068,6 +1185,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
+            public string workflowstepdocId { get; set; }
         }
 
         public class WorkFlowAttachments
@@ -1079,6 +1197,7 @@ namespace Anywhere.service.Data.DocumentConversion
             public string orderOrStep { get; set; }
             public string whereFrom { get; set; }
             public string sigAttachmentId { get; set; }
+            public string workflowstepdocId { get; set; }
         }
 
         public class POrWFAttachment
@@ -1086,6 +1205,11 @@ namespace Anywhere.service.Data.DocumentConversion
             public MemoryStream attachment { get; set; }
             public string description { get; set; }
             public string attachmentType { get; set; }
+        }
+
+        public class DODDResult
+        {
+            public string message { get; set; }
         }
 
         //public class POrWFAttachment

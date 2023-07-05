@@ -1,8 +1,4 @@
 using Anywhere.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -44,13 +40,25 @@ namespace Anywhere.service.Data
             ConsumerDemographics[] consumerDemoObj = js.Deserialize<ConsumerDemographics[]>(consumerDemoString);
             return consumerDemoObj;
         }
+        public DemographicInformation[] GetDemographicInformation(string token)
+        {
+            string demoInfoString = dg.GetDemographicInformation(token);
+            DemographicInformation[] demoInfoObj = js.Deserialize<DemographicInformation[]>(demoInfoString);
+            return demoInfoObj;
+        }
+        public MobileCarrierDropdown[] getMobileCarrierDropdown(string token)
+        {
+            string mobileCarrierDropdownString = dg.getMobileCarrierDropdown(token);
+            MobileCarrierDropdown[] mobileCarrierDropdownData = js.Deserialize<MobileCarrierDropdown[]>(mobileCarrierDropdownString);
+            return mobileCarrierDropdownData;
+        }
         public ConsumerRelationships[] getConsumerRelationshipsJSON(string token, string consumerId)
         {
             string consumerRelString = dg.getConsumerRelationshipsJSON(token, consumerId);
             ConsumerRelationships[] consumerRelObj = js.Deserialize<ConsumerRelationships[]>(consumerRelString);
             return consumerRelObj;
         }
-        
+
         public ConsumerPlanYearInfo getConsumerPlanYearInfo(string token, string consumerId)
         {
             string consumerPlanYearInfoString = dg.getConsumerPlanYearInfo(token, consumerId);
@@ -58,11 +66,17 @@ namespace Anywhere.service.Data
             return consumerPlanYearInfoObj[0];
         }
 
+        public class MobileCarrierDropdown
+        {
+            public string carrierName { get; set; }
+            public string carrierId { get; set; }
+        }
+
         public class CheckForIndividualAbsent
         {
             public string isAbsent { get; set; }
         }
-                
+
         public class AddCustomGroup
         {
             public string CustomGroupID { get; set; }
@@ -92,6 +106,7 @@ namespace Anywhere.service.Data
             public string firstname { get; set; }
             public string lastname { get; set; }
             public string nickname { get; set; }
+            public string middlename { get; set; }
             public string primaryphone { get; set; }
             public string secondaryphone { get; set; }
             public string cellphone { get; set; }
@@ -105,8 +120,35 @@ namespace Anywhere.service.Data
             public string DOB { get; set; }
             public string SSN { get; set; }
             public string MedicaidNumber { get; set; }
-
-
+            public string MedicareNumber { get; set; }
+            public string ResidentNumber { get; set; }
+            public string County { get; set; }
+            public string orgName { get; set; }
+            public string orgAdd1 { get; set; }
+            public string orgAdd2 { get; set; }
+            public string city { get; set; }
+            public string orgZipCode { get; set; }
+            public string orgCity { get; set; }
+            public string orgPrimaryPhone { get; set; }
+            public string pathToEmployment { get; set; }
+            public string race { get; set; }
+            public string language { get; set; }
+            public string gender { get; set; }
+            public string generation { get; set; }
+            public string maritalStatus { get; set; }
+            public string educationLevel { get; set; }
+            public string orgState { get; set; }
+        }
+        public class DemographicInformation
+        {
+            public string addressOne { get; set; }
+            public string addressTwo { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zipCode { get; set; }
+            public string mobilePhone { get; set; }
+            public string carrier { get; set; }
+            public string email { get; set; }
         }
         public class ConsumerRelationships
         {

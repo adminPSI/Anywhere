@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanOutcomes
@@ -57,7 +56,7 @@ namespace Anywhere.service.Data.PlanOutcomes
                 return "4APODG: error ANYW_ISP_UpdatePlanOutcomeProgressSummary";
             }
         }
-                
+
         public string deletePlanOutcomeProgressSummary(string token, long progressSummaryId)
         {
             if (tokenValidator(token) == false) return null;
@@ -239,7 +238,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             logger.debug("insertPlanOutcomesExperiences ");
             List<string> list = new List<string>();
             list.Add(experienceId);
-            
+
             list.Add(responsibleContact.ToString());
             list.Add(responsibleProvider.ToString());
             list.Add(whenHowOftenValue);
@@ -366,7 +365,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
-        
+
 
         public string getPlanOutcomes(string token, string assessmentId, int targetAssessmentVersionId)
         {
@@ -385,6 +384,24 @@ namespace Anywhere.service.Data.PlanOutcomes
             {
                 logger.error("1PODG", ex.Message + "ANYW_ISP_GetPlanOutcomes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "1APODG: error ANYW_ISP_GetPlanOutcomes";
+            }
+        }
+
+        public string getPlanOutcomesPaidSupportProviders(string assessmentId)
+        {
+            logger.debug("getServiceVendors ");
+            List<string> list = new List<string>();
+            list.Add(assessmentId);
+            
+            string text = "CALL DBA.ANYW_ISP_GetPlanOutcomesPaidSupportProviders(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("8ADG", ex.Message + "ANYW_ISP_GetPlanOutcomesPaidSupportProviders(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "8ADG: error ANYW_ISP_GetPlanOutcomesPaidSupportProviders";
             }
         }
 

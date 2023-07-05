@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Anywhere.Data;
+using Anywhere.service.Data.PlanInformedConsent;
+using System;
 using System.Collections.Generic;
-using Anywhere.Data;
-using System.Web.Script.Serialization;
-using System.Text;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
-using System.Management.Automation.Language;
-using Microsoft.Expression.Interactivity.Media;
+using System.Text;
+using System.Web.Script.Serialization;
+using static Anywhere.service.Data.IncidentTrackingWorker;
 
 namespace Anywhere.service.Data
 {
@@ -19,45 +20,141 @@ namespace Anywhere.service.Data
         //Below code is for hours worked widget
         public WorkWeek GetWorkWeeks(String token)
         {
-            DateTime currentWeekStart = GetCompanyCurrentWorkWeekStart(token);
-            DateTime currentWeekEnd = currentWeekStart.AddDays(6);
-            DateTime previousWeekStart = currentWeekStart.AddDays(-7);
-            DateTime previousWeekEnd = currentWeekStart.AddDays(-1);
-            string currWS = currentWeekStart.ToString("yyyy-MM-dd");
-            string currWE = currentWeekEnd.ToString("yyyy-MM-dd");
-            string prevWS = previousWeekStart.ToString("yyyy-MM-dd");
-            string prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+            StartAndEndWeek startAndEnd = GetCompanyCurrentWorkWeekStart(token, 'N');
+            StartAndEndWeek startAndEndPrevious = GetCompanyCurrentWorkWeekStart(token, 'Y');
+            
+            double daysOfPayPeriod = (startAndEnd.endOfWeek - startAndEnd.startOfWeek).TotalDays;
+            string currWS = "";
+            string currWE = "";
+            string prevWS = "";
+            string prevWE = "";
+            DateTime previousWeekStart;
+            DateTime previousWeekEnd;
+            if (daysOfPayPeriod > 2)
+            {
+                DateTime currentWeekStart = startAndEnd.startOfWeek;
+                DateTime currentWeekEnd = startAndEnd.endOfWeek;
+                if (startAndEndPrevious is null)
+                {
+                    previousWeekStart = DateTime.Parse("1900-01-01");
+                    previousWeekEnd = DateTime.Parse("1900-01-01");
+                }else{
+                    previousWeekStart = startAndEndPrevious.startOfWeek;
+                    previousWeekEnd = startAndEndPrevious.endOfWeek;
+                }
+                
+                currWS = currentWeekStart.ToString("yyyy-MM-dd");
+                currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+                prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+                prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                DateTime currentWeekStart = startAndEnd.startOfWeek;
+                DateTime currentWeekEnd = currentWeekStart.AddDays(6);
+                previousWeekStart = currentWeekStart.AddDays(-7);
+                previousWeekEnd = currentWeekStart.AddDays(-1);
+                currWS = currentWeekStart.ToString("yyyy-MM-dd");
+                currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+                prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+                prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+            }
             WorkWeek workWeek = new WorkWeek();
             workWeek.curr_start_date = currWS;
             workWeek.curr_end_date = currWE;
-            workWeek.prev_start_date = prevWS;
-            workWeek.prev_end_date = prevWE;
+            if(prevWS != "1900-01-01")
+            {
+                workWeek.prev_start_date = prevWS;
+                workWeek.prev_end_date = prevWE;
+            }            
 
             return workWeek;
         }
         public DaysAndHours[] GetDatesAndHoursWorked(String token)
         {
-            DateTime currentWeekStart = GetCompanyCurrentWorkWeekStart(token);
-            DateTime currentWeekEnd = currentWeekStart.AddDays(6);
-            DateTime previousWeekStart = currentWeekStart.AddDays(-7);
-            DateTime previousWeekEnd = currentWeekStart.AddDays(-1);
-            string currWS = currentWeekStart.ToString("yyyy-MM-dd");
-            string currWE = currentWeekEnd.ToString("yyyy-MM-dd");
-            string prevWS = previousWeekStart.ToString("yyyy-MM-dd");
-            string prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
-            string currentWeekHoursWorkedString = dg.getWeekHoursWorked(token, currWS, currWE, prevWS, prevWE);
-            DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
-            return daysAndHours;
+            StartAndEndWeek startAndEnd = GetCompanyCurrentWorkWeekStart(token, 'N');
+            StartAndEndWeek startAndEndPrevious = GetCompanyCurrentWorkWeekStart(token, 'Y');
+
+            
+
+            double daysOfPayPeriod = (startAndEnd.endOfWeek - startAndEnd.startOfWeek).TotalDays;
+            string currWS = "";
+            string currWE = "";
+            string prevWS = "";
+            string prevWE = "";
+            DateTime previousWeekStart;
+            DateTime previousWeekEnd;
+
+            if (daysOfPayPeriod > 1)
+            {
+                DateTime currentWeekStart = startAndEnd.startOfWeek;
+                DateTime currentWeekEnd = startAndEnd.endOfWeek;
+                if (startAndEndPrevious is null)
+                {
+                    previousWeekStart = DateTime.Parse("1900-01-01");
+                    previousWeekEnd = DateTime.Parse("1900-01-01");
+                }
+                else
+                {
+                    previousWeekStart = startAndEndPrevious.startOfWeek;
+                    previousWeekEnd = startAndEndPrevious.endOfWeek;
+                }
+                
+                currWS = currentWeekStart.ToString("yyyy-MM-dd");
+                currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+                prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+                prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+                string currentWeekHoursWorkedString = dg.getWeekHoursWorked(token, currWS, currWE, prevWS, prevWE);
+                DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
+                return daysAndHours;
+            }
+            else
+            {
+                DateTime currentWeekStart = startAndEnd.startOfWeek;
+                DateTime currentWeekEnd = currentWeekStart.AddDays(6);
+                previousWeekStart = currentWeekStart.AddDays(-7);
+                previousWeekEnd = currentWeekStart.AddDays(-1);
+                currWS = currentWeekStart.ToString("yyyy-MM-dd");
+                currWE = currentWeekEnd.ToString("yyyy-MM-dd");
+                prevWS = previousWeekStart.ToString("yyyy-MM-dd");
+                prevWE = previousWeekEnd.ToString("yyyy-MM-dd");
+                string currentWeekHoursWorkedString = dg.getWeekHoursWorked(token, currWS, currWE, prevWS, prevWE);
+                DaysAndHours[] daysAndHours = js.Deserialize<DaysAndHours[]>(currentWeekHoursWorkedString);
+                return daysAndHours;
+            }
+            
         }
         //todaysDate = dateTime.ToString("yyyy/MM/dd");
-        public DateTime GetCompanyCurrentWorkWeekStart(String token)
+        public StartAndEndWeek GetCompanyCurrentWorkWeekStart(String token, char weekTwo)
         {
-            string companyWorkWeekStart = dg.getCompanyWorkWeekStartFromDB(token);
+            string companyWorkWeekStart = dg.getCompanyWorkWeekStartFromDB(token, weekTwo);
+            string companyWorkWeekEnd = dg.getCompanyWorkWeekEndFromDB(token, weekTwo);
             StartDayOfWeek[] startDay = js.Deserialize<StartDayOfWeek[]>(companyWorkWeekStart);
-            string workWeekStart = startDay[0].Day_of_Week.ToString();
-            int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
-            DateTime weekStart = DateTime.Today.AddDays(-ded);
-            return weekStart;
+            EndDayOfWeek[] endDay = js.Deserialize<EndDayOfWeek[]>(companyWorkWeekEnd);
+            if(startDay.Length != 0)
+            {
+                if (startDay[0].Day_of_Week.Length > 3)
+                {
+                    DateTime weekStart = DateTime.Parse(startDay[0].Day_of_Week.ToString());
+                    DateTime weekEnd = DateTime.Parse(endDay[0].Day_of_Week.ToString());
+                    StartAndEndWeek startAndEnd = new StartAndEndWeek();
+                    startAndEnd.startOfWeek = weekStart;
+                    startAndEnd.endOfWeek = weekEnd;
+                    return startAndEnd;
+                }
+                else
+                {
+                    //string workWeekStart = startDay[0].Day_of_Week.ToString();
+                    string workWeekStart = startDay.Length != 0 ? startDay[0].Day_of_Week.ToString() : "S";
+                    int ded = DayOfWeekDeductionJD(DateTime.Today.Date, workWeekStart);
+                    DateTime weekStart = DateTime.Today.AddDays(-ded);
+                    StartAndEndWeek startAndEnd = new StartAndEndWeek();
+                    startAndEnd.startOfWeek = weekStart;
+                    startAndEnd.endOfWeek = weekStart;
+                    return startAndEnd;
+                }
+            }
+            return null;
         }
 
         public int DayOfWeekDeductionJD(DateTime date, string workWeekShort)
@@ -140,7 +237,18 @@ namespace Anywhere.service.Data
             return dg.validateToken(token);
         }
 
+        public class StartAndEndWeek
+        {
+            public DateTime startOfWeek { get; set; }
+            public DateTime endOfWeek { get; set; }
+        }
+
         public class StartDayOfWeek
+        {
+            public string Day_of_Week { get; set; }
+        }
+
+        public class EndDayOfWeek
         {
             public string Day_of_Week { get; set; }
         }
@@ -339,6 +447,7 @@ namespace Anywhere.service.Data
             public string SD { get; set; }
             public string conL { get; set; }
             public string MN { get; set; }
+            public string residentNumber { get; set; }
         }
 
         public RosterLocations[] getLocationsJSON(string token)
@@ -382,6 +491,7 @@ namespace Anywhere.service.Data
             public string emarPermission { get; set; }
             public string formsPermission { get; set; }
             public string OODPermission { get; set; }
+            public string resetPassword { get; set; }
             public string workshopPermission { get; set; }
             public string anywhereSchedulingPermission { get; set; }
             public string anywherePlanPermission { get; set; }
@@ -408,6 +518,8 @@ namespace Anywhere.service.Data
             public string incidentTrackingPopulateIncidentDate { get; set; }
             public string incidentTrackingPopulateReportedTime { get; set; }
             public string incidentTrackingPopulateReportedDate { get; set; }
+            public string incidentTrackingShowCauseAndContributingFactors { get; set; }
+            public string incidentTrackingShowPreventionPlan { get; set; }
             public string schedulingPermission { get; set; }
             public string singleEntryApproveEnabled { get; set; }
             public string seShowConsumerSignature { get; set; }
@@ -421,6 +533,14 @@ namespace Anywhere.service.Data
             public string azureSttApi { get; set; }
             public string reportSeconds { get; set; }
             public string planPeopleId { get; set; }
+            public string adminPermission { get; set; }
+            public string oneSpan { get; set; }
+            public string anywhereResetPasswordPermission { get; set; }
+            public string anywhereConsumerFinancesPermission { get; set; }
+            public string anywhereEmploymentPermission { get; set; }
+            public string warningStartTime { get; set; }
+            public string warningEndTime { get; set; }
+
         }
 
         public ConsumerGroups[] getConsumerGroupsJSON(string locationId, string token)
@@ -457,6 +577,24 @@ namespace Anywhere.service.Data
             return oidObj;
         }
 
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getCaseManagersfromOptionsTable(string token)
+        {
+            string caseManagersString = dg.getCaseManagersfromOptionsTable(token);
+            PlanInformedConsentWorker.InformedConsentSSAs[] caseManagerObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(caseManagersString);
+            return caseManagerObj;
+        }
+
+
+        public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
+        {
+            string consumersString = dg.getConsumerswithSaleforceIds(token);
+            PlanInformedConsentWorker.InformedConsentSSAs[] consumersObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(consumersString);
+            return consumersObj;
+        }
+
+
+
+
         public class OrganiztionId
         {
             public string orgId { get; set; }
@@ -484,28 +622,37 @@ namespace Anywhere.service.Data
         {
             //Check login type
             //return dg.getLogIn(userId, hash);
-            string loginType =  dg.checkLoginType();
+            string loginType = dg.checkLoginType();
             LoginType[] loginTypeObj = js.Deserialize<LoginType[]>(loginType);
             string type = loginTypeObj[0].setting_value.ToString();
-            if(type.Equals("Y") && userId.ToUpper() != "PSI"){
+            if (type.Equals("Y") && userId.ToUpper() != "PSI")
+            {
                 //check code against DB to see if expired
-                if(deviceId.Equals("")){
+                if (deviceId.Equals(""))
+                {
                     return aAuth.generateAuthentication(userId, hash);
-                }else{
+                }
+                else
+                {
                     string expired = aDG.checkDeviceAuthentication(userId, deviceId);
-                    DeviceExpired[]  expiredObj = js.Deserialize<DeviceExpired[]>(expired);
+                    DeviceExpired[] expiredObj = js.Deserialize<DeviceExpired[]>(expired);
                     string isExpired = expiredObj[0].deviceGUID.ToString();
-                    if(isExpired.Equals("Y")){
+                    if (isExpired.Equals("Y"))
+                    {
                         return aAuth.generateAuthentication(userId, hash);
-                    }else if(isExpired.Equals("Invalid username"))
+                    }
+                    else if (isExpired.Equals("Invalid username"))
                     {
                         return "Invalid Username";
                     }
-                    else{
+                    else
+                    {
                         return dg.getLogIn(userId, hash);
                     }
-                }                
-            }else{
+                }
+            }
+            else
+            {
                 return dg.getLogIn(userId, hash);
             }
         }

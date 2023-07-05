@@ -28,6 +28,7 @@
   let deleteRowsActive = false;
   let selectedRow;
   let isSortable;
+  let readonly;
 
   //* TEMP FUNCTION FOR RE-ORDERING ROWS ON DELETE
   function updateRowOrderAfterDelete(grid, questionSetId) {
@@ -125,6 +126,10 @@
       const inputWrap = question.querySelector('.input-field');
       const inputEle = question.querySelector('.input-field__input');
 
+      // check for radios
+      if (!inputWrap) inputWrap = question.querySelector('.radioWrap');
+      if (!inputEle) inputEle = question.querySelector('input');
+
       const sectionId = section.id.replace('section', '');
       const setId = questionSet.id.replace('set', '');
       const answerId = inputEle.id;
@@ -132,15 +137,18 @@
       if (conditionalQuestions[0].conditionalAnswerText !== answer) {
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
-        inputWrap.classList.add('disabled');
-        if (type !== 'checkbox') {
-          inputEle.value = '';
-        } else {
+        input.disableInputField(inputWrap);
+        if (type === 'checkbox') {
           inputEle.checked = false;
+        } else {
+          inputEle.value = '';
+          const radios = [...inputWrap.querySelectorAll('input')];
+          if (radios.length === 0) return;
+          radios.forEach(radio => (radio.checked = false));
         }
         addAnswer(answerId);
       } else {
-        inputWrap.classList.remove('disabled');
+        input.enableInputField(inputWrap);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
       }
@@ -151,8 +159,12 @@
         const question = document.getElementById(`question${questionId}`);
         const section = question.closest('.assessment__section');
         const questionSet = question.closest('.questionSet');
-        const inputWrap = question.querySelector('.input-field');
-        const inputEle = question.querySelector('.input-field__input');
+        let inputWrap = question.querySelector('.input-field');
+        let inputEle = question.querySelector('.input-field__input');
+
+        // check for radios
+        if (!inputWrap) inputWrap = question.querySelector('.radioWrap');
+        if (!inputEle) inputEle = question.querySelector('input');
 
         const sectionId = section.id.replace('section', '');
         const setId = questionSet.id.replace('set', '');
@@ -161,15 +173,19 @@
         if (conditionalAnswerText !== answer) {
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = false;
-          inputWrap.classList.add('disabled');
-          if (type !== 'checkbox') {
-            inputEle.value = '';
-          } else {
+          input.disableInputField(inputWrap);
+          if (type === 'checkbox') {
             inputEle.checked = false;
+          } else {
+            inputEle.value = '';
+            const radios = [...inputWrap.querySelectorAll('input')];
+            if (radios.length === 0) return;
+            radios.forEach(radio => (radio.checked = false));
           }
+
           addAnswer(answerId);
         } else {
-          inputWrap.classList.remove('disabled');
+          input.enableInputField(inputWrap);
           sectionQuestionCount[sectionId][setId][questionId].answered = false;
           sectionQuestionCount[sectionId][setId][questionId].required = true;
         }
@@ -437,6 +453,9 @@
         // });
       },
     });
+    if (readonly || !$.session.planUpdate) {
+      input.disableInputField(applicableCheckbox);
+    }
     const sectionTitle = document.createElement('h2');
     sectionTitle.innerText = title;
 
@@ -493,7 +512,7 @@
           popupData: { assessmentAreaId: id },
           isNew: true,
           fromAssessment: true,
-          charLimits: charLimits.servicesSupports
+          charLimits: charLimits.servicesSupports,
         });
       },
     });
@@ -502,7 +521,12 @@
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        servicesSupports.showAddAdditionalSupportPopup({ assessmentAreaId: id }, true, true, charLimits.servicesSupports);
+        servicesSupports.showAddAdditionalSupportPopup(
+          { assessmentAreaId: id },
+          true,
+          true,
+          charLimits.servicesSupports,
+        );
       },
     });
     const profRefBtn = button.build({
@@ -510,7 +534,12 @@
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        servicesSupports.showAddProfessionalReferralPopup({ assessmentAreaId: id }, true, true, charLimits.servicesSupports);
+        servicesSupports.showAddProfessionalReferralPopup(
+          { assessmentAreaId: id },
+          true,
+          true,
+          charLimits.servicesSupports,
+        );
       },
     });
 
@@ -606,14 +635,15 @@
     let questionInput;
     let hasStaticText;
 
-    let textAreaCharLimit = 1000;
+    let textAreaCharLimit = 10000;
 
     switch (answerStyle) {
       case 'TEXTAREA': {
-        if (data.colName === 'What is the risk, what it looks like, where it occurs:') {
-          textAreaCharLimit = 10000;
-        }
-
+        // For text areas with colName "What’s Working" and "What's Not Working"
+        if (colName.trim().split(' ').pop() === 'Working') {
+          textAreaCharLimit = 1000;
+        }        
+        
         questionInput = input.build({
           type: 'textarea',
           style: 'secondary',
@@ -631,7 +661,7 @@
           style: 'secondary',
           id: answerId,
           value: answerText ? answerText : '',
-          charLimit: 1000,
+          charLimit: 10000,
           forceCharLimit: true,
         });
         break;
@@ -698,6 +728,9 @@
     }
 
     if (questionInput) gridCell.appendChild(questionInput);
+    if (readonly || !$.session.planUpdate) {
+      if (questionInput) input.disableInputField(questionInput);
+    }
 
     return { markup: gridCell, hasStaticText };
   }
@@ -970,12 +1003,12 @@
             const gridCell = document.createElement('div');
             gridCell.classList.add('grid__cell');
 
-            let textAreaCharLimit = 1000;
+            let textAreaCharLimit = 10000;
 
             switch (answerStyle) {
               case 'TEXTAREA': {
-                if (colName === 'What is the risk, what it looks like, where it occurs:') {
-                  textAreaCharLimit = 10000;
+                if (data.colName === "What’s Working" || data.colName === "What’s Not Working") {
+                  textAreaCharLimit = 1000;
                 }
 
                 const questionInput = input.build({
@@ -988,6 +1021,9 @@
                   forceCharLimit: true,
                   attributes: [{ key: 'data-answer-row', value: answerRow }],
                 });
+                if (readonly || !$.session.planUpdate) {
+                  input.disableInputField(questionInput);
+                }
 
                 gridCell.appendChild(questionInput);
                 break;
@@ -1003,6 +1039,9 @@
                   forceCharLimit: true,
                   attributes: [{ key: 'data-answer-row', value: answerRow }],
                 });
+                if (readonly || !$.session.planUpdate) {
+                  input.disableInputField(questionInput);
+                }
 
                 gridCell.appendChild(questionInput);
                 break;
@@ -1012,6 +1051,9 @@
                   dropdownId: answerId,
                   style: 'secondary',
                 });
+                if (readonly || !$.session.planUpdate) {
+                  input.disableInputField(questionInput);
+                }
 
                 const colKey = UTIL.camelize(colName);
                 const dataKey = colNameDropdownMap[colKey];
@@ -1052,35 +1094,7 @@
                 break;
               }
               case 'DATE': {
-                console.log('need to get dates from planDates');
                 return;
-
-                gridCell.setAttribute('data-cellType', 'date');
-                const inputOptions = {
-                  type: 'date',
-                  style: 'secondary',
-                  id: answerId,
-                };
-
-                if (
-                  colName.toLowerCase().includes('begin') ||
-                  colName.toLowerCase().includes('start')
-                ) {
-                  console.log('effective Start Date needed here');
-                  const startDate = UTIL.formatDateToIso(effectiveStartDate);
-                  answerText = startDate;
-                  inputOptions.value = startDate;
-                } else {
-                  console.log('effective End Date needed here');
-                  const endDate = UTIL.formatDateToIso(effectiveEndDate);
-                  answerText = endDate;
-                  inputOptions.value = endDate;
-                }
-
-                const questionInput = input.build(inputOptions);
-
-                gridCell.appendChild(questionInput);
-                break;
               }
             }
 
@@ -1091,6 +1105,16 @@
 
           gridBody.appendChild(gridRow);
           DOM.autosizeTextarea();
+
+          let firstCol;
+
+          if (isSortable) {
+            firstCol = gridRow.children[1];
+          } else {
+            firstCol = gridRow.children[0];
+          }
+          const colInput = firstCol.querySelector('.input-field__input');
+          colInput.focus();
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
@@ -1116,8 +1140,7 @@
           selectedRow = undefined;
           deleteRowsActive = false;
           const row = grid.querySelector('.grid__row.selected');
-          if (row)
-            row.classList.remove('selected');
+          if (row) row.classList.remove('selected');
           grid.classList.remove('delteActive');
           deleteRowsBtn.innerText = 'Delete Row';
           deleteRowsBtn.classList.remove('selected');
@@ -1148,7 +1171,7 @@
       style: 'secondary',
       id: answerId,
       value: answerText,
-      charLimit: 2000,
+      charLimit: 10000,
       forceCharLimit: true,
     });
 
@@ -1157,10 +1180,14 @@
       const parentAnswerText = parentQuestion && parentQuestion.answerText;
 
       if (parentAnswerText !== conditionalAnswerText) {
-        questionInputMarkup.classList.add('disabled');
+        //questionInputMarkup.classList.add('disabled');
+        input.disableInputField(questionInputMarkup);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {
+        if (readonly || !$.session.planUpdate) {
+          input.disableInputField(questionInputMarkup);
+        }
         sectionQuestionCount[sectionId][setId][questionId].answered =
           answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
@@ -1169,6 +1196,9 @@
       sectionQuestionCount[sectionId][setId][questionId].answered =
         answerText === '' ? false : true;
       sectionQuestionCount[sectionId][setId][questionId].required = true;
+      if (readonly || !$.session.planUpdate) {
+        input.disableInputField(questionInputMarkup);
+      }
     }
 
     return questionInputMarkup;
@@ -1184,10 +1214,10 @@
       questionId,
     } = data;
 
-    let charLimit = 2000;
-    if (data.text && data.text === 'List other tools:') {
-      charLimit = 1000;
-    }
+    let charLimit = 10000;
+    // if (data.text && data.text === 'List other tools:') {
+    //   charLimit = 1000;
+    // }
 
     const questionInputMarkup = input.build({
       type: 'textarea',
@@ -1204,10 +1234,14 @@
       const parentAnswerText = parentQuestion && parentQuestion.answerText;
 
       if (parentAnswerText !== conditionalAnswerText) {
-        questionInputMarkup.classList.add('disabled');
+        //questionInputMarkup.classList.add('disabled');
+        input.disableInputField(questionInputMarkup);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {
+        if (readonly || !$.session.planUpdate) {
+          input.disableInputField(questionInputMarkup);
+        }
         sectionQuestionCount[sectionId][setId][questionId].answered =
           answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
@@ -1216,6 +1250,9 @@
       sectionQuestionCount[sectionId][setId][questionId].answered =
         answerText === '' ? false : true;
       sectionQuestionCount[sectionId][setId][questionId].required = true;
+      if (readonly || !$.session.planUpdate) {
+        input.disableInputField(questionInputMarkup);
+      }
     }
 
     return questionInputMarkup;
@@ -1245,16 +1282,23 @@
       const parentAnswerText = parentQuestion && parentQuestion.answerText;
 
       if (parentAnswerText !== conditionalAnswerText) {
-        questionInputMarkup.classList.add('disabled');
+        //questionInputMarkup.classList.add('disabled');
+        input.disableInputField(questionInputMarkup);
         sectionQuestionCount[sectionId][setId][questionId].answered = false;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       } else {
+        if (readonly || !$.session.planUpdate) {
+          input.disableInputField(questionInputMarkup);
+        }
         sectionQuestionCount[sectionId][setId][questionId].answered = isChecked;
         sectionQuestionCount[sectionId][setId][questionId].required = false;
       }
     } else {
       sectionQuestionCount[sectionId][setId][questionId].answered = isChecked;
       sectionQuestionCount[sectionId][setId][questionId].required = false;
+      if (readonly || !$.session.planUpdate) {
+        input.disableInputField(questionInputMarkup);
+      }
     }
 
     return questionInputMarkup;
@@ -1302,6 +1346,23 @@
 
       const radioInput = input.buildRadio(btnOpts);
       questionInputMarkup.appendChild(radioInput);
+    });
+
+    const eraser = document.createElement('div');
+    eraser.innerHTML += icons.eraser;
+    questionInputMarkup.appendChild(eraser);
+
+    eraser.addEventListener('click', () => {
+      // clear out answer
+      addAnswer(answerId, '');
+      // mark unanswered
+      sectionQuestionCount[sectionId][setId][questionId].answered = false;
+      // clear radios
+      const radios = [...questionInputMarkup.querySelectorAll('input')];
+      radios.forEach(radio => (radio.checked = false));
+      // clear conditionals
+      const conditionalQuestions = assessment.getConditionalQuestions(questionId);
+      toggleConditionalQuestion('', 'radio', conditionalQuestions);
     });
 
     return questionInputMarkup;
@@ -1605,11 +1666,12 @@
     answerObj = {};
     subSectionsWithAttachments = [];
     charLimits = planData.getAllISPcharacterLimts();
+    readonly = readOnly;
 
     if (!$.session.planUpdate) {
       isSortable = false;
     } else {
-      isSortable = readOnly ? false : true;
+      isSortable = readonly ? false : true;
     }
 
     assessmentDropdownData = {};

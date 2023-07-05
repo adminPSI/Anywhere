@@ -340,7 +340,7 @@ const planAttachment = (() => {
     cleanAttachmentLists(attachmentsToAdd, attachmentsToRemove) {
       attachmentsToRemove.forEach(attachmentId => {
         let list = attachments.get(this.questionId);
-        let newList = list.filter(a => a.attachmentId !== attachmentId);
+        let newList = list.filter(a => a.planAttachmentId !== attachmentId);
         attachments.set(this.questionId, newList);
       });
       attachmentsToAdd.forEach(attachment => {

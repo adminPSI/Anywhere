@@ -5,18 +5,20 @@
 #paidSupportsTable {
   margin-bottom: 10px;
 
-  .table {
-    .table__row {
-      cursor: pointer;
+  .table__row {
+    cursor: pointer;
 
-      > div {
-        flex-grow: 1;
-        margin: 0 5px 0 0;
-        overflow-wrap: break-word;
-      }
-      > div:last-child {
-        margin: 0;
-      }
+    &.selected {
+      background: $secondary;
+    }
+
+    > div {
+      flex-grow: 1;
+      margin: 0 5px 0 0;
+      overflow-wrap: break-word;
+    }
+    > div:last-child {
+      margin: 0;
     }
   }
 
@@ -458,6 +460,56 @@
     .left,
     .right {
       width: 49%;
+    }
+  }
+}
+
+.multiEditPopup {
+  .popupMessage {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    font-style: italic;
+  }
+
+  .popup__header {
+    margin: 0 0 20px;
+  }
+}
+
+.btnWrap {
+  .addRowBtnPaidSupports {
+    width: 100%;
+    margin: 0 0 10px;
+  }
+  .mutliEditBtnWrap {
+    display: flex;
+    width: 100%;
+    margin: 0;
+
+    button {
+      margin-right: 10px;
+      width: 100px;
+    }
+
+    .multiEditBtn {
+      margin: 0;
+      width: auto;
+
+      &.enabled {
+        margin-right: 10px;
+        background: $secondary;
+      }
+    }
+  }
+
+  @media screen and (min-width: '800px') {
+    .addRowBtnPaidSupports {
+      max-width: 200px;
+      margin: 0 10px 0 0;
+    }
+    .mutliEditBtnWrap {
+      width: auto;
     }
   }
 }

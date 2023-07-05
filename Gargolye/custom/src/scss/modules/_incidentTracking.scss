@@ -3,13 +3,17 @@
 #incidentOverviewTable {
   .table__header-row,
   .table__row {
+    &[data-viewed='true'] {
+      font-weight: $bold;
+      // color: $font-dark;
+      // background: $secondary;
+    }
     > div {
       margin: 0 5px 0 0;
     }
     > div:last-child {
       margin: 0;
     }
-    
     > div:nth-child(1) {// location
       flex-grow: 1;
       flex-basis: 100px;
@@ -42,6 +46,12 @@
       display: none;
       flex-basis: 100px;
       max-width: 300px;
+    }
+    > div.endIcon {
+      flex-basis: 75px;
+      margin-left: auto;
+      margin-right: 0;
+      max-width: 100px;
     }
 
     @media screen and (min-width: 560px) {
@@ -232,6 +242,7 @@
         border-bottom: $w-sm solid rgba($black, 0.12);
         padding: 10px 5px;
         margin: 0 0 5px;
+        cursor: pointer;
 
         &.removeConsumer {
           background: $font-error;
@@ -253,9 +264,11 @@
     flex-shrink: 0;
     width: 100%;
     transform: translateX(10%);
+    visibility: hidden;
 
     &.visible {
       height: auto;
+      visibility: visible;
     }
 
     &__home {
@@ -269,7 +282,7 @@
       }
     }
   }
-  .followUpSection {
+  .behaviorSection {
     &.visible {
       transform: translateX(-100%);
     }
@@ -281,14 +294,14 @@
         width: 100px;
       }
       > div:nth-child(2) {
-        width: 80px;
+        width: 60px;
       }
       > div:nth-child(3) {
-        width: 60px;
+        width: 80px;
       }
     }
   }
-  .injuriesSection {
+  .followUpSection {
     &.visible {
       transform: translateX(-200%);
     }
@@ -307,7 +320,7 @@
       }
     }
   }
-  .interventionSection {
+  .injuriesSection {
     &.visible {
       transform: translateX(-300%);
     }
@@ -326,14 +339,33 @@
       }
     }
   }
-  .involvementSection {
+  .interventionSection {
     &.visible {
       transform: translateX(-400%);
+    }
+    .table__row {
+      > div {
+        flex-grow: 1;
+      }
+      > div:nth-child(1) {
+        width: 100px;
+      }
+      > div:nth-child(2) {
+        width: 80px;
+      }
+      > div:nth-child(3) {
+        width: 60px;
+      }
+    }
+  }
+  .involvementSection {
+    &.visible {
+      transform: translateX(-500%);
     }
   }
   .reportingSection {
     &.visible {
-    transform: translateX(-500%);
+    transform: translateX(-600%);
     }
     .table__row {
       > div {
@@ -352,7 +384,7 @@
   }
   .reviewSection {
     &.visible {
-      transform: translateX(-600%);
+      transform: translateX(-700%);
     }
     .table__row {
       > div {

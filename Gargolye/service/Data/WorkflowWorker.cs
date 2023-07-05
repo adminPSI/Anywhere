@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Odbc;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -132,6 +130,7 @@ namespace Anywhere.service.Data
             public string IndivNameFirstL { get; set; }
             public string IndivNameFLast5 { get; set; }
             public string ResidentNumber { get; set; }
+            public string serviceProviders { get; set; }
 
         }
 
@@ -250,7 +249,7 @@ namespace Anywhere.service.Data
             public string description { get; set; }
             [DataMember(Order = 2)]
             public string responsiblePartyId { get; set; }
-            
+
         }
 
         [DataContract]
@@ -258,7 +257,7 @@ namespace Anywhere.service.Data
         {
             [DataMember(Order = 0)]
             public string ID { get; set; }
-          
+
         }
 
         [DataContract]
@@ -509,7 +508,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public PeopleName[] getPeopleNames(string token)
+        public PeopleName[] getPeopleNames(string token, string peopleId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -517,7 +516,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    PeopleName[] people = js.Deserialize<PeopleName[]>(wfdg.getPeopleNames(transaction));
+                    PeopleName[] people = js.Deserialize<PeopleName[]>(wfdg.getPeopleNames(peopleId, transaction));
                     return people;
                 }
                 catch (Exception ex)
@@ -554,7 +553,7 @@ namespace Anywhere.service.Data
                 try
                 {
                     js.MaxJsonLength = Int32.MaxValue;
-                   // if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    // if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     Workflow[] workflows = js.Deserialize<Workflow[]>(wfdg.getWFwithMissingResponsibleParties(token, workflowIds, transaction));
                     return workflows;
                 }
@@ -692,23 +691,23 @@ namespace Anywhere.service.Data
         }
 
         public string isWorkflowAutoCreated(string token, string workflowName)
-        {   
-                try
-                {
-                    if (workflowName == null) throw new Exception("workflowName is required");
+        {
+            try
+            {
+                if (workflowName == null) throw new Exception("workflowName is required");
 
-                    String isAutoCreated = wfdg.isWorkflowAutoCreated(workflowName);
+                String isAutoCreated = wfdg.isWorkflowAutoCreated(workflowName);
 
-                    return isAutoCreated;
-                }
-                catch (Exception ex)
-                {            
-                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
-                }
-           
+                return isAutoCreated;
+            }
+            catch (Exception ex)
+            {
+                throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+            }
+
         }
 
-            public string insertWorkflow(string token, string templateId, string peopleId, string referenceId)
+        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -777,7 +776,7 @@ namespace Anywhere.service.Data
 
                     // insert attachment binary data
                     String attachmentId = wfdg.insertAttachment(attachmentType, attachment, transaction);
- 
+
                     // insert document
                     String documentId = wfdg.insertWorkflowStepDocument(stepId, docOrder, description, attachmentId, comments, documentEdited, transaction);
 
@@ -980,7 +979,7 @@ namespace Anywhere.service.Data
 
         public string updateRelationshipResponsiblePartyID(string token, string peopleId, string WFID, string responsiblePartyType)
         {
-          
+
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
@@ -989,7 +988,7 @@ namespace Anywhere.service.Data
 
 
                     string rowsUpdated = wfdg.updateRelationshipResponsiblePartyID(peopleId, WFID, responsiblePartyType, transaction);
-                    
+
                     string stepsUpdated = wfdg.updateStepResponsiblePartyID(WFID, responsiblePartyType, transaction);
 
                     return rowsUpdated;
@@ -1274,13 +1273,15 @@ namespace Anywhere.service.Data
         {
             Dictionary<string, string> dictPlaceHolderValuesforStep = new Dictionary<string, string>();
 
-            switch (param) {
+            switch (param)
+            {
 
                 case "[Due Date]":
                     if (thisStep.DueDate != "")
                     {
                         dictPlaceHolderValuesforStep.Add(param, DateTime.Parse(thisStep.DueDate).ToString("MM/dd/yyyy"));
-                    } else
+                    }
+                    else
                     {
                         dictPlaceHolderValuesforStep.Add(param, thisStep.DueDate);
                     }
@@ -1289,7 +1290,8 @@ namespace Anywhere.service.Data
                     if (thisStep.DoneDate != "")
                     {
                         dictPlaceHolderValuesforStep.Add(param, DateTime.Parse(thisStep.DoneDate).ToString("MM/dd/yyyy"));
-                    } else
+                    }
+                    else
                     {
                         dictPlaceHolderValuesforStep.Add(param, thisStep.DoneDate);
                     }
@@ -1298,7 +1300,8 @@ namespace Anywhere.service.Data
                     if (thisStep.StartDate != "")
                     {
                         dictPlaceHolderValuesforStep.Add(param, DateTime.Parse(thisStep.StartDate).ToString("MM/dd/yyyy"));
-                    } else
+                    }
+                    else
                     {
                         dictPlaceHolderValuesforStep.Add(param, thisStep.StartDate);
                     }
@@ -1337,7 +1340,8 @@ namespace Anywhere.service.Data
                     if (thisPlan.planYearStart != "")
                     {
                         dictPlaceHolderValuesforPlan.Add(param, DateTime.Parse(thisPlan.planYearStart).ToString("MM/dd/yyyy"));
-                    } else
+                    }
+                    else
                     {
                         dictPlaceHolderValuesforPlan.Add(param, thisPlan.planYearStart);
                     }
@@ -1347,7 +1351,8 @@ namespace Anywhere.service.Data
                     if (thisPlan.planYearEnd != "")
                     {
                         dictPlaceHolderValuesforPlan.Add(param, DateTime.Parse(thisPlan.planYearEnd).ToString("MM/dd/yyyy"));
-                    } else
+                    }
+                    else
                     {
                         dictPlaceHolderValuesforPlan.Add(param, thisPlan.planYearEnd);
                     }
@@ -1356,7 +1361,8 @@ namespace Anywhere.service.Data
                     if (thisPlan.effectiveStart != "")
                     {
                         dictPlaceHolderValuesforPlan.Add(param, DateTime.Parse(thisPlan.effectiveStart).ToString("MM/dd/yyyy"));
-                    } else
+                    }
+                    else
                     {
                         dictPlaceHolderValuesforPlan.Add(param, thisPlan.effectiveStart);
                     }
@@ -1376,6 +1382,9 @@ namespace Anywhere.service.Data
                 case "[Indiv. Resident Number]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.ResidentNumber);
                     break;
+                case "[Service Providers]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisPlan.serviceProviders);
+                    break;
             }
             return dictPlaceHolderValuesforPlan;
         }
@@ -1387,7 +1396,8 @@ namespace Anywhere.service.Data
 
             string returnActionJSON = "";
 
-            try {
+            try
+            {
                 // process actions associated with the event
                 foreach (ActionInfo thisAction in theseActions)
                 {
@@ -1403,7 +1413,8 @@ namespace Anywhere.service.Data
                                     wfStatusParameter = thisAction.WF_Action_Parameters.Split('=');
                                 }
 
-                                if (wfStatusParameter.Length > 1) {
+                                if (wfStatusParameter.Length > 1)
+                                {
                                     string returnStatusInfo = wfdg.setWorkflowStatus(thisAction.WF_ID, wfStatusParameter[1], transaction);
                                     var returnStatus = new { ActionId = thisAction.WF_Action_ID, wfStatusId = wfStatusParameter[1], workflowId = thisAction.WF_ID };
                                     returnActionJSON = Newtonsoft.Json.JsonConvert.SerializeObject(returnStatus);
@@ -1533,7 +1544,7 @@ namespace Anywhere.service.Data
             if (dateActionParameters.Count != 0)
             {
                 strdateActionParameters = (dateActionParameters["Date"]).ToUpper();
-            } 
+            }
 
 
             try
@@ -1825,7 +1836,7 @@ namespace Anywhere.service.Data
             return relatedPerson != null ? relatedPerson.peopleId : null;
         }
 
-       
+
 
         string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, DistributedTransaction transaction_insertWFDetails)
         {
@@ -1846,7 +1857,7 @@ namespace Anywhere.service.Data
                     transaction_insertWF.Commit();
                     transaction_insertWF.Dispose();
                 }
-                    
+
 
                 // ===Populate Responsible Party Relationship Table from template
                 using (DistributedTransaction transaction_responseRelations = new DistributedTransaction(DbHelper.ConnectionString))
@@ -1868,20 +1879,21 @@ namespace Anywhere.service.Data
                             transaction_updatePartyIds.Commit();
                             transaction_updatePartyIds.Dispose();
 
-                        } catch (Exception ex)
-            {
+                        }
+                        catch (Exception ex)
+                        {
                             throw ex;
                         }
 
-                    }    
-                    
+                    }
+
                 }
 
                 // === Populate inserted Responsible Party Relationships with Responsible Party Ids
                 //if (insertResult != null) {
                 //    string updateResult = wfdg.updateWFResponsiblePartyIDs(peopleId, workflowId, transaction);
                 //}
-                
+
                 List<dynamic> lstEvents = new List<dynamic>();
 
                 // Fetch all the workflow template data
@@ -1980,7 +1992,7 @@ namespace Anywhere.service.Data
 
                                 String stepEventActionId = wfdg.insertWorkflowStepEventAction(stepEventId, a.actionId, a.actionParameter, a.actionDescription, transaction_insertWFDetails);
 
-                                lstEvents.Add(new {stepId = stepId, eventId = e.eventId});
+                                lstEvents.Add(new { stepId = stepId, eventId = e.eventId });
                             }
                         }
 
@@ -1994,7 +2006,7 @@ namespace Anywhere.service.Data
                 //MAT Commented out below because the transaction was failing due to being Commited here
                 transaction_insertWFDetails.Commit();
                 // transaction.Dispose();
-              //  var test = 1;
+                //  var test = 1;
 
 
                 // process Events
@@ -2013,7 +2025,8 @@ namespace Anywhere.service.Data
                         string processingCompleted = processWorkflowStepEvent(token, thisEvent);
                     }
 
-                    else if (itemEvent.eventId == "1") {
+                    else if (itemEvent.eventId == "1")
+                    {
 
                         WorkflowEditedStepStatus thisEvent = new WorkflowEditedStepStatus();
 
@@ -2026,14 +2039,15 @@ namespace Anywhere.service.Data
                 //transaction.Commit();
                 return workflowId;
 
-                } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
 
         }
 
-    
+
 
         public ManualWorkflowList[] getManualWorkflowList(string token, string processId, string planId)
         {
@@ -2097,13 +2111,13 @@ namespace Anywhere.service.Data
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
-                {                    
+                {
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    
+
                     PlanWorkflowWidgetData[] planWidgetData = Array.FindAll(
                         js.Deserialize<PlanWorkflowWidgetData[]>(
                             wfdg.getDashboardPlanWorkflowWidget(responsiblePartyId, transaction)
-                        ), 
+                        ),
                         d => d.planActive == "True");
 
                     return planWidgetData;
@@ -2118,6 +2132,6 @@ namespace Anywhere.service.Data
         }
 
         #endregion
-        
+
     }
 }

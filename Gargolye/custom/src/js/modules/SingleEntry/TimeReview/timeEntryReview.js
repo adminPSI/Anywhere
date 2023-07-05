@@ -275,7 +275,7 @@ var timeEntryReview = (function () {
     dropdown.populate(workCodeDropdown, data, workCodeId);
   }
   function setupFilterEventListeners() {
-      locationDropdown.addEventListener('change', function () {
+    locationDropdown.addEventListener('change', function () {
       var selectedOption = event.target.options[event.target.selectedIndex];
       tmpLocationId = selectedOption.value;
       tmpLocationName = selectedOption.innerHTML;
@@ -291,32 +291,32 @@ var timeEntryReview = (function () {
         locationId = tmpLocationId;
         workCodeId = tmpWorkCodeId;
 
-          if (locationId !== '%' || workCodeId !== '%') {
-              populateTable(
-                  entriesByDate.filter(e => {
-                      if (tmpLocationId && tmpWorkCodeId) {
-                          wcAbbreviation = workCodeName.split(' ')[0];
-                          if (tmpLocationId === '%') {
-                              return e.WCCode === wcAbbreviation;
-                          } else if (tmpWorkCodeId === '%') {
-                              return e.Location_ID === locationId;
-                          } else {
-                              return e.Location_ID === locationId && e.WCCode === wcAbbreviation;
-                          }
-                      }
-                      if (tmpLocationId && !tmpWorkCodeId) {
-                          return e.Location_ID === locationId;
-                      }
+        if (locationId !== '%' || workCodeId !== '%') {
+          populateTable(
+            entriesByDate.filter(e => {
+              if (tmpLocationId && tmpWorkCodeId) {
+                wcAbbreviation = workCodeName.split(' ')[0];
+                if (tmpLocationId === '%') {
+                  return e.WCCode === wcAbbreviation;
+                } else if (tmpWorkCodeId === '%') {
+                  return e.Location_ID === locationId;
+                } else {
+                  return e.Location_ID === locationId && e.WCCode === wcAbbreviation;
+                }
+              }
+              if (tmpLocationId && !tmpWorkCodeId) {
+                return e.Location_ID === locationId;
+              }
 
-                      if (tmpWorkCodeId && !tmpLocationId) {
-                          wcAbbreviation = workCodeName.split(' ')[0];
-                          return e.WCCode === wcAbbreviation;
-                      }
-                  }),
-              );
-          } else {
-              populateTable(entriesByDate);
-          }
+              if (tmpWorkCodeId && !tmpLocationId) {
+                wcAbbreviation = workCodeName.split(' ')[0];
+                return e.WCCode === wcAbbreviation;
+              }
+            }),
+          );
+        } else {
+          populateTable(entriesByDate);
+        }
 
         ACTION_NAV.hide();
         mulitSelectBtn.classList.remove('enabled');
@@ -426,6 +426,7 @@ var timeEntryReview = (function () {
           entry: results,
           consumers: consumers,
           payPeriod,
+          recordActivityElement: document.getElementById(`${entryId}-seRecordActivity`),
         });
       });
     });
@@ -586,8 +587,8 @@ var timeEntryReview = (function () {
     }
   }
   // populate
-  function populateTable(results) {
-    var workCodes = timeEntry.getWorkCodes();
+  async function populateTable(results) {
+    var workCodes = await timeEntry.getWorkCodes();
 
     var tableData = results.map(td => {
       var entryId = td.Single_Entry_ID;
@@ -640,7 +641,84 @@ var timeEntryReview = (function () {
     });
 
     table.populate(reviewTable, tableData);
+    buildSERecordActivity(results);
   }
+
+  // Row Additional Information from ticket 71522
+  function buildSERecordActivity(seData) {
+    function createElement(status, user, date, seID, rejected) {
+      const dateVal = date.split(' ')[0];
+      const timeVal = UTIL.formatTimeString(
+        UTIL.convertToMilitary(`${date.split(' ')[1]} ${date.split(' ')[2]}`),
+      );
+      const element = document.createElement('p');
+      element.classList.add('seRecordActivity');
+      element.id = `${seID}-seRecordActivity`;
+      element.innerText = `${status}: ${dateVal} - ${timeVal} - ${user}`;
+     // if (rejected) element.classList.add('error'); //add red text to the message for rejected records
+      if (rejected) element.style.color = "red"; //add red text to the message for rejected records
+      const tableRow = document.getElementById(seID);
+      tableRow.appendChild(element);
+    }
+    seData.forEach(entry => {
+      switch (entry.Anywhere_Status) {
+        case 'A': // Submitted needs approval
+          createElement(
+            'Record Submitted',
+            entry.submittedUser,
+            entry.submit_date,
+            entry.Single_Entry_ID,
+            false,
+          );
+          break;
+        case 'S':  // Submitted (and Approved)
+          if (entry.approved_time != '') {
+            createElement(
+              'Record Approved',
+              entry.approvedUser,
+              entry.approved_time,
+              entry.Single_Entry_ID,
+              false,
+            );
+            break;
+
+          } else {
+            createElement(
+              'Record Submitted',
+              entry.submittedUser,
+              entry.submit_date,
+              entry.Single_Entry_ID,
+              false,
+            ); 
+            break;
+          }
+          
+        case 'I':  // Imported into Advisor
+        case 'D':  // Duplicate 
+          createElement(
+            'Record Approved',
+            entry.approvedUser,
+            entry.approved_time,
+            entry.Single_Entry_ID,
+            false,
+          );
+          break;
+        case 'R':  // Rejected
+          createElement(
+            'Record Rejected',
+            entry.rejectedUser,
+            entry.rejected_time,
+            entry.Single_Entry_ID,
+            true,
+          );
+          break;
+
+        default:
+          break;
+      }
+    });
+  }
+
   // build
   function buildTopNav() {
     var btnWrap = document.createElement('div');
@@ -745,32 +823,32 @@ var timeEntryReview = (function () {
         statusIn: status ? status : '',
       },
       function (results, error) {
-          entriesByDate = results;
-          if (locationId !== '%' || workCodeId !== '%') {
-              populateTable(
-                  entriesByDate.filter(e => {
-                      if (tmpLocationId && tmpWorkCodeId) {
-                          wcAbbreviation = workCodeName.split(' ')[0];
-                          if (tmpLocationId === '%') {
-                              return e.WCCode === wcAbbreviation;
-                          } else if (tmpWorkCodeId === '%') {
-                              return e.Location_ID === locationId;
-                          } else {
-                              return e.Location_ID === locationId && e.WCCode === wcAbbreviation;
-                          }
-                      }
-                      if (tmpLocationId && !tmpWorkCodeId && tmpLocationId !== '%') {
-                          return e.Location_ID === locationId;
-                      }
-                      if (tmpWorkCodeId && !tmpLocationId && tmpWorkCodeId !== '%') {
-                          wcAbbreviation = workCodeName.split(' ')[0];
-                          return e.WCCode === wcAbbreviation;
-                      }
-                  }),
-              );
-          } else {
-              populateTable(entriesByDate);
-          }
+        entriesByDate = results;
+        if (locationId !== '%' || workCodeId !== '%') {
+          populateTable(
+            entriesByDate.filter(e => {
+              if (tmpLocationId && tmpWorkCodeId) {
+                wcAbbreviation = workCodeName.split(' ')[0];
+                if (tmpLocationId === '%') {
+                  return e.WCCode === wcAbbreviation;
+                } else if (tmpWorkCodeId === '%') {
+                  return e.Location_ID === locationId;
+                } else {
+                  return e.Location_ID === locationId && e.WCCode === wcAbbreviation;
+                }
+              }
+              if (tmpLocationId && !tmpWorkCodeId && tmpLocationId !== '%') {
+                return e.Location_ID === locationId;
+              }
+              if (tmpWorkCodeId && !tmpLocationId && tmpWorkCodeId !== '%') {
+                wcAbbreviation = workCodeName.split(' ')[0];
+                return e.WCCode === wcAbbreviation;
+              }
+            }),
+          );
+        } else {
+          populateTable(entriesByDate);
+        }
       },
     );
   }
@@ -811,10 +889,10 @@ var timeEntryReview = (function () {
   }
 
   //Handle navigation from dashboard widget to module
-  function dashHandler(startPeriod, endPeriod, status) {
+  async function dashHandler(startPeriod, endPeriod, status) {
     payPeriodData = timeEntry.getPayPeriods(false);
     locationData = timeEntry.getLocations();
-    workCodeData = timeEntry.getWorkCodes();
+    workCodeData = await timeEntry.getWorkCodes();
     let startDateIso = UTIL.formatDateToIso(startPeriod);
     let endDateIso = UTIL.formatDateToIso(endPeriod);
 
@@ -825,50 +903,21 @@ var timeEntryReview = (function () {
     );
     loadReviewPage(status);
   }
-  /*
-  function displayPayPeriodPopup() {
-    // popup
-    var popup = POPUP.build({classNames: 'timeEntryReviewPayPeriodPopup'});
-    // popup message
-    var popupText = document.createElement('p');
-    popupText.innerHTML = 'Please select a pay period to review';
-    // popup dropdown
-    var payPeriodsDropdown = buildPayPeriodDropdown();
-    // apply button
-    var applyBtn = button.build({
-      text: 'Review',
-      style: 'secondary',
-      type: 'contained',
-      callback: function() {
-        POPUP.hide(popup);
-        loadReviewPage();
-      }
-    });
-    // build popup
-    popup.appendChild(popupText);
-    popup.appendChild(payPeriodsDropdown);
-    popup.appendChild(applyBtn);
-    // show popup
-    POPUP.show(popup);
-  }
-  */
-  function refreshPage(payperiod) {
+  async function refreshPage(payperiod) {
     setActiveModuleSectionAttribute('timeEntry-review');
     payPeriodData = timeEntry.getPayPeriods(false);
-    // payPeriod = timeEntry.getCurrentPayPeriod(false);
     payPeriod = payperiod ? payperiod : timeEntry.getCurrentPayPeriod(false);
     locationData = timeEntry.getLocations();
-    workCodeData = timeEntry.getWorkCodes();
+    workCodeData = await timeEntry.getWorkCodes();
 
     loadReviewPage();
   }
-  function init() {
+  async function init() {
     payPeriodData = timeEntry.getPayPeriods(false);
     payPeriod = timeEntry.getCurrentPayPeriod(false);
     locationData = timeEntry.getLocations();
-    workCodeData = timeEntry.getWorkCodes();
+    workCodeData = await timeEntry.getWorkCodes();
 
-    //displayPayPeriodPopup();
     loadReviewPage();
   }
 

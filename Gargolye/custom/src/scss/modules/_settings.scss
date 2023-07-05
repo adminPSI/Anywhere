@@ -3,6 +3,7 @@
     margin-bottom: 8px;
   }
 }
+
 .settingMenuCard {
   margin-bottom: 5px;
   background: #fff;
@@ -39,58 +40,176 @@
     .rllCheckbox {
       padding-bottom: 10px;
     }
-    // > div {
-    //   margin-left: 10px;
-    //   margin-right: 10px;
-    // }
   }
 }
 
-.submenu.util-menu__widgetSettings {
+// Widget Settings
+.util-menu__widgetSettings {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
-  .widgetSettingsSaveBtn {
-    margin-top: -10px;
+
+  .widgetsContainer {
+    display: flex;
+    flex-flow: row wrap;
+  }
+
+  .widgetWrap {
+    overflow: hidden;
+    position: relative;
+    margin: 0 0 10px;
+    border-radius: 4px;
     width: 100%;
-    transition-duration: .18s;
-    transition-timing-function: linear;
-    background: $bg-dark;
-    &.saved {
-      background: $bg-dark2;
+
+    // settings order based off widget order
+    &.customlinks {
+      order: 1;
+    }
+    &.absentconsumers {
+      order: 2;
+    }
+    &.casenoteproductivity {
+      order: 3;
+    }
+    &.mycaseload {
+      order: 4;
+    }
+    &.rejectedcasenotes {
+      order: 5;
+    }
+    &.planto-dolist {
+      order: 6;
+    }
+    &.locationprogressnotes {
+      order: 7;
+    }
+    &.myunapprovedtimeentries {
+      order: 8;
+    }
+    &.consumerprogressnotes {
+      order: 9;
+    }
+    &.timeentryreview {
+      order: 10;
+    }
+    &.dayservicetimeclock {
+      order: 11;
+    }
+    &.hoursworked {
+      order: 12;
+    }
+    &.myschedule {
+      order: 13;
+    }
+    &.dailyservices {
+      order: 14;
+    }
+    &.dayservices {
+      order: 15;
+    }
+    &.incidenttracking {
+      order: 16;
     }
   }
 
+  .widgetHeader {
+    align-items: center;
+    background: $bg-dark2;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 5px 10px 10px;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
 
-  .cnProductivity {
-    .group1 {
-      display: flex;
-      margin-top: 10px;
-      > div {
-        flex-grow: 1;
-        &:first-child {
-          max-width: 110px;
-        }
-        &:last-child {
-          margin-left: 10px;
+    .checkbox-mtd > span {
+      font-size: 14px;
+    }
+    .checkbox-mtd:before {
+      background-color: $btn-light;
+    }
+  }
+
+  .widgetBody {
+    background-color: $btn-light;
+    transform: translateY(-100%);
+    transition: all 200ms linear;
+    max-height: 0px;
+    opacity: 0;
+
+    .widgetBody__Inner {
+      padding: 20px 5px 10px;
+
+      .settingsCheckBox {
+        margin: 0 0 20px;
+
+        span {
+          font-size: 14px;
         }
       }
-    }
-    .group2 {
-      width: 250px;
-      margin-top: 10px;
-    }
-  }
-  .cnCaseLoad {
-    .settingsCheckBox {
-      margin-bottom: 10px;
-    }
-  }
-  #productivityThresholdPercentage,
-  #cnProductivityDaysBack,
-  #cnProductivityWorkHoursPerDay {
-    text-align: right;
-  }
 
+      button {
+        margin: 0 0 5px;
+      }
+    }
 
+    &.active {
+      transform: translateY(0);
+      max-height: fit-content;
+      opacity: 1;
+    }
+  }
 }
 
+
+// My Information
+.util-menu__info {
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+
+  .informationSection {
+    margin: 0 0 10px;
+
+    > p {
+      background: $secondary;
+      padding: 6px;
+      font-weight: 500;
+    }
+
+    &__body {
+      background: $bg-light;
+      padding: 12px 10px 6px;
+
+      p {
+        color: $font-error;
+      }
+    }
+  }
+
+  .stateZipWrap {
+    display: flex;
+    width: 100%;
+
+    > div:first-child {
+      max-width: 100px;
+      margin-right: 10px;
+    }
+    > div:last-child {
+      flex-grow: 1;
+    }
+  }
+
+  .updateInformationBtn {
+    background: $secondary;
+    width: 100%;
+  }
+
+  .successfulSavePopup {
+    position: absolute;
+    background: $primary;
+    color: $font-light;
+    left: 0px;
+    top: 20%;
+    width: 100%
+  }
+}

@@ -98,6 +98,11 @@
   }
 }
 
+.password-error {
+    color: red;
+    border-color: red;
+}
+
 .successfulSavePopup, .failSavePopup {
   text-align: center;
 

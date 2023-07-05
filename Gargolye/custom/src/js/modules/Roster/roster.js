@@ -904,7 +904,7 @@ const roster2 = (function () {
         if (!consumercount) return `Select consumer(s) below`;
         return `Select consumer(s) below <span>Total Consumer Count:</span> ${consumercount}`;
         break;
-      }
+      } 
     }
   }
   function buildMiniRosterPopup(rosterMarkup) {
@@ -928,9 +928,12 @@ const roster2 = (function () {
     const activeSection = DOM.ACTIONCENTER.dataset.activeSection;
     //buttons need to be disabled. This will need to
     // be modified if more modules need these buttons disabled
+
     if (
       $.loadedApp === 'outcomes' ||
       $.loadedApp === 'plan' ||
+      $.loadedApp === 'ConsumerFinances' || 
+      $.loadedApp === 'employment' ||  
       $.loadedApp === 'covid' ||
       $.loadedApp === 'forms' ||
       activeSection === 'caseNotesSSA-new' ||
@@ -987,7 +990,11 @@ const roster2 = (function () {
       id: 'mini_roster',
       // classNames: ['floatingActionBtn', 'consumerListBtn', 'disabled'],
       classNames: ['floatingActionBtn', 'consumerListBtn'],
-      callback: async () => {
+        callback: async () => {          
+            if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'employment') {
+            clearSelectedConsumers(); 
+            clearActiveConsumers();   
+        }
         MINI_ROSTER_BTN.classList.add('disabled');
         await showMiniRoster(rosterOptions);
         MINI_ROSTER_BTN.classList.remove('disabled');
@@ -1080,9 +1087,16 @@ const roster2 = (function () {
     };
     rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
     // I am not sure why consumer location was being set to the selected location ID?
-    // rosterConsumers.forEach((consumer) => {
-    //   consumer.conL = selectedLocationId;
-    // });
+    const seenIds = {};
+
+    rosterConsumers = rosterConsumers.filter((consumer) => {
+      if (seenIds[consumer.id]) {
+        return false;
+      } else {
+        seenIds[consumer.id] = true;
+        return true;
+      }
+    });
     groupRosterConsumers();
 
     if (selectedLocationId !== '0') {
@@ -1177,6 +1191,8 @@ const roster2 = (function () {
       if (
         $.loadedApp === 'outcomes' ||
         $.loadedApp === 'plan' ||
+        $.loadedApp === 'ConsumerFinances' ||  
+        $.loadedApp === 'employment' ||  
         $.loadedApp === 'covid' ||
         $.loadedApp === 'forms' ||
         // $.loadedApp === 'OOD' ||

@@ -5,6 +5,7 @@ var consumerInfo = (function () {
   var consumerInfoCard;
   var currentlyVisibleSection;
   var hasUnreadNote;
+  var modalOverlay;
 
   function getImageOrientation(file, callback) {
     var reader = new FileReader();
@@ -54,6 +55,18 @@ var consumerInfo = (function () {
     });
 
     return newPath;
+  }
+  function updatePhotoToDefault() {
+    var targetConsumerId = consumerInfoCard.dataset.consumerid;
+    var consumerCardFromRosterList = document.querySelector(
+      `[data-consumer-id="${targetConsumerId}"]`,
+    );
+    var rosterPic = consumerCardFromRosterList.querySelector('img');
+    var infoCardPic = consumerInfoCard.querySelector('img');
+    rosterPic.setAttribute('src', './images/new-icons/default.jpg');
+    infoCardPic.setAttribute('src', './images/new-icons/default.jpg');
+    rosterPic.setAttribute('onerror', './images/new-icons/default.jpg');
+    infoCardPic.setAttribute('onerror', './images/new-icons/default.jpg');
   }
   async function updateConsumerPhoto(event) {
     event.preventDefault();
@@ -198,12 +211,13 @@ var consumerInfo = (function () {
     var rosterList = document.querySelector('.roster');
     rosterList.classList.add('fadeOut');
     DOM.toggleHeaderOpacity();
-
+  
     setTimeout(function () {
       consumerInfoCard.classList.add('visible');
       if (!isMobile) {
         bodyScrollLock.disableBodyScroll(consumerInfoCard);
       }
+      modalOverlay.classList.add('modal');
     }, 300);
   }
   function closeCard() {
@@ -230,6 +244,7 @@ var consumerInfo = (function () {
       if (!isMobile) {
         bodyScrollLock.enableBodyScroll(consumerInfoCard);
       }
+      modalOverlay.classList.remove('modal');
     }, 200);
 
     currentlyVisibleSection = null;
@@ -329,6 +344,29 @@ var consumerInfo = (function () {
     var sectionInner = section.querySelector('.sectionInner');
     sectionInner.innerHTML = '';
 
+    var removePhotoBtn = button.build({
+      text: 'Remove Photo',
+      style: 'secondary',
+      type: 'contained',
+      callback: e => {
+        if (!$.session.DemographicsPictureDelete) {
+          return;
+        }
+
+        rosterAjax.updatePortrait(
+          '',
+          parseInt(consumerId),
+          formatPortraitPath($.session.portraitPath),
+          () => {
+            updatePhotoToDefault();
+          },
+        );
+      },
+    });
+    if (!$.session.DemographicsPictureDelete) {
+      removePhotoBtn.classList.add('disabled');
+    }
+
     var photoInput = input.build({
       label: 'Choose Image',
       type: 'file',
@@ -337,6 +375,7 @@ var consumerInfo = (function () {
       attributes: [{ key: 'multiple', value: 'false' }],
     });
 
+    sectionInner.appendChild(removePhotoBtn);
     sectionInner.appendChild(photoInput);
 
     photoInput.addEventListener('change', updateConsumerPhoto);
@@ -423,87 +462,6 @@ var consumerInfo = (function () {
     });
 
     sectionInner.appendChild(attachmentsList);
-  }
-  function populateDemographicsSection(section, data) {
-    var sectionInner = section.querySelector('.sectionInner');
-    sectionInner.innerHTML = '';
-
-    var addressOne = data.addressone;
-    var addressTwo = data.addresstwo;
-    var city = data.mailcity;
-    var state = data.mailstate;
-    var zip = data.mailzipcode;
-    zip = zip ? zip.trim() : zip;
-    var tempPrimaryPhone = data.primaryphone.split('%');
-    var tempSecondaryPhone = data.secondaryphone.split('%');
-    var pPhoneNumber = UTIL.formatPhoneNumber(tempPrimaryPhone[0].trim());
-    var sPhoneNumber = UTIL.formatPhoneNumber(tempSecondaryPhone[0].trim());
-    var pPhoneType = tempPrimaryPhone.length > 1 ? tempPrimaryPhone[1] : '';
-    var sPhoneType = tempSecondaryPhone.length > 1 ? tempSecondaryPhone[1] : '';
-    var pPhone = `${pPhoneNumber} ${pPhoneType}`;
-    var sPhone = `${sPhoneNumber} ${sPhoneType}`;
-    var cellPhoneNumber = '';
-    if (data.cellphone !== null && data.cellphone !== undefined) {
-      const cell = data.cellphone.trim();
-      if (cell !== '%') {
-        cellPhoneNumber = UTIL.formatPhoneNumber(cell);
-      } else {
-        cellPhoneNumber = '';
-      }
-    }
-
-    sectionInner.innerHTML = `
-      <div>
-        <h3>Address</h3>
-        <p class="addressone">${addressOne}</p>
-        <p class="addresstwo">${addressTwo}</p>
-        <p class="mail">${city}, ${state} ${zip}</p>
-      </div>
-      <div>
-        <h3>Contact Info</h3>
-        <p class="primaryphone">Primary: <a href=tel:+1-${pPhone}>${pPhone}</a></p>
-        <p class="secondaryphone">Secondary: <a href=tel:+1-${sPhone}>${sPhone}</a></p>
-        ${
-          $.session.applicationName === 'Gatekeeper'
-            ? `<p class="secondaryphone">Cell: <a href=tel:+1-${cellPhoneNumber}>${cellPhoneNumber}</a></p>`
-            : ''
-        }
-      </div>
-      <div>
-        <h3>Additional Info</h3>
-        <input type="button" id="infoButton" value="Show Details" class="btn btn--secondary btn--contained" style="float: right;">
-        <p class="primaryphone" id="DOB">DOB: </p>
-        <p class="primaryphone" id="SSN">SSN: </p>
-        <p class="primaryphone" id="Medicaid">Medicaid: </p>
-      </div>
-    `;
-
-    document.getElementById('infoButton').addEventListener('click', function (e) {
-      if (e.target.value === 'Show Details') {
-        e.target.value = 'Hide Details';
-        let formatDOB;
-        if (data.DOB !== '') {
-          let newDate = new Date(data.DOB);
-          let theMonth = newDate.getMonth() + 1;
-          formatDOB =
-            UTIL.leadingZero(theMonth) +
-            '/' +
-            UTIL.leadingZero(newDate.getDate()) +
-            '/' +
-            newDate.getFullYear();
-        } else {
-          formatDOB = '';
-        }
-        document.getElementById('DOB').textContent = `DOB: ${formatDOB}`;
-        document.getElementById('SSN').textContent = `SSN: ${data.SSN}`;
-        document.getElementById('Medicaid').textContent = `Medicaid: ${data.MedicaidNumber}`;
-      } else {
-        e.target.value = 'Show Details';
-        document.getElementById('DOB').textContent = 'DOB:';
-        document.getElementById('SSN').textContent = 'SSN:';
-        document.getElementById('Medicaid').textContent = 'Medicaid:';
-      }
-    });
   }
   function showRelationshipDetails(section, sectionInner, data) {
     // set sectionInner to display none
@@ -951,7 +909,7 @@ var consumerInfo = (function () {
         case 'Demographics': {
           targetSection = consumerInfoCard.querySelector('.demographicsSection');
           rosterAjax.getConsumerDemographics(consumerId, function (results) {
-            populateDemographicsSection(targetSection, results[0]);
+            demographics.populate(targetSection, results[0], consumerId);
           });
           break;
         }
@@ -963,6 +921,7 @@ var consumerInfo = (function () {
           break;
         }
         case 'Intellivue': {
+          //
           targetSection = consumerInfoCard.querySelector('.intellivueSection');
           intellivue.getApplicationListHostedWithUser(function (results) {
             populateIntellivueSection(targetSection, results);
@@ -981,7 +940,7 @@ var consumerInfo = (function () {
   function buildCard() {
     consumerInfoCard = document.createElement('div');
     consumerInfoCard.classList.add('consumerInfoCard');
-
+  
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     var backBtn = button.build({
@@ -1002,17 +961,17 @@ var consumerInfo = (function () {
     });
     btnWrap.appendChild(backBtn);
     btnWrap.appendChild(closeBtn);
-
+  
     var cardInner = document.createElement('div');
     cardInner.classList.add('cardInner');
     var cardHeading = document.createElement('div');
     cardHeading.classList.add('consumerInfoCard__heading');
     var cardBody = document.createElement('div');
     cardBody.classList.add('consumerInfoCard__body');
-
+  
     var cardMenu = buildMenu();
     cardBody.appendChild(cardMenu);
-
+  
     var sections = buildSections([
       'absent',
       'photo',
@@ -1028,18 +987,28 @@ var consumerInfo = (function () {
     sections.forEach(section => {
       cardBody.appendChild(section);
     });
-
-    // build card
+  
+    // Build card
     cardInner.appendChild(cardHeading);
     cardInner.appendChild(cardBody);
-
+  
     consumerInfoCard.appendChild(btnWrap);
     consumerInfoCard.appendChild(cardInner);
-
+  
     setupCardEvents(cardMenu);
-
+  
+    modalOverlay = document.querySelector('.overlay');
+  
+    // Add event listener to close the card when clicking outside of it
+    modalOverlay.addEventListener('click', function(event) {
+      closeCard();
+    });
+  
+    document.body.appendChild(consumerInfoCard);
+  
     return consumerInfoCard;
   }
+  
 
   return {
     buildCard,

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Anywhere.Log;
+using System;
 using System.Data;
-using System.Web;
-using System.Text;
-using Anywhere.Log;
-using Microsoft.VisualBasic.CompilerServices;
-using Microsoft.VisualBasic;
 using System.IO;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Text;
 
 namespace Anywhere.service.Data
 {
@@ -47,7 +40,7 @@ namespace Anywhere.service.Data
             sb.Append(" DBA.anyw_isp_assessment_question_sets.question_set_type, DBA.anyw_isp_assessment_question_sets.question_set_title, '' AS PlanStatus, ");
             sb.Append("0 AS ColumnCount, DBA.anyw_isp_assessment_question_sets.isp_assessment_question_set_id, dba.anyw_isp_assessment_questions.question_prompt, 0 AS ISP, ");
             sb.Append("dba.ANYW_ISP_Assessment_Questions.hide_on_assessment, DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id, -1 AS SubSectionCount,  "); //?????
-            sb.Append("SectionAllowable.Applicable AS SectionAllowable "); // SQL for SecionAllowable
+            sb.Append("SectionAllowable.Applicable AS SectionAllowable,  0 AS HideSubSectionTitle "); // SQL for SecionAllowable
             sb.Append("FROM DBA.anyw_isp_assessment_question_sets ");
             sb.Append("LEFT OUTER JOIN DBA.anyw_isp_assessment_subsections ON DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id = DBA.anyw_isp_assessment_subsections.isp_assessment_subsection_id ");
             sb.Append("LEFT OUTER JOIN DBA.anyw_isp_assessment_sections ON DBA.anyw_isp_assessment_question_sets.isp_assessment_section_id = DBA.anyw_isp_assessment_sections.isp_assessment_section_id ");
@@ -56,7 +49,7 @@ namespace Anywhere.service.Data
             sb.Append("LEFT OUTER JOIN DBA.ANYW_ISP_Plan_Section_Applicable SectionAllowable ON DBA.anyw_isp_assessment_sections.isp_assessment_section_id = SectionAllowable.ISP_Assessment_Section_ID ");
             sb.AppendFormat("WHERE DBA.anyw_isp_consumer_assessment_answers.isp_consumer_plan_id = {0} ", AssesmentID);
             sb.AppendFormat("AND SectionAllowable.ISP_Assessment_ID = {0} ", AssesmentID); // SQL for SecionAllowable 08/17/2021
-            sb.Append("AND SectionAllowable.Applicable = 'y' ");  // SQL for SecionAllowable 'SQL for SecionAllowable
+            sb.Append("AND SectionAllowable.Applicable = 'y' ");  // SQL for SecionAllowable 
             if (Assessment == true)
             {
                 sb.Append("AND dba.ANYW_ISP_Assessment_Questions.hide_on_assessment IS NULL "); // Added 02/01/21
@@ -111,8 +104,6 @@ namespace Anywhere.service.Data
                     }
                 }
 
-                //if (row["question_set_type"].ToString()  == "LIST")
-                //{
                 sb.Clear();
                 sb.Append("SELECT   COUNT(DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id) AS Counter ");
                 sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
@@ -121,9 +112,8 @@ namespace Anywhere.service.Data
                 sb.AppendFormat("WHERE   DBA.anyw_isp_consumer_assessment_answers.answer > '0' ");
                 sb.AppendFormat("AND DBA.anyw_isp_consumer_assessment_answers.isp_consumer_plan_id = {0} ", AssesmentID);
                 sb.AppendFormat("AND DBA.anyw_isp_assessment_question_sets.isp_assessment_subsection_id = {0} ", row["isp_assessment_subsection_id"]);
-                //sb.Append("AND DBA.anyw_isp_assessment_question_sets.question_set_type = 'LIST' ");
+
                 row["SubSectionCount"] = di.QueryScalar(sb.ToString());
-                //}
 
                 if (row["section_order"].ToString() == "5")
                     if (row["subsection_order"].ToString() == "4")
@@ -131,8 +121,11 @@ namespace Anywhere.service.Data
                         {
                             row["question_set_order"] = Convert.ToInt16(row["question_set_order"]) + 1;
                         }
-            }
 
+                row["HideSubSectionTitle"] = HideSubSectionTitle(AssesmentID, row["subsection_title"].ToString(), Convert.ToInt64(row["section_order"]));
+
+
+            }
             DataRow rowNew = dt.NewRow();
             rowNew["section_order"] = "5";
             rowNew["subsection_order"] = "4";
@@ -144,8 +137,8 @@ namespace Anywhere.service.Data
             rowNew["answer"] = di.QueryScalar(sb.ToString());
             dt.Rows.Add(rowNew);
             dt.AcceptChanges();
-            //MessageBox.Show("AssesmentAnswers");
-            //MessageBox.Show(string.Format("AssesmentAnswers dt row count {0}", dt.Rows.Count));
+
+
             return dt.DataSet;
         }
 
@@ -409,8 +402,7 @@ namespace Anywhere.service.Data
             sb.Append("LEFT OUTER JOIN DBA.People ON DBA.ANYW_ISP_Consumer_Informed_Consent.CS_Change_Mind_SSA_People_ID = DBA.People.ID ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Consumer_Informed_Consent.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
-            //dt.WriteXmlSchema(@"C:\Work\OComReports\AssesmentXML\ISPTeamMembers.xml");
-            //MessageBox.Show("ISPTeamMembers");
+
             return dt.DataSet;
         }
 
@@ -425,12 +417,13 @@ namespace Anywhere.service.Data
                 sb.Append("dba.ANYW_ISP_Signatures.CS_Agree_To_Plan, dba.ANYW_ISP_Signatures.CS_FCOP_Explained, dba.ANYW_ISP_Signatures.CS_Due_Process, ");
                 sb.Append("dba.ANYW_ISP_Signatures.CS_Residential_Options, dba.ANYW_ISP_Signatures.CS_Supports_Health_Needs, dba.ANYW_ISP_Signatures.Name AS SupportName, ");
                 sb.Append("SSA.Last_Name, SSA.First_Name, SSA.Middle_Name, dba.ANYW_ISP_Signatures.Signature_Order, dba.ANYW_ISP_Signatures.CS_Technology AS TechSolutionsExplored, ");
-                sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2 ");
+                sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type ");
                 sb.Append("FROM  dba.ANYW_ISP_Signatures ");
                 sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
                 sb.Append("LEFT OUTER JOIN dba.People SSA ON dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID = SSA.ID ");
                 sb.Append("LEFT OUTER JOIN dba.Vendors ON dba.ANYW_ISP_Signatures.CS_Contact_Provider_Vendor_ID = dba.Vendors.Vendor_ID ");
                 sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
+                sb.Append("AND  dba.ANYW_ISP_Signatures.ISP_Signature_Type < 3 ");
                 sb.Append("AND (DBA.ANYW_ISP_Signatures.Team_Member = 'Parent/Guardian' ");
                 sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Guardian' ");
                 sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Person Supported') ");
@@ -445,12 +438,13 @@ namespace Anywhere.service.Data
                 sb.Append("dba.ANYW_ISP_Signatures.CS_FCOP_Explained, dba.ANYW_ISP_Signatures.CS_Due_Process, dba.ANYW_ISP_Signatures.CS_Residential_Options, ");
                 sb.Append("dba.ANYW_ISP_Signatures.CS_Supports_Health_Needs, dba.ANYW_ISP_Signatures.Name AS SupportName, SSA.Last_Name, SSA.First_Name, SSA.Middle_Name, ");
                 sb.Append("dba.ANYW_ISP_Signatures.Signature_Order, dba.ANYW_ISP_Signatures.CS_Technology AS TechSolutionsExplored, ");
-                sb.Append("dba.People.First_Name + ' ' + dba.People.Last_Name AS Name2, dba.Organization.Name ");
+                sb.Append("dba.People.First_Name + ' ' + dba.People.Last_Name AS Name2, dba.Organization.Name, dba.ANYW_ISP_Signatures.ISP_Signature_Type ");
                 sb.Append("FROM dba.Organization ");
                 sb.Append("RIGHT OUTER JOIN dba.People SSA ON dba.Organization.Organization_ID = SSA.Organization_ID ");
                 sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Signatures ON dba.ANYW_ISP_Signatures.CS_Change_Mind_SSA_People_ID = SSA.ID ");
                 sb.Append("RIGHT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
                 sb.AppendFormat("WHERE dba.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
+                sb.Append("AND  dba.ANYW_ISP_Signatures.ISP_Signature_Type < 3 ");
                 sb.Append("AND (DBA.ANYW_ISP_Signatures.Team_Member = 'Parent/Guardian' ");
                 sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Guardian' ");
                 sb.Append("OR DBA.ANYW_ISP_Signatures.Team_Member = 'Person Supported') ");
@@ -470,10 +464,70 @@ namespace Anywhere.service.Data
             sb.Append("SELECT ISP_Consumer_Signature_ID, ISP_Consumer_Plan_ID, Team_Member, Name, Relationship, Participated, ");
             sb.Append("Signature, Date_Signed, Dissent_Area_Disagree, Dissent_How_To_Address, Dissent_Date, dba.ANYW_ISP_Signatures.User_ID, ");
             sb.Append("dba.ANYW_ISP_Signatures.Last_Update, Signature_Order, ");
-            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2 ");
+            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type ");
             sb.Append("FROM dba.ANYW_ISP_Signatures ");
             sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
+            DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+            //int x = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                if (row["Signature"].ToString() != string.Empty)
+                {
+                    var ms = new MemoryStream();
+                    byte[] ba = (byte[])row["Signature"];
+                    ms.Write(ba, 0, ba.Length);
+                    ms.Position = 0L;
+
+                    System.Drawing.Image i = System.Drawing.Image.FromStream(ms);
+                    var bm = new System.Drawing.Bitmap(i.Size.Width, i.Size.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                    var g = System.Drawing.Graphics.FromImage(bm);
+                    g.Clear(System.Drawing.Color.White);
+                    g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
+                    g.DrawImage(i, 0, 0);
+                    var ms2 = new MemoryStream();
+                    bm.Save(ms2, System.Drawing.Imaging.ImageFormat.Bmp);
+                    ms2.Position = 0L;
+                    ba = null;
+                    ba = ms2.ToArray();
+                    row["Signature"] = ba;
+
+                    //iImage = i;
+
+                    ms.Close();
+                    ms.Dispose();
+                    ms2.Close();
+                    ms2.Dispose();
+                }
+            }
+            //MessageBox.Show("ISPSignatures");
+            return dt.DataSet;
+        }
+
+        public DataSet Dissenting(long AssesmentID, Boolean OneSpan)
+        {
+            sb.Clear();
+            sb.Append("SELECT ISP_Consumer_Signature_ID, ISP_Consumer_Plan_ID, Team_Member, Name, Relationship, Participated, ");
+            sb.Append("Signature, Date_Signed, Dissent_Area_Disagree, Dissent_How_To_Address, Dissent_Date, dba.ANYW_ISP_Signatures.User_ID, ");
+            sb.Append("dba.ANYW_ISP_Signatures.Last_Update, Signature_Order, ");
+            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type ");
+            sb.Append("FROM dba.ANYW_ISP_Signatures ");
+            sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
+            sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
+
+            {
+                if (OneSpan == false)
+                {
+                    sb.Append("AND Dissent_Area_Disagree > '' ");
+                }
+            }
+            {
+                if (OneSpan == true)
+                {
+                    sb.Append("AND (Dissent_Area_Disagree = '' OR Dissent_Area_Disagree IS NULL) ");
+                }
+            }
+
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             //int x = 0;
             foreach (DataRow row in dt.Rows)
@@ -569,7 +623,6 @@ namespace Anywhere.service.Data
                     dt.Rows[0]["County"] = County;
 
                 }
-
 
             }
 
@@ -710,17 +763,25 @@ namespace Anywhere.service.Data
             return dt.DataSet;
         }
 
-        public DataSet ISPIntroduction(long AssesmentID)
+        public DataSet ISPIntroduction(long AssesmentID, Boolean Advisor = false)
         {
             var ms = new MemoryStream();
             byte[] ba = null;
 
             sb.Clear();
-            sb.Append("SELECT   DBA.People.Last_Name, DBA.People.First_Name, DBA.People.Middle_Name, DBA.People.ID, ");
+            sb.Append("SELECT   DBA.People.Last_Name, DBA.People.First_Name, DBA.People.Middle_Name, ");
             sb.Append("DBA.anyw_isp_consumer_plans.Use_Consumer_Plan_Image, DBA.anyw_isp_consumer_plans.Like_Admire, ");
             sb.Append("DBA.anyw_isp_consumer_plans.Things_Important_To, DBA.anyw_isp_consumer_plans.Things_important_For, ");
             sb.Append("DBA.anyw_isp_consumer_plans.How_To_Support, DBA.ANYW_ISP_Consumer_Plan_Images.Image AS PlanPicture, ");
-            sb.Append("DBA.People.Nick_Name ");
+            sb.Append("DBA.People.Nick_Name, '' AS BadPicture, ");
+            if (Advisor == true)
+            {
+                sb.Append("DBA.People.Consumer_ID AS ID ");
+            }
+            else
+            {
+                sb.Append("DBA.People.ID ");
+            }
             sb.Append("FROM DBA.anyw_isp_consumer_plans ");
             sb.Append("LEFT OUTER JOIN DBA.ANYW_ISP_Consumer_Plan_Images ON DBA.anyw_isp_consumer_plans.isp_consumer_plan_id = DBA.ANYW_ISP_Consumer_Plan_Images.ISP_Consumer_Plan_ID ");
             sb.Append("LEFT OUTER JOIN DBA.People ON DBA.anyw_isp_consumer_plans.consumer_id = DBA.People.ID ");
@@ -728,7 +789,6 @@ namespace Anywhere.service.Data
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             if (dt.Rows.Count > 0)
             {
-
                 DataRow row = dt.Rows[0];
                 if (row["Use_Consumer_Plan_Image"].ToString() == "1")
                 {
@@ -776,12 +836,13 @@ namespace Anywhere.service.Data
                 {
                     ms.Write(ba, 0, ba.Length);
                     ms.Position = 0L;
+
                     System.Drawing.Image i = System.Drawing.Image.FromStream(ms);
-                    var bm = new System.Drawing.Bitmap(i.Size.Width, i.Size.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                    var bm = new System.Drawing.Bitmap(192, 192, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
                     var g = System.Drawing.Graphics.FromImage(bm);
                     g.Clear(System.Drawing.Color.White);
                     g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
-                    g.DrawImage(i, 0, 0);
+                    g.DrawImage(i, 0, 0, 192, 192);
 
                     var ms2 = new MemoryStream();
                     bm.Save(ms2, System.Drawing.Imaging.ImageFormat.Bmp);
@@ -800,6 +861,30 @@ namespace Anywhere.service.Data
             }
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
+        }
+
+        public long HideSubSectionTitle(long AssesmentID, string SubSectionName, long SectionOrder)
+        {
+            sb.Clear();
+            sb.Append("SELECT COUNT(dba.ANYW_ISP_Consumer_Assessment_Answers.answer) AS iCount ");
+            sb.Append("FROM dba.ANYW_ISP_Assessment_Question_Sets ");
+            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Assessment_Subsections ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_subsection_id = dba.ANYW_ISP_Assessment_Subsections.isp_assessment_subsection_id ");
+            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Assessment_Sections ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_section_id = dba.ANYW_ISP_Assessment_Sections.isp_assessment_section_id ");
+            sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Assessment_Questions ON dba.ANYW_ISP_Assessment_Question_Sets.isp_assessment_question_set_id = dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_set_id ");
+            sb.Append("RIGHT OUTER JOIN dba.ANYW_ISP_Consumer_Assessment_Answers ON dba.ANYW_ISP_Assessment_Questions.isp_assessment_question_id = dba.ANYW_ISP_Consumer_Assessment_Answers.isp_assessment_question_id ");
+            sb.Append("LEFT OUTER JOIN dba.ANYW_ISP_Plan_Section_Applicable SectionAllowable ON dba.ANYW_ISP_Assessment_Sections.isp_assessment_section_id = SectionAllowable.ISP_Assessment_Section_ID ");
+            sb.AppendFormat("WHERE SectionAllowable.ISP_Assessment_ID = {0} ", AssesmentID);
+            sb.AppendFormat("AND dba.ANYW_ISP_Consumer_Assessment_Answers.isp_consumer_plan_id = {0} ", AssesmentID);
+            sb.Append("AND SectionAllowable.Applicable = 'y' ");
+            sb.Append("AND dba.ANYW_ISP_Assessment_Questions.hide_on_assessment IS NULL ");
+            sb.Append("AND dba.ANYW_ISP_Assessment_Questions.answer_style = 'CHECKOPTION' ");
+            sb.AppendFormat("AND dba.ANYW_ISP_Assessment_Subsections.subsection_title = '{0}' ", SubSectionName);
+            sb.AppendFormat("AND dba.ANYW_ISP_Assessment_Sections.section_order = {0} ", SectionOrder);
+            sb.Append("AND dba.ANYW_ISP_Consumer_Assessment_Answers.answer = '1' ");
+            if (di.QueryScalar(sb.ToString()) > 0)
+                return 0;
+            else
+                return 1;
         }
 
 

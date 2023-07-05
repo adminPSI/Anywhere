@@ -38,22 +38,21 @@ var schedulingAjax = (function () {
       });
   }
 
-  function requestDaysOffSchedulingAjax(insertData) {
+  async function requestDaysOffSchedulingAjax(insertData) {
       //insertData must include token, personId, dates, fromTime, toTime, reason, employeeNotifiedId, status
-      $.ajax({
-          type: "POST",
-          url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
-              "/" + $.webServer.serviceName + "/requestDaysOffScheduling/",
-          data: JSON.stringify(insertData),
-          contentType: "application/json; charset=utf-8",
-          dataType: "json",
-          success: function (response, status, xhr) {
-              var res = response.requestDaysOffSchedulingResult;
-          },
-          error: function (xhr, status, error) {
-              //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-          }
-      });
+      try {
+        const result = await $.ajax({
+            type: "POST",
+            url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
+                "/" + $.webServer.serviceName + "/requestDaysOffScheduling/",
+            data: JSON.stringify(insertData),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+        });
+        return result
+      } catch (error) {
+        throw new Error(error.responseText);
+      }
   }
 
   function getCallOffDropdownReasonsAjax(cb) {
@@ -271,22 +270,22 @@ async function getOverlapDataforSelectedShiftAjax(shiftId, personId) {
       });
   }
 
-  function approveDenyDaysOffRequestSchedulingAjax(insertData) {//token, daysOffIdString(comma separated), decision)
-      $.ajax({
+  async function approveDenyDaysOffRequestSchedulingAjax(insertData) {//token, daysOffIdString(comma separated), decision)
+    try {  
+        const result = await $.ajax({
           type: "POST",
           url: $.webServer.protocol + "://" + $.webServer.address + ":" + $.webServer.port +
               "/" + $.webServer.serviceName + "/approveDenyDaysOffRequestScheduling/",
           data: JSON.stringify(insertData),
           contentType: "application/json; charset=utf-8",
           dataType: "json",
-          success: function (response, status, xhr) {
-              var res = response.approveDenyDaysOffRequestSchedulingResult;
-          },
-          error: function (xhr, status, error) {
-              //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-          }
-      });
-  }
+        });
+          return result.approveDenyDaysOffRequestSchedulingResult;
+
+        } catch (error) {
+        throw new Error(error.responseText);
+    }
+}
 
   function getScheduleMyApprovalDataAjax(insertData, cb) {//token, personId
       $.ajax({

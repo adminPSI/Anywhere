@@ -1,16 +1,11 @@
-﻿using System;
+﻿using Anywhere.Data;
+using Anywhere.Log;
+using CrystalDecisions.CrystalReports.Engine;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
-using System.Web.UI.WebControls;
-using System.Windows.Interop;
-using Anywhere.Data;
-using Anywhere.Log;
-using CrystalDecisions.CrystalReports.Engine;
-using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere.service.Data
 {
@@ -112,8 +107,8 @@ namespace Anywhere.service.Data
             DataTable dt = ars.AssesmentHeader(ID).Tables[0];
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.OpenSubreport("Header").SetDataSource(dt);
-            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(ID));
-            
+            cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(ID, Advisor));
+
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
 
             crViewer.ReportSource = cr;
@@ -123,8 +118,8 @@ namespace Anywhere.service.Data
 
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);           
-            
+            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+
             cr.Close();
             cr.Dispose();
             return ms;
@@ -141,11 +136,25 @@ namespace Anywhere.service.Data
             //return allAttachments;
         }
 
-        public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public MemoryStream createOISPAssessment(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, string include)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
             ApplicationName[] appName = js.Deserialize<ApplicationName[]>(applicationName);
+            string SuppressImportantFor = "";
+            if (appName[0].setting.ToUpper() == "ADVISOR")
+            {
+                Advisor = true;
+            }
+            if (include == "Y")
+            {
+                SuppressImportantFor = "false";
+            }
+            else
+            {
+                SuppressImportantFor = "true";
+            }
+
             if (appName[0].setting.ToUpper() == "ADVISOR")
             {
                 Advisor = true;
@@ -195,6 +204,7 @@ namespace Anywhere.service.Data
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = eS.ToString(); // Option for expanded text for editing
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
+            cr.DataDefinition.FormulaFields["SuppressImportantFor"].Text = SuppressImportantFor.ToString();
             crViewer.ReportSource = cr;
             crViewer.ShowLastPage();
             TotalPage += crViewer.GetCurrentPageNumber();
@@ -202,16 +212,16 @@ namespace Anywhere.service.Data
 
             MemoryStream ms = new MemoryStream();
             ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-            
+
             cr.Close();
             cr.Dispose();
-            
+
             return ms;
             //byte[] msa2 = StreamExtensions.ToByteArray(ms);
             //return msa2;
         }
 
-        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
+        public MemoryStream createOISPlan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly )
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -220,6 +230,7 @@ namespace Anywhere.service.Data
             {
                 Advisor = true;
             }
+
             ReportDocument cr = new ReportDocument();
             bool eS = false;
             long ID = long.Parse(assessmentID);
@@ -264,9 +275,10 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("Header").SetDataSource(dt);
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
+            cr.DataDefinition.FormulaFields["SignatureOnly"].Text = signatureOnly.ToString();           
+            
 
-            //cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = false.ToString(); // Option for expanded text for editing
-
+            
             cr.OpenSubreport("AssesmentSummary").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUMMARY", Advisor));
             cr.OpenSubreport("Skills").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SKILLS", Advisor));
             cr.OpenSubreport("Supervision").SetDataSource(ars.ISPSummary(long.Parse(assessmentID), false, "SUPERVISION", Advisor));
@@ -278,9 +290,10 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("TeamMembers").SetDataSource(ars.ISPTeamMembers(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("TeamMembers2").SetDataSource(ars.ISPTeamMembers2(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
-            cr.OpenSubreport("Dissenting").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
+            cr.OpenSubreport("Dissenting").SetDataSource(ars.Dissenting(long.Parse(assessmentID), oneSpan));
             cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(long.Parse(assessmentID), Advisor));
-            cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));
+            cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));          
+
             cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(long.Parse(assessmentID)));
             cr.OpenSubreport("Places").SetDataSource(ars.ISPPlaces(long.Parse(assessmentID)));
 
@@ -291,7 +304,7 @@ namespace Anywhere.service.Data
 
             MemoryStream ms = new MemoryStream();
             ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-            
+
             cr.Close();
             cr.Dispose();
 
@@ -307,7 +320,7 @@ namespace Anywhere.service.Data
         //    createOISPAssessment
         //}
 
-        public MemoryStream createAssessmentReport(string token,string  userId, string assessmentID, string versionID, string extraSpace, bool isp )
+        public MemoryStream createAssessmentReport(string token, string userId, string assessmentID, string versionID, string extraSpace, bool isp)
         {
             bool Advisor = false;
             string applicationName = dg.GetApplicationName(token);
@@ -319,10 +332,13 @@ namespace Anywhere.service.Data
             ReportDocument cr = new ReportDocument();
             bool eS = false;
             long ID = long.Parse(assessmentID);
-            if(extraSpace.ToLower() == "false"){//change to boolean TODO
+            if (extraSpace.ToLower() == "false")
+            {//change to boolean TODO
                 extraSpace = "'false'";
                 eS = false;
-            }else{
+            }
+            else
+            {
                 extraSpace = "'true'";
                 eS = true;
             }
@@ -336,7 +352,7 @@ namespace Anywhere.service.Data
             var endPath = crPath.IndexOf("</path>");
             crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
             crName = "AssesmentVersion1.rpt";
-            
+
             try
             {
                 cr.Load(string.Format(crPath, crName));

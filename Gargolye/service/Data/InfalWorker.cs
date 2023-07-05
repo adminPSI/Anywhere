@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Data;
 
 namespace Anywhere.service.Data
@@ -13,7 +11,7 @@ namespace Anywhere.service.Data
         DataXferFunctions dxf = new DataXferFunctions();
         DataGetterInfal data = new DataGetterInfal();
         SQLBuilder sqlBuild = new SQLBuilder();
-        Common common = new Common();        
+        Common common = new Common();
 
         private string ConnString = System.Configuration.ConfigurationManager.ConnectionStrings["infalconnection"].ToString();
         System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
@@ -43,7 +41,7 @@ namespace Anywhere.service.Data
             string legalName = data.QueryScalarString(ConnString, legalNameQuery);
             userNameResultString = "<results><result><name> " + legalName + "</name></result></results>";
             return userNameResultString;
-        }        
+        }
 
         //New
         public string InfalGetClockInsAndOuts(string id)
@@ -52,7 +50,7 @@ namespace Anywhere.service.Data
             double num;
             //get empid from userid
             id = ConvertToEmpId(id);
-            
+
             List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
             Dictionary<string, object> myRow;
 
@@ -91,7 +89,7 @@ namespace Anywhere.service.Data
             Dictionary<string, object> myRow;
             DataSet ds = new DataSet();
             //Had to convert id to long to be passed
-            long longId = Int64.Parse(id);        
+            long longId = Int64.Parse(id);
             //returns query string to be passed to database
             string jobsQueryString = sqlBuild.AssignParameterGetJobs(longId);
             //save result to dataset
@@ -122,24 +120,24 @@ namespace Anywhere.service.Data
             //get empid from userid
             empIdString = ConvertToEmpId(empIdString);
             bool AddLunch = false;
-	        string WorkDay = inDate;
-	        string WorkDate = inDate;
-	        Int32 WhoId = Int32.Parse(empIdString);
-	        Int32 EmpId = Int32.Parse(empIdString);
-	        Int32 JobId = Int32.Parse(jobIdString);
-	        decimal LatIn = Decimal.Parse(latInString);
-	        decimal LongIn = Decimal.Parse(longInString);
-	        string EndTime = "";
-	        string EndAMPM = "";
+            string WorkDay = inDate;
+            string WorkDate = inDate;
+            Int32 WhoId = Int32.Parse(empIdString);
+            Int32 EmpId = Int32.Parse(empIdString);
+            Int32 JobId = Int32.Parse(jobIdString);
+            decimal LatIn = Decimal.Parse(latInString);
+            decimal LongIn = Decimal.Parse(longInString);
+            string EndTime = "";
+            string EndAMPM = "";
             if (StartTime == "12:00" && StartAMPM == "AM")
             {
                 StartTime = "11:59";
                 StartAMPM = "PM";
             }
             long TCHeader = sqlBuild.GetEmpTimeCardHeaderIDByDate(ConnString, EmpId, WorkDay);                           //Added cast to int
-	        string result = sqlBuild.AddNewTimeCard(ConnString, EmpId, WorkDate, StartTime, StartAMPM, EndTime, EndAMPM, (int)TCHeader, JobId, AddLunch,
-	            WhoId, LatIn, LongIn);
-	        return result.ToString();
+            string result = sqlBuild.AddNewTimeCard(ConnString, EmpId, WorkDate, StartTime, StartAMPM, EndTime, EndAMPM, (int)TCHeader, JobId, AddLunch,
+                WhoId, LatIn, LongIn);
+            return result.ToString();
         }
 
         public string InfalClockOut(string empIdString, string jobIdString, string recIdString, string latOutString, string longOutString, string outDate, string EndTime, string EndTimeAMPM, string Memo)
@@ -149,16 +147,16 @@ namespace Anywhere.service.Data
             //get empid from userid
             empIdString = ConvertToEmpId(empIdString);
             long result = 0;
-	        decimal LatOut = Decimal.Parse(latOutString);
-	        decimal LongOut = Decimal.Parse(longOutString);
-	        long EmpId = Int64.Parse(empIdString);
-	        long RecID = Int64.Parse(recIdString);
+            decimal LatOut = Decimal.Parse(latOutString);
+            decimal LongOut = Decimal.Parse(longOutString);
+            long EmpId = Int64.Parse(empIdString);
+            long RecID = Int64.Parse(recIdString);
             if (EndTime == "12:00" && EndTimeAMPM == "AM")
             {
                 EndTime = "11:59";
                 EndTimeAMPM = "PM";
             }
-	       return "<results><result>" + sqlBuild.UpdateTimeCard(ConnString, RecID, EndTime, EndTimeAMPM, LatOut, LongOut, Memo, EmpId).ToString() + "</result></results>";
+            return "<results><result>" + sqlBuild.UpdateTimeCard(ConnString, RecID, EndTime, EndTimeAMPM, LatOut, LongOut, Memo, EmpId).ToString() + "</result></results>";
         }
 
         public string ConvertToEmpId(string idString)

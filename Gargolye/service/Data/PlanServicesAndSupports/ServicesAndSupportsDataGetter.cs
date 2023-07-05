@@ -5,7 +5,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.Odbc;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanServicesAndSupports
@@ -27,7 +26,9 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(newOrExisting.ToString());
             list.Add(whoSupports);
             list.Add(reasonForReferral);
-            string text = "CALL DBA.ANYW_ISP_UpdateProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+             
+            string text = "CALL DBA.ANYW_ISP_UpdateProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            
             try
             {
                 return executeDataBaseCallJSON(text);
@@ -51,7 +52,9 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(whoSupports);
             list.Add(reasonForReferral);
             list.Add(rowOrder.ToString());
-            string text = "CALL DBA.ANYW_ISP_InsertProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            
+            string text = "CALL DBA.ANYW_ISP_InsertProfessionalReferral(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            
             try
             {
                 return executeDataBaseCallJSON(text);
@@ -102,7 +105,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             }
         }
 
-            public string deleteProfessionalReferral(string token, long professionalReferralId)
+        public string deleteProfessionalReferral(string token, long professionalReferralId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("deleteProfessionalReferral ");
@@ -146,7 +149,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
                 return "2SSDG: error ANYW_ISP_UpdateAdditionalSupports";
             }
         }
-         
+
         public string insertAdditionalSupports(string token, long anywAssessmentId, int assessmentAreaId, string whoSupports, string whatSupportLooksLike, string howOftenValue, int howOftenFrequency, string howOftenText, int rowOrder)
         {
             if (tokenValidator(token) == false) return null;
@@ -289,7 +292,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(icfRate.ToString());
             list.Add(complexRate.ToString());
             list.Add(developmentalRate.ToString());
-            list.Add(childIntensiveRate.ToString()); 
+            list.Add(childIntensiveRate.ToString());
             string text = "CALL DBA.ANYW_ISP_InsertSSModifications(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -372,6 +375,28 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             }
         }
 
+        public string updateMultiPaidSupports(string token, string paidSupportsId, string providerId, string beginDate, string endDate)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertMultiPaidSupports ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(paidSupportsId.ToString());
+            list.Add(providerId);
+            list.Add(beginDate);
+            list.Add(endDate);
+            string text = "CALL DBA.ANYW_ISP_UpdateMultiPaidSupports(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4SSDG", ex.Message + "ANYW_ISP_UpdateMultiPaidSupports(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4SSDG: error ANYW_ISP_UpdateMultiPaidSupports";
+            }
+        }
+
         public string insertPaidSupports(string token, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, int rowOrder, string serviceNameOther)
         {
             if (tokenValidator(token) == false) return null;
@@ -386,9 +411,9 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             list.Add(howOftenValue);
             list.Add(howOftenFrequency.ToString());
             list.Add(howOftenText);
-            list.Add(beginDate); 
+            list.Add(beginDate);
             list.Add(endDate);
-            list.Add(fundingSource.ToString()); 
+            list.Add(fundingSource.ToString());
             list.Add(fundingSourceText);
             list.Add(rowOrder.ToString());
             list.Add(serviceNameOther);

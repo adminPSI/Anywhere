@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Script.Serialization;
+﻿using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.Covid
-{    
+{
     public class CovidWorker
     {
         CovidDataGetter cdg = new CovidDataGetter();
@@ -14,7 +10,7 @@ namespace Anywhere.service.Data.Covid
         public string insertUpdateCovidAssessment(string token, string assesmentDate, string assessmentTime, string cough, string diarrhea,
            string fever, string locationId, string malaise, string nasalCong, string nausea, string tasteAndSmell, string notes, string peopleId, string settingType, string shortnessBreath, string soreThroat, string assessmentId, string isConsumer)
         {
-            return cdg.insertUpdateCovidAssessment(token, assesmentDate, assessmentTime, cough, diarrhea, fever, locationId, malaise, nasalCong, nausea,tasteAndSmell, notes, peopleId, settingType, shortnessBreath, soreThroat, assessmentId, isConsumer);
+            return cdg.insertUpdateCovidAssessment(token, assesmentDate, assessmentTime, cough, diarrhea, fever, locationId, malaise, nasalCong, nausea, tasteAndSmell, notes, peopleId, settingType, shortnessBreath, soreThroat, assessmentId, isConsumer);
         }
 
         public CovidDetails[] getIndividualsCovidDetails(string token, string peopleId, string assessmentDate, string isConsumer)

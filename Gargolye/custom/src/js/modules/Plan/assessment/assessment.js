@@ -284,6 +284,38 @@ const assessment = (function () {
 
     POPUP.show(savePopup);
   }
+  // BELOW IS NOW AUTOSAVE
+  async function autoSaveAssessment(continueCallback) {
+    const isActive = plan.getPlanActiveStatus();
+    const status = plan.getPlanStatus();
+
+    if (!$.session.planUpdate || !isActive || status === 'C') {
+      continueCallback();
+      return;
+    }
+
+    const savePopup = POPUP.build({
+      classNames: 'saveWarningPopup',
+      hideX: true,
+    });
+    const saveBar = PROGRESS.SPINNER.get('Saving Assessment...');
+    savePopup.appendChild(saveBar);
+    POPUP.show(savePopup);
+
+    const answersArray = mainAssessment.getAnswers();
+    const success = await assessment.updateAnswers(answersArray);
+    savePopup.removeChild(saveBar);
+
+    if (success !== undefined && success !== null && success !== 'error') {
+      const successDiv = successfulSave.get('Assessment Saved', true);
+      savePopup.appendChild(successDiv);
+
+      setTimeout(() => {
+        POPUP.hide(savePopup);
+        continueCallback();
+      }, 1500);
+    }
+  }
 
   // Data
   //------------------------------------
@@ -351,7 +383,8 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: extraSpace,
-          isp: true, //new
+            isp: true, //new
+          signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
 
@@ -378,6 +411,9 @@ const assessment = (function () {
     planAttachmentIds,
     wfAttachmentIds,
     sigAttachmentIds,
+    DODDFlag,
+    signatureOnly,
+    include,
   ) {
     assessmentAjax.getPlanAssessmentReportWithAttachments(//Testgd
       {
@@ -387,9 +423,13 @@ const assessment = (function () {
         versionID,
         extraSpace: extraSpace,
         isp: true,
+        oneSpan: false,
         planAttachmentIds,
         wfAttachmentIds,
         sigAttachmentIds,
+        DODDFlag,
+        signatureOnly,
+        include,
       },
       () => {
         const arr = success._buffer;
@@ -418,7 +458,8 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: 'false',
-          isp: true, //
+            isp: true, //
+          signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
 
@@ -519,6 +560,7 @@ const assessment = (function () {
     deleteGridRows,
     transeferPlanReportToONET,
     showSaveWarning,
+    autoSaveAssessment,
     // applicable stuff
     showApplicableWarningMessage,
     toggleIsSectionApplicable,

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Anywhere.Data;
+﻿using Anywhere.Data;
 using System.Web.Script.Serialization;
-using System.Text;
-using System.Security.Cryptography;
 
 namespace Anywhere.service.Data
 {
@@ -97,7 +91,7 @@ namespace Anywhere.service.Data
             public string locationId { get; set; }
             public string Name { get; set; }
             public string defaultDayServiceType { get; set; }
-        }        
+        }
 
         public class DSConsumerActivityObject
         {
@@ -114,7 +108,7 @@ namespace Anywhere.service.Data
             public string AllowNonBillable { get; set; }
             public string ciStaffID { get; set; }
         }
-        
+
         public class CIDropdownStaff
         {
             public string fullName { get; set; }

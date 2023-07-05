@@ -1,8 +1,4 @@
-﻿using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanServicesAndSupports
@@ -106,6 +102,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             return dg.deletePaidSupports(token, paidSupportsId);
         }
 
+        public string updateMultiPaidSupports(string token, string paidSupportsId, string providerId, string beginDate, string endDate)
+        {
+            return dg.updateMultiPaidSupports(token, paidSupportsId, providerId, beginDate, endDate);
+        }
         public string updatePaidSupports(string token, long paidSupportsId, long anywAssessmentId, string providerId, int assessmentAreaId, int serviceNameId, string scopeOfService, string howOftenValue, int howOftenFrequency, string howOftenText, string beginDate, string endDate, int fundingSource, string fundingSourceText, string serviceNameOther)
         {
             return dg.updatePaidSupports(token, paidSupportsId, anywAssessmentId, providerId, assessmentAreaId, serviceNameId, scopeOfService, howOftenValue, howOftenFrequency, howOftenText, beginDate, endDate, fundingSource, fundingSourceText, serviceNameOther);
@@ -134,10 +134,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
         public string updateAdditionalSupportsRowOrder(string token, long assessmentId, long addSupportId, int newPos, int oldPos)
         {
             return dg.updateAdditionalSupportsRowOrder(token, assessmentId, addSupportId, newPos, oldPos);
-        }        
+        }
 
         public void carryOverServicesToNewPlan(string consumerPlanId, string priorConsumerPlanId, string effectiveStart, string effectiveend, string targetAssessmentVersionId, string token)
-        {            
+        {
             long priorPlanId = long.Parse(priorConsumerPlanId);
             long newPlanId = long.Parse(consumerPlanId);
             string beginDate = "";
@@ -152,9 +152,13 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             {
                 //var bd = DateTime.Parse(paidSupportObj[i].beginDate);
                 var bd = DateTime.Parse(effectiveStart);
-                beginDate = bd.ToString("yyyy-MM-dd");
+                //beginDate = bd.ToString("yyyy-MM-dd");
+                DateTime oldBeginDate = DateTime.Parse(paidSupportObj[i].beginDate);
+                beginDate = oldBeginDate.ToString("yyyy-MM-dd");
                 var ed = DateTime.Parse(effectiveend);
-                endDate = ed.ToString("yyyy-MM-dd");
+                //endDate = ed.ToString("yyyy-MM-dd");
+                DateTime oldEndDate = DateTime.Parse(paidSupportObj[i].endDate);
+                endDate = oldEndDate.ToString("yyyy-MM-dd");
                 var edT = DateTime.Parse(paidSupportObj[i].endDate);
                 endDateT = edT.ToString("yyy-MM-dd");
                 DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
@@ -198,10 +202,10 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             {
                 return note;
             }
-            if (note.Contains("'"))
-            {
-                note = note.Replace("'", "''");
-            }
+            //if (note.Contains("'"))
+            //{
+            //    note = note.Replace("'", "''");
+            //}
             if (note.Contains("\\"))
             {
                 note = note.Replace("\\", "");
@@ -279,7 +283,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             public string icfRate { get; set; }
             public string complexRate { get; set; }
             public string developmentalRate { get; set; }
-            public string childIntensiveRate { get; set; }            
+            public string childIntensiveRate { get; set; }
         }
 
         public class AdditionalSupports

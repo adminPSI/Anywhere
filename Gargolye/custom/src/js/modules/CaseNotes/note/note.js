@@ -260,6 +260,7 @@ var note = (function () {
       lastUpdated = rd.lastupdate;
       enteredBy = rd.originaluserid;
       cnBatched = rd.batched;
+      originalUserName = rd.originaluserfullname;
       mileage = rd.totalmiles;
     }
   }
@@ -274,16 +275,52 @@ var note = (function () {
   function isCaseNoteReadOnly() {
     if (credit === 'Y' || credit === '-1') {
       isReadOnly = true;
-   // } else if (caseManagerId !== $.session.PeopleId) {
-    //  isReadOnly = true;
+      // } else if (caseManagerId !== $.session.PeopleId) {
+      //  isReadOnly = true;
     } else {
       isReadOnly = false;
     }
-
   }
+  function showTimeWarningPopup(callback) {
+    const timeWarningPop = POPUP.build({
+      id: 'timeWarningPop',
+      classNames: 'warning',
+      hideX: hide_X,
+    });
 
-  
-  
+    const message = document.createElement('p');
+    message.innerText = `The times you have entered
+    are outside the current normal working hours. Click OK to
+    proceed or cacnel to return to the form.`;
+
+    const okBtn = button.build({
+      text: 'ok',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        POPUP.hide(timeWarningPop);
+        callback();
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'cancel',
+      style: 'secondary',
+      type: 'outlined',
+      callback: function () {
+        POPUP.hide(timeWarningPop);
+      },
+    });
+
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(okBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    timeWarningPop.appendChild(message);
+    timeWarningPop.appendChild(btnWrap);
+
+    POPUP.show(timeWarningPop);
+  }
 
   async function noteSaveUpdate(saveAndNew) {
     //Remove the selected consumer from active list
@@ -727,28 +764,30 @@ var note = (function () {
     }
   }
   function populateVendorDropdown() {
-    caseNotesAjax.getConsumerSpecificVendors(selectedConsumerIds[0], serviceDate, function (
-      results,
-    ) {
-      var data = results.map(r => {
-        return {
-          value: r.vendorId,
-          text: r.vendorName,
-        };
-      });
-      //        if ($.session.applicationName === 'Gatekeeper')
-      //          data.unshift({ value: '', text: '' }); // add blank value in vendor dropdown for GK only
-      var defaultVal;
+    caseNotesAjax.getConsumerSpecificVendors(
+      selectedConsumerIds[0],
+      serviceDate,
+      function (results) {
+        var data = results.map(r => {
+          return {
+            value: r.vendorId,
+            text: r.vendorName,
+          };
+        });
+        //        if ($.session.applicationName === 'Gatekeeper')
+        //          data.unshift({ value: '', text: '' }); // add blank value in vendor dropdown for GK only
+        var defaultVal;
 
-      if (rd && rd.vendorid) {
-        defaultVal = rd.vendorid;
-      } else {
-        vendorId = data[1] && data[1].value ? data[1].value : '';
-        defaultVal = vendorId;
-      }
+        if (rd && rd.vendorid) {
+          defaultVal = rd.vendorid;
+        } else {
+          vendorId = data[1] && data[1].value ? data[1].value : '';
+          defaultVal = vendorId;
+        }
 
-      dropdown.populate(vendorDropdown, data, defaultVal);
-    });
+        dropdown.populate(vendorDropdown, data, defaultVal);
+      },
+    );
   }
   function populateServiceLocations() {
     var serviceLocData = { serviceDate, consumerId: selectedConsumerIds[0] };
@@ -1062,6 +1101,40 @@ var note = (function () {
 
     return docTime;
   }
+  function parseSessionTimes(dirtyTime) {
+    const isAMorPM = dirtyTime.includes('A') ? 'am' : 'pm';
+    let time;
+
+    if (isAMorPM === 'am') {
+      time = `${dirtyTime.split('A')[0]} AM`;
+    } else {
+      time = `${dirtyTime.split('P')[0]} PM`;
+    }
+
+    time = UTIL.convertToMilitary(time);
+    return time.slice(0, -3);
+  }
+  function checkTimesAreWithinWorkHours() {
+    const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
+    const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
+
+    if (
+      $.session.caseNotesWarningStartTime === '00:00' ||
+      $.session.caseNotesWarningEndTime === '00:00' ||
+      !$.session.caseNotesWarningStartTime ||
+      !$.session.caseNotesWarningEndTime ||
+      $.session.caseNotesWarningStartTime === 'Null' ||
+      $.session.caseNotesWarningEndTime === 'Null'
+    ) {
+      return true;
+    }
+
+    if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
+      return false;
+    }
+
+    return true;
+  }
   function buildCardDetailsSection() {
     async function saveBtnAction(saveAndNew) {
       function preSave() {
@@ -1090,7 +1163,27 @@ var note = (function () {
             saveNoteBtn.classList.add('disabled');
             saveAndNewNoteBtn.classList.add('disabled');
             preSave();
-            await noteSaveUpdate(saveAndNew);
+            if ($.session.applicationName === 'Gatekeeper') {
+              const hoursAreWithinWorkHours = checkTimesAreWithinWorkHours();
+              if (hoursAreWithinWorkHours) {
+                await noteSaveUpdate(saveAndNew);
+              } else {
+                warningPopup(
+                  `The times you have entered are outside the current normal working hours.
+                  Click OK to proceed or cancel to return to the form.`,
+                  async () => {
+                    await noteSaveUpdate(saveAndNew);
+                  },
+                  () => {
+                    saveNoteBtn.classList.remove('disabled');
+                    saveAndNewNoteBtn.classList.remove('disabled');
+                    return;
+                  },
+                );
+              }
+            } else {
+              await noteSaveUpdate(saveAndNew);
+            }
           },
           () => {
             return;
@@ -1100,9 +1193,30 @@ var note = (function () {
         saveNoteBtn.classList.add('disabled');
         saveAndNewNoteBtn.classList.add('disabled');
         preSave();
-        await noteSaveUpdate(saveAndNew);
+        if ($.session.applicationName === 'Gatekeeper') {
+          const hoursAreWithinWorkHours = checkTimesAreWithinWorkHours();
+          if (hoursAreWithinWorkHours) {
+            await noteSaveUpdate(saveAndNew);
+          } else {
+            warningPopup(
+              `The times you have entered are outside the current normal working hours.
+              Click OK to proceed or cancel to return to the form.`,
+              async () => {
+                await noteSaveUpdate(saveAndNew);
+              },
+              () => {
+                saveNoteBtn.classList.remove('disabled');
+                saveAndNewNoteBtn.classList.remove('disabled');
+                return;
+              },
+            );
+          }
+        } else {
+          await noteSaveUpdate(saveAndNew);
+        }
       }
     }
+    //----------------------------------------------------------------------
 
     var details = document.createElement('div');
     details.classList.add('card__body', 'caseNoteCard__details');
@@ -1305,16 +1419,16 @@ var note = (function () {
     //Hide Mileage Input if they don't have a bill/service code
     if (serviceId === '' || serviceId === '0') mileageInput.classList.add('hidden');
 
-    if (pageLoaded === 'review') {    
+    if (pageLoaded === 'review') {
       if (groupNoteId !== 0) grid_col_2.appendChild(groupNoteDisplay);
       //Last Updated by message (only on review)
       var lastUpdatedDisplay = document.createElement('div');
       lastUpdatedDisplay.classList.add('lastUpdatedDisplay');
       var lastUpdatedMessage = document.createElement('p');
       lastUpdatedMessage.innerHTML = `
-      Last Edited On: ${lastUpdated} <br> Entered By: ${enteredBy}<br>`;
+      Last Edited On: ${lastUpdated} <br> Entered By: ${enteredBy} (${originalUserName})<br>`;
       lastUpdatedDisplay.appendChild(lastUpdatedMessage);
-      
+
       var correctedCheckboxDiv = document.createElement('div');
       correctedCheckboxDiv.classList.add('correctedCheckbox');
       correctedCheckbox = input.buildCheckbox({
@@ -1341,34 +1455,34 @@ var note = (function () {
           break;
       }
 
-     if (reviewRequired === 'Y' && $.session.applicationName === 'Gatekeeper') {   
+      if (reviewRequired === 'Y' && $.session.applicationName === 'Gatekeeper') {
         var reviewMessage = document.createElement('p');
         reviewMessage.classList.add('reviewMessage');
         reviewMessage.innerHTML = `
         <br>Review Required for this Case Note <br> Review Results: ${reviewText} 
         ${reviewRejectReason === '' ? '' : `<br> Rejection Reason: ${reviewRejectReason}`}`;
-       if (reviewResults === 'R') reviewMessage.appendChild(correctedCheckboxDiv);
-     }  
+        if (reviewResults === 'R') reviewMessage.appendChild(correctedCheckboxDiv);
+      }
 
-      ////ADV does not have a rejection reason  
-      if (reviewRequired === 'Y' && $.session.applicationName === 'Advisor') {   
+      ////ADV does not have a rejection reason
+      if (reviewRequired === 'Y' && $.session.applicationName === 'Advisor') {
         var reviewMessage = document.createElement('p');
         reviewMessage.classList.add('reviewMessage');
         reviewMessage.innerHTML = `
         <br>Review Required for this Case Note <br> Review Results: ${reviewText}`;
         reviewMessage.appendChild(correctedCheckboxDiv);
-      }  
-    }  
-   
+      }
+    }
+
     grid_col_2.appendChild(btnWrap);
     grid_col_2.appendChild(btnWrap2);
     details.appendChild(grid_col_1);
     details.appendChild(grid_col_2);
-    if (pageLoaded === 'review') {  
+    if (pageLoaded === 'review') {
       grid_col_2.appendChild(lastUpdatedDisplay);
       if (reviewRequired === 'Y') grid_col_2.appendChild(reviewMessage);
-   }   
-    
+    }
+
     if ($.session.applicationName === 'Gatekeeper') buildDocTime();
 
     DOM.ACTIONCENTER.appendChild(details);
@@ -1558,7 +1672,7 @@ var note = (function () {
         docTimeMinutesField.parentElement.classList.add('hidden');
         timerButtons.classList.add('hidden');
         docTimeMinutesField.value = '0';
-         documentationTimer.stopTimer();
+        documentationTimer.stopTimer();
         timerRunning = false;
         documentationTime = '';
         break;
@@ -1874,11 +1988,11 @@ var note = (function () {
     confidentialCheckbox.addEventListener('change', event => {
       confidential = event.target.checked ? 'Y' : 'N';
     });
-    if (pageLoaded === 'review' && reviewRequired === 'Y' && reviewResults === 'R') { 
-    correctedCheckbox.addEventListener('change', event => {
-      corrected = event.target.checked ? 'Y' : 'N';
-    });
-  }
+    if (pageLoaded === 'review' && reviewRequired === 'Y' && reviewResults === 'R') {
+      correctedCheckbox.addEventListener('change', event => {
+        corrected = event.target.checked ? 'Y' : 'N';
+      });
+    }
   }
   // required fields/permissions
   function checkRequiredFields() {
@@ -2055,19 +2169,21 @@ var note = (function () {
 
     // in GK Anywhere, if case note is NOT batched, then check that user has the Case Notes Update Entered permission
     // CHECKING IF IT IS NOT BATCHED -- EMPTY STRING IS NOT BATCHED
-    if (($.session.applicationName === 'Gatekeeper') && (!cnBatched || cnBatched === '')) {
+    if ($.session.applicationName === 'Gatekeeper' && (!cnBatched || cnBatched === '')) {
       if ($.session.CaseNotesUpdate) {
-              if ((!$.session.CaseNotesUpdateEntered) || ($.session.CaseNotesUpdateEntered && (caseManagerId === $.session.PeopleId)))  {
-                isReadOnly = false;  //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
-              } else {
-                  isReadOnly = true;  //can not edit (with UpdateEntered permission, can't edit other people's case notes)
-              }
+        if (
+          !$.session.CaseNotesUpdateEntered ||
+          ($.session.CaseNotesUpdateEntered && caseManagerId === $.session.PeopleId)
+        ) {
+          isReadOnly = false; //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
+        } else {
+          isReadOnly = true; //can not edit (with UpdateEntered permission, can't edit other people's case notes)
+        }
       } else {
-        isReadOnly = true;  //can not edit (no overall update permission)
+        isReadOnly = true; //can not edit (no overall update permission)
       }
-         
     }
-    
+
     if (isReadOnly) setInputstoReadOnly();
 
     //Set Permissions is the last thing that gets called. Adding Dashboard New CN Events here.
@@ -2219,11 +2335,9 @@ var note = (function () {
             newNote.init(dashConsumer);
             return;
           } else {
-
             newNote.init();
             return;
           }
-         
         }
         if (pageLoaded === 'review') {
           if (groupNoteId !== 0) {
@@ -2258,11 +2372,9 @@ var note = (function () {
             newNote.init(dashConsumer);
             return;
           } else {
-
             newNote.init();
             return;
           }
-         
         }
         if (pageLoaded === 'review') {
           if (groupNoteId !== 0) {

@@ -148,6 +148,10 @@
     font-size: 13px;
     font-style: italic;
     font-weight: 600;
+    
+    &.rejected {
+      color: #db162f;
+    }
   }
 }
 .transportationBtn {
@@ -333,6 +337,11 @@ button.evv-highlight {
 }
 #singleEntryReviewTable,
 #singleEntryAdminReviewTable {
+  .iconsBox {
+    display: flex;
+    flex-direction: row;
+  }
+
   .additionalInfoBox {
     display: flex;
     text-align: center;
@@ -350,6 +359,21 @@ button.evv-highlight {
     svg {
       min-width: 25px;
       padding-left: 7px;
+    }
+  }
+  .commentsBox {
+    display: flex;
+    text-align: center;
+    line-height: 28px;
+    color: $primary;
+    height: 26px;
+    border-radius: 4px;
+    min-width: 20px;
+    font-weight: 500;
+    max-width: 54px;
+    svg {
+      min-width: 25px;
+      color: $primary;
     }
   }
 }
@@ -492,17 +516,51 @@ button.evv-highlight {
     font-size: 11px;
     font-style: italic;
     font-weight: 600;
+
+    &.rejected {
+      color: #db162f;
+    }
   }
 
 }
-.actioncenter[data-active-section="timeEntry-approval"] {
-  .totalhoursdiv {
+
+//Time Entry Review
+#singleEntryReviewTable {
+  .seRecordActivity {
     position: absolute;
-    margin-top: 30px;
-    margin-left: -90px;
-    font-weight: 500;
-    color: $font-dark;
+    // margin-top: 36px;
+    transform: translate(0,18px);
+    font-size: 11px;
+    font-style: italic;
+    font-weight: 600;
+
+    &.rejected {
+      color: #db162f;
+    }
   }
+}
+
+.actioncenter[data-active-section="timeEntry-approval"] {
+    .totalhoursdiv {
+        position: absolute;
+        margin-top: 30px;
+        margin-left: -90px;
+        font-weight: 500;
+        color: $font-dark;
+    }
+
+    .dateWrap {
+        justify-content: space-between;
+        margin-bottom: -10px;
+
+        > div {
+            width: 48%;
+
+            > input {
+                font-size: .87rem;
+            }
+        }
+    }
 }
 
 .timeApprovalWarningPopup {

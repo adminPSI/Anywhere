@@ -4,12 +4,22 @@ const csSignature = (() => {
   let isSigned;
   let readOnly;
   let showConsentStatments;
+  let signatureType;
   // dom
   let signaturePopup;
+  let signatureSection;
+  let changeMindQ;
+  let complaintQ;
+  let dissentAreaDisagree;
+  let dissentHowToAddress;
+  let standardQuestions; // these are all the radio questions
   let sigPad;
   let saveBtn;
   // other
+  let allowSignClear;
+  let clearSignature = false;
   let characterLimits;
+  let prevDissentData = {};
 
   //*------------------------------------------------------
   //* UTIL
@@ -46,6 +56,9 @@ const csSignature = (() => {
     if (isNew) {
       insertSuccess = await planConsentAndSign.insertNewTeamMember(selectedMemberData);
     } else {
+      selectedMemberData.dateSigned = UTIL.formatDateToIso(
+        dates.removeTimestamp(selectedMemberData.dateSigned),
+      );
       await planConsentAndSign.updateTeamMember(selectedMemberData);
       insertSuccess = true;
     }
@@ -86,10 +99,125 @@ const csSignature = (() => {
       },
     });
   }
+  function checkForAllowClearSignature() {
+    if (!isSigned) return false;
+
+    const planStatus = plan.getPlanStatus();
+    const activePlan = plan.getPlanActiveStatus();
+
+    if ($.session.planClearSignature && planStatus === 'D' && activePlan === true) {
+      if ($.session.oneSpan && signatureType === '1') {
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+  function clearInputsOnSignatureClear() {
+    const dissentAreaInput = dissentAreaDisagree.querySelector('.input-field__input');
+    const dissentHowToInput = dissentHowToAddress.querySelector('.input-field__input');
+    dissentAreaInput.value = '';
+    dissentHowToInput.value = '';
+    dissentAreaInput.style.pointerEvents = 'all';
+    dissentHowToInput.style.pointerEvents = 'all';
+    dissentAreaInput.removeAttribute('readonly');
+    dissentHowToInput.removeAttribute('readonly');
+    dissentAreaDisagree.classList.remove('disabled');
+    dissentHowToAddress.classList.remove('disabled');
+
+    if (signatureType === '1') {
+      const allRadios = [...signaturePopup.querySelectorAll('.ic_questionRadioContainer')];
+
+      // if this works remove below for each's
+      allRadios.forEach(radio => {
+        radio.classList.remove('disabled');
+        radio.classList.add('error');
+        const radios = [...radio.querySelectorAll('.radio')];
+        radios.forEach(radio => {
+          const input = radio.querySelector('input');
+          input.checked = false;
+        });
+      });
+    }
+
+    const prompt = document.createElement('p');
+    prompt.innerText = `By checking the boxes below, I agree that this plan reflects actions, services, and supports as requested by the person listed. As a provider, I agree to the services listed in this plan for which I am named a responsible party. I understand that I may revoke my consent at any time verbally or in writing in accordance with DODD rules.`;
+    prompt.style.marginBottom = '14px';
+    signaturePopup.insertBefore(prompt, signatureSection);
+
+    checkSignautrePopupForErrors();
+  }
+  function clearMemberDataOnClear() {
+    isSigned = false;
+
+    selectedMemberData.attachmentId = '';
+    selectedMemberData.dateSigned = '';
+    selectedMemberData.description = '';
+    selectedMemberData.csChangeMind = '';
+    selectedMemberData.csContact = '';
+    selectedMemberData.csSupportsHealthNeeds = '';
+    selectedMemberData.csRightsReviewed = '';
+    selectedMemberData.csAgreeToPlan = '';
+    selectedMemberData.csTechnology = '';
+    selectedMemberData.csFCOPExplained = '';
+    selectedMemberData.csDueProcess = '';
+    selectedMemberData.csResidentialOptions = '';
+    selectedMemberData.dissentAreaDisagree = '';
+    selectedMemberData.dissentHowToAddress = '';
+  }
 
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
+  function showClearConfirmationPopup() {
+    const confirmPop = POPUP.build({
+      id: 'clearSignConfirmPopup',
+      hideX: true,
+    });
+    const message = document.createElement('p');
+    message.innerText = `Are you sure you would like to remove this signature and any associated consent and dissenting opinions? This cannot be undone.`;
+
+    const yesBtn = button.build({
+      text: 'yes',
+      style: 'secondary',
+      type: 'contained',
+      callback: async () => {
+        const planId = plan.getCurrentPlanId();
+        const attachmentId = selectedMemberData.attachmentId;
+        clearSignature = true;
+        clearMemberDataOnClear();
+        clearInputsOnSignatureClear();
+        const updatedSignatureSection = buildSignatureSection();
+        signaturePopup.replaceChild(updatedSignatureSection, signatureSection);
+        signatureSection = updatedSignatureSection;
+        await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
+        if (signatureType === '2') {
+          planAjax.deletePlanAttachment(planId, attachmentId);
+        }
+        DOM.ACTIONCENTER.removeChild(confirmPop);
+        planConsentAndSign.refreshTable();
+      },
+    });
+    const noBtn = button.build({
+      text: 'no',
+      style: 'secondary',
+      type: 'outlined',
+      callback: () => {
+        DOM.ACTIONCENTER.removeChild(confirmPop);
+      },
+    });
+    const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    btnWrap.appendChild(yesBtn);
+    btnWrap.appendChild(noBtn);
+
+    confirmPop.appendChild(message);
+    confirmPop.appendChild(btnWrap);
+
+    POPUP.show(confirmPop);
+  }
   function buildSignatureSection() {
     const signatureWrap = document.createElement('div');
     signatureWrap.classList.add('signatureWrap');
@@ -99,6 +227,9 @@ const csSignature = (() => {
     signatureWrap.appendChild(signatureTitle);
 
     if (selectedMemberData.description) {
+      const innerWrap = document.createElement('div');
+      innerWrap.classList.add('innerWrap');
+
       const attachmentDesc = document.createElement('p');
       attachmentDesc.innerText = selectedMemberData.description;
       attachmentDesc.classList.add('signAttachmentDesc');
@@ -138,14 +269,36 @@ const csSignature = (() => {
         form.submit();
         form.remove();
       });
+      innerWrap.appendChild(attachmentDesc);
 
-      signatureWrap.appendChild(attachmentDesc);
+      // signature date
+      let signDate = UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned));
+      const date = input.build({
+        type: 'date',
+        label: 'Signature Date',
+        style: 'secondary',
+        value: signDate,
+        classNames: 'disabled',
+      });
+      if (
+        selectedMemberData.signatureType === 'In-Person' ||
+        selectedMemberData.signatureType === '2'
+      ) {
+        innerWrap.appendChild(date);
+      }
+
+      signatureWrap.appendChild(innerWrap);
       return signatureWrap;
     } else if (
       selectedMemberData.signatureType === 'In-Person' ||
       selectedMemberData.signatureType === '2'
     ) {
       selectedMemberData.hasWetSignature = false;
+
+      const innerWrap = document.createElement('div');
+      innerWrap.classList.add('innerWrap');
+
+      // signature attachment
       const attachmentInput = document.createElement('input');
       attachmentInput.type = 'file';
       attachmentInput.classList.add('input-field__input', 'attachmentInput');
@@ -169,7 +322,39 @@ const csSignature = (() => {
         await Promise.all([attPromise]);
       });
 
-      signatureWrap.appendChild(attachmentInput);
+      // signature date
+      let signDate = selectedMemberData.dateSigned
+        ? UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateSigned))
+        : null;
+      const date = input.build({
+        type: 'date',
+        label: 'Signature Date',
+        style: 'secondary',
+        value: signDate ? signDate : '',
+        callback: e => {
+          selectedMemberData.dateSigned = e.target.value;
+
+          if (!selectedMemberData.dateSigned) {
+            date.classList.add('error');
+            if (signDate) {
+              date.classList.remove('error');
+            }
+          } else {
+            date.classList.remove('error');
+          }
+
+          checkSignautrePopupForErrors();
+        },
+      });
+
+      if (!signDate) {
+        date.classList.add('error');
+      }
+
+      innerWrap.appendChild(attachmentInput);
+      innerWrap.appendChild(date);
+
+      signatureWrap.appendChild(innerWrap);
 
       return signatureWrap;
     } else {
@@ -195,12 +380,6 @@ const csSignature = (() => {
       sigCanvas.classList.add('evvCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
-      // sigCanvas.addEventListener('touchend', () => {
-      //   console.log('touchend');
-      // });
-      // sigCanvas.addEventListener('mouseup', () => {
-      //   console.log('mouseup');
-      // });
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;
@@ -216,6 +395,7 @@ const csSignature = (() => {
       sigBody.appendChild(sigImage);
     }
 
+    // this clear signature button is only for the sig pad canvas
     const clearSignatureBtn = button.build({
       id: '',
       text: 'clear',
@@ -240,7 +420,7 @@ const csSignature = (() => {
     dissentTitle.classList.add('h3Title');
     dissentTitle.innerText = 'Dissenting Opinion';
     // questions
-    const dissentAreaDisagree = input.build({
+    dissentAreaDisagree = input.build({
       label: 'Area Team Member Disagrees',
       value: selectedMemberData.dissentAreaDisagree,
       type: 'textarea',
@@ -252,7 +432,7 @@ const csSignature = (() => {
         selectedMemberData.dissentAreaDisagree = event.target.value;
       },
     });
-    const dissentHowToAddress = input.build({
+    dissentHowToAddress = input.build({
       label: 'How to Address',
       value: selectedMemberData.dissentHowToAddress,
       type: 'textarea',
@@ -267,6 +447,11 @@ const csSignature = (() => {
     dissentWrap.appendChild(dissentTitle);
     dissentWrap.appendChild(dissentAreaDisagree);
     dissentWrap.appendChild(dissentHowToAddress);
+
+    if (isSigned || readOnly) {
+      dissentAreaDisagree.classList.add('disabled');
+      dissentHowToAddress.classList.add('disabled');
+    }
 
     return dissentWrap;
   }
@@ -467,11 +652,11 @@ const csSignature = (() => {
     consentHeader.innerText = 'Consent Statements';
     consentWrap.appendChild(consentHeader);
 
-    const standardQuestions = buildStandardQuestionSet();
+    standardQuestions = buildStandardQuestionSet();
 
     if (showConsentStatments) {
-      const changeMindQ = getChangeMindMarkup();
-      const complaintQ = getContactMarkup();
+      changeMindQ = getChangeMindMarkup();
+      complaintQ = getContactMarkup();
       consentWrap.appendChild(changeMindQ);
       consentWrap.appendChild(complaintQ);
     }
@@ -486,9 +671,20 @@ const csSignature = (() => {
   //*------------------------------------------------------
   function showPopup({ isNewMember, isReadOnly, memberData }) {
     isNew = isNewMember;
+    const prevDateSigned = memberData.dateSigned;
     isSigned = memberData.dateSigned !== '';
+    clearSignature = false;
+    signatureType = memberData.signatureType;
+
+    if (memberData.signatureType === '2' && memberData.description === '') {
+      isSigned = false;
+    }
     readOnly = isReadOnly;
     selectedMemberData = memberData;
+    prevDissentData = {
+      dissentHowToAddress: selectedMemberData.dissentHowToAddress,
+      dissentAreaDisagree: selectedMemberData.dissentAreaDisagree,
+    };
     showConsentStatments = planConsentAndSign.isTeamMemberConsentable(memberData.teamMember);
     characterLimits = planData.getISPCharacterLimits('consentAndSign');
 
@@ -503,13 +699,11 @@ const csSignature = (() => {
     //* PROMPT
     //*------------------------------
     const prompt = document.createElement('p');
-    //prompt.innerText = `By signing below, I agree that this plan reflects actions, services, and supports as requested by the person listed. As a provider, I agree to the services listed in this plan for which I am named a responsible party. I understand that I may revoke my consent at any time verbally or in writing in accordance with DODD Rules.`;
-    prompt.innerText = `I agree this plan reflects actions, services, and supports requested by me and may be sent to those providing services to me.`;
-
+    prompt.innerText = `By checking the boxes below, I agree that this plan reflects actions, services, and supports as requested by the person listed. As a provider, I agree to the services listed in this plan for which I am named a responsible party. I understand that I may revoke my consent at any time verbally or in writing in accordance with DODD rules.`;
     prompt.style.marginBottom = '14px';
 
     //* SIGNATURE
-    const signatureSection = buildSignatureSection();
+    signatureSection = buildSignatureSection();
 
     //* DISSENT
     const dissentSection = buildDissentSection();
@@ -519,9 +713,19 @@ const csSignature = (() => {
 
     //* SAVE/CANCEL BUTTONS
     //*------------------------------
+    allowSignClear = checkForAllowClearSignature(memberData.signatureType);
+    const clearSignatureBtn = button.build({
+      id: 'clearSigBtn',
+      text: 'clear',
+      style: 'danger',
+      type: 'contained',
+      callback: () => {
+        showClearConfirmationPopup();
+      },
+    });
     saveBtn = button.build({
       id: 'saveSigBtn',
-      text: 'save',
+      text: allowSignClear ? 'update' : 'save',
       style: 'secondary',
       type: 'contained',
       callback: () => {
@@ -535,7 +739,7 @@ const csSignature = (() => {
           if (!selectedMemberData.description || selectedMemberData.description === '') {
             saveFromSignature();
           } else {
-            showWarningPopup(sigPadData);
+            showWarningPopup();
           }
         } else {
           if (sigPadData === emptySignatureDataURL || sigPadData === '') {
@@ -546,15 +750,17 @@ const csSignature = (() => {
         }
       },
     });
+    const cancelText = (isSigned || readOnly) && !allowSignClear ? 'close' : 'cancel';
     const cancelBtn = button.build({
-      text: isSigned || readOnly ? 'close' : 'cancel',
+      text: cancelText,
       style: 'secondary',
       type: 'outlined',
       callback: () => {
-        selectedMemberData.dissentAreaDisagree.value = '';
-        selectedMemberData.dissentHowToAddress.value = '';
+        selectedMemberData.dissentAreaDisagree = prevDissentData.dissentAreaDisagree;
+        selectedMemberData.dissentHowToAddress = prevDissentData.dissentHowToAddress;
 
         if (!isSigned) {
+          selectedMemberData.dateSigned = prevDateSigned;
           selectedMemberData.description = '';
           selectedMemberData.attachmentType = '';
           selectedMemberData.hasWetSignature = false;
@@ -564,9 +770,16 @@ const csSignature = (() => {
         POPUP.hide(signaturePopup);
       },
     });
+
     const saveCancelWrap = document.createElement('div');
     saveCancelWrap.classList.add('btnWrap');
-    if (!isSigned && !readOnly) saveCancelWrap.appendChild(saveBtn);
+
+    if (allowSignClear) {
+      saveCancelWrap.appendChild(clearSignatureBtn);
+      saveCancelWrap.appendChild(saveBtn);
+    } else {
+      if (!isSigned && !readOnly) saveCancelWrap.appendChild(saveBtn);
+    }
     saveCancelWrap.appendChild(cancelBtn);
 
     //* BUILD IT
@@ -598,6 +811,9 @@ const csSignature = (() => {
     DOM.autosizeTextarea();
 
     checkSignautrePopupForErrors();
+    if (allowSignClear && (isSigned || readOnly)) {
+      saveBtn.classList.add('disabled');
+    }
   }
 
   return {

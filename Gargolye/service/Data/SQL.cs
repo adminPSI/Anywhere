@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.VisualBasic;
-using System.Collections;
+﻿using Anywhere.Log;
 using System.Data;
-using System.Diagnostics;
 using System.Text;
-using Anywhere.Log;
 
 namespace Anywhere.service.Data
-{    
+{
     public class SQL
     {
         private static Loger logger = new Loger();
         StringBuilder sb = new StringBuilder();
-        Data.Sybase di = new Data.Sybase();        
+        Data.Sybase di = new Data.Sybase();
         public DataSet TimeDetail(string UserName, string StartDate, string EndDate)
         {
 
@@ -45,7 +38,7 @@ namespace Anywhere.service.Data
             logger.debug(sb.ToString());
             return di.SelectRowsDS(sb.ToString());
 
-        }        
+        }
 
         public DataSet TimeOverlap(string UserID, string StartDate, string EndDate)
         {
@@ -73,6 +66,6 @@ namespace Anywhere.service.Data
             return di.SelectRowsDS(sb.ToString());
 
         }
-        
+
     }
 }

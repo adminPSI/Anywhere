@@ -1,132 +1,147 @@
 body {
-  -webkit-overflow-scrolling: touch !important;
-  background: $bg-light;
-  color: $font-dark;
-  overflow: auto;
+    -webkit-overflow-scrolling: touch !important;
+    background: $bg-light;
+    color: $font-dark;
+    overflow: auto;
 }
 
 button.moduleFilterBtn {
-  width: 100%;
+    width: 100%;
 }
 
 button.floatingActionBtn {
-  border-radius: $r-circle;
-  box-shadow: $shadow-m2;
-  cursor: pointer;
-  margin: 0;
-  min-width: auto;
-  padding: 2px;
-  position: fixed;
-  bottom: 20px;
-  right: 24px;
-  height: 64px;
-  width: 64px;
-
-  svg {
+    border-radius: $r-circle;
+    box-shadow: $shadow-m2;
+    cursor: pointer;
     margin: 0;
-    width: 90%;
-  }
+    min-width: auto;
+    padding: 2px;
+    position: fixed;
+    bottom: 20px;
+    right: 24px;
+    height: 64px;
+    width: 64px;
+
+    svg {
+        margin: 0;
+        width: 90%;
+    }
 }
 
 textarea {
-  resize: none;
+    resize: none;
 }
 
 svg {
-  .fill-path {
-    fill: currentColor;
-  }
+    .fill-path {
+        fill: currentColor;
+    }
 }
 
 .freezeScroll {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .overlay {
-  background: $primary;
-  display: none;
-  height: 100%;
-  opacity: 0.9;
-  position: fixed;
-  top: 0;
-  width: 100%;
+    background: $primary;
+    display: none;
+    height: 100%;
+    opacity: 0.9;
+    position: fixed;
+    top: 0;
+    width: 100%;
 
-  &.visible {
-    display: block;
-  }
+    &.visible {
+        display: block;
+    }
+
+    &.modal {
+        display: block;
+        z-index: 100;
+        background: transparent;
+    }
 }
 
 .error {
-  color: $font-error;
+    color: $font-error;
 }
 .warning {
-  color: $font-warning;
+    color: $font-warning;
 }
 .customLink {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .ellipsis {
-  border-radius: $r-sm;
-  background: $gray;
-  font-weight: $bold;
-  padding: 0 5px;
-  margin: 0 0 0 4px;
+    border-radius: $r-sm;
+    background: $gray;
+    font-weight: $bold;
+    padding: 0 5px;
+    margin: 0 0 0 4px;
 }
 
 .landingMessage {
-  text-align: center;
-  margin-top: 20px;
+    text-align: center;
+    margin-top: 20px;
 }
 
 .disabledModule {
-  /*display:none;*/
-  opacity: 0.5;
-  pointer-events: none;
+    /*display:none;*/
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 input[type='time']::-webkit-clear-button {
-  display: none;
+    display: none;
 }
 input[type='time']::-ms-clear {
-  display: none;
+    display: none;
 }
 input[type='radio' i]:focus {
-  outline: 1px solid #0075ff;
+    outline: 1px solid #0075ff;
 }
 
 .bold {
-  font-weight: $normal;
+    font-weight: $normal;
 }
 
 .filteredByData {
-  border-bottom: 2px solid $secondary;
-  display: flex;
-  flex-flow: row wrap;
-  padding: 0 0 5px 0;
-  position: relative;
-  margin: 10px 0;
+    border-bottom: 2px solid $secondary;
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0 0 5px 0;
+    position: relative;
+    margin: 10px 0;
 
-  &::before {
-    content: 'Filtered By:';
-    font-size: 12px;
-    font-weight: $normal;
-    position: absolute;
-    top: -15px;
-  }
+    &::before {
+        content: 'Filtered By:';
+        font-size: 12px;
+        font-weight: $normal;
+        position: absolute;
+        top: -15px;
+    }
 
-  p {
-    color: $primary;
-    font-weight: $normal;
-    padding: 0 6px 0 0;
-  }
+    p {
+        color: $primary;
+        font-weight: $normal;
+        padding: 0 6px 0 0;
+    }
 
-  span {
-    color: black;
-  }
+    span {
+        color: black;
+    }
 }
 
 .disabled {
-  color: rgba(0, 0, 0, 0.5) !important;
-  pointer-events: none;
+    color: rgba(0, 0, 0, 0.5) !important;
+    pointer-events: none;
+}
+
+.noPointerEvents {
+    pointer-events: none;
+}
+
+.heading {
+    color: $primary;
+    font-weight: $normal;
 }

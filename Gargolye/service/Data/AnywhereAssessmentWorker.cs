@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Anywhere.Data;
-using System.Web.Script.Serialization;
-using System.ServiceModel.Web;
 using System.Runtime.Serialization;
+using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
 {
@@ -15,7 +10,7 @@ namespace Anywhere.service.Data
         JavaScriptSerializer js = new JavaScriptSerializer();
 
         public class ConsumerAssessment
-        {            
+        {
             public string sectionId { get; set; }
             public string sectionName { get; set; }
             public string sectionOrder { get; set; }
@@ -42,7 +37,7 @@ namespace Anywhere.service.Data
             public string answerId { get; set; }
             public string answerRow { get; set; }
             public string answerText { get; set; }
-        }             
+        }
 
         public class ConsumerPlans
         {
@@ -82,6 +77,7 @@ namespace Anywhere.service.Data
         public class ConsumerPlan
         {
             public string consumerPlanId { get; set; }
+            public string cQFullName { get; set; }
         }
 
         [DataContract]
@@ -99,7 +95,7 @@ namespace Anywhere.service.Data
 
         public string updateAssessmentAnswers(string token, Answer[] answers)
         {
-            
+
             string result = adg.validateToken(token);
 
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
@@ -107,16 +103,16 @@ namespace Anywhere.service.Data
                 try
                 {
                     foreach (Answer answer in answers)
-                    {                        
+                    {
                         // update the answer
-                        adg.updateAssessmentAnswer(answer.answerId, answer.answerText, transaction);                        
+                        adg.updateAssessmentAnswer(answer.answerId, answer.answerText, transaction);
                     }
                 }
                 catch (Exception ex)
                 {
-                    throw ex;                    
+                    throw ex;
                 }
-            }            
+            }
             return "success";
         }
 
@@ -140,20 +136,20 @@ namespace Anywhere.service.Data
             return resultString;
         }
 
-        public string insertConsumerPlan(string token, string consumerId, string assessmentVersionId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate)
+        public string insertConsumerPlan(string token, string consumerId, string assessmentVersionId, string planType, string planYearStart, string planYearEnd, string effectiveStart, string effectiveEnd, string active, string reviewDate, string salesForceCaseManagerId)
         {
             // insert the assessment
-            string assessmentIdObj = adg.insertConsumerPlan(token, consumerId, planType, planYearStart, planYearEnd, effectiveStart, effectiveEnd, active, reviewDate);
+            string assessmentIdObj = adg.insertConsumerPlan(token, consumerId, planType, planYearStart, planYearEnd, effectiveStart, effectiveEnd, active, reviewDate, salesForceCaseManagerId);
 
             ConsumerPlan[] plan = js.Deserialize<ConsumerPlan[]>(assessmentIdObj);
 
             QuestionSet[] questionSets = js.Deserialize<QuestionSet[]>(adg.getQuestionSets(assessmentVersionId));
 
-            foreach(QuestionSet qset in questionSets)
+            foreach (QuestionSet qset in questionSets)
             {
                 Int32 answerRows = Int32.Parse(qset.questionSetAnswerRowcount);
                 Question[] questions = js.Deserialize<Question[]>(adg.getQuestions(qset.questionSetId));
-                
+
                 // for each row, insert each question in the question set
                 for (int i = 1; i <= answerRows; i++)
                 {
@@ -163,13 +159,13 @@ namespace Anywhere.service.Data
                         string[] separatingStrings = { "~~" };
                         string[] defaultAnswers = question.questionDefaultAnswer.Split(separatingStrings, System.StringSplitOptions.RemoveEmptyEntries);
                         // if a default answer exists, use it, otherwise set answer to null
-                        string answer = i <= defaultAnswers.Length ? (defaultAnswers[i-1] == "==TODAY") ? DateTime.Now.ToString("yyyy-MM-dd") : defaultAnswers[i-1] : null;
+                        string answer = i <= defaultAnswers.Length ? (defaultAnswers[i - 1] == "==TODAY") ? DateTime.Now.ToString("yyyy-MM-dd") : defaultAnswers[i - 1] : null;
                         // insert answer record
                         adg.insertConsumerAssessmentAnswer(plan[0].consumerPlanId, question.questionId, i.ToString(), answer);
                     }
                 }
             }
-            
+
             return assessmentIdObj;
         }
 
@@ -186,8 +182,9 @@ namespace Anywhere.service.Data
             return adg.transferPlanReportToONET(token, planId);
         }
 
-        public ServiceAndsSupportData getServiceAndSupportsData(string token, string effectiveStartDate, string effectiveEndDate, long consumerId, string areInSalesForce, string planId )
+        public ServiceAndsSupportData getServiceAndSupportsData(string token, string effectiveStartDate, string effectiveEndDate, long consumerId, string areInSalesForce, string planId)
         {
+            planId = planId.TrimEnd(',');
             //get assessment areas
             string assessmentAreas = adg.getAssessmentAreas(token);
             AssessmentAreas[] assessmentAreasObj = js.Deserialize<AssessmentAreas[]>(assessmentAreas);
@@ -220,12 +217,20 @@ namespace Anywhere.service.Data
             return vendorObj;
         }
 
+        public ActiveVendors[] getAllActiveVendors(string token)
+        {
+            string vendorString = adg.getAllActiveVendors(token);
+            ActiveVendors[] vendorObj = js.Deserialize<ActiveVendors[]>(vendorString);
+
+            return vendorObj;
+        }
+
         public class ServiceAndsSupportData
         {
             public AssessmentAreas[] assessmentAreas { get; set; }
             public ServiceVendors[] serviceVendors { get; set; }
             public ServiceTypesOther[] serviceTypesOther { get; set; }
-            public FundingSource[] fundingSource { get; set; } 
+            public FundingSource[] fundingSource { get; set; }
             public ConsumerRelationships[] relationships { get; set; }
         }
 
@@ -239,6 +244,13 @@ namespace Anywhere.service.Data
         {
             public string vendorId { get; set; }
             public string vendorName { get; set; }
+        }
+
+        public class ActiveVendors
+        {
+            public string vendorId { get; set; }
+            public string vendorName { get; set; }
+            public string vendorAddress { get; set; }
         }
 
         public class ServiceTypesOther

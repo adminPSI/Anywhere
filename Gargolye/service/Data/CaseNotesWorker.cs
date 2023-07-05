@@ -1,9 +1,6 @@
 ﻿using Anywhere.Data;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -14,9 +11,9 @@ namespace Anywhere.service.Data
         JavaScriptSerializer js = new JavaScriptSerializer();
         CaseNoteFilterWorker cnfw = new CaseNoteFilterWorker();
 
-        public string addCaseNoteAttachment(string token, string caseNoteId, string description, string attachmentType, string attachment )
+        public string addCaseNoteAttachment(string token, string caseNoteId, string description, string attachmentType, string attachment)
         {
-            return dg.addCaseNoteAttachment(token, caseNoteId, description, attachmentType, attachment);             
+            return dg.addCaseNoteAttachment(token, caseNoteId, description, attachmentType, attachment);
         }
 
         public ConsumersThatCanHaveMileage[] getConsumersThatCanHaveMileageJSON(string token)
@@ -45,7 +42,8 @@ namespace Anywhere.service.Data
             //    billingCode, reviewStatus, location, service, need, contact, confidential, billed, attachments, noteText);
             js.MaxJsonLength = Int32.MaxValue;
             CaseNotesFilteredSearch[] filteredObj = js.Deserialize<CaseNotesFilteredSearch[]>(filteredString);
-            if(overlaps == "Y"){
+            if (overlaps == "Y")
+            {
                 List<string> overlappingIds = new List<string>();
                 foreach (CaseNotesFilteredSearch caseNote in filteredObj)
                 {
@@ -57,12 +55,12 @@ namespace Anywhere.service.Data
                         overlappingIds.Add(caseNote.casenoteid.ToString());
                     }
                 }
-                if(filteredObj.Length > 0)
+                if (filteredObj.Length > 0)
                 {
                     filteredObj[0].overlaps = overlappingIds;
                 }
-                
-            }            
+
+            }
             //CaseNotesFilteredSearch[] filteredObj = JsonConvert.DeserializeObject<CaseNotesFilteredSearch[]>(filteredString);
             return filteredObj;
         }
@@ -179,7 +177,7 @@ namespace Anywhere.service.Data
         {
             public string billerId { get; set; }
             public string billerName { get; set; }
-        }        
+        }
 
         public class CaseNotesFilteredSearch
         {
@@ -202,7 +200,7 @@ namespace Anywhere.service.Data
             public string attachcount { get; set; }
 
             public List<string> overlaps { get; set; }
-        }        
+        }
 
         public class ConsumerSpecificVendors
         {
@@ -233,6 +231,8 @@ namespace Anywhere.service.Data
             public string credit { get; set; }
             public string originaluserid { get; set; }
             public string batched { get; set; }
+
+            public string originaluserfullname { get; set; }
             public string casemanagerid { get; set; }
             public string totalmiles { get; set; }
             public string traveltime { get; set; }
@@ -260,7 +260,7 @@ namespace Anywhere.service.Data
 
         }
 
-        
+
 
     }
 }

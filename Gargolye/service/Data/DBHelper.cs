@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Data.Common;
-using System.Configuration;
 
 public enum Providers : int
 {
@@ -567,7 +567,7 @@ public partial class DbHelper
             oDataAdapter = null;
         }
     }
-    
+
     /// <summary>
     /// <para>Executes the <paramref name="commandText"/> as part of the given <paramref name="transaction" /> and returns the results in a new <see cref="DataSet"/>.</para>
     /// </summary>

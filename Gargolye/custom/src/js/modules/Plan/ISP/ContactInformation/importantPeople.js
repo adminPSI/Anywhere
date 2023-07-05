@@ -7,6 +7,9 @@ const isp_ci_importantPeople = (() => {
   let relationshipInput;
   let addressInput;
   let phoneInput;
+  let phoneInput2;
+  let phoneExt;
+  let phone2Ext;
   let emailInput;
   let typeDropdown;
   let saveBtn;
@@ -138,13 +141,7 @@ const isp_ci_importantPeople = (() => {
     } else {
       phoneInput.classList.remove('error');
     }
-    // EMAIL
-    emailInput.querySelector('input').value = opts.email;
-    if (opts.email === '') {
-      emailInput.classList.add('error');
-    } else {
-      emailInput.classList.remove('error');
-    }
+    
     checkForErrors();
   }
 
@@ -163,6 +160,11 @@ const isp_ci_importantPeople = (() => {
       const phoneVal = contactInformation.formatPhone(
         document.getElementById('isp-ciip-phoneInput').value,
       ).val;
+      const phoneVal2 = contactInformation.formatPhone(
+        document.getElementById('isp-ciip-phoneInput2').value,
+      ).val;
+      const extVal = document.getElementById('isp-ciip-extinput').value;
+      const extVal2 = document.getElementById('isp-ciip-extinput2').value;
       const emailVal = document.getElementById('isp-ciip-emailInput').value;
 
       if (isNew) {
@@ -176,6 +178,9 @@ const isp_ci_importantPeople = (() => {
           relationship: relationshipVal,
           address: addressVal,
           phone: phoneVal,
+          phone2: phoneVal2,
+          phoneExt: extVal,
+          phone2Ext: extVal2,
           email: emailVal,
         };
         const importantPersonId = await contactInformationAjax.insertPlanContactImportantPeople(
@@ -206,6 +211,9 @@ const isp_ci_importantPeople = (() => {
           relationship: UTIL.removeUnsavableNoteText(relationshipVal),
           address: UTIL.removeUnsavableNoteText(addressVal),
           phone: UTIL.removeUnsavableNoteText(phoneVal),
+          phone2: UTIL.removeUnsavableNoteText(phoneVal2),
+          phoneExt: extVal,
+          phone2Ext: extVal2,
           email: emailVal,
         };
         await contactInformationAjax.updatePlanContactImportantPeople(data);
@@ -304,14 +312,6 @@ const isp_ci_importantPeople = (() => {
     });
     if (popupData.name === '') nameInput.classList.add('error');
 
-    // relationshipInput = input.build({
-    //   label: 'Relationship',
-    //   value: popupData.relationship,
-    //   id: `isp-ciip-relationshipInput`,
-    //   readonly: readOnly,
-    // });
-    // if (popupData.relationship === '') relationshipInput.classList.add('error');
-
     addressInput = input.build({
       label: 'Address',
       value: popupData.address,
@@ -336,6 +336,37 @@ const isp_ci_importantPeople = (() => {
     });
     if (popupData.phone === '') phoneInput.classList.add('error');
 
+    phoneInput2 = input.build({
+      label: 'Phone 2',
+      value: UTIL.formatPhoneNumber(popupData.phone2),
+      id: `isp-ciip-phoneInput2`,
+      readonly: readOnly,
+      type: 'tel',
+      attributes: [
+        { key: 'maxlength', value: '12' },
+        { key: 'pattern', value: '[0-9]{3}-[0-9]{3}-[0-9]{4}' },
+        { key: 'placeholder', value: '888-888-8888' },
+      ],
+    });
+
+    phoneExt = input.build({
+      label: 'Ext.',
+      value: popupData.phoneExt,
+      readonly: readOnly,
+      type: 'number',
+      id: 'isp-ciip-extinput',
+      attributes: [{ key: 'maxlength', value: '5' }],
+    });
+
+    phone2Ext = input.build({
+      label: 'Ext.',
+      value: popupData.phone2Ext,
+      readonly: readOnly,
+      type: 'number',
+      id: 'isp-ciip-extinput2',
+      attributes: [{ key: 'maxlength', value: '5' }],
+    });
+
     emailInput = input.build({
       label: 'Email',
       value: popupData.email,
@@ -343,8 +374,18 @@ const isp_ci_importantPeople = (() => {
       readonly: readOnly,
       type: 'email',
     });
-    if (popupData.email === '') emailInput.classList.add('error');
 
+    // Wrap up Phones w/Ext.
+    const phoneWrap = document.createElement('div');
+    const phoneWrap2 = document.createElement('div');
+    phoneWrap.classList.add('phoneWrap');
+    phoneWrap2.classList.add('phoneWrap');
+    phoneWrap.appendChild(phoneInput);
+    phoneWrap.appendChild(phoneExt);
+    phoneWrap2.appendChild(phoneInput2);
+    phoneWrap2.appendChild(phone2Ext);
+
+    // Action Buttons
     saveBtn = button.build({
       text: 'save',
       style: 'secondary',
@@ -410,7 +451,8 @@ const isp_ci_importantPeople = (() => {
     // popup.appendChild(relationshipInput);
     popup.appendChild(addressInput);
     popup.appendChild(emailInput);
-    popup.appendChild(phoneInput);
+    popup.appendChild(phoneWrap);
+    popup.appendChild(phoneWrap2);
     popup.appendChild(btnWrap);
     if (!isNew && !readOnly) popup.appendChild(btnWrap2);
 
@@ -432,6 +474,36 @@ const isp_ci_importantPeople = (() => {
       }
       checkForErrors();
     });
+
+    phoneInput2.addEventListener('input', event => {
+      if (event.target.value !== '' && contactInformation.validatePhone(event.target.value)) {
+        const phnDisp = contactInformation.formatPhone(event.target.value).disp;
+        event.target.value = phnDisp;
+      }
+
+      if (event.target.value === '' || contactInformation.validatePhone(event.target.value)) {
+        phoneInput2.classList.remove('error');
+      } else {
+        phoneInput2.classList.add('error');
+      }
+
+      checkForErrors();
+    });
+
+    phoneExt.addEventListener('input', event => {
+      if (event.target.value.length > 5) {
+        const value = event.target.value;
+        const slicedValue = value.slice(0, 5);
+        event.target.value = slicedValue;
+      }
+    });
+    phone2Ext.addEventListener('input', event => {
+      if (event.target.value.length > 5) {
+        const value = event.target.value;
+        const slicedValue = value.slice(0, 5);
+        event.target.value = slicedValue;
+      }
+    });
     typeDropdown.addEventListener('change', event => {
       if (event.target.value === '') {
         typeDropdown.classList.add('error');
@@ -448,14 +520,6 @@ const isp_ci_importantPeople = (() => {
       }
       checkForErrors();
     });
-    // relationshipInput.addEventListener('input', event => {
-    //   if (event.target.value === '') {
-    //     relationshipInput.classList.add('error');
-    //   } else {
-    //     relationshipInput.classList.remove('error');
-    //   }
-    //   checkForErrors();
-    // });
     addressInput.addEventListener('input', event => {
       if (event.target.value === '') {
         addressInput.classList.add('error');
@@ -465,14 +529,6 @@ const isp_ci_importantPeople = (() => {
       checkForErrors();
     });
 
-    emailInput.addEventListener('input', event => {
-      if (event.target.value === '') {
-        emailInput.classList.add('error');
-      } else {
-        emailInput.classList.remove('error');
-      }
-      checkForErrors();
-    });
   }
 
   function checkForErrors() {

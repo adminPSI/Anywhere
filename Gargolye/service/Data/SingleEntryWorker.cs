@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -12,7 +11,42 @@ namespace Anywhere.service.Data
         DataGetter dg = new DataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
-        public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
+        public ConsumerAndLocation[] getSelectedConsumerLocations(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
+        {
+            
+            List<string> consumerIdList = new List<string>();
+            List<string> locationIdList = new List<string>();
+            int consumerCount = 0;
+            string locIdString = dg.getConsumerLocationForSingleEntry(token, dateOfService, consumerId);
+            ConsumerAndLocation[] consumerAndLocations = js.Deserialize<ConsumerAndLocation[]>(locIdString);
+            for (int i = 0; i < consumerAndLocations.GetLength(0); i++)
+            {
+                consumerIdList.Add(consumerAndLocations[i].consumerId.ToString());
+                locationIdList.Add(consumerAndLocations[i].locationId.ToString());
+            }
+
+            //var duplicateConsumerLocations = consumerAndLocations
+            //.GroupBy(x => x.consumerName) // items with same shorName are grouped to gether
+            // .Where(x => x.Count() > 1) // filter groups where they have more than one memeber
+            //.Select(x => x.Key) // select shortName from these groups
+            //.ToList(); // convert it to a list
+
+            if (consumerIdList.Count != consumerIdList.Distinct().Count())
+            {
+                //If there is more than one loction for any of the selected consumers, send the list of all selected consumers/locations for "location overlap processing"
+                return consumerAndLocations;
+            } else
+            {
+                // if no overlap locations for any consumers, send back an empty list of consumers/locations to indicate no "location overlap processing" required 
+                ConsumerAndLocation[] emptyconsumerAndLocations = new ConsumerAndLocation[0];
+                return emptyconsumerAndLocations;
+
+            }
+                
+        }
+
+
+            public ConsumerAndLocation[] preInsertSingleEntry(string token, string userId, string updaterId, string personId, string dateOfService, string locationId, string workCodeID, string startTime, string endTime, string checkHours, string consumerId, string transportationUnits, string transportationReimbursable, string numberOfConsumersPresent, string inComments, string odometerStart, string odometerEnd, string destination, string reason, string latitude, string longitude, string endLatitude, string endLongitude, string deviceType, string evvReason, string attest, string licensePlateNumber, string community)
         {
             List<string> consumerIdList = new List<string>();
             List<string> locationIdList = new List<string>();
@@ -73,6 +107,11 @@ namespace Anywhere.service.Data
         public string singleEntrySaveSignatureAndNote(string token, string singleEntryId, string consumerId, string note, string signatureImage)
         {
             return dg.singleEntrySaveSignatureAndNote(token, singleEntryId, consumerId, note, signatureImage);
+        }
+
+        public string insertConsumerforSavedSingleEntry(string token, string singleEntryId, string consumerId, string deviceType, string evvReason)
+        {
+            return dg.insertConsumerforSavedSingleEntry(token, singleEntryId, consumerId, deviceType, evvReason);
         }
 
         public SignatureAndNote[] getSpecificConsumerSignatureAndNote(string token, string singleEntryId, string consumerId)
@@ -175,9 +214,13 @@ namespace Anywhere.service.Data
         }
 
         //Gets SE work codes
-        public WorkCodes[] getWorkCodesJSON(string token)
+        public WorkCodes[] getWorkCodesJSON(string token, string getAllWorkCodes)
         {
-            string workCodesString = dg.getWorkCodesJSON(token);
+            if (getAllWorkCodes != "Y")
+            {
+                getAllWorkCodes = "N";
+            }
+            string workCodesString = dg.getWorkCodesJSON(token, getAllWorkCodes);
             WorkCodes[] workCodesObj = js.Deserialize<WorkCodes[]>(workCodesString);
             return workCodesObj;
         }
@@ -202,7 +245,7 @@ namespace Anywhere.service.Data
             SingleEntryByDate[] seByDateObj = js.Deserialize<SingleEntryByDate[]>(seByDateString);
             return seByDateObj;
         }
-                                 
+
         public SingleEntryById[] getSingleEntryByIdJSON(string token, string singleEntryId)
         {
             string seByIdString = dg.getSingleEntryByIdJSON(token, singleEntryId);
@@ -252,6 +295,35 @@ namespace Anywhere.service.Data
             return consumersPresentObj;
         }
 
+        public string adminUpdateSingleEntryStatus(string token, string singleEntryIdString, string newStatus, string userID, string rejectionReason)
+        {
+            // Update the AA_Single_Entry table
+            dg.adminUpdateSingleEntryStatus(token, singleEntryIdString, newStatus, userID, rejectionReason);
+
+            // If string has more than one id, the string will be split into an array containing each id
+            string[] singleEntryIdArr = singleEntryIdString.Split(',');
+            char newStatusRejected = 'R';
+
+            // Looks for rejection status and sends out notification 
+            if (newStatus == newStatusRejected.ToString())
+            {
+                foreach (var singleEntryId in singleEntryIdArr)
+                {
+                    try
+                    {
+                        // Converts the id into a double to be used in procedure
+                        double singleEntryIdDouble = double.Parse(singleEntryId);
+                        dg.timeEntryRejectionNotification(token, singleEntryId);
+                    }
+                    catch (Exception ex)
+                    {
+                        return "failed";
+                    }
+                }
+            }
+            return "success";
+        }
+
         public SingleEntryEvvReasonCodes[] getSingleEntryEvvReasonCodesJSON(string token)
         {
             string evvReasonCodeString = dg.getSingleEntryEVVReasonCodeJSON(token);
@@ -280,19 +352,19 @@ namespace Anywhere.service.Data
         }
 
         public LocationsAndResidences[] getLocationsAndResidencesJSON(string token)
-    {
-      string locationsAndResidencesString = dg.getLocationsAndResidencesJSON(token);
-      LocationsAndResidences[] locationsAndResidencesObj = js.Deserialize<LocationsAndResidences[]>(locationsAndResidencesString);
-      return locationsAndResidencesObj;
-    }
+        {
+            string locationsAndResidencesString = dg.getLocationsAndResidencesJSON(token);
+            LocationsAndResidences[] locationsAndResidencesObj = js.Deserialize<LocationsAndResidences[]>(locationsAndResidencesString);
+            return locationsAndResidencesObj;
+        }
 
-    public class LocationsAndResidences
-    {
-      public string locationId { get; set; }
-      public string residence { get; set; }
-    }
+        public class LocationsAndResidences
+        {
+            public string locationId { get; set; }
+            public string residence { get; set; }
+        }
 
-    public class RequiredSingleEntryFields
+        public class RequiredSingleEntryFields
         {
             public string destinationrequired { get; set; }
             public string noterequired { get; set; }
@@ -302,7 +374,7 @@ namespace Anywhere.service.Data
             public string reconfigimportfile { get; set; }
             public string use5characterworkcode { get; set; }
             public string licenseplaterequired { get; set; }
-        }        
+        }
 
         public class WorkCodes
         {
@@ -311,7 +383,7 @@ namespace Anywhere.service.Data
             public string billable { get; set; }
             public string keyTimes { get; set; }
             public string serviceType { get; set; }
-        }        
+        }
 
         public class SingleEntryLocations
         {
@@ -325,7 +397,7 @@ namespace Anywhere.service.Data
         public class SingleEntryUsersByLocation
         {
             public string consumer_id { get; set; }
-        }        
+        }
 
         public class SingleEntryByDate
         {
@@ -346,7 +418,13 @@ namespace Anywhere.service.Data
             public string Transportation_Units { get; set; }
             public string Number_Consumers_Present { get; set; }
             public string destination { get; set; }
-        }        
+            public string approvedUser { get; set; }
+            public string rejectedUser { get; set; }
+            public string submittedUser { get; set; }
+            public string approved_time { get; set; }
+            public string submit_date { get; set; }
+            public string rejected_time { get; set; }
+        }
 
         public class SingleEntryById
         {
@@ -379,6 +457,13 @@ namespace Anywhere.service.Data
             public string licensePlateNumber { get; set; }
             public string community { get; set; }
             public string rejectionReason { get; set; }
+            public string approvedUser { get; set; }
+            public string rejectedUser { get; set; }
+            public string submittedUser { get; set; }
+            public string approved_time { get; set; }
+            public string submit_date { get; set; }
+            public string rejected_time { get; set; }
+            public string supervisorId { get; set; }
         }
 
         public class SEFilteredListResults
@@ -401,35 +486,38 @@ namespace Anywhere.service.Data
             public string workCodeId { get; set; }
             public string firstname { get; set; }
             public string lastname { get; set; }
+            public string userId { get; set; }
+            public string peopleId { get; set; }
             public string latitude { get; set; }
             public string longitude { get; set; }
             public string approvedUser { get; set; }
             public string rejectedUser { get; set; }
             public string submittedUser { get; set; }
-        }        
+            public string keyTimes { get; set; }
+        }
 
         public class AdminSELocations
         {
             public string locationID { get; set; }
             public string shortDescription { get; set; }
-        }        
+        }
 
         public class SingleEntrySupervisors
         {
             public string person_id { get; set; }
             public string first_name { get; set; }
             public string last_name { get; set; }
-        }        
+        }
 
         public class SingleEntryUsersWC
         {
             public string consumer_id { get; set; }
-        }        
+        }
 
         public class seOverlapCheck
         {
             public string single_entry_id { get; set; }
-        }        
+        }
 
         public class SingleEntryConsumersPresent
         {

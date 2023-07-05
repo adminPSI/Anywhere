@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Net;
-using System.Xml;
-using System.Web.Script.Serialization;
-using System.Web.Configuration;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Web.Configuration;
+using System.Web.Script.Serialization;
+using System.Xml;
 namespace Anywhere.Data
 {
     public class IntelliviewDataGetter

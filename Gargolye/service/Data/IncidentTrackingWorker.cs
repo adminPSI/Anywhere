@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Automation.Runspaces;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -14,7 +14,7 @@ namespace Anywhere.service.Data
         JavaScriptSerializer js = new JavaScriptSerializer();
 
         public InvolvementTypeData[] GetITInvolvementTypeData(string token)
-        {            
+        {
             string involvementTypeDataString = dg.getITInvolvementTypeData(token);
             InvolvementTypeData[] involvementTypeData = js.Deserialize<InvolvementTypeData[]>(involvementTypeDataString);
             return involvementTypeData;
@@ -113,7 +113,7 @@ namespace Anywhere.service.Data
         }
 
         //Save incident
-        public List<string> SaveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate,
+        public List<string> SaveUpdateITIncident(string token, string incidentTypeId, string incidentDate, string incidentTime, string reportedDate, string incidentTypeDesc,
                                     string reportedTime, string subcategoryId, string locationDetailId, string serviceLocation, string summary, string note, string prevention, string contributingFactor,//end of main table data
                                     string consumerIdString, string includeInCount, string involvementId, string consumerIncidentLocationIdString, string consumerInvolvedIdString, //end of consumers
                                     string employeeIdString, string notifyEmployeeString, string employeeInvolvementIdString, //end of employees
@@ -130,32 +130,32 @@ namespace Anywhere.service.Data
                 //Save initial incident
                 string incidentIdS = dg.saveUpdateIncidentTrackingITDetails(token, incidentTypeId, incidentDate, incidentTime, reportedDate, reportedTime, subcategoryId, locationDetailId, summary, note, prevention, contributingFactor, updateIncidentId, saveUpdate);
                 string incidentId = Regex.Replace(incidentIdS, "[^0-9]", "");
-                consumerIdAndInvolvedId = saveUpdateITConsumersInvolved(token, consumerIdString, incidentId, includeInCount, involvementId, consumerIncidentLocationIdString, consumerInvolvedIdString,"Save");
+                consumerIdAndInvolvedId = saveUpdateITConsumersInvolved(token, consumerIdString, incidentId, includeInCount, involvementId, consumerIncidentLocationIdString, consumerInvolvedIdString, "Save");
                 ret = saveUpdateITEmployeesInvolved(token, incidentId, employeeIdString, notifyEmployeeString, employeeInvolvementIdString);
                 ret = saveUpdateITOthersInvolved(token, incidentId, othersInvolvedNameString, othersInvolvedCompanyString, othersInvolvedAddress1String, othersInvolvedAddress2String,
                 othersInvolvedCityString, othersInvolvedStateString, othersInvolvedZipCodeString, othersInvolvedPhoneString, othersInvolvedInvolvementTypeIdString);
-                if(notifyS.Equals("Y"))
+                if (notifyS.Equals("Y"))
                 {
-                    autoNotifySupervisors(token, incidentDate, "Insert", consumerIncidentLocationIdString, employeeIdString, notifyEmployeeString);
+                    autoNotifySupervisors(token, incidentDate, "Insert", consumerIncidentLocationIdString, employeeIdString, notifyEmployeeString, incidentTime, subcategoryId, incidentTypeDesc);
                 }
             }
             else
             {
                 ret = dg.saveUpdateIncidentTrackingITDetails(token, incidentTypeId, incidentDate, incidentTime, reportedDate, reportedTime, subcategoryId, locationDetailId, summary, note, prevention, contributingFactor, updateIncidentId, saveUpdate);
-                ret1 = saveUpdateITConsumersInvolved(token, consumerIdString, updateIncidentId, includeInCount, involvementId, consumerIncidentLocationIdString, consumerInvolvedIdString,"Update");
+                ret1 = saveUpdateITConsumersInvolved(token, consumerIdString, updateIncidentId, includeInCount, involvementId, consumerIncidentLocationIdString, consumerInvolvedIdString, "Update");
                 ret = saveUpdateITEmployeesInvolved(token, updateIncidentId, employeeIdString, notifyEmployeeString, employeeInvolvementIdString);
                 ret = saveUpdateITOthersInvolved(token, updateIncidentId, othersInvolvedNameString, othersInvolvedCompanyString, othersInvolvedAddress1String, othersInvolvedAddress2String,
                                                 othersInvolvedCityString, othersInvolvedStateString, othersInvolvedZipCodeString, othersInvolvedPhoneString, othersInvolvedInvolvementTypeIdString);
                 if (notifyS.Equals("Y"))
                 {
-                    autoNotifySupervisors(token, incidentDate, "Update", consumerIncidentLocationIdString, employeeIdString, notifyEmployeeString);
+                    autoNotifySupervisors(token, incidentDate, "Update", consumerIncidentLocationIdString, employeeIdString, notifyEmployeeString, incidentTime, subcategoryId, incidentTypeDesc);
                 }
             }
-
             return consumerIdAndInvolvedId;
         }
 
-        public void autoNotifySupervisors(string token, string incidentDate, string saveUpdate, string locationIdString, string employeeIdString, string notifyEmployeeString)
+        public void autoNotifySupervisors(string token, string incidentDate, string saveUpdate, string locationIdString, string employeeIdString, string notifyEmployeeString,
+                                            string incidentTime, string subcategoryId, string incidentTypeDesc)
         {
             string supervisorIds = "";
             string[] locationIds = locationIdString.Split('|');
@@ -169,13 +169,13 @@ namespace Anywhere.service.Data
             var i = 0;
             foreach (var empId in employeeIds)
             {
-                if(notifyEmployeeChars[i] == "N")
+                if (notifyEmployeeChars[i] == "N")
                 {
                     dontNotify.Add(empId);
                 }
             }
-            SupervisorIdList[] ids = js.Deserialize<SupervisorIdList[]>(supervisorIds);            
-            foreach(var id in ids.Distinct())
+            SupervisorIdList[] ids = js.Deserialize<SupervisorIdList[]>(supervisorIds);
+            foreach (var id in ids.Distinct())
             {
                 if (dontNotify.Contains(id.employeeId.ToString()))
                 {
@@ -183,8 +183,8 @@ namespace Anywhere.service.Data
                 }
                 else
                 {
-                    dg.sendITNotification(token, saveUpdate, id.employeeId.ToString());
-                }                
+                    dg.sendITNotification(token, saveUpdate, id.employeeId.ToString(), incidentTypeDesc, incidentDate, incidentTime, subcategoryId);
+                }
             }
         }
 
@@ -198,7 +198,7 @@ namespace Anywhere.service.Data
             string[] involveId = involvementId.Split('|');
             string run = "first";
             int i = 0;
-            string consumerInvolvedId = ""; 
+            string consumerInvolvedId = "";
             foreach (string consumerId in consumerIds)
             {
                 consumerInvolvedId = dg.saveUpdateITConsumersInvolved(token, consumerId, incidentId, includeCount[i], involveId[i], consumerIncidentLocationIds[i], run, consumerInvolvedIds[i], saveOrUpdate, consumerIdString);
@@ -240,7 +240,7 @@ namespace Anywhere.service.Data
                 if (othersInvolvedZips[i] == "1ZXY2") { othersZip = null; } else { othersZip = othersInvolvedZips[i]; }
                 if (othersInvolvedPhones[i] == "1ZXY2") { othersPhone = null; } else { othersPhone = othersInvolvedPhones[i]; }
                 if (othersInvolvedInvolvementTypeIds[i] == "1ZXY2") { othersInvolvementTyId = null; } else { othersInvolvementTyId = othersInvolvedInvolvementTypeIds[i]; }
-                if(othersInvolvementTyId == "%") { othersInvolvementTyId = ""; }
+                if (othersInvolvementTyId == "%") { othersInvolvementTyId = ""; }
                 dg.saveUpdateITOthersInvolved(token, incidentId, othersName, othersCompany, otherAddress1, otherAddress2, othersCity, othersState, othersZip, othersPhone, othersInvolvementTyId, run);
                 run = "";
                 i++;
@@ -264,9 +264,9 @@ namespace Anywhere.service.Data
             return "Success";
         }
 
-        public string SendITNotification(string token, string notificationType, string employeeId)
+        public string SendITNotification(string token, string notificationType, string employeeId, string incidentTypeDesc, string incidentDate, string incidentTime, string subcategoryId)
         {
-            dg.sendITNotification(token, notificationType, employeeId);
+            dg.sendITNotification(token, notificationType, employeeId, incidentTypeDesc, incidentDate, incidentTime, subcategoryId);
             return "success";
         }
 
@@ -331,6 +331,13 @@ namespace Anywhere.service.Data
             return consumerFollowUpsData;
         }
 
+        public ConsumerBehaviors[] getitConsumerBehaviors(string token, string consumerId, string incidentId)
+        {
+            string consumerBehaviorsString = dg.getitConsumerBehaviors(token, consumerId, incidentId);
+            ConsumerBehaviors[] consumerBehaviorsData = js.Deserialize<ConsumerBehaviors[]>(consumerBehaviorsString);
+            return consumerBehaviorsData;
+        }
+
         public ConsumerReporting[] getitConsumerReporting(string token, string consumerId, string incidentId)
         {
             string consumerReportingString = dg.getitConsumerReporting(token, consumerId, incidentId);
@@ -343,6 +350,13 @@ namespace Anywhere.service.Data
             string followUpTypesString = dg.getitConsumerFollowUpTypes(token);
             ConsumerFollowUpTypes[] followUpTypesData = js.Deserialize<ConsumerFollowUpTypes[]>(followUpTypesString);
             return followUpTypesData;
+        }
+
+        public ConsumerBehaviorTypes[] getitConsumerBehaviorTypes(string token)
+        {
+            string behaviorTypesString = dg.getitConsumerBehaviorTypes(token);
+            ConsumerBehaviorTypes[] behaviorTypesData = js.Deserialize<ConsumerBehaviorTypes[]>(behaviorTypesString);
+            return behaviorTypesData;
         }
 
         public ReportingCategories[] getitReportingCategories(string token)
@@ -363,9 +377,28 @@ namespace Anywhere.service.Data
                                                     List<String> dueDateArray, List<String> completedDateArray, List<String> notesArray)
         {
             int i = 0;
-             foreach (string followUpTypeId in followUpTypeIdArray)
+            foreach (string followUpTypeId in followUpTypeIdArray)
             {
                 dg.saveUpdateITConsumerFollowUp(token, consumerFollowUpIdArray[i], consumerInvolvedId, followUpTypeId, personResponsibleArray[i], dueDateArray[i], completedDateArray[i], notesArray[i]);
+                i++;
+            }
+            return "Success";
+        }
+
+        //Consumer Behavior Alter Specific Calls
+        public string itDeleteConsumerBehavior(string token, string itConsumerBehaviorId)
+        {
+            dg.itDeleteConsumerBehavior(token, itConsumerBehaviorId);
+            return "success";
+        }
+
+        public string saveUpdateITConsumerBehavior(string token, List<String> consumerBehaviorIdArray, string consumerInvolvedId, List<String> behaviorTypeIdArray, List<String> startTimeArray,
+                                                    List<String> endTimeArray, List<String> occurrencesArray)
+        {
+            int i = 0;
+            foreach (string behaviorTypeId in behaviorTypeIdArray)
+            {
+                dg.saveUpdateITConsumerBehavior(token, consumerBehaviorIdArray[i], consumerInvolvedId, behaviorTypeId, startTimeArray[i], endTimeArray[i], occurrencesArray[i]);
                 i++;
             }
             return "Success";
@@ -379,7 +412,7 @@ namespace Anywhere.service.Data
         }
 
         public string saveUpdateITConsumerReporting(string token, List<String> consumerReportIdArray, string consumerInvolvedId, List<String> reportDateArray, List<String> reportTimeArray,
-                                                            List<String> reportingCategoryIdArray, List<String> reportToArray, List<String> reportByArray, 
+                                                            List<String> reportingCategoryIdArray, List<String> reportToArray, List<String> reportByArray,
                                                             List<String> reportMethodArray, List<String> notesArray)
         {
             int i = 0;
@@ -399,7 +432,7 @@ namespace Anywhere.service.Data
             return "success";
         }
 
-        public string saveUpdateITConsumerReviews(string token, List<String> itConsumerReviewIdArray, string consumerInvolvedId, List<String> reviewedByArray, List<String> reviewedDateArray,List<String> noteArray)
+        public string saveUpdateITConsumerReviews(string token, List<String> itConsumerReviewIdArray, string consumerInvolvedId, List<String> reviewedByArray, List<String> reviewedDateArray, List<String> noteArray)
         {
             int i = 0;
             foreach (string reviewedDate in reviewedDateArray)
@@ -450,6 +483,36 @@ namespace Anywhere.service.Data
             return "success";
         }
 
+        // NEW - Incident Tracking Update Incident View By User
+        public string updateIncidentViewByUser(string token, string incidentId, string userId)
+        {
+            dg.updateIncidentViewByUser(token, incidentId, userId);
+            return "success";
+        }
+
+        public ReportScheduleId[] generateIncidentTrackingReport(string token, string incidentId)
+        {
+            string category = "Incident Tracking";
+            string title = "Incidents [Composite] by Consumer, Date";
+            string reportServerList = "Primary";
+            string result = "";
+
+            result = dg.generateIncidentTrackingReport(token, category, title, reportServerList, incidentId);
+
+            ReportScheduleId[] reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+            return reportScheduleId;
+        }
+
+        public string checkIfITReportExists(string token, string reportScheduleId)
+        {
+            return dg.checkIfITReportExists(token, reportScheduleId);
+        }
+
+        public string sendIncidentTrackingReport(string token, string reportScheduleId, string toAddresses, string ccAddresses, string bccAddresses, string emailSubject, string emailBody)
+        {
+            return dg.sendIncidentTrackingReport(token, reportScheduleId, toAddresses, ccAddresses, bccAddresses, emailSubject, emailBody);
+        }
+
         public class ReportingCategories
         {
             public string itReportingCategoryId { get; set; }
@@ -460,6 +523,12 @@ namespace Anywhere.service.Data
         {
             public string itFollowUpTypeId { get; set; }
             public string followUpTypeName { get; set; }
+        }
+
+        public class ConsumerBehaviorTypes
+        {
+            public string itBehaviorTypeId { get; set; }
+            public string behaviorTypeName { get; set; }
         }
 
         public class ConsumerReporting
@@ -486,6 +555,17 @@ namespace Anywhere.service.Data
             public string lastUpdatedBy { get; set; }
             public string lastUpdatedOn { get; set; }
             public string notes { get; set; }
+        }
+
+        public class ConsumerBehaviors
+        {
+            public string itConsumerBehaviorId { get; set; }
+            public string behaviorTypeId { get; set; }
+            public string startTime { get; set; }
+            public string endTime { get; set; }
+            public string occurrences { get; set; }
+            public string lastUpdatedBy { get; set; }
+            public string lastUpdatedOn { get; set; }
         }
 
         public class ConsumerReviews
@@ -553,26 +633,26 @@ namespace Anywhere.service.Data
             public string involvementId { get; set; }
             public string description { get; set; }
         }
-        
+
         public class IncidentCategories
         {
             public string incidentCategory { get; set; }
             public string categoryId { get; set; }
             public string subcategoryId { get; set; }
         }
-        
+
         public class IncidentLocationDetail
         {
             public string itLocationId { get; set; }
             public string description { get; set; }
         }
-        
+
         public class IncidentTrackingConsumerServiceLocations
-        {            
+        {
             public string description { get; set; }
             public string locationId { get; set; }
         }
-        
+
         public class IncidentWidgetData
         {
             public string incidentId { get; set; }
@@ -580,8 +660,11 @@ namespace Anywhere.service.Data
             public string consumerName { get; set; }
             public string incidentCategory { get; set; }
             public string incidentDate { get; set; }
+            public string viewedOn { get; set; }
+            public string originallyEnteredBy { get; set; }
+            public string viewedBy { get; set; }
         }
-        
+
         public class IncidentTrackingReviewTableData
         {
             public string incidentId { get; set; }
@@ -594,14 +677,17 @@ namespace Anywhere.service.Data
             public string supervisorName { get; set; }
             public string supervisorId { get; set; }
             public string includeInCount { get; set; }
-            public string incidentTime { get; set; }            
+            public string incidentTime { get; set; }
+            public string viewedOn { get; set; }
+            public string originallyEnteredBy { get; set; }
+            public string viewedBy { get; set; }
         }
-        
+
         public class IncidentTrackingReviewLocations
         {
             public string ID { get; set; }
             public string Name { get; set; }
-            public string Residence{ get; set; }
+            public string Residence { get; set; }
         }
 
 
@@ -611,12 +697,12 @@ namespace Anywhere.service.Data
             public string Name { get; set; }
             public string Residence { get; set; }
         }
-        
+
         public class EmployeesInvolvedEmployeeDropdown
         {
             public string employeeId { get; set; }
             public string employeeName { get; set; }
-        }        
+        }
 
         public class IncidentEditReviewDataAllObjects
         {
@@ -684,7 +770,12 @@ namespace Anywhere.service.Data
             public string phone { get; set; }
             public string involvementTypeId { get; set; }
             public string involvementDescription { get; set; }
-        }         
-        
+        }
+
+        public class ReportScheduleId
+        {
+            public string reportScheduleId { get; set; }
+        }
+
     }
 }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Anywhere.Data;
+﻿using Anywhere.Data;
 using System.Web.Script.Serialization;
-using System.Text;
-using System.Security.Cryptography;
 
 namespace Anywhere.service.Data
 {
@@ -101,13 +95,14 @@ namespace Anywhere.service.Data
 
         public string updateUserWidgetSettings(string token, string widgetId, string showHide, string widgetConfig)
         {
-            return dg.updateUserWidgetSettings(token, widgetId, showHide,  widgetConfig);
+            return dg.updateUserWidgetSettings(token, widgetId, showHide, widgetConfig);
         }
 
         public string clockInStaff(string token, string locationId, string createTimeEntries)
         {
             string response = dg.clockInStaff(token, locationId);
-            if(response.IndexOf("setTime") != -1){
+            if (response.IndexOf("setTime") != -1)
+            {
                 tcW.dataSetUp(response, "clockIn", locationId);
                 response = "<results></results>";
             }
@@ -125,7 +120,7 @@ namespace Anywhere.service.Data
             return response;
         }
 
-        public class UserWidgetSettings 
+        public class UserWidgetSettings
         {
             public string widgetId { get; set; }
             public string widgetConfig { get; set; }
@@ -163,7 +158,7 @@ namespace Anywhere.service.Data
             public string ID { get; set; }
             public string Name { get; set; }
             public string Residence { get; set; }
-        }        
+        }
 
         public class SingleEntryCountObj
         {
@@ -188,7 +183,7 @@ namespace Anywhere.service.Data
             public string last_name { get; set; }
             public string People_ID { get; set; }
             public string Location_ID { get; set; }
-        }        
+        }
 
         public class StaffActivityObj
         {
@@ -199,17 +194,17 @@ namespace Anywhere.service.Data
             public string Stop_Time { get; set; }
             public string Description { get; set; }
             public string location_code { get; set; }
-        }        
+        }
 
         public class DSClockedInConsumers
         {
-            public string clockedinconsumername { get; set; }            
-        }        
+            public string clockedinconsumername { get; set; }
+        }
 
         public class DSClockedInStaff
         {
             public string staffclockedinname { get; set; }
-        }        
+        }
 
         public class SystemMessagesAndCustomLinks
         {
