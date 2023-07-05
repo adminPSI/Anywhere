@@ -2221,8 +2221,6 @@ const plan = (function () {
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
       const sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
 
-      debugger;
-
       return {
         values: [type, revisionNum, startDate, effectiveStart, reviewDate, sentToDODD],
         attributes: [

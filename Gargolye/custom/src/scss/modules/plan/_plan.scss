@@ -183,7 +183,11 @@ body.planActive {
     }
 
     @media screen and (min-width: 500px) {
-      div:nth-child(5),
+      div:nth-child(5) {
+        display: block;
+      }
+    }
+    @media screen and (min-width: 600px) {
       div:nth-child(6) {
         display: block;
       }
