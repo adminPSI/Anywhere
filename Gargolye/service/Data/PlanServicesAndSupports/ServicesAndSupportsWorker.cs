@@ -143,6 +143,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             string beginDate = "";
             string endDateT = "";
             string endDate = "";
+            int result = 0;
             //Paid supports
             string paidSupportString = dg.getPaidSupports(token, priorPlanId, int.Parse(targetAssessmentVersionId));
             PaidSupports[] paidSupportObj = js.Deserialize<PaidSupports[]>(paidSupportString);
@@ -150,20 +151,27 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             PreviousPlanEnd[] previousEnd = js.Deserialize<PreviousPlanEnd[]>(previousPlanEndString);
             for (int i = 0; i < paidSupportObj.Length; i++)
             {
-                //var bd = DateTime.Parse(paidSupportObj[i].beginDate);
-                var bd = DateTime.Parse(effectiveStart);
-                //beginDate = bd.ToString("yyyy-MM-dd");
-                DateTime oldBeginDate = DateTime.Parse(paidSupportObj[i].beginDate);
-                beginDate = oldBeginDate.ToString("yyyy-MM-dd");
-                var ed = DateTime.Parse(effectiveend);
-                //endDate = ed.ToString("yyyy-MM-dd");
-                DateTime oldEndDate = DateTime.Parse(paidSupportObj[i].endDate);
-                endDate = oldEndDate.ToString("yyyy-MM-dd");
-                var edT = DateTime.Parse(paidSupportObj[i].endDate);
-                endDateT = edT.ToString("yyy-MM-dd");
-                DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
-                DateTime endTestDate = DateTime.Parse(endDateT);
-                int result = DateTime.Compare(endTestDate, previousEndDate);
+                if (revision == "true")
+                {
+                    //var bd = DateTime.Parse(paidSupportObj[i].beginDate);
+                    var bd = DateTime.Parse(effectiveStart);
+                    beginDate = bd.ToString("yyyy-MM-dd");
+                    var ed = DateTime.Parse(effectiveend);
+                    endDate = ed.ToString("yyyy-MM-dd");
+                    var edT = DateTime.Parse(paidSupportObj[i].endDate);
+                    endDateT = edT.ToString("yyy-MM-dd");
+                    DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
+                    DateTime endTestDate = DateTime.Parse(endDateT);
+                    result = DateTime.Compare(endTestDate, previousEndDate);
+                }
+                else
+                {
+                    beginDate = effectiveStart;
+                    endDate = effectiveend;
+                    DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
+                    DateTime endTestDate = DateTime.Parse(endDateT);
+                    result = DateTime.Compare(endTestDate, previousEndDate);
+                }
                 if (result < 0)
                 {
                     //do nothing
