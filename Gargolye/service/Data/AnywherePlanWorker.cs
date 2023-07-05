@@ -79,6 +79,9 @@ namespace Anywhere.service.Data
                 public string planStatus { get; set; }
                 public string createdOn { get; set; }
                 public string reviewDate { get; set; }
+                public string sentToDODD { get; set; }
+                public string userSentDODD { get; set; }
+                public string dateSentDODD { get; set; }
                 public string active { get; set; }
 
             }
@@ -746,7 +749,7 @@ namespace Anywhere.service.Data
                     if (priorConsumerPlanId != null)
                     {
                         pow.carryOverOutcomesToNewPlan(consumerPlanId, priorConsumerPlanId, targetAssessmentVersionId, token);
-                        ssW.carryOverServicesToNewPlan(consumerPlanId, priorConsumerPlanId, effectiveStart, effectiveEnd, targetAssessmentVersionId, token);
+                        ssW.carryOverServicesToNewPlan(consumerPlanId, priorConsumerPlanId, effectiveStart, effectiveEnd, targetAssessmentVersionId, token, revision);
                         pciw.carryOverContactToNewPlan(consumerPlanId, priorConsumerPlanId, token);
                         psw.carryOverTeamMembersToNewPlan(consumerPlanId, priorConsumerPlanId, token);
                         picw.carryOverInformedConsentToNewPlan(consumerPlanId, priorConsumerPlanId, token, revision);
