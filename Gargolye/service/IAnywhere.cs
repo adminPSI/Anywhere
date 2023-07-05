@@ -4403,6 +4403,14 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getJobStandings/")]
         EmploymentWorker.JobStanding[] getJobStandings(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getEmployeeInfoByID/")]
+        EmploymentWorker.EmploymentEntriesByID[] getEmployeeInfoByID(string token, string positionId);
     }
 
 

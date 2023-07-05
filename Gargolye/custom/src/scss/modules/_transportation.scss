@@ -1,5 +1,5 @@
 [data-active-module="transportation"],
-[data-active-module="ConsumerFinances"] {  
+[data-active-module="ConsumerFinances"] {
     //Global Transportation Styles
     .trans_DeleteBtn {
         background: $bg-error;
@@ -7,7 +7,7 @@
         margin-top: 10px;
     }
 
-    .addRouteRadioDiv {  
+    .addRouteRadioDiv {
         :first-child {
             padding-right: 20px;
         }
@@ -557,11 +557,26 @@
 
 [data-active-module="ConsumerFinances"] {
     .checkbox-mtd > span::after {
-        left: -24px;  
+        left: -24px;
     }
 }
+
 [data-active-module="resetPassword"],
 [data-active-module="Employment"] {
+
+    .dropdown {
+        margin: 0px 5px 20px;
+    }
+
+    .employmentDTWrap {
+        display: flex;
+        justify-content: space-between;
+    }
+
+
+    .employmentMsgWrap {
+        display: flex;
+    }
 
     h3 {
         font-size: 1rem;

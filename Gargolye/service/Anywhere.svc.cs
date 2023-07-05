@@ -3248,5 +3248,10 @@ namespace Anywhere
             return emp.getJobStandings(token);
         }
 
+        public EmploymentEntriesByID[] getEmployeeInfoByID(string token, string positionId)
+        {
+            return emp.getEmployeeInfoByID(token, positionId);
+        }
+
     }
 }

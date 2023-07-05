@@ -5,6 +5,7 @@ const ISP = (function () {
   let ispNav;
   let ispBody;
   let readOnly;
+  let validationCheck
 
   const sections = [
     {
@@ -144,16 +145,50 @@ const ISP = (function () {
 
   // Markup
   //---------------------------------------------
-  function buildNavigation() {
+   function buildNavigation() {
     const nav = document.createElement('div');
     nav.classList.add('planISP__nav');
 
-    sections.forEach((section, index) => {
+    sections.forEach(async (section, index) => {
       const sectionId = section.id;
 
       const navItem = document.createElement('div');
       navItem.classList.add('planISP__navItem');
       navItem.innerHTML = `${section.title}`;
+
+      // if the section is 'Outcomes' run an initial validation check on the section
+      if (section.title === 'Outcomes') {
+        const outcomesAlertDiv = document.createElement('div');
+        outcomesAlertDiv.classList.add('outcomesAlertDiv');
+        outcomesAlertDiv.id = 'outcomesAlert';
+        outcomesAlertDiv.innerHTML = `${icons.error}`;
+        navItem.appendChild(outcomesAlertDiv);
+
+        // creates and shows a tip when hovering over the visible alert div
+        planValidation.createTooltip('There is data missing on this tab that is required by DODD', outcomesAlertDiv)
+
+        // Initially hides the alert div
+        outcomesAlertDiv.style.display = 'none';
+        
+        // If a plan returns an error on the validation check, show the alert div
+        if (validationCheck.complete === false) {
+          outcomesAlertDiv.style.display = 'block';
+
+          const ISPnav = document.getElementById('tabNav1');
+          const ISPAlertDiv = document.createElement('div');
+          // ISPAlertDiv.id = 'outcomesAlert';
+          // ISPAlertDiv.innerHTML = `${icons.error}`;
+          const pDiv = ISPnav.querySelector('p');
+          //pDiv.appendChild(ISPAlertDiv);
+
+          if (pDiv.innerHTML !== `ISP ${icons.error}`){
+            pDiv.innerHTML = `ISP ${icons.error}`;
+
+            // creates and shows a tip when hovering over the visible alert div
+            planValidation.createTooltip('There is data missing on this tab that is required by DODD', pDiv)
+          }
+        }
+      }
 
       if (index === 0) {
         navItem.classList.add('active');
@@ -216,6 +251,8 @@ const ISP = (function () {
     } else {
       readOnly = false;
     }
+
+    validationCheck = await planValidation.outcomesValidation(planId);
 
     ispNav = buildNavigation();
     ispDiv.appendChild(ispNav);

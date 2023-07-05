@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using static Anywhere.service.Data.Employment.EmploymentWorker;
 
 namespace Anywhere.service.Data.Employment
 {
@@ -77,6 +78,24 @@ namespace Anywhere.service.Data.Employment
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_getJobStandings()");
+                throw ex;
+            }
+        }
+
+        public string getEmployeeInfoByID(string token, string positionId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getEmployeeInfoByID");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@positionId", DbType.String, positionId);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getEmployeeInfoByID(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getEmployeeInfoByID(" + positionId + ")");
                 throw ex;
             }
         }
