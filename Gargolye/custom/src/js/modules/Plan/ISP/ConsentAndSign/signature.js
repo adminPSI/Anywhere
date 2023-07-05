@@ -171,6 +171,16 @@ const csSignature = (() => {
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
+  function resizeCanvas(sigCanvas) {
+    var ratio = Math.max(window.devicePixelRatio || 1, 1);
+
+    sigCanvas.width = sigCanvas.offsetWidth * ratio;
+    sigCanvas.height = sigCanvas.offsetHeight * ratio;
+    sigCanvas.getContext('2d').scale(ratio, ratio);
+
+    sigPad.clear();
+  }
+
   function showClearConfirmationPopup() {
     const confirmPop = POPUP.build({
       id: 'clearSignConfirmPopup',
@@ -380,6 +390,11 @@ const csSignature = (() => {
       sigCanvas.classList.add('evvCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
+
+      // On mobile devices it might make more sense to listen to orientation change,
+      // rather than window resize events.
+      window.onresize = resizeCanvas;
+      resizeCanvas(sigCanvas);
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;
