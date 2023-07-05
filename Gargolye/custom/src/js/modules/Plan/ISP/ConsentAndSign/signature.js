@@ -14,6 +14,8 @@ const csSignature = (() => {
   let dissentHowToAddress;
   let standardQuestions; // these are all the radio questions
   let sigPad;
+  let sigBody;
+  let sigCanvas;
   let saveBtn;
   // other
   let allowSignClear;
@@ -171,15 +173,6 @@ const csSignature = (() => {
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
-  function resizeCanvas(sigCanvas) {
-    var ratio = Math.max(window.devicePixelRatio || 1, 1);
-
-    sigCanvas.width = sigCanvas.offsetWidth * ratio;
-    sigCanvas.height = sigCanvas.offsetHeight * ratio;
-    sigCanvas.getContext('2d').scale(ratio, ratio);
-
-    sigPad.clear();
-  }
 
   function showClearConfirmationPopup() {
     const confirmPop = POPUP.build({
@@ -377,7 +370,7 @@ const csSignature = (() => {
     const sigDiv = document.createElement('div');
     sigDiv.classList.add('signature-pad');
 
-    const sigBody = document.createElement('div');
+    sigBody = document.createElement('div');
     sigBody.classList.add('signature-pad--body');
     sigDiv.appendChild(sigBody);
 
@@ -386,15 +379,12 @@ const csSignature = (() => {
     }
 
     if (!isSigned) {
-      const sigCanvas = document.createElement('canvas');
-      sigCanvas.classList.add('evvCanvas');
+      sigCanvas = document.createElement('canvas');
+      sigCanvas.classList.add('ispCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
 
-      // On mobile devices it might make more sense to listen to orientation change,
-      // rather than window resize events.
-      window.onresize = resizeCanvas;
-      resizeCanvas(sigCanvas);
+      sigCanvas.width = sigBody.width;
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;
@@ -828,6 +818,10 @@ const csSignature = (() => {
     checkSignautrePopupForErrors();
     if (allowSignClear && (isSigned || readOnly)) {
       saveBtn.classList.add('disabled');
+    }
+
+    if (sigCanvas) {
+      sigCanvas.width = sigBody.offsetWidth;
     }
   }
 
