@@ -746,7 +746,7 @@ namespace Anywhere.service.Data
                     if (priorConsumerPlanId != null)
                     {
                         pow.carryOverOutcomesToNewPlan(consumerPlanId, priorConsumerPlanId, targetAssessmentVersionId, token);
-                        ssW.carryOverServicesToNewPlan(consumerPlanId, priorConsumerPlanId, effectiveStart, effectiveEnd, targetAssessmentVersionId, token);
+                        ssW.carryOverServicesToNewPlan(consumerPlanId, priorConsumerPlanId, effectiveStart, effectiveEnd, targetAssessmentVersionId, token, revision);
                         pciw.carryOverContactToNewPlan(consumerPlanId, priorConsumerPlanId, token);
                         psw.carryOverTeamMembersToNewPlan(consumerPlanId, priorConsumerPlanId, token);
                         picw.carryOverInformedConsentToNewPlan(consumerPlanId, priorConsumerPlanId, token, revision);
