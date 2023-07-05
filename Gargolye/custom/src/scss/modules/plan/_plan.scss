@@ -176,10 +176,15 @@ body.planActive {
       display: none;
       min-width: 94px;
     }
+    div:nth-child(6) {
+      // SENT TO DODD DATE
+      display: none;
+      min-width: 94px;
+    }
 
     @media screen and (min-width: 500px) {
-      div:nth-child(5) {
-        // REVIEW DATE
+      div:nth-child(5),
+      div:nth-child(6) {
         display: block;
       }
     }

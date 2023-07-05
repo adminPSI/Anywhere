@@ -2206,7 +2206,7 @@ const plan = (function () {
   function buildOverviewTable() {
     const tableOptions = {
       plain: false,
-      columnHeadings: ['Type', 'Rev #', 'PY Start', 'Eff Start', 'Review'],
+      columnHeadings: ['Type', 'Rev #', 'PY Start', 'Eff Start', 'Review', 'Sent To DODD'],
       tableId: 'planOverviewTable',
     };
 
@@ -2219,9 +2219,12 @@ const plan = (function () {
       const effectiveEnd = pd.effectiveEnd.split(' ')[0];
       const isActive = pd.active === 'True' ? true : false;
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
+      const sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
+
+      debugger;
 
       return {
-        values: [type, revisionNum, startDate, effectiveStart, reviewDate],
+        values: [type, revisionNum, startDate, effectiveStart, reviewDate, sentToDODD],
         attributes: [
           { key: 'data-plan-active', value: isActive },
           { key: 'data-plan-id', value: pd.consumerPlanId },
