@@ -151,7 +151,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             PreviousPlanEnd[] previousEnd = js.Deserialize<PreviousPlanEnd[]>(previousPlanEndString);
             for (int i = 0; i < paidSupportObj.Length; i++)
             {
-                if (revision == "true")
+                if (revision == "false")
                 {
                     //var bd = DateTime.Parse(paidSupportObj[i].beginDate);
                     var bd = DateTime.Parse(effectiveStart);
@@ -159,15 +159,21 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
                     var ed = DateTime.Parse(effectiveend);
                     endDate = ed.ToString("yyyy-MM-dd");
                     var edT = DateTime.Parse(paidSupportObj[i].endDate);
-                    endDateT = edT.ToString("yyy-MM-dd");
+                    endDateT = edT.ToString("yyyy-MM-dd");
                     DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
                     DateTime endTestDate = DateTime.Parse(endDateT);
                     result = DateTime.Compare(endTestDate, previousEndDate);
                 }
                 else
                 {
-                    beginDate = effectiveStart;
-                    endDate = effectiveend;
+                    var bd = DateTime.Parse(paidSupportObj[i].beginDate);
+                    beginDate = bd.ToString("yyyy-MM-dd");
+                    var ed = DateTime.Parse(paidSupportObj[i].endDate);
+                    endDate = ed.ToString("yyyy-MM-dd");
+                    //beginDate = paidSupportObj[i].beginDate;
+                    //endDate = paidSupportObj[i].endDate;
+                    var edT = DateTime.Parse(endDate);
+                    endDateT = edT.ToString("yyyy-MM-dd");
                     DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
                     DateTime endTestDate = DateTime.Parse(endDateT);
                     result = DateTime.Compare(endTestDate, previousEndDate);
