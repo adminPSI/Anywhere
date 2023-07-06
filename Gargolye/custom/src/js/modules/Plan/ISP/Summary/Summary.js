@@ -1345,21 +1345,23 @@ const planSummary = (function () {
     const questionSetId = data.questionSetId;
     const rowId = `planRisksTable${secTitle}${row}`;
 
-    if (oldData.whoResponsible.answer !== whoResponsible) {
-      // remove old
-      if (oldData.whoResponsible.answer !== '') {
-        if (selectedVendors[oldData.whoResponsible.answer] === 1) {
-          delete selectedVendors[oldData.whoResponsible.answer];
-        } else {
-          selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
+    if (Object.keys(oldData).length) {
+      if (oldData.whoResponsible.answer !== whoResponsible) {
+        // remove old
+        if (oldData.whoResponsible.answer !== '') {
+          if (selectedVendors[oldData.whoResponsible.answer] === 1) {
+            delete selectedVendors[oldData.whoResponsible.answer];
+          } else {
+            selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
+          }
         }
-      }
-      // add new
-      if (whoResponsible) {
-        if (selectedVendors[whoResponsible]) {
-          selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
-        } else {
-          selectedVendors[whoResponsible] = 1;
+        // add new
+        if (whoResponsible) {
+          if (selectedVendors[whoResponsible]) {
+            selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+          } else {
+            selectedVendors[whoResponsible] = 1;
+          }
         }
       }
     }
