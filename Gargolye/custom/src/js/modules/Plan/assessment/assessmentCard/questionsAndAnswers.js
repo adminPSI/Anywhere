@@ -143,8 +143,9 @@
         } else {
           inputEle.value = '';
           const radios = [...inputWrap.querySelectorAll('input')];
-          if (radios.length === 0) return;
-          radios.forEach(radio => (radio.checked = false));
+          if (radios.length !== 0) {
+            radios.forEach(radio => (radio.checked = false));
+          }
         }
         addAnswer(answerId);
       } else {
@@ -642,8 +643,8 @@
         // For text areas with colName "What’s Working" and "What's Not Working"
         if (colName.trim().split(' ').pop() === 'Working') {
           textAreaCharLimit = 1000;
-        }        
-        
+        }
+
         questionInput = input.build({
           type: 'textarea',
           style: 'secondary',
@@ -1007,7 +1008,7 @@
 
             switch (answerStyle) {
               case 'TEXTAREA': {
-                if (data.colName === "What’s Working" || data.colName === "What’s Not Working") {
+                if (data.colName === 'What’s Working' || data.colName === 'What’s Not Working') {
                   textAreaCharLimit = 1000;
                 }
 
