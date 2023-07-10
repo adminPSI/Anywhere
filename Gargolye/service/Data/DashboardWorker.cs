@@ -23,6 +23,13 @@ namespace Anywhere.service.Data
             return singleEntryCountObj;
         }
 
+        public MissingPlanSignaturesObj[] getMissingPlanSignatures(string token)
+        {
+            string missingSignaturesString = dg.getMissingPlanSignatures(token);
+            MissingPlanSignaturesObj[] missingSignaturesObj = js.Deserialize<MissingPlanSignaturesObj[]>(missingSignaturesString);
+            return missingSignaturesObj;
+        }
+
         public AdminApprovalNumbersObj[] getSingleEntryAdminApprovalNumbersJSON(string token)
         {
             string singleEntryAdminApprovalNumbersString = dg.getSingleEntryAdminApprovalNumbersJSON(token);
@@ -165,6 +172,13 @@ namespace Anywhere.service.Data
             public string startdate { get; set; }
             public string enddate { get; set; }
             public string Anywhere_Status { get; set; }
+        }
+
+        public class MissingPlanSignaturesObj
+        {
+            public string individual { get; set; }
+            public string planYearStart { get; set; }
+            public string planType { get; set; }
         }
 
         public class SingleEntryLocationObj
