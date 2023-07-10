@@ -1621,7 +1621,7 @@ namespace Anywhere.Data
             catch (Exception ex)
             {
                 logger.error("569", ex.Message + "ANYW_Dashboard_GetPlansNeedingSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "569: error ANYW_Dashboard_GetMissingPlanSignatures";
+                return "569: error ANYW_Dashboard_GetPlansNeedingSignatures";
             }
         }
 
