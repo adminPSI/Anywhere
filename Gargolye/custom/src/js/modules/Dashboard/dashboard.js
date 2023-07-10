@@ -174,7 +174,7 @@
       <h3>Plan Missing Signatures</h3>
     </div>
     <div class="widget__body">
-      
+    <div class="missingSignatures"></div>
     </div>
     `,
   };

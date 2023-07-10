@@ -516,6 +516,28 @@ const planAjax = (function () {
       },
     });
   }
+  async function getConsumerPeopleIdAsync(consumerId, callback) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerPeopleId/',
+        data: '{"consumerId":"' + consumerId + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.getConsumerPeopleIdResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
   async function getPlanAttachmentsList(retrieveData) {
     try {
       const data = await $.ajax({
@@ -616,5 +638,6 @@ const planAjax = (function () {
     uploadPlanToDODD,
     checkForSalesForce,
     getConsumerPeopleId,
+    getConsumerPeopleIdAsync,
   };
 })();

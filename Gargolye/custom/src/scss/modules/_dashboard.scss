@@ -376,3 +376,21 @@
     }
   }
 }
+
+// Missing Signatures Plan
+#missingSignaturesWidgetTable {
+  .table__row {
+    > div {
+      flex-grow: 1;
+    }
+    > div:nth-child(1) {
+      width: 115px;
+    }
+    > div:nth-child(2) {
+      width: 105px;
+    }
+    > div:nth-child(3) {
+      width: 80px;
+    }
+  }
+}

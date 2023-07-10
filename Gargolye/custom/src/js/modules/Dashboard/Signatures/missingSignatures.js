@@ -1,11 +1,15 @@
 const signatureWidget = (function () {
+  let missingSignatureData;
+  // cached data
   let signaturePlanStatus;
   let signatureWidgetGroupId;
   let signatureWidgetGroupName;
+  let signatureWidgetGroupCode;
   // DOM
   //-----------------------
   let widget;
   let widgetBody;
+  let missingSignaturesList;
   let filterPopup;
   let applyFiltersBtn;
   let cancelFilterBtn;
@@ -14,12 +18,12 @@ const signatureWidget = (function () {
 
   function populatePlanStatusDropdown() {
     var data = [
-      { value: '0', text: 'All' },
-      { value: '1', text: 'Draft' },
-      { value: '2', text: 'Complete' },
+      { value: '%', text: 'All' },
+      { value: 'D', text: 'Draft' },
+      { value: 'C', text: 'Complete' },
     ];
 
-    dropdown.populate('absentWidgetLocations', data, absentWidgetLocationId);
+    dropdown.populate(planStatusDropdown, data, signaturePlanStatus);
   }
 
   function buildFilterPopup() {
@@ -61,7 +65,54 @@ const signatureWidget = (function () {
     filterPopup.appendChild(btnWrap);
     widget.insertBefore(filterPopup, widgetBody);
 
-    populatePlanStatusDropdown(results);
+    populatePlanStatusDropdown();
+  }
+  function eventSetup() {
+    let oldSignaturePlanStatus;
+    let oldSignatureWidgetGroupId;
+    let oldSignatureWidgetGroupName;
+    let oldSignatureWidgetGroupCode;
+
+    planStatusDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      // cache old values
+      oldSignaturePlanStatus = signaturePlanStatus;
+    });
+    groupDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      // cache old values
+      oldSignatureWidgetGroupId = signatureWidgetGroupId;
+      oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
+      oldSignatureWidgetGroupName = signatureWidgetGroupName;
+      // update variables
+      signatureWidgetGroupId = selectedOption.value;
+      signatureWidgetGroupCode = selectedOption.id;
+      signatureWidgetGroupName = selectedOption.innerHTML;
+    });
+    applyFiltersBtn.addEventListener('click', event => {
+      filterPopup.classList.remove('visible');
+      overlay.hide();
+      bodyScrollLock.enableBodyScroll(filterPopup);
+
+      //TODO-ash: filter missingSignatureData by signaturePlanStatus then call populateMissingSignatures() with filtered data
+      // filteredSignatures = missingSignatureData.filter(ms => ms.planStatus = signaturePlanStatus);
+      // populateMissingSignatures(filteredSignatures);
+
+      //Loading
+      // consumerList.innerHTML = '';
+      // PROGRESS__ANYWHERE.init()
+      // PROGRESS__ANYWHERE.SPINNER.show(consumerList, "Loading");
+    });
+    cancelFilterBtn.addEventListener('click', event => {
+      filterPopup.classList.remove('visible');
+      overlay.hide();
+      bodyScrollLock.enableBodyScroll(filterPopup);
+
+      signaturePlanStatus = oldSignaturePlanStatus;
+      signatureWidgetGroupId = oldSignatureWidgetGroupId;
+      signatureWidgetGroupName = oldSignatureWidgetGroupName;
+      signatureWidgetGroupCode = oldSignatureWidgetGroupCode;
+    });
   }
   function displayFilteredBy() {
     var filteredBy = widget.querySelector('.widgetFilteredBy');
@@ -69,20 +120,23 @@ const signatureWidget = (function () {
     if (!filteredBy) {
       filteredBy = document.createElement('div');
       filteredBy.classList.add('widgetFilteredBy');
-      // TODO: append filteredBy
+      widgetBody.insertBefore(filteredBy, missingSignaturesList);
     }
 
+    const statusName =
+      signaturePlanStatus === '%' ? 'All' : signaturePlanStatus === 'D' ? 'Draft' : 'Complete';
+
     filteredBy.innerHTML = `<div class="filteredByData">
-      <p><span>Plan Status:</span> ${signaturePlanStatus}</p>
+      <p><span>Plan Status:</span> ${statusName}</p>
       <p><span>Group:</span> ${signatureWidgetGroupName}</p>
     </div>`;
   }
 
   function populateMissingSignatures(data) {
     const tableOptions = {
-      plain: false,
+      plain: true,
       columnHeadings: ['Individual', 'PY Start Date', 'Plan Type'],
-      tableId: 'planOverviewTable',
+      tableId: 'missingSignaturesWidgetTable',
     };
 
     const tableData = [];
@@ -93,13 +147,26 @@ const signatureWidget = (function () {
       const endDate = d.planYearEnd.split(' ')[0];
       const effectiveStart = d.effectiveStart.split(' ')[0];
       const effectiveEnd = d.effectiveEnd.split(' ')[0];
-      const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
+      const reviewDate = d.reviewDate ? d.reviewDate.split(' ')[0] : 'n/a';
 
       const individuals = d.individual.split(',');
       individuals.forEach(i => {
         tableData.push({
           values: [i, startDate, type],
-          onClick: () => {
+          onClick: async () => {
+            if ($.session.applicationName === 'Advisor') {
+              const newId = await planAjax.getConsumerPeopleIdAsync(selectedConsumer.id);
+              $.session.planPeopleId = newId[0].id;
+              plan.setSelectedConsumer({
+                id: $.session.planPeopleId,
+                consumerId: selectedConsumer.id,
+              });
+            } else {
+              plan.setSelectedConsumer({
+                id: 'idk how to get this yet',
+              });
+            }
+
             plan.setPlanId(d.planID);
             plan.setPlanType(d.planType);
             plan.setPlanStatus(d.planStatus);
@@ -113,30 +180,40 @@ const signatureWidget = (function () {
             });
 
             $.loadedApp = 'plan';
+            DOM.clearActionCenter();
             setActiveModuleAttribute('plan');
             UTIL.toggleMenuItemHighlight('plan');
-            DOM.clearActionCenter();
             plan.buildPlanPage(['i']);
           },
         });
       });
     });
+
+    const sigTable = table.build(tableOptions);
+    table.populate(sigTable, tableData);
+    widgetBody.appendChild(sigTable);
   }
 
   function init() {
-    if (!signaturePlanStatus) signaturePlanStatus = '0';
+    if (!signaturePlanStatus) signaturePlanStatus = '%';
     if (!signatureWidgetGroupId) signatureWidgetGroupId = '0';
     if (!signatureWidgetGroupName) signatureWidgetGroupName = 'Everyone';
+    if (!signatureWidgetGroupCode) signatureWidgetGroupCode = 'ALL';
 
-    widget = document.getElementById('dashabsentconsumers');
+    widget = document.getElementById('dashmissingsignatures');
     widgetBody = widget.querySelector('.widget__body');
+    missingSignaturesList = document.querySelector('.missingSignatures');
+
+    // append filter button
+    dashboard.appendFilterButton('dashmissingsignatures', 'missingSignaturesFilterBtn');
 
     buildFilterPopup();
     displayFilteredBy();
+    eventSetup();
 
     missingSignatureAjax.getMissingPlanSignatures({ token: $.session.Token }, res => {
-      console.log(res);
-      populateMissingSignatures(res);
+      missingSignatureData = res;
+      populateMissingSignatures(missingSignatureData);
     });
   }
 

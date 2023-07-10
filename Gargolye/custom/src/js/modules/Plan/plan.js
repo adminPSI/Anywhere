@@ -177,6 +177,7 @@ const plan = (function () {
     return previousPlansData ? (previousPlansData.length > 0 ? true : false) : false;
   }
   //-- set
+  function setSelectedConsumer() {}
   function setPlanId(newPlanId) {
     planId = newPlanId;
   }
@@ -2321,11 +2322,13 @@ const plan = (function () {
     getPlanDropdownData,
     getWorkflowMarkup,
     getHasPreviousPlans,
+    setSelectedConsumer,
     setPlanType,
     setPlanId,
     setPlanStatus,
     toggleNewPlanDoneBtn,
     handleActionNavEvent,
+    buildPlanPage,
     loadLanding: loadLandingPage,
     init,
   };
