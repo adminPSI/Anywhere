@@ -1613,14 +1613,14 @@ namespace Anywhere.Data
             logger.debug("getMissingPlanSignatures");
             List<string> list = new List<string>();
             list.Add(token);
-            string text = "CALL DBA.ANYW_Dashboard_GetMissingPlanSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            string text = "CALL DBA.ANYW_Dashboard_GetPlansNeedingSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("569", ex.Message + "ANYW_Dashboard_GetMissingPlanSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                logger.error("569", ex.Message + "ANYW_Dashboard_GetPlansNeedingSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "569: error ANYW_Dashboard_GetMissingPlanSignatures";
             }
         }
