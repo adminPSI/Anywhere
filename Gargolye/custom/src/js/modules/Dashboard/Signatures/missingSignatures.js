@@ -78,8 +78,49 @@ const signatureWidget = (function () {
     </div>`;
   }
 
-  function populateMissingSignatures() {
-    // do stuff
+  function populateMissingSignatures(data) {
+    const tableOptions = {
+      plain: false,
+      columnHeadings: ['Individual', 'PY Start Date', 'Plan Type'],
+      tableId: 'planOverviewTable',
+    };
+
+    const tableData = [];
+
+    data.forEach(d => {
+      const type = d.planType === 'A' ? 'Annual' : 'Revision';
+      const startDate = d.planYearStart.split(' ')[0];
+      const endDate = d.planYearEnd.split(' ')[0];
+      const effectiveStart = d.effectiveStart.split(' ')[0];
+      const effectiveEnd = d.effectiveEnd.split(' ')[0];
+      const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
+
+      const individuals = d.individual.split(',');
+      individuals.forEach(i => {
+        tableData.push({
+          values: [i, startDate, type],
+          onClick: () => {
+            plan.setPlanId(d.planID);
+            plan.setPlanType(d.planType);
+            plan.setPlanStatus(d.planStatus);
+
+            planDates.setReviewPlanDates({
+              startDate: new Date(startDate),
+              endDate: new Date(endDate),
+              effectiveStart: new Date(effectiveStart),
+              effectiveEnd: new Date(effectiveEnd),
+              reviewDate: new Date(reviewDate),
+            });
+
+            $.loadedApp = 'plan';
+            setActiveModuleAttribute('plan');
+            UTIL.toggleMenuItemHighlight('plan');
+            DOM.clearActionCenter();
+            plan.buildPlanPage(['i']);
+          },
+        });
+      });
+    });
   }
 
   function init() {
