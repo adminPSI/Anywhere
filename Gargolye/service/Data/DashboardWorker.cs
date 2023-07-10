@@ -179,6 +179,14 @@ namespace Anywhere.service.Data
             public string individual { get; set; }
             public string planYearStart { get; set; }
             public string planType { get; set; }
+            public string planId { get; set; }
+            public string planStatus { get; set; }
+            public string revisionNumber { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string effectiveStart { get; set; }
+            public string effectiveEnd { get; set; }
+            public string reviewDate { get; set; }
         }
 
         public class SingleEntryLocationObj
