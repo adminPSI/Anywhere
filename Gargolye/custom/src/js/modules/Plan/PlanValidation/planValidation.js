@@ -516,8 +516,14 @@ const planValidation = (function () {
         token: $.session.Token,
         assessmentId: planId,
       });
-  
+
       validationCheck.outcomesData = outcomesData;
+
+      if(outcomesData.planOutcome.length === 0 && outcomesData.planOutcomeExperiences.length === 0 && outcomesData.planProgressSummary.length === 0 && outcomesData.planReviews.length === 0) {
+        validationCheck.complete = false;
+        validationCheck.planProgressSummary = false;
+        return validationCheck;
+      }
   
       // get a list of the unique outcomeIds
       var uniqueOutcomeIds = Array.from(new Set(outcomesData.planOutcome.map(obj => obj.outcomeId)));
@@ -552,7 +558,7 @@ const planValidation = (function () {
         validationCheck.complete = false;
       }
   
-      // check the pla progress summary value, if empty string then show alert
+      // check the plan progress summary value, if empty string then show alert
       if (outcomesData.planProgressSummary[0].progressSummary !== '') {
         validationCheck.planProgressSummary = true;
       } else {
