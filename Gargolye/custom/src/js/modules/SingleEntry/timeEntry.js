@@ -363,6 +363,19 @@ var timeEntry = (function () {
               });
             });
           });
+        } else {
+          successfulSave.show('UPDATED');
+          setTimeout(function () {
+            successfulSave.hide();
+            timeEntryCard.clearAllGlobalVariables();
+            roster2.clearActiveConsumers();
+
+            if (isAdminEdit) {
+              timeApproval.refreshPage(payPeriod);
+            } else {
+              timeEntryReview.refreshPage(payPeriod);
+            }
+          }, 1000);
         }
       });
     });
