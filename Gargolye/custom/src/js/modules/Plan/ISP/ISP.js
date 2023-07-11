@@ -163,30 +163,14 @@ const ISP = (function () {
         outcomesAlertDiv.id = 'outcomesAlert';
         outcomesAlertDiv.innerHTML = `${icons.error}`;
         navItem.appendChild(outcomesAlertDiv);
+        outcomesAlertDiv.style.display = 'none';
 
         // creates and shows a tip when hovering over the visible alert div
         planValidation.createTooltip('There is data missing on this tab that is required by DODD', outcomesAlertDiv)
-
-        // Initially hides the alert div
-        outcomesAlertDiv.style.display = 'none';
         
         // If a plan returns an error on the validation check, show the alert div
         if (validationCheck.complete === false) {
-          outcomesAlertDiv.style.display = 'block';
-
-          const ISPnav = document.getElementById('tabNav1');
-          const ISPAlertDiv = document.createElement('div');
-          // ISPAlertDiv.id = 'outcomesAlert';
-          // ISPAlertDiv.innerHTML = `${icons.error}`;
-          const pDiv = ISPnav.querySelector('p');
-          //pDiv.appendChild(ISPAlertDiv);
-
-          if (pDiv.innerHTML !== `ISP ${icons.error}`){
-            pDiv.innerHTML = `ISP ${icons.error}`;
-
-            // creates and shows a tip when hovering over the visible alert div
-            planValidation.createTooltip('There is data missing on this tab that is required by DODD', pDiv)
-          }
+          outcomesAlertDiv.style.display = 'flex';
         }
       }
 
@@ -252,7 +236,8 @@ const ISP = (function () {
       readOnly = false;
     }
 
-    validationCheck = await planValidation.outcomesValidation(planId);
+    validationCheck = plan.getISPValidation();
+    //planValidation.getAssessmentValidation(planId);
 
     ispNav = buildNavigation();
     ispDiv.appendChild(ispNav);

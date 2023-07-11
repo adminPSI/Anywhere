@@ -630,6 +630,58 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
                 return "4SSDG: error ANYW_ISP_GetRelationshipsForExperiences";
             }
         }
+        public string getWorkingNotWorkingAnswers(string token, long assessmentId)
+        {
+            logger.debug("getWorkingNotWorkingAnswers ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(assessmentId.ToString());
+            string text = "CALL DBA.ANYW_ISP_GetWorkingNotWorkingAnswers(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4SSDG", ex.Message + "ANYW_ISP_GetWorkingNotWorkingAnswers(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4SSDG: error ANYW_ISP_GetWorkingNotWorkingAnswers";
+            }
+        }
+        public string getSectionsApplicable(string token, long assessmentId)
+        {
+            logger.debug("getSectionsApplicable ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(assessmentId.ToString());
+            string text = "CALL DBA.ANYW_ISP_GetSectionsApplicable(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4SSDG", ex.Message + "ANYW_ISP_GetSectionsApplicable(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4SSDG: error ANYW_ISP_GetSectionsApplicable";
+            }
+        }
+        public string getAssessmentOutcomes(string token, long assessmentId, int targetAssessmentVersionId)
+        {
+            logger.debug("getAssessmentOutcomes ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(assessmentId.ToString());
+            list.Add(targetAssessmentVersionId.ToString());
+            string text = "CALL DBA.ANYW_ISP_GetAssessmentOutcomes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4SSDG", ex.Message + "ANYW_ISP_GetAssessmentOutcomes(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4SSDG: error ANYW_ISP_GetAssessmentOutcomes";
+            }
+        }
         public string removeUnsavableNoteText(string note)
         {
             if (note == "" || note is null)

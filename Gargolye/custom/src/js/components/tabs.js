@@ -78,11 +78,36 @@ const TABS = (function () {
     return tabsBody;
   };
   const buildNavItem = (navText, isActive, index) => {
+    let ISPValidationCheck = plan.getISPValidation();
+    let assessmentValidtaionCheck = plan.getAssessmentValidation();
+
     const navItem = document.createElement('div');
     navItem.classList.add('tabsNav__item');
     navItem.id = `tabNav${index}`;
     navItem.innerHTML = `<p>${navText}</p>`;
+    
+    // create alert div
+    const navAlertDiv = document.createElement('div');
+    navAlertDiv.classList.add('tocAlertDiv');
+    navAlertDiv.id = `navAlert${navText}`;
+    navAlertDiv.innerHTML = `${icons.error}`;
+    navItem.appendChild(navAlertDiv);
+
+    planValidation.createTooltip("Data is missing on this tab that is required by DODD", navAlertDiv);
+
+    navAlertDiv.style.display = 'none';
+   
     if (isActive) navItem.classList.add('active');
+
+    // DIsplay Assessment Nav Validation if their are validation errors
+    if (navText === 'Assessment' && assessmentValidtaionCheck.complete === false) {
+        navAlertDiv.style.display = 'flex';
+    }
+
+    // DIsplay ISP Nav Validation if their are validation errors
+    if (navText === 'ISP' && ISPValidationCheck.complete === false) {
+        navAlertDiv.style.display = 'flex';
+    }
 
     return navItem;
   };

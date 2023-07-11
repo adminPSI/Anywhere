@@ -33,6 +33,16 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             //Experience Relationships
             string relationshipString = dg.getExperienceRelationships(consumerId);
             ConsumerRelationships[] relationshipObj = js.Deserialize<ConsumerRelationships[]>(relationshipString);
+            //Working/Not Working
+            string workingNotWorking = dg.getWorkingNotWorkingAnswers(token, anywAssessmentId);
+            WorkingNotWorking[] workingNotWorkingObj = js.Deserialize<WorkingNotWorking[]>(workingNotWorking);
+            //Sections Applicable
+            string sectionsApplicable = dg.getSectionsApplicable(token, anywAssessmentId);
+            SectionsApplicable[] sectionsAPplicalbeObj = js.Deserialize<SectionsApplicable[]>(sectionsApplicable);
+            //Total Outcomes
+            string assessmentOutcomes = dg.getAssessmentOutcomes(token, anywAssessmentId, 0);
+            AssessmentOutcomes[] assessmentOutcomesObj = js.Deserialize<AssessmentOutcomes[]>(assessmentOutcomes);
+
 
             ServicesAndSupports totalServicesAndSupports = new ServicesAndSupports();
             totalServicesAndSupports.paidSupport = paidSupportObj;
@@ -43,6 +53,9 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             totalServicesAndSupports.employmentOptions = employmentOptionsObj;
             totalServicesAndSupports.levelsOfsupervision = levelsOfSupervisionObj;
             totalServicesAndSupports.experienceRelationships = relationshipObj;
+            totalServicesAndSupports.workingNotWorking = workingNotWorkingObj;
+            totalServicesAndSupports.sectionsApplicable = sectionsAPplicalbeObj;
+            totalServicesAndSupports.assessmentOutcomes = assessmentOutcomesObj;
 
             return totalServicesAndSupports;
         }
@@ -242,6 +255,9 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             public EmploymentOptions[] employmentOptions { get; set; }
             public LevelsOfSupervision[] levelsOfsupervision { get; set; }
             public ConsumerRelationships[] experienceRelationships { get; set; }
+            public WorkingNotWorking[] workingNotWorking { get; set; }
+            public SectionsApplicable[] sectionsApplicable { get; set; }
+            public AssessmentOutcomes[] assessmentOutcomes { get; set; }
         }
 
         public class CommunicationsOptions
@@ -332,6 +348,24 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             public string ID { get; set; }
             public string relationship { get; set; }
 
+        }
+        public class SectionsApplicable
+        {
+            public string sectionId { get; set; }
+            public string applicable { get; set; }
+        }
+        public class WorkingNotWorking
+        {
+            public string questionNumber { get; set; }
+            public string answer { get; set; }
+            public string answerid { get; set; }
+            public string answerRow { get; set; }
+        }
+        public class AssessmentOutcomes
+        {
+            public string ispconsumerId { get; set; }
+            public string anywAssessmentId { get; set; }
+            public string assessmentAreaId { get; set; }
         }
     }
 }
