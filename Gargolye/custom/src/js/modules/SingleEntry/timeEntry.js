@@ -37,117 +37,6 @@ var timeEntry = (function () {
 
   // Save, Update, Delete
   //------------------------------------
-  function showOverlapPopup(updateorsave = 'save') {
-    var popup = POPUP.build({});
-    var message = document.createElement('p');
-    message.style.marginBottom = '2em';
-    message.innerHTML = `There is an overlap with an existing Time Entry record. Do you wish to proceed?`;
-
-    var btnWrap = document.createElement('div');
-    btnWrap.classList.add('btnWrap');
-
-    var yesBtn = button.build({
-      text: 'Yes',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        POPUP.hide(popup);
-        if ($.session.singleEntrycrossMidnight && updateorsave === 'save') {
-          showMultipleEntriesPopup();
-        }
-        if (!$.session.singleEntrycrossMidnight && updateorsave === 'save') {
-          getEntryData('', saveAndSubmit);
-        }
-        if ($.session.singleEntrycrossMidnight && updateorsave === 'update') {
-          showMultipleEntriesPopup('update');
-        }
-        if (!$.session.singleEntrycrossMidnight && updateorsave === 'update') {
-          updateEntry('', '', '', saveAndSubmit);
-        }
-      },
-    });
-    var noBtn = button.build({
-      text: 'No',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        POPUP.hide(popup);
-      },
-    });
-
-    popup.appendChild(message);
-    btnWrap.appendChild(yesBtn);
-    btnWrap.appendChild(noBtn);
-    popup.appendChild(btnWrap);
-
-    POPUP.show(popup);
-  }
-  function showDeleteEntryWarningPopup(messageText, callback) {
-    var popup = POPUP.build({ classNames: ['warning'], hideX: true });
-    var message = document.createElement('p');
-    message.innerHTML = messageText;
-    var btnWrap = document.createElement('div');
-    btnWrap.classList.add('btnWrap');
-    var yesBtn = button.build({
-      text: 'Yes',
-      type: 'contained',
-      style: 'secondary',
-      callback: function () {
-        POPUP.hide(popup);
-        callback();
-      },
-    });
-    var noBtn = button.build({
-      text: 'No',
-      type: 'contained',
-      style: 'secondary',
-      callback: function () {
-        POPUP.hide(popup);
-        timeEntryCard.enableSaveButtons();
-      },
-    });
-    btnWrap.appendChild(yesBtn);
-    btnWrap.appendChild(noBtn);
-    popup.appendChild(message);
-    popup.appendChild(btnWrap);
-
-    POPUP.show(popup);
-  }
-
-  function showMultipleEntriesPopup(updateorsave = 'save') {
-    var popup2 = POPUP.build({});
-    var message2 = document.createElement('p');
-    message2.innerHTML = `You have entered an End Time that crosses over midnight. Two separate entries will be created when this record is saved. Do you wish to proceed?`;
-    var btnWrap = document.createElement('div');
-    btnWrap.classList.add('btnWrap');
-    var yesBtn2 = button.build({
-      text: 'Yes',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        POPUP.hide(popup2);
-        updateorsave === 'save'
-          ? getEntryData('', saveAndSubmit)
-          : updateEntry('', '', '', saveAndSubmit);
-      },
-    });
-    var noBtn2 = button.build({
-      text: 'No',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        POPUP.hide(popup2);
-      },
-    });
-    btnWrap.appendChild(yesBtn2);
-    btnWrap.appendChild(noBtn2);
-    popup2.appendChild(message2);
-    popup2.appendChild(btnWrap);
-    //	popup2.appendChild(noBtn2);
-
-    POPUP.show(popup2);
-  }
-
   function getEntryData(keyStartStop, saveAndSubmitBool) {
     saveAndSubmit = saveAndSubmitBool;
     if (keyStartStop === 'Y') {
@@ -225,13 +114,12 @@ var timeEntry = (function () {
       saveEntryData(saveData1, saveData2);
     }
   }
-
   function saveEntryData(saveData, saveData2) {
     if (saveData.locationId !== '' || saveData.consumerId === '') {
       if (saveAndSubmit) {
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
-        showDeleteEntryWarningPopup(warningMessage, () => {
+        showWarningPopup(warningMessage, () => {
           singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
             const entryId = results[1].replace('</', '');
             const updateObj = {
@@ -299,7 +187,7 @@ var timeEntry = (function () {
       if (saveAndSubmit) {
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
 
-        showDeleteEntryWarningPopup(warningMessage, () => {
+        showWarningPopup(warningMessage, () => {
           // 1. Grab the consumer/location data
           singleEntryAjax.getSelectedConsumerLocations(saveData, function (results) {
             overlapconsumerlocationdata = results;
@@ -388,7 +276,256 @@ var timeEntry = (function () {
       }
     }
   }
+  function updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndSubmitBool) {
+    saveAndSubmit = saveAndSubmitBool;
 
+    if (keyStartStop === 'Y') {
+      if ($.session.singleEntrycrossMidnight) {
+        crossmidnightisadminedit = isAdminEdit;
+        crossmidnightpayperiod = payPeriod;
+        showMultipleEntriesPopup('update');
+        return;
+      }
+    }
+
+    var saveData = timeEntryCard.getSaveUpdateData('Save');
+    var updateData = timeEntryCard.getSaveUpdateData('Update');
+    // update an entry that crosses midnight, results in update of original entry and a save of the new entry
+    if ($.session.singleEntrycrossMidnight) {
+      // may need overlapcheck on crossmidnight Update because saved record (2nd entry) may overlap with previous edits
+      // if (keyStartStop === 'Y') {
+      // 	var overlapData = timeEntryCard.getOverlapData();
+      // 	singleEntryAjax.singleEntryOverlapCheck(overlapData, function(results) {
+      // 		if (results.length > 0) {
+      // 			showOverlapPopup('update');
+      // 		}
+      // 	});
+      // 	return;
+      // }
+
+      // second day entry in the database -- SAVE
+      saveData.checkHours = saveData.crossMidnightCheckHours[1].day2TotalHours;
+      saveData.startTime = '00:00';
+
+      // transportation only saved with the first day entry
+      saveData.destination = '';
+      saveData.licensePlateNumber = '';
+      saveData.odometerEnd = '';
+      saveData.odometerStart = '';
+      saveData.reason = '';
+      saveData.transportationReimbursable = '';
+      saveData.transportationUnits = 0;
+
+      if (!saveData.defaultEndTimeChanged) {
+        saveData.evvReason = '';
+        checkDeviceType() === 'Mobile'
+          ? (saveData.deviceType = 'Mobile')
+          : (saveData.deviceType = 'Other');
+      }
+      // * Date Constructor Doc: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
+      // * Note on constructing date on date string is highly discouraged due to browser differences and inconsistencies.
+      // * This was the issue for the crossing over midnight issue in older versions of safari.
+      const year = parseInt(saveData.dateOfService.split('-')[0]);
+      const month = parseInt(saveData.dateOfService.split('-')[1]);
+      const day = parseInt(saveData.dateOfService.split('-')[2]);
+      var nextDay = new Date(year, month - 1, day);
+      nextDay.setDate(nextDay.getDate() + 1);
+
+      var dd = ('0' + nextDay.getDate()).slice(-2);
+      var mm = ('0' + (nextDay.getMonth() + 1)).slice(-2);
+      var yyyy = nextDay.getFullYear();
+
+      saveData.dateOfService = yyyy + '-' + mm + '-' + dd;
+
+      saveEntryData(saveData);
+
+      // first day entry in the database -- UPDATE
+      updateData.checkHours = saveData.crossMidnightCheckHours[0].day1TotalHours;
+      updateData.endTime = '00:00';
+      updateSingleEntry(crossmidnightisadminedit, crossmidnightpayperiod, updateData);
+    } else {
+      updateSingleEntry(isAdminEdit, payPeriod, updateData);
+    }
+  }
+  function updateSingleEntry(isAdminEdit, payPeriod, updateData) {
+    singleEntryAjax.updateSingleEntry(updateData, function (results) {
+      if (!saveAndSubmit) {
+        // Orig Update
+        if (!$.session.singleEntrycrossMidnight) {
+          successfulSave.show('UPDATED');
+        }
+        setTimeout(function () {
+          if (!$.session.singleEntrycrossMidnight) {
+            successfulSave.hide();
+          }
+          roster2.clearActiveConsumers();
+          timeEntryCard.clearAllGlobalVariables();
+
+          if (isAdminEdit) {
+            timeApproval.refreshPage(payPeriod);
+          } else {
+            timeEntryReview.refreshPage(payPeriod);
+          }
+        }, 1000);
+      } else {
+        // Update w/Submit
+        var updateObj = {
+          token: $.session.Token,
+          singleEntryIdString: updateData.singleEntryId,
+          newStatus: 'S',
+        };
+        var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+
+        showWarningPopup(warningMessage, () => {
+          singleEntryAjax.updateSingleEntryStatus(updateObj, () => {
+            if (!$.session.singleEntrycrossMidnight) {
+              successfulSave.show('UPDATED & SUBMITTED');
+            }
+            setTimeout(function () {
+              if (!$.session.singleEntrycrossMidnight) {
+                successfulSave.hide();
+              }
+              roster2.clearActiveConsumers();
+              timeEntryCard.clearAllGlobalVariables();
+
+              if (isAdminEdit) {
+                timeApproval.refreshPage(payPeriod);
+              } else {
+                timeEntryReview.refreshPage(payPeriod);
+              }
+            }, 1000);
+          });
+        });
+      }
+    });
+  }
+  function deleteEntry(entryId, isAdminEdit, payperiod) {
+    if (!entryId) return;
+
+    singleEntryAjax.deleteSingleEntryRecord(entryId, function (results) {
+      successfulSave.show('DELETED');
+      setTimeout(function () {
+        successfulSave.hide();
+        if (isAdminEdit) {
+          timeApproval.refreshPage(payPeriod);
+        } else {
+          timeEntryReview.refreshPage(payperiod);
+        }
+      }, 1000);
+    });
+  }
+
+  function showOverlapPopup(updateorsave = 'save') {
+    var popup = POPUP.build({});
+    var message = document.createElement('p');
+    message.style.marginBottom = '2em';
+    message.innerHTML = `There is an overlap with an existing Time Entry record. Do you wish to proceed?`;
+
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+
+    var yesBtn = button.build({
+      text: 'Yes',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        POPUP.hide(popup);
+        if ($.session.singleEntrycrossMidnight && updateorsave === 'save') {
+          showMultipleEntriesPopup();
+        }
+        if (!$.session.singleEntrycrossMidnight && updateorsave === 'save') {
+          getEntryData('', saveAndSubmit);
+        }
+        if ($.session.singleEntrycrossMidnight && updateorsave === 'update') {
+          showMultipleEntriesPopup('update');
+        }
+        if (!$.session.singleEntrycrossMidnight && updateorsave === 'update') {
+          updateEntry('', '', '', saveAndSubmit);
+        }
+      },
+    });
+    var noBtn = button.build({
+      text: 'No',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        POPUP.hide(popup);
+      },
+    });
+
+    popup.appendChild(message);
+    btnWrap.appendChild(yesBtn);
+    btnWrap.appendChild(noBtn);
+    popup.appendChild(btnWrap);
+
+    POPUP.show(popup);
+  }
+  function showWarningPopup(messageText, callback) {
+    var popup = POPUP.build({ classNames: ['warning'], hideX: true });
+    var message = document.createElement('p');
+    message.innerHTML = messageText;
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    var yesBtn = button.build({
+      text: 'Yes',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        callback();
+      },
+    });
+    var noBtn = button.build({
+      text: 'No',
+      type: 'contained',
+      style: 'secondary',
+      callback: function () {
+        POPUP.hide(popup);
+        timeEntryCard.enableSaveButtons();
+      },
+    });
+    btnWrap.appendChild(yesBtn);
+    btnWrap.appendChild(noBtn);
+    popup.appendChild(message);
+    popup.appendChild(btnWrap);
+
+    POPUP.show(popup);
+  }
+  function showMultipleEntriesPopup(updateorsave = 'save') {
+    var popup2 = POPUP.build({});
+    var message2 = document.createElement('p');
+    message2.innerHTML = `You have entered an End Time that crosses over midnight. Two separate entries will be created when this record is saved. Do you wish to proceed?`;
+    var btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
+    var yesBtn2 = button.build({
+      text: 'Yes',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        POPUP.hide(popup2);
+        updateorsave === 'save'
+          ? getEntryData('', saveAndSubmit)
+          : updateEntry('', '', '', saveAndSubmit);
+      },
+    });
+    var noBtn2 = button.build({
+      text: 'No',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        POPUP.hide(popup2);
+      },
+    });
+    btnWrap.appendChild(yesBtn2);
+    btnWrap.appendChild(noBtn2);
+    popup2.appendChild(message2);
+    popup2.appendChild(btnWrap);
+    //	popup2.appendChild(noBtn2);
+
+    POPUP.show(popup2);
+  }
+
+  // Overlap
   function getConsumerswithOverlappingLocations(consumerlocatons) {
     // get list of consumerIds that are listed more than once (ie, consumers with overlappng locations)
     duplicateconsumerIds = consumerlocatons.reduce((a, e) => {
@@ -406,7 +543,6 @@ var timeEntry = (function () {
       e => duplicateconsumerIds[e.consumerId],
     );
   }
-
   function checkOverlapPopupForErrors() {
     const erros = [...overlapLocationsPopup.querySelectorAll('.error')];
 
@@ -416,7 +552,19 @@ var timeEntry = (function () {
       overlapLocationsDoneBtn.classList.remove('disabled');
     }
   }
+  function populateOverlapLocationsDropdown(locDrop, consumer) {
+    let thisconsumersLocations = consumerswithMultipleLocations.filter(
+      val => val.consumerId === consumer.consumerId,
+    );
 
+    let data = thisconsumersLocations.map(location => ({
+      id: location.consumerId,
+      value: location.locationId,
+      text: location.locationName,
+    }));
+    data.unshift({ id: '', value: 'SELECT', text: 'SELECT' }); //ADD Blank value
+    dropdown.populate(locDrop, data);
+  }
   function buildOverlapLocationsDropdown(consumer, index) {
     const wrap = document.createElement('div');
 
@@ -451,7 +599,6 @@ var timeEntry = (function () {
 
     return wrap;
   }
-
   function displayOverlapLocationsPopup(results) {
     getConsumerswithOverlappingLocations(results);
 
@@ -578,21 +725,6 @@ var timeEntry = (function () {
 
     POPUP.show(overlapLocationsPopup);
   }
-
-  function populateOverlapLocationsDropdown(locDrop, consumer) {
-    let thisconsumersLocations = consumerswithMultipleLocations.filter(
-      val => val.consumerId === consumer.consumerId,
-    );
-
-    let data = thisconsumersLocations.map(location => ({
-      id: location.consumerId,
-      value: location.locationId,
-      text: location.locationName,
-    }));
-    data.unshift({ id: '', value: 'SELECT', text: 'SELECT' }); //ADD Blank value
-    dropdown.populate(locDrop, data);
-  }
-
   async function saveSingleEntrywithLocationOverlaps() {
     let savedLocationsSingleEntryPairs = [];
     let overlapSavedLocationsSingleEntryPairs = [];
@@ -782,157 +914,13 @@ var timeEntry = (function () {
     return singleEntryIdArray;
   } // end of Parent/containing function -- function populateOverlapLocationsDropdown(locDrop, consumer)
 
-  function updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndSubmitBool) {
-    saveAndSubmit = saveAndSubmitBool;
-
-    if (keyStartStop === 'Y') {
-      if ($.session.singleEntrycrossMidnight) {
-        crossmidnightisadminedit = isAdminEdit;
-        crossmidnightpayperiod = payPeriod;
-        showMultipleEntriesPopup('update');
-        return;
-      }
-    }
-
-    var saveData = timeEntryCard.getSaveUpdateData('Save');
-    var updateData = timeEntryCard.getSaveUpdateData('Update');
-    // update an entry that crosses midnight, results in update of original entry and a save of the new entry
-    if ($.session.singleEntrycrossMidnight) {
-      // may need overlapcheck on crossmidnight Update because saved record (2nd entry) may overlap with previous edits
-      // if (keyStartStop === 'Y') {
-      // 	var overlapData = timeEntryCard.getOverlapData();
-      // 	singleEntryAjax.singleEntryOverlapCheck(overlapData, function(results) {
-      // 		if (results.length > 0) {
-      // 			showOverlapPopup('update');
-      // 		}
-      // 	});
-      // 	return;
-      // }
-
-      // second day entry in the database -- SAVE
-      saveData.checkHours = saveData.crossMidnightCheckHours[1].day2TotalHours;
-      saveData.startTime = '00:00';
-
-      // transportation only saved with the first day entry
-      saveData.destination = '';
-      saveData.licensePlateNumber = '';
-      saveData.odometerEnd = '';
-      saveData.odometerStart = '';
-      saveData.reason = '';
-      saveData.transportationReimbursable = '';
-      saveData.transportationUnits = 0;
-
-      if (!saveData.defaultEndTimeChanged) {
-        saveData.evvReason = '';
-        checkDeviceType() === 'Mobile'
-          ? (saveData.deviceType = 'Mobile')
-          : (saveData.deviceType = 'Other');
-      }
-      // * Date Constructor Doc: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
-      // * Note on constructing date on date string is highly discouraged due to browser differences and inconsistencies.
-      // * This was the issue for the crossing over midnight issue in older versions of safari.
-      const year = parseInt(saveData.dateOfService.split('-')[0]);
-      const month = parseInt(saveData.dateOfService.split('-')[1]);
-      const day = parseInt(saveData.dateOfService.split('-')[2]);
-      var nextDay = new Date(year, month - 1, day);
-      nextDay.setDate(nextDay.getDate() + 1);
-
-      var dd = ('0' + nextDay.getDate()).slice(-2);
-      var mm = ('0' + (nextDay.getMonth() + 1)).slice(-2);
-      var yyyy = nextDay.getFullYear();
-
-      saveData.dateOfService = yyyy + '-' + mm + '-' + dd;
-
-      saveEntryData(saveData);
-
-      // first day entry in the database -- UPDATE
-      updateData.checkHours = saveData.crossMidnightCheckHours[0].day1TotalHours;
-      updateData.endTime = '00:00';
-      updateSingleEntry(crossmidnightisadminedit, crossmidnightpayperiod, updateData);
-    } else {
-      updateSingleEntry(isAdminEdit, payPeriod, updateData);
-    }
-  }
-
-  function updateSingleEntry(isAdminEdit, payPeriod, updateData) {
-    singleEntryAjax.updateSingleEntry(updateData, function (results) {
-      if (!saveAndSubmit) {
-        // Orig Update
-        if (!$.session.singleEntrycrossMidnight) {
-          successfulSave.show('UPDATED');
-        }
-        setTimeout(function () {
-          if (!$.session.singleEntrycrossMidnight) {
-            successfulSave.hide();
-          }
-          roster2.clearActiveConsumers();
-          timeEntryCard.clearAllGlobalVariables();
-
-          if (isAdminEdit) {
-            timeApproval.refreshPage(payPeriod);
-          } else {
-            timeEntryReview.refreshPage(payPeriod);
-          }
-        }, 1000);
-      } else {
-        // Update w/Submit
-        var updateObj = {
-          token: $.session.Token,
-          singleEntryIdString: updateData.singleEntryId,
-          newStatus: 'S',
-        };
-        var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
-
-        showDeleteEntryWarningPopup(warningMessage, () => {
-          singleEntryAjax.updateSingleEntryStatus(updateObj, () => {
-            if (!$.session.singleEntrycrossMidnight) {
-              successfulSave.show('UPDATED & SUBMITTED');
-            }
-            setTimeout(function () {
-              if (!$.session.singleEntrycrossMidnight) {
-                successfulSave.hide();
-              }
-              roster2.clearActiveConsumers();
-              timeEntryCard.clearAllGlobalVariables();
-
-              if (isAdminEdit) {
-                timeApproval.refreshPage(payPeriod);
-              } else {
-                timeEntryReview.refreshPage(payPeriod);
-              }
-            }, 1000);
-          });
-        });
-      }
-    });
-  }
-
-  function deleteEntry(entryId, isAdminEdit, payperiod) {
-    if (!entryId) return;
-
-    singleEntryAjax.deleteSingleEntryRecord(entryId, function (results) {
-      successfulSave.show('DELETED');
-      setTimeout(function () {
-        successfulSave.hide();
-        if (isAdminEdit) {
-          timeApproval.refreshPage(payPeriod);
-        } else {
-          timeEntryReview.refreshPage(payperiod);
-        }
-      }, 1000);
-    });
-  }
-
   // Util/CRUD
-  //
-  //
   //------------------------------------
   function checkDeviceType() {
     if ($.session.OS === 'iPhone/iPod' || $.session.OS === 'Linux') {
       return 'Mobile';
     } else return 'Other';
   }
-
   function setRequiredFields(results) {
     var res = results[0];
 
