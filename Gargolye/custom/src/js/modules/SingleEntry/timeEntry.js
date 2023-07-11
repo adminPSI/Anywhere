@@ -227,7 +227,6 @@ var timeEntry = (function () {
   }
 
   function saveEntryData(saveData, saveData2) {
-    var test = saveData;
     if (saveData.locationId !== '' || saveData.consumerId === '') {
       if (saveAndSubmit) {
         var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
@@ -275,13 +274,25 @@ var timeEntry = (function () {
         });
       } else {
         singleEntryAjax.insertSingleEntryNew(saveData, function (results) {
-          successfulSave.show('SAVED');
-          setTimeout(function () {
-            successfulSave.hide();
-            timeEntryCard.clearAllGlobalVariables();
-            roster2.clearActiveConsumers();
-            newTimeEntry.init(true);
-          }, 1000);
+          if (!saveData2) {
+            successfulSave.show('SAVED');
+            setTimeout(function () {
+              successfulSave.hide();
+              timeEntryCard.clearAllGlobalVariables();
+              roster2.clearActiveConsumers();
+              newTimeEntry.init(true);
+            }, 1000);
+          } else {
+            singleEntryAjax.insertSingleEntryNew(saveData2, function (results) {
+              successfulSave.show('SAVED');
+              setTimeout(function () {
+                successfulSave.hide();
+                timeEntryCard.clearAllGlobalVariables();
+                roster2.clearActiveConsumers();
+                newTimeEntry.init(true);
+              }, 1000);
+            });
+          }
         });
       }
     } else {
@@ -349,13 +360,25 @@ var timeEntry = (function () {
           // no location overlaps for any selected consumer
           if (overlapconsumerlocationdata.length === 0) {
             singleEntryAjax.preInsertSingleEntry(saveData, function (results) {
-              successfulSave.show('SAVED');
-              setTimeout(function () {
-                successfulSave.hide();
-                timeEntryCard.clearAllGlobalVariables();
-                roster2.clearActiveConsumers();
-                newTimeEntry.init();
-              }, 1000);
+              if (!saveData2) {
+                successfulSave.show('SAVED');
+                setTimeout(function () {
+                  successfulSave.hide();
+                  timeEntryCard.clearAllGlobalVariables();
+                  roster2.clearActiveConsumers();
+                  newTimeEntry.init();
+                }, 1000);
+              } else {
+                singleEntryAjax.preInsertSingleEntry(saveData2, function (results) {
+                  successfulSave.show('SAVED');
+                  setTimeout(function () {
+                    successfulSave.hide();
+                    timeEntryCard.clearAllGlobalVariables();
+                    roster2.clearActiveConsumers();
+                    newTimeEntry.init();
+                  }, 1000);
+                });
+              }
             });
           } else {
             // location overlaps exist for a selected consumer
