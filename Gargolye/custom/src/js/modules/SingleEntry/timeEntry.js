@@ -276,6 +276,97 @@ var timeEntry = (function () {
       }
     }
   }
+  function updateSingleEntry(isAdminEdit, payPeriod, updateData) {
+    singleEntryAjax.updateSingleEntry(updateData, function (results) {
+      if (!saveAndSubmit) {
+        // Orig Update
+        if (!$.session.singleEntrycrossMidnight) {
+          successfulSave.show('UPDATED');
+        }
+        setTimeout(function () {
+          if (!$.session.singleEntrycrossMidnight) {
+            successfulSave.hide();
+          }
+          roster2.clearActiveConsumers();
+          timeEntryCard.clearAllGlobalVariables();
+
+          if (isAdminEdit) {
+            timeApproval.refreshPage(payPeriod);
+          } else {
+            timeEntryReview.refreshPage(payPeriod);
+          }
+        }, 1000);
+      } else {
+        // Update w/Submit
+        var updateObj = {
+          token: $.session.Token,
+          singleEntryIdString: updateData.singleEntryId,
+          newStatus: 'S',
+        };
+        var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+
+        showWarningPopup(warningMessage, () => {
+          singleEntryAjax.updateSingleEntryStatus(updateObj, () => {
+            if (!$.session.singleEntrycrossMidnight) {
+              successfulSave.show('UPDATED & SUBMITTED');
+            }
+            setTimeout(function () {
+              if (!$.session.singleEntrycrossMidnight) {
+                successfulSave.hide();
+              }
+              roster2.clearActiveConsumers();
+              timeEntryCard.clearAllGlobalVariables();
+
+              if (isAdminEdit) {
+                timeApproval.refreshPage(payPeriod);
+              } else {
+                timeEntryReview.refreshPage(payPeriod);
+              }
+            }, 1000);
+          });
+        });
+      }
+    });
+  }
+  function saveAndUpdateEntryForMidnightCross(saveData, updateData, isAdminEdit, payPeriod) {
+    singleEntryAjax.updateSingleEntry(updateData, updateResults => {
+      // Update w/Submit
+      const updateObj1 = {
+        token: $.session.Token,
+        singleEntryIdString: updateData.singleEntryId,
+        newStatus: 'S',
+      };
+      singleEntryAjax.insertSingleEntryNew(saveData, saveResults => {
+        const updateObj2 = {
+          token: $.session.Token,
+          singleEntryIdString: saveResults[1].replace('</', ''),
+          newStatus: 'S',
+        };
+
+        if (saveAndSubmit) {
+          var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
+          showWarningPopup(warningMessage, () => {
+            singleEntryAjax.updateSingleEntryStatus(updateObj1, () => {
+              singleEntryAjax.updateSingleEntryStatus(updateObj2, () => {
+                successfulSave.show('UPDATED & SUBMITTED');
+                setTimeout(function () {
+                  successfulSave.hide();
+                  timeEntryCard.clearAllGlobalVariables();
+                  roster2.clearActiveConsumers();
+
+                  if (isAdminEdit) {
+                    timeApproval.refreshPage(payPeriod);
+                  } else {
+                    timeEntryReview.refreshPage(payPeriod);
+                  }
+                }, 1000);
+              });
+            });
+          });
+        }
+      });
+    });
+  }
   function updateEntry(isAdminEdit, payPeriod, keyStartStop, saveAndSubmitBool) {
     saveAndSubmit = saveAndSubmitBool;
 
@@ -337,67 +428,19 @@ var timeEntry = (function () {
 
       saveData.dateOfService = yyyy + '-' + mm + '-' + dd;
 
-      saveEntryData(saveData);
-
       // first day entry in the database -- UPDATE
       updateData.checkHours = saveData.crossMidnightCheckHours[0].day1TotalHours;
       updateData.endTime = '00:00';
-      updateSingleEntry(crossmidnightisadminedit, crossmidnightpayperiod, updateData);
+
+      saveAndUpdateEntryForMidnightCross(
+        saveData,
+        updateData,
+        crossmidnightisadminedit,
+        crossmidnightpayperiod,
+      );
     } else {
       updateSingleEntry(isAdminEdit, payPeriod, updateData);
     }
-  }
-  function updateSingleEntry(isAdminEdit, payPeriod, updateData) {
-    singleEntryAjax.updateSingleEntry(updateData, function (results) {
-      if (!saveAndSubmit) {
-        // Orig Update
-        if (!$.session.singleEntrycrossMidnight) {
-          successfulSave.show('UPDATED');
-        }
-        setTimeout(function () {
-          if (!$.session.singleEntrycrossMidnight) {
-            successfulSave.hide();
-          }
-          roster2.clearActiveConsumers();
-          timeEntryCard.clearAllGlobalVariables();
-
-          if (isAdminEdit) {
-            timeApproval.refreshPage(payPeriod);
-          } else {
-            timeEntryReview.refreshPage(payPeriod);
-          }
-        }, 1000);
-      } else {
-        // Update w/Submit
-        var updateObj = {
-          token: $.session.Token,
-          singleEntryIdString: updateData.singleEntryId,
-          newStatus: 'S',
-        };
-        var warningMessage = `By clicking Yes, you are confirming that you have reviewed this entry and it is correct to the best of your knowledge.`;
-
-        showWarningPopup(warningMessage, () => {
-          singleEntryAjax.updateSingleEntryStatus(updateObj, () => {
-            if (!$.session.singleEntrycrossMidnight) {
-              successfulSave.show('UPDATED & SUBMITTED');
-            }
-            setTimeout(function () {
-              if (!$.session.singleEntrycrossMidnight) {
-                successfulSave.hide();
-              }
-              roster2.clearActiveConsumers();
-              timeEntryCard.clearAllGlobalVariables();
-
-              if (isAdminEdit) {
-                timeApproval.refreshPage(payPeriod);
-              } else {
-                timeEntryReview.refreshPage(payPeriod);
-              }
-            }, 1000);
-          });
-        });
-      }
-    });
   }
   function deleteEntry(entryId, isAdminEdit, payperiod) {
     if (!entryId) return;
@@ -525,7 +568,7 @@ var timeEntry = (function () {
     POPUP.show(popup2);
   }
 
-  // Overlap
+  // Overlapping Locations
   function getConsumerswithOverlappingLocations(consumerlocatons) {
     // get list of consumerIds that are listed more than once (ie, consumers with overlappng locations)
     duplicateconsumerIds = consumerlocatons.reduce((a, e) => {
