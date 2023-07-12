@@ -1104,22 +1104,6 @@ const servicesSupports = (() => {
       }
     });
 
-    // if ($.session.applicationName === 'Advisor') {
-    //   if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
-    //     let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
-    //     servicesDropdownSelectedText = servicesDropdownSelected.text;
-    //   } else {
-    //     saveUpdateData.serviceNameId = '24';
-    //   }
-    // } else {
-    //   if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
-    //     let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
-    //     servicesDropdownSelectedText = servicesDropdownSelected.text;
-    //   } else {
-    //     saveUpdateData.serviceNameId = '%';
-    //   }
-    // }
-
     if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
       let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
       servicesDropdownSelectedText = servicesDropdownSelected.text;
