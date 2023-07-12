@@ -91,6 +91,8 @@ namespace Anywhere.service.Data.DocumentConversion
                 WorkflowDataGetter wfdg = new WorkflowDataGetter();
                 PlanDataGetter pdg = new PlanDataGetter();
                 string sendPlanResult;
+                bool planUploadSuccess = true;
+                bool attachmentUploadSuccess = true;
                 //string noAttachmentsMessage = string.Empty;
 
                 long lngPlanId = long.Parse(planId);
@@ -163,10 +165,12 @@ namespace Anywhere.service.Data.DocumentConversion
 
             if (wfAttachmentIds.Length == 0 && sigAttachmentIds.Length == 0 && planAttachmentIds.Length == 0)
             {
+                aadg.setUploadUserId(token, planId);
                 return "Successfully sent Plan to DODD.";
             }
             else
             {
+                aadg.setUploadUserId(token, planId);
                 return "Successfully sent Plan and selected Attachments to DODD.";
             }
 
