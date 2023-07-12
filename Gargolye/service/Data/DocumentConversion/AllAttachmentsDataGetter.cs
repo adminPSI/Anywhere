@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.DocumentConversion
@@ -33,6 +34,28 @@ namespace Anywhere.service.Data.DocumentConversion
                 return "647: error ANYW_ISP_GetPlanAttachmentsWithOrdering";
             }
         }
+        
+        public string setUploadUserId(string token, string planId)
+        {
+            if (ValidateToken(token) == false)
+            {
+                return "invalid token";
+            }
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(planId);
+            string text = "CALL DBA.ANYW_ISP_SetUploadUserId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("647.5", ex.Message + "ANYW_ISP_SetUploadUserId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "647.5: error ANYW_ISP_SetUploadUserId";
+            }
+        }
+
 
         public MemoryStream GetAttachmentData(string attachmentId)
         {
