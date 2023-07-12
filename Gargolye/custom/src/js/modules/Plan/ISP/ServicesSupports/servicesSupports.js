@@ -1622,7 +1622,7 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: () => {
+      callback: async () => {
         doneBtn.classList.add('disabled');
 
         if (isNew) {
@@ -1650,6 +1650,9 @@ const servicesSupports = (() => {
 
         hcbsSelected = undefined;
         saveUpdateProvider = '';
+
+        let assessmentPlanValidation = await planValidation.assessmentValidation(planID);
+        planValidation.servicesAndSuportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId)
       },
     });
     const cancelBtn = button.build({
@@ -2276,7 +2279,7 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: () => {
+      callback: async () => {
         doneBtn.classList.add('disabled');
         if (isNew) {
           if (fromAssessment) {
@@ -2288,6 +2291,9 @@ const servicesSupports = (() => {
           }
 
           insertAdditionalSupport(saveUpdateData, fromAssessment);
+
+          let assessmentPlanValidation = await planValidation.assessmentValidation(planID);
+          planValidation.servicesAndSuportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId)
         } else {
           updateAdditionalSupport(saveUpdateData);
         }
@@ -2657,7 +2663,7 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: () => {
+      callback: async () => {
         doneBtn.classList.add('disabled');
 
         if (isNew) {
@@ -2673,6 +2679,9 @@ const servicesSupports = (() => {
         } else {
           updateProfessionalReferral(saveUpdateData);
         }
+
+        let assessmentPlanValidation = await planValidation.assessmentValidation(planID);
+        planValidation.servicesAndSuportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId)
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(professionalReferralPopup);

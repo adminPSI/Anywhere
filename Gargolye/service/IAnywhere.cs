@@ -860,6 +860,14 @@ namespace Anywhere
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+              BodyStyle = WebMessageBodyStyle.Wrapped,
+              ResponseFormat = WebMessageFormat.Json,
+              RequestFormat = WebMessageFormat.Json,
+              UriTemplate = "/getMissingPlanSignatures/")]
+        DashboardWorker.MissingPlanSignaturesObj[] getMissingPlanSignatures(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
              BodyStyle = WebMessageBodyStyle.Wrapped,
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,

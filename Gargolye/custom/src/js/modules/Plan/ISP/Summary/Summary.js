@@ -434,7 +434,8 @@ const planSummary = (function () {
 
             importantToAnswerId = rowData['importantTo'].answerId;
             importantForAnswerId = rowData['importantFor'].answerId;
-
+            rowData['importantTo'].answer = importantTo;
+            rowData['importantFor'].answer = importantFor;
             row = 1;
           }
         }
@@ -891,6 +892,7 @@ const planSummary = (function () {
             upateSingleEmptyRowInsteadOfAddingNew = true;
 
             skillAbilityId = rowData['skillAbility'].answerId;
+            rowData['skillAbility'].answer = skillAbility;
 
             row = 1;
           }
@@ -1596,6 +1598,11 @@ const planSummary = (function () {
             whatIsRiskId = rowData['whatIsRisk'].answerId;
             whatSupportLooksLikeId = rowData['whatSupportLooksLike'].answerId;
             whoResponsibleId = rowData['whoResponsible'].answerId;
+
+            rowData['riskSupervision'].answer = riskSupervision;
+            rowData['whatIsRisk'].answer = whatIsRisk;
+            rowData['whatSupportLooksLike'].answer = whatSupportLooksLike;
+            rowData['whoResponsible'].answer = whoResponsible;
 
             row = 1;
           }

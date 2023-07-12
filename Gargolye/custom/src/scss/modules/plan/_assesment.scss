@@ -144,6 +144,9 @@
     margin: 0;
     max-width: 32%;
     padding: 0;
+    justify-content: center;
+    align-items: center;
+    display: flex;
   }
 }
 .moreMenuPopup {
@@ -888,6 +891,9 @@
         .numOfQuestionsUnawnseredWrap {
           top: -4px;
         }
+        .workingAlertDiv {
+          top: -4px
+        }
       }
       .tableOfContents__subSectionHeading {
         display: none;
@@ -967,4 +973,23 @@
       cursor: pointer;
     }
   }
+}
+
+.tocAlertDiv, .workingAlertDiv {
+  svg {
+    height: 24px;
+    color: red;
+    position: relative;
+    bottom: 3px;
+  }
+}
+
+.workingAlertDiv {
+  position: relative;
+  display: inline-block;
+  top: 10px;
+}
+
+.tableOfContents__heading {
+  display: flex;
 }

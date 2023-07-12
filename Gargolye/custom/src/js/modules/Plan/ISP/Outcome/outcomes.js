@@ -394,8 +394,8 @@ const planOutcomes = (() => {
       });
     }
 
-    validationCheck = await planValidation.outcomesValidation(planId);
-    planValidation.outcomeTabsValidationCheck(validationCheck);
+    validationCheck = await planValidation.ISPValidation(planId);
+    planValidation.checkAllOutcomesComplete(validationCheck);
   }
   //-- Markup ---------
   function toggleAddNewOutcomePopupDoneBtn() {
@@ -915,13 +915,13 @@ const planOutcomes = (() => {
      const alertDiv = document.getElementById(`experienceAlert${outcomeId}`);
 
      // checks for missing data
-     validationCheck = await planValidation.outcomesValidation(planId);
+     validationCheck = await planValidation.ISPValidation(planId);
 
      // displays or removes alert depending on validationCheck
      planValidation.experiencesValidationCheck(validationCheck, outcomeId, alertDiv);
 
      // displays or removes alerts for tabs in the navs depending on validationCheck
-     planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck);
+     planValidation.checkAllOutcomesComplete(validationCheck);
   }
   //-- Helpers --------
   function getColTextForWhenHowOften(freq, value, text) {
@@ -1355,13 +1355,13 @@ const planOutcomes = (() => {
         const alertDiv = document.getElementById(`experienceAlert${saveUpdateData.outcomeId}`);
 
         // checks for missing data
-        validationCheck = await planValidation.outcomesValidation(planId);
+        validationCheck = await planValidation.ISPValidation(planId);
 
         // displays or removes alert depending on validationCheck
         planValidation.experiencesValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
 
         // displays or removes alerts for tabs in the navs depending on validationCheck
-        planValidation.outcomeTabsValidationCheck(saveUpdateData.outcomeId, validationCheck);
+        planValidation.checkAllOutcomesComplete(validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -1720,13 +1720,13 @@ const planOutcomes = (() => {
     const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
 
     // checks for missing data
-    validationCheck = await planValidation.outcomesValidation(planId);
+    validationCheck = await planValidation.ISPValidation(planId);
 
     // displays or removes alert depending on validationCheck
     planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
 
     // displays or removes alerts for tabs in the navs depending on validationCheck
-    planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck);
+    planValidation.checkAllOutcomesComplete(validationCheck);
   }
   //-- Markup ---------
   function toggleReviewsPopupDoneBtn() {
@@ -1845,13 +1845,13 @@ const planOutcomes = (() => {
     const alertDiv = document.getElementById(`reviewsAlert${saveUpdateData.outcomeId}`);
 
     // checks for missing data
-    validationCheck = await planValidation.outcomesValidation(planId);
+    validationCheck = await planValidation.ISPValidation(planId);
 
     // displays or removes alert depending on validationCheck
     planValidation.reviewsValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
 
     // displays or removes alerts for tabs in the navs depending on validationCheck
-    planValidation.outcomeTabsValidationCheck(saveUpdateData.outcomeId, validationCheck);
+    planValidation.checkAllOutcomesComplete(validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -2072,11 +2072,14 @@ const planOutcomes = (() => {
           text: 'Yes',
           style: 'danger',
           type: 'contained',
-          callback: () => {
+          callback: async () => {
             deleteOutcome(outcomeId);
             outcome.parentNode.removeChild(outcome);
             POPUP.hide(deleteWarningPopup);
             checkIfSummaryRequired();
+
+            validationCheck = await planValidation.ISPValidation(planId);
+            planValidation.checkAllOutcomesComplete(validationCheck);
           },
         });
         const noBtn = button.build({
@@ -2346,6 +2349,13 @@ const planOutcomes = (() => {
           progressSummary: textForSave,
           progressSummaryId: progressSummaryId,
         });
+
+        if (e.target.value === '') {
+          validationCheck.planProgressSummary = false;
+        } else {
+          validationCheck.planProgressSummary = true;
+        }
+        planValidation.checkAllOutcomesComplete(validationCheck);
       },
     });
     outcomesProgressSummary.classList.add('summaryOutcomesTextInput');
@@ -2372,8 +2382,9 @@ const planOutcomes = (() => {
           outcomeOrder: 0, //need this to  keep from first one defaulting to 2
         });
 
-        validationCheck = await planValidation.outcomesValidation(planId);
-        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck);
+        validationCheck = await planValidation.ISPValidation(planId);
+        planValidation.checkAllOutcomesComplete(validationCheck);
+
         const outcome = buildOutcome({ outcomeId, outcomeOrder, status: '0' });
         outcomesWrap.insertBefore(outcome, addOutcomeBtn);
         checkIfSummaryRequired();
@@ -2416,7 +2427,7 @@ const planOutcomes = (() => {
     //   assessmentId: planId,
     // });
 
-    validationCheck = await planValidation.outcomesValidation(planId);
+    validationCheck = await planValidation.ISPValidation(planId);
      
     const planOutcomesData = validationCheck.outcomesData;
 

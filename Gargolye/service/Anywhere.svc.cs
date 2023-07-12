@@ -666,6 +666,11 @@ namespace Anywhere
             return singleEntryWorker.getEmployeeListAndCountInfoJSON(token, supervisorId);
         }
 
+        public DashboardWorker.MissingPlanSignaturesObj[] getMissingPlanSignatures(string token)
+        {
+            return dashWork.getMissingPlanSignatures(token);
+        }
+
         public DashboardWorker.SingleEntryCountObj[] getSingleEntryCountInfoJSON(string token)
         {
             return dashWork.getSingleEntryCountInfoJSON(token);
