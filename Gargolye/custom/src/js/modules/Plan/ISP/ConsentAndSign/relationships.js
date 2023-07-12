@@ -138,7 +138,8 @@ const csRelationship = (() => {
   }
   function showMainPopup() {
     gkRelationships = planData.getDropdownData().relationships;
-    gkRelationships = removeDups(gkRelationships);
+    //gkRelationships = removeDups(gkRelationships);
+    gkRelationships = gkRelationships;
     teamMemberPopup = document.getElementById('sig_mainPopup');
 
     importPopup = POPUP.build({

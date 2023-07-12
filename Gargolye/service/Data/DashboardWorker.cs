@@ -187,6 +187,8 @@ namespace Anywhere.service.Data
             public string effectiveEnd { get; set; }
             public string reviewDate { get; set; }
             public string consumerId { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
         }
 
         public class SingleEntryLocationObj

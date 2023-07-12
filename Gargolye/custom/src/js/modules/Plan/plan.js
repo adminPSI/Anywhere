@@ -179,14 +179,16 @@ const plan = (function () {
   function getHasPreviousPlans() {
     return previousPlansData ? (previousPlansData.length > 0 ? true : false) : false;
   }
-  function getISPValidation(){
+  function getISPValidation() {
     return ISPValidationCheck;
   }
   function getAssessmentValidation() {
     return assessmentValidationCheck;
   }
   //-- set
-  function setSelectedConsumer() {}
+  function setSelectedConsumer(consumer) {
+    selectedConsumer = consumer;
+  }
   function setPlanId(newPlanId) {
     planId = newPlanId;
   }
@@ -1494,13 +1496,17 @@ const plan = (function () {
     planHeaderGeneralInfoBar = buildGeneralInfoBar();
     planHeader.insertBefore(planHeaderGeneralInfoBar, planHeaderButtons);
   }
-  function getConsumerNameFromCard(consumerCard) {
-    const firstName = consumerCard.querySelector('.name_first');
-    const lastName = consumerCard.querySelector('.name_last');
+  function getConsumerNameFromCard({ consumerCard, firstName, lastName }) {
+    if (!consumerCard) {
+      return `${lastName} ${firstName}`;
+    }
 
-    if (!firstName || !lastName) return;
+    const firstName2 = consumerCard.querySelector('.name_first');
+    const lastName2 = consumerCard.querySelector('.name_last');
 
-    return `${lastName.innerText} ${firstName.innerText}`;
+    if (!firstName2 || !lastName2) return;
+
+    return `${lastName2.innerText} ${firstName2.innerText}`;
   }
   function buildGeneralInfoBar() {
     let type;
