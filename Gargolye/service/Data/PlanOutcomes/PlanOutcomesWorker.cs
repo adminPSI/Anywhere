@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Anywhere.service.Data.PlanServicesAndSupports;
+using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAssessmentWorker;
+using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 
 namespace Anywhere.service.Data.PlanOutcomes
 {
@@ -238,12 +240,19 @@ namespace Anywhere.service.Data.PlanOutcomes
             //get progress summary
             string planOutcomesProgressSummaryString = pdg.getPlanOutcomeProgressSummary(token, assessmentId);
             PlanPorgressSummary[] planOutcomesProgressSummaryObj = js.Deserialize<PlanPorgressSummary[]>(planOutcomesProgressSummaryString);
+            //Paid Support
+            long anywAssessmentId;
+            anywAssessmentId = long.Parse(assessmentId);
+            ServicesAndSupportsDataGetter dataGetter = new ServicesAndSupportsDataGetter();
+            string paidSupportString = dataGetter.getPaidSupports(token, anywAssessmentId, 0);
+            PaidSupports[] paidSupportObj = js.Deserialize<PaidSupports[]>(paidSupportString);
 
             PlanTotalOutcome totalOutcome = new PlanTotalOutcome();
             totalOutcome.planOutcome = planOutcomesObj;
             totalOutcome.planOutcomeExperiences = planOutcomesExperiencesObj;
             totalOutcome.planReviews = planOutcomesReviewObj;
             totalOutcome.planProgressSummary = planOutcomesProgressSummaryObj;
+            totalOutcome.paidSupports = paidSupportObj;
 
             return totalOutcome;
         }
@@ -374,6 +383,7 @@ namespace Anywhere.service.Data.PlanOutcomes
             public PlanOutcomesExperiences[] planOutcomeExperiences { get; set; }
             public PlanOutcomesReviews[] planReviews { get; set; }
             public PlanPorgressSummary[] planProgressSummary { get; set; }
+            public PaidSupports[] paidSupports { get; set; }
         }
 
         public class PlanPorgressSummary
@@ -427,6 +437,25 @@ namespace Anywhere.service.Data.PlanOutcomes
             public string whoResponsible { get; set; }
             public string contactId { get; set; }
             public string reviewOrder { get; set; }
+        }
+        public class PaidSupports
+        {
+            public string paidSupportsId { get; set; }
+            public string anywAssessmentId { get; set; }
+            public string providerId { get; set; }
+            public string assessmentAreaId { get; set; }
+            public string serviceNameId { get; set; }
+            public string scopeOfservice { get; set; }
+            public string howOftenValue { get; set; }
+            public string howOftenFrequency { get; set; }
+            public string howOftenText { get; set; }
+            public string beginDate { get; set; }
+            public string endDate { get; set; }
+            public string fundingSource { get; set; }
+            public string fundingSourceText { get; set; }
+            public string rowOrder { get; set; }
+            public string serviceNameOther { get; set; }
+
         }
 
     }

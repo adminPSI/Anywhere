@@ -395,7 +395,7 @@ const planOutcomes = (() => {
     }
 
     validationCheck = await planValidation.ISPValidation(planId);
-    planValidation.checkAllOutcomesComplete(validationCheck);
+    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Markup ---------
   function toggleAddNewOutcomePopupDoneBtn() {
@@ -508,10 +508,12 @@ const planOutcomes = (() => {
 
       if (detailsText === '') {
         detailsTextInput.classList.add('error');
-        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck, true, true);
+        planValidation.updateOutcomeDetails(outcomeId, validationCheck, true);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       } else {
         detailsTextInput.classList.remove('error');
-        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck, true, false);
+        planValidation.updateOutcomeDetails(outcomeId, validationCheck, false);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       }
 
       toggleAddNewOutcomePopupDoneBtn();
@@ -914,14 +916,14 @@ const planOutcomes = (() => {
      // grabs the review alert for this specific outcome
      const alertDiv = document.getElementById(`experienceAlert${outcomeId}`);
 
-     // checks for missing data
+     // retrieves new data from database
      validationCheck = await planValidation.ISPValidation(planId);
 
-     // displays or removes alert depending on validationCheck
+     // displays or removes alert for button depending on validationCheck
      planValidation.experiencesValidationCheck(validationCheck, outcomeId, alertDiv);
 
      // displays or removes alerts for tabs in the navs depending on validationCheck
-     planValidation.checkAllOutcomesComplete(validationCheck);
+     planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Helpers --------
   function getColTextForWhenHowOften(freq, value, text) {
@@ -1357,11 +1359,11 @@ const planOutcomes = (() => {
         // checks for missing data
         validationCheck = await planValidation.ISPValidation(planId);
 
-        // displays or removes alert depending on validationCheck
+        // displays or removes button alert depending on validationCheck
         planValidation.experiencesValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
 
         // displays or removes alerts for tabs in the navs depending on validationCheck
-        planValidation.checkAllOutcomesComplete(validationCheck);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -1558,6 +1560,9 @@ const planOutcomes = (() => {
                 false,
               ),
           };
+
+          validationCheck.selectedProviders.push(respObj[0].responsibleProvider);
+
           const experiencesTable = table.build(tableOptions);
           experiencesTable.classList.add('experiencesTable');
           experiencesTable.classList.add('sortableTable');
@@ -1607,6 +1612,9 @@ const planOutcomes = (() => {
    
     // checks if alert should be visible
     planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv); 
+
+    // checks if providers are in paid supports providers
+    planValidation.checkExperienceProviders(validationCheck);
 
     return experiencesDiv;
   }
@@ -1722,11 +1730,11 @@ const planOutcomes = (() => {
     // checks for missing data
     validationCheck = await planValidation.ISPValidation(planId);
 
-    // displays or removes alert depending on validationCheck
+    // displays or removes button alert depending on validationCheck
     planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
 
     // displays or removes alerts for tabs in the navs depending on validationCheck
-    planValidation.checkAllOutcomesComplete(validationCheck);
+    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Markup ---------
   function toggleReviewsPopupDoneBtn() {
@@ -1847,11 +1855,11 @@ const planOutcomes = (() => {
     // checks for missing data
     validationCheck = await planValidation.ISPValidation(planId);
 
-    // displays or removes alert depending on validationCheck
+    // displays or removes button alert depending on validationCheck
     planValidation.reviewsValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
 
     // displays or removes alerts for tabs in the navs depending on validationCheck
-    planValidation.checkAllOutcomesComplete(validationCheck);
+    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -2079,7 +2087,7 @@ const planOutcomes = (() => {
             checkIfSummaryRequired();
 
             validationCheck = await planValidation.ISPValidation(planId);
-            planValidation.checkAllOutcomesComplete(validationCheck);
+            planValidation.updatedIspOutcomesSetAlerts(validationCheck);
           },
         });
         const noBtn = button.build({
@@ -2209,8 +2217,12 @@ const planOutcomes = (() => {
       outcomesUpdateData.outcome = e.target.value;
       if (outcomesUpdateData.outcome === '') {
         outcomeInput.classList.add('error');
+        planValidation.updateOutcome(outcomeId, validationCheck, true);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       } else {
         outcomeInput.classList.remove('error');
+        planValidation.updateOutcome(outcomeId, validationCheck, false);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       }
     });
     // Details
@@ -2237,10 +2249,12 @@ const planOutcomes = (() => {
       outcomesUpdateData.details = e.target.value;
       if (outcomesUpdateData.details === '') {
         detailsInput.classList.add('error');
-        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck, true, true);
+        planValidation.updateOutcomeDetails(outcomeId, validationCheck, true);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       } else {
         detailsInput.classList.remove('error');
-        planValidation.outcomeTabsValidationCheck(outcomeId, validationCheck, true, false);
+        planValidation.updateOutcomeDetails(outcomeId, validationCheck, false);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       }
     });
     // History
@@ -2355,7 +2369,7 @@ const planOutcomes = (() => {
         } else {
           validationCheck.planProgressSummary = true;
         }
-        planValidation.checkAllOutcomesComplete(validationCheck);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     outcomesProgressSummary.classList.add('summaryOutcomesTextInput');
@@ -2383,7 +2397,7 @@ const planOutcomes = (() => {
         });
 
         validationCheck = await planValidation.ISPValidation(planId);
-        planValidation.checkAllOutcomesComplete(validationCheck);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
 
         const outcome = buildOutcome({ outcomeId, outcomeOrder, status: '0' });
         outcomesWrap.insertBefore(outcome, addOutcomeBtn);
@@ -2422,11 +2436,6 @@ const planOutcomes = (() => {
       isSortable = isReadOnly ? false : true;
     }
 
-    // const planOutcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
-    //   token: $.session.Token,
-    //   assessmentId: planId,
-    // });
-
     validationCheck = await planValidation.ISPValidation(planId);
      
     const planOutcomesData = validationCheck.outcomesData;
@@ -2454,6 +2463,29 @@ const planOutcomes = (() => {
     dropdownData = planData.getDropdownData();
     outcomesData = mapOutcomesDetails(planOutcomesData);
     hasPreviousPlan = plan.getHasPreviousPlans();
+
+    const ddData = dropdownData.serviceVendors.map(dd => {
+      return {
+        value: dd.vendorId,
+        text: dd.vendorName,
+      };
+    });
+
+    const { getPlanOutcomesPaidSupportProvidersResult: selectedVendors } =
+      await planOutcomesAjax.getPlanOutcomesPaidSupportProviders(planId);
+      
+      function getSelectedVendorIds() {
+        return selectedVendors.reduce((acc, vendor) => {
+          acc.push(vendor.vendorId);
+          return acc;
+        }, []);
+      }
+
+    const selectedVendorIds = getSelectedVendorIds();
+
+    const paidSupportData = ddData.filter(provider => selectedVendorIds.includes(provider.value));
+
+    validationCheck.paidSupportsProviders = paidSupportData;
 
     return validationCheck;
   }

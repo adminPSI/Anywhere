@@ -507,11 +507,16 @@ const planValidation = (function () {
       let validationCheck = {
         complete: true,
         details: [],
-        experiences: [],
-        reviews: [],
+        missingExperiences: [],
+        missingReviews: [],
         planProgressSummary: false,
+        outcome: [],
+        selectedProviders: [],
+        paidSupportsProviders: [],
+        invalidProviders: []
       };
   
+
       outcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
         token: $.session.Token,
         assessmentId: planId,
@@ -519,20 +524,29 @@ const planValidation = (function () {
 
       validationCheck.outcomesData = outcomesData;
 
-      if(outcomesData.planOutcome.length === 0 && outcomesData.planOutcomeExperiences.length === 0 && outcomesData.planProgressSummary.length === 0 && outcomesData.planReviews.length === 0) {
-        validationCheck.complete = false;
-        validationCheck.planProgressSummary = false;
-        return validationCheck;
+      for (const item of outcomesData.planOutcomeExperiences) {
+        for (const responsibility of item.planExperienceResponsibilities) {
+          const responsibleProvider = responsibility.responsibleProvider;
+          (validationCheck.selectedProviders).push(responsibleProvider);
+        }
       }
+
+      const paidSupportsIds = outcomesData.paidSupports.map(obj => obj.providerId);
+      validationCheck.paidSupportsProviders = paidSupportsIds;
+
+      const invalidProviders = (validationCheck.selectedProviders).filter(number => number !== "" && number !== "%" && !(validationCheck.paidSupportsProviders).includes(number));
+      validationCheck.invalidProviders = invalidProviders;
   
       // get a list of the unique outcomeIds
       var uniqueOutcomeIds = Array.from(new Set(outcomesData.planOutcome.map(obj => obj.outcomeId)));
   
-      // if any outcome is missing the 'Details to Know' section, return false on the validation check
+      // if any outcome is missing the 'Details to Know' or 'Outcome' section, return false on the validation check
       for (let i = 0; i < outcomesData.planOutcome.length; i++) {
         if (outcomesData.planOutcome[i].details === '') {
-          validationCheck.complete = false;
           validationCheck.details.push(outcomesData.planOutcome[i].outcomeId);
+        }
+        if (outcomesData.planOutcome[i].outcome === '') {
+          validationCheck.outcome.push(outcomesData.planOutcome[i].outcomeId);
         }
       }
   
@@ -550,104 +564,59 @@ const planValidation = (function () {
         num => !outcomeReviewOutcomeIds.includes(num),
       );
   
-      validationCheck.experiences = missingOutcomeExperiences;
-      validationCheck.reviews = missingOutcomeReviews;
+      validationCheck.missingExperiences = missingOutcomeExperiences;
+      validationCheck.missingReviews = missingOutcomeReviews;
   
       // if an outcome is missing a review or experience, return false on the validation check
       if (missingOutcomeReviews.length > 0 || missingOutcomeExperiences.length > 0) {
         validationCheck.complete = false;
       }
   
-      // check the plan progress summary value, if empty string then show alert
-      if (outcomesData.planProgressSummary[0].progressSummary !== '') {
-        validationCheck.planProgressSummary = true;
-      } else {
-        validationCheck.planProgressSummary = false;
-      }
+      // check the plan progress summary value
+      validationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
   
-     // checks if plan has an outcome and plan summary, and all outcomes have an experience and review
-     if (
-        validationCheck.details.length === 0 &&
-        validationCheck.experiences.length === 0 &&
-        validationCheck.reviews.length === 0 &&
-        validationCheck.planProgressSummary === true &&
-        outcomesData.planOutcome.length > 0
-      ) {
-        validationCheck.complete = true;
-      } else {
-        validationCheck.complete = false;
-      }
+     // checks if all required data on the page has been filled out
+     checkAllOutcomesComplete(validationCheck);
   
       return validationCheck;
     }
-  
-    function outcomeTabsValidationCheck(outcomeId, validationCheck, overrideCheck, emptyString) {
+
+    // sets the alerts status based on the completion of the ISP outcomes data
+    function updatedIspOutcomesSetAlerts(validationCheck) {
+      //checkExperienceProviders(validationCheck);
       checkAllOutcomesComplete(validationCheck);
-  
-      // Top/ Main navigation
+
+      // ISP Main Nav and ISP Outcomes Tab 
       const ISPAlertDiv = document.getElementById('navAlertISP');
-  
-      // ISP tab navigation
       const outcomesNav = document.getElementById('outcomesAlert');
-  
-      // if override is true, then set alerts to show/ if false remove the alerts
-      if (overrideCheck === true) {
-        updateOutcomeDetails(outcomeId, validationCheck, emptyString);
-        checkAllOutcomesComplete(validationCheck);
-  
-        // if the details section for this outcome is set to an empty string, set the alerts
-        if (validationCheck.details.length > 0) {
-          outcomesNav.style.display = 'block';
-          ISPAlertDiv.style.display = 'flex';
-        }
-  
-        // if the details array in the validation check is not 0, and the rest of the outcome is not complete, then the alerts should still be there
-        if (validationCheck.details.length === 0 && validationCheck.complete === true) {
-          outcomesNav.style.display = 'none';
-          ISPAlertDiv.style.display = 'none';
-        }
+
+      if (validationCheck.complete === true) {
+        outcomesNav.style.display = 'none';
+        ISPAlertDiv.style.display = 'none';
       } else {
-        if (validationCheck.complete === true) {
-          outcomesNav.style.display = 'none';
-          ISPAlertDiv.style.display = 'none';
-        } else {
-          outcomesNav.style.display = 'block';
-          ISPAlertDiv.style.display = 'flex';
-        }
+        outcomesNav.style.display = 'block';
+        ISPAlertDiv.style.display = 'flex';
       }
-  
+
       return validationCheck;
     }
   
+    // Checks if all fields on the ISP outcomes are completed
     function checkAllOutcomesComplete(validationCheck) {
-        const ISPAlertDiv = document.getElementById('navAlertISP');
-        const outcomesNav = document.getElementById('outcomesAlert');
-
-      // checks if plan has an outcome and plan summary, and all outcomes have an experience and review
-      if (
+      validationCheck.complete =
         validationCheck.details.length === 0 &&
-        validationCheck.experiences.length === 0 &&
-        validationCheck.reviews.length === 0 &&
-        validationCheck.planProgressSummary === true &&
-        outcomesData.planOutcome.length > 0
-      ) {
-        validationCheck.complete = true;
-      } else {
-        validationCheck.complete = false;
-      }
+        validationCheck.missingExperiences.length === 0 &&
+        validationCheck.missingReviews.length === 0 &&
+        validationCheck.planProgressSummary &&
+        validationCheck.outcome.length === 0 &&
+        outcomesData.planOutcome.length > 0 &&
+        validationCheck.invalidProviders.length === 0;
 
-      if (validationCheck.complete) {
-        ISPAlertDiv.style.display = 'none';
-        outcomesNav.style.display = 'none';
-        } else {
-            ISPAlertDiv.style.display = 'flex';
-            outcomesNav.style.display = 'flex';
-        }
-  
       return validationCheck;
     }
   
     // ISP DETAILS TO KNOW
+     // adds the outcomeId to a list of unfinished outcomes if the value is an empty string, if the value is not empty it will remove that id from the list
     function updateOutcomeDetails(outcomeId, validationCheck, emptyString) {
       if (emptyString) {
         validationCheck.details.push(outcomeId);
@@ -658,25 +627,44 @@ const planValidation = (function () {
   
       return validationCheck;
     }
-  
-    // ISP REVIEWS
-    function reviewsValidationCheck(validationCheck, outcomeId, alertDiv) {
-      // if an outcome is missing a review, add alert/ else remove alert
-      if (validationCheck.reviews.includes(outcomeId)) {
-        alertDiv.style.display = 'flex';
+
+    // ISP OUTCOME FIELD
+    // adds the outcomeId to a list of unfinished outcomes if the value is an empty string, if the value is not empty it will remove that id from the list
+    function updateOutcome(outcomeId, validationCheck, emptyString) {
+      if (emptyString) {
+        validationCheck.outcome.push(outcomeId);
       } else {
-        alertDiv.style.display = 'none';
+        // Remove this outcome ID from the outcome array in the validation check
+        validationCheck.outcome = validationCheck.outcome.filter(id => id !== outcomeId);
       }
+    
+      return validationCheck;
+    }
+
+    // ISP REVIEWS
+    //checks if the outcome has a review, if not, set the alert next to the add review button
+    function reviewsValidationCheck(validationCheck, outcomeId, alertDiv) {
+      const display = validationCheck.missingReviews.includes(outcomeId) ? 'flex' : 'none';
+      alertDiv.style.display = display;
     }
   
     //ISP EXPERIENCES
+    //checks if the outcome has an experience, if not, set the alert next to the add experience button
     function experiencesValidationCheck(validationCheck, outcomeId, alertDiv) {
-      // if an outcome is missing an experience, add alert/ else remove alert
-      if (validationCheck.experiences.includes(outcomeId)) {
-        alertDiv.style.display = 'flex';
-      } else {
-        alertDiv.style.display = 'none';
-      }
+      const display = validationCheck.missingExperiences.includes(outcomeId) ? 'flex' : 'none';
+      alertDiv.style.display = display;
+    }
+
+    // checks if the provider selected for the experience is also in the paid supports
+    function checkExperienceProviders(validationCheck) {
+      // Extract the first values from the second array objects
+      const secondValues = (validationCheck.paidSupportsProviders).map(obj => obj.value);
+
+      // Create a list of values from the first array that don't exist in the second array
+      const invalidProviders = validationCheck.selectedProviders.filter(value => value !== '' && value !== '%' && !secondValues.includes(value));
+      
+      validationCheck.invalidProviders = invalidProviders;
+      return validationCheck;
     }
   
     async function init(planId) {
@@ -691,7 +679,7 @@ const planValidation = (function () {
       updatedAssessmenteValidation,
       ISPValidation,
       checkAllOutcomesComplete,
-      outcomeTabsValidationCheck,
+      updatedIspOutcomesSetAlerts,
       reviewsValidationCheck,
       experiencesValidationCheck,
       workingSectionCheck,
@@ -699,6 +687,9 @@ const planValidation = (function () {
       tocAssessmentCheck,
       findQuestionIdCategory,
       servicesAndSupportsBtnCheck,
+      updateOutcome,
+      updateOutcomeDetails,
+      checkExperienceProviders,
       init,
     };
   })();
