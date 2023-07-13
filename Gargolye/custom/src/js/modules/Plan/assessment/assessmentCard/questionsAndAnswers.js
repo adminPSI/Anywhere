@@ -180,8 +180,9 @@
           } else {
             inputEle.value = '';
             const radios = [...inputWrap.querySelectorAll('input')];
-            if (radios.length === 0) return;
-            radios.forEach(radio => (radio.checked = false));
+            if (radios.length !== 0) {
+              radios.forEach(radio => (radio.checked = false));
+            }
           }
 
           addAnswer(answerId);
@@ -306,16 +307,18 @@
       let applied = e.target.checked ? 'Y' : 'N';
 
       // Find the object with matching sectionId and obtain the index
-      const matchingIndex = (assessmentValidationCheck.sectionsApplicable).findIndex(obj => obj.sectionId === sectionID);
+      const matchingIndex = assessmentValidationCheck.sectionsApplicable.findIndex(
+        obj => obj.sectionId === sectionID,
+      );
 
       // Update the value if a match is found
       if (matchingIndex !== -1) {
-        (assessmentValidationCheck.sectionsApplicable[matchingIndex]).applicable = applied;
+        assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
         //(assessmentValidationCheck.sectionsApplicable[matchingIndex]).applicable === 'Y' ? 'N' : 'Y';
       }
 
-       // checks entire assessments for validation errors
-       planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+      // checks entire assessments for validation errors
+      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
       return;
     }
@@ -357,30 +360,34 @@
         sectionQuestionCount[sectionId][setId][questionId].answered =
           e.target.checked === true ? true : false;
 
-          const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
+        const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
-          if (questionIdCategory !== 'Variable not found in the object' && questionIdCategory !== 'noSupport' ) {
-            assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] = e.target.checked;
-          }
+        if (
+          questionIdCategory !== 'Variable not found in the object' &&
+          questionIdCategory !== 'noSupport'
+        ) {
+          assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] =
+            e.target.checked;
+        }
 
-          if (questionIdCategory === 'noSupport') {
-            assessmentValidationCheck.servicesAndSupportsChecked[sectionId] = {
-              ...assessmentValidationCheck.servicesAndSupportsChecked[sectionId], // Preserve existing properties
-              noSupport: true, // Set noSupport to true
-            };
-            
-            for (const key in assessmentValidationCheck.servicesAndSupportsChecked[sectionId]) {
-              if (key !== 'noSupport') {
-                assessmentValidationCheck.servicesAndSupportsChecked[sectionId][key] = false;
-              }
+        if (questionIdCategory === 'noSupport') {
+          assessmentValidationCheck.servicesAndSupportsChecked[sectionId] = {
+            ...assessmentValidationCheck.servicesAndSupportsChecked[sectionId], // Preserve existing properties
+            noSupport: true, // Set noSupport to true
+          };
+
+          for (const key in assessmentValidationCheck.servicesAndSupportsChecked[sectionId]) {
+            if (key !== 'noSupport') {
+              assessmentValidationCheck.servicesAndSupportsChecked[sectionId][key] = false;
             }
           }
+        }
 
-          // checks the status of the buttons and adds/removes error class if needed for specific section
-          planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
+        // checks the status of the buttons and adds/removes error class if needed for specific section
+        planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
 
-          // checks entire assessments for validation errors
-          planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+        // checks entire assessments for validation errors
+        planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
       }
       if (type === 'radio') {
         const radioLabelText = e.target.nextSibling.innerHTML;
@@ -398,9 +405,13 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
 
             if (sectionId === '41') {
-              assessmentValidationCheck = planValidation.updateAnswerWorkingSection(assessmentValidationCheck, answer, answerId)
+              assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
+                assessmentValidationCheck,
+                answer,
+                answerId,
+              );
 
-               // checks entire assessments for validation errors
+              // checks entire assessments for validation errors
               planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
             }
           }
@@ -411,7 +422,11 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(assessmentValidationCheck, answer, answerId)
+          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
+            assessmentValidationCheck,
+            answer,
+            answerId,
+          );
           // checks entire assessments for validation errors
           planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
         }
@@ -429,7 +444,11 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
           }
 
-          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(assessmentValidationCheck, answer, answerId)
+          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
+            assessmentValidationCheck,
+            answer,
+            answerId,
+          );
           // checks entire assessments for validation errors
           planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
         } else {
@@ -439,7 +458,11 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(assessmentValidationCheck, answer, answerId)
+          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
+            assessmentValidationCheck,
+            answer,
+            answerId,
+          );
           // checks entire assessments for validation errors
           planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
         }
@@ -554,18 +577,26 @@
 
     // number of paid supports attached to this section
     let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
-    let additionalSupportCount = assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
-    let professionalReferralCounts = assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
-    let potentialOutcomeCount = assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
+    let additionalSupportCount =
+      assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
+    let professionalReferralCounts =
+      assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
+    let potentialOutcomeCount =
+      assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
 
-    // returns true if the section has been checked 
+    // returns true if the section has been checked
     let paidSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport;
-    let additionalSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport || assessmentValidationCheck.servicesAndSupportsChecked[id].technology || assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
-    let professionalReferralChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
-    let potentialOutcomeChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
+    let additionalSupportChecked =
+      assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport ||
+      assessmentValidationCheck.servicesAndSupportsChecked[id].technology ||
+      assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
+    let professionalReferralChecked =
+      assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
+    let potentialOutcomeChecked =
+      assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
 
     const outcomesBtn = button.build({
-      text:`Add Outcome (${potentialOutcomeCount})`,
+      text: `Add Outcome (${potentialOutcomeCount})`,
       style: 'secondary',
       type: 'contained',
       id: `outcomesBtn${id}`,
@@ -735,8 +766,8 @@
         // For text areas with colName "What’s Working" and "What's Not Working"
         if (colName.trim().split(' ').pop() === 'Working') {
           textAreaCharLimit = 1000;
-        }        
-        
+        }
+
         questionInput = input.build({
           type: 'textarea',
           style: 'secondary',
@@ -1366,8 +1397,12 @@
 
     const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
-    if (questionIdCategory !== 'Variable not found in the object' && questionIdCategory !== 'noSupport' ) {
-      assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] = isChecked;
+    if (
+      questionIdCategory !== 'Variable not found in the object' &&
+      questionIdCategory !== 'noSupport'
+    ) {
+      assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] =
+        isChecked;
     }
 
     const questionInputMarkup = input.buildNativeCheckbox({
