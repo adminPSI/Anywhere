@@ -156,11 +156,17 @@ const signatureWidget = (function () {
           onClick: async () => {
             if ($.session.applicationName === 'Advisor') {
               const newId = await planAjax.getConsumerPeopleIdAsync(d.consumerId);
-              $.session.planPeopleId = newId[0].id;
-              plan.setSelectedConsumer({
-                id: $.session.planPeopleId,
-                consumerId: d.consumerId,
-              });
+              if (newId) {
+                $.session.planPeopleId = newId[0].id;
+                plan.setSelectedConsumer({
+                  id: $.session.planPeopleId,
+                  consumerId: d.consumerId,
+                });
+              } else {
+                plan.setSelectedConsumer({
+                  id: d.consumerId,
+                });
+              }
             } else {
               plan.setSelectedConsumer({
                 id: d.consumerId,
@@ -183,7 +189,7 @@ const signatureWidget = (function () {
             DOM.clearActionCenter();
             setActiveModuleAttribute('plan');
             UTIL.toggleMenuItemHighlight('plan');
-            plan.buildPlanPage(['i']);
+            plan.buildPlanPage(['a']);
           },
         });
       });
