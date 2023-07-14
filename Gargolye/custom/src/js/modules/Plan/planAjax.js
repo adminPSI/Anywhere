@@ -529,7 +529,7 @@ const planAjax = (function () {
           '/' +
           $.webServer.serviceName +
           '/getConsumerPeopleId/',
-        data: '{"consumerId":"' + consumerId + '"}',
+        data: JSON.stringify({ consumerId: consumerId }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });

@@ -352,6 +352,7 @@ const planData = (() => {
         ...defaultDropdowns,
       };
 
+      dropdowns.relationshipsWithDups = dropdowns.relationships;
       dropdowns.relationships = removeDupRelationships(dropdowns.relationships);
     } catch (error) {
       console.log(error);
