@@ -95,7 +95,7 @@ const assessmentAjax = (function () {
     extraSpaceInput.setAttribute('name', 'extraSpace');
       extraSpaceInput.setAttribute('value', retrieveData.extraSpace);  
       var toDODDInput = document.createElement('input');
-      toDODDInput.setAttribute('name', 'extraSpace');
+      toDODDInput.setAttribute('name', 'toDODD');
       toDODDInput.setAttribute('value', retrieveData.toDODD); 
       var ispInput = document.createElement('input');
       ispInput.setAttribute('name', 'isp');

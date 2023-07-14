@@ -423,7 +423,7 @@ const assessment = (function () {
         assessmentID,
         versionID,
             extraSpace: extraSpace,
-            toDODD,
+            toDODD: false,
         isp: true,
         oneSpan: false,
         planAttachmentIds,
