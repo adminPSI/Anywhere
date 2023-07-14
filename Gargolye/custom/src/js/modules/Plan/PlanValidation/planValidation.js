@@ -242,7 +242,7 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT DATA UPDATE CHECK
-    function updatedAssessmenteValidation() {
+    function updatedAssessmenteValidation(assessmentValidationCheck) {
       const workingAlertDiv = document.getElementById('workingAlert');
       const tocAlertDiv = document.getElementById('tocAlert');
       const tocMobileAlertDiv = document.getElementById('tocAlertMobile');
@@ -273,9 +273,13 @@ const planValidation = (function () {
   
       // If the working/not working section does not have a completed row, show the alert
       if (!assessmentValidationCheck.workingSectionComplete) {
-        workingAlertDiv.style.display = 'inline-block';
+        if (workingAlertDiv) {
+          workingAlertDiv.style.display = 'inline-block';
+        }
       } else {
-        workingAlertDiv.style.display = 'none';
+        if (workingAlertDiv) {
+          workingAlertDiv.style.display = 'none';
+        }
       }
   
       // If the assessment page has an error, show the nav alert
@@ -352,13 +356,17 @@ const planValidation = (function () {
       
           if (
             (assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport && paidSupportCount === 0) ||
-            (assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport || assessmentValidationCheck.servicesAndSupportsChecked[id].technology || assessmentValidationCheck.servicesAndSupportsChecked[id].comunityResource && additionalSupportCount === 0) ||
+            ((assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport || assessmentValidationCheck.servicesAndSupportsChecked[id].technology || assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource) && additionalSupportCount === 0) ||
             (assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral && professionalReferralCounts === 0) ||
             (assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome && potentialOutcomeCount === 0)
           ) {
-            tocSectionHeader.style.display = 'inline-block';
+            if (tocSectionHeader) {
+              tocSectionHeader.style.display = 'inline-block';
+            }
           } else {
-            tocSectionHeader.style.display = 'none';
+            if (tocSectionHeader) {
+              tocSectionHeader.style.display = 'none';
+            }
           }
         }
       
@@ -573,7 +581,9 @@ const planValidation = (function () {
       }
   
       // check the plan progress summary value
-      validationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
+      if (outcomesData.planProgressSummary[0]) {
+        validationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
+      }
   
      // checks if all required data on the page has been filled out
      checkAllOutcomesComplete(validationCheck);
@@ -676,6 +686,7 @@ const planValidation = (function () {
     return {
       createTooltip,
       getAssessmentValidation,
+      updateTocSectionHeaders,
       updatedAssessmenteValidation,
       ISPValidation,
       checkAllOutcomesComplete,

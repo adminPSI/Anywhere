@@ -109,18 +109,6 @@ const ISP = (function () {
         popup.style.overflow = 'auto';
         callback();
         POPUP.hide(popup);
-
-        // grabs the experience alert for this specific outcome
-        const alertDiv = document.getElementById(`experienceAlert${saveUpdateData.outcomeId}`);
-
-        // checks for missing data
-        validationCheck = await planValidation.ISPValidation(planId);
-
-        // displays or removes button alert depending on validationCheck
-        planValidation.experiencesValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
-
-        // displays or removes alerts for tabs in the navs depending on validationCheck
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     const noBtn = button.build({

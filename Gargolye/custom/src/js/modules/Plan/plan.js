@@ -1778,7 +1778,7 @@ const plan = (function () {
 
     DOM.autosizeTextarea();
 
-    planValidation.updatedAssessmenteValidation();
+    planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
   }
 
   // New Plan Setup Page
