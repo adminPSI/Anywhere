@@ -30,7 +30,7 @@ const EmploymentInformation = (() => {
             position = '';
             jobStanding = '';
             employer = '';
-            transportation = '';
+            transportation = '';//
             typeOfWork = '';
             selfEmployed = '';
             name = '';
