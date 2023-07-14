@@ -93,7 +93,10 @@ const assessmentAjax = (function () {
     versionIDInput.id = 'versionID';
     var extraSpaceInput = document.createElement('input');
     extraSpaceInput.setAttribute('name', 'extraSpace');
-    extraSpaceInput.setAttribute('value', retrieveData.extraSpace);      
+      extraSpaceInput.setAttribute('value', retrieveData.extraSpace);  
+      var toDODDInput = document.createElement('input');
+      toDODDInput.setAttribute('name', 'extraSpace');
+      toDODDInput.setAttribute('value', retrieveData.toDODD); 
       var ispInput = document.createElement('input');
       ispInput.setAttribute('name', 'isp');
       ispInput.setAttribute('value', retrieveData.isp);
@@ -127,7 +130,8 @@ const assessmentAjax = (function () {
     form.appendChild(userIdInput);
     form.appendChild(assessmentIDInput);
     form.appendChild(versionIDInput);
-    form.appendChild(extraSpaceInput);
+      form.appendChild(extraSpaceInput);
+      form.appendChild(toDODDInput);
     form.appendChild(ispInput);
     form.appendChild(oneSpanInput);
     form.appendChild(signatureOnlyInput);
