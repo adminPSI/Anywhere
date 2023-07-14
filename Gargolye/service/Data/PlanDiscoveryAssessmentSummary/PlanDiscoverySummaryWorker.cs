@@ -24,7 +24,7 @@ namespace Anywhere.service.Data.PlanDiscoveryAssessmentSummary
             return questionObj;
         }
         //need inserts - may not need inserts, they are created when plan is added
-        public SummarySavedAnswerIds insertAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywQuestionIds, int[] answerRow, string[] answers, string userId)
+        public SummarySavedAnswerIds insertAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywQuestionIds, int[] answerRow, string[] answers, string userId, string skipped)
         {
             string testc = "";
             SummarySavedAnswerIds savedAnswerObj = new SummarySavedAnswerIds();
@@ -37,7 +37,7 @@ namespace Anywhere.service.Data.PlanDiscoveryAssessmentSummary
                     var i = 0;
                     foreach (long questionId in anywQuestionIds)
                     {
-                        testc = dg.insertAssessmentSummaryAnswer(anywAssessmentId, questionId, answerRow[i], answers[i], userId);
+                        testc = dg.insertAssessmentSummaryAnswer(anywAssessmentId, questionId, answerRow[i], answers[i], userId, skipped);
                         SummaryAnswer[] singAnswerObj = js.Deserialize<SummaryAnswer[]>(testc);
                         if (i == 0)
                         {
