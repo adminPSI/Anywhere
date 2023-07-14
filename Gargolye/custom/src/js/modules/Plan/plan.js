@@ -457,15 +457,13 @@ const plan = (function () {
 
     if (planType === 'Annual' || planType === 'a') {
       warningMessage.innerHTML = `
-        <p>Are you sure you want to delete the entire Annual plan effective on ${esDate} for ${getConsumerNameFromCard(
-        selectedConsumer.card,
-      )}?</p>
+        <p>Are you sure you want to delete the entire Annual plan effective on ${esDate} for 
+        ${getConsumerNameFromCard(selectedConsumer)}?</p>
       `;
     } else {
       warningMessage.innerHTML = `
-        <p>Are you sure you want to delete the entire Revision ${revisionNumber} plan effective on ${esDate} for ${getConsumerNameFromCard(
-        selectedConsumer.card,
-      )}?</p>
+        <p>Are you sure you want to delete the entire Revision ${revisionNumber} plan effective on ${esDate} for 
+        ${getConsumerNameFromCard(selectedConsumer)}?</p>
       `;
     }
 
@@ -1496,13 +1494,13 @@ const plan = (function () {
     planHeaderGeneralInfoBar = buildGeneralInfoBar();
     planHeader.insertBefore(planHeaderGeneralInfoBar, planHeaderButtons);
   }
-  function getConsumerNameFromCard({ consumerCard, firstName, lastName }) {
-    if (!consumerCard) {
+  function getConsumerNameFromCard({ card, firstName, lastName }) {
+    if (!card) {
       return `${lastName} ${firstName}`;
     }
 
-    const firstName2 = consumerCard.querySelector('.name_first');
-    const lastName2 = consumerCard.querySelector('.name_last');
+    const firstName2 = card.querySelector('.name_first');
+    const lastName2 = card.querySelector('.name_last');
 
     if (!firstName2 || !lastName2) return;
 
@@ -1550,7 +1548,7 @@ const plan = (function () {
     generalInfoBar.classList.add('generalInfo');
     generalInfoBar.setAttribute('data-people-id', `${selectedConsumer.id}`);
 
-    const consumerName = `<p>${getConsumerNameFromCard(selectedConsumer.card)}</p>`;
+    const consumerName = `<p>${getConsumerNameFromCard(selectedConsumer)}</p>`;
     const dateSpan = `<p>Span: ${starDate} - ${endDate}</p>`;
     const dateSpanEff = `<p>Eff: ${esDate} - ${edDate}</p>`;
     const typeAndNum = revisionNumber > 0 ? `<p>${type} ${revisionNumber}</p>` : `<p>${type}</p>`;
