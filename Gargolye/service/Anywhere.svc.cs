@@ -91,7 +91,8 @@ namespace Anywhere
         ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
         ConsumerFinancesWorker cf = new ConsumerFinancesWorker();
         DemographicsWoker cdw = new DemographicsWoker();
-        EmploymentWorker emp = new EmploymentWorker();  
+        EmploymentWorker emp = new EmploymentWorker();
+        AssessmentDataGetter assDG = new AssessmentDataGetter();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure(); 
@@ -1730,6 +1731,16 @@ namespace Anywhere
             return aAW.transferPlanReportToONET(token, planId);
         }
 
+        public string insertConsumerAssessmentAnswer(string consumerPlanId, string questionId, string answerRow, string answer, string skipped)
+        {
+            return assDG.insertConsumerAssessmentAnswer(consumerPlanId, questionId, answerRow, answer, skipped);
+        }
+
+        public string runReOrderSQL(string token)
+        {
+            return assDG.runReOrderSQL(token);
+        }
+
         public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate, string salesForceCaseManagerId)
         {
             // insert the annaul consumer plan and assessment
@@ -2632,9 +2643,9 @@ namespace Anywhere
             return pdsw.getAdditionalAssessmentSummaryQuestions(anywAssessmentId);
         }
 
-        public PlanDiscoverySummaryWorker.SummarySavedAnswerIds insertAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywQuestionIds, int[] answerRow, string[] answers, string userId)
+        public PlanDiscoverySummaryWorker.SummarySavedAnswerIds insertAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywQuestionIds, int[] answerRow, string[] answers, string userId, string skipped)
         {
-            return pdsw.insertAssessmentSummaryAnswers(token, anywAssessmentId, anywQuestionIds, answerRow, answers, userId);
+            return pdsw.insertAssessmentSummaryAnswers(token, anywAssessmentId, anywQuestionIds, answerRow, answers, userId, skipped);
         }
 
         public string updateAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywAnswerIds, string[] answers, string userId)

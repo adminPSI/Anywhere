@@ -164,7 +164,7 @@ namespace Anywhere.service.Data
                         // if a default answer exists, use it, otherwise set answer to null
                         string answer = i <= defaultAnswers.Length ? (defaultAnswers[i - 1] == "==TODAY") ? DateTime.Now.ToString("yyyy-MM-dd") : defaultAnswers[i - 1] : null;
                         // insert answer record
-                        adg.insertConsumerAssessmentAnswer(plan[0].consumerPlanId, question.questionId, i.ToString(), answer);
+                        adg.insertConsumerAssessmentAnswer(plan[0].consumerPlanId, question.questionId, i.ToString(), answer, "N");
                     }
                 }
             }

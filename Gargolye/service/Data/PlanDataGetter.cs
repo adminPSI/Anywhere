@@ -483,7 +483,7 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
-        public string insertConsumerAssessmentAnswer(string consumerPlanId, string questionId, string answerRow, string answer, string updatedBy, DistributedTransaction transaction)
+        public string insertConsumerAssessmentAnswer(string consumerPlanId, string questionId, string answerRow, string answer, string updatedBy, string skipped, DistributedTransaction transaction)
         {
             try
             {
@@ -494,6 +494,7 @@ namespace Anywhere.service.Data
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answerRow", DbType.String, answerRow);
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answer", DbType.String, answer);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@updatedBy", DbType.String, updatedBy);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@skipped", DbType.String, skipped);
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerAssessmentAnswer(?,?,?,?,?)", args, ref transaction).ToString();
             }
             catch (Exception ex)

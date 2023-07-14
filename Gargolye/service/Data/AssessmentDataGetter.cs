@@ -82,6 +82,25 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string runReOrderSQL(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertConsumerPlan ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_ISP_RunReOrderSQL(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3ADG", ex.Message + "ANYW_ISP_RunReOrderSQL(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3ADG: error ANYW_ISP_RunReOrderSQL";
+            }
+        }
+
         public string switchPlanType(string token, string consumerPlanId, string planType)
         {
             if (tokenValidator(token) == false) return null;
@@ -155,7 +174,7 @@ namespace Anywhere.service.Data
         }
 
 
-        public string insertConsumerAssessmentAnswer(string consumerPlanId, string questionId, string answerRow, string answer)
+        public string insertConsumerAssessmentAnswer(string consumerPlanId, string questionId, string answerRow, string answer, string skipped)
         {
             logger.debug("insertConsumerAssessmentAnswer ");
             List<string> list = new List<string>();
@@ -163,6 +182,7 @@ namespace Anywhere.service.Data
             list.Add(questionId);
             list.Add(answerRow);
             list.Add(answer);
+            list.Add(skipped);
             string text = "CALL DBA.ANYW_ISP_insertConsumerAssessmentAnswer(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
