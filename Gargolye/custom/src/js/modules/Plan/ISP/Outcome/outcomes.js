@@ -1345,9 +1345,9 @@ const planOutcomes = (() => {
           );
           const expTables = [...expTableWrap.querySelectorAll('.table')];
           saveUpdateData.experienceOrder = expTables.length;
-          insertOutcomeExperience({ ...saveUpdateData }, expTableWrap);
+          await insertOutcomeExperience({ ...saveUpdateData }, expTableWrap);
         } else {
-          updateOutcomeExperience({ ...saveUpdateData }, respPartysToDelete);
+          await updateOutcomeExperience({ ...saveUpdateData }, respPartysToDelete);
         }
 
         doneBtn.classList.remove('disabled');

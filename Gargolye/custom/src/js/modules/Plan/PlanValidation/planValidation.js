@@ -584,6 +584,11 @@ const planValidation = (function () {
       if (outcomesData.planProgressSummary[0]) {
         validationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
       }
+
+      // if there are invalid providers, return false on the validaton check
+      if (validationCheck.invalidProviders.length > 0) {
+        validationCheck.complete = false;
+      }
   
      // checks if all required data on the page has been filled out
      checkAllOutcomesComplete(validationCheck);
@@ -661,7 +666,7 @@ const planValidation = (function () {
     //ISP EXPERIENCES
     //checks if the outcome has an experience, if not, set the alert next to the add experience button
     function experiencesValidationCheck(validationCheck, outcomeId, alertDiv) {
-      const display = validationCheck.missingExperiences.includes(outcomeId) ? 'flex' : 'none';
+      const display = (validationCheck.missingExperiences.includes(outcomeId) || validationCheck.invalidProviders.length > 0) ? 'flex' : 'none';
       alertDiv.style.display = display;
     }
 
