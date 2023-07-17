@@ -23,6 +23,7 @@ namespace Anywhere.service.Data.DocumentConversion
         JavaScriptSerializer js = new JavaScriptSerializer();
         GetReportsStreams grs = new GetReportsStreams();
         PDFGenerator.Data obj = new PDFGenerator.Data();
+        AnywhereAssessmentWorker aaw = new AnywhereAssessmentWorker();
 
         //  PDFDoc doc = new PDFDoc();
 
@@ -178,7 +179,7 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool isp, bool oneSpan, bool signatureOnly, string include)
+        public void addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toDODD, bool isp, bool oneSpan, bool signatureOnly, string include)
         {
 
             var current = System.Web.HttpContext.Current;
@@ -660,6 +661,10 @@ namespace Anywhere.service.Data.DocumentConversion
 
 
                 byte[] finalMergedArray = concatAndAddContent(allAttachments);
+                if(toDODD == true)
+                {
+                    aaw.insertPlanReportToBeTranferredToONET(token, finalMergedArray.ToString(), long.Parse(assessmentID));
+                }
                 response.Clear();
                 response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
                 response.ContentType = "application/pdf";
