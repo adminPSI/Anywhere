@@ -1339,9 +1339,6 @@
     } = data;
 
     let charLimit = 10000;
-    // if (data.text && data.text === 'List other tools:') {
-    //   charLimit = 1000;
-    // }
 
     const questionInputMarkup = input.build({
       type: 'textarea',

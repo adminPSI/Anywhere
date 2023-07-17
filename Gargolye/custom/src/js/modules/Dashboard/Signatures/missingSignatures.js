@@ -94,14 +94,14 @@ const signatureWidget = (function () {
       overlay.hide();
       bodyScrollLock.enableBodyScroll(filterPopup);
 
-      //TODO-ash: filter missingSignatureData by signaturePlanStatus then call populateMissingSignatures() with filtered data
-      // filteredSignatures = missingSignatureData.filter(ms => ms.planStatus = signaturePlanStatus);
-      // populateMissingSignatures(filteredSignatures);
-
-      //Loading
-      // consumerList.innerHTML = '';
-      // PROGRESS__ANYWHERE.init()
-      // PROGRESS__ANYWHERE.SPINNER.show(consumerList, "Loading");
+      if (signaturePlanStatus === '%') {
+        populateMissingSignatures(missingSignatureData);
+      } else {
+        filteredSignatures = missingSignatureData.filter(
+          ms => (ms.planStatus = signaturePlanStatus),
+        );
+        populateMissingSignatures(filteredSignatures);
+      }
     });
     cancelFilterBtn.addEventListener('click', event => {
       filterPopup.classList.remove('visible');
