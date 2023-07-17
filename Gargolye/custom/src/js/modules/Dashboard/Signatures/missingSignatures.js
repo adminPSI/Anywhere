@@ -156,7 +156,7 @@ const signatureWidget = (function () {
           onClick: async () => {
             if ($.session.applicationName === 'Advisor') {
               const newId = await planAjax.getConsumerPeopleIdAsync(d.consumerId);
-              if (newId) {
+              if (newId.length) {
                 $.session.planPeopleId = newId[0].id;
                 plan.setSelectedConsumer({
                   id: $.session.planPeopleId,
