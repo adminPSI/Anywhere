@@ -61,7 +61,7 @@ const signatureWidget = (function () {
     btnWrap.appendChild(cancelFilterBtn);
 
     filterPopup.appendChild(planStatusDropdown);
-    filterPopup.appendChild(groupDropdown);
+    // filterPopup.appendChild(groupDropdown);
     filterPopup.appendChild(btnWrap);
     widget.insertBefore(filterPopup, widgetBody);
 
@@ -78,17 +78,17 @@ const signatureWidget = (function () {
       // cache old values
       oldSignaturePlanStatus = signaturePlanStatus;
     });
-    groupDropdown.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      // cache old values
-      oldSignatureWidgetGroupId = signatureWidgetGroupId;
-      oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
-      oldSignatureWidgetGroupName = signatureWidgetGroupName;
-      // update variables
-      signatureWidgetGroupId = selectedOption.value;
-      signatureWidgetGroupCode = selectedOption.id;
-      signatureWidgetGroupName = selectedOption.innerHTML;
-    });
+    // groupDropdown.addEventListener('change', event => {
+    //   const selectedOption = event.target.options[event.target.selectedIndex];
+    //   // cache old values
+    //   oldSignatureWidgetGroupId = signatureWidgetGroupId;
+    //   oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
+    //   oldSignatureWidgetGroupName = signatureWidgetGroupName;
+    //   // update variables
+    //   signatureWidgetGroupId = selectedOption.value;
+    //   signatureWidgetGroupCode = selectedOption.id;
+    //   signatureWidgetGroupName = selectedOption.innerHTML;
+    // });
     applyFiltersBtn.addEventListener('click', event => {
       filterPopup.classList.remove('visible');
       overlay.hide();
