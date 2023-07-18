@@ -383,12 +383,21 @@ const planIntroduction = (() => {
     planId = data.planId;
     charLimits = planData.getISPCharacterLimits('introduction');
 
-    var activeConsumers = roster2.getActiveConsumers();
-    selectedConsumerId = activeConsumers[activeConsumers.length - 1].id;
+    // var activeConsumers = roster2.getActiveConsumers();
+    // selectedConsumerId = activeConsumers[activeConsumers.length - 1].id;
+
+    // const selectedConsumer = plan.getSelectedConsumer();
+    // consumerIdForPhoto =
+    //   $.session.applicationName === 'Advisor' ? selectedConsumer.consumerId : selectedConsumer.id;
 
     const selectedConsumer = plan.getSelectedConsumer();
-    consumerIdForPhoto =
-      $.session.applicationName === 'Advisor' ? selectedConsumer.consumerId : selectedConsumer.id;
+    selectedConsumerId = selectedConsumer.id;
+
+    if ($.session.applicationName === 'Advisor') {
+      consumerIdForPhoto = selectedConsumer.consumerId
+        ? selectedConsumer.consumerId
+        : selectedConsumer.id;
+    }
 
     const planIntroductionData = await planIntroductionAjax.getPlanIntroduction({
       token: $.session.Token,

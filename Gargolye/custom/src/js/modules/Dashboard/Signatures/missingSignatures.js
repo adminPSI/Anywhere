@@ -61,7 +61,7 @@ const signatureWidget = (function () {
     btnWrap.appendChild(cancelFilterBtn);
 
     filterPopup.appendChild(planStatusDropdown);
-    filterPopup.appendChild(groupDropdown);
+    // filterPopup.appendChild(groupDropdown);
     filterPopup.appendChild(btnWrap);
     widget.insertBefore(filterPopup, widgetBody);
 
@@ -78,30 +78,30 @@ const signatureWidget = (function () {
       // cache old values
       oldSignaturePlanStatus = signaturePlanStatus;
     });
-    groupDropdown.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      // cache old values
-      oldSignatureWidgetGroupId = signatureWidgetGroupId;
-      oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
-      oldSignatureWidgetGroupName = signatureWidgetGroupName;
-      // update variables
-      signatureWidgetGroupId = selectedOption.value;
-      signatureWidgetGroupCode = selectedOption.id;
-      signatureWidgetGroupName = selectedOption.innerHTML;
-    });
+    // groupDropdown.addEventListener('change', event => {
+    //   const selectedOption = event.target.options[event.target.selectedIndex];
+    //   // cache old values
+    //   oldSignatureWidgetGroupId = signatureWidgetGroupId;
+    //   oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
+    //   oldSignatureWidgetGroupName = signatureWidgetGroupName;
+    //   // update variables
+    //   signatureWidgetGroupId = selectedOption.value;
+    //   signatureWidgetGroupCode = selectedOption.id;
+    //   signatureWidgetGroupName = selectedOption.innerHTML;
+    // });
     applyFiltersBtn.addEventListener('click', event => {
       filterPopup.classList.remove('visible');
       overlay.hide();
       bodyScrollLock.enableBodyScroll(filterPopup);
 
-      //TODO-ash: filter missingSignatureData by signaturePlanStatus then call populateMissingSignatures() with filtered data
-      // filteredSignatures = missingSignatureData.filter(ms => ms.planStatus = signaturePlanStatus);
-      // populateMissingSignatures(filteredSignatures);
-
-      //Loading
-      // consumerList.innerHTML = '';
-      // PROGRESS__ANYWHERE.init()
-      // PROGRESS__ANYWHERE.SPINNER.show(consumerList, "Loading");
+      if (signaturePlanStatus === '%') {
+        populateMissingSignatures(missingSignatureData);
+      } else {
+        filteredSignatures = missingSignatureData.filter(
+          ms => (ms.planStatus = signaturePlanStatus),
+        );
+        populateMissingSignatures(filteredSignatures);
+      }
     });
     cancelFilterBtn.addEventListener('click', event => {
       filterPopup.classList.remove('visible');
@@ -156,7 +156,7 @@ const signatureWidget = (function () {
           onClick: async () => {
             if ($.session.applicationName === 'Advisor') {
               const newId = await planAjax.getConsumerPeopleIdAsync(d.consumerId);
-              if (newId) {
+              if (newId.length) {
                 $.session.planPeopleId = newId[0].id;
                 plan.setSelectedConsumer({
                   id: $.session.planPeopleId,

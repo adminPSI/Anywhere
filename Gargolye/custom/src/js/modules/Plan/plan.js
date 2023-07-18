@@ -1778,7 +1778,7 @@ const plan = (function () {
 
     DOM.autosizeTextarea();
 
-    planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+    planValidation.updatedAssessmenteValidation();
   }
 
   // New Plan Setup Page
@@ -1855,7 +1855,7 @@ const plan = (function () {
     let insertedSSA;
     const workflowIds = [];
 
-    var selectedConsumer = plan.getSelectedConsumer();
+    //var selectedConsumer = plan.getSelectedConsumer();
     var salesForceCaseManagerId = await consentAndSignAjax.getStateCaseManagerforConsumer({
       peopleId: selectedConsumer.id,
     });
