@@ -4433,6 +4433,128 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getEmployeeInfoByID/")]
         EmploymentWorker.EmploymentEntriesByID[] getEmployeeInfoByID(string token, string positionId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getWagesEntries/")]
+        EmploymentWorker.WagesEntries[] getWagesEntries(string token, string positionID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/insertEmploymentPath/")]
+        EmploymentWorker.EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+      RequestFormat = WebMessageFormat.Json,
+      UriTemplate = "/insertEmploymentInfo/")]
+        EmploymentWorker.EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getJobStandingsDropDown/")]
+        EmploymentWorker.JobStanding[] getJobStandingsDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getEmployerDropDown/")]
+        EmploymentWorker.Employer[] getEmployerDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getPositionDropDown/")]
+        EmploymentWorker.Position[] getPositionDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getTransportationDropDown/")]
+        EmploymentWorker.Transportation[] getTransportationDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getTypeOfWorkDropDown/")]
+        EmploymentWorker.TypeOfWork[] getTypeOfWorkDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/insertWages/")]
+        EmploymentWorker.WagesEntries insertWages(string token, string hoursWeek, string hoursWages, string startDate, string endDate, string PositionId, string wagesID, string userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getPositionTaskEntries/")]
+        EmploymentWorker.PositionTaskEntries[] getPositionTaskEntries(string token, string positionID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getInitialPerformanceDropdown/")]
+        EmploymentWorker.InitialPerformance[] getInitialPerformanceDropdown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+      RequestFormat = WebMessageFormat.Json,
+      UriTemplate = "/insertPositionTask/")]
+        EmploymentWorker.PositionTaskEntries insertPositionTask(string token, string task, string description, string startDate, string endDate, string initialPerformance, string initialPerformanceNotes, string employeeStandard, string PositionId, string jobTaskID, string userID);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getWorkScheduleEntries/")]
+        EmploymentWorker.WorkScheduleEntries[] getWorkScheduleEntries(string token, string positionID);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/isNewPositionEnable/")]
+        EmploymentWorker.EmploymentValidate[] isNewPositionEnable(string token, string consumerIds);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getEmployeementPath/")]
+        EmploymentWorker.EmploymentEntriesByID[] getEmployeementPath(string token, string consumersId);
+
     }
 
 
