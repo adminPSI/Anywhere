@@ -69,9 +69,22 @@
         answerId: id,
         answerText: answer ? answer : '',
         answerRow: answerRow ? answerRow : '',
+        skipped: 'N',
       };
     } else {
       answerObj[id].answerText = answer ? answer : '';
+    }
+  }
+  function toggleAnswerSkipped(id, skipped) {
+    if (!answerObj[id]) {
+      answerObj[id] = {
+        answerId: id,
+        answerText: '',
+        answerRow: '',
+        skipped: skipped ? 'Y' : 'N',
+      };
+    } else {
+      answerObj[id].skipped = skipped ? 'Y' : 'N';
     }
   }
   function clearData() {
@@ -114,6 +127,17 @@
       return unique;
     };
     return removeDups(data);
+  }
+  function toggleIntentionallyBlankCheckbox(answerId, setID, disable) {
+    let checkbox = document.getElementById(`intentionallyBlankCheckbox${answerId}`);
+    checkbox = checkbox ? checkbox : document.getElementById(`intentionallyBlankCheckbox${setID}`);
+    if (!checkbox) return;
+
+    if (disable) {
+      input.disableInputField(checkbox.parentElement);
+    } else {
+      input.enableInputField(checkbox.parentElement);
+    }
   }
   // Conditional Questions
   function toggleConditionalQuestion(answer, type, conditionalQuestions) {
@@ -322,6 +346,42 @@
 
       return;
     }
+    if (e.target.id.includes('intentionallyBlankCheckbox')) {
+      const isForRow = e.target.dataset.isforrow;
+      // ids for associated textarea question/anwser
+      let answerId = e.target.dataset.answerid;
+      let setId = e.target.dataset.setid;
+
+      if (isForRow === 'false') {
+        toggleAnswerSkipped(answerId, e.target.checked);
+
+        const textAreaInput = document.getElementById(answerId);
+
+        if (e.target.checked) {
+          addAnswer(answerId, '');
+          textAreaInput.value = '';
+          input.disableInputField(textAreaInput);
+        } else {
+          input.enableInputField(textAreaInput);
+        }
+      } else {
+        const questionSet = document.getElementById(`set${setId}`);
+        const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row')];
+        const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
+        questionSetGridRows.forEach(row => {
+          debugger;
+        });
+        questionSetActionButtons.forEach(btn => {
+          if (e.target.checked) {
+            btn.classList.add('disabled');
+          } else {
+            btn.classList.remove('disabled');
+          }
+        });
+      }
+
+      return;
+    }
 
     const tagName = e.target.tagName;
     const type = e.target.type;
@@ -400,6 +460,7 @@
 
         if (answer !== '') {
           addAnswer(answerId, answer);
+
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
@@ -417,6 +478,7 @@
           }
         } else {
           addAnswer(answerId);
+
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
@@ -483,6 +545,20 @@
       }
 
       markUnansweredQuestions();
+
+      if (type === 'textarea') {
+        if (!questionSetDiv.classList.contains('questionSet__grid')) {
+          const hideCheckbox = answer !== '' ? true : false;
+          toggleIntentionallyBlankCheckbox(answerId, setId, hideCheckbox);
+        } else {
+          const setGrid = questionSetDiv.querySelector('.grid');
+          if (setGrid.classList.contains('awnsered')) {
+            toggleIntentionallyBlankCheckbox(answerId, setId, true);
+          } else {
+            toggleIntentionallyBlankCheckbox(answerId, setId, false);
+          }
+        }
+      }
 
       return;
     }
@@ -859,7 +935,9 @@
     return { markup: gridCell, hasStaticText };
   }
   function buildQuestionGridMarkup(questions, questionSetId, allowRowInsert, sectionId) {
+    let addRowBtn, deleteRowsBtn, cancelDeleteRowsBtn;
     let hasStaticText = false;
+    let areAllGridAnswersEmpty = true;
 
     const COL_NAME_MAP = {};
     sectionQuestionCount[sectionId][questionSetId] = {};
@@ -997,6 +1075,7 @@
 
           if (answerText && answerText !== '') {
             sectionQuestionCount[sectionId][questionSetId][questionRowId].answered = true;
+            areAllGridAnswersEmpty = false;
           }
         }
 
@@ -1049,20 +1128,20 @@
       const gridActionRow = document.createElement('div');
       gridActionRow.classList.add('gridActionRow');
 
-      const addRowBtn = button.build({
+      addRowBtn = button.build({
         text: 'Add Row',
         type: 'contained',
         style: 'secondary',
         classNames: 'addRowBtn',
       });
-      const deleteRowsBtn = button.build({
+      deleteRowsBtn = button.build({
         text: 'Delete Row',
         type: 'contained',
         style: 'secondary',
         id: 'deleteRowBtn',
         classNames: 'deleteRowBtn',
       });
-      const cancelDeleteRowsBtn = button.build({
+      cancelDeleteRowsBtn = button.build({
         text: 'Cancel Delete',
         type: 'contained',
         style: 'secondary',
@@ -1271,6 +1350,23 @@
           cancelDeleteRowsBtn.classList.add('hidden');
         }
       });
+    }
+
+    // intentionally blank checkbox
+    const intentionallyBlankCheckbox = input.buildCheckbox({
+      text: 'Intentionally left blank',
+      id: `intentionallyBlankCheckbox${questionSetId}`,
+      className: 'intentionallyBlankCheckbox',
+      isChecked: false,
+      isDisabled: readonly,
+      attributes: [
+        { key: 'data-setid', value: questionSetId },
+        { key: 'data-isforrow', value: true },
+      ],
+    });
+    grid.appendChild(intentionallyBlankCheckbox);
+    if (!areAllGridAnswersEmpty) {
+      input.disableInputField(intentionallyBlankCheckbox);
     }
 
     if (hasStaticText) grid.classList.add('staticText');
@@ -1576,6 +1672,26 @@
         question.innerHTML = `<p class="question__text">${text}</p>`;
         if (prompt) question.innerHTML += `<p class="question__prompt">${prompt}</p>`;
         question.appendChild(questionInputMarkup);
+
+        // intentionally blank checkbox
+        const intentionallyBlankCheckbox = input.buildCheckbox({
+          text: 'Intentionally left blank',
+          id: `intentionallyBlankCheckbox${answerId}`,
+          className: 'intentionallyBlankCheckbox',
+          isChecked: false,
+          isDisabled: readOnly,
+          attributes: [
+            { key: 'data-setid', value: setId },
+            { key: 'data-sectionid', value: sectionId },
+            { key: 'data-questionid', value: questionId },
+            { key: 'data-answerid', value: answerId },
+            { key: 'data-isforrow', value: false },
+          ],
+        });
+        question.appendChild(intentionallyBlankCheckbox);
+        if (answerText) {
+          input.disableInputField(intentionallyBlankCheckbox);
+        }
         break;
       }
       case 'CHECKOPTION': {
