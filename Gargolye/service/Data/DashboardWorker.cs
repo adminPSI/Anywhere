@@ -189,6 +189,7 @@ namespace Anywhere.service.Data
             public string consumerId { get; set; }
             public string firstName { get; set; }
             public string lastName { get; set; }
+            public string locationId { get; set; }
         }
 
         public class SingleEntryLocationObj
