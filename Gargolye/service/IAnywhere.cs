@@ -3853,7 +3853,7 @@ namespace Anywhere
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "/addSelectedAttachmentsToReport/")]
-        void addSelectedAttachmentsToReport(System.IO.Stream testInput);
+        string addSelectedAttachmentsToReport(System.IO.Stream testInput);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
