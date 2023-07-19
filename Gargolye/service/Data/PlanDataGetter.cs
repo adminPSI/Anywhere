@@ -488,7 +488,7 @@ namespace Anywhere.service.Data
             try
             {
                 logger.debug("insertConsumerAssessmentAnswer ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[6];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerPlanId", DbType.String, consumerPlanId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@questionId", DbType.String, questionId);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answerRow", DbType.String, answerRow);
