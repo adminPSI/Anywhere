@@ -254,7 +254,7 @@ const assessment = (function () {
         savePopup.insertBefore(saveBar, btnWrap);
 
         const answersArray = mainAssessment.getAnswers();
-        const success = await assessment.updateAnswers(answersArray);
+        const success = await updateAnswers(answersArray);
 
         if (success !== undefined && success !== null && success !== 'error') {
           const successDiv = successfulSave.get('Assessment Saved', true);
@@ -303,7 +303,7 @@ const assessment = (function () {
     POPUP.show(savePopup);
 
     const answersArray = mainAssessment.getAnswers();
-    const success = await assessment.updateAnswers(answersArray);
+    const success = await updateAnswers(answersArray);
     savePopup.removeChild(saveBar);
 
     if (success !== undefined && success !== null && success !== 'error') {
@@ -383,7 +383,7 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: extraSpace,
-            isp: true, //new
+          isp: true, //new
           signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
@@ -404,7 +404,7 @@ const assessment = (function () {
       return error.statusText;
     }
   }
-  function generateReportWithAttachments(//TODO Nathan. Add flag if to DODD
+  function generateReportWithAttachments( //TODO Nathan. Add flag if to DODD
     assessmentID,
     versionID,
     extraSpace,
@@ -413,17 +413,18 @@ const assessment = (function () {
     sigAttachmentIds,
     DODDFlag,
     signatureOnly,
-      include,
-    toDODD
+    include,
+    toDODD,
   ) {
-    assessmentAjax.getPlanAssessmentReportWithAttachments(//Testgd
+    assessmentAjax.getPlanAssessmentReportWithAttachments(
+      //Testgd
       {
         token: $.session.Token,
         userId: $.session.PeopleId,
         assessmentID,
         versionID,
-            extraSpace: extraSpace,
-            toDODD: false,
+        extraSpace: extraSpace,
+        toDODD: false,
         isp: true,
         oneSpan: false,
         planAttachmentIds,
@@ -431,8 +432,7 @@ const assessment = (function () {
         sigAttachmentIds,
         DODDFlag,
         signatureOnly,
-            include,
-        
+        include,
       },
       () => {
         const arr = success._buffer;
@@ -461,7 +461,7 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: 'false',
-            isp: true, //
+          isp: true, //
           signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
