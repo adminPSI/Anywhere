@@ -3270,6 +3270,81 @@ namespace Anywhere
         {
             return emp.getEmployeeInfoByID(token, positionId);
         }
+        public WagesEntries[] getWagesEntries(string token, string positionID)
+        {
+            return emp.getWagesEntries(token, positionID);
+        }
+
+        public EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID)
+        {
+            return emp.insertEmploymentPath(token, employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID);
+        }
+
+        public EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId)
+        {
+            return emp.insertEmploymentInfo(token, startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId);
+        }
+
+        public JobStanding[] getJobStandingsDropDown(string token)
+        {
+            return emp.getJobStandingsDropDown(token);
+        }
+
+        public Employer[] getEmployerDropDown(string token)
+        {
+            return emp.getEmployerDropDown(token);
+        }
+
+        public Position[] getPositionDropDown(string token)
+        {
+            return emp.getPositionDropDown(token);
+        }
+
+        public Transportation[] getTransportationDropDown(string token)
+        {
+            return emp.getTransportationDropDown(token);
+        }
+
+        public TypeOfWork[] getTypeOfWorkDropDown(string token)
+        {
+            return emp.getTypeOfWorkDropDown(token);
+        }
+
+        public WagesEntries insertWages(string token, string hoursWeek, string hoursWages, string startDate, string endDate, string PositionId, string wagesID, string userID)
+        {
+            return emp.insertWages(token, hoursWeek, hoursWages, startDate, endDate, PositionId, wagesID, userID);
+        }
+
+        public PositionTaskEntries[] getPositionTaskEntries(string token, string positionID)
+        {
+            return emp.getPositionTaskEntries(token, positionID);
+        }
+
+        public InitialPerformance[] getInitialPerformanceDropdown(string token)
+        {
+            return emp.getInitialPerformanceDropdown(token);
+        }
+
+        public PositionTaskEntries insertPositionTask(string token, string task, string description, string startDate, string endDate, string initialPerformance, string initialPerformanceNotes, string employeeStandard, string PositionId, string jobTaskID, string userID)
+        {
+            return emp.insertPositionTask(token, task, description, startDate, endDate, initialPerformance, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, userID);
+        }
+
+        public WorkScheduleEntries[] getWorkScheduleEntries(string token, string positionID)
+        {
+            return emp.getWorkScheduleEntries(token, positionID);
+        }
+
+        public EmploymentValidate[] isNewPositionEnable(string token, string consumerIds)
+        {
+            return emp.isNewPositionEnable(token, consumerIds);
+        }
+
+        public EmploymentEntriesByID[] getEmployeementPath(string token, string consumersId)
+        {
+            return emp.getEmployeementPath(token, consumersId);
+        }
+
 
     }
 }

@@ -145,6 +145,446 @@ var EmploymentAjax = (function () {
         }
     }
 
+    async function insertEmploymentPathAsync(
+        employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertEmploymentPath/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    employmentPath: employmentPath,
+                    newStartDate: newStartDate,
+                    newEndDate: newEndDate,
+                    currentEndDate: currentEndDate,
+                    peopleID: peopleID,
+                    userID: userID
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function insertEmploymentInfoAsync(
+        startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertEmploymentInfo/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    startDatePosition: startDatePosition,
+                    endDatePosition: endDatePosition,
+                    position: position,
+                    jobStanding: jobStanding,
+                    employer: employer,
+                    transportation: transportation,
+                    typeOfWork: typeOfWork,
+                    selfEmployed: selfEmployed,
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    peopleID: peopleID,
+                    userID: userID,
+                    PositionId: PositionId,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getJobStandingsDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getJobStandingsDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getEmployerDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getEmployerDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getPositionDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getPositionDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getTransportationDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getTransportationDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getTypeOfWorkDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getTypeOfWorkDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getWagesEntriesAsync(positionID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getWagesEntries/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "positionID":"' +
+                    positionID +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function insertWagesAsync(
+        hoursWeek, hoursWages, startDate, endDate, PositionId, wagesID, userID
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertWages/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    hoursWeek: hoursWeek,
+                    hoursWages: hoursWages,
+                    startDate: startDate,
+                    endDate: endDate,
+                    PositionId: PositionId,
+                    wagesID: wagesID,
+                    userID: userID
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getPositionTaskEntriesAsync(positionID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getPositionTaskEntries/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "positionID":"' +
+                    positionID +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getInitialPerformanceDropdownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getInitialPerformanceDropdown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function insertPositionTaskAsync(
+        task, description, startDate, endDate, initialPerformance, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, userID
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertPositionTask/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    task: task,
+                    description: description,
+                    startDate: startDate,
+                    endDate: endDate,
+                    initialPerformance: initialPerformance,
+                    initialPerformanceNotes: initialPerformanceNotes,
+                    employeeStandard: employeeStandard,
+                    PositionId: PositionId,
+                    jobTaskID: jobTaskID,
+                    userID: userID
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getWorkScheduleEntriesAsync(positionID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getWorkScheduleEntries/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "positionID":"' +
+                    positionID +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function isNewPositionEnableAsync(consumerIds) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/isNewPositionEnable/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "consumerIds":"' +
+                    consumerIds +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getEmployeementPathAsync(consumersId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getEmployeementPath/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "consumersId":"' +
+                    consumersId +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
 
     return {
         getEmploymentEntriesAsync,
@@ -152,5 +592,20 @@ var EmploymentAjax = (function () {
         getPositionsAsync,
         getJobStandingsAsync,
         getEmployeeInfoByIDAsync,
+        insertEmploymentPathAsync,
+        insertEmploymentInfoAsync,
+        getJobStandingsDropDownAsync,
+        getEmployerDropDownAsync,
+        getPositionDropDownAsync,
+        getTransportationDropDownAsync,
+        getTypeOfWorkDropDownAsync,
+        getWagesEntriesAsync,
+        insertWagesAsync,
+        getPositionTaskEntriesAsync,
+        getInitialPerformanceDropdownAsync,
+        insertPositionTaskAsync,
+        getWorkScheduleEntriesAsync,
+        isNewPositionEnableAsync,
+        getEmployeementPathAsync
     };
 })();

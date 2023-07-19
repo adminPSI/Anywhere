@@ -28,73 +28,82 @@
 }
 
 .dropdown--primary {
-  color: $input-blur--light;
-  select {
-    background: $bg-dark;
-  }
+    color: $input-blur--light;
+    select {
+        background: $bg-dark;
+    }
 }
 .dropdown--secondary {
-  color: $input-blur--dark;
+    color: $input-blur--dark;
 }
 
 .dropdown.disabled {
-  color: rgba(0, 0, 0, .5);
-  // opacity: 0.6;
-  pointer-events: none;
-  &.dropdown--primary {
-    color: rgba($input-blur--light, .5);
-  }
+    color: rgba(0, 0, 0, .5);
+    // opacity: 0.6;
+    pointer-events: none;
+    &.dropdown--primary {
+        color: rgba($input-blur--light, .5);
+    }
 }
 
 .dropdown.error {
-  color: $red;
-  .dropdown__select {
-    //TO KEEP DROPDOWN ERROR FONT COLOR BLACK:
-    color: $font-dark;
-  }
+    color: $red;
+    .dropdown__select {
+        //TO KEEP DROPDOWN ERROR FONT COLOR BLACK:
+        color: $font-dark;
+    }
+}
+
+.dropdown.errorPopup {
+    color: $red;
+
+    .dropdown__select {
+        //TO KEEP DROPDOWN ERROR FONT COLOR BLACK:
+        color: $font-dark;
+    }
 }
 
 .dropdown.hidden {
-  display: none;
+    display: none;
 }
 
 
 .inlineDropdown {
-  border-bottom: 2px solid $font-dark;
-  position: relative;
-  background: #fafafa;
+    border-bottom: 2px solid $font-dark;
+    position: relative;
+    background: #fafafa;
 
-  &__select {
-    background: inherit;
-    color: $primary;
-    font-weight: $normal;
-    font-style: italic;
-    option {
-      color: $font-dark;
-      font-style: normal;
+    &__select {
+        background: inherit;
+        color: $primary;
+        font-weight: $normal;
+        font-style: italic;
+        option {
+            color: $font-dark;
+            font-style: normal;
+        }
     }
-  }
-  svg {
-    pointer-events: none;
-    width: 14px;
-    height: auto;
-    position: absolute;
-    right: 4px;
-  }
+    svg {
+        pointer-events: none;
+        width: 14px;
+        height: auto;
+        position: absolute;
+        right: 4px;
+    }
 }
 
 .inlineDropdown.disabled {
-  color: rgba(0, 0, 0, .5);
-  pointer-events: none;
-  select {
-    color: inherit;
-  }
+    color: rgba(0, 0, 0, .5);
+    pointer-events: none;
+    select {
+        color: inherit;
+    }
 }
 
 .inlineDropdown.error {
-  color: $red;
-  .inlineDropdown__select {
-    //TO KEEP DROPDOWN ERROR FONT COLOR BLACK:
-    color: $font-dark;
-  }
+    color: $red;
+    .inlineDropdown__select {
+        //TO KEEP DROPDOWN ERROR FONT COLOR BLACK:
+        color: $font-dark;
+    }
 }
