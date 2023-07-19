@@ -666,12 +666,12 @@
       padding: 5px 0;
       margin: 0 0 5px;
 
-      &.unawnsered {
-        .input-field {
-          // color: $font-error;
-          // pointer-events: none;
-        }
-      }
+      // &.unawnsered {
+      //   .input-field {
+      //     // color: $font-error;
+      //     // pointer-events: none;
+      //   }
+      // }
 
       .grid__cell {
         flex-grow: 1;
@@ -736,15 +736,15 @@
   margin: 0 0 20px;
 
   &.unawnsered {
-    .input-field {
-      // color: $font-error;
-    }
+    // .input-field {
+    //   // color: $font-error;
+    // }
     .input-field__input {
       color: $font-dark;
     }
-    .radioWrap {
-      // outline: 2px solid $font-error;
-    }
+    // .radioWrap {
+    //   // outline: 2px solid $font-error;
+    // }
   }
 
   .input-field {
