@@ -69,7 +69,7 @@
         answerId: id,
         answerText: answer ? answer : '',
         answerRow: answerRow ? answerRow : '',
-        skipped: 'false',
+        skipped: 'N',
       };
     } else {
       answerObj[id].answerText = answer ? answer : '';
@@ -81,10 +81,10 @@
         answerId: id,
         answerText: '',
         answerRow: '',
-        skipped: skipped ? 'true' : 'false',
+        skipped: skipped ? 'Y' : 'N',
       };
     } else {
-      answerObj[id].skipped = skipped ? 'true' : 'false';
+      answerObj[id].skipped = skipped ? 'Y' : 'N';
     }
   }
   function clearData() {
