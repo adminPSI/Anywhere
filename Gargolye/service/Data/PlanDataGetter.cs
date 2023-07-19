@@ -488,14 +488,14 @@ namespace Anywhere.service.Data
             try
             {
                 logger.debug("insertConsumerAssessmentAnswer ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[6];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerPlanId", DbType.String, consumerPlanId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@questionId", DbType.String, questionId);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answerRow", DbType.String, answerRow);
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answer", DbType.String, answer);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@updatedBy", DbType.String, updatedBy);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@skipped", DbType.String, skipped);
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerAssessmentAnswer(?,?,?,?,?)", args, ref transaction).ToString();
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerAssessmentAnswer(?,?,?,?,?,?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {

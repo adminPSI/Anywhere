@@ -37,6 +37,7 @@ namespace Anywhere.service.Data
             public string answerId { get; set; }
             public string answerRow { get; set; }
             public string answerText { get; set; }
+            public string skipped { get; set; }
         }
 
         public class ConsumerPlans
