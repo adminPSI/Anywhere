@@ -171,6 +171,7 @@ const assessment = (function () {
             requiredAnswer: otherData.questionRequiresAnswer,
             tag: otherData.questionTag,
             text: otherData.questionText,
+            skipped: otherData.skipped,
           };
         }
       } else {
@@ -188,6 +189,7 @@ const assessment = (function () {
             requiredAnswer: otherData.questionRequiresAnswer,
             text: otherData.questionText,
             tag: otherData.questionTag,
+            skipped: otherData.skipped,
           };
         }
         if (!questionData[questionId]) {
@@ -204,6 +206,7 @@ const assessment = (function () {
             requiredAnswer: otherData.questionRequiresAnswer,
             text: otherData.questionText,
             tag: otherData.questionTag,
+            skipped: otherData.skipped,
           };
         }
 
