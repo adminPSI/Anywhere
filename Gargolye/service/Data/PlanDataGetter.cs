@@ -495,7 +495,7 @@ namespace Anywhere.service.Data
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answer", DbType.String, answer);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@updatedBy", DbType.String, updatedBy);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@skipped", DbType.String, skipped);
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerAssessmentAnswer(?,?,?,?,?)", args, ref transaction).ToString();
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_insertConsumerAssessmentAnswer(?,?,?,?,?,?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
