@@ -2905,7 +2905,7 @@ namespace Anywhere
         {
             return dpra.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
         }
-        public void addSelectedAttachmentsToReport(System.IO.Stream testInput)
+        public string addSelectedAttachmentsToReport(System.IO.Stream testInput)
         {
             string token;
             string userId;
@@ -2955,7 +2955,7 @@ namespace Anywhere
             attIdThree = attIdThree.Replace("%2C", ",");
             sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(toDODD), bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly), include);
+            return dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(toDODD), bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly), include);
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
@@ -3345,6 +3345,20 @@ namespace Anywhere
             return emp.getEmployeementPath(token, consumersId);
         }
 
+        public WagesEntries saveCheckboxWages(string token, string chkboxName, string IsChacked, string PositionId, string textboxValue, string userID)
+        {
+            return emp.saveCheckboxWages(token, chkboxName, IsChacked, PositionId, textboxValue, userID);
+        }
+
+        public WagesCheckboxEntries[] getWagesCheckboxEntries(string token, string positionID)
+        {
+            return emp.getWagesCheckboxEntries(token, positionID);
+        }
+
+        public WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
+        {
+            return emp.insertWorkSchedule(token, dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID);
+        }
 
     }
 }

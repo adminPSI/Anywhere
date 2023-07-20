@@ -8,6 +8,7 @@ using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using System.ServiceModel.Web;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
 using static Anywhere.service.Data.AnywhereWorker;
+using System.Management.Automation.Language;
 
 namespace Anywhere.service.Data.Employment
 {
@@ -248,24 +249,23 @@ namespace Anywhere.service.Data.Employment
             }
         }
 
-        public string insertWages(string token, string hoursWeek, string hoursWages, string startDate, string endDate, string PositionId, string wagesID, string userID, DistributedTransaction transaction)
+        public string insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID, DistributedTransaction transaction)
         {
             try
             {
-                logger.debug("insertWages");
+                logger.debug("insertUpdateWorkSchedule");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[7];
-                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hoursWeek", DbType.Double, hoursWeek);
-                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hoursWages", DbType.Double, hoursWages);
-                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDate", DbType.String, startDate);
-                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDate", DbType.String, endDate);
-                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionId", DbType.Double, PositionId);
-                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wagesID", DbType.Double, wagesID);
-                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertUpdateWages(?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@dayOfWeek", DbType.Double, dayOfWeek);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startTime", DbType.Double, startTime);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endTime", DbType.String, endTime);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionId", DbType.Double, PositionId);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wagesID", DbType.Double, WorkScheduleID);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertUpdateWorkSchedule(?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_insertUpdateWages(" + hoursWeek + "," + startDate + "," + endDate + ")");
+                logger.error("WFDG", ex.Message + "ANYW_insertUpdateWorkSchedule(" + dayOfWeek + "," + startTime + "," + endTime + ")");
                 throw ex;
             }
 
@@ -312,7 +312,7 @@ namespace Anywhere.service.Data.Employment
                 {
                     endDate = null;
                 }
-                logger.debug("insertPositionTask");
+                logger.debug("insertUpdatePositionTask");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[10];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@task", DbType.String, task);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@description", DbType.String, description);
@@ -324,11 +324,11 @@ namespace Anywhere.service.Data.Employment
                 args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionId", DbType.String, PositionId);
                 args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@jobTaskID", DbType.String, jobTaskID);
                 args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertPositionTask(?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertUpdatePositionTask(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
-                logger.error("WFDG", ex.Message + "ANYW_insertPositionTask(" + task + "," + description + "," + startDate + ")");
+                logger.error("WFDG", ex.Message + "ANYW_insertUpdatePositionTask(" + task + "," + description + "," + startDate + ")");
                 throw ex;
             }
         }
@@ -385,6 +385,68 @@ namespace Anywhere.service.Data.Employment
                 logger.error("WFDG", ex.Message + "ANYW_getEmployeementPath(" + consumersId + ")");
                 throw ex;
             }
+        }
+
+        public string saveCheckboxWages(string token, string chkboxName, string IsChacked, string PositionId, string textboxValue, string userID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("saveCheckboxWages");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@chkboxName", DbType.String, chkboxName);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@IsChacked", DbType.String, IsChacked);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionId", DbType.Double, PositionId);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@textboxValue", DbType.String, textboxValue);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_saveCheckboxWages(?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_saveCheckboxWages(" + chkboxName + "," + PositionId + "," + userID + ")");
+                throw ex;
+            }
+
+        }
+
+        public string getWagesCheckboxEntries(string token, string positionID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getWagesCheckboxEntries");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@positionID", DbType.String, positionID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getWagesCheckboxEntries(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getWagesCheckboxEntries(" + positionID + ")");
+                throw ex;
+            }
+        }
+
+        public string insertWages(string token, string hoursWeek, string hoursWages, string startDate, string endDate, string PositionId, string wagesID, string userID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("insertWages");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[7];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hoursWeek", DbType.Double, hoursWeek);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hoursWages", DbType.Double, hoursWages);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDate", DbType.String, startDate);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDate", DbType.String, endDate);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionId", DbType.Double, PositionId);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wagesID", DbType.Double, wagesID);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertUpdateWages(?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_insertUpdateWages(" + hoursWeek + "," + startDate + "," + endDate + ")");
+                throw ex;
+            }
+
         }
 
     }

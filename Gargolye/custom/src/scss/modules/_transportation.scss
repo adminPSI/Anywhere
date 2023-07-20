@@ -580,6 +580,10 @@
 
     .employmentMsgWrap {
         display: flex;
+
+        .checkbox-mtd > span:after {
+            top: 24px !important;
+        }
     }
 
     h3 {

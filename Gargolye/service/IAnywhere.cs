@@ -3853,7 +3853,7 @@ namespace Anywhere
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "/addSelectedAttachmentsToReport/")]
-        void addSelectedAttachmentsToReport(System.IO.Stream testInput);
+        string addSelectedAttachmentsToReport(System.IO.Stream testInput);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4554,6 +4554,30 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getEmployeementPath/")]
         EmploymentWorker.EmploymentEntriesByID[] getEmployeementPath(string token, string consumersId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/saveCheckboxWages/")]
+        EmploymentWorker.WagesEntries saveCheckboxWages(string token, string chkboxName, string IsChacked, string PositionId, string textboxValue, string userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getWagesCheckboxEntries/")]
+        EmploymentWorker.WagesCheckboxEntries[] getWagesCheckboxEntries(string token, string positionID);
+
+       // [OperationContract]
+       // [WebInvoke(Method = "POST",
+       //         BodyStyle = WebMessageBodyStyle.Wrapped,
+       //         ResponseFormat = WebMessageFormat.Json,
+       //RequestFormat = WebMessageFormat.Json,
+       //UriTemplate = "/insertWages/")]
+       // EmploymentWorker.WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID);
 
     }
 
