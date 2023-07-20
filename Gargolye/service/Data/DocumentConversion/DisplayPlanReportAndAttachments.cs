@@ -24,6 +24,7 @@ namespace Anywhere.service.Data.DocumentConversion
         GetReportsStreams grs = new GetReportsStreams();
         PDFGenerator.Data obj = new PDFGenerator.Data();
         AnywhereAssessmentWorker aaw = new AnywhereAssessmentWorker();
+        AssessmentDataGetter adg = new AssessmentDataGetter();
 
         //  PDFDoc doc = new PDFDoc();
 
@@ -179,15 +180,17 @@ namespace Anywhere.service.Data.DocumentConversion
 
         }
 
-        public string addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toDODD, bool isp, bool oneSpan, bool signatureOnly, string include)
+        public string addSelectedAttachmentsToReport(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include)
         {
-
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
             bool isTokenValid = aadg.ValidateToken(token);
-            pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20230512):99A5675D0437C60AF320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
-            PDFDoc new_doc;
+            if (toONET == false) {
+                pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20230512):99A5675D0437C60AF320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+                PDFDoc new_doc;
+            }
+            
 
             if (isTokenValid)//
             {
@@ -661,10 +664,11 @@ namespace Anywhere.service.Data.DocumentConversion
 
 
                 byte[] finalMergedArray = concatAndAddContent(allAttachments);
-                if(toDODD == true)
+                if(toONET == true)
                 {
-                    aaw.insertPlanReportToBeTranferredToONET(token, finalMergedArray.ToString(), long.Parse(assessmentID));
-                    return "success to O.NEt";
+                    string finalMergedArrayString = System.Convert.ToBase64String(finalMergedArray);
+                    aaw.insertPlanReportToBeTranferredToONET(token, finalMergedArrayString, long.Parse(assessmentID));
+                    return "Plan successfully sent to OhioDD.net";
                 }
                 response.Clear();
                 response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ";");
@@ -1152,6 +1156,14 @@ namespace Anywhere.service.Data.DocumentConversion
             return planReport;
         }
 
+        public SentToONETDate[] getSentToONETDate(string token, string assesmentId)
+        {
+            string sentDate = adg.getSentToONETDate(token, assesmentId);
+            SentToONETDate[] sentDateObj = js.Deserialize<SentToONETDate[]>(sentDate);
+
+            return sentDateObj;
+        }
+
         public ReportSectionOrder[] getReportSectionOrder()
         {
             string reportOrderString = "";
@@ -1159,6 +1171,11 @@ namespace Anywhere.service.Data.DocumentConversion
             ReportSectionOrder[] reportOrderObj = js.Deserialize<ReportSectionOrder[]>(reportOrderString);
 
             return reportOrderObj;
+        }
+
+        public class SentToONETDate
+        {
+            public string sentDate { get; set; }
         }
 
         public class ReportSectionOrder

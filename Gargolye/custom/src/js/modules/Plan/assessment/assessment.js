@@ -407,7 +407,7 @@ const assessment = (function () {
       return error.statusText;
     }
   }
-  function generateReportWithAttachments( //TODO Nathan. Add flag if to DODD
+  function generateReportWithAttachments(
     assessmentID,
     versionID,
     extraSpace,
@@ -427,7 +427,7 @@ const assessment = (function () {
         assessmentID,
         versionID,
         extraSpace: extraSpace,
-        toDODD: false,
+        toONET: false,
         isp: true,
         oneSpan: false,
         planAttachmentIds,
@@ -453,26 +453,36 @@ const assessment = (function () {
       },
     );
   }
-
-  async function transeferPlanReportToONET(assessmentID, versionID) {
-    //PROGRESS.SPINNER.show('Tranferring Report...');
+  async function transeferPlanReportToONET(
+    assessmentID,
+    versionID,
+    extraSpace,
+    planAttachmentIds,
+    wfAttachmentIds,
+    sigAttachmentIds,
+    DODDFlag,
+    signatureOnly,
+    include
+  ) {
     try {
-      const success = (
-        await assessmentAjax.getPlanAssessmentReport({
-          token: $.session.Token,
-          userId: $.session.PeopleId,
-          assessmentID,
-          versionID,
-          extraSpace: 'false',
-          isp: true, //
-          signatureOnly: false,
-        })
-      ).getPlanAssessmentReportResult;
-
-      const arr = success._buffer;
-      const byteArray = new Uint8Array(arr);
-
-      insertPlanReportToBeTranferredToONET(byteArray, assessmentID);
+      const successMessage = await assessmentAjax.transeferPlanReportToONET({
+        token: $.session.Token,
+        userId: $.session.PeopleId,
+        assessmentID,
+        versionID,
+        extraSpace: extraSpace,
+        toONET: true,
+        isp: true,
+        oneSpan: false,
+        planAttachmentIds,
+        wfAttachmentIds,
+        sigAttachmentIds,
+        DODDFlag,
+        signatureOnly,
+        include,
+      });
+  
+      return successMessage;
     } catch (error) {
       console.log(error.statusText);
     }
@@ -492,17 +502,6 @@ const assessment = (function () {
           planId: assessmentID,
         })
       ).insertPlanReportToBeTranferredToONETResult;
-      //return response;
-      if (response === 'Success') {
-        //PROGRESS.SPINNER.hide();
-        successfulSave.show('Plan Sent');
-        setTimeout(function () {
-          //successfulSave.hide();
-          const savePopup = document.querySelector('.successfulSavePopup');
-          DOM.ACTIONCENTER.removeChild(savePopup);
-        }, 1000);
-      }
-      // return planId;
     } catch (error) {
       console.log(error.statusText);
     }
