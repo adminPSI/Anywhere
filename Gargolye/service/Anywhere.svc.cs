@@ -3345,6 +3345,20 @@ namespace Anywhere
             return emp.getEmployeementPath(token, consumersId);
         }
 
+        public WagesEntries saveCheckboxWages(string token, string chkboxName, string IsChacked, string PositionId, string textboxValue, string userID)
+        {
+            return emp.saveCheckboxWages(token, chkboxName, IsChacked, PositionId, textboxValue, userID);
+        }
+
+        public WagesCheckboxEntries[] getWagesCheckboxEntries(string token, string positionID)
+        {
+            return emp.getWagesCheckboxEntries(token, positionID);
+        }
+
+        public WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
+        {
+            return emp.insertWorkSchedule(token, dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID);
+        }
 
     }
 }

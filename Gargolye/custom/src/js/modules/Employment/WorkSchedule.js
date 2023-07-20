@@ -45,7 +45,6 @@ const WorkSchedule = (() => {
         });
         workScheduleEntriesTable = buildworkScheduleEntriesTable();
 
-        //  DOM.clearActionCenter();
 
         const column1 = document.createElement('div')
         column1.classList.add('col-1')
@@ -56,8 +55,9 @@ const WorkSchedule = (() => {
         addNewCard.innerHTML = `<div class="card__header">Work Schedule</div>`;
         addNewCard.appendChild(addNewCardBody)
         column1.appendChild(addNewCard)
-
-        addNewCardBody.appendChild(NEW_SHIFT_BTN);
+        if ($.session.EmploymentUpdate) {
+            addNewCardBody.appendChild(NEW_SHIFT_BTN);
+        }
         addNewCardBody.appendChild(workScheduleEntriesTable);
         workScheduleDiv.appendChild(column1);
         return workScheduleDiv;
@@ -89,10 +89,19 @@ const WorkSchedule = (() => {
     }
 
     function addWorkSchedulePopupBtn(WorkScheduleId) {
-        dayOfWeek = '';
-        startTime = '';
-        endTime = '';
-
+        if (WorkScheduleId == 0 || WorkScheduleId == undefined) {
+            dayOfWeek = '';
+            startTime = '';
+            endTime = '';
+        }
+        else {
+            let workScheduleValue = ScheduleEntries.getWorkScheduleEntriesResult.find(x => x.WorkScheduleId == WorkScheduleId);
+            dayOfWeek = workScheduleValue.dayOfWeek;
+            startTime = moment(workScheduleValue.startTime).format('YYYY-MM-DD');
+            endTime = moment(workScheduleValue.endTime).format('YYYY-MM-DD');
+            
+           
+        }
         addWorkSchedulePopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
             hideX: true,
@@ -121,7 +130,7 @@ const WorkSchedule = (() => {
 
         NewStartTime = input.build({
             id: 'NewStartTime',
-            type: 'date',
+            type: 'time',
             label: 'Strat Time',
             style: 'secondary',
             value: startTime,
@@ -129,7 +138,7 @@ const WorkSchedule = (() => {
 
         NewEndTime = input.build({
             id: 'NewEndTime',
-            type: 'date',
+            type: 'time',
             label: 'End Time',
             style: 'secondary',
             value: endTime,
@@ -159,7 +168,9 @@ const WorkSchedule = (() => {
 
         var popupbtnWrap = document.createElement('div');
         popupbtnWrap.classList.add('btnWrap');
-        popupbtnWrap.appendChild(APPLY_BTN);
+        if ($.session.EmploymentUpdate) {
+            popupbtnWrap.appendChild(APPLY_BTN);
+        }
         popupbtnWrap.appendChild(CANCEL_BTN);
         addWorkSchedulePopup.appendChild(popupbtnWrap);
 
@@ -174,11 +185,11 @@ const WorkSchedule = (() => {
             dayOfWeek = event.target.value;
             checkRequiredFieldsOfPopup();
         });
-        NewStartTime.addEventListener('input', event => {
+        NewStartTime.addEventListener('change', event => {
             startTime = event.target.value;
             checkRequiredFieldsOfPopup();
         });
-        NewEndTime.addEventListener('input', event => {
+        NewEndTime.addEventListener('change', event => {
             endTime = event.target.value;
             checkRequiredFieldsOfPopup();
         });
@@ -237,7 +248,7 @@ const WorkSchedule = (() => {
             { id: 4, value: 4, text: 'Wednesday' },
             { id: 5, value: 5, text: 'Thursday' },
             { id: 6, value: 6, text: 'Friday' },
-            { id: 7, value: 7, text: 'Saturday' },
+            { id: 7, value: 7, text: 'Saturday' }, 
 
         ]);
         dayOfWeekDropdownData.unshift({ id: null, value: '', text: '' });
@@ -246,7 +257,7 @@ const WorkSchedule = (() => {
 
 
     async function saveNewWagesPopup() {
-        const result = await EmploymentAjax.insertWagesAsync(hoursWeek, hoursWages, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
+        const result = await EmploymentAjax.insertWorkScheduleAsync(dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
         const { insertWagesResult } = result;
         if (insertWagesResult.WorkScheduleId != null) {
             buildNewWorkScheduleForm()

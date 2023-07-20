@@ -120,7 +120,7 @@ const NewEmployment = (function () {
         await WagesBenefits.init(PositionId);
         await PositionTask.init(PositionId);
         await WorkSchedule.init(PositionId);
-
+        
         sections.forEach((section, index) => {
             const sectionId = section.id;
             const sectionMarkup = section.markup();

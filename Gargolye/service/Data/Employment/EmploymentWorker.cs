@@ -161,11 +161,28 @@ namespace Anywhere.service.Data.Employment
         }
 
         [DataContract]
+        public class WagesCheckboxEntries
+        {
+            [DataMember(Order = 0)]
+            public string vacationSick { get; set; }
+            [DataMember(Order = 1)]
+            public string medical { get; set; }
+            [DataMember(Order = 2)]
+            public string retirement { get; set; }
+            [DataMember(Order = 3)]
+            public string empDiscount { get; set; }
+            [DataMember(Order = 4)]
+            public string other { get; set; }
+            [DataMember(Order = 5)]
+            public string otherText { get; set; }
+
+        }
+
+        [DataContract]
         public class EmploymentPath
         {
             [DataMember(Order = 0)]
             public string pathId { get; set; }
-
         }
 
         [DataContract]
@@ -187,7 +204,10 @@ namespace Anywhere.service.Data.Employment
             public string employeeStandard { get; set; }
             [DataMember(Order = 7)]
             public string jobTaskId { get; set; }
-
+            [DataMember(Order = 8)]
+            public int lastTaskNumber { get; set; }
+            [DataMember(Order = 9)]
+            public string initialPerformanceID { get; set; }
         }
 
 
@@ -514,7 +534,7 @@ namespace Anywhere.service.Data.Employment
                     if (endDate == "")
                         dateEnd = null;
                     else
-                        dateEnd = endDate; 
+                        dateEnd = endDate;
 
                     WagesID = Odg.insertWages(token, hoursWeek, hoursWages, startDate, dateEnd, PositionId, wagesID, userID, transaction);
 
@@ -641,6 +661,71 @@ namespace Anywhere.service.Data.Employment
 
                     return employeepath;
 
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public WagesEntries saveCheckboxWages(string token, string chkboxName, string IsChacked, string PositionId, string textboxValue, string userID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    String WagesID;
+                    WagesEntries addUpdateWages = new WagesEntries();
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+
+                    WagesID = Odg.saveCheckboxWages(token, chkboxName, IsChacked, PositionId, textboxValue, userID, transaction);
+
+                    addUpdateWages.wagesId = WagesID;
+                    return addUpdateWages;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public WagesCheckboxEntries[] getWagesCheckboxEntries(string token, string positionID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    WagesCheckboxEntries[] entries = js.Deserialize<WagesCheckboxEntries[]>(Odg.getWagesCheckboxEntries(token, positionID, transaction));
+
+                    return entries;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    String WorkScheduleId;
+                    WorkScheduleEntries addUpdateWorkSchedule = new WorkScheduleEntries();
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+
+                    WorkScheduleId = Odg.insertWorkSchedule(token, dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID, transaction);
+
+                    addUpdateWorkSchedule.WorkScheduleId = WorkScheduleId;
+                    return addUpdateWorkSchedule;
                 }
                 catch (Exception ex)
                 {

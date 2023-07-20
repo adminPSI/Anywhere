@@ -377,6 +377,34 @@ var EmploymentAjax = (function () {
         }
     }
 
+    async function getWagesCheckboxEntriesAsync(positionID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getWagesCheckboxEntries/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "positionID":"' +
+                    positionID +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     async function insertWagesAsync(
         hoursWeek, hoursWages, startDate, endDate, PositionId, wagesID, userID
     ) {
@@ -400,6 +428,39 @@ var EmploymentAjax = (function () {
                     endDate: endDate,
                     PositionId: PositionId,
                     wagesID: wagesID,
+                    userID: userID
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+
+    async function saveCheckboxWagesAsync(
+        chkboxName, IsChacked, PositionId, textboxValue, userID
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/saveCheckboxWages/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    chkboxName: chkboxName,
+                    IsChacked: IsChacked,
+                    PositionId: PositionId,
+                    textboxValue: textboxValue,
                     userID: userID
                 }),
                 contentType: 'application/json; charset=utf-8',
@@ -586,6 +647,39 @@ var EmploymentAjax = (function () {
         }
     }
 
+    async function insertWorkScheduleAsync(
+        dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertWorkSchedule/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    dayOfWeek: dayOfWeek,
+                    startTime: startTime,
+                    endTime: endTime,
+                    PositionId: PositionId,
+                    WorkScheduleID: WorkScheduleID,
+                    userID: userID
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     return {
         getEmploymentEntriesAsync,
         getEmployersAsync,
@@ -600,12 +694,15 @@ var EmploymentAjax = (function () {
         getTransportationDropDownAsync,
         getTypeOfWorkDropDownAsync,
         getWagesEntriesAsync,
+        getWagesCheckboxEntriesAsync,
         insertWagesAsync,
+        saveCheckboxWagesAsync,
         getPositionTaskEntriesAsync,
         getInitialPerformanceDropdownAsync,
         insertPositionTaskAsync,
         getWorkScheduleEntriesAsync,
         isNewPositionEnableAsync,
-        getEmployeementPathAsync
+        getEmployeementPathAsync,
+        insertWorkScheduleAsync,
     };
 })();

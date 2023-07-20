@@ -3,11 +3,20 @@ const WagesBenefits = (() => {
     let PositionId;
     let EmploymentsEntries;
     let wagesID;
+    let CheckBoxEntries;
+    let vacationSickChk;
+    let retirementChk;
+    let medicialChk;
+    let DiscountChk;
+    let otherChk;
+    let otherValue;
+    let isOverLapRecord = false;
 
     async function init(positionId) {
         PositionId = positionId;
         if (PositionId != undefined) {
             EmploymentsEntries = await EmploymentAjax.getWagesEntriesAsync(PositionId);
+            CheckBoxEntries = await EmploymentAjax.getWagesCheckboxEntriesAsync(PositionId);
         }
     }
 
@@ -34,49 +43,58 @@ const WagesBenefits = (() => {
         wagesDiv.classList.add('additionalQuestionWrap');
         otherInputText = '';
 
-        vacationSick = input.buildCheckbox({
+        vacationSickChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].vacationSick;
+        retirementChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].medical;
+        medicialChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].retirement;
+        DiscountChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].empDiscount;
+        otherChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].other;
+        otherValue = CheckBoxEntries.getWagesCheckboxEntriesResult[0].otherText;
+
+        vacationSickchkBox = input.buildCheckbox({
             text: 'Vacation/Sick',
             id: 'chkVacationSick',
-            isChecked: false,
+            isChecked: vacationSickChk == 'Y' ? true : false,
             style: 'secondary',
-            callback: () => saveWagesChecked('VacationSick', event.target),
+            callback: () => saveWagesChecked('VacationSick', event.target.checked, null),
         });
 
-        medicalVision = input.buildCheckbox({
+        medicalVisionchkbox = input.buildCheckbox({
             text: 'Medical/Dental/Vision',
             id: 'chkmedicalVision',
-            isChecked: false,
+            isChecked: medicialChk == 'Y' ? true : false,
             style: 'secondary',
-            callback: () => saveWagesChecked('Medical', event.target),
+            callback: () => saveWagesChecked('Medical', event.target.checked, null),
         });
 
-        retirement = input.buildCheckbox({
+        retirementchkBox = input.buildCheckbox({
             text: 'Retirement',
             id: 'chkRetirement',
-            isChecked: false,
+            isChecked: retirementChk == 'Y' ? true : false,
             style: 'secondary',
-            callback: () => saveWagesChecked('Retirement', event.target),
+            callback: () => saveWagesChecked('Retirement', event.target.checked, null),
         });
 
-        empDiscount = input.buildCheckbox({
+        empDiscountchkBox = input.buildCheckbox({
             text: 'Employee Discount',
             id: 'chkEmpDiscount',
-            isChecked: false,
+            isChecked: DiscountChk == 'Y' ? true : false,
             style: 'secondary',
-            callback: () => saveWagesChecked('empDiscount', event.target),
+            callback: () => saveWagesChecked('empDiscount', event.target.checked, null),
         });
 
-        other = input.buildCheckbox({
+        otherchkBox = input.buildCheckbox({
             text: 'Other',
             id: 'chkOther',
-            isChecked: false,
+            isChecked: otherChk == 'Y' ? true : false,
             style: 'secondary',
-            callback: () => saveWagesChecked('other', event.target),
+            callback: () => otherChecked(event.target.checked),
         });
 
         otherInput = input.build({
             type: 'text',
+            id: 'otherInput',
             style: 'secondary',
+            value: otherValue,
         });
 
         NEW_WAGES_BTN = button.build({
@@ -97,7 +115,9 @@ const WagesBenefits = (() => {
         addNewCard.appendChild(addNewCardBody)
         column1.appendChild(addNewCard)
 
-        addNewCardBody.appendChild(NEW_WAGES_BTN);
+        if ($.session.EmploymentUpdate) {
+            addNewCardBody.appendChild(NEW_WAGES_BTN);
+        }
 
         addNewCardBody.appendChild(WagesEntriesTable);
 
@@ -109,25 +129,25 @@ const WagesBenefits = (() => {
 
         var chkDiv = document.createElement('div');
         chkDiv.style.marginTop = '20px'
-        chkDiv.appendChild(vacationSick);
+        chkDiv.appendChild(vacationSickchkBox);
         addNewCardBody.appendChild(chkDiv);
 
 
         var chkDiv1 = document.createElement('div');
-        chkDiv1.appendChild(medicalVision);
+        chkDiv1.appendChild(medicalVisionchkbox);
         addNewCardBody.appendChild(chkDiv1);
 
         var chkDiv2 = document.createElement('div');
-        chkDiv2.appendChild(retirement);
+        chkDiv2.appendChild(retirementchkBox);
         addNewCardBody.appendChild(chkDiv2);
 
         var chkDiv3 = document.createElement('div');
-        chkDiv3.appendChild(empDiscount);
+        chkDiv3.appendChild(empDiscountchkBox);
         addNewCardBody.appendChild(chkDiv3);
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('employmentMsgWrap');
-        btnWrap.appendChild(other);
+        btnWrap.appendChild(otherchkBox);
         otherInput.style.width = '80%';
         otherInput.style.marginLeft = '2%';
         btnWrap.appendChild(otherInput);
@@ -135,14 +155,35 @@ const WagesBenefits = (() => {
 
         wagesDiv.appendChild(column1);
         eventListeners();
+        disableCheckBox();
         return wagesDiv;
 
     }
 
     function eventListeners() {
-        otherInput.addEventListener('input', event => {
+        otherInput.addEventListener('focusout', event => {
             otherInputText = event.target.value;
+            saveWagesChecked('other', true, otherInputText);
         });
+    }
+
+    function disableCheckBox() {
+        if ($.session.EmploymentUpdate) {
+            vacationSickchkBox.classList.remove('disabled');
+            medicalVisionchkbox.classList.remove('disabled');
+            retirementchkBox.classList.remove('disabled');
+            empDiscountchkBox.classList.remove('disabled');
+            otherchkBox.classList.remove('disabled');
+        }
+        else {
+            vacationSickchkBox.classList.add('disabled');
+            medicalVisionchkbox.classList.add('disabled');
+            retirementchkBox.classList.add('disabled');
+            empDiscountchkBox.classList.add('disabled');
+            otherchkBox.classList.add('disabled');
+
+        }
+        otherInput.classList.add('disabled');
     }
 
     function buildWagesEntriesTable() {
@@ -171,14 +212,14 @@ const WagesBenefits = (() => {
     }
 
     function addWagesPopupBtn(wagesId) {
-        if (wagesId == 0) {
+        if (wagesId == 0 || wagesId == undefined) {
             hoursWeek = '';
             hoursWages = '';
             startDate = '';
             endDate = '';
         }
         else {
-            let empValue = EmploymentsEntries.getWagesEntriesResult.find(x => x.wageId = wagesId);
+            let empValue = EmploymentsEntries.getWagesEntriesResult.find(x => x.wageId == wagesId);
             hoursWeek = empValue.hoursPerWeek;
             hoursWages = empValue.wagesPerHour;
             startDate = moment(empValue.startDate).format('YYYY-MM-DD');
@@ -218,7 +259,7 @@ const WagesBenefits = (() => {
             type: 'text',
             label: 'Wages Per Hour',
             style: 'secondary',
-            value: hoursWages,
+            value: '$' + hoursWages,
         });
 
         newStartDate = input.build({
@@ -256,9 +297,16 @@ const WagesBenefits = (() => {
         addWagesPopup.appendChild(newStartDate);
         addWagesPopup.appendChild(newEndDate);
 
+
+        var confirmMessage = document.createElement('div');
+        confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
+        addWagesPopup.appendChild(confirmMessage);
+
         var popupbtnWrap = document.createElement('div');
         popupbtnWrap.classList.add('btnWrap');
-        popupbtnWrap.appendChild(APPLY_BTN);
+        if ($.session.EmploymentUpdate) {
+            popupbtnWrap.appendChild(APPLY_BTN);
+        }
         popupbtnWrap.appendChild(CANCEL_BTN);
         addWagesPopup.appendChild(popupbtnWrap);
 
@@ -270,11 +318,19 @@ const WagesBenefits = (() => {
     function PopupEventListeners() {
         weekHours.addEventListener('input', event => {
             hoursWeek = event.target.value;
+            if (hoursWeek.includes('.') && (hoursWeek.match(/\./g).length > 1 || hoursWeek.toString().split('.')[1].length > 2)) {
+                document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
+                return;
+            }
             checkRequiredFieldsOfPopup();
         });
 
         wagesHours.addEventListener('input', event => {
             hoursWages = event.target.value;
+            if (hoursWages.includes('.') && (hoursWages.match(/\./g).length > 1 || hoursWages.toString().split('.')[1].length > 2)) {
+                document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
+                return;
+            }
             checkRequiredFieldsOfPopup();
         });
         newStartDate.addEventListener('input', event => {
@@ -305,7 +361,7 @@ const WagesBenefits = (() => {
             weekHours.classList.remove('errorPopup');
         }
 
-        if (wagesPerHour.value === '') {
+        if (wagesPerHour.value === '' || wagesPerHour.value === '$') {
             wagesHours.classList.add('errorPopup');
         } else {
             wagesHours.classList.remove('errorPopup');
@@ -330,18 +386,40 @@ const WagesBenefits = (() => {
         }
     }
 
+    function otherChecked(event) {
+        if (event == true) {
+            otherInput.classList.remove('disabled');
+        } else {
+            otherInput.classList.add('disabled');
+            debugger;
+            otherValue = '';
+            otherInput.querySelector('#otherInput').value = '';
+            saveWagesChecked('other', false, '');
 
-    async function saveNewWagesPopup() {
-
-        const result = await EmploymentAjax.insertWagesAsync(hoursWeek, hoursWages, startDate, endDate, PositionId, wagesID, $.session.UserId);
-        const { insertWagesResult } = result;
-        if (insertWagesResult.wagesId != null) {
-            buildNewWagesBenefitsForm()
         }
-        POPUP.hide(addWagesPopup);
     }
 
-    async function saveEmployeeInfo() {
+    async function saveNewWagesPopup() {
+        const result = await EmploymentAjax.insertWagesAsync(hoursWeek, hoursWages.replace('$', ''), startDate, endDate, PositionId, wagesID, $.session.UserId);
+        const { insertWagesResult } = result;
+        debugger; 
+        var messagetext = document.getElementById('confirmMessage');
+        messagetext.innerHTML = ``;
+        if (insertWagesResult.wagesId == '-1') {
+            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
+            messagetext.classList.add('password-error');
+        }
+        else {
+            buildNewWagesBenefitsForm()
+            POPUP.hide(addWagesPopup);
+        }
+
+    }
+
+    async function saveWagesChecked(chkboxName, event, textboxValue) {
+        let IsChacked = event == true ? 'Y' : 'N';
+        const result = await EmploymentAjax.saveCheckboxWagesAsync(chkboxName, IsChacked, PositionId, textboxValue, $.session.UserId);
+        const { saveCheckboxWagesResult } = result;
 
     }
 
