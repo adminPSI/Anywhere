@@ -1,5 +1,8 @@
 const missingSignatureAjax = (function () {
   function getMissingPlanSignatures(retrieveData, callback) {
+    // This function is not async bc it needs to work with other
+    // dashboard functions that are not async,
+    // if you refactor this you refactor all
     $.ajax({
       type: 'POST',
       url:
@@ -21,8 +24,54 @@ const missingSignatureAjax = (function () {
       error: function (xhr, status, error) {},
     });
   }
+  async function getLocationDropdownData() {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerPlans/',
+        data: JSON.stringify({ token: $.session.Token }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.getConsumerPlansResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+  async function getGroupsDropdownData(locationId) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerPlans/',
+        data: JSON.stringify({ token: $.session.Token, locationId: locationId }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.getConsumerPlansResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
 
   return {
     getMissingPlanSignatures,
+    getLocationDropdownData,
+    getGroupsDropdownData,
   };
 })();

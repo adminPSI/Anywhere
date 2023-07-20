@@ -369,7 +369,18 @@
         const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row')];
         const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
         questionSetGridRows.forEach(row => {
-          debugger;
+          const rowCells = row.querySelectorAll('.grid__cell');
+          rowCells.forEach(cell => {
+            const cellInput = cell.querySelector('.input-field__input');
+            toggleAnswerSkipped(cellInput.id, e.target.checked);
+            if (e.target.checked) {
+              addAnswer(cellInput.id, '');
+              cellInput.value = '';
+              input.disableInputField(cellInput);
+            } else {
+              input.enableInputField(cellInput);
+            }
+          });
         });
         questionSetActionButtons.forEach(btn => {
           if (e.target.checked) {
@@ -1357,7 +1368,7 @@
       text: 'Intentionally left blank',
       id: `intentionallyBlankCheckbox${questionSetId}`,
       className: 'intentionallyBlankCheckbox',
-      isChecked: false,
+      isChecked: false, //skipped === 'Y' ? true : false,
       isDisabled: readonly,
       attributes: [
         { key: 'data-setid', value: questionSetId },
@@ -1621,6 +1632,7 @@
       prompt,
       requiredAnswer,
       text,
+      skipped,
     } = questionData;
 
     let addAttachmentButton = false;
@@ -1678,7 +1690,7 @@
           text: 'Intentionally left blank',
           id: `intentionallyBlankCheckbox${answerId}`,
           className: 'intentionallyBlankCheckbox',
-          isChecked: false,
+          isChecked: skipped === 'Y' ? true : false,
           isDisabled: readOnly,
           attributes: [
             { key: 'data-setid', value: setId },
@@ -1691,6 +1703,9 @@
         question.appendChild(intentionallyBlankCheckbox);
         if (answerText) {
           input.disableInputField(intentionallyBlankCheckbox);
+        }
+        if (skipped === 'Y') {
+          input.disableInputField(questionInputMarkup);
         }
         break;
       }
