@@ -391,7 +391,6 @@ const WagesBenefits = (() => {
             otherInput.classList.remove('disabled');
         } else {
             otherInput.classList.add('disabled');
-            debugger;
             otherValue = '';
             otherInput.querySelector('#otherInput').value = '';
             saveWagesChecked('other', false, '');
@@ -402,7 +401,6 @@ const WagesBenefits = (() => {
     async function saveNewWagesPopup() {
         const result = await EmploymentAjax.insertWagesAsync(hoursWeek, hoursWages.replace('$', ''), startDate, endDate, PositionId, wagesID, $.session.UserId);
         const { insertWagesResult } = result;
-        debugger; 
         var messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertWagesResult.wagesId == '-1') {
