@@ -215,6 +215,25 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string getSentToONETDate(string token, string planId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSentToONETDate ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(planId.ToString());
+            string text = "CALL DBA.ANYW_ISP_getSentToONETDate(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("6ADG", ex.Message + "ANYW_ISP_InsertPlanReportToBeTranferredToONET(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "6ADG: error ANYW_ISP_InsertPlanReportToBeTranferredToONET";
+            }
+        }
+
         public string transferPlanReportToONET(string token, long planId)
         {
             if (tokenValidator(token) == false) return null;

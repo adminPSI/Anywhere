@@ -430,8 +430,8 @@ const planValidation = (function () {
         } else {
           if (section.button.classList.contains('error')) {
             section.button.classList.remove('error');
-            section.button.innerHTML = `${section.errorText} (${section.count})`;
           }
+          section.button.innerHTML = `${section.errorText} (${section.count})`;
         }
       });
       
