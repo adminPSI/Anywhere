@@ -254,12 +254,12 @@ namespace Anywhere.service.Data.Employment
             try
             {
                 logger.debug("insertUpdateWorkSchedule");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[7];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[6];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@dayOfWeek", DbType.Double, dayOfWeek);
-                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startTime", DbType.Double, startTime);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startTime", DbType.String, startTime);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endTime", DbType.String, endTime);
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionId", DbType.Double, PositionId);
-                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wagesID", DbType.Double, WorkScheduleID);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@WorkScheduleID", DbType.Double, WorkScheduleID);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertUpdateWorkSchedule(?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }

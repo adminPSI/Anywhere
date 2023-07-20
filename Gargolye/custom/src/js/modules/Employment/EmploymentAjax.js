@@ -669,7 +669,7 @@ var EmploymentAjax = (function () {
                     endTime: endTime,
                     PositionId: PositionId,
                     WorkScheduleID: WorkScheduleID,
-                    userID: userID
+                    userID: userID,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
