@@ -354,17 +354,17 @@ namespace Anywhere.service.Data.PlanSignature
             {
                 //do work to get salesforceid and update record then return true
                 string cSFID = GetConsumersSalesForceId(consumerId);
-                if (cSFID == "")
+                if (cSFID == "" || cSFID == null)
                 {
-                    valid = true;
+                    valid = false;
                 }
                 else if (cSFID.ToUpper().IndexOf("NO SALES") == -1)
                 {
-                    valid = true;
+                    valid = false;
                 }
                 else
                 {
-                    valid = false;
+                    valid = true;
                 }
 
             }
