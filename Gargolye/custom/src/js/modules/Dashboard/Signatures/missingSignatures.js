@@ -5,6 +5,8 @@ const signatureWidget = (function () {
   let signatureWidgetGroupId;
   let signatureWidgetGroupName;
   let signatureWidgetGroupCode;
+  let signatureWidgetLocationId;
+  let signatureWidgetLocationName;
   // DOM
   //-----------------------
   let widget;
@@ -14,6 +16,7 @@ const signatureWidget = (function () {
   let applyFiltersBtn;
   let cancelFilterBtn;
   let planStatusDropdown;
+  let locationDropdown;
   let groupDropdown;
 
   function populatePlanStatusDropdown() {
@@ -25,6 +28,44 @@ const signatureWidget = (function () {
 
     dropdown.populate(planStatusDropdown, data, signaturePlanStatus);
   }
+  function populateLocationDropdown(locData) {
+    const dropdownData = locData.map(data => {
+      return {
+        value: data.ID,
+        text: data.Name,
+      };
+    });
+
+    const defaultLocation = {
+      id: '%',
+      value: '%',
+      text: 'ALL',
+    };
+    dropdownData.unshift(defaultLocation);
+
+    dropdown.populate(locationDropdown, dropdownData, signatureWidgetLocationId);
+  }
+  function populateGroupDropdown(groupData) {
+    const dropdownData = groupData.map(function (data) {
+      return {
+        value: data.RetrieveID,
+        text: data.GroupName,
+      };
+    });
+
+    UTIL.findAndSlice(dropdownData, 'Caseload', 'text');
+    UTIL.findAndSlice(dropdownData, 'Needs Attention', 'text');
+    UTIL.findAndSlice(dropdownData, 'Everyone', 'text');
+
+    const defaultGroup = {
+      id: '%',
+      value: '%',
+      text: 'EVERYONE',
+    };
+    dropdownData.unshift(defaultGroup);
+
+    dropdown.populate(groupDropdown, dropdownData, signatureWidgetGroupId);
+  }
 
   function buildFilterPopup() {
     var widgetFilter = widget.querySelector('.widget__filters');
@@ -35,6 +76,12 @@ const signatureWidget = (function () {
     planStatusDropdown = dropdown.build({
       dropdownId: 'missingSignaturesPlanStatus',
       label: 'Plan Status',
+      style: 'secondary',
+      readonly: false,
+    });
+    locationDropdown = dropdown.build({
+      dropdownId: 'missingSignaturesLocation',
+      label: 'Location',
       style: 'secondary',
       readonly: false,
     });
@@ -61,7 +108,8 @@ const signatureWidget = (function () {
     btnWrap.appendChild(cancelFilterBtn);
 
     filterPopup.appendChild(planStatusDropdown);
-    // filterPopup.appendChild(groupDropdown);
+    filterPopup.appendChild(locationDropdown);
+    filterPopup.appendChild(groupDropdown);
     filterPopup.appendChild(btnWrap);
     widget.insertBefore(filterPopup, widgetBody);
 
@@ -72,23 +120,36 @@ const signatureWidget = (function () {
     let oldSignatureWidgetGroupId;
     let oldSignatureWidgetGroupName;
     let oldSignatureWidgetGroupCode;
+    let oldSignatureWidgetLocationId;
+    let oldSignatureWidgetLocationName;
 
     planStatusDropdown.addEventListener('change', event => {
       const selectedOption = event.target.options[event.target.selectedIndex];
-      // cache old values
+      // cache
       oldSignaturePlanStatus = signaturePlanStatus;
+      // update
+      signaturePlanStatus = selectedOption.value;
     });
-    // groupDropdown.addEventListener('change', event => {
-    //   const selectedOption = event.target.options[event.target.selectedIndex];
-    //   // cache old values
-    //   oldSignatureWidgetGroupId = signatureWidgetGroupId;
-    //   oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
-    //   oldSignatureWidgetGroupName = signatureWidgetGroupName;
-    //   // update variables
-    //   signatureWidgetGroupId = selectedOption.value;
-    //   signatureWidgetGroupCode = selectedOption.id;
-    //   signatureWidgetGroupName = selectedOption.innerHTML;
-    // });
+    locationDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      // cache
+      oldSignatureWidgetLocationId = signatureWidgetLocationId;
+      oldSignatureWidgetLocationName = signatureWidgetLocationName;
+      // update
+      signatureWidgetLocationId = selectedOption.value;
+      signatureWidgetLocationName = selectedOption.innerHTML;
+    });
+    groupDropdown.addEventListener('change', event => {
+      const selectedOption = event.target.options[event.target.selectedIndex];
+      // cache
+      oldSignatureWidgetGroupId = signatureWidgetGroupId;
+      oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
+      oldSignatureWidgetGroupName = signatureWidgetGroupName;
+      // update
+      signatureWidgetGroupId = selectedOption.value;
+      signatureWidgetGroupCode = selectedOption.id;
+      signatureWidgetGroupName = selectedOption.innerHTML;
+    });
     applyFiltersBtn.addEventListener('click', event => {
       filterPopup.classList.remove('visible');
       overlay.hide();
@@ -128,6 +189,7 @@ const signatureWidget = (function () {
 
     filteredBy.innerHTML = `<div class="filteredByData">
       <p><span>Plan Status:</span> ${statusName}</p>
+      <p><span>Location:</span> ${signatureWidgetLocationName}</p>
       <p><span>Group:</span> ${signatureWidgetGroupName}</p>
     </div>`;
   }
@@ -205,6 +267,8 @@ const signatureWidget = (function () {
     if (!signatureWidgetGroupId) signatureWidgetGroupId = '0';
     if (!signatureWidgetGroupName) signatureWidgetGroupName = 'Everyone';
     if (!signatureWidgetGroupCode) signatureWidgetGroupCode = 'ALL';
+    if ($.session.outcomeWidgetLocationId) signatureWidgetLocationId = '%';
+    if ($.session.outcomeWidgetLocationId) signatureWidgetLocationName = 'ALL';
 
     widget = document.getElementById('dashmissingsignatures');
     widgetBody = widget.querySelector('.widget__body');

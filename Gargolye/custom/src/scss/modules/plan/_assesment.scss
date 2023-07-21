@@ -445,6 +445,83 @@
         }
     }
 
+    #portalScreen {
+      overflow: hidden;
+
+      &.visible {
+          transform: translateX(-1000%);
+      }
+
+      .attachmentsWrap {
+          min-height: 400px;
+          margin: 0 0 15px;
+          max-height: 400px;
+          overflow-y: auto;
+
+          .attachmentsHeading {
+              margin: 0 0 10px;
+          }
+
+          .planAttWrap,
+          .workflowAttWrap,
+          .signatureAttWrap {
+              h2 {
+                  margin: 0 0 10px;
+              }
+
+              .attachment {
+                  cursor: pointer;
+                  padding: 5px;
+                  margin: 0 0 5px;
+
+                  &.selected {
+                      background: $secondary;
+                  }
+              }
+          }
+      }
+      // success/error message
+      .warningMessage {
+          margin-bottom: 10px;
+          text-align: center;
+          font-weight: $normal;
+
+          p:first-child {
+              color: $font-error;
+              margin-bottom: 10px;
+          }
+
+          p:last-child {
+              color: $font-dark;
+          }
+      }
+
+      .okBtn {
+          width: 100%;
+      }
+      .checkboxWrap {
+        display: flex;
+        flex-flow: row nowrap;
+        flex-grow: 1;
+        width: 100%;
+
+        .checkbox.checkbox-mtd {
+          transform: none !important;
+          -webkit-transform: none !important;
+
+          #portalCheckbox {
+            transform: none !important;
+            -webkit-transform: none !important;
+           }
+           span {
+            transform: none !important;
+            -webkit-transform: none !important;
+           }
+          .checkbox-mtd>span:after { top: 7px; }
+        }
+      }
+  }
+
     #changePlanTypeScreen {
         .currentType {
             display: flex;
@@ -996,4 +1073,13 @@
 
 .tableOfContents__heading {
   display: flex;
+}
+
+.sentToOnetDateDiv {
+  bottom: 10px;
+  position: relative;
+  
+  p {
+    font-size: .9rem;
+  }
 }

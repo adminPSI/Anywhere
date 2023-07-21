@@ -89,6 +89,8 @@ namespace Anywhere.service.Data.Employment
             [DataMember(Order = 13)]
             public string positionID { get; set; }
 
+            [DataMember(Order = 14)]
+            public string existingEndDate { get; set; }           
         }
 
 

@@ -503,17 +503,13 @@ const planOutcomes = (() => {
       forceCharLimit: true,
     });
     detailsTextInput.classList.add('detailsTextInput');
-    detailsTextInput.addEventListener('onchange', e => {
+    detailsTextInput.addEventListener('input', e => {
       detailsText = e.target.value;
 
       if (detailsText === '') {
         detailsTextInput.classList.add('error');
-        planValidation.updateOutcomeDetails(outcomeId, validationCheck, true);
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       } else {
         detailsTextInput.classList.remove('error');
-        planValidation.updateOutcomeDetails(outcomeId, validationCheck, false);
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       }
 
       toggleAddNewOutcomePopupDoneBtn();
@@ -567,6 +563,18 @@ const planOutcomes = (() => {
           },
           true,
         );
+
+        validationCheck = await planValidation.ISPValidation(planId);
+        assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+        planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
+
+        const ISPAlertDiv = document.getElementById('navAlertISP');
+
+        if (validationCheck.complete === true) {
+          ISPAlertDiv.style.display = 'none';
+        } else {
+          ISPAlertDiv.style.display = 'flex';
+        }
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(newOutcomePopup);
