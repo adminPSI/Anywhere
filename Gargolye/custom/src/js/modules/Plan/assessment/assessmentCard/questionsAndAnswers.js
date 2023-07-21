@@ -366,7 +366,9 @@
         }
       } else {
         const questionSet = document.getElementById(`set${setId}`);
-        const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row')];
+        const questionSetGridRows = [
+          ...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)'),
+        ];
         const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
         questionSetGridRows.forEach(row => {
           const rowCells = row.querySelectorAll('.grid__cell');

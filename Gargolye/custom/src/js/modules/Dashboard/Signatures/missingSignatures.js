@@ -281,9 +281,11 @@ const signatureWidget = (function () {
     displayFilteredBy();
     eventSetup();
 
-    missingSignatureAjax.getMissingPlanSignatures({ token: $.session.Token }, res => {
+    missingSignatureAjax.getMissingPlanSignatures({ token: $.session.Token }, async res => {
       missingSignatureData = res;
       populateMissingSignatures(missingSignatureData);
+      locationDropdownData = await missingSignatureAjax.getLocationDropdownData();
+      groupDropdownData = await missingSignatureAjax.getGroupsDropdownData();
     });
   }
 
