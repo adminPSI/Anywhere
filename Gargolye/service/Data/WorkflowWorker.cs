@@ -131,6 +131,9 @@ namespace Anywhere.service.Data
             public string IndivNameFLast5 { get; set; }
             public string ResidentNumber { get; set; }
             public string serviceProviders { get; set; }
+            public string CaseManagerNameLastFirst { get; set; }
+            public string CaseManagerNameFirstLast { get; set; }
+            public string Sender { get; set; }
 
         }
 
@@ -1384,6 +1387,15 @@ namespace Anywhere.service.Data
                     break;
                 case "[Service Providers]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.serviceProviders);
+                    break;
+                case "[Case Manager(Last, First)]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisPlan.CaseManagerNameLastFirst);
+                    break;
+                case "[Case Manager(First Last)]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisPlan.CaseManagerNameFirstLast);
+                    break;
+                case "[Sender]":
+                    dictPlaceHolderValuesforPlan.Add(param, thisPlan.Sender);
                     break;
             }
             return dictPlaceHolderValuesforPlan;
