@@ -291,7 +291,9 @@ const signatureWidget = (function () {
       missingSignatureData = res;
       populateMissingSignatures(missingSignatureData);
       locationDropdownData = await missingSignatureAjax.getLocationDropdownData();
-      groupDropdownData = await missingSignatureAjax.getGroupsDropdownData();
+      groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
+        signatureWidgetLocationId,
+      );
     });
   }
 

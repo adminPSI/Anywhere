@@ -5,7 +5,7 @@ const ISP = (function () {
   let ispNav;
   let ispBody;
   let readOnly;
-  let validationCheck
+  let validationCheck;
 
   const sections = [
     {
@@ -145,7 +145,7 @@ const ISP = (function () {
 
   // Markup
   //---------------------------------------------
-   function buildNavigation() {
+  function buildNavigation() {
     const nav = document.createElement('div');
     nav.classList.add('planISP__nav');
 
@@ -166,8 +166,11 @@ const ISP = (function () {
         outcomesAlertDiv.style.display = 'none';
 
         // creates and shows a tip when hovering over the visible alert div
-        planValidation.createTooltip('There is data missing on this tab that is required by DODD', outcomesAlertDiv)
-        
+        planValidation.createTooltip(
+          'There is data missing on this tab that is required by DODD',
+          outcomesAlertDiv,
+        );
+
         // If a plan returns an error on the validation check, show the alert div
         if (validationCheck.complete === false) {
           outcomesAlertDiv.style.display = 'flex';
@@ -192,6 +195,9 @@ const ISP = (function () {
   async function buildBody() {
     const body = document.createElement('div');
     body.classList.add('planISP__body');
+
+    // refresh data for relationships in dropdown data
+    planData.refreshDropdownData();
 
     await getInitialData();
 
