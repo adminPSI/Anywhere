@@ -11,9 +11,17 @@ const WagesBenefits = (() => {
     let otherChk;
     let otherValue;
     let isOverLapRecord = false;
+    let consumersID;
+    let name;
+    let positionName;
+    let selectedConsumersName;
 
-    async function init(positionId) {
+    async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
+        consumersID = ConsumersId;
+        name = Name;
+        positionName = PositionName;
+        selectedConsumersName = SelectedConsumersName;
         if (PositionId != undefined) {
             EmploymentsEntries = await EmploymentAjax.getWagesEntriesAsync(PositionId);
             CheckBoxEntries = await EmploymentAjax.getWagesCheckboxEntriesAsync(PositionId);
@@ -195,7 +203,7 @@ const WagesBenefits = (() => {
         };
 
         let tableData = EmploymentsEntries.getWagesEntriesResult.map((entry) => ({
-            values: [entry.hoursPerWeek, entry.wagesPerHour, entry.startDate, entry.endDate],
+            values: [entry.hoursPerWeek, entry.wagesPerHour, moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY')],
             attributes: [{ key: 'wagesId', value: entry.wagesId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
@@ -219,11 +227,11 @@ const WagesBenefits = (() => {
             endDate = '';
         }
         else {
-            let empValue = EmploymentsEntries.getWagesEntriesResult.find(x => x.wageId == wagesId);
+            let empValue = EmploymentsEntries.getWagesEntriesResult.find(x => x.wagesId == wagesId);
             hoursWeek = empValue.hoursPerWeek;
             hoursWages = empValue.wagesPerHour;
             startDate = moment(empValue.startDate).format('YYYY-MM-DD');
-            endDate = moment(empValue.endDate).format('YYYY-MM-DD');
+            endDate = empValue.endDate == '' ? '' : moment(empValue.endDate).format('YYYY-MM-DD');
         }
 
 
@@ -265,7 +273,7 @@ const WagesBenefits = (() => {
         newStartDate = input.build({
             id: 'newStartDate',
             type: 'date',
-            label: 'New Path Strat Date',
+            label: '`Start Date',
             style: 'secondary',
             value: startDate,
         });
@@ -408,7 +416,7 @@ const WagesBenefits = (() => {
             messagetext.classList.add('password-error');
         }
         else {
-            buildNewWagesBenefitsForm()
+            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 1);
             POPUP.hide(addWagesPopup);
         }
 

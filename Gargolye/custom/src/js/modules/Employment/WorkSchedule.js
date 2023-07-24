@@ -4,9 +4,17 @@ const WorkSchedule = (() => {
     let PositionId;
     let ScheduleEntries;
     let WorkScheduleID;
+    let consumersID;
+    let name;
+    let positionName;
+    let selectedConsumersName;
 
-    async function init(positionId) {
+    async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
+        consumersID = ConsumersId;
+        name = Name;
+        positionName = PositionName;
+        selectedConsumersName = SelectedConsumersName;
         if (PositionId != undefined) {
             ScheduleEntries = await EmploymentAjax.getWorkScheduleEntriesAsync(PositionId);
         }
@@ -72,7 +80,7 @@ const WorkSchedule = (() => {
         };
 
         let tableData = ScheduleEntries.getWorkScheduleEntriesResult.map((entry) => ({
-            values: [entry.dayOfWeek, entry.startTime, entry.endTime],
+            values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : 'Saturday', entry.startTime, entry.endTime],
             attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)
@@ -97,10 +105,8 @@ const WorkSchedule = (() => {
         else {
             let workScheduleValue = ScheduleEntries.getWorkScheduleEntriesResult.find(x => x.WorkScheduleId == WorkScheduleId);
             dayOfWeek = workScheduleValue.dayOfWeek;
-            startTime = moment(workScheduleValue.startTime).format('YYYY-MM-DD');
-            endTime = moment(workScheduleValue.endTime).format('YYYY-MM-DD');
-            
-           
+            startTime = workScheduleValue.startTime; 
+            endTime = workScheduleValue.endTime;   
         }
         addWorkSchedulePopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
@@ -115,7 +121,7 @@ const WorkSchedule = (() => {
             WorkScheduleID = WorkScheduleId;
         }
         else {
-            heading.innerText = 'New New';
+            heading.innerText = 'New Shift';
             WorkScheduleID = 0;
         }
 
@@ -162,7 +168,11 @@ const WorkSchedule = (() => {
 
         var timebtnWrap = document.createElement('div');
         timebtnWrap.classList.add('btnWrap');
+        NewStartTime.style.marginLeft = '1%';
+        NewStartTime.style.width = '48%';
         timebtnWrap.appendChild(NewStartTime);
+        NewEndTime.style.marginLeft = '2%';  
+        NewEndTime.style.width = '48%';
         timebtnWrap.appendChild(NewEndTime);
         addWorkSchedulePopup.appendChild(timebtnWrap);
 
@@ -208,7 +218,7 @@ const WorkSchedule = (() => {
         var timeEnd = NewEndTime.querySelector('#NewEndTime');
         var timeStart = NewStartTime.querySelector('#NewStartTime');
 
-        if (weekDay.value === '') {
+        if (dayOfWeek === '') {
             dayOfWeekDropdown.classList.add('errorPopup');
         } else {
             dayOfWeekDropdown.classList.remove('errorPopup');
@@ -258,9 +268,9 @@ const WorkSchedule = (() => {
 
     async function saveNewWagesPopup() {
         const result = await EmploymentAjax.insertWorkScheduleAsync(dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
-        const { insertWagesResult } = result;
-        if (insertWagesResult.WorkScheduleId != null) {
-            buildNewWorkScheduleForm()
+        const { insertWorkScheduleResult } = result;
+        if (insertWorkScheduleResult.WorkScheduleId != null) {
+            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 3);
         }
         POPUP.hide(addWorkSchedulePopup);
     }

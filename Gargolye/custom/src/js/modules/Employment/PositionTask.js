@@ -5,9 +5,17 @@ const PositionTask = (() => {
     let jobTaskID;
     let PositionEntries;
     let lastTaskNumber;
+    let consumersID;
+    let name;
+    let positionName;
+    let selectedConsumersName;
 
-    async function init(positionId) {
+    async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
+        consumersID = ConsumersId;
+        name = Name;
+        positionName = PositionName;
+        selectedConsumersName = SelectedConsumersName;
         if (PositionId != undefined) {
             PositionEntries = await EmploymentAjax.getPositionTaskEntriesAsync(PositionId);
         }
@@ -66,12 +74,12 @@ const PositionTask = (() => {
     function buildPositionEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
+            tableId: 'singleEntryAdminReviewTable',  
             columnHeadings: ['Task #', 'Description', 'Start Date', 'End Date', 'Initial Performance', 'Initial Performance Notes', 'Employer Standerd'],
         };
 
         let tableData = PositionEntries.getPositionTaskEntriesResult.map((entry) => ({
-            values: [entry.task, entry.description, entry.startDate, entry.endDate, entry.initialPerformance, entry.initialPerformanceNotes, entry.employeeStandard],
+            values: [entry.task, entry.description, entry.startDate == '' ? '' : moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY'), entry.initialPerformance, entry.initialPerformanceNotes, entry.employeeStandard],
             attributes: [{ key: 'jobTaskId', value: entry.jobTaskId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.jobTaskId.value)
@@ -87,11 +95,11 @@ const PositionTask = (() => {
         addPositionPopupBtn(jobTaskId)
     }
 
-    function addPositionPopupBtn(jobTaskId) { 
+    function addPositionPopupBtn(jobTaskId) {
         if (jobTaskId == 0 || jobTaskId == undefined) {
             task = PositionEntries.getPositionTaskEntriesResult[0].lastTaskNumber;
             description = '';
-            startDate = ''; 
+            startDate = '';
             endDate = '';
             initialPerformance = '';
             initialPerformanceNotes = '';
@@ -103,7 +111,7 @@ const PositionTask = (() => {
             task = positionValue.task;
             description = positionValue.description;
             startDate = moment(positionValue.startDate).format('YYYY-MM-DD');
-            endDate = moment(positionValue.endDate).format('YYYY-MM-DD');
+            endDate = positionValue.endDate == '' ? '' : moment(positionValue.endDate).format('YYYY-MM-DD');
             initialPerformance = positionValue.initialPerformanceID;
             initialPerformanceNotes = positionValue.initialPerformanceNotes;
             employeeStandard = positionValue.employeeStandard;
@@ -198,7 +206,7 @@ const PositionTask = (() => {
             style: 'secondary',
             type: 'outlined',
         });
-        
+
         addPositionPopup.appendChild(heading);
 
         addPositionPopup.appendChild(taskInput);
@@ -208,7 +216,7 @@ const PositionTask = (() => {
         addPositionPopup.appendChild(initialPerformanceDropdown);
         addPositionPopup.appendChild(initialPerformanceNotesInput);
         addPositionPopup.appendChild(employeeStandardInput);
-        taskInput.classList.add('disabled'); 
+        taskInput.classList.add('disabled');
 
         var popupbtnWrap = document.createElement('div');
         popupbtnWrap.classList.add('btnWrap');
@@ -290,7 +298,7 @@ const PositionTask = (() => {
         } = await EmploymentAjax.getInitialPerformanceDropdownAsync();
         let initialPerformanceData = InitialPerformance.map((initialPerformance) => ({
             id: initialPerformance.initialPerformanceId,
-            value: initialPerformance.initialPerformanceId,  
+            value: initialPerformance.initialPerformanceId,
             text: initialPerformance.initialPerformanceName
         }));
         initialPerformanceData.unshift({ id: null, value: '', text: '' });
@@ -300,8 +308,9 @@ const PositionTask = (() => {
     async function saveNewWagesPopup() {
         const result = await EmploymentAjax.insertPositionTaskAsync(task, description, startDate, endDate, initialPerformanceID, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, $.session.UserId);
         const { insertPositionTaskResult } = result;
-        if (insertPositionTaskResult.jobTaskID != null) { 
-            buildNewPositionForm();
+
+        if (insertPositionTaskResult.jobTaskId != null) {
+            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 2);
         }
         POPUP.hide(addPositionPopup);
     }

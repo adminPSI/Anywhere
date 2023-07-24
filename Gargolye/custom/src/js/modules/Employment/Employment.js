@@ -90,7 +90,7 @@ const Employment = (() => {
             tableId: 'singleEntryAdminReviewTable',
             headline: 'Consumer: ' + selectedConsumersName,
             columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing'],
-            endIcon: true,
+            endIcon: $.session.OODView == true ? true : false,
         };
 
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
@@ -106,16 +106,15 @@ const Employment = (() => {
 
         const additionalInformation = newODDEntryBtn();
         additionalInformation.innerHTML = '+ NEW ODD ENTRY';
-
         additionalInformation.style = 'margin-top: -10px; width: 200px;';
 
         let tableData = EmploymentsEntries.getEmploymentEntriesResult.map((entry) => ({
-            values: [entry.employer, entry.position, entry.positionStartDate, entry.positionEndDate, entry.jobStanding],
+            values: [entry.employer, entry.position, entry.positionStartDate == '' ? '' : moment(entry.positionStartDate).format('MM-DD-YYYY'), entry.positionEndDate == '' ? '' : moment(entry.positionEndDate).format('MM-DD-YYYY'), entry.jobStanding],
             attributes: [{ key: 'positionId', value: entry.positionId }, { key: 'PeopleName', value: entry.PeopleName }],
             onClick: (e) => {
                 handleAccountTableEvents(e)
             },
-            endIcon: additionalInformation.outerHTML,
+            endIcon: $.session.OODView == true ? additionalInformation.outerHTML : '',
             endIconCallback: e => {
                 // TODO
                 //buildChangePasswordPopup(userID, FirstName, LastName); 

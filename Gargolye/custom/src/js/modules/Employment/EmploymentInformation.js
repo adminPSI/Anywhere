@@ -20,6 +20,7 @@ const EmploymentInformation = (() => {
     let positionName;
     let selectedConsumersName;
     let getEmployeepath = [];
+    let existingEndDate;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -46,7 +47,7 @@ const EmploymentInformation = (() => {
         employeeInfoDiv.classList.add('additionalQuestionWrap');
 
         if (PositionId != undefined) {
-            BtnName = 'UPDATE'
+            BtnName = 'SAVE'
             startDatePosition = moment(getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionStartDate).format('YYYY-MM-DD');
             endDatePosition = moment(getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionEndDate).format('YYYY-MM-DD');
             position = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].position;
@@ -77,18 +78,19 @@ const EmploymentInformation = (() => {
             email = '';
             employmentPath = getEmployeepath.getEmployeementPathResult[0].employmentPath;
             peopleID = consumersID;
-            tempstartDatePosition = '';
-            tempendDatePosition = '';
-            tempposition = '';
-            tempjobStanding = '';
-            tempemployer = '';
-            temptransportation = '';
-            temptypeOfWork = '';
-            tempselfEmployed = '';
-            tempname = '';
-            tempphone = '';
-            tempemail = '';
         }
+        existingEndDate = moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD');
+        tempstartDatePosition = '';
+        tempendDatePosition = '';
+        tempposition = '';
+        tempjobStanding = '';
+        tempemployer = '';
+        temptransportation = '';
+        temptypeOfWork = '';
+        tempselfEmployed = '';
+        tempname = '';
+        tempphone = '';
+        tempemail = '';
 
         positionStartDate = input.build({
             id: 'positionStartDate',
@@ -144,7 +146,7 @@ const EmploymentInformation = (() => {
         isSelfEmployed = input.buildCheckbox({
             text: 'Self-Employed?',
             id: 'chkisSelfEmployed',
-            isChecked: selfEmployed == '' ? false : true,
+            isChecked: selfEmployed == 'Y' ? true : false, 
         });
 
         nameInput = input.build({
@@ -198,15 +200,15 @@ const EmploymentInformation = (() => {
         message.style.marginTop = '1%';
 
         if (employmentPath == '1')
-            message.innerText = 'I have a job but would like a better one or to move up.';
+            message.innerText = 'Path to Employment: I have a job but would like a better one or to move up.';
         else if (employmentPath == '2')
-            message.innerText = 'I want a job! I need help to fine one.';
+            message.innerText = 'Path to Employment: I want a job! I need help to fine one.';
         else if (employmentPath == '3')
-            message.innerText = "I'm not sure about work. I need help to learn more.";
+            message.innerText = "Path to Employment: I'm not sure about work. I need help to learn more.";
         else if (employmentPath == '4')
-            message.innerText = "I don't think I want to work, but I may not know enough.";
+            message.innerText = "Path to Employment: I don't think I want to work, but I may not know enough.";
         else
-            message.innerText = '';
+            message.innerText = 'Path to Employment:';
 
         var msgWrap = document.createElement('div');
         msgWrap.classList.add('employmentMsgWrap');
@@ -489,7 +491,7 @@ const EmploymentInformation = (() => {
 
     function updatePathPopupBtn() {
         employmentPath = '';
-        currentEndDate = '';
+        currentEndDate = existingEndDate;
         newStartDate = '';
         newEndDate = '';
 
@@ -607,7 +609,7 @@ const EmploymentInformation = (() => {
             currentPathEndDate.classList.remove('errorPopup');
         }
 
-        if (newStartDate.value === '' || newStartDate.value <= CurrentEndDate.value) {
+        if (newStartDate.value === '' || newStartDate.value <= existingEndDate) {
             newPathStartDate.classList.add('errorPopup');
         } else {
             newPathStartDate.classList.remove('errorPopup');

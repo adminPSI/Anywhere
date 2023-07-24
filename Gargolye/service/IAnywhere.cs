@@ -4585,13 +4585,13 @@ namespace Anywhere
             UriTemplate = "/getWagesCheckboxEntries/")]
         EmploymentWorker.WagesCheckboxEntries[] getWagesCheckboxEntries(string token, string positionID);
 
-       // [OperationContract]
-       // [WebInvoke(Method = "POST",
-       //         BodyStyle = WebMessageBodyStyle.Wrapped,
-       //         ResponseFormat = WebMessageFormat.Json,
-       //RequestFormat = WebMessageFormat.Json,
-       //UriTemplate = "/insertWages/")]
-       // EmploymentWorker.WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID);
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/insertWorkSchedule/")]
+        EmploymentWorker.WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID);
 
     }
 
