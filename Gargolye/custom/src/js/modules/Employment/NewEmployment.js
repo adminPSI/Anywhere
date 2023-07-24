@@ -8,6 +8,7 @@ const NewEmployment = (function () {
     let name;
     let positionName;
     let selectedConsumersName;
+    let tabPositionIndex;
 
     const sections = [
         {
@@ -28,18 +29,18 @@ const NewEmployment = (function () {
         {
             title: 'Work Schedule',
             id: 3,
-            markup: () => WorkSchedule.getMarkup(), 
+            markup: () => WorkSchedule.getMarkup(),
         },
 
     ];
 
-    async function refreshEmployment(PositionID, Name, PositionName, SelectedConsumersName, selectedConsumersId) {
-
+    async function refreshEmployment(PositionID, Name, PositionName, SelectedConsumersName, selectedConsumersId, TabPosition = 0) {
         PositionId = PositionID;
         consumersId = selectedConsumersId;
         name = Name;
         positionName = PositionName;
         selectedConsumersName = SelectedConsumersName;
+        tabPositionIndex = TabPosition;
 
         DOM.clearActionCenter();
         const heading = document.createElement('div');
@@ -90,14 +91,13 @@ const NewEmployment = (function () {
         nav.classList.add('planISP__nav');
 
         sections.forEach((section, index) => {
-
             const sectionId = section.id;
 
             const navItem = document.createElement('div');
             navItem.classList.add('planISP__navItem');
             navItem.innerHTML = `${section.title}`;
 
-            if (index === 0) {
+            if (tabPositionIndex === index) {
                 navItem.classList.add('active');
             }
 
@@ -116,18 +116,18 @@ const NewEmployment = (function () {
         const body = document.createElement('div');
         body.classList.add('planISP__body');
 
-        await EmploymentInformation.init(PositionId, name, positionName, selectedConsumersName , consumersId);
-        await WagesBenefits.init(PositionId);
-        await PositionTask.init(PositionId);
-        await WorkSchedule.init(PositionId);
-        
+        await EmploymentInformation.init(PositionId, name, positionName, selectedConsumersName, consumersId);
+        await WagesBenefits.init(PositionId, name, positionName, selectedConsumersName, consumersId);
+        await PositionTask.init(PositionId, name, positionName, selectedConsumersName, consumersId);
+        await WorkSchedule.init(PositionId, name, positionName, selectedConsumersName, consumersId);
+
         sections.forEach((section, index) => {
             const sectionId = section.id;
             const sectionMarkup = section.markup();
             sectionMarkup.setAttribute('data-section-id', sectionId);
             sectionMarkup.classList.add('planISP__section');
 
-            if (index === 0) {
+            if (tabPositionIndex === index) {
                 sectionMarkup.classList.add('active');
             }
 

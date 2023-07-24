@@ -1365,21 +1365,23 @@
       });
     }
 
-    // intentionally blank checkbox
-    const intentionallyBlankCheckbox = input.buildCheckbox({
-      text: 'Intentionally left blank',
-      id: `intentionallyBlankCheckbox${questionSetId}`,
-      className: 'intentionallyBlankCheckbox',
-      isChecked: false, //skipped === 'Y' ? true : false,
-      isDisabled: readonly,
-      attributes: [
-        { key: 'data-setid', value: questionSetId },
-        { key: 'data-isforrow', value: true },
-      ],
-    });
-    grid.appendChild(intentionallyBlankCheckbox);
-    if (!areAllGridAnswersEmpty) {
-      input.disableInputField(intentionallyBlankCheckbox);
+    if (questionSetId !== '182') {
+      // intentionally blank checkbox
+      const intentionallyBlankCheckbox = input.buildCheckbox({
+        text: 'Intentionally left blank',
+        id: `intentionallyBlankCheckbox${questionSetId}`,
+        className: 'intentionallyBlankCheckbox',
+        isChecked: false, //skipped === 'Y' ? true : false,
+        isDisabled: readonly,
+        attributes: [
+          { key: 'data-setid', value: questionSetId },
+          { key: 'data-isforrow', value: true },
+        ],
+      });
+      grid.appendChild(intentionallyBlankCheckbox);
+      if (!areAllGridAnswersEmpty) {
+        input.disableInputField(intentionallyBlankCheckbox);
+      }
     }
 
     if (hasStaticText) grid.classList.add('staticText');

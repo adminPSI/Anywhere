@@ -651,7 +651,6 @@ const EmploymentInformation = (() => {
     }
 
     async function saveEmployeeInfo() {
-        debugger;
         const result = await EmploymentAjax.insertEmploymentInfoAsync(startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, consumersID, $.session.UserId, PositionId);
         const { insertEmploymentInfoResult } = result;
         if (insertEmploymentInfoResult.positionID != null) {
