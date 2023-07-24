@@ -158,9 +158,11 @@ const signatureWidget = (function () {
       if (signaturePlanStatus === '%') {
         populateMissingSignatures(missingSignatureData);
       } else {
-        filteredSignatures = missingSignatureData.filter(
-          ms => (ms.planStatus = signaturePlanStatus),
-        );
+        filteredSignatures = missingSignatureData.filter(ms => {
+          return (
+            ms.planStatus === signaturePlanStatus && ms.locationId === signatureWidgetLocationId
+          );
+        });
         populateMissingSignatures(filteredSignatures);
       }
     });
@@ -210,11 +212,15 @@ const signatureWidget = (function () {
       const effectiveStart = d.effectiveStart.split(' ')[0];
       const effectiveEnd = d.effectiveEnd.split(' ')[0];
       const reviewDate = d.reviewDate ? d.reviewDate.split(' ')[0] : 'n/a';
+      const revisionNumber = d.revisionNumber ? d.revisionNumber : '';
+      const locationID = d.locationId;
+
+      const planType = d.planType === 'R' ? `${type} ${revisionNumber}` : type;
 
       const individuals = d.individual.split(',');
       individuals.forEach(i => {
         tableData.push({
-          values: [i, startDate, type],
+          values: [i, startDate, planType],
           onClick: async () => {
             if ($.session.applicationName === 'Advisor') {
               const newId = await planAjax.getConsumerPeopleIdAsync(d.consumerId);
@@ -267,8 +273,8 @@ const signatureWidget = (function () {
     if (!signatureWidgetGroupId) signatureWidgetGroupId = '0';
     if (!signatureWidgetGroupName) signatureWidgetGroupName = 'Everyone';
     if (!signatureWidgetGroupCode) signatureWidgetGroupCode = 'ALL';
-    if ($.session.outcomeWidgetLocationId) signatureWidgetLocationId = '%';
-    if ($.session.outcomeWidgetLocationId) signatureWidgetLocationName = 'ALL';
+    if (!signatureWidgetLocationId) signatureWidgetLocationId = '%';
+    if (!signatureWidgetLocationName) signatureWidgetLocationName = 'ALL';
 
     widget = document.getElementById('dashmissingsignatures');
     widgetBody = widget.querySelector('.widget__body');
@@ -285,7 +291,9 @@ const signatureWidget = (function () {
       missingSignatureData = res;
       populateMissingSignatures(missingSignatureData);
       locationDropdownData = await missingSignatureAjax.getLocationDropdownData();
-      groupDropdownData = await missingSignatureAjax.getGroupsDropdownData();
+      groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
+        signatureWidgetLocationId,
+      );
     });
   }
 

@@ -395,6 +395,16 @@ const planSummary = (function () {
       forceCharLimit: true,
       callback: e => {
         importantTo = e.target.value;
+
+        if (importantTo === '' && importantFor === '') {
+          importantToTextarea.classList.add('error');
+          importantForTextarea.classList.add('error');
+        } else {
+          importantToTextarea.classList.remove('error');
+          importantForTextarea.classList.remove('error');
+        }
+
+        toggleImportantDoneBtn();
       },
     });
     importantToTextarea.classList.add('importantTo');
@@ -409,6 +419,16 @@ const planSummary = (function () {
       forceCharLimit: true,
       callback: e => {
         importantFor = e.target.value;
+
+        if (importantTo === '' && importantFor === '') {
+          importantToTextarea.classList.add('error');
+          importantForTextarea.classList.add('error');
+        } else {
+          importantToTextarea.classList.remove('error');
+          importantForTextarea.classList.remove('error');
+        }
+
+        toggleImportantDoneBtn();
       },
     });
     importantForTextarea.classList.add('importantFor');
@@ -564,6 +584,11 @@ const planSummary = (function () {
     // init required fields
     if (sectionTitle === '' || sectionTitle === '%') {
       assessmentAreaDropdown.classList.add('error');
+      hasInitialErros = true;
+    }
+    if (importantTo === '' && importantFor === '') {
+      importantToTextarea.classList.add('error');
+      importantForTextarea.classList.add('error');
       hasInitialErros = true;
     }
     if (hasInitialErros) {
