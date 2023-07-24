@@ -403,6 +403,8 @@ const planSummary = (function () {
           importantToTextarea.classList.remove('error');
           importantForTextarea.classList.remove('error');
         }
+
+        toggleImportantDoneBtn();
       },
     });
     importantToTextarea.classList.add('importantTo');
@@ -425,6 +427,8 @@ const planSummary = (function () {
           importantToTextarea.classList.remove('error');
           importantForTextarea.classList.remove('error');
         }
+
+        toggleImportantDoneBtn();
       },
     });
     importantForTextarea.classList.add('importantFor');
