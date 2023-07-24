@@ -36,12 +36,12 @@ const missingSignatureAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/getConsumerPlans/',
+          '/populateLocationsRemainingServicesWidgetFilter/',
         data: JSON.stringify({ token: $.session.Token }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return data.getConsumerPlansResult;
+      return data.populateLocationsRemainingServicesWidgetFilterResult;
     } catch (error) {
       console.log(error.responseText);
     }
@@ -58,12 +58,12 @@ const missingSignatureAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/getConsumerPlans/',
+          '/populateGroupsRemainingServicesWidgetFilter/',
         data: JSON.stringify({ token: $.session.Token, locationId: locationId }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return data.getConsumerPlansResult;
+      return data.populateGroupsRemainingServicesWidgetFilterResult;
     } catch (error) {
       console.log(error.responseText);
     }
