@@ -1429,7 +1429,7 @@ const plan = (function () {
     alertPopup.appendChild(alertbtnWrap);
     POPUP.show(alertPopup);
   }
-  
+
   function sendToPortalAlert(sendtoPortalResponse) {
     var alertPopup = POPUP.build({
       id: 'saveAlertPopup',
@@ -1585,7 +1585,7 @@ const plan = (function () {
       sentToOnetPDiv.classList.add('sentToOnetDateDiv');
       sentToOnetPDiv.innerHTML = `<p>Previously sent on: ${sentToOnet}`;
       morepopupmenu.appendChild(sentToOnetPDiv);
-    } 
+    }
 
     morepopupmenu.appendChild(sendToDODDBtn);
     morepopupmenu.appendChild(editDatesBtn);
@@ -1688,7 +1688,10 @@ const plan = (function () {
     return morepopupmenu;
   }
   async function showMorePopup() {
-    sentToOnet = await assessmentAjax.getSentToONETDate({token:$.session.Token, assessmentId: planId});
+    sentToOnet = await assessmentAjax.getSentToONETDate({
+      token: $.session.Token,
+      assessmentId: planId,
+    });
     sentToOnet = sentToOnet[0].sentDate;
     morePopup = POPUP.build({
       classNames: 'moreMenuPopup',
@@ -2018,7 +2021,10 @@ const plan = (function () {
 
     planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
-    sentToOnet = await assessmentAjax.getSentToONETDate({token:$.session.Token, assessmentId: planId});
+    sentToOnet = await assessmentAjax.getSentToONETDate({
+      token: $.session.Token,
+      assessmentId: planId,
+    });
     sentToOnet = sentToOnet[0].sentDate;
   }
 
@@ -2478,7 +2484,8 @@ const plan = (function () {
       const effectiveEnd = pd.effectiveEnd.split(' ')[0];
       const isActive = pd.active === 'True' ? true : false;
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
-      const sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
+      let sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
+      sentToDODD = `${pd.userSentDODD} - ${sentToDODD}`;
 
       return {
         values: [type, revisionNum, startDate, effectiveStart, reviewDate, sentToDODD],
