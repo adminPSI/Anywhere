@@ -4,9 +4,17 @@ const WorkSchedule = (() => {
     let PositionId;
     let ScheduleEntries;
     let WorkScheduleID;
+    let consumersID;
+    let name;
+    let positionName;
+    let selectedConsumersName;
 
-    async function init(positionId) {
+    async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
+        consumersID = ConsumersId;
+        name = Name;
+        positionName = PositionName;
+        selectedConsumersName = SelectedConsumersName;
         if (PositionId != undefined) {
             ScheduleEntries = await EmploymentAjax.getWorkScheduleEntriesAsync(PositionId);
         }
@@ -262,9 +270,7 @@ const WorkSchedule = (() => {
         const result = await EmploymentAjax.insertWorkScheduleAsync(dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
         const { insertWorkScheduleResult } = result;
         if (insertWorkScheduleResult.WorkScheduleId != null) {
-            //buildNewWorkScheduleForm();
-            WorkSchedule.init(PositionId);
-            WorkSchedule.getMarkup();
+            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 3);
         }
         POPUP.hide(addWorkSchedulePopup);
     }
