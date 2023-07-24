@@ -2906,7 +2906,7 @@ namespace Anywhere
         {
             return dpra.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
         }
-        public string addSelectedAttachmentsToReport(System.IO.Stream testInput)
+        public void addSelectedAttachmentsToReport(System.IO.Stream testInput)
         {
             string token;
             string userId;
@@ -2956,12 +2956,12 @@ namespace Anywhere
             attIdThree = attIdThree.Replace("%2C", ",");
             sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            return dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(toONET), bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly), include);
+            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(toONET), bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly), include);
         }
 
         public string transeferPlanReportToONET(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include)
         {
-            string response = dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+            string response = dpra.addSelectedAttachmentsToReportTwo(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
             return response;
         }
 
