@@ -747,6 +747,7 @@
     if (paidSupportChecked && paidSupportCount === 0) {
       paidSupportBtn.classList.add('error');
       assessmentValidationCheck.complete = false;
+      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
     }
 
     if (additionalSupportChecked && additionalSupportCount === 0) {

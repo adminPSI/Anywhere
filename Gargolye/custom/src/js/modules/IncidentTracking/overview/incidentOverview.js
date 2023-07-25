@@ -185,6 +185,9 @@ var incidentOverview = (function () {
     filterDropdownEventSetup();
   }
   function setupFiltering() {
+    const filterAndReportsBtnsWrap = document.createElement('div');
+    filterAndReportsBtnsWrap.classList.add('filterAndReportsBtnsWrap')
+
     filterBtn = button.build({
       text: 'Filter',
       icon: 'filter',
@@ -194,7 +197,12 @@ var incidentOverview = (function () {
       callback: showFilterPopup,
     });
 
-    DOM.ACTIONCENTER.appendChild(filterBtn);
+        let filterValues = {};
+        reportsBtn = generateReports.createMainReportButton([{ text: 'Individual Reporting Log', callback: generateReports.passFilterValuesForReport('Individual Reporting Log', filterValues) }])
+
+        DOM.ACTIONCENTER.appendChild(filterAndReportsBtnsWrap);
+        filterAndReportsBtnsWrap.appendChild(filterBtn);
+        filterAndReportsBtnsWrap.appendChild(reportsBtn);
 
     buildFilterPopup();
   }
