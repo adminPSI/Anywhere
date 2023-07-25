@@ -14,6 +14,7 @@ var incidentOverview = (function () {
   var fromDateInput;
   var toDateInput;
   var categoryDropdown;
+  let consumerDropdownData;
   // filter values for remembering
   var filterData = {
     alpha: null,
@@ -93,7 +94,8 @@ var incidentOverview = (function () {
   }
   function populateFilterDropdowns() {
     incidentTrackingAjax.getReviewPageLocations(populateLocationsDropdown);
-    incidentTrackingAjax.getReviewPageLocations(populateConsumersDropdown);
+    //incidentTrackingAjax.getReviewPageLocations(populateConsumersDropdown);
+    getConsumerDropdownData();
     incidentTrackingAjax.getIncidentCategories(populateCategoriesDropdown);
     incidentTrackingAjax.getITReviewPageEmployeeListAndSubList(
       $.session.PeopleId,
@@ -452,30 +454,28 @@ var incidentOverview = (function () {
       filterData.locationName = 'All Locations';
     }
   }
-  function populateConsumersDropdown(res) {
-    var data = res.map(r => {
-      var value = r.ID;
-      var text = r.Name;
 
+  function populateConsumersDropdown() {
+    populateDropdownData = consumerDropdownData.map(el => {
       return {
-        value,
-        text,
+        text: `${el.LN}, ${el.FN}`,
+        value: el.id,
       };
     });
-
-    var defaultOption = {
-      value: '%',
-      text: 'All',
-    };
-    data.unshift(defaultOption);
-
-    if (filterData.consumer) {
-      dropdown.populate(consumerDropdown, data, filterData.consumer);
-    } else {
-      dropdown.populate(consumerDropdown, data);
-      filterData.consumerName = 'All Consumers';
-    }
+    populateDropdownData.unshift({ text: 'All', value: '%' });
+    dropdown.populate(consumerDropdown, populateDropdownData, filterData.consumer);
   }
+
+  function getConsumerDropdownData() {
+    return new Promise((resolve, reject) => {
+      caseNotesAjax.getConsumersForCNFilter(res => {
+        consumerDropdownData = res;
+        populateConsumersDropdown();
+        resolve('success');
+      });
+    });
+  }
+
   function populateCategoriesDropdown(res) {
     var data = res.map(r => {
       var value = r.subcategoryId;
