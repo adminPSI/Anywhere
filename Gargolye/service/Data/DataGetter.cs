@@ -4070,13 +4070,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string getITReviewTableData(string token, string locationId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
+        public string getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getITReviewTableData ");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(locationId);
+            list.Add(consumerId);
             list.Add(employeeId);
             list.Add(supervisorId);
             list.Add(subcategoryId);

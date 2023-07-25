@@ -255,7 +255,7 @@ var incidentOverview = (function () {
       retrieveData.consumerId = selectedOption.value;
       // temp cache data
       tmpConsumerId = selectedOption.value;
-      tmpConsumernName = selectedOption.innerHTML;
+      tmpConsumerName = selectedOption.innerHTML;
     });
     categoryDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
@@ -463,7 +463,13 @@ var incidentOverview = (function () {
       };
     });
     populateDropdownData.unshift({ text: 'All', value: '%' });
-    dropdown.populate(consumerDropdown, populateDropdownData, filterData.consumer);
+
+    if (filterData.consumer) {
+      dropdown.populate(consumerDropdown, populateDropdownData, filterData.consumer);
+    } else {
+      dropdown.populate(consumerDropdown, populateDropdownData);
+      filterData.consumerName = 'All Consumers';
+    }
   }
 
   function getConsumerDropdownData() {
