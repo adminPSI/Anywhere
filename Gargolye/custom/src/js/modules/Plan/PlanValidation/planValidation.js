@@ -264,11 +264,19 @@ const planValidation = (function () {
       // Set alert divs display value
       // If a section is not applied, show the alerts in the Table of Contents and the Nav
       if (!assessmentValidationCheck.hasASectionApplicable) {
-        tocAlertDiv.style.display = 'flex';
-        tocMobileAlertDiv.style.display = 'flex';
+        if (tocAlertDiv) {
+          tocAlertDiv.style.display = 'flex';
+        }
+        if (tocMobileAlertDiv) {
+          tocMobileAlertDiv.style.display = 'flex';
+        }
       } else {
-        tocAlertDiv.style.display = 'none';
-        tocMobileAlertDiv.style.display = 'none';
+        if (tocAlertDiv) {
+          tocAlertDiv.style.display = 'none';
+        }
+        if (tocMobileAlertDiv) {
+          tocMobileAlertDiv.style.display = 'none';
+        }
       }
   
       // If the working/not working section does not have a completed row, show the alert
@@ -284,9 +292,13 @@ const planValidation = (function () {
   
       // If the assessment page has an error, show the nav alert
       if (assessmentValidationCheck.complete === false) {
-        navAlertDiv.style.display = 'flex';
+        if (navAlertDiv) {
+          navAlertDiv.style.display = 'flex';
+        }
       } else {
-        navAlertDiv.style.display = 'none';
+        if (navAlertDiv) {
+          navAlertDiv.style.display = 'none';
+        }
       }
   
       return assessmentValidationCheck;
