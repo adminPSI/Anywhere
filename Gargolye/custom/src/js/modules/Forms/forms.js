@@ -43,9 +43,17 @@
 	
 		const consumerCard = buildConsumerCard();
 		 newFormBtn = buildNewFormBtn();
+
+        let filterValues = false;
+        reportsBtn = generateReports.createMainReportButton([{ text: 'Form Listing - By Consumer', callback: generateReports.passFilterValuesForReport(filterValues) }])
+
+		const btnWrap = document.createElement('div');
+		btnWrap.classList.add('newFormAndReportBtns')
 	
 		landingPage.appendChild(consumerCard);
-		 landingPage.appendChild(newFormBtn);
+		landingPage.appendChild(btnWrap);
+		btnWrap.appendChild(newFormBtn);
+		btnWrap.appendChild(reportsBtn)
 		
 		overviewTable = await buildOverviewTable();
 		landingPage.appendChild(overviewTable);

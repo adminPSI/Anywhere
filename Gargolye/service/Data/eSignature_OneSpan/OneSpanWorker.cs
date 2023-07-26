@@ -19,7 +19,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 {
     public class OneSpanWorker
     {
-        private static String apiUrl = "https://sandbox.esignlive.com/api";
+        //private static String apiUrl = "https://sandbox.esignlive.com/api";
+        private static String apiUrl = "https://sandbox.esignlive.com/apitoken/clientApp/accessToken";
         // USE https://apps.e-signlive.com/api FOR PRODUCTION
         private static String apiKey = "MEhOb1ptNkhXd1FaOnhqSTdUYXZlaFowSQ==";
         OssClient ossClient = new OssClient(apiKey, apiUrl);
@@ -29,6 +30,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
         public string oneSpanBuildSigners(string token, string assessmentID, MemoryStream ms)
         {
+
             string applicationVersion = ossClient.SystemService.GetApplicationVersion();
             if (tokenValidator(token) == false) return null;
             if (!osdg.validateToken(token))
@@ -62,12 +64,16 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     dateSignedList.Add(item["dateSigned"]);
                 }
 
+                // Gets the senders info
+                string senderInfo = osdg.getSenderInfo(token);
+                OneSpanSender[] senderInfoObj = JsonConvert.DeserializeObject<OneSpanSender[]>(senderInfo);
+
                 // Sets the senders info
-                string firstNameTest = "Your County Board";
-                string lastNameTest = "of DD";
+                string senderFirstName = senderInfoObj[0].FirstName;
+                string senderLastName = senderInfoObj[0].LastName;
                 SenderInfoBuilder sender = SenderInfoBuilder
-                    .NewSenderInfo("erick.bey@primarysolutions.net")
-                    .WithName(firstNameTest, lastNameTest);
+                    .NewSenderInfo(senderInfoObj[0].Email)
+                    .WithName(senderFirstName, senderLastName);
 
                 // Sets default last name value if one is not provided
                 string lastName = "(No Last Name Provided)";
@@ -510,6 +516,11 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             public string SignatureId { get; set; }
             public string SignatureType { get; set; }
         }
-
+        public class OneSpanSender
+        {
+            public string FirstName { get; set;}
+            public string LastName { get; set;}
+            public string Email { get; set;}
+        }
     }
 }

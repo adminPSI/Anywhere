@@ -48,9 +48,9 @@ namespace Anywhere.service.Data
             return itIncidentWidgetData;
         }
 
-        public IncidentTrackingReviewTableData[] GetITReviewTableData(string token, string locationId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
+        public IncidentTrackingReviewTableData[] GetITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
-            string itReviewTableDataString = dg.getITReviewTableData(token, locationId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            string itReviewTableDataString = dg.getITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
             IncidentTrackingReviewTableData[] itReviewTableData = js.Deserialize<IncidentTrackingReviewTableData[]>(itReviewTableDataString);
             return itReviewTableData;
         }

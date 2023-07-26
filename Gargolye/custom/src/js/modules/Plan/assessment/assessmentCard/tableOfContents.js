@@ -279,6 +279,8 @@
 
     toc.appendChild(tocHeader);
     toc.appendChild(tocMain);
+
+    planValidation.tocAssessmentCheck(assessmentValidationCheck);
   }
 
   return {
