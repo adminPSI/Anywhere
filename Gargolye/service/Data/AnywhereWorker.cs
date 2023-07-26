@@ -482,6 +482,7 @@ namespace Anywhere.service.Data
             public string removeGoalsWidget { get; set; }
             public string application { get; set; }
             public string portraitPath { get; set; }
+            public string anywhereMainPermission { get; set; }
             public string outcomesPermission { get; set; }
             public string dayServicesPermission { get; set; }
             public string caseNotesPermission { get; set; }

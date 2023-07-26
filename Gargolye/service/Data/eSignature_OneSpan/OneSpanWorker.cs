@@ -19,7 +19,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 {
     public class OneSpanWorker
     {
-        private static String apiUrl = "https://sandbox.esignlive.com/api";
+        //private static String apiUrl = "https://sandbox.esignlive.com/api";
+        private static String apiUrl = "https://sandbox.esignlive.com/apitoken/clientApp/accessToken";
         // USE https://apps.e-signlive.com/api FOR PRODUCTION
         private static String apiKey = "MEhOb1ptNkhXd1FaOnhqSTdUYXZlaFowSQ==";
         OssClient ossClient = new OssClient(apiKey, apiUrl);
@@ -29,6 +30,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
         public string oneSpanBuildSigners(string token, string assessmentID, MemoryStream ms)
         {
+
             string applicationVersion = ossClient.SystemService.GetApplicationVersion();
             if (tokenValidator(token) == false) return null;
             if (!osdg.validateToken(token))

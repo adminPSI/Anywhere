@@ -331,11 +331,12 @@ const servicesSupports = (() => {
   }
 
   function populateServiceNameDropdown(dropdownEle, defaultValue, fundingSourceVal) {
-    const availableServiceTypes = [];
     const data = [];
     dropdownData.serviceTypes.forEach(dd => {
-      if (dd.showWith.includes(fundingSourceVal)) {
-        availableServiceTypes.push(dd.value);
+      if (
+        dd.showWith.includes(fundingSourceVal) ||
+        (fundingSourceVal === '8' && dd.value === '47')
+      ) {
         data.push({
           value: dd.value,
           text: dd.text,
@@ -1090,6 +1091,7 @@ const servicesSupports = (() => {
       hcbsSelected = true;
       saveUpdateData.fundingSource = '4';
     }
+
     const availableServiceTypes = [];
     const data = [];
     dropdownData.serviceTypes.forEach(dd => {
@@ -1101,19 +1103,15 @@ const servicesSupports = (() => {
         });
       }
     });
-    if ($.session.applicationName === 'Advisor') {
-      if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
-        let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
-        servicesDropdownSelectedText = servicesDropdownSelected.text;
-      } else {
-        saveUpdateData.serviceNameId = '24';
-      }
+
+    if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
+      let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
+      servicesDropdownSelectedText = servicesDropdownSelected.text;
     } else {
-      if (availableServiceTypes.includes(saveUpdateData.serviceNameId)) {
-        let servicesDropdownSelected = data.find(e => e.value === saveUpdateData.serviceNameId);
-        servicesDropdownSelectedText = servicesDropdownSelected.text;
+      if (saveUpdateData.fundingSource === '8') {
+        servicesDropdownSelectedText = 'Other (please specify)';
       } else {
-        saveUpdateData.serviceNameId = '%';
+        saveUpdateData.serviceNameId = $.session.applicationName === 'Advisor' ? '24' : '%';
       }
     }
 
@@ -1150,17 +1148,33 @@ const servicesSupports = (() => {
       style: 'secondary',
       callback: async (e, selectedOption) => {
         saveUpdateData.fundingSource = selectedOption.value;
-        saveUpdateData.serviceNameId = populateServiceNameDropdown(
-          serviceNameDropdown,
-          saveUpdateData.serviceNameId,
-          selectedOption.value,
-        );
+
+        if (saveUpdateData.fundingSource === '8') {
+          serviceNameDropdown.classList.add('disabled');
+          serviceNameOtherDropdown.classList.remove('disabled');
+          serviceNameOtherDropdown.classList.add('error');
+
+          saveUpdateData.serviceNameId = populateServiceNameDropdown(
+            serviceNameDropdown,
+            '47',
+            '5',
+          );
+          populateOtherServiceTypesDropdown(serviceNameOtherDropdown, '%');
+        } else {
+          serviceNameDropdown.classList.remove('disabled');
+
+          saveUpdateData.serviceNameId = populateServiceNameDropdown(
+            serviceNameDropdown,
+            saveUpdateData.serviceNameId,
+            selectedOption.value,
+          );
+          populateOtherServiceTypesDropdown(serviceNameOtherDropdown, '%');
+        }
 
         // store currently selected fundingSource (fundingSourceDropdownSelectedText) for use when populating the vendor dropdown
         // store type of fundingSource (hcbsSelected) for use when populating service and vendor dropdowns
         fundingSourceDropdownSelectedText = selectedOption.innerText;
         if (selectedOption.innerText.includes('HCBS') || selectedOption.innerText.includes('ICF')) {
-          //
           hcbsSelected = true;
         } else {
           hcbsSelected = false;
@@ -1203,6 +1217,7 @@ const servicesSupports = (() => {
         // validation of fundingSource Input
         const fundingSourceInputField = fundingSourceInput.querySelector('.input-field__input');
 
+        // enable/disable funding source text input
         if (saveUpdateData.fundingSource === '8') {
           fundingSourceInput.classList.remove('disabled');
           fundingSourceInputField.removeAttribute('tabindex');
@@ -1225,7 +1240,7 @@ const servicesSupports = (() => {
         validateProviderDropdown();
 
         togglePaidSupportDoneBtn();
-      }, //callback end
+      },
     });
 
     async function validateServicesDropdown() {
@@ -1774,6 +1789,10 @@ const servicesSupports = (() => {
       fundingSourceInput.classList.add('disabled');
       doneBtn.classList.add('disabled');
       deleteBtn.classList.add('disabled');
+    } else {
+      if (saveUpdateData.fundingSource === '8') {
+        serviceNameDropdown.classList.add('disabled');
+      }
     }
 
     // popup assemble!!

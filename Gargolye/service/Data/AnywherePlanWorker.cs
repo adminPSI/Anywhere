@@ -79,10 +79,12 @@ namespace Anywhere.service.Data
                 public string planStatus { get; set; }
                 public string createdOn { get; set; }
                 public string reviewDate { get; set; }
+                public string active { get; set; }//
                 public string sentToDODD { get; set; }
                 public string userSentDODD { get; set; }
                 public string dateSentDODD { get; set; }
                 public string active { get; set; }
+
 
             }
 
