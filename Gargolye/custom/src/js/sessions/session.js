@@ -36,6 +36,7 @@ $.session.CaseNotesCaseloadRestriction = false;
 $.session.CaseNotesSSANotes = false;
 $.session.SingleEntryView = false;
 $.session.SingleEntryUpdate = false;
+$.session.anywhereMainPermission = false;
 $.session.WorkshopView = false;
 $.session.WorkshopUpdate = false;
 $.session.isCurrentlySingleEntry = false;

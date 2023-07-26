@@ -16,6 +16,24 @@ namespace Anywhere.service.Data.eSignature_OneSpan
         private static Loger logger = new Loger();
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
+        public string getSS(string token)
+        {
+            logger.debug("getSS ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_ISP_OneSpan_GetSS(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1OSG", ex.Message + "ANYW_ISP_OneSpan_GetSS(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1OSG: error ANYW_ISP_OneSpan_GetSS";
+            }
+        }
+
         public string getSenderInfo(string token)
         {
             logger.debug("getSenderInfo ");

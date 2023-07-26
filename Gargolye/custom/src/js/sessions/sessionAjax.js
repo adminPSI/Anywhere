@@ -899,6 +899,7 @@ function getDefaultAnywhereSettings() {
             $.session.useProgressNotes = res.useProgressNotes;
             $.session.applicationName = res.application;
             $.session.portraitPath = res.portraitPath;
+            $.session.anywhereMainPermission = res.anywhereMainPermission;
             $.session.outcomesPermission = res.outcomesPermission;
             $.session.dayServicesPermission = res.dayServicesPermission;
             $.session.caseNotesPermission = res.caseNotesPermission;
