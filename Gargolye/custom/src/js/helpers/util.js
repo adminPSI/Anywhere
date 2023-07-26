@@ -757,6 +757,10 @@ const UTIL = (function () {
       case 'reportForms': {
         break;
       }
+      case 'authorizations': {
+        target = document.getElementById('authorizationsdiv');
+        break;
+      }
       case 'plan': {
         target = document.getElementById('plansettingsdiv');
         break;
