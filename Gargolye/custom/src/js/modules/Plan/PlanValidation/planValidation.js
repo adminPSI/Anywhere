@@ -693,6 +693,24 @@ const planValidation = (function () {
       validationCheck.invalidProviders = invalidProviders;
       return validationCheck;
     }
+
+    function checkExperiencesAfterAddingNewPaidSupport(validationCheck) {
+      // Find all divs with classname 'experiencesAlert'
+      const divs = document.querySelectorAll('.experiencesAlert');
+
+      // Loop over the resulting array and run your function on each div
+      if (divs.length > 0) {
+        divs.forEach(div => {
+          // Extract the number from the id using a regular expression
+          const regex = /experienceAlert(\d{1,5})/;
+          const matches = div.id.match(regex);
+          const number = matches ? Number(matches[1]) : null;
+
+          // Check each div to see if the alert is needed or not
+          experiencesValidationCheck(validationCheck, number, div);
+        });
+      }
+    }
   
     async function init(planId) {
       ISPValidation(planId);
@@ -718,6 +736,7 @@ const planValidation = (function () {
       updateOutcome,
       updateOutcomeDetails,
       checkExperienceProviders,
+      checkExperiencesAfterAddingNewPaidSupport,
       init,
     };
   })();

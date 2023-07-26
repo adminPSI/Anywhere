@@ -1666,6 +1666,9 @@ const servicesSupports = (() => {
         hcbsSelected = undefined;
         saveUpdateProvider = '';
 
+        let ISPValidation = planValidation.ISPValidation(planID);
+        planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
+
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
         planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
         planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
@@ -1685,6 +1688,9 @@ const servicesSupports = (() => {
 
         hcbsSelected = undefined;
         saveUpdateProvider = '';
+
+        let ISPValidation = planValidation.ISPValidation(planID);
+        planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
       },
     });
     const deleteBtn = button.build({
