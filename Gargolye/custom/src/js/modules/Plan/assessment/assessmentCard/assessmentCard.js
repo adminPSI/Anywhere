@@ -59,6 +59,9 @@ const assessmentCard = (function () {
 
     mainAssessment.markUnansweredQuestions();
     tableOfContents.showUnansweredQuestionCount();
+
+    let assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+    planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
   }
 
   // Navigation Bar
