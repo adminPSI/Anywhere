@@ -301,3 +301,42 @@
     }
   }
 }
+
+.experiencesAlert, .reviewsAlert {
+  svg {
+    height: 30px;
+    color: red;
+    position: relative;
+    top: 5px;
+  }
+}
+
+.btnAlertContainer {
+ display: flex;
+}
+
+.tooltip {
+  .tooltiptext {
+    box-shadow: $shadow-m1;
+    background-color: $primary;
+    border-radius: 6px;
+    color: $white;
+    height: auto;
+    opacity: 0;
+    padding: 5px;
+    position: fixed;
+    text-align: center;
+    transition: opacity .3s;
+    visibility: hidden;
+    width: auto;
+    z-index: 100;
+    font-weight: 200;
+    font-size: 16px;
+    }
+  &:hover {
+    .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}

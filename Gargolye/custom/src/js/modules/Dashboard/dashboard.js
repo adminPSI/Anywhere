@@ -4,24 +4,25 @@
   var widgetSettings;
 
   var widgetIds = {
-    absent: 6,
-    adminSingleEntry: 14,
-    customLinks: 5,
-    clockedIn: 12,
-    goals: 11,
-    hoursWorked: 10,
-    incidentTracking: 16,
-    infal: null,
-    timeClock: 9,
-    schedule: 15,
-    singleEntry: 13,
-    systemMessages: null,
-    consumerProgressNotes: 8,
-    unreadLocationNotes: 7,
     caseNotesProductivity: 1,
     caseNotesCaseLoad: 2,
     caseNotesRejected: 3,
     planWorkflow: 4,
+    customLinks: 5,
+    absent: 6,
+    unreadLocationNotes: 7,
+    consumerProgressNotes: 8,
+    timeClock: 9,
+    hoursWorked: 10,
+    goals: 11,
+    clockedIn: 12,
+    singleEntry: 13,
+    adminSingleEntry: 14,
+    schedule: 15,
+    incidentTracking: 16,
+    missingSignatures: 17,
+    infal: null,
+    systemMessages: null,
   };
 
   // Widget Markup
@@ -135,7 +136,7 @@
     <div class="widget__body">
       <div id="locationProgressNoteList"></div>
     </div>
-  `,
+    `,
     caseNotesProductivity: `
     <div class="widget__header">
       <h3>Case Note Productivity</h3>
@@ -143,31 +144,39 @@
     <div class="widget__body">
       <div id="cn_productivity"></div>
     </div>
-  `,
+    `,
     caseNotesCaseLoad: `
-  <div class="widget__header">
-    <h3>My Case Load</h3>
-  </div>
-  <div class="widget__body">
-    <div id="cn_caseLoad"></div>
-  </div>
-`,
+    <div class="widget__header">
+      <h3>My Case Load</h3>
+    </div>
+    <div class="widget__body">
+      <div id="cn_caseLoad"></div>
+    </div>
+    `,
     caseNotesRejected: `
-  <div class="widget__header">
-    <h3>Rejected Case Notes</h3>
-  </div>
-  <div class="widget__body">
-    <div id="cn_rejected"></div>
-  </div>
-`,
+      <div class="widget__header">
+        <h3>Rejected Case Notes</h3>
+      </div>
+      <div class="widget__body">
+        <div id="cn_rejected"></div>
+      </div>
+    `,
     planWorkflow: `
-  <div class="widget__header">
-    <h3>Plan To-Do List</h3>
-  </div>
-  <div class="widget__body">
-    <div id="plan-workflow-tasks"></div>
-  </div>
-`,
+    <div class="widget__header">
+      <h3>Plan To-Do List</h3>
+    </div>
+    <div class="widget__body">
+      <div id="plan-workflow-tasks"></div>
+    </div>
+    `,
+    missingSignatures: `
+    <div class="widget__header">
+      <h3>Plan Missing Signatures</h3>
+    </div>
+    <div class="widget__body">
+    <div class="missingSignatures"></div>
+    </div>
+    `,
   };
 
   // Global Dash Functions
@@ -541,6 +550,22 @@
       })();
     }
   }
+  function initSignaturesWidget() {
+    const showHide = getWidgetSettings(widgetIds.missingSignatures).showHide;
+    if (!infalOnly) {
+      (function loadSignatureWidget() {
+        var div = document.createElement('div');
+        div.setAttribute('data-show', showHide);
+        div.setAttribute('data-widgetId', widgetIds.missingSignatures);
+        div.id = 'dashmissingsignatures';
+        div.classList.add('widget');
+        div.classList.add('missingSignaturesWidget');
+        div.innerHTML = html.missingSignatures;
+        widgets.push(div);
+        setupFuncs.push(signatureWidget.init);
+      })();
+    }
+  }
 
   function loadDashboardWidgets() {
     var actioncenter = document.getElementById('actioncenter');
@@ -567,6 +592,7 @@
     /*15*/ initClockedInWidget(); // Day Services Clocked In
     /*16*/ initIncidentTrackingWidget(); // Incident Tracking
     /*17*/ initInfalWidget(); // InfalTimeClock Widget
+    /*18*/ initSignaturesWidget(); // Missing Signatures Widget
 
     var actioncenter = document.getElementById('actioncenter');
     widgets.forEach(widget => {

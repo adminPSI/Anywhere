@@ -144,6 +144,9 @@
     margin: 0;
     max-width: 32%;
     padding: 0;
+    justify-content: center;
+    align-items: center;
+    display: flex;
   }
 }
 .moreMenuPopup {
@@ -442,6 +445,83 @@
         }
     }
 
+    #portalScreen {
+      overflow: hidden;
+
+      &.visible {
+          transform: translateX(-1000%);
+      }
+
+      .attachmentsWrap {
+          min-height: 400px;
+          margin: 0 0 15px;
+          max-height: 400px;
+          overflow-y: auto;
+
+          .attachmentsHeading {
+              margin: 0 0 10px;
+          }
+
+          .planAttWrap,
+          .workflowAttWrap,
+          .signatureAttWrap {
+              h2 {
+                  margin: 0 0 10px;
+              }
+
+              .attachment {
+                  cursor: pointer;
+                  padding: 5px;
+                  margin: 0 0 5px;
+
+                  &.selected {
+                      background: $secondary;
+                  }
+              }
+          }
+      }
+      // success/error message
+      .warningMessage {
+          margin-bottom: 10px;
+          text-align: center;
+          font-weight: $normal;
+
+          p:first-child {
+              color: $font-error;
+              margin-bottom: 10px;
+          }
+
+          p:last-child {
+              color: $font-dark;
+          }
+      }
+
+      .okBtn {
+          width: 100%;
+      }
+      .checkboxWrap {
+        display: flex;
+        flex-flow: row nowrap;
+        flex-grow: 1;
+        width: 100%;
+
+        .checkbox.checkbox-mtd {
+          transform: none !important;
+          -webkit-transform: none !important;
+
+          #portalCheckbox {
+            transform: none !important;
+            -webkit-transform: none !important;
+           }
+           span {
+            transform: none !important;
+            -webkit-transform: none !important;
+           }
+          .checkbox-mtd>span:after { top: 7px; }
+        }
+      }
+  }
+
     #changePlanTypeScreen {
         .currentType {
             display: flex;
@@ -663,12 +743,12 @@
       padding: 5px 0;
       margin: 0 0 5px;
 
-      &.unawnsered {
-        .input-field {
-          // color: $font-error;
-          // pointer-events: none;
-        }
-      }
+      // &.unawnsered {
+      //   .input-field {
+      //     // color: $font-error;
+      //     // pointer-events: none;
+      //   }
+      // }
 
       .grid__cell {
         flex-grow: 1;
@@ -733,15 +813,15 @@
   margin: 0 0 20px;
 
   &.unawnsered {
-    .input-field {
-      // color: $font-error;
-    }
+    // .input-field {
+    //   // color: $font-error;
+    // }
     .input-field__input {
       color: $font-dark;
     }
-    .radioWrap {
-      // outline: 2px solid $font-error;
-    }
+    // .radioWrap {
+    //   // outline: 2px solid $font-error;
+    // }
   }
 
   .input-field {
@@ -802,6 +882,9 @@
       pointer-events: all !important;
     }
   }
+}
+.intentionallyBlankCheckbox {
+  margin-top: 10px;
 }
 
 @media screen and (min-width: '1000px') {
@@ -888,6 +971,9 @@
         .numOfQuestionsUnawnseredWrap {
           top: -4px;
         }
+        .workingAlertDiv {
+          top: -4px
+        }
       }
       .tableOfContents__subSectionHeading {
         display: none;
@@ -966,5 +1052,34 @@
     .reviewAttachmentContainer {
       cursor: pointer;
     }
+  }
+}
+
+.tocAlertDiv, .workingAlertDiv {
+  svg {
+    height: 24px;
+    color: red;
+    position: relative;
+    bottom: 3px;
+  }
+}
+
+.workingAlertDiv {
+  position: relative;
+  display: inline-block;
+  top: 10px;
+  margin-bottom: 10px;
+}
+
+.tableOfContents__heading {
+  display: flex;
+}
+
+.sentToOnetDateDiv {
+  bottom: 10px;
+  position: relative;
+  
+  p {
+    font-size: .9rem;
   }
 }

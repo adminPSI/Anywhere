@@ -1883,6 +1883,12 @@ var outcomes = (function() {
       topFilterDateWrap.appendChild(dateInput);
     }
 
+    let filterValues = {
+    };
+    reportsBtn = generateReports.createMainReportButton([{ text: 'Documentation - Completed With Percentages', callback: generateReports.passFilterValuesForReport(filterValues) }, { text: 'Outcome Activity - With Community Integration By Employee, Individual, Date', callback: generateReports.passFilterValuesForReport(filterValues) }])
+
+    topFilterDateWrap.appendChild(reportsBtn);
+
     if (!document.querySelector(".topOutcomeWrap")) {
       DOM.ACTIONCENTER.appendChild(topFilterDateWrap);
     }

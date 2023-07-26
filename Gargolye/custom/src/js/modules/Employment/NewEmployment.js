@@ -1,273 +1,157 @@
-//const NewEmployment = (() => {
-//    // dropdown and inputs declaration
+const NewEmployment = (function () {
 
-//    let newPathEmploymentVal;
+    let PositionId;
+    let ispDiv;
+    let ispNav;
+    let ispBody;
+    let consumersId;
+    let name;
+    let positionName;
+    let selectedConsumersName;
+    let tabPositionIndex;
 
-//    async function init() {
-//        buildNewEmploymentForm();
-//    }
-//    async function buildNewEmploymentForm() {
- 
+    const sections = [
+        {
+            title: 'Employment Information',
+            id: 0,
+            markup: () => EmploymentInformation.getMarkup(),
+        },
+        {
+            title: 'Wages & Benefits',
+            id: 1,
+            markup: () => WagesBenefits.getMarkup(),
+        },
+        {
+            title: 'Position Tasks',
+            id: 2,
+            markup: () => PositionTask.getMarkup(),
+        },
+        {
+            title: 'Work Schedule',
+            id: 3,
+            markup: () => WorkSchedule.getMarkup(),
+        },
 
-//        positionStartDate = input.build({
-//            id: 'positionStartDate',
-//            type: 'date',
-//            label: 'Start Date',
-//            style: 'secondary',
-//            //value: filterValues.positionStartDate,
-//        });
+    ];
 
-//        positionEndDate = input.build({
-//            id: 'positionEndDate',
-//            type: 'date',
-//            label: 'End Date',
-//            style: 'secondary',
-//            //value: filterValues.positionEndDate,
-//        });
+    async function refreshEmployment(PositionID, Name, PositionName, SelectedConsumersName, selectedConsumersId, TabPosition = 0) {
+        PositionId = PositionID;
+        consumersId = selectedConsumersId;
+        name = Name;
+        positionName = PositionName;
+        selectedConsumersName = SelectedConsumersName;
+        tabPositionIndex = TabPosition;
 
-//        positionDropdown = dropdown.build({
-//            id: 'positionDropdown',
-//            label: "Position",
-//            dropdownId: "positionDropdown",
-//        });
+        DOM.clearActionCenter();
+        const heading = document.createElement('div');
+        const headingName = document.createElement('div');
 
-//        jobStandingDropdown = dropdown.build({
-//            id: 'jobStandingDropdown',
-//            label: "Job Standing",
-//            dropdownId: "jobStandingDropdown",
-//        });
+        const ispWrap = document.createElement('div');
 
-//        EmployerDropdown = dropdown.build({
-//            id: 'employerDropdown',
-//            label: "Employer",
-//            dropdownId: "employerDropdown",
-//        });
+        ispWrap.id = 'planISP';
 
-//        TransportationDropdown = dropdown.build({
-//            id: 'transportationDropdown',
-//            label: "Transportation",
-//            dropdownId: "transportationDropdown",
-//        });
+        ispWrap.innerHTML = '';
 
-//        TypeOfWorkDropdown = dropdown.build({
-//            id: 'typeOfWorkDropdown',
-//            label: "Type Of Work",
-//            dropdownId: "typeOfWorkDropdown",
-//        });
+        const newIspMarkup = await getMarkup();
 
-//        isSelfEmployed = input.buildCheckbox({
-//            text: 'Self-Employed?',
-//            id: 'chkisSelfEmployed',
-//            // callback: () => setCheckForInactiveUser(event.target),
-//            isChecked: false,
-//        });
+        heading.innerHTML = `<h4>${selectedConsumersName}</h4>`;
+        headingName.innerHTML = `<h4>${Name} - ${PositionName}</h4>`;
+        ispWrap.appendChild(newIspMarkup);
 
-//        nameInput = input.build({
-//            id: 'nameInput',
-//            label: 'Name',
-//            type: 'text',
-//            style: 'secondary',
-//        });
+        DOM.ACTIONCENTER.appendChild(heading);
+        if (PositionId != undefined)
+            DOM.ACTIONCENTER.appendChild(headingName);
+        DOM.ACTIONCENTER.appendChild(ispWrap);
+        DOM.autosizeTextarea();
+    }
+    function toggleActiveNavItem(selectedNavItem) {
+        const activeNavItem = ispNav.querySelector('.active');
 
-//        phoneInput = input.build({
-//            id: 'phoneInput',
-//            label: 'Phone',
-//            type: 'number',
-//            style: 'secondary',
-//            attributes: [{ key: 'maxlength', value: '12' }],
-//        });
+        if (activeNavItem) {
+            activeNavItem.classList.remove('active');
+        }
 
-//        emailInput = input.build({
-//            id: 'emailInput',
-//            label: 'Email',
-//            type: 'text',
-//            style: 'secondary',
-//        });
+        selectedNavItem.classList.add('active');
+    }
+    function toggleActiveSection(sectionId) {
+        const activeSection = ispBody.querySelector('.active');
+        const targetSection = ispBody.querySelector(`[data-section-id="${sectionId}"]`);
 
-//        // Save button
-//        SAVE_BTN = button.build({
-//            text: 'Save',
-//            style: 'secondary',
-//            type: 'contained',
-//        });
-//        CANCEL_BTN = button.build({
-//            text: 'Cancel',
-//            style: 'secondary',
-//            type: 'outlined',
-//            // callback: () => filterPopupCancelBtn()
-//        });
-//        UPDATE_BTN = button.build({
-//            text: 'Update',
-//            style: 'secondary',
-//            type: 'contained',
-//            callback: () => updatePathPopupBtn()
-//        });
+        if (activeSection) {
+            activeSection.classList.remove('active');
+        }
 
-//        DOM.clearActionCenter();
-//        var LineBr = document.createElement('br');
+        targetSection.classList.add('active');
+    }
 
-//        const message = document.createElement('b');
-//        message.style.marginTop = '1%';
-//        message.innerText = 'Path to Employment : I Want a job! I need help to find one.';
+    // Markup
+    //---------------------------------------------
+    function buildNavigation() {
+        const nav = document.createElement('div');
+        nav.classList.add('planISP__nav');
 
-//        var msgWrap = document.createElement('div');
-//        msgWrap.classList.add('employmentMsgWrap');
+        sections.forEach((section, index) => {
+            const sectionId = section.id;
 
-//        msgWrap.appendChild(message);
-//        UPDATE_BTN.style.marginLeft = '1%';
-//        msgWrap.appendChild(UPDATE_BTN);
-//        DOM.ACTIONCENTER.appendChild(msgWrap);
+            const navItem = document.createElement('div');
+            navItem.classList.add('planISP__navItem');
+            navItem.innerHTML = `${section.title}`;
 
-//        const column1 = document.createElement('div')
-//        column1.classList.add('col-1')
-//        const addNewCard = document.createElement("div");
-//        addNewCard.classList.add("card");
-//        const addNewCardBody = document.createElement("div");
-//        addNewCardBody.classList.add("card__body");
-//        addNewCard.innerHTML = `<div class="card__header">Employment Information</div>`;
-//        addNewCard.appendChild(addNewCardBody)
-//        column1.appendChild(addNewCard)
-//        addNewCardBody.appendChild(EmployerDropdown);
-//        addNewCardBody.appendChild(positionDropdown);
+            if (tabPositionIndex === index) {
+                navItem.classList.add('active');
+            }
 
-//        var dropWrap = document.createElement('div');
-//        dropWrap.classList.add('employmentDTWrap');
-//        jobStandingDropdown.style.width = '27%';
-//        dropWrap.appendChild(jobStandingDropdown);
-//        TransportationDropdown.style.width = '27%';
-//        dropWrap.appendChild(TransportationDropdown);
-//        positionStartDate.style.width = '20%';
-//        dropWrap.appendChild(positionStartDate);
-//        positionEndDate.style.width = '20%';
-//        dropWrap.appendChild(positionEndDate);
-//        addNewCardBody.appendChild(dropWrap);
+            navItem.addEventListener('click', e => {
+                toggleActiveNavItem(navItem);
+                toggleActiveSection(sectionId);
+                DOM.autosizeTextarea();
+            });
 
-//        var drWrap = document.createElement('div');
-//        drWrap.classList.add('employmentDTWrap');
-//        TypeOfWorkDropdown.style.width = '35%';
-//        drWrap.appendChild(TypeOfWorkDropdown);
-//        isSelfEmployed.style.width = '25%';
-//        isSelfEmployed.style.marginRight = '35%';
-//        drWrap.appendChild(isSelfEmployed);
-//        addNewCardBody.appendChild(drWrap);
+            nav.appendChild(navItem);
+        });
 
-//        const consumerNameDisplay = document.createElement("p");
-//        consumerNameDisplay.classList.add("heading");
-//        consumerNameDisplay.innerHTML = `<span>${'Supervisor Information'}</span>`;
-//        consumerNameDisplay.style.marginLeft = '10px';
-//        addNewCardBody.appendChild(consumerNameDisplay);
-//        addNewCardBody.appendChild(LineBr);
-//        addNewCardBody.appendChild(LineBr);
+        return nav;
+    }
+    async function buildBody() {
+        const body = document.createElement('div');
+        body.classList.add('planISP__body');
 
-//        var infoWrap = document.createElement('div');
-//        infoWrap.classList.add('employmentDTWrap');
-//        nameInput.style.width = '30%';
-//        infoWrap.appendChild(nameInput);
-//        phoneInput.style.width = '32%';
-//        infoWrap.appendChild(phoneInput);
-//        emailInput.style.width = '32%';
-//        infoWrap.appendChild(emailInput);
-//        addNewCardBody.appendChild(infoWrap);
+        await EmploymentInformation.init(PositionId, name, positionName, selectedConsumersName, consumersId);
+        await WagesBenefits.init(PositionId, name, positionName, selectedConsumersName, consumersId);
+        await PositionTask.init(PositionId, name, positionName, selectedConsumersName, consumersId);
+        await WorkSchedule.init(PositionId, name, positionName, selectedConsumersName, consumersId);
 
-//        var btnWrap = document.createElement('div');
-//        btnWrap.classList.add('employmentDTWrap');
-//        btnWrap.style.marginLeft = '25%';
-//        btnWrap.style.width = '50%';
-//        SAVE_BTN.style.width = '48%';
-//        btnWrap.appendChild(SAVE_BTN);
-//        CANCEL_BTN.style.width = '48%';
-//        btnWrap.appendChild(CANCEL_BTN);
-//        addNewCardBody.appendChild(btnWrap);
+        sections.forEach((section, index) => {
+            const sectionId = section.id;
+            const sectionMarkup = section.markup();
+            sectionMarkup.setAttribute('data-section-id', sectionId);
+            sectionMarkup.classList.add('planISP__section');
 
-//        DOM.ACTIONCENTER.appendChild(column1);
-//    }
+            if (tabPositionIndex === index) {
+                sectionMarkup.classList.add('active');
+            }
 
+            body.appendChild(sectionMarkup);
+        });
 
-//    function updatePathPopupBtn() {
+        return body;
+    }
 
-//        updatePathPopup = POPUP.build({
-//            classNames: ['rosterFilterPopup'],
-//            hideX: true,
-//        });
+    async function getMarkup() {
+        ispDiv = document.createElement('div');
+        ispDiv.classList.add('planISP');
 
-//        const heading = document.createElement('h2');
-//        heading.innerText = 'Update Path to Employment';
+        ispNav = buildNavigation();
+        ispDiv.appendChild(ispNav);
 
-//        // dropdowns & inputs 
-//        currentPathEndDate = input.build({
-//            id: 'currentPathEndDate',
-//            type: 'date',
-//            label: 'Current Path End Date',
-//            style: 'secondary',
-//        });
+        ispBody = await buildBody();
+        ispDiv.appendChild(ispBody);
 
-//        newPathEmployment = dropdown.build({
-//            id: 'newPathEmployment',
-//            label: "New Path to Employment",
-//            dropdownId: "newPathEmployment",
-//            value: newPathEmploymentVal,
-//        });
+        return ispDiv;
+    }
 
-//        newPathStartDate = input.build({
-//            id: 'newPathStartDate',
-//            type: 'date',
-//            label: 'New Path Strat Date',
-//            style: 'secondary',
-//        });
-
-//        newPathEndDate = input.build({
-//            id: 'newPathEndDate',
-//            type: 'date',
-//            label: 'New Path End Date',
-//            style: 'secondary',
-//        });
-
-//        APPLY_BTN = button.build({
-//            text: 'Apply',
-//            style: 'secondary',
-//            type: 'contained',
-//        });
-//        APPLY_BTN.style.width = '100%';
-//        updatePathPopup.appendChild(heading);  
-//        updatePathPopup.appendChild(currentPathEndDate);
-//        updatePathPopup.appendChild(newPathEmployment);
-//        updatePathPopup.appendChild(newPathStartDate);
-//        updatePathPopup.appendChild(newPathEndDate);
-//        updatePathPopup.appendChild(APPLY_BTN);
-//        POPUP.show(updatePathPopup);
-//    }
-
-//    function eventListeners() {
-
-//    }
-
-//    async function populateNewPathEmploymentDropdown() {
-//        const condfidentialDropdownData = ([
-//            { text: "I have a job but would like a better one or to move up.", value: '1' },
-//            { text: "I want a job! I need help to fine one.", value: '2' },
-//            { text: "I'm not sure about work. I need help to learn more.", value: '3' },
-//            { text: "I don't think I want to work, but I may not know enough.", value: '4' }, 
-//        ]);
-//        dropdown.populate("newPathEmployment", condfidentialDropdownData, newPathEmploymentVal);
-//    }
-
-
-
-//    async function saveNewAccount() {
-
-//    }
-
-//    // Populate the Account DDL 
-
-
-
-
-
-
-
-//    return {
-//        init,
-//        buildNewEmploymentForm,
-
-//    };
-//})(); 
+    return {
+        refreshEmployment,
+        getMarkup,
+    };
+})();

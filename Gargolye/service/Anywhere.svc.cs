@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Web.Script.Serialization;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
@@ -91,7 +92,8 @@ namespace Anywhere
         ResetPasswordWorker resetPasswordWorker = new ResetPasswordWorker();
         ConsumerFinancesWorker cf = new ConsumerFinancesWorker();
         DemographicsWoker cdw = new DemographicsWoker();
-        EmploymentWorker emp = new EmploymentWorker();  
+        EmploymentWorker emp = new EmploymentWorker();
+        AssessmentDataGetter assDG = new AssessmentDataGetter();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure(); 
@@ -664,6 +666,11 @@ namespace Anywhere
         public SingleEntryWorker.EmployeeListAndCountInfo[] getEmployeeListAndCountInfoJSON(string token, string supervisorId)
         {
             return singleEntryWorker.getEmployeeListAndCountInfoJSON(token, supervisorId);
+        }
+
+        public DashboardWorker.MissingPlanSignaturesObj[] getMissingPlanSignatures(string token)
+        {
+            return dashWork.getMissingPlanSignatures(token);
         }
 
         public DashboardWorker.SingleEntryCountObj[] getSingleEntryCountInfoJSON(string token)
@@ -1306,9 +1313,9 @@ namespace Anywhere
             return iTW.GetITDashboardWidgetData(token, viewCaseLoad);
         }
 
-        public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
+        public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
-            return iTW.GetITReviewTableData(token, locationId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            return iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
         }
 
         public string updateIncidentTrackingDaysBack(string token, string updatedReviewDays)
@@ -1723,6 +1730,16 @@ namespace Anywhere
         {
             // insert the annaul consumer plan and assessment
             return aAW.transferPlanReportToONET(token, planId);
+        }
+
+        public string insertConsumerAssessmentAnswer(string consumerPlanId, string questionId, string answerRow, string answer, string skipped)
+        {
+            return assDG.insertConsumerAssessmentAnswer(consumerPlanId, questionId, answerRow, answer, skipped);
+        }
+
+        public string runReOrderSQL(string token)
+        {
+            return assDG.runReOrderSQL(token);
         }
 
         public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate, string salesForceCaseManagerId)
@@ -2627,9 +2644,9 @@ namespace Anywhere
             return pdsw.getAdditionalAssessmentSummaryQuestions(anywAssessmentId);
         }
 
-        public PlanDiscoverySummaryWorker.SummarySavedAnswerIds insertAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywQuestionIds, int[] answerRow, string[] answers, string userId)
+        public PlanDiscoverySummaryWorker.SummarySavedAnswerIds insertAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywQuestionIds, int[] answerRow, string[] answers, string userId, string skipped)
         {
-            return pdsw.insertAssessmentSummaryAnswers(token, anywAssessmentId, anywQuestionIds, answerRow, answers, userId);
+            return pdsw.insertAssessmentSummaryAnswers(token, anywAssessmentId, anywQuestionIds, answerRow, answers, userId, skipped);
         }
 
         public string updateAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywAnswerIds, string[] answers, string userId)
@@ -2904,6 +2921,7 @@ namespace Anywhere
             string oneSpan;
             string signatureOnly;
             string include;
+            string toONET;
 
             StreamReader reader = new StreamReader(testInput);
             string fullInput = reader.ReadToEnd();
@@ -2912,10 +2930,11 @@ namespace Anywhere
             assessmentID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
             versionID = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
             extraSpace = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
-            isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
-            oneSpan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
-            signatureOnly = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
-            include = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[8], "=")[1];
+            toONET = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            isp = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+            oneSpan = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[7], "=")[1];
+            signatureOnly = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[8], "=")[1];
+            include = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[9], "=")[1];
 
 
             string[] words = fullInput.Split('&');
@@ -2937,7 +2956,18 @@ namespace Anywhere
             attIdThree = attIdThree.Replace("%2C", ",");
             sigAttachmentIds = attIdThree.Split(',');
             //attachmentIds = new[] { System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "%2C")[2] };
-            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly), include);
+            dpra.addSelectedAttachmentsToReport(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, bool.Parse(toONET), bool.Parse(isp), bool.Parse(oneSpan), bool.Parse(signatureOnly), include);
+        }
+
+        public string transeferPlanReportToONET(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include)
+        {
+            string response = dpra.addSelectedAttachmentsToReportTwo(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, userId, assessmentID, versionID, extraSpace, toONET, isp, oneSpan, signatureOnly, include);
+            return response;
+        }
+
+        public SentToONETDate[] getSentToONETDate(string token, string assessmentId)
+        {
+            return dpra.getSentToONETDate(token, assessmentId);
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)
@@ -3251,6 +3281,95 @@ namespace Anywhere
         public EmploymentEntriesByID[] getEmployeeInfoByID(string token, string positionId)
         {
             return emp.getEmployeeInfoByID(token, positionId);
+        }
+        public WagesEntries[] getWagesEntries(string token, string positionID)
+        {
+            return emp.getWagesEntries(token, positionID);
+        }
+
+        public EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID)
+        {
+            return emp.insertEmploymentPath(token, employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID);
+        }
+
+        public EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId)
+        {
+            return emp.insertEmploymentInfo(token, startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId);
+        }
+
+        public JobStanding[] getJobStandingsDropDown(string token)
+        {
+            return emp.getJobStandingsDropDown(token);
+        }
+
+        public Employer[] getEmployerDropDown(string token)
+        {
+            return emp.getEmployerDropDown(token);
+        }
+
+        public Position[] getPositionDropDown(string token)
+        {
+            return emp.getPositionDropDown(token);
+        }
+
+        public Transportation[] getTransportationDropDown(string token)
+        {
+            return emp.getTransportationDropDown(token);
+        }
+
+        public TypeOfWork[] getTypeOfWorkDropDown(string token)
+        {
+            return emp.getTypeOfWorkDropDown(token);
+        }
+
+        public WagesEntries insertWages(string token, string hoursWeek, string hoursWages, string startDate, string endDate, string PositionId, string wagesID, string userID)
+        {
+            return emp.insertWages(token, hoursWeek, hoursWages, startDate, endDate, PositionId, wagesID, userID);
+        }
+
+        public PositionTaskEntries[] getPositionTaskEntries(string token, string positionID)
+        {
+            return emp.getPositionTaskEntries(token, positionID);
+        }
+
+        public InitialPerformance[] getInitialPerformanceDropdown(string token)
+        {
+            return emp.getInitialPerformanceDropdown(token);
+        }
+
+        public PositionTaskEntries insertPositionTask(string token, string task, string description, string startDate, string endDate, string initialPerformance, string initialPerformanceNotes, string employeeStandard, string PositionId, string jobTaskID, string userID)
+        {
+            return emp.insertPositionTask(token, task, description, startDate, endDate, initialPerformance, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, userID);
+        }
+
+        public WorkScheduleEntries[] getWorkScheduleEntries(string token, string positionID)
+        {
+            return emp.getWorkScheduleEntries(token, positionID);
+        }
+
+        public EmploymentValidate[] isNewPositionEnable(string token, string consumerIds)
+        {
+            return emp.isNewPositionEnable(token, consumerIds);
+        }
+
+        public EmploymentEntriesByID[] getEmployeementPath(string token, string consumersId)
+        {
+            return emp.getEmployeementPath(token, consumersId);
+        }
+
+        public WagesEntries saveCheckboxWages(string token, string chkboxName, string IsChacked, string PositionId, string textboxValue, string userID)
+        {
+            return emp.saveCheckboxWages(token, chkboxName, IsChacked, PositionId, textboxValue, userID);
+        }
+
+        public WagesCheckboxEntries[] getWagesCheckboxEntries(string token, string positionID)
+        {
+            return emp.getWagesCheckboxEntries(token, positionID);
+        }
+
+        public WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
+        {
+            return emp.insertWorkSchedule(token, dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID);
         }
 
     }

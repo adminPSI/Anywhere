@@ -37,6 +37,7 @@ namespace Anywhere.service.Data
             public string answerId { get; set; }
             public string answerRow { get; set; }
             public string answerText { get; set; }
+            public string skipped { get; set; }
         }
 
         public class ConsumerPlans
@@ -49,6 +50,9 @@ namespace Anywhere.service.Data
             public string effectiveEnd { get; set; }
             public string createdOn { get; set; }//
             public string reviewDate { get; set; }//
+            public string sentToDODD { get; set; }
+            public string userSentDODD { get; set; }//
+            public string dateSentDODD { get; set; }//
             public string active { get; set; }
         }
 
@@ -161,7 +165,7 @@ namespace Anywhere.service.Data
                         // if a default answer exists, use it, otherwise set answer to null
                         string answer = i <= defaultAnswers.Length ? (defaultAnswers[i - 1] == "==TODAY") ? DateTime.Now.ToString("yyyy-MM-dd") : defaultAnswers[i - 1] : null;
                         // insert answer record
-                        adg.insertConsumerAssessmentAnswer(plan[0].consumerPlanId, question.questionId, i.ToString(), answer);
+                        adg.insertConsumerAssessmentAnswer(plan[0].consumerPlanId, question.questionId, i.ToString(), answer, "N");
                     }
                 }
             }
@@ -175,6 +179,8 @@ namespace Anywhere.service.Data
             adg.insertPlanReportToBeTranferredToONET(token, report, planId);
             return "Success";
         }
+
+
 
         public string transferPlanReportToONET(string token, long planId)
         {

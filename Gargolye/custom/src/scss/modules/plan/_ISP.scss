@@ -49,10 +49,21 @@
     margin-right: 30px;
     padding-right: 10px;
     text-align: center;
+    display: flex;
 
     &.active {
       font-weight: $bold;
     }
+  }
+  
+  .outcomesAlertDiv {
+    svg {
+      height: 24px;
+      color: red;
+      position: relative;
+      bottom: 3px;
+    }
+
   }
 
   &__section {

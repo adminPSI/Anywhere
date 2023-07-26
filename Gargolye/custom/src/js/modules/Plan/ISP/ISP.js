@@ -5,6 +5,7 @@ const ISP = (function () {
   let ispNav;
   let ispBody;
   let readOnly;
+  let validationCheck;
 
   const sections = [
     {
@@ -102,7 +103,7 @@ const ISP = (function () {
       text: 'Yes',
       style: 'danger',
       type: 'contained',
-      callback: () => {
+      callback: async () => {
         popup.removeChild(deleteWarning);
         popup.classList.remove('deleteActive');
         popup.style.overflow = 'auto';
@@ -148,12 +149,33 @@ const ISP = (function () {
     const nav = document.createElement('div');
     nav.classList.add('planISP__nav');
 
-    sections.forEach((section, index) => {
+    sections.forEach(async (section, index) => {
       const sectionId = section.id;
 
       const navItem = document.createElement('div');
       navItem.classList.add('planISP__navItem');
       navItem.innerHTML = `${section.title}`;
+
+      // if the section is 'Outcomes' run an initial validation check on the section
+      if (section.title === 'Outcomes') {
+        const outcomesAlertDiv = document.createElement('div');
+        outcomesAlertDiv.classList.add('outcomesAlertDiv');
+        outcomesAlertDiv.id = 'outcomesAlert';
+        outcomesAlertDiv.innerHTML = `${icons.error}`;
+        navItem.appendChild(outcomesAlertDiv);
+        outcomesAlertDiv.style.display = 'none';
+
+        // creates and shows a tip when hovering over the visible alert div
+        planValidation.createTooltip(
+          'There is data missing on this tab that is required by DODD',
+          outcomesAlertDiv,
+        );
+
+        // If a plan returns an error on the validation check, show the alert div
+        if (validationCheck.complete === false) {
+          outcomesAlertDiv.style.display = 'flex';
+        }
+      }
 
       if (index === 0) {
         navItem.classList.add('active');
@@ -173,6 +195,9 @@ const ISP = (function () {
   async function buildBody() {
     const body = document.createElement('div');
     body.classList.add('planISP__body');
+
+    // refresh data for relationships in dropdown data
+    planData.refreshDropdownData();
 
     await getInitialData();
 
@@ -216,6 +241,9 @@ const ISP = (function () {
     } else {
       readOnly = false;
     }
+
+    validationCheck = plan.getISPValidation();
+    //planValidation.getAssessmentValidation(planId);
 
     ispNav = buildNavigation();
     ispDiv.appendChild(ispNav);

@@ -63,12 +63,21 @@
     margin: 0;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    display: flex;
+    justify-content: center;
 
     p {
       pointer-events: none;
       font-weight: 500;
       opacity: 0.8;
     }
+
+    svg {
+      height: 1rem;
+      color: red;
+      position: relative;
+    }
+
 
     &.active {
       background: $white2;

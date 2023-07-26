@@ -75,7 +75,26 @@ const POPUP = (function () {
     });
 
     if (!opts.hideX) popup.appendChild(closePopBtn);
-
+  
+    // Check if modal is enabled
+    if (opts.modal) {
+      // Create a background div for closing the popup
+      const background = document.createElement('div');
+      background.classList.add('popup__background');
+      background.addEventListener('click', () => {
+        DOM.ACTIONCENTER.removeChild(popup);
+        DOM.ACTIONCENTER.removeChild(background);
+        overlay.hide();
+        bodyScrollLock.enableBodyScroll(popup);
+        document.body.style.overflow = 'visible';
+        if (opts.closeCallback) opts.closeCallback();
+      });
+  
+      // Append the background div and popup to ACTIONCENTER
+      DOM.ACTIONCENTER.appendChild(background);
+      DOM.ACTIONCENTER.appendChild(popup);
+    }
+  
     return popup;
   }
   /**

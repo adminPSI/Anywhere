@@ -412,6 +412,12 @@ const widgetSettings = (function () {
       showHide: '',
       application: 'adv',
     },
+    17: {
+      name: 'Plan Missing Signatures',
+      settings: {},
+      showHide: '',
+      application: 'gk,adv',
+    },
   };
 
   function setWidgetSettings(widgetId) {

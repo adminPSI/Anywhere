@@ -69,16 +69,10 @@ const csRelationship = (() => {
 
     POPUP.show(existingRelationshipPopup);
   }
-  const removeDups = data => {
-    const flag = {};
-    const unique = [];
-    data.forEach(el => {
-      if (!flag[el.peopleId]) {
-        flag[el.peopleId] = true;
-        unique.push(el);
-      }
-    });
-    return unique;
+  const removeExisting = data => {
+    const teamMembers = planConsentAndSign.getTeamMemberData();
+    const teamMemberIDs = teamMembers.map(tm => tm.contactId);
+    return data.filter(el => !teamMemberIDs.includes(el.contactId));
   };
 
   //*------------------------------------------------------
@@ -137,8 +131,8 @@ const csRelationship = (() => {
     return relationshipDiv;
   }
   function showMainPopup() {
-    gkRelationships = planData.getDropdownData().relationships;
-    gkRelationships = removeDups(gkRelationships);
+    gkRelationships = planData.getDropdownData().relationshipsWithDups;
+    gkRelationships = removeExisting(gkRelationships);
     teamMemberPopup = document.getElementById('sig_mainPopup');
 
     importPopup = POPUP.build({
@@ -156,6 +150,9 @@ const csRelationship = (() => {
     let teamMembers = planConsentAndSign.getTeamMemberData();
     if (!teamMembers) teamMembers = [];
 
+    gkRelationships.sort((a, b) => {
+      return `${a.firstName} ${a.lastName}` > `${b.firstName} ${b.lastName}` ? 1 : -1;
+    });
     gkRelationships.forEach(rel => {
       if (teamMembers.length !== 0) {
         const filteredMember = teamMembers.filter(tm => tm.peopleId === rel.peopleId);

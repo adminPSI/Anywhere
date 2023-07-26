@@ -1607,6 +1607,24 @@ namespace Anywhere.Data
             }
         }
 
+        public string getMissingPlanSignatures(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getMissingPlanSignatures");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Dashboard_GetPlansNeedingSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("569", ex.Message + "ANYW_Dashboard_GetPlansNeedingSignatures(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "569: error ANYW_Dashboard_GetPlansNeedingSignatures";
+            }
+        }
+
         public string getSingleEntryCountInfoJSON(string token)
         {
             if (tokenValidator(token) == false) return null;
@@ -4052,13 +4070,14 @@ namespace Anywhere.Data
             }
         }
 
-        public string getITReviewTableData(string token, string locationId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
+        public string getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getITReviewTableData ");
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(locationId);
+            list.Add(consumerId);
             list.Add(employeeId);
             list.Add(supervisorId);
             list.Add(subcategoryId);

@@ -129,6 +129,32 @@
       <p class="numOfQuestionsUnawnseredWrap"><span class="numOfQuestionsUnawnsered"></span></p>
     `;
 
+    const tocSectionAlertDiv = document.createElement('div');
+    tocSectionAlertDiv.classList.add('workingAlertDiv');
+    tocSectionAlertDiv.id = `${id}alert`;
+    tocSectionAlertDiv.innerHTML = `${icons.error}`;
+    sectionHeading.appendChild(tocSectionAlertDiv);
+
+      planValidation.createTooltip("This section is missing an Outcome, Support, or Referral", tocSectionAlertDiv);
+
+      tocSectionAlertDiv.style.display = 'none';     
+
+    if (title === 'WORKING/ NOT WORKING') {
+      const workingAlertDiv = document.createElement('div');
+      workingAlertDiv.classList.add('workingAlertDiv');
+      workingAlertDiv.id = `workingAlert`;
+      workingAlertDiv.innerHTML = `${icons.error}`;
+      sectionHeading.appendChild(workingAlertDiv);
+
+      planValidation.createTooltip("There must be at least one record for What's Working/What's Not Working", workingAlertDiv);
+
+      workingAlertDiv.style.display = 'none';
+
+      if (assessmentValidationCheck.workingSectionComplete === false) {
+        workingAlertDiv.style.display = 'inline-block';
+      }
+    }
+
     section.appendChild(sectionHeading);
 
     return section;
@@ -193,10 +219,25 @@
     tocInner = document.createElement('div');
     tocInner.classList.add('tableOfContents__inner');
 
+    let assessmentValidationCheck = plan.getAssessmentValidation();
+
     const tocHeader = document.createElement('h2');
     tocHeader.classList.add('tableOfContents__heading');
     tocHeader.innerHTML = `Table Of Contents`;
+    
+    const tocAlertDiv = document.createElement('div');
+    tocAlertDiv.classList.add('tocAlertDiv');
+    tocAlertDiv.id = 'tocAlert';
+    tocHeader.appendChild(tocAlertDiv);
+    tocAlertDiv.innerHTML = `${icons.error}`;
+    
+    // creates and shows a tip when hovering over the visible alert div
+    planValidation.createTooltip('At least one section of the Assessment must be selected', tocAlertDiv)
 
+    if (assessmentValidationCheck.hasASectionApplicable === true) {
+      tocAlertDiv.style.display = 'none';
+    }
+   
     const tocMain = document.createElement('div');
     tocMain.classList.add('tableOfContents__main');
 
@@ -238,6 +279,8 @@
 
     toc.appendChild(tocHeader);
     toc.appendChild(tocMain);
+
+    planValidation.tocAssessmentCheck(assessmentValidationCheck);
   }
 
   return {

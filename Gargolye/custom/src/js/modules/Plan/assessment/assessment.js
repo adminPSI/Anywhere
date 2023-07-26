@@ -171,6 +171,7 @@ const assessment = (function () {
             requiredAnswer: otherData.questionRequiresAnswer,
             tag: otherData.questionTag,
             text: otherData.questionText,
+            skipped: otherData.skipped,
           };
         }
       } else {
@@ -188,6 +189,7 @@ const assessment = (function () {
             requiredAnswer: otherData.questionRequiresAnswer,
             text: otherData.questionText,
             tag: otherData.questionTag,
+            skipped: otherData.skipped,
           };
         }
         if (!questionData[questionId]) {
@@ -204,6 +206,7 @@ const assessment = (function () {
             requiredAnswer: otherData.questionRequiresAnswer,
             text: otherData.questionText,
             tag: otherData.questionTag,
+            skipped: otherData.skipped,
           };
         }
 
@@ -254,7 +257,7 @@ const assessment = (function () {
         savePopup.insertBefore(saveBar, btnWrap);
 
         const answersArray = mainAssessment.getAnswers();
-        const success = await assessment.updateAnswers(answersArray);
+        const success = await updateAnswers(answersArray);
 
         if (success !== undefined && success !== null && success !== 'error') {
           const successDiv = successfulSave.get('Assessment Saved', true);
@@ -303,7 +306,7 @@ const assessment = (function () {
     POPUP.show(savePopup);
 
     const answersArray = mainAssessment.getAnswers();
-    const success = await assessment.updateAnswers(answersArray);
+    const success = await updateAnswers(answersArray);
     savePopup.removeChild(saveBar);
 
     if (success !== undefined && success !== null && success !== 'error') {
@@ -383,7 +386,7 @@ const assessment = (function () {
           assessmentID,
           versionID,
           extraSpace: extraSpace,
-            isp: true, //new
+          isp: true, //new
           signatureOnly: false,
         })
       ).getPlanAssessmentReportResult;
@@ -404,7 +407,7 @@ const assessment = (function () {
       return error.statusText;
     }
   }
-  function generateReportWithAttachments(//TODO Nathan. Add flag if to DODD
+  function generateReportWithAttachments(
     assessmentID,
     versionID,
     extraSpace,
@@ -414,14 +417,17 @@ const assessment = (function () {
     DODDFlag,
     signatureOnly,
     include,
+    toDODD,
   ) {
-    assessmentAjax.getPlanAssessmentReportWithAttachments(//Testgd
+    assessmentAjax.getPlanAssessmentReportWithAttachments(
+      //Testgd
       {
         token: $.session.Token,
         userId: $.session.PeopleId,
         assessmentID,
         versionID,
         extraSpace: extraSpace,
+        toONET: false,
         isp: true,
         oneSpan: false,
         planAttachmentIds,
@@ -447,26 +453,36 @@ const assessment = (function () {
       },
     );
   }
-
-  async function transeferPlanReportToONET(assessmentID, versionID) {
-    //PROGRESS.SPINNER.show('Tranferring Report...');
+  async function transeferPlanReportToONET(
+    assessmentID,
+    versionID,
+    extraSpace,
+    planAttachmentIds,
+    wfAttachmentIds,
+    sigAttachmentIds,
+    DODDFlag,
+    signatureOnly,
+    include
+  ) {
     try {
-      const success = (
-        await assessmentAjax.getPlanAssessmentReport({
-          token: $.session.Token,
-          userId: $.session.PeopleId,
-          assessmentID,
-          versionID,
-          extraSpace: 'false',
-            isp: true, //
-          signatureOnly: false,
-        })
-      ).getPlanAssessmentReportResult;
-
-      const arr = success._buffer;
-      const byteArray = new Uint8Array(arr);
-
-      insertPlanReportToBeTranferredToONET(byteArray, assessmentID);
+      const successMessage = await assessmentAjax.transeferPlanReportToONET({
+        token: $.session.Token,
+        userId: $.session.PeopleId,
+        assessmentID,
+        versionID,
+        extraSpace: extraSpace,
+        toONET: true,
+        isp: true,
+        oneSpan: false,
+        planAttachmentIds,
+        wfAttachmentIds,
+        sigAttachmentIds,
+        DODDFlag,
+        signatureOnly,
+        include,
+      });
+  
+      return successMessage;
     } catch (error) {
       console.log(error.statusText);
     }
@@ -486,17 +502,6 @@ const assessment = (function () {
           planId: assessmentID,
         })
       ).insertPlanReportToBeTranferredToONETResult;
-      //return response;
-      if (response === 'Success') {
-        //PROGRESS.SPINNER.hide();
-        successfulSave.show('Plan Sent');
-        setTimeout(function () {
-          //successfulSave.hide();
-          const savePopup = document.querySelector('.successfulSavePopup');
-          DOM.ACTIONCENTER.removeChild(savePopup);
-        }, 1000);
-      }
-      // return planId;
     } catch (error) {
       console.log(error.statusText);
     }

@@ -274,7 +274,7 @@ const isp_ci_importantPeople = (() => {
       { text: 'Partner', value: 'Partner' },
       { text: 'Guardian of Person', value: 'Guardian of Person' },
       { text: 'Guardian of Estate', value: 'Guardian of Estate' },
-      { text: 'Guardian of Person and Estate', value: 'Guardian of Person and Estate' },
+      { text: 'Guardian of Person AND Estate', value: 'Guardian of Person AND Estate' },
       { text: 'Payee', value: 'Payee' },
       { text: 'Support Broker', value: 'Support Broker' },
       { text: 'Home Provider', value: 'Home Provider' },

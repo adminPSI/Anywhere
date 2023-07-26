@@ -1637,7 +1637,7 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: () => {
+      callback: async () => {
         doneBtn.classList.add('disabled');
 
         if (isNew) {
@@ -1665,6 +1665,10 @@ const servicesSupports = (() => {
 
         hcbsSelected = undefined;
         saveUpdateProvider = '';
+
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
     const cancelBtn = button.build({
@@ -2295,7 +2299,7 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: () => {
+      callback: async () => {
         doneBtn.classList.add('disabled');
         if (isNew) {
           if (fromAssessment) {
@@ -2307,6 +2311,10 @@ const servicesSupports = (() => {
           }
 
           insertAdditionalSupport(saveUpdateData, fromAssessment);
+
+          let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+          planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         } else {
           updateAdditionalSupport(saveUpdateData);
         }
@@ -2676,7 +2684,7 @@ const servicesSupports = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: () => {
+      callback: async () => {
         doneBtn.classList.add('disabled');
 
         if (isNew) {
@@ -2692,6 +2700,10 @@ const servicesSupports = (() => {
         } else {
           updateProfessionalReferral(saveUpdateData);
         }
+
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(professionalReferralPopup);

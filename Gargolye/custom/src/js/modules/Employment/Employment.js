@@ -10,7 +10,7 @@ const Employment = (() => {
     var selectedConsumers;
     var selectedConsumersName;
     var selectedConsumersId;
-
+    let isNewPositionEnable;
     //filter
     let filterValues;
 
@@ -55,6 +55,16 @@ const Employment = (() => {
             })
         ).getConsumerNameByIDResult;
 
+        const result = await EmploymentAjax.isNewPositionEnableAsync(selectedConsumersId);
+        const { isNewPositionEnableResult } = result;
+
+        if (isNewPositionEnableResult[0].IsEmployeeEnable == '0') {
+            isNewPositionEnable = false;
+        }
+        else {
+            isNewPositionEnable = true;
+        }
+
         selectedConsumersName = name[0].FullName;
         const topButton = buildHeaderButton(selectedConsumers[0]);
         landingPage.appendChild(topButton);
@@ -80,7 +90,7 @@ const Employment = (() => {
             tableId: 'singleEntryAdminReviewTable',
             headline: 'Consumer: ' + selectedConsumersName,
             columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing'],
-            endIcon: true,
+            endIcon: $.session.OODView == true ? true : false,
         };
 
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
@@ -96,18 +106,18 @@ const Employment = (() => {
 
         const additionalInformation = newODDEntryBtn();
         additionalInformation.innerHTML = '+ NEW ODD ENTRY';
-
         additionalInformation.style = 'margin-top: -10px; width: 200px;';
 
         let tableData = EmploymentsEntries.getEmploymentEntriesResult.map((entry) => ({
-            values: [entry.employer, entry.position, entry.positionStartDate, entry.positionEndDate, entry.jobStanding],
-            attributes: [{ key: 'positionId', value: entry.positionId }],
+            values: [entry.employer, entry.position, entry.positionStartDate == '' ? '' : moment(entry.positionStartDate).format('MM-DD-YYYY'), entry.positionEndDate == '' ? '' : moment(entry.positionEndDate).format('MM-DD-YYYY'), entry.jobStanding],
+            attributes: [{ key: 'positionId', value: entry.positionId }, { key: 'PeopleName', value: entry.PeopleName }],
             onClick: (e) => {
-                handleAccountTableEvents(e.target.attributes.positionId.value)
+                handleAccountTableEvents(e)
             },
-            endIcon: additionalInformation.outerHTML,
+            endIcon: $.session.OODView == true ? additionalInformation.outerHTML : '',
             endIconCallback: e => {
-                //buildChangePasswordPopup(userID, FirstName, LastName);
+                // TODO
+                //buildChangePasswordPopup(userID, FirstName, LastName); 
             },
         }));
         const oTable = table.build(tableOptions);
@@ -116,8 +126,11 @@ const Employment = (() => {
         return oTable;
     }
 
-    function handleAccountTableEvents(empId) {
-        EmploymentInformation.buildNewEmploymentForm(empId)
+    function handleAccountTableEvents(event) {
+        var name = event.target.childNodes[0].innerText;
+        var positionName = event.target.childNodes[1].innerText;
+        var positionId = event.target.attributes.positionId.value;
+        NewEmployment.refreshEmployment(positionId, name, positionName, selectedConsumersName, selectedConsumersId);
     }
 
     function newODDEntryBtn() {
@@ -158,9 +171,9 @@ const Employment = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'newEntryBtn',
-            callback: async () => { EmploymentInformation.init() },
+            callback: async () => { NewEmployment.refreshEmployment(positionId = undefined, '', '', selectedConsumersName, selectedConsumersId) },
         });
-        if ($.session.EmploymentUpdate) {
+        if ($.session.EmploymentUpdate && isNewPositionEnable) {
             newPositionBtn.classList.remove('disabled');
         }
         else {
