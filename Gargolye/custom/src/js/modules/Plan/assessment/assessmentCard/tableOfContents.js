@@ -135,7 +135,7 @@
     tocSectionAlertDiv.innerHTML = `${icons.error}`;
     sectionHeading.appendChild(tocSectionAlertDiv);
 
-      planValidation.createTooltip("This section is missing an Outcome, Support, or Referral", tocSectionAlertDiv);
+      //planValidation.createTooltip("This section is missing an Outcome, Support, or Referral", tocSectionAlertDiv);
 
       tocSectionAlertDiv.style.display = 'none';     
 
@@ -146,7 +146,7 @@
       workingAlertDiv.innerHTML = `${icons.error}`;
       sectionHeading.appendChild(workingAlertDiv);
 
-      planValidation.createTooltip("There must be at least one record for What's Working/What's Not Working", workingAlertDiv);
+      //planValidation.createTooltip("There must be at least one record for What's Working/What's Not Working", workingAlertDiv);
 
       workingAlertDiv.style.display = 'none';
 
@@ -232,7 +232,7 @@
     tocAlertDiv.innerHTML = `${icons.error}`;
     
     // creates and shows a tip when hovering over the visible alert div
-    planValidation.createTooltip('At least one section of the Assessment must be selected', tocAlertDiv)
+    //planValidation.createTooltip('At least one section of the Assessment must be selected', tocAlertDiv)
 
     if (assessmentValidationCheck.hasASectionApplicable === true) {
       tocAlertDiv.style.display = 'none';
@@ -280,7 +280,7 @@
     toc.appendChild(tocHeader);
     toc.appendChild(tocMain);
 
-    planValidation.tocAssessmentCheck(assessmentValidationCheck);
+    //planValidation.tocAssessmentCheck(assessmentValidationCheck);
   }
 
   return {

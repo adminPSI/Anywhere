@@ -394,8 +394,8 @@ const planOutcomes = (() => {
       });
     }
 
-    validationCheck = await planValidation.ISPValidation(planId);
-    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+    //validationCheck = await planValidation.ISPValidation(planId);
+    //planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Markup ---------
   function toggleAddNewOutcomePopupDoneBtn() {
