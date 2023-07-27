@@ -564,10 +564,10 @@ const planOutcomes = (() => {
           true,
         );
 
-        validationCheck = await planValidation.ISPValidation(planId);
-        assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
-        planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
-        planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+        // validationCheck = await planValidation.ISPValidation(planId);
+        // assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+        // planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
+        // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
         const ISPAlertDiv = document.getElementById('navAlertISP');
 
@@ -921,18 +921,18 @@ const planOutcomes = (() => {
     const expTable = expTableWrap.querySelector(`#experiencesTable${experienceId}`);
 
     expTableWrap.removeChild(expTable);
-    
-     // grabs the review alert for this specific outcome
-     const alertDiv = document.getElementById(`experienceAlert${outcomeId}`);
 
-     // retrieves new data from database
-     validationCheck = await planValidation.ISPValidation(planId);
+    // grabs the review alert for this specific outcome
+    //  const alertDiv = document.getElementById(`experienceAlert${outcomeId}`);
 
-     // displays or removes alert for button depending on validationCheck
-     planValidation.experiencesValidationCheck(validationCheck, outcomeId, alertDiv);
+    //  // retrieves new data from database
+    //  validationCheck = await planValidation.ISPValidation(planId);
 
-     // displays or removes alerts for tabs in the navs depending on validationCheck
-     planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+    //  // displays or removes alert for button depending on validationCheck
+    //  planValidation.experiencesValidationCheck(validationCheck, outcomeId, alertDiv);
+
+    //  // displays or removes alerts for tabs in the navs depending on validationCheck
+    //  planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Helpers --------
   function getColTextForWhenHowOften(freq, value, text) {
@@ -1344,7 +1344,7 @@ const planOutcomes = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: async() => {
+      callback: async () => {
         doneBtn.classList.add('disabled');
 
         if (isNew) {
@@ -1362,17 +1362,17 @@ const planOutcomes = (() => {
         doneBtn.classList.remove('disabled');
         POPUP.hide(experiencesPopup);
 
-        // grabs the experience alert for this specific outcome
-        const alertDiv = document.getElementById(`experienceAlert${saveUpdateData.outcomeId}`);
+        // // grabs the experience alert for this specific outcome
+        // const alertDiv = document.getElementById(`experienceAlert${saveUpdateData.outcomeId}`);
 
-        // checks for missing data
-        validationCheck = await planValidation.ISPValidation(planId);
+        // // checks for missing data
+        // validationCheck = await planValidation.ISPValidation(planId);
 
-        // displays or removes button alert depending on validationCheck
-        planValidation.experiencesValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
+        // // displays or removes button alert depending on validationCheck
+        // planValidation.experiencesValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
 
-        // displays or removes alerts for tabs in the navs depending on validationCheck
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // // displays or removes alerts for tabs in the navs depending on validationCheck
+        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -1613,17 +1613,17 @@ const planOutcomes = (() => {
     experienceAlertDiv.classList.add(`experiencesAlert`);
 
     // creates and shows a tip when hovering over the visible alert div
-    planValidation.createTooltip('At least one experience must be entered for each outcome', experienceAlertDiv);
+    //planValidation.createTooltip('At least one experience must be entered for each outcome', experienceAlertDiv);
 
     experienceBtnAlertDiv.appendChild(addExpTableBtn);
     experienceBtnAlertDiv.appendChild(experienceAlertDiv);
     experiencesDiv.appendChild(experienceBtnAlertDiv);
-   
-    // checks if alert should be visible
-    planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv); 
 
-    // checks if providers are in paid supports providers
-    planValidation.checkExperienceProviders(validationCheck);
+    // // checks if alert should be visible
+    // planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv);
+
+    // // checks if providers are in paid supports providers
+    // planValidation.checkExperienceProviders(validationCheck);
 
     return experiencesDiv;
   }
@@ -1737,13 +1737,13 @@ const planOutcomes = (() => {
     const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
 
     // checks for missing data
-    validationCheck = await planValidation.ISPValidation(planId);
+    // validationCheck = await planValidation.ISPValidation(planId);
 
     // displays or removes button alert depending on validationCheck
-    planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
+    // planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
 
     // displays or removes alerts for tabs in the navs depending on validationCheck
-    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+    // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Markup ---------
   function toggleReviewsPopupDoneBtn() {
@@ -1844,7 +1844,7 @@ const planOutcomes = (() => {
       style: 'secondary',
       type: 'contained',
       classNames: 'doneBtn',
-      callback: async() => {
+      callback: async () => {
         doneBtn.classList.add('disabled');
         if (isNew) {
           const tableId = `reviewsTable${saveUpdateData.outcomeId}`;
@@ -1858,17 +1858,17 @@ const planOutcomes = (() => {
         doneBtn.classList.remove('disabled');
         POPUP.hide(reviewsPopup);
 
-    // grabs the review alert for this specific outcome
-    const alertDiv = document.getElementById(`reviewsAlert${saveUpdateData.outcomeId}`);
+        // grabs the review alert for this specific outcome
+        // const alertDiv = document.getElementById(`reviewsAlert${saveUpdateData.outcomeId}`);
 
-    // checks for missing data
-    validationCheck = await planValidation.ISPValidation(planId);
+        // // checks for missing data
+        // validationCheck = await planValidation.ISPValidation(planId);
 
-    // displays or removes button alert depending on validationCheck
-    planValidation.reviewsValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
+        // // displays or removes button alert depending on validationCheck
+        // planValidation.reviewsValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
 
-    // displays or removes alerts for tabs in the navs depending on validationCheck
-    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // // displays or removes alerts for tabs in the navs depending on validationCheck
+        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -2013,13 +2013,13 @@ const planOutcomes = (() => {
     reviewAlertDiv.classList.add('reviewsAlert');
 
     // creates and shows a tip when hovering over the visible alert div
-    planValidation.createTooltip('At least one review must be entered for each outcome', reviewAlertDiv);
-    
+    // planValidation.createTooltip('At least one review must be entered for each outcome', reviewAlertDiv);
+
     reviewsBtnAlertDiv.appendChild(addRowBtn);
     reviewsBtnAlertDiv.appendChild(reviewAlertDiv);
     reviewsDiv.appendChild(reviewsBtnAlertDiv);
 
-    planValidation.reviewsValidationCheck(validationCheck, outcomeId, reviewAlertDiv)
+    // planValidation.reviewsValidationCheck(validationCheck, outcomeId, reviewAlertDiv)
 
     return reviewsDiv;
   }
@@ -2095,8 +2095,8 @@ const planOutcomes = (() => {
             POPUP.hide(deleteWarningPopup);
             checkIfSummaryRequired();
 
-            validationCheck = await planValidation.ISPValidation(planId);
-            planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+            // validationCheck = await planValidation.ISPValidation(planId);
+            // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
           },
         });
         const noBtn = button.build({
@@ -2226,12 +2226,12 @@ const planOutcomes = (() => {
       outcomesUpdateData.outcome = e.target.value;
       if (outcomesUpdateData.outcome === '') {
         outcomeInput.classList.add('error');
-        planValidation.updateOutcome(outcomeId, validationCheck, true);
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // planValidation.updateOutcome(outcomeId, validationCheck, true);
+        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       } else {
         outcomeInput.classList.remove('error');
-        planValidation.updateOutcome(outcomeId, validationCheck, false);
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // planValidation.updateOutcome(outcomeId, validationCheck, false);
+        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       }
     });
     // Details
@@ -2258,12 +2258,12 @@ const planOutcomes = (() => {
       outcomesUpdateData.details = e.target.value;
       if (outcomesUpdateData.details === '') {
         detailsInput.classList.add('error');
-        planValidation.updateOutcomeDetails(outcomeId, validationCheck, true);
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // planValidation.updateOutcomeDetails(outcomeId, validationCheck, true);
+        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       } else {
         detailsInput.classList.remove('error');
-        planValidation.updateOutcomeDetails(outcomeId, validationCheck, false);
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // planValidation.updateOutcomeDetails(outcomeId, validationCheck, false);
+        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       }
     });
     // History
@@ -2378,7 +2378,7 @@ const planOutcomes = (() => {
         } else {
           validationCheck.planProgressSummary = true;
         }
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     outcomesProgressSummary.classList.add('summaryOutcomesTextInput');
@@ -2405,8 +2405,8 @@ const planOutcomes = (() => {
           outcomeOrder: 0, //need this to  keep from first one defaulting to 2
         });
 
-        validationCheck = await planValidation.ISPValidation(planId);
-        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // validationCheck = await planValidation.ISPValidation(planId);
+        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
 
         const outcome = buildOutcome({ outcomeId, outcomeOrder, status: '0' });
         outcomesWrap.insertBefore(outcome, addOutcomeBtn);
@@ -2445,8 +2445,8 @@ const planOutcomes = (() => {
       isSortable = isReadOnly ? false : true;
     }
 
-    validationCheck = await planValidation.ISPValidation(planId);
-     
+    // validationCheck = await planValidation.ISPValidation(planId);
+
     const planOutcomesData = validationCheck.outcomesData;
 
     if (
@@ -2482,13 +2482,13 @@ const planOutcomes = (() => {
 
     const { getPlanOutcomesPaidSupportProvidersResult: selectedVendors } =
       await planOutcomesAjax.getPlanOutcomesPaidSupportProviders(planId);
-      
-      function getSelectedVendorIds() {
-        return selectedVendors.reduce((acc, vendor) => {
-          acc.push(vendor.vendorId);
-          return acc;
-        }, []);
-      }
+
+    function getSelectedVendorIds() {
+      return selectedVendors.reduce((acc, vendor) => {
+        acc.push(vendor.vendorId);
+        return acc;
+      }, []);
+    }
 
     const selectedVendorIds = getSelectedVendorIds();
 

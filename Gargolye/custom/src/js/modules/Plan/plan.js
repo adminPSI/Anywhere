@@ -1879,8 +1879,8 @@ const plan = (function () {
     // init data for tab sections
     await planData.init(planId);
     await planAttachment.getAttachments(planId);
-    ISPValidationCheck = await planValidation.ISPValidation(planId);
-    assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+    // ISPValidationCheck = await planValidation.ISPValidation(planId);
+    // assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
 
     // build tab section wraps
     const assessmentWrap = document.createElement('div');
@@ -2019,7 +2019,7 @@ const plan = (function () {
 
     DOM.autosizeTextarea();
 
-    planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+    //planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
     sentToOnet = await assessmentAjax.getSentToONETDate({
       token: $.session.Token,
