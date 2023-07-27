@@ -101,14 +101,14 @@ const TABS = (function () {
     if (isActive) navItem.classList.add('active');
 
     // DIsplay Assessment Nav Validation if their are validation errors
-    if (navText === 'Assessment' && assessmentValidtaionCheck.complete === false) {
-      navAlertDiv.style.display = 'flex';
-    }
+    //if (navText === 'Assessment' && assessmentValidtaionCheck.complete === false) {
+    //  navAlertDiv.style.display = 'flex';
+    //}
 
-    // DIsplay ISP Nav Validation if their are validation errors
-    if (navText === 'ISP' && ISPValidationCheck.complete === false) {
-      navAlertDiv.style.display = 'flex';
-    }
+    //// DIsplay ISP Nav Validation if their are validation errors
+    //if (navText === 'ISP' && ISPValidationCheck.complete === false) {
+    //  navAlertDiv.style.display = 'flex';
+    //}
 
     return navItem;
   };

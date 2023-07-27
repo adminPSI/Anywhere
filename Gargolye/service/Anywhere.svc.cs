@@ -1315,7 +1315,7 @@ namespace Anywhere
 
         public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
-            return iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            return null;// iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
         }
 
         public string updateIncidentTrackingDaysBack(string token, string updatedReviewDays)
@@ -2967,7 +2967,7 @@ namespace Anywhere
 
         public SentToONETDate[] getSentToONETDate(string token, string assessmentId)
         {
-            return dpra.getSentToONETDate(token, assessmentId);
+            return null;// dpra.getSentToONETDate(token, assessmentId);
         }
 
         public string checkIfCNReportExists(string token, string reportScheduleId)

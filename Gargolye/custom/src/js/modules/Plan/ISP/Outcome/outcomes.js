@@ -2457,7 +2457,7 @@ const planOutcomes = (() => {
 
     // validationCheck = await planValidation.ISPValidation(planId);
 
-    const planOutcomesData = validationCheck.outcomesData;
+    //const planOutcomesData = validationCheck.outcomesData;
 
     if (
       !planOutcomesData.planProgressSummary ||

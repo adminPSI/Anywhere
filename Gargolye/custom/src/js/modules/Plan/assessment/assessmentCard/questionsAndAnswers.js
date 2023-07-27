@@ -694,7 +694,8 @@
       },
     });
     const paidSupportBtn = button.build({
-      text: `Add Paid Support (${paidSupportCount})`,
+        //text: `Add Paid Support (${paidSupportCount})`,
+      text: 'Add Paid Support',
       style: 'secondary',
       type: 'contained',
       id: `paidSupportBtn${id}`,
@@ -708,7 +709,8 @@
       },
     });
     const additionalSupportBtn = button.build({
-      text: `Add Additional Support (${additionalSupportCount})`,
+        /*text: `Add Additional Support (${additionalSupportCount})`,*/
+        text: 'Add Additional Support',
       style: 'secondary',
       type: 'contained',
       id: `additionalSupportBtn${id}`,
@@ -722,7 +724,8 @@
       },
     });
     const profRefBtn = button.build({
-      text: `Add Professional Referral (${professionalReferralCounts})`,
+        /*text: `Add Professional Referral (${professionalReferralCounts})`,*/
+        text: 'Add Professional Referral',
       style: 'secondary',
       type: 'contained',
       id: `profRefBtn${id}`,
@@ -744,11 +747,11 @@
     }
 
     // Add error class to buttons that are checked and have 0 outcomes attached to them
-    if (paidSupportChecked && paidSupportCount === 0) {
-      paidSupportBtn.classList.add('error');
+    //if (paidSupportChecked && paidSupportCount === 0) {
+    //  paidSupportBtn.classList.add('error');
       // assessmentValidationCheck.complete = false;
       // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
-    }
+    //}
 
     // if (additionalSupportChecked && additionalSupportCount === 0) {
     //   additionalSupportBtn.classList.add('error');
@@ -760,9 +763,9 @@
     //   assessmentValidationCheck.complete = false;
     // }
 
-    if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
-      outcomesBtn.classList.add('error');
-    }
+    //if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
+    //  outcomesBtn.classList.add('error');
+    //}
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');

@@ -151,9 +151,9 @@
 
       workingAlertDiv.style.display = 'none';
 
-      if (assessmentValidationCheck.workingSectionComplete === false) {
-        workingAlertDiv.style.display = 'inline-block';
-      }
+      //if (assessmentValidationCheck.workingSectionComplete === false) {
+      //  workingAlertDiv.style.display = 'inline-block';
+      //}
     }
 
     section.appendChild(sectionHeading);
@@ -238,9 +238,9 @@
     //   tocAlertDiv,
     // );
 
-    if (assessmentValidationCheck.hasASectionApplicable === true) {
-      tocAlertDiv.style.display = 'none';
-    }
+    //if (assessmentValidationCheck.hasASectionApplicable === true) {
+    //  tocAlertDiv.style.display = 'none';
+    //}
 
     const tocMain = document.createElement('div');
     tocMain.classList.add('tableOfContents__main');

@@ -172,9 +172,9 @@ const ISP = (function () {
         // );
 
         // If a plan returns an error on the validation check, show the alert div
-        if (validationCheck.complete === false) {
-          outcomesAlertDiv.style.display = 'flex';
-        }
+        //if (validationCheck.complete === false) {
+        //  outcomesAlertDiv.style.display = 'flex';
+        //}
       }
 
       if (index === 0) {

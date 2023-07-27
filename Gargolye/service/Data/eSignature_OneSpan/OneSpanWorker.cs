@@ -550,6 +550,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         public class OneSpanSigner
         {
             public string FirstName { get; set; }
+
             public string LastName { get; set; }
             public string Email { get; set; }
             public string DateSigned { get; set; }
