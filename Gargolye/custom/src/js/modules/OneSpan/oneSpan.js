@@ -165,6 +165,7 @@ const oneSpan = (() => {
         checkOneSpanData,//
         buildSendDocumentToOneSpanBtn,
         shouldBeDisabled,
-        fireDataUpdateEvent
+        fireDataUpdateEvent,
+        sendToOneSpanProgress//
       };
     })();
