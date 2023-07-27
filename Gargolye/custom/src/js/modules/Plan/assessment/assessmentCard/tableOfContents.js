@@ -54,21 +54,17 @@
       const numOfQuestionsUnawnseredWrapDiv = section.querySelector(
         '.numOfQuestionsUnawnseredWrap',
       );
-      const numOfQuestionsUnawnseredDiv = section.querySelector(
-        '.numOfQuestionsUnawnsered',
-      );
+      const numOfQuestionsUnawnseredDiv = section.querySelector('.numOfQuestionsUnawnsered');
       let numOfQuestionsUnawnsered = 0;
       let tableQuestionSets;
-      if (!sectionUnawnseredQuestions[sectionKey])
-        sectionUnawnseredQuestions[sectionKey] = 0;
+      if (!sectionUnawnseredQuestions[sectionKey]) sectionUnawnseredQuestions[sectionKey] = 0;
 
       questionSetKeys.forEach(questionSetKey => {
         const questionKeys = Object.keys(questionCountObj[sectionKey][questionSetKey]);
 
         questionKeys.forEach(questionKey => {
-          const { answered, required, rowOrder } = questionCountObj[sectionKey][
-            questionSetKey
-          ][questionKey];
+          const { answered, required, rowOrder } =
+            questionCountObj[sectionKey][questionSetKey][questionKey];
           if (!rowOrder) {
             if (!answered && required) {
               numOfQuestionsUnawnsered++;
@@ -76,8 +72,7 @@
             }
           } else {
             if (!tableQuestionSets) tableQuestionSets = {};
-            if (!tableQuestionSets[questionSetKey])
-              tableQuestionSets[questionSetKey] = {};
+            if (!tableQuestionSets[questionSetKey]) tableQuestionSets[questionSetKey] = {};
             if (!tableQuestionSets[questionSetKey][rowOrder])
               tableQuestionSets[questionSetKey][rowOrder] = {
                 atLeastOneColumnAnswered: false,
@@ -135,9 +130,12 @@
     tocSectionAlertDiv.innerHTML = `${icons.error}`;
     sectionHeading.appendChild(tocSectionAlertDiv);
 
-      //planValidation.createTooltip("This section is missing an Outcome, Support, or Referral", tocSectionAlertDiv);
+    planValidation.createTooltip(
+      'This section is missing an Outcome, Support, or Referral',
+      tocSectionAlertDiv,
+    );
 
-      tocSectionAlertDiv.style.display = 'none';     
+    tocSectionAlertDiv.style.display = 'none';
 
     if (title === 'WORKING/ NOT WORKING') {
       const workingAlertDiv = document.createElement('div');
@@ -146,7 +144,10 @@
       workingAlertDiv.innerHTML = `${icons.error}`;
       sectionHeading.appendChild(workingAlertDiv);
 
-      //planValidation.createTooltip("There must be at least one record for What's Working/What's Not Working", workingAlertDiv);
+      planValidation.createTooltip(
+        "There must be at least one record for What's Working/What's Not Working",
+        workingAlertDiv,
+      );
 
       workingAlertDiv.style.display = 'none';
 
@@ -224,20 +225,23 @@
     const tocHeader = document.createElement('h2');
     tocHeader.classList.add('tableOfContents__heading');
     tocHeader.innerHTML = `Table Of Contents`;
-    
+
     const tocAlertDiv = document.createElement('div');
     tocAlertDiv.classList.add('tocAlertDiv');
     tocAlertDiv.id = 'tocAlert';
     tocHeader.appendChild(tocAlertDiv);
     tocAlertDiv.innerHTML = `${icons.error}`;
-    
+
     // creates and shows a tip when hovering over the visible alert div
-    //planValidation.createTooltip('At least one section of the Assessment must be selected', tocAlertDiv)
+    planValidation.createTooltip(
+      'At least one section of the Assessment must be selected',
+      tocAlertDiv,
+    );
 
     if (assessmentValidationCheck.hasASectionApplicable === true) {
       tocAlertDiv.style.display = 'none';
     }
-   
+
     const tocMain = document.createElement('div');
     tocMain.classList.add('tableOfContents__main');
 
@@ -280,7 +284,7 @@
     toc.appendChild(tocHeader);
     toc.appendChild(tocMain);
 
-    //planValidation.tocAssessmentCheck(assessmentValidationCheck);
+    planValidation.tocAssessmentCheck(assessmentValidationCheck);
   }
 
   return {

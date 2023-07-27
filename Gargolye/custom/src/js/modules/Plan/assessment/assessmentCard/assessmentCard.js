@@ -126,9 +126,12 @@ const assessmentCard = (function () {
     tocAlertDiv.id = 'tocAlertMobile';
     tableOfContentsBtn.appendChild(tocAlertDiv);
     tocAlertDiv.innerHTML = `${icons.error}`;
-    
+
     // creates and shows a tip when hovering over the visible alert div
-    //planValidation.createTooltip('At least one section of the Assessment must be selected', tocAlertDiv)
+    planValidation.createTooltip(
+      'At least one section of the Assessment must be selected',
+      tocAlertDiv,
+    );
 
     if (assessmentValidationCheck.hasASectionApplicable === true) {
       tocAlertDiv.style.display = 'none';

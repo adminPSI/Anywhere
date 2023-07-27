@@ -1666,9 +1666,12 @@ const servicesSupports = (() => {
         hcbsSelected = undefined;
         saveUpdateProvider = '';
 
-        // let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-        // planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
-        // planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(
+          assessmentPlanValidation,
+          saveUpdateData.assessmentAreaId,
+        );
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
     const cancelBtn = button.build({
@@ -2312,9 +2315,12 @@ const servicesSupports = (() => {
 
           insertAdditionalSupport(saveUpdateData, fromAssessment);
 
-          // let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-          // planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
-          // planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
+          let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+          planValidation.servicesAndSupportsBtnCheck(
+            assessmentPlanValidation,
+            saveUpdateData.assessmentAreaId,
+          );
+          planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         } else {
           updateAdditionalSupport(saveUpdateData);
         }
@@ -2701,9 +2707,12 @@ const servicesSupports = (() => {
           updateProfessionalReferral(saveUpdateData);
         }
 
-        // let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-        // planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
-        // planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(
+          assessmentPlanValidation,
+          saveUpdateData.assessmentAreaId,
+        );
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(professionalReferralPopup);

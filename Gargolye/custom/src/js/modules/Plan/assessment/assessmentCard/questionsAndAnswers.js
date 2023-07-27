@@ -342,7 +342,7 @@
       }
 
       // checks entire assessments for validation errors
-      //planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
       return;
     }
@@ -457,10 +457,10 @@
         }
 
         // checks the status of the buttons and adds/removes error class if needed for specific section
-        //planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
+        planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
 
         // checks entire assessments for validation errors
-        //planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+        planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
       }
       if (type === 'radio') {
         const radioLabelText = e.target.nextSibling.innerHTML;
@@ -478,16 +478,16 @@
             if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
 
-            //if (sectionId === '41') {
-            //  assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-            //    assessmentValidationCheck,
-            //    answer,
-            //    answerId,
-            //  );
+            if (sectionId === '41') {
+              assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
+                assessmentValidationCheck,
+                answer,
+                answerId,
+              );
 
               // checks entire assessments for validation errors
-              //planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
-            //}
+              planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+            }
           }
         } else {
           addAnswer(answerId);
@@ -497,13 +497,13 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          //assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //  assessmentValidationCheck,
-          //  answer,
-          //  answerId,
-          //);
-          //// checks entire assessments for validation errors
-          //planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
+            assessmentValidationCheck,
+            answer,
+            answerId,
+          );
+          // checks entire assessments for validation errors
+          planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
         }
       }
       if (type === 'select-one') {
@@ -519,13 +519,13 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
           }
 
-          //assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //  assessmentValidationCheck,
-          //  answer,
-          //  answerId,
-          //);
-          //// checks entire assessments for validation errors
-          //planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
+            assessmentValidationCheck,
+            answer,
+            answerId,
+          );
+          // checks entire assessments for validation errors
+          planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
         } else {
           addAnswer(answerId);
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
@@ -533,13 +533,13 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          //assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //  assessmentValidationCheck,
-          //  answer,
-          //  answerId,
-          //);
-          //// checks entire assessments for validation errors
-          //planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+          assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
+            assessmentValidationCheck,
+            answer,
+            answerId,
+          );
+          // checks entire assessments for validation errors
+          planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
         }
       }
       if (type === 'date') {
@@ -744,11 +744,11 @@
     }
 
     // Add error class to buttons that are checked and have 0 outcomes attached to them
-    //if (paidSupportChecked && paidSupportCount === 0) {
-    //  paidSupportBtn.classList.add('error');
-    //  assessmentValidationCheck.complete = false;
-    //  planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
-    //}
+    if (paidSupportChecked && paidSupportCount === 0) {
+      paidSupportBtn.classList.add('error');
+      assessmentValidationCheck.complete = false;
+      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+    }
 
     if (additionalSupportChecked && additionalSupportCount === 0) {
       additionalSupportBtn.classList.add('error');
@@ -1504,15 +1504,15 @@
 
     const isChecked = answerText && answerText === '1' ? true : false;
 
-    //const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
+    const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
-    //if (
-    //  questionIdCategory !== 'Variable not found in the object' &&
-    //  questionIdCategory !== 'noSupport'
-    //) {
-    //  assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] =
-    //    isChecked;
-    //}
+    if (
+      questionIdCategory !== 'Variable not found in the object' &&
+      questionIdCategory !== 'noSupport'
+    ) {
+      assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] =
+        isChecked;
+    }
 
     const questionInputMarkup = input.buildNativeCheckbox({
       id: answerId,
@@ -1934,7 +1934,7 @@
     subSectionsWithAttachments = [];
     charLimits = planData.getAllISPcharacterLimts();
     readonly = readOnly;
-    //assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+    assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
 
     if (!$.session.planUpdate) {
       isSortable = false;
