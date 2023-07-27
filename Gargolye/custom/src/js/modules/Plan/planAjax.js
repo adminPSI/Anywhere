@@ -495,27 +495,6 @@ const planAjax = (function () {
       error: function (xhr, status, error) {},
     });
   }
-  function getConsumerPeopleId(consumerId, callback) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getConsumerPeopleId/',
-      data: '{"consumerId":"' + consumerId + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getConsumerPeopleIdResult;
-        return callback(res);
-      },
-    });
-  }
   async function getPlanAttachmentsList(retrieveData) {
     try {
       const data = await $.ajax({
@@ -539,6 +518,51 @@ const planAjax = (function () {
     }
   }
 
+  // OTHER
+  // ----------------------------------
+  function getConsumerPeopleId(consumerId, callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getConsumerPeopleId/',
+      data: '{"consumerId":"' + consumerId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getConsumerPeopleIdResult;
+        return callback(res);
+      },
+    });
+  }
+  async function getConsumerPeopleIdAsync(consumerId, callback) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getConsumerPeopleId/',
+        data: JSON.stringify({ consumerId: consumerId }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.getConsumerPeopleIdResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
   async function updatePlanSectionApplicable(retrieveData) {
     // string token, long planId, long sectionId, string applicable)
     try {
@@ -563,7 +587,6 @@ const planAjax = (function () {
       console.log(error.responseText);
     }
   }
-
   function checkForSalesForce() {
     $.ajax({
       type: 'POST',
@@ -591,6 +614,28 @@ const planAjax = (function () {
       },
     });
   }
+  async function runReOrderSQL() {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/runReOrderSQL/',
+        data: JSON.stringify({}),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.runReOrderSQLResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
 
   return {
     getConsumerPlans,
@@ -616,5 +661,7 @@ const planAjax = (function () {
     uploadPlanToDODD,
     checkForSalesForce,
     getConsumerPeopleId,
+    getConsumerPeopleIdAsync,
+    runReOrderSQL,
   };
 })();

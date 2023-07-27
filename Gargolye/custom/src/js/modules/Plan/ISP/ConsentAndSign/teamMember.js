@@ -916,7 +916,7 @@ const csTeamMember = (() => {
     }
 
     // inserting/removing the conditional fields based on teamMemberDropdown selection
-    function insertingConditionalFieldsintoPopup() {
+    async function insertingConditionalFieldsintoPopup() {
       if (selectedMemberData.teamMember === '') {
         // team member has NOT been selected
 
@@ -951,7 +951,7 @@ const csTeamMember = (() => {
           selectedMemberData.teamMember,
         );
 
-        insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian);
+        await insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian);
       } //end if -- team member has been selected
     } // end if -- function insertingConditionalFieldsintoPopup()
 
@@ -997,12 +997,12 @@ const csTeamMember = (() => {
       } // end if -- isSelectedTeamMemberConsentable
     }
 
-    function insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian) {
+    async function insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian) {
       if (isSelectedTeamMemberGuardian && $.session.areInSalesForce === true) {
         // show guardan DDL only if it's not there
         if (!showStateGuardians) {
           showStateGuardians = true;
-          populateGuardiansDropDown();
+          await populateGuardiansDropDown();
           teamMemberPopup.insertBefore(stateGuardianDropdown, nameInput);
           if (selectedStateGuardian === '') stateGuardianDropdown.classList.add('error');
         }

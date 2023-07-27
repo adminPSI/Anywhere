@@ -36,7 +36,28 @@ const assessmentAjax = (function () {
     });
   }
 
-  async function sendSelectedAttachmentsToDODD(retrieveData) {
+  async function getSentToONETDate(retrieveData) {
+    //token, assessmentId
+    const data = await $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getSentToONETDate/',
+      data: JSON.stringify(retrieveData),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+    });
+
+    return data.getSentToONETDateResult;
+  }
+
+  async function transeferPlanReportToONET(retrieveData) {
      //token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds
      try {
       const data = await $.ajax({
@@ -49,19 +70,46 @@ const assessmentAjax = (function () {
              $.webServer.port +
              '/' +
              $.webServer.serviceName +
-             '/sendSelectedAttachmentsToDODD/',
+             '/transeferPlanReportToONET/',
          data: JSON.stringify(retrieveData),
          contentType: 'application/json; charset=utf-8',
          dataType: 'json',
      });
 
-     return data.sendSelectedAttachmentsToDODDResult;
+     return data.transeferPlanReportToONETResult;
 
     } catch (error) {
       console.log(error);
+      return error.text;
     }
   }
-  
+
+  async function sendSelectedAttachmentsToDODD(retrieveData) {
+    //token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds
+    try {
+     const data = await $.ajax({
+        type: 'POST',
+        url:
+            $.webServer.protocol +
+            '://' +
+            $.webServer.address +
+            ':' +
+            $.webServer.port +
+            '/' +
+            $.webServer.serviceName +
+            '/sendSelectedAttachmentsToDODD/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+    });
+
+    return data.sendSelectedAttachmentsToDODDResult;
+
+   } catch (error) {
+     console.log(error);
+   }
+ }
+
   function getPlanAssessmentReportWithAttachments(retrieveData, callback) {
     var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/addSelectedAttachmentsToReport/`;
     var successFunction = function (resp) {
@@ -93,7 +141,10 @@ const assessmentAjax = (function () {
     versionIDInput.id = 'versionID';
     var extraSpaceInput = document.createElement('input');
     extraSpaceInput.setAttribute('name', 'extraSpace');
-    extraSpaceInput.setAttribute('value', retrieveData.extraSpace);      
+      extraSpaceInput.setAttribute('value', retrieveData.extraSpace);  
+      var toONETInput = document.createElement('input');
+      toONETInput.setAttribute('name', 'toONET');
+      toONETInput.setAttribute('value', retrieveData.toONET); 
       var ispInput = document.createElement('input');
       ispInput.setAttribute('name', 'isp');
       ispInput.setAttribute('value', retrieveData.isp);
@@ -128,6 +179,7 @@ const assessmentAjax = (function () {
     form.appendChild(assessmentIDInput);
     form.appendChild(versionIDInput);
     form.appendChild(extraSpaceInput);
+    form.appendChild(toONETInput);
     form.appendChild(ispInput);
     form.appendChild(oneSpanInput);
     form.appendChild(signatureOnlyInput);
@@ -327,5 +379,7 @@ const assessmentAjax = (function () {
     updateAssessmentAnswerRowOrder,
     getPlanAssessmentReportWithAttachments,
     sendSelectedAttachmentsToDODD,
+    transeferPlanReportToONET,
+    getSentToONETDate
   };
 })();

@@ -1655,6 +1655,12 @@ const dayServices = (function () {
         multiSelectAllNoneArea.appendChild(multiSelectNoneBtn);
         multiSelectAllNoneArea.classList.add('hidden');
 
+        let filterValues = {
+            dayServiceLocation: null,
+            dayServiceServiceDate: null
+        };
+        reportsBtn = generateReports.createMainReportButton([{ text: 'Individual Day Service Activity Report', callback: generateReports.passFilterValuesForReport('Individual Day Service Activity Report', filterValues) }])
+
         batchedMessageDisplay.innerHTML = 'The selected location is batched for this date.';
         batchedMessageDisplay.classList.add('batchedMessageDisplay');
         batchedMessageDisplay.classList.add('hidden');
@@ -1663,6 +1669,7 @@ const dayServices = (function () {
         btnWrap.classList.add('btnWrap');
         btnWrap.appendChild(filterBtn);
         if ($.session.DayServiceUpdate) btnWrap.appendChild(mulitSelectBtn); //No need to multi select for view only
+        btnWrap.appendChild(reportsBtn);
         DOM.ACTIONCENTER.appendChild(btnWrap);
         if ($.session.DayServiceUpdate) DOM.ACTIONCENTER.appendChild(multiSelectAllNoneArea); //no need to multi select for view only
         DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);

@@ -395,6 +395,16 @@ const planSummary = (function () {
       forceCharLimit: true,
       callback: e => {
         importantTo = e.target.value;
+
+        if (importantTo === '' && importantFor === '') {
+          importantToTextarea.classList.add('error');
+          importantForTextarea.classList.add('error');
+        } else {
+          importantToTextarea.classList.remove('error');
+          importantForTextarea.classList.remove('error');
+        }
+
+        toggleImportantDoneBtn();
       },
     });
     importantToTextarea.classList.add('importantTo');
@@ -409,6 +419,16 @@ const planSummary = (function () {
       forceCharLimit: true,
       callback: e => {
         importantFor = e.target.value;
+
+        if (importantTo === '' && importantFor === '') {
+          importantToTextarea.classList.add('error');
+          importantForTextarea.classList.add('error');
+        } else {
+          importantToTextarea.classList.remove('error');
+          importantForTextarea.classList.remove('error');
+        }
+
+        toggleImportantDoneBtn();
       },
     });
     importantForTextarea.classList.add('importantFor');
@@ -421,8 +441,26 @@ const planSummary = (function () {
       callback: async () => {
         doneBtn.classList.add('disabled');
         let questionSetId = questionSetIdMap['importantTableData'][sectionTitle];
+        let upateSingleEmptyRowInsteadOfAddingNew = false;
 
-        if (isNew) {
+        const tableDataKeys = Object.keys(summaryData.importantTableData[sectionTitle]);
+        if (isNew && tableDataKeys.length === 1) {
+          const rowData = summaryData.importantTableData[sectionTitle]['1'];
+          const impToAnswer = rowData['importantTo'].answer;
+          const impForAnswer = rowData['importantFor'].answer;
+
+          if (!impToAnswer && !impForAnswer) {
+            upateSingleEmptyRowInsteadOfAddingNew = true;
+
+            importantToAnswerId = rowData['importantTo'].answerId;
+            importantForAnswerId = rowData['importantFor'].answerId;
+            rowData['importantTo'].answer = importantTo;
+            rowData['importantFor'].answer = importantFor;
+            row = 1;
+          }
+        }
+
+        if (isNew && !upateSingleEmptyRowInsteadOfAddingNew) {
           const secTitle = sectionTitle.replaceAll(' ', '');
           let rowOrder = table.getRowCount(`planImportantTable${secTitle}`);
           const questionIds = questionIdMap['importantTableData'][sectionTitle];
@@ -546,6 +584,11 @@ const planSummary = (function () {
     // init required fields
     if (sectionTitle === '' || sectionTitle === '%') {
       assessmentAreaDropdown.classList.add('error');
+      hasInitialErros = true;
+    }
+    if (importantTo === '' && importantFor === '') {
+      importantToTextarea.classList.add('error');
+      importantForTextarea.classList.add('error');
       hasInitialErros = true;
     }
     if (hasInitialErros) {
@@ -863,8 +906,24 @@ const planSummary = (function () {
       callback: async () => {
         doneBtn.classList.add('disabled');
         let questionSetId = questionSetIdMap['skillsTableData'][sectionTitle];
+        let upateSingleEmptyRowInsteadOfAddingNew = false;
 
-        if (isNew) {
+        const tableDataKeys = Object.keys(summaryData.skillsTableData[sectionTitle]);
+        if (isNew && tableDataKeys.length === 1) {
+          const rowData = summaryData.skillsTableData[sectionTitle]['1'];
+          const skillAbilityAnswer = rowData['skillAbility'].answer;
+
+          if (!skillAbilityAnswer) {
+            upateSingleEmptyRowInsteadOfAddingNew = true;
+
+            skillAbilityId = rowData['skillAbility'].answerId;
+            rowData['skillAbility'].answer = skillAbility;
+
+            row = 1;
+          }
+        }
+
+        if (isNew && !upateSingleEmptyRowInsteadOfAddingNew) {
           const secTitle = sectionTitle.replaceAll(' ', '');
           let rowOrder = table.getRowCount(`planSkillsTable${secTitle}`);
           const questionIds = questionIdMap['skillsTableData'][sectionTitle];
@@ -1313,21 +1372,23 @@ const planSummary = (function () {
     const questionSetId = data.questionSetId;
     const rowId = `planRisksTable${secTitle}${row}`;
 
-    if (oldData.whoResponsible.answer !== whoResponsible) {
-      // remove old
-      if (oldData.whoResponsible.answer !== '') {
-        if (selectedVendors[oldData.whoResponsible.answer] === 1) {
-          delete selectedVendors[oldData.whoResponsible.answer];
-        } else {
-          selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
+    if (Object.keys(oldData).length) {
+      if (oldData.whoResponsible.answer !== whoResponsible) {
+        // remove old
+        if (oldData.whoResponsible.answer !== '') {
+          if (selectedVendors[oldData.whoResponsible.answer] === 1) {
+            delete selectedVendors[oldData.whoResponsible.answer];
+          } else {
+            selectedVendors[oldData.whoResponsible.answer] = selectedVendors[whoResponsible] - 1;
+          }
         }
-      }
-      // add new
-      if (whoResponsible) {
-        if (selectedVendors[whoResponsible]) {
-          selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
-        } else {
-          selectedVendors[whoResponsible] = 1;
+        // add new
+        if (whoResponsible) {
+          if (selectedVendors[whoResponsible]) {
+            selectedVendors[whoResponsible] = selectedVendors[whoResponsible] + 1;
+          } else {
+            selectedVendors[whoResponsible] = 1;
+          }
         }
       }
     }
@@ -1545,8 +1606,34 @@ const planSummary = (function () {
       callback: async () => {
         doneBtn.classList.add('disabled');
         let questionSetId = questionSetIdMap['risksTableData'][sectionTitle];
+        let upateSingleEmptyRowInsteadOfAddingNew = false;
 
-        if (isNew) {
+        const tableDataKeys = Object.keys(summaryData.risksTableData[sectionTitle]);
+        if (isNew && tableDataKeys.length === 1) {
+          const rowData = summaryData.risksTableData[sectionTitle]['1'];
+          const riskAnswer = rowData['riskSupervision'].answer;
+          const whatIsRiskAnswer = rowData['whatIsRisk'].answer;
+          const supportAnswer = rowData['whatSupportLooksLike'].answer;
+          const whoResponsibleAnswer = rowData['whoResponsible'].answer;
+
+          if (!riskAnswer && !whatIsRiskAnswer && !supportAnswer && !whoResponsibleAnswer) {
+            upateSingleEmptyRowInsteadOfAddingNew = true;
+
+            riskSupervisionId = rowData['riskSupervision'].answerId;
+            whatIsRiskId = rowData['whatIsRisk'].answerId;
+            whatSupportLooksLikeId = rowData['whatSupportLooksLike'].answerId;
+            whoResponsibleId = rowData['whoResponsible'].answerId;
+
+            rowData['riskSupervision'].answer = riskSupervision;
+            rowData['whatIsRisk'].answer = whatIsRisk;
+            rowData['whatSupportLooksLike'].answer = whatSupportLooksLike;
+            rowData['whoResponsible'].answer = whoResponsible;
+
+            row = 1;
+          }
+        }
+
+        if (isNew && !upateSingleEmptyRowInsteadOfAddingNew) {
           const secTitle = sectionTitle.replaceAll(' ', '');
           let rowOrder = table.getRowCount(`planRisksTable${secTitle}`);
           const questionIds = questionIdMap['risksTableData'][sectionTitle];

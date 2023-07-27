@@ -561,21 +561,10 @@
     }
 }
 
-[data-active-module="resetPassword"],
-[data-active-module="Employment"] {
+[data-active-module="resetPassword"] {
 
     .dropdown {
         margin: 0px 5px 20px;
-    }
-
-    .employmentDTWrap {
-        display: flex;
-        justify-content: space-between;
-    }
-
-
-    .employmentMsgWrap {
-        display: flex;
     }
 
     h3 {
@@ -613,6 +602,51 @@
 
         .btnWrap {
             flex-flow: row nowrap;
+        }
+    }
+}
+
+[data-active-module="Employment"] {
+
+    .dropdown {
+        margin: 0px 5px 20px;
+    }
+
+    .employmentDTWrap {
+        display: flex;
+        justify-content: space-between;
+
+        .checkbox-mtd > span:after {
+            top: 24px !important;
+        }
+    }
+
+
+    .employmentMsgWrap {
+        display: flex;
+
+        .checkbox-mtd > span:after {
+            top: 24px !important;
+        }
+    }
+
+    h3 {
+        font-size: 1rem;
+    }
+
+    #singleEntryAdminReviewTable {
+
+        .table__row {
+            > div {
+                margin-top: 10px;
+            }
+        }
+
+        .endIcon {
+            max-width: 200px !important;
+            cursor: pointer;
+            margin-right: 100px !important;
+            margin-bottom: -20px;
         }
     }
 }

@@ -14,6 +14,8 @@ const csSignature = (() => {
   let dissentHowToAddress;
   let standardQuestions; // these are all the radio questions
   let sigPad;
+  let sigBody;
+  let sigCanvas;
   let saveBtn;
   // other
   let allowSignClear;
@@ -171,6 +173,7 @@ const csSignature = (() => {
   //*------------------------------------------------------
   //* MARKUP
   //*------------------------------------------------------
+
   function showClearConfirmationPopup() {
     const confirmPop = POPUP.build({
       id: 'clearSignConfirmPopup',
@@ -367,7 +370,7 @@ const csSignature = (() => {
     const sigDiv = document.createElement('div');
     sigDiv.classList.add('signature-pad');
 
-    const sigBody = document.createElement('div');
+    sigBody = document.createElement('div');
     sigBody.classList.add('signature-pad--body');
     sigDiv.appendChild(sigBody);
 
@@ -376,10 +379,12 @@ const csSignature = (() => {
     }
 
     if (!isSigned) {
-      const sigCanvas = document.createElement('canvas');
-      sigCanvas.classList.add('evvCanvas');
+      sigCanvas = document.createElement('canvas');
+      sigCanvas.classList.add('ispCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
+
+      sigCanvas.width = sigBody.width;
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;
@@ -813,6 +818,10 @@ const csSignature = (() => {
     checkSignautrePopupForErrors();
     if (allowSignClear && (isSigned || readOnly)) {
       saveBtn.classList.add('disabled');
+    }
+
+    if (sigCanvas) {
+      sigCanvas.width = sigBody.offsetWidth;
     }
   }
 

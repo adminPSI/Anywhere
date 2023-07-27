@@ -219,12 +219,37 @@
   max-height: 700px;
   max-width: 600px;
 
+  .signature-pad {
+    margin: 0 0 15px;
+  
+    &--actions {
+      display: flex;
+      button {
+        margin: 0;
+  
+        &:first-child {
+          margin-right: 10px;
+        }
+      }
+    }
+  
+    img {
+      outline: 2px solid $font-dark;
+      width: 100%;
+    }
+  
+    .ispCanvas {
+      outline: 2px solid $font-dark;
+      //width: 100%;
+    }
+  }
+
   .popup__header {
     margin: 0 0 14px;
   }
   .signature-pad--body {
     &.disabled {
-      .evvCanvas {
+      .ispCanvas {
         pointer-events: none;
         opacity: 0.5;
       }

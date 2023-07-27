@@ -294,11 +294,22 @@ var notesOverview = (function () {
       text: 'Reports',
       style: 'secondary',
       type: 'contained',
+      modal: true,
       icon: 'add',
       callback: function () {
         showCNReportsPopup();
       },
     });
+
+  let reportRUnning = false;
+  let filterValues = {};
+  cnADVReportBtn = generateReports.createMainReportButton(reportRUnning, null, [
+    {
+      text: 'Detailed Case Notes By Biller',
+      callback: generateReports.passFilterValuesForReport(filterValues),
+    },
+  ]);
+
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('cnbtnWrap');
     btnWrap.appendChild(filterBtn);
@@ -306,6 +317,7 @@ var notesOverview = (function () {
     //Can create new notes or update/delete notes.
     if ($.session.CaseNotesUpdate) btnWrap.appendChild(newNoteBtn);
     if ($.session.applicationName === 'Gatekeeper') btnWrap.appendChild(cnReportBtn);
+    if ($.session.applicationName === 'Advisor') btnWrap.appendChild(cnADVReportBtn);
     DOM.ACTIONCENTER.appendChild(btnWrap);
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     currentFilterDisplay.classList.add('filteredByData');

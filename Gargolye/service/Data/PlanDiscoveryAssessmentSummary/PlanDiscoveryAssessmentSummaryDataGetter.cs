@@ -51,7 +51,7 @@ namespace Anywhere.service.Data.PlanDiscoveryAssessmentSummary
             }
         }
 
-        public string insertAssessmentSummaryAnswer(long anywAssessmentId, long questionId, int answerRow, string answer, string userId)
+        public string insertAssessmentSummaryAnswer(long anywAssessmentId, long questionId, int answerRow, string answer, string userId, string skipped)
         {
             logger.debug("getAssessmentSummaryQuestions ");
             List<string> list = new List<string>();
@@ -60,6 +60,7 @@ namespace Anywhere.service.Data.PlanDiscoveryAssessmentSummary
             list.Add(answerRow.ToString());
             list.Add(answer);
             list.Add(userId);
+            list.Add(skipped);
             string text = "CALL DBA.ANYW_ISP_InsertAssessmentSummaryAnswer(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

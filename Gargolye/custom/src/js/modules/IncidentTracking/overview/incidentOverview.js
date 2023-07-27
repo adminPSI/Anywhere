@@ -9,10 +9,12 @@ var incidentOverview = (function () {
   var applyFilterBtn;
   var alphaDropdown;
   var locationDropdown;
+  var consumerDropdown;
   var betaDropdown;
   var fromDateInput;
   var toDateInput;
   var categoryDropdown;
+  let consumerDropdownData;
   // filter values for remembering
   var filterData = {
     alpha: null,
@@ -21,6 +23,8 @@ var incidentOverview = (function () {
     betaName: null,
     location: null,
     locationName: null,
+    consumer: null,
+    consumerName: null,
     category: null,
     categoryName: null,
     fromDate: null,
@@ -58,6 +62,8 @@ var incidentOverview = (function () {
       filterData.alphaName = $.session.LName + ', ' + $.session.Name;
     if (filterData.locationName === null || filterData.locationName === 'All')
       filterData.locationName = 'All Locations';
+      if (filterData.consumerName === null || filterData.consumerName === 'All')
+      filterData.consumerName = 'All Consumers';
     if (filterData.betaName === null || filterData.betaName === 'All')
       filterData.betaName = 'All Employees';
     if (filterData.categoryName === null || filterData.categoryName === 'All')
@@ -65,6 +71,7 @@ var incidentOverview = (function () {
     selectedFilters.innerHTML = `
       <p><span>Supervisor:</span> ${filterData.alphaName}</p>
       <p><span>Location:</span> ${filterData.locationName}</p>
+      <p><span>Consumer:</span> ${filterData.consumerName}</p>
       <p><span>Employee:</span> ${filterData.betaName}</p>
       <p><span>Category/Subcategory:</span> ${filterData.categoryName}</p>
       <p><span>From Date:</span> ${UTIL.formatDateFromIso(filterData.fromDate)}</p>
@@ -78,6 +85,8 @@ var incidentOverview = (function () {
     filterData.betaName = data.betaName ? data.betaName : filterData.betaName;
     filterData.location = data.locationId ? data.locationId : filterData.location;
     filterData.locationName = data.locationName ? data.locationName : filterData.locationName;
+    filterData.consumer = data.consumerId ? data.consumerId : filterData.consumer;
+    filterData.consumerName = data.consumerName ? data.consumerName : filterData.consumerName;
     filterData.category = data.categoryId ? data.categoryId : filterData.category;
     filterData.categoryName = data.categoryName ? data.categoryName : filterData.categoryName;
     filterData.fromDate = data.fromDate ? data.fromDate : filterData.fromDate;
@@ -85,6 +94,8 @@ var incidentOverview = (function () {
   }
   function populateFilterDropdowns() {
     incidentTrackingAjax.getReviewPageLocations(populateLocationsDropdown);
+    //incidentTrackingAjax.getReviewPageLocations(populateConsumersDropdown);
+    getConsumerDropdownData();
     incidentTrackingAjax.getIncidentCategories(populateCategoriesDropdown);
     incidentTrackingAjax.getITReviewPageEmployeeListAndSubList(
       $.session.PeopleId,
@@ -120,6 +131,11 @@ var incidentOverview = (function () {
       label: 'Location',
       style: 'secondary',
     });
+    consumerDropdown = dropdown.build({
+      dropdownId: 'consumerDropdown',
+      label: 'Consumer',
+      style: 'secondary',
+    });
     betaDropdown = dropdown.build({
       dropdownId: 'locationDropdown',
       label: 'Employee',
@@ -151,6 +167,7 @@ var incidentOverview = (function () {
     // Build Popup
     filterPopup.appendChild(alphaDropdown);
     filterPopup.appendChild(locationDropdown);
+    filterPopup.appendChild(consumerDropdown);
     filterPopup.appendChild(betaDropdown);
     filterPopup.appendChild(categoryDropdown);
     filterPopup.appendChild(fromDateInput);
@@ -168,6 +185,9 @@ var incidentOverview = (function () {
     filterDropdownEventSetup();
   }
   function setupFiltering() {
+    const filterAndReportsBtnsWrap = document.createElement('div');
+    filterAndReportsBtnsWrap.classList.add('filterAndReportsBtnsWrap')
+
     filterBtn = button.build({
       text: 'Filter',
       icon: 'filter',
@@ -177,7 +197,12 @@ var incidentOverview = (function () {
       callback: showFilterPopup,
     });
 
-    DOM.ACTIONCENTER.appendChild(filterBtn);
+        let filterValues = {};
+        reportsBtn = generateReports.createMainReportButton([{ text: 'Individual Reporting Log', callback: generateReports.passFilterValuesForReport('Individual Reporting Log', filterValues) }])
+
+        DOM.ACTIONCENTER.appendChild(filterAndReportsBtnsWrap);
+        filterAndReportsBtnsWrap.appendChild(filterBtn);
+        filterAndReportsBtnsWrap.appendChild(reportsBtn);
 
     buildFilterPopup();
   }
@@ -188,6 +213,8 @@ var incidentOverview = (function () {
     var tmpBetaName;
     var tmpLocationId;
     var tmpLocationName;
+    var tmpConsumerId;
+    var tmpConsumerName;
     var tmpCategoryId;
     var tmpCategoryName;
     var tmpToDate;
@@ -199,6 +226,7 @@ var incidentOverview = (function () {
       // update retrieveData obj
       retrieveData.supervisorId = selectedAlphaId;
       retrieveData.locationId = '%';
+      retrieveData.consumerId = '%';
       retrieveData.employeeId = '%';
       retrieveData.subcategoryId = '%';
       retrieveData.viewCaseLoad = $.session.incidentTrackingViewCaseLoad;
@@ -229,6 +257,13 @@ var incidentOverview = (function () {
       // temp cache data
       tmpLocationId = selectedOption.value;
       tmpLocationName = selectedOption.innerHTML;
+    });
+    consumerDropdown.addEventListener('change', event => {
+      var selectedOption = event.target.options[event.target.selectedIndex];
+      retrieveData.consumerId = selectedOption.value;
+      // temp cache data
+      tmpConsumerId = selectedOption.value;
+      tmpConsumerName = selectedOption.innerHTML;
     });
     categoryDropdown.addEventListener('change', event => {
       var selectedOption = event.target.options[event.target.selectedIndex];
@@ -275,6 +310,8 @@ var incidentOverview = (function () {
         betaName: tmpBetaName,
         locationId: tmpLocationId,
         locationName: tmpLocationName,
+        consumerId: tmpConsumerId,
+        consumerName: tmpConsumerName,
         categoryId: tmpCategoryId,
         categoryName: tmpCategoryName,
         toDate: tmpToDate,
@@ -425,6 +462,34 @@ var incidentOverview = (function () {
       filterData.locationName = 'All Locations';
     }
   }
+
+  function populateConsumersDropdown() {
+    populateDropdownData = consumerDropdownData.map(el => {
+      return {
+        text: `${el.LN}, ${el.FN}`,
+        value: el.id,
+      };
+    });
+    populateDropdownData.unshift({ text: 'All', value: '%' });
+
+    if (filterData.consumer) {
+      dropdown.populate(consumerDropdown, populateDropdownData, filterData.consumer);
+    } else {
+      dropdown.populate(consumerDropdown, populateDropdownData);
+      filterData.consumerName = 'All Consumers';
+    }
+  }
+
+  function getConsumerDropdownData() {
+    return new Promise((resolve, reject) => {
+      caseNotesAjax.getConsumersForCNFilter(res => {
+        consumerDropdownData = res;
+        populateConsumersDropdown();
+        resolve('success');
+      });
+    });
+  }
+
   function populateCategoriesDropdown(res) {
     var data = res.map(r => {
       var value = r.subcategoryId;

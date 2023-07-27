@@ -80,6 +80,10 @@ namespace Anywhere.service.Data
                 public string createdOn { get; set; }
                 public string reviewDate { get; set; }
                 public string active { get; set; }//
+                public string sentToDODD { get; set; }
+                public string userSentDODD { get; set; }
+                public string dateSentDODD { get; set; }
+
 
             }
 
@@ -687,6 +691,7 @@ namespace Anywhere.service.Data
                     public string answerId { get; set; }
                     public string answerRow { get; set; }
                     public string answerText { get; set; }
+                    public string skipped { get; set; }
                 }
 
                 public class ConsumerRelationships
@@ -790,7 +795,7 @@ namespace Anywhere.service.Data
                                     }
 
                                     // insert answer record
-                                    adg.insertConsumerAssessmentAnswer(consumerPlanId, question.questionId, i.ToString(), answer, userId, dbTransaction);
+                                    adg.insertConsumerAssessmentAnswer(consumerPlanId, question.questionId, i.ToString(), answer, userId, "N", dbTransaction);
                                 }
                             }
                         }
@@ -829,7 +834,7 @@ namespace Anywhere.service.Data
                                     }
 
                                     // insert answer record
-                                    adg.insertConsumerAssessmentAnswer(consumerPlanId, question.questionId, i.ToString(), answer, userId, dbTransaction);
+                                    adg.insertConsumerAssessmentAnswer(consumerPlanId, question.questionId, i.ToString(), answer, userId, "N", dbTransaction);
                                 }
                             }
                         }
@@ -889,7 +894,7 @@ namespace Anywhere.service.Data
                                 string answerText = getDefaultAnswer(question.questionDefaultAnswer, null, rowNumber);
 
                                 // insert answer row
-                                string answerId = adg.insertConsumerAssessmentAnswer(consumerPlanId, question.questionId, rowNumber.ToString(), answerText, userId, transaction);
+                                string answerId = adg.insertConsumerAssessmentAnswer(consumerPlanId, question.questionId, rowNumber.ToString(), answerText, userId, "N", transaction);
 
                                 if (answerId == null) throw new Exception("A problem occured while trying to insert an answer row");
 

@@ -181,7 +181,7 @@
 
   //Get review table data
   function getITReviewTableData(retrieveData, callback) {
-    //retrieveData is = token, userId, locationId, employeeId, subcategoryId, fromDate, toDate
+    //retrieveData is = token, userId, locationId, consumerId, employeeId, subcategoryId, fromDate, toDate
     $.ajax({
       type: 'POST',
       url:

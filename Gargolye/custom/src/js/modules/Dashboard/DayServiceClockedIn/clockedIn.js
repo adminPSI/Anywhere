@@ -1,4 +1,4 @@
-﻿var clockedInWidget = (function() {
+﻿var clockedInWidget = (function () {
   // DATA
   //-----------------------
   var locations;
@@ -6,19 +6,19 @@
   var clockedInStaff;
   // DOM
   //-----------------------
-	var widget;
+  var widget;
   var widgetBody;
   var asOfTime;
   var widgetTabs;
-	var filterPopup;
-	var locationDropdown;
-	var applyFiltersBtn;
+  var filterPopup;
+  var locationDropdown;
+  var applyFiltersBtn;
   var cancelFilterBtn;
   // VALUES
   //-----------------------
   var locationId;
   var locationName;
-  
+
   // Filtering
   function populateLocations() {
     var data = locations.map(r => {
@@ -32,7 +32,7 @@
     // if (!$.session.defaultDayServiceLocation) $.session.defaultDayServiceLocation = data[0].value;
     if (!locationId) locationId = data[0].value;
     if (!locationName) locationName = data[0].text;
-    
+
     dropdown.populate('clockedInLocations', data, locationId);
   }
   function buildFilterPopup() {
@@ -55,7 +55,7 @@
     cancelFilterBtn = button.build({
       text: 'Cancel',
       style: 'secondary',
-      type: 'outlined'
+      type: 'outlined',
     });
 
     var btnWrap = document.createElement('div');
@@ -84,34 +84,36 @@
   function populateCurrentClockInTime() {
     var currentTime = UTIL.getCurrentTime();
     currentTime = UTIL.convertFromMilitary(currentTime);
-    
+
     asOfTime = document.createElement('p');
     asOfTime.classList.add('bold', 'clockedInTime');
     asOfTime.innerHTML = `Clocked In As Of ${currentTime}`;
 
     widgetBody.appendChild(asOfTime);
   }
-	function populateConsumersNames() {
-		var consumers = {};
-		var totalConsumers = 0;
+  function populateConsumersNames() {
+    var consumers = {};
+    var totalConsumers = 0;
 
-		clockedInConsumers.forEach(function(consumer) {
-			var fullName = `${consumer.clockedinconsumername.split(' ')[1]}, ${consumer.clockedinconsumername.split(' ')[0]}`;
-			if (!consumers[fullName]) consumers[fullName] = 0;
-			consumers[fullName]++;
-			totalConsumers++;
+    clockedInConsumers.forEach(function (consumer) {
+      var fullName = `${consumer.clockedinconsumername.split(' ')[1]}, ${
+        consumer.clockedinconsumername.split(' ')[0]
+      }`;
+      if (!consumers[fullName]) consumers[fullName] = 0;
+      consumers[fullName]++;
+      totalConsumers++;
     });
-    
-		var consumersSorted = {};
-		Object.keys(consumers)
-			.sort()
-			.forEach(function(key) {
-				consumersSorted[key] = consumers[key];
-			});
+
+    var consumersSorted = {};
+    Object.keys(consumers)
+      .sort()
+      .forEach(function (key) {
+        consumersSorted[key] = consumers[key];
+      });
 
     // Tab Section
     var section = document.querySelector('.consumers-section');
-    if (!section) return; 
+    if (!section) return;
     section.innerHTML = '';
 
     var consumerCount = document.createElement('div');
@@ -121,53 +123,55 @@
     var list = document.createElement('ul');
     list.classList.add('clockedInList');
 
-		var names = Object.keys(consumersSorted);
-		names.forEach(function(name) {
-			var li = document.createElement('li');
-			li.innerHTML = name;
-			list.appendChild(li);
+    var names = Object.keys(consumersSorted);
+    names.forEach(function (name) {
+      var li = document.createElement('li');
+      li.innerHTML = name;
+      list.appendChild(li);
     });
-    
+
     section.appendChild(consumerCount);
     section.appendChild(list);
-	}
-	function populateStaffNames() {
-		var consumers = {};
-		var totalEmployees = 0;
+  }
+  function populateStaffNames() {
+    var consumers = {};
+    var totalEmployees = 0;
 
-		clockedInStaff.forEach(function(consumer) {
-			var fullName = `${consumer.staffclockedinname.split(' ')[1]}, ${consumer.staffclockedinname.split(' ')[0]}`;
-			if (!consumers[fullName]) consumers[fullName] = 0;
-			consumers[fullName]++;
-			totalEmployees++;
+    clockedInStaff.forEach(function (consumer) {
+      var fullName = `${consumer.staffclockedinname.split(' ')[1]}, ${
+        consumer.staffclockedinname.split(' ')[0]
+      }`;
+      if (!consumers[fullName]) consumers[fullName] = 0;
+      consumers[fullName]++;
+      totalEmployees++;
     });
-    
-		var consumersSorted = {};
-		Object.keys(consumers)
-			.sort()
-			.forEach(function(key) {
-				consumersSorted[key] = consumers[key];
+
+    var consumersSorted = {};
+    Object.keys(consumers)
+      .sort()
+      .forEach(function (key) {
+        consumersSorted[key] = consumers[key];
       });
 
     // Tab Section
     var section = document.querySelector('.employees-section');
-    if (!section) return; 
+    if (!section) return;
     section.innerHTML = '';
 
     var employeeCount = document.createElement('div');
     employeeCount.classList.add('clockedInCount');
     employeeCount.innerHTML = `Total - ${totalEmployees}`;
 
-		var list = document.createElement('ul');
+    var list = document.createElement('ul');
     list.classList.add('clockedInList');
 
-		var names = Object.keys(consumersSorted);
-		names.forEach(function(name) {
-			var li = document.createElement('LI');
-			li.innerHTML = name;
-			list.appendChild(li);
-		});
-		
+    var names = Object.keys(consumersSorted);
+    names.forEach(function (name) {
+      var li = document.createElement('LI');
+      li.innerHTML = name;
+      list.appendChild(li);
+    });
+
     section.appendChild(employeeCount);
     section.appendChild(list);
   }
@@ -185,59 +189,71 @@
     displayFilteredBy();
   }
 
-	function eventSetup() {
+  function eventSetup() {
     var oldLocationId;
     var oldLocationName;
 
-		locationDropdown.addEventListener('change', event => {
-			var selectedOption = event.target.options[event.target.selectedIndex];
+    locationDropdown.addEventListener('change', event => {
+      var selectedOption = event.target.options[event.target.selectedIndex];
       oldLocationId = locationId;
       oldLocationName = locationName;
       locationId = selectedOption.value;
       locationName = selectedOption.innerHTML;
-		});
-		applyFiltersBtn.addEventListener('click', event => {
-			filterPopup.classList.remove('visible');
-			overlay.hide();
-			bodyScrollLock.enableBodyScroll(filterPopup);
+    });
+    applyFiltersBtn.addEventListener('click', event => {
+      filterPopup.classList.remove('visible');
+      overlay.hide();
+      bodyScrollLock.enableBodyScroll(filterPopup);
 
-      clockedInWidgetAjax.getClockedInConsumerNamesDayServicesAjax(locationId, function(consumerNames) {
-        clockedInConsumers = consumerNames;
-        clockedInWidgetAjax.getClockedInStaffNamesDayServicesAjax(locationId, function(staffNames) {
-          clockedInStaff = staffNames;
-          populateConsumersNames();
-          populateStaffNames();
-          displayFilteredBy();
-        });
-      });
-		});
-		cancelFilterBtn.addEventListener('click', event => {
-			filterPopup.classList.remove('visible');
-			overlay.hide();
-			bodyScrollLock.enableBodyScroll(filterPopup);
+      clockedInWidgetAjax.getClockedInConsumerNamesDayServicesAjax(
+        locationId,
+        function (consumerNames) {
+          clockedInConsumers = consumerNames;
+          clockedInWidgetAjax.getClockedInStaffNamesDayServicesAjax(
+            locationId,
+            function (staffNames) {
+              clockedInStaff = staffNames;
+              populateConsumersNames();
+              populateStaffNames();
+              displayFilteredBy();
+            },
+          );
+        },
+      );
+    });
+    cancelFilterBtn.addEventListener('click', event => {
+      filterPopup.classList.remove('visible');
+      overlay.hide();
+      bodyScrollLock.enableBodyScroll(filterPopup);
 
       locationId = oldLocationId;
       locationName = oldLocationName;
-		});
+    });
   }
   function getInitialData(callback) {
-    clockedInWidgetAjax.getLocationsForDashboardDayServices(function(results) {
+    clockedInWidgetAjax.getLocationsForDashboardDayServices(function (results) {
       locations = results;
 
-      clockedInWidgetAjax.getClockedInConsumerNamesDayServicesAjax(locations[0].ID, function(results) {
-        clockedInConsumers = results;
+      clockedInWidgetAjax.getClockedInConsumerNamesDayServicesAjax(
+        locations[0].ID,
+        function (results) {
+          clockedInConsumers = results;
 
-        clockedInWidgetAjax.getClockedInStaffNamesDayServicesAjax(locations[0].ID, function(results) {
-          clockedInStaff = results;
+          clockedInWidgetAjax.getClockedInStaffNamesDayServicesAjax(
+            locations[0].ID,
+            function (results) {
+              clockedInStaff = results;
 
-          callback();
-        });
-      });
+              callback();
+            },
+          );
+        },
+      );
     });
   }
 
-	function init() {
-		// append filter button
+  function init() {
+    // append filter button
     dashboard.appendFilterButton('dashdsclockedin', 'clockedInFilterBtn');
 
     widget = document.getElementById('dashdsclockedin');
@@ -247,14 +263,14 @@
     buildFilterPopup();
     eventSetup();
 
-    getInitialData(function() {
+    getInitialData(function () {
       populateCurrentClockInTime();
       populateLocations();
       buildWidgetTabs();
     });
-	}
+  }
 
-	return {
-		init,
-	};
+  return {
+    init,
+  };
 })();
