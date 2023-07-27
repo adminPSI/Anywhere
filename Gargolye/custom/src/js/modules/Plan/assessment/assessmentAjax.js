@@ -58,26 +58,25 @@ const assessmentAjax = (function () {
   }
 
   async function transeferPlanReportToONET(retrieveData) {
-     //token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds
-     try {
+    //token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds
+    try {
       const data = await $.ajax({
-         type: 'POST',
-         url:
-             $.webServer.protocol +
-             '://' +
-             $.webServer.address +
-             ':' +
-             $.webServer.port +
-             '/' +
-             $.webServer.serviceName +
-             '/transeferPlanReportToONET/',
-         data: JSON.stringify(retrieveData),
-         contentType: 'application/json; charset=utf-8',
-         dataType: 'json',
-     });
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/transeferPlanReportToONET/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
 
-     return data.transeferPlanReportToONETResult;
-
+      return data.transeferPlanReportToONETResult;
     } catch (error) {
       console.log(error);
       return error.text;
@@ -87,28 +86,27 @@ const assessmentAjax = (function () {
   async function sendSelectedAttachmentsToDODD(retrieveData) {
     //token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds
     try {
-     const data = await $.ajax({
+      const data = await $.ajax({
         type: 'POST',
         url:
-            $.webServer.protocol +
-            '://' +
-            $.webServer.address +
-            ':' +
-            $.webServer.port +
-            '/' +
-            $.webServer.serviceName +
-            '/sendSelectedAttachmentsToDODD/',
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/sendSelectedAttachmentsToDODD/',
         data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-    });
+      });
 
-    return data.sendSelectedAttachmentsToDODDResult;
-
-   } catch (error) {
-     console.log(error);
-   }
- }
+      return data.sendSelectedAttachmentsToDODDResult;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   function getPlanAssessmentReportWithAttachments(retrieveData, callback) {
     var action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/addSelectedAttachmentsToReport/`;
@@ -130,7 +128,7 @@ const assessmentAjax = (function () {
     var userIdInput = document.createElement('input');
     userIdInput.setAttribute('name', 'userId');
     userIdInput.setAttribute('value', retrieveData.userId);
-      userIdInput.id = 'userId';
+    userIdInput.id = 'userId';
     var assessmentIDInput = document.createElement('input');
     assessmentIDInput.setAttribute('name', 'assessmentID');
     assessmentIDInput.setAttribute('value', retrieveData.assessmentID);
@@ -141,38 +139,38 @@ const assessmentAjax = (function () {
     versionIDInput.id = 'versionID';
     var extraSpaceInput = document.createElement('input');
     extraSpaceInput.setAttribute('name', 'extraSpace');
-      extraSpaceInput.setAttribute('value', retrieveData.extraSpace);  
-      var toONETInput = document.createElement('input');
-      toONETInput.setAttribute('name', 'toONET');
-      toONETInput.setAttribute('value', retrieveData.toONET); 
-      var ispInput = document.createElement('input');
-      ispInput.setAttribute('name', 'isp');
-      ispInput.setAttribute('value', retrieveData.isp);
-      ispInput.id = 'isp';
-      var oneSpanInput = document.createElement('input');
-      oneSpanInput.setAttribute('name', 'oneSpan');
-      oneSpanInput.setAttribute('value', retrieveData.oneSpan);
-      oneSpanInput.id = 'oneSpan';
+    extraSpaceInput.setAttribute('value', retrieveData.extraSpace);
+    var toONETInput = document.createElement('input');
+    toONETInput.setAttribute('name', 'toONET');
+    toONETInput.setAttribute('value', retrieveData.toONET);
+    var ispInput = document.createElement('input');
+    ispInput.setAttribute('name', 'isp');
+    ispInput.setAttribute('value', retrieveData.isp);
+    ispInput.id = 'isp';
+    var oneSpanInput = document.createElement('input');
+    oneSpanInput.setAttribute('name', 'oneSpan');
+    oneSpanInput.setAttribute('value', retrieveData.oneSpan);
+    oneSpanInput.id = 'oneSpan';
     var signatureOnlyInput = document.createElement('input');
-      signatureOnlyInput.setAttribute('name', 'signatureOnly');
-      signatureOnlyInput.setAttribute('value', retrieveData.signatureOnly);
-      signatureOnlyInput.id = 'signatureOnly';
+    signatureOnlyInput.setAttribute('name', 'signatureOnly');
+    signatureOnlyInput.setAttribute('value', retrieveData.signatureOnly);
+    signatureOnlyInput.id = 'signatureOnly';
     var includeInput = document.createElement('input');
-      includeInput.setAttribute('name', 'include');
-      includeInput.setAttribute('value', retrieveData.include);
-      includeInput.id = 'include';
+    includeInput.setAttribute('name', 'include');
+    includeInput.setAttribute('value', retrieveData.include);
+    includeInput.id = 'include';
     var planAttachmentIdsInput = document.createElement('input');
-      planAttachmentIdsInput.setAttribute('name', 'planAttachmentIds');
-      planAttachmentIdsInput.setAttribute('value', retrieveData.planAttachmentIds);
-      planAttachmentIdsInput.id = 'planAttachmentIds';
+    planAttachmentIdsInput.setAttribute('name', 'planAttachmentIds');
+    planAttachmentIdsInput.setAttribute('value', retrieveData.planAttachmentIds);
+    planAttachmentIdsInput.id = 'planAttachmentIds';
     var wfAttachmentIdsInput = document.createElement('input');
-      wfAttachmentIdsInput.setAttribute('name', 'wfAttachmentIds');
-      wfAttachmentIdsInput.setAttribute('value', retrieveData.wfAttachmentIds);
-      wfAttachmentIdsInput.id = 'wfAttachmentIds';
+    wfAttachmentIdsInput.setAttribute('name', 'wfAttachmentIds');
+    wfAttachmentIdsInput.setAttribute('value', retrieveData.wfAttachmentIds);
+    wfAttachmentIdsInput.id = 'wfAttachmentIds';
     var sigAttachmentIdsInput = document.createElement('input');
-      sigAttachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
-      sigAttachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
-      sigAttachmentIdsInput.id = 'sigAttachmentIds';
+    sigAttachmentIdsInput.setAttribute('name', 'sigAttachmentIds');
+    sigAttachmentIdsInput.setAttribute('value', retrieveData.sigAttachmentIds);
+    sigAttachmentIdsInput.id = 'sigAttachmentIds';
 
     form.appendChild(tokenInput);
     form.appendChild(userIdInput);
@@ -248,6 +246,28 @@ const assessmentAjax = (function () {
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
     });
+  }
+
+  async function updateConsumerAssessmentAnswer(answerObject) {
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/insertConsumerAssessmentAnswer/',
+        data: JSON.stringify({ token: $.session.Token }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+
+      return data.insertConsumerAssessmentAnswerResult;
+    } catch (error) {}
   }
 
   function insertAssessmentGridRowAnswers(retrieveData) {
@@ -371,6 +391,7 @@ const assessmentAjax = (function () {
     getConsumerRelationships,
     getConsumerNameInfo,
     updateConsumerAssessmentAnswers,
+    updateConsumerAssessmentAnswer,
     insertAssessmentGridRowAnswers,
     deleteAssessmentGridRowAnswers,
     getServiceAndSupportsData,
@@ -380,6 +401,6 @@ const assessmentAjax = (function () {
     getPlanAssessmentReportWithAttachments,
     sendSelectedAttachmentsToDODD,
     transeferPlanReportToONET,
-    getSentToONETDate
+    getSentToONETDate,
   };
 })();

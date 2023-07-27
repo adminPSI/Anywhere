@@ -9,7 +9,6 @@
   let questionSectionSets;
   let questionSubSectionSets;
   let sectionQuestionCount;
-  let answerObj; // for saving
   let assessmentId;
   let subSectionsWithAttachments;
   let additionalSummaryData;
@@ -63,29 +62,13 @@
 
   // Utils
   //------------------------------------
-  function addAnswer(id, answer, answerRow) {
-    if (!answerObj[id]) {
-      answerObj[id] = {
-        answerId: id,
-        answerText: answer ? answer : '',
-        answerRow: answerRow ? answerRow : '',
-        skipped: 'N',
-      };
-    } else {
-      answerObj[id].answerText = answer ? answer : '';
-    }
-  }
-  function toggleAnswerSkipped(id, skipped) {
-    if (!answerObj[id]) {
-      answerObj[id] = {
-        answerId: id,
-        answerText: '',
-        answerRow: '',
-        skipped: skipped ? 'Y' : 'N',
-      };
-    } else {
-      answerObj[id].skipped = skipped ? 'Y' : 'N';
-    }
+  function addAnswer(id, answer, answerRow, skipped) {
+    assessmentAjax.updateConsumerAssessmentAnswer({
+      answerId: id,
+      answerText: answer ? answer : '',
+      answerRow: answerRow ? answerRow : '',
+      skipped: skipped ? skipped : 'N',
+    });
   }
   function clearData() {
     sections = {};
@@ -94,9 +77,6 @@
     questionSubSectionSets = {};
     sectionQuestionCount = 0;
     subSectionsWithAttachments = [];
-  }
-  function getAnswers() {
-    return Object.values(answerObj);
   }
   function getSectionQuestionCount() {
     return sectionQuestionCount;
@@ -347,18 +327,18 @@
       return;
     }
     if (e.target.id.includes('intentionallyBlankCheckbox')) {
+      const isChecked = e.target.checked;
+      const skipped = isChecked ? 'Y' : 'N';
       const isForRow = e.target.dataset.isforrow;
       // ids for associated textarea question/anwser
       let answerId = e.target.dataset.answerid;
       let setId = e.target.dataset.setid;
 
       if (isForRow === 'false') {
-        toggleAnswerSkipped(answerId, e.target.checked);
+        addAnswer(answerId, '', '', skipped);
 
         const textAreaInput = document.getElementById(answerId);
-
-        if (e.target.checked) {
-          addAnswer(answerId, '');
+        if (isChecked) {
           textAreaInput.value = '';
           input.disableInputField(textAreaInput);
         } else {
@@ -373,10 +353,10 @@
         questionSetGridRows.forEach(row => {
           const rowCells = row.querySelectorAll('.grid__cell');
           rowCells.forEach(cell => {
+            addAnswer(cellInput.id, '', '', skipped);
+
             const cellInput = cell.querySelector('.input-field__input');
-            toggleAnswerSkipped(cellInput.id, e.target.checked);
-            if (e.target.checked) {
-              addAnswer(cellInput.id, '');
+            if (isChecked) {
               cellInput.value = '';
               input.disableInputField(cellInput);
             } else {
@@ -1930,7 +1910,6 @@
     questionSectionSets = {};
     questionSubSectionSets = {};
     sectionQuestionCount = {};
-    answerObj = {};
     subSectionsWithAttachments = [];
     charLimits = planData.getAllISPcharacterLimts();
     readonly = readOnly;
@@ -1978,7 +1957,7 @@
     addQuestionSet,
     build,
     clearData,
-    getAnswers,
+    //getAnswers,
     getSectionQuestionCount,
     markUnansweredQuestions,
     toggleUnansweredQuestionFilter,

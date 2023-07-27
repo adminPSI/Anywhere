@@ -114,6 +114,8 @@ const signatureWidget = (function () {
     widget.insertBefore(filterPopup, widgetBody);
 
     populatePlanStatusDropdown();
+    populateLocationDropdown(locationDropdownData);
+    populateGroupDropdown(groupDropdownData);
   }
   function eventSetup() {
     let oldSignaturePlanStatus;
