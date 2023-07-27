@@ -3372,5 +3372,10 @@ namespace Anywhere
             return emp.insertWorkSchedule(token, dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID);
         }
 
+        public PositionTaskEntries[] getLastTaskNumber(string token, string positionID)
+        {
+            return emp.getLastTaskNumber(token, positionID);
+        }
+
     }
 }

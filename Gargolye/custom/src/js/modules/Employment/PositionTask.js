@@ -4,7 +4,7 @@ const PositionTask = (() => {
     let PositionId;
     let jobTaskID;
     let PositionEntries;
-    let lastTaskNumber;
+    let LastTaskNumber;
     let consumersID;
     let name;
     let positionName;
@@ -18,6 +18,7 @@ const PositionTask = (() => {
         selectedConsumersName = SelectedConsumersName;
         if (PositionId != undefined) {
             PositionEntries = await EmploymentAjax.getPositionTaskEntriesAsync(PositionId);
+            LastTaskNumber = await EmploymentAjax.getLastTaskNumberAsync(PositionId);
         }
     }
 
@@ -97,8 +98,8 @@ const PositionTask = (() => {
 
     function addPositionPopupBtn(jobTaskId) {
         if (jobTaskId == 0 || jobTaskId == undefined) {
-            task = PositionEntries.getPositionTaskEntriesResult[0].lastTaskNumber;
-            description = '';
+            task = LastTaskNumber.getLastTaskNumberResult[0] == undefined ? 1 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber;
+            description = ''; 
             startDate = '';
             endDate = '';
             initialPerformance = '';

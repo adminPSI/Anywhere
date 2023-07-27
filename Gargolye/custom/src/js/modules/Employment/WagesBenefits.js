@@ -203,7 +203,7 @@ const WagesBenefits = (() => {
         };
 
         let tableData = EmploymentsEntries.getWagesEntriesResult.map((entry) => ({
-            values: [entry.hoursPerWeek, entry.wagesPerHour, moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY')],
+            values: [entry.hoursPerWeek, '$' + entry.wagesPerHour, moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY')],
             attributes: [{ key: 'wagesId', value: entry.wagesId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
@@ -273,7 +273,7 @@ const WagesBenefits = (() => {
         newStartDate = input.build({
             id: 'newStartDate',
             type: 'date',
-            label: '`Start Date',
+            label: 'Start Date',
             style: 'secondary',
             value: startDate,
         });
@@ -347,6 +347,7 @@ const WagesBenefits = (() => {
         });
         newEndDate.addEventListener('input', event => {
             endDate = event.target.value;
+            checkRequiredFieldsOfPopup();
         });
 
         APPLY_BTN.addEventListener('click', () => {
@@ -362,6 +363,7 @@ const WagesBenefits = (() => {
         var weekPerHour = weekHours.querySelector('#weekHours');
         var wagesPerHour = wagesHours.querySelector('#wagesHours');
         var startDate = newStartDate.querySelector('#newStartDate');
+        var endDate = newEndDate.querySelector('#newEndDate');
 
         if (weekPerHour.value === '') {
             weekHours.classList.add('errorPopup');
@@ -375,7 +377,7 @@ const WagesBenefits = (() => {
             wagesHours.classList.remove('errorPopup');
         }
 
-        if (startDate.value === '') {
+        if (startDate.value === '' || (endDate.value != '' && startDate.value > endDate.value)) {
             newStartDate.classList.add('errorPopup');
         } else {
             newStartDate.classList.remove('errorPopup');

@@ -109,7 +109,7 @@ const Employment = (() => {
         additionalInformation.style = 'margin-top: -10px; width: 200px;';
 
         let tableData = EmploymentsEntries.getEmploymentEntriesResult.map((entry) => ({
-            values: [entry.employer, entry.position, entry.positionStartDate == '' ? '' : moment(entry.positionStartDate).format('MM-DD-YYYY'), entry.positionEndDate == '' ? '' : moment(entry.positionEndDate).format('MM-DD-YYYY'), entry.jobStanding],
+            values: [entry.employer, entry.position, entry.positionStartDate == '' ? '' : moment(entry.positionStartDate).format('M/D/YYYY'), entry.positionEndDate == '' ? '' : moment(entry.positionEndDate).format('M/D/YYYY'), entry.jobStanding],
             attributes: [{ key: 'positionId', value: entry.positionId }, { key: 'PeopleName', value: entry.PeopleName }],
             onClick: (e) => {
                 handleAccountTableEvents(e)
@@ -201,7 +201,7 @@ const Employment = (() => {
             token: $.session.Token,
             employer: '%',
             position: '%',
-            positionStartDate: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 365)),
+            positionStartDate: '1990-01-01', // UTIL.formatDateFromDateObj(dates.subDays(new Date('1/1/1990'))),  
             positionEndDate: null,// UTIL.getTodaysDate(),           
             jobStanding: '%',
         }

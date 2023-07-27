@@ -680,6 +680,34 @@ var EmploymentAjax = (function () {
         }
     }
 
+    async function getLastTaskNumberAsync(positionID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getLastTaskNumber/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "positionID":"' +
+                    positionID +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     return {
         getEmploymentEntriesAsync,
         getEmployersAsync,
@@ -704,5 +732,6 @@ var EmploymentAjax = (function () {
         isNewPositionEnableAsync,
         getEmployeementPathAsync,
         insertWorkScheduleAsync,
+        getLastTaskNumberAsync,
     };
 })();
