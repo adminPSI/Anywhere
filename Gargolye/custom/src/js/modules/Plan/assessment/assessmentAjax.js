@@ -249,6 +249,12 @@ const assessmentAjax = (function () {
   }
 
   async function updateConsumerAssessmentAnswer(answerObject) {
+    const retrieveData = {
+      token: $.session.Token,
+      consumerPlanId: plan.getCurrentPlanId(),
+      ...answerObject,
+    };
+
     try {
       const data = await $.ajax({
         type: 'POST',
@@ -261,13 +267,15 @@ const assessmentAjax = (function () {
           '/' +
           $.webServer.serviceName +
           '/insertConsumerAssessmentAnswer/',
-        data: JSON.stringify({ token: $.session.Token }),
+        data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
 
       return data.insertConsumerAssessmentAnswerResult;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   function insertAssessmentGridRowAnswers(retrieveData) {

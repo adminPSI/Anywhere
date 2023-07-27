@@ -1,5 +1,7 @@
 const signatureWidget = (function () {
   let missingSignatureData;
+  let locationDropdownData;
+  let groupDropdownData;
   // cached data
   let signaturePlanStatus;
   let signatureWidgetGroupId;
@@ -29,6 +31,8 @@ const signatureWidget = (function () {
     dropdown.populate(planStatusDropdown, data, signaturePlanStatus);
   }
   function populateLocationDropdown(locData) {
+    locData = locData ? locData : locationDropdownData;
+
     const dropdownData = locData.map(data => {
       return {
         value: data.ID,
@@ -46,25 +50,28 @@ const signatureWidget = (function () {
     dropdown.populate(locationDropdown, dropdownData, signatureWidgetLocationId);
   }
   function populateGroupDropdown(groupData) {
+    groupData = groupData ? groupData : groupDropdownData;
+
     const dropdownData = groupData.map(function (data) {
       return {
-        value: data.RetrieveID,
+        //value: data.RetrieveID,
+        value: data.GroupCode,
         text: data.GroupName,
       };
     });
 
-    UTIL.findAndSlice(dropdownData, 'Caseload', 'text');
-    UTIL.findAndSlice(dropdownData, 'Needs Attention', 'text');
-    UTIL.findAndSlice(dropdownData, 'Everyone', 'text');
+    // UTIL.findAndSlice(dropdownData, 'Caseload', 'text');
+    // UTIL.findAndSlice(dropdownData, 'Needs Attention', 'text');
+    // UTIL.findAndSlice(dropdownData, 'Everyone', 'text');
 
-    const defaultGroup = {
-      id: '%',
-      value: '%',
-      text: 'EVERYONE',
-    };
-    dropdownData.unshift(defaultGroup);
+    // const defaultGroup = {
+    //   id: '%',
+    //   value: '%',
+    //   text: 'EVERYONE',
+    // };
+    // dropdownData.unshift(defaultGroup);
 
-    dropdown.populate(groupDropdown, dropdownData, signatureWidgetGroupId);
+    dropdown.populate(groupDropdown, dropdownData, signatureWidgetGroupCode);
   }
 
   function buildFilterPopup() {
@@ -114,8 +121,6 @@ const signatureWidget = (function () {
     widget.insertBefore(filterPopup, widgetBody);
 
     populatePlanStatusDropdown();
-    populateLocationDropdown(locationDropdownData);
-    populateGroupDropdown(groupDropdownData);
   }
   function eventSetup() {
     let oldSignaturePlanStatus;
@@ -296,6 +301,8 @@ const signatureWidget = (function () {
       groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
         signatureWidgetLocationId,
       );
+      populateLocationDropdown(locationDropdownData);
+      populateGroupDropdown(groupDropdownData);
     });
   }
 
