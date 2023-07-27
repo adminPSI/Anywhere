@@ -133,9 +133,9 @@ const assessmentCard = (function () {
     //   tocAlertDiv,
     // );
 
-    if (assessmentValidationCheck.hasASectionApplicable === true) {
-      tocAlertDiv.style.display = 'none';
-    }
+    // if (assessmentValidationCheck.hasASectionApplicable === true) {
+    //   tocAlertDiv.style.display = 'none';
+    // }
 
     const navBar = document.createElement('div');
     navBar.classList.add('assessmentNavigation');
