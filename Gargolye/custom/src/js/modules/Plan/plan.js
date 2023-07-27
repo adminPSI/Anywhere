@@ -1817,13 +1817,7 @@ const plan = (function () {
       type: 'outlined',
       callback: () => {
         clearAllDataKeepConsumer();
-
-        if ($.loadedAppPage === 'planAssessment') {
-          $.loadedAppPage = '';
-          assessment.autoSaveAssessment(loadLandingPage);
-        } else {
-          loadLandingPage();
-        }
+        loadLandingPage();
       },
     });
 
@@ -1908,42 +1902,22 @@ const plan = (function () {
             TABS.toggleNavStatus(tabs, 'enable');
           } else if (targetTabIndex === '1') {
             TABS.toggleNavStatus(tabs, 'disable');
-            if ($.loadedAppPage === 'planAssessment') {
-              assessment.autoSaveAssessment(async () => {
-                $.loadedAppPage = 'planISP';
-                await ISP.refreshISP(planId);
-                TABS.toggleNavStatus(tabs, 'enable');
-                DOM.autosizeTextarea();
-              });
-            } else {
-              $.loadedAppPage = 'planISP';
-              await ISP.refreshISP(planId);
-              TABS.toggleNavStatus(tabs, 'enable');
-              DOM.autosizeTextarea();
-            }
+
+            $.loadedAppPage = 'planISP';
+            await ISP.refreshISP(planId);
+            TABS.toggleNavStatus(tabs, 'enable');
+            DOM.autosizeTextarea();
           } else if (targetTabIndex === '2') {
             TABS.toggleNavStatus(tabs, 'disable');
-            if ($.loadedAppPage === 'planAssessment') {
-              assessment.autoSaveAssessment(async () => {
-                $.loadedAppPage = 'planWorkflow';
-                const workflowLoadingBar = PROGRESS.SPINNER.get('Loading ISP...');
-                workflowWrap.innerHTML = '';
-                workflowWrap.appendChild(workflowLoadingBar);
-                const newWorkflowMarkup = await getWorkflowMarkup();
-                workflowWrap.innerHTML = '';
-                workflowWrap.appendChild(newWorkflowMarkup);
-                TABS.toggleNavStatus(tabs, 'enable');
-              });
-            } else {
-              $.loadedAppPage = 'planWorkflow';
-              const workflowLoadingBar = PROGRESS.SPINNER.get('Loading Workflow...');
-              workflowWrap.innerHTML = '';
-              workflowWrap.appendChild(workflowLoadingBar);
-              const newWorkflowMarkup = await getWorkflowMarkup();
-              workflowWrap.innerHTML = '';
-              workflowWrap.appendChild(newWorkflowMarkup);
-              TABS.toggleNavStatus(tabs, 'enable');
-            }
+
+            $.loadedAppPage = 'planWorkflow';
+            const workflowLoadingBar = PROGRESS.SPINNER.get('Loading Workflow...');
+            workflowWrap.innerHTML = '';
+            workflowWrap.appendChild(workflowLoadingBar);
+            const newWorkflowMarkup = await getWorkflowMarkup();
+            workflowWrap.innerHTML = '';
+            workflowWrap.appendChild(newWorkflowMarkup);
+            TABS.toggleNavStatus(tabs, 'enable');
           }
           DOM.autosizeTextarea();
         },

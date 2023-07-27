@@ -64,17 +64,10 @@ const MODULE_MENU = (function () {
         simpleMar.simpleMarLogin();
         return;
       }
-      if ($.loadedApp === 'plan' && $.loadedAppPage === 'planAssessment') {
-        assessment.autoSaveAssessment(() => {
-          moduleMenu.classList.remove('menu-visible');
-          bodyScrollLock.enableBodyScroll(moduleMenu);
-          loadApp(target.dataset.loadModule);
-        });
-      } else {
-        moduleMenu.classList.remove('menu-visible');
-        bodyScrollLock.enableBodyScroll(moduleMenu);
-        loadApp(target.dataset.loadModule);
-      }
+
+      moduleMenu.classList.remove('menu-visible');
+      bodyScrollLock.enableBodyScroll(moduleMenu);
+      loadApp(target.dataset.loadModule);
 
       return;
     }
@@ -230,14 +223,7 @@ const MINI_MODULE_MENU = (function () {
 
       menuClone.addEventListener('click', e => {
         const appName = e.target.dataset.loadModule;
-
-        if ($.loadedApp === 'plan' && $.loadedAppPage === 'planAssessment') {
-          assessment.autoSaveAssessment(e => {
-            loadApp(appName);
-          });
-        } else {
-          loadApp(appName);
-        }
+        loadApp(appName);
       });
     }
 
