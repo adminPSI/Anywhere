@@ -362,8 +362,9 @@ namespace Anywhere.service.Data.ConsumerFinances
                     ConsumerFinancesEntry[] PastRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getPastAccountRunningBalance(date, account, transaction));
 
                     string runningBalance = amount;
-                    if (PastRunningBal.Length > 0)
+                    if (PastRunningBal.Length > 0 )
                     {
+                        PastRunningBal[0].balance = PastRunningBal[0].balance == "" ? "0" : PastRunningBal[0].balance; 
                         if (amountType == "E")
                         {
                             runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) - Convert.ToDecimal(runningBalance)).ToString();
@@ -390,7 +391,8 @@ namespace Anywhere.service.Data.ConsumerFinances
                     foreach (ConsumerFinancesEntry updateAmount in nextRunningBal)
                     {
                         string balance;
-                        if (amountType == "E")
+                        updateAmount.balance = updateAmount.balance == "" ? "0" : updateAmount.balance;
+                        if (updateAmount.amount == "0") 
                         {
                             balance = (Convert.ToDecimal(updateAmount.balance) - Convert.ToDecimal(runningBalance)).ToString();
                         }
@@ -398,7 +400,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                         {
                             balance = (Convert.ToDecimal(updateAmount.balance) + Convert.ToDecimal(runningBalance)).ToString();
                         }
-
+                        runningBalance = balance; 
                         Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
                     }
 
