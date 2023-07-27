@@ -49,7 +49,7 @@ const EmploymentInformation = (() => {
         if (PositionId != undefined) {
             BtnName = 'SAVE'
             startDatePosition = moment(getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionStartDate).format('YYYY-MM-DD');
-            endDatePosition = moment(getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionEndDate).format('YYYY-MM-DD');
+            endDatePosition = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionEndDate == '' ? '' : moment(getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionEndDate).format('YYYY-MM-DD');
             position = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].position;
             jobStanding = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].jobStanding;
             employer = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].employer;
@@ -79,7 +79,7 @@ const EmploymentInformation = (() => {
             employmentPath = getEmployeepath.getEmployeementPathResult[0].employmentPath;
             peopleID = consumersID;
         }
-        existingEndDate = moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD');
+        existingEndDate = moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD'); 
         tempstartDatePosition = '';
         tempendDatePosition = '';
         tempposition = '';
@@ -146,7 +146,7 @@ const EmploymentInformation = (() => {
         isSelfEmployed = input.buildCheckbox({
             text: 'Self-Employed?',
             id: 'chkisSelfEmployed',
-            isChecked: selfEmployed == 'Y' ? true : false, 
+            isChecked: selfEmployed == 'Y' ? true : false,
         });
 
         nameInput = input.build({
@@ -202,7 +202,7 @@ const EmploymentInformation = (() => {
         if (employmentPath == '1')
             message.innerText = 'Path to Employment: I have a job but would like a better one or to move up.';
         else if (employmentPath == '2')
-            message.innerText = 'Path to Employment: I want a job! I need help to fine one.';
+            message.innerText = 'Path to Employment: I want a job! I need help to find one.';
         else if (employmentPath == '3')
             message.innerText = "Path to Employment: I'm not sure about work. I need help to learn more.";
         else if (employmentPath == '4')
@@ -291,7 +291,7 @@ const EmploymentInformation = (() => {
         populateDropdowns();
         enableDisabledInputs();
         employeeInfoDiv.appendChild(column1);
-        checkRequiredFieldsOfEmployeeInfo(startDatePosition, position, employer, jobStanding);
+        checkRequiredFieldsOfEmployeeInfo(startDatePosition, position, employer, jobStanding, endDatePosition);
 
         return employeeInfoDiv;
     }
@@ -332,14 +332,15 @@ const EmploymentInformation = (() => {
 
     function getRequiredFieldsOfEmployeeInfo() {
         var startDate = positionStartDate.querySelector('#positionStartDate');
+        var endDate = positionEndDate.querySelector('#positionEndDate');
         var position = positionDropdown.querySelector('#positionDropdown');
         var employer = employerDropdown.querySelector('#employerDropdown');
         var jobStanding = jobStandingDropdown.querySelector('#jobStandingDropdown');
-        checkRequiredFieldsOfEmployeeInfo(startDate.value, position.value, employer.value, jobStanding.value)
+        checkRequiredFieldsOfEmployeeInfo(startDate.value, position.value, employer.value, jobStanding.value, endDate.value)
     }
 
-    function checkRequiredFieldsOfEmployeeInfo(startDate, position, employer, jobStanding) {
-        if (startDate === '') {
+    function checkRequiredFieldsOfEmployeeInfo(startDate, position, employer, jobStanding, endDate) {
+        if (startDate === '' || (endDate != '' && startDate > endDate)) {
             positionStartDate.classList.add('error');
         } else {
             positionStartDate.classList.remove('error');
@@ -384,6 +385,7 @@ const EmploymentInformation = (() => {
         positionEndDate.addEventListener('input', event => {
             endDatePosition = event.target.value;
             tempendDatePosition = event.target.value;
+            getRequiredFieldsOfEmployeeInfo();  
         });
         positionDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
@@ -580,9 +582,11 @@ const EmploymentInformation = (() => {
         });
         newPathEndDate.addEventListener('input', event => {
             newEndDate = event.target.value;
+            checkRequiredFieldsOfEmploymentPath();
         });
         currentPathEndDate.addEventListener('input', event => {
             currentEndDate = event.target.value;
+            existingEndDate = event.target.value;
             checkRequiredFieldsOfEmploymentPath();
         });
 
@@ -609,7 +613,7 @@ const EmploymentInformation = (() => {
             currentPathEndDate.classList.remove('errorPopup');
         }
 
-        if (newStartDate.value === '' || newStartDate.value <= existingEndDate) {
+        if (newStartDate.value === '' || newStartDate.value <= existingEndDate || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {
             newPathStartDate.classList.add('errorPopup');
         } else {
             newPathStartDate.classList.remove('errorPopup');
@@ -631,7 +635,7 @@ const EmploymentInformation = (() => {
     function populateNewPathEmploymentDropdown() {
         const condfidentialDropdownData = ([
             { id: 1, value: 1, text: "I have a job but would like a better one or to move up." },
-            { id: 2, value: 2, text: "I want a job! I need help to fine one." },
+            { id: 2, value: 2, text: "I want a job! I need help to find one." },
             { id: 3, value: 3, text: "I'm not sure about work. I need help to learn more." },
             { id: 4, value: 4, text: "I don't think I want to work, but I may not know enough." },
         ]);

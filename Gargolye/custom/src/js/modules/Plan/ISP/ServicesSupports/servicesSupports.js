@@ -1666,7 +1666,7 @@ const servicesSupports = (() => {
         hcbsSelected = undefined;
         saveUpdateProvider = '';
 
-        let ISPValidation = planValidation.ISPValidation(planID);
+        let ISPValidation = await planValidation.ISPValidation(planID);
         planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
 
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
@@ -1688,16 +1688,13 @@ const servicesSupports = (() => {
 
         hcbsSelected = undefined;
         saveUpdateProvider = '';
-
-        let ISPValidation = planValidation.ISPValidation(planID);
-        planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
       },
     });
     const deleteBtn = button.build({
       text: 'Delete',
       style: 'danger',
       type: 'contained',
-      callback: () => {
+      callback: async () => {
         const message = 'Do you want to delete this Paid Support?';
         ISP.showDeleteWarning(paidSupportPopup, message, () => {
           deletePaidSupport(saveUpdateData.paidSupportsId);
@@ -1710,6 +1707,13 @@ const servicesSupports = (() => {
 
         hcbsSelected = undefined;
         saveUpdateProvider = '';
+
+        let ISPValidation = await planValidation.ISPValidation(planID);
+        planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
+
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
     const btnWrap = document.createElement('div');

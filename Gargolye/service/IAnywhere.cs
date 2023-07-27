@@ -4593,6 +4593,13 @@ namespace Anywhere
        UriTemplate = "/insertWorkSchedule/")]
         EmploymentWorker.WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getLastTaskNumber/")]
+        EmploymentWorker.PositionTaskEntries[] getLastTaskNumber(string token, string positionID);
     }
 
 

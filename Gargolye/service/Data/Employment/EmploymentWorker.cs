@@ -737,6 +737,25 @@ namespace Anywhere.service.Data.Employment
             }
         }
 
+        public PositionTaskEntries[] getLastTaskNumber(string token, string positionID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    PositionTaskEntries[] entries = js.Deserialize<PositionTaskEntries[]>(Odg.getLastTaskNumber(token, positionID, transaction));
+                    return entries;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+
+        }
+
 
     }
 }

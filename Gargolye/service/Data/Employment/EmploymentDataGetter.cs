@@ -449,5 +449,23 @@ namespace Anywhere.service.Data.Employment
 
         }
 
+        public string getLastTaskNumber(string token, string positionID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getLastTaskNumber");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@positionID", DbType.String, positionID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getLastTaskNumber(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getLastTaskNumber(" + positionID + ")");
+                throw ex;
+            }
+        }
+
     }
 }

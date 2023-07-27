@@ -230,7 +230,7 @@ const WorkSchedule = (() => {
             NewEndTime.classList.remove('errorPopup');
         }
 
-        if (timeStart.value === '') {
+        if (timeStart.value === '' || (timeEnd.value != '' && timeStart.value > timeEnd.value)) {  
             NewStartTime.classList.add('errorPopup');
         } else {
             NewStartTime.classList.remove('errorPopup');
