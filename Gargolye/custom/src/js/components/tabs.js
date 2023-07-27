@@ -91,10 +91,10 @@ const TABS = (function () {
     navAlertDiv.innerHTML = `${icons.error}`;
     navItem.appendChild(navAlertDiv);
 
-    planValidation.createTooltip(
-      'There is data missing on this tab that is required by DODD',
-      navAlertDiv,
-    );
+    //planValidation.createTooltip(
+    //   'There is data missing on this tab that is required by DODD',
+    //   navAlertDiv,
+    // );
 
     navAlertDiv.style.display = 'none';
 
