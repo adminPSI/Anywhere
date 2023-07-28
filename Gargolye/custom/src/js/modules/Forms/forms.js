@@ -44,8 +44,8 @@
 		const consumerCard = buildConsumerCard();
 		 newFormBtn = buildNewFormBtn();
 
-        let filterValues = false;
-        reportsBtn = generateReports.createMainReportButton([{ text: 'Form Listing - By Consumer', callback: generateReports.passFilterValuesForReport(filterValues) }])
+        let filterValues = { formsConsumer: selectedConsumer.id };
+        reportsBtn = generateReports.createMainReportButton([{ text: 'Form Listing - By Consumer', filterValues }])
 
 		const btnWrap = document.createElement('div');
 		btnWrap.classList.add('newFormAndReportBtns')

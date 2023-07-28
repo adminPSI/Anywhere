@@ -20,13 +20,13 @@ const generateReports = (() =>  {
       }
   
     // Helper function to create report buttons
-    function createIndividualReportButton(text, callback) {
+    function createIndividualReportButton(text, filterValues) {
       return button.build({
         text,
         style: 'secondary',
         type: 'contained',
         callback: function () {
-          showWarningPopup(text, callback);
+          showWarningPopup(text, filterValues);
         },
       });
     }
@@ -46,7 +46,7 @@ const generateReports = (() =>  {
     
       // Create buttons dynamically using the helper function
       // example: [{ text: 'Detail Report', callback: passFilterValuesForDetailReport },{ text: 'Time Analysis Report', callback: passFilterValuesForTimeEntryReport }];
-      const buttons = buttonsData.map(({ text, callback }) => createIndividualReportButton(text, callback));
+      const buttons = buttonsData.map(({ text, filterValues }) => createIndividualReportButton(text, filterValues));
     
       // Disable buttons if the report is running
       if (reportRunning) {
@@ -67,7 +67,7 @@ const generateReports = (() =>  {
     }
   
     // Function to generate the warning popup
-    function showWarningPopup(reportType, callback) {
+    function showWarningPopup(reportType, filterValues) {
       if (reportRunning) return;
   
       reportRunning = true;

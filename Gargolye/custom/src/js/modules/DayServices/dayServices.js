@@ -1656,10 +1656,10 @@ const dayServices = (function () {
         multiSelectAllNoneArea.classList.add('hidden');
 
         let filterValues = {
-            dayServiceLocation: null,
-            dayServiceServiceDate: null
+            dayServiceLocation: locationCache[locationID].locationName,
+            dayServiceServiceDate: serviceDate
         };
-        reportsBtn = generateReports.createMainReportButton([{ text: 'Individual Day Service Activity Report', callback: generateReports.passFilterValuesForReport('Individual Day Service Activity Report', filterValues) }])
+        reportsBtn = generateReports.createMainReportButton([{ text: 'Individual Day Service Activity Report', filterValues}])
 
         batchedMessageDisplay.innerHTML = 'The selected location is batched for this date.';
         batchedMessageDisplay.classList.add('batchedMessageDisplay');
