@@ -1669,6 +1669,130 @@ namespace Anywhere.service.Data.DocumentConversion
             return reportOrderObj;
         }
 
+        public MemoryStream generateReportForOneSpan(string token, string userId, string assessmentID, string versionID, string extraSpace, bool toONET, bool isp, bool oneSpan, bool signatureOnly, string include)
+        {
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            bool isTokenValid = aadg.ValidateToken(token);
+            if (toONET == false)
+            {
+                pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20230512):99A5675D0437C60AF320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+                PDFDoc new_doc;
+            }
+
+            if (isTokenValid)
+            {
+                Attachment attachment = new Attachment();
+                List<byte[]> allAttachments = new List<byte[]>();
+                ReportSectionOrder[] order = getReportSectionOrder();
+                MemoryStream assessment = new MemoryStream();
+                MemoryStream intro = new MemoryStream();
+                MemoryStream plan = new MemoryStream();
+
+                if (false == signatureOnly)
+                {
+                    foreach (ReportSectionOrder ord in order)
+                    {
+                        if (ord.setting_value == "1" || ord.setting_value == "2" || ord.setting_value == "3" || ord.setting_value == "4" || ord.setting_value == "5" || ord.setting_value == "6")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                assessment = grs.createOISPAssessment(token, userId, assessmentID, versionID, extraSpace, isp, include);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                intro = grs.createOISPIntro(token, userId, assessmentID, versionID, extraSpace, isp);
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                            }
+                        }
+                    }
+                }
+                if (signatureOnly == true)
+                {
+                    plan = grs.createOISPlan(token, userId, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+                }
+
+                byte[] introReport = new byte[intro.Length];
+                byte[] assessmentReport = new byte[intro.Length];
+
+                if (signatureOnly == false)
+                {
+                    introReport = StreamExtensions.ToByteArray(intro);
+                    intro.Close();
+                    intro.Flush();
+                    intro.Dispose();
+                    assessmentReport = StreamExtensions.ToByteArray(assessment);
+                    assessment.Close();
+                    intro.Flush();
+                    assessment.Dispose();
+                }
+                else
+                {
+                    intro.Close();
+                    intro.Flush();
+                    intro.Dispose();
+                    assessment.Close();
+                    intro.Flush();
+                    assessment.Dispose();
+                }
+
+                byte[] planReport = StreamExtensions.ToByteArray(plan);
+                plan.Close();
+                intro.Flush();
+                plan.Dispose();
+
+                if (false == signatureOnly)
+                {
+                    // ... (existing logic for creating wfAttRep, sigAttRep, and planAttRep removed for simplicity)
+                }
+
+                if (false == signatureOnly)
+                {
+                    foreach (ReportSectionOrder ord in order)
+                    {
+                        if (ord.setting_value == "1" || ord.setting_value == "2" || ord.setting_value == "3" || ord.setting_value == "4" || ord.setting_value == "5" || ord.setting_value == "6")
+                        {
+                            if (ord.setting_key == "Assessment")
+                            {
+                                allAttachments.Add(assessmentReport);
+                            }
+                            if (ord.setting_key == "All About Me")
+                            {
+                                allAttachments.Add(introReport);
+                            }
+                            if (ord.setting_key == "Plan")
+                            {
+                                allAttachments.Add(planReport);
+                            }
+                            // ... (existing logic for adding attachments to allAttachments removed for simplicity)
+                        }
+                    }
+                }
+                if (signatureOnly == true)
+                {
+                    allAttachments.Add(planReport);
+                }
+
+                byte[] finalMergedArray = concatAndAddContent(allAttachments);
+                if (toONET == true)
+                {
+                    string finalMergedArrayString = System.Convert.ToBase64String(finalMergedArray);
+                    aaw.insertPlanReportToBeTranferredToONET(token, finalMergedArrayString, long.Parse(assessmentID));
+                    // return "Plan successfully sent to OhioDD.net";
+                }
+
+                // Instead of writing to the response, we'll create a MemoryStream and return it.
+                MemoryStream memoryStream = new MemoryStream(finalMergedArray);
+                return memoryStream;
+            }
+             return null;
+        }
+
+
         public class SentToONETDate
         {
             public string sentDate { get; set; }

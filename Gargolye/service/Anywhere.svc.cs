@@ -22,6 +22,7 @@ using Anywhere.service.Data.PlanIntroduction;
 using Anywhere.service.Data.PlanOutcomes;
 using Anywhere.service.Data.PlanServicesAndSupports;
 using Anywhere.service.Data.PlanSignature;
+using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
@@ -35,6 +36,7 @@ using System.Web.Script.Serialization;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
+using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 
 namespace Anywhere
 {
@@ -94,6 +96,7 @@ namespace Anywhere
         DemographicsWoker cdw = new DemographicsWoker();
         EmploymentWorker emp = new EmploymentWorker();
         AssessmentDataGetter assDG = new AssessmentDataGetter();
+        ReportBuilderWorker rbw = new ReportBuilderWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure(); 
@@ -2897,6 +2900,11 @@ namespace Anywhere
             return cnReportWorker.generateCNTimeAnalysisReport(token, userId, billerId, consumerId, billingCode, serviceStartDate, serviceEndDate, applicationName);
         }
 
+        public ReportScheduleId[] generateReport(string token, string reportType, ReportData reportData)
+        {
+            return rbw.generateReport(token, reportType, reportData);
+        }
+
         public PlanAndWorkflowAttachments[] getPlanAndWorkFlowAttachments(string token, string assessmentId)
         {
             return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
@@ -2975,6 +2983,11 @@ namespace Anywhere
             return cnReportWorker.checkIfCNReportExists(token, reportScheduleId);
         }
 
+        public string checkIfReportExists(string token, string reportScheduleId)
+        {
+            return rbw.checkIfReportExists(token, reportScheduleId);
+        }
+
         public void viewCaseNoteReport(System.IO.Stream testInput)
         {
             string token;
@@ -2985,6 +2998,18 @@ namespace Anywhere
             token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
             reportScheduleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
             cnReportWorker.viewCaseNoteReport(token, reportScheduleId);
+        }
+
+        public void viewReport(System.IO.Stream testInput)
+        {
+            string token;
+            string reportScheduleId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            reportScheduleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            rbw.viewReport(token, reportScheduleId);
         }
 
         public string oneSpanGetSignedDocuments(string token, string packageId, string assessmentID)
@@ -3000,9 +3025,9 @@ namespace Anywhere
 
         public string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp, bool oneSpan)
         {
-            //MemoryStream ms = getPlanAssessmentReportOneSpan(token, "crystal", "466", "1", "false", true);
+            MemoryStream ms = dpra.generateReportForOneSpan(token, userID, assessmentID, versionID, extraSpace, false, isp, oneSpan, false, "Y");
             bool signatureOnly = false;
-            MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+            //MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             return osw.oneSpanBuildSigners(token, assessmentID, ms);
         }
 
