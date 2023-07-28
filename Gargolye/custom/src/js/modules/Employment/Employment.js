@@ -49,7 +49,7 @@ const Employment = (() => {
         selectedConsumersId = selectedConsumers[0].id;
         $.session.consumerId = selectedConsumersId;
         const name = (
-            await ConsumerFinancesAjax.getConsumerNameByID({
+            await ConsumerFinancesAjax.getConsumerNameByID({ 
                 token: $.session.Token,
                 consumerId: selectedConsumersId,
             })
@@ -139,7 +139,7 @@ const Employment = (() => {
             style: 'secondary',
             type: 'contained',
         });
-    }
+    } 
 
     // build display of Account and button
     function buildHeaderButton(consumer) {

@@ -52,6 +52,10 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string reconciled { get; set; }
             [DataMember(Order = 16)]
             public string lastUpdateBy { get; set; }
+            [DataMember(Order = 17)]
+            public string deposit { get; set; }
+            [DataMember(Order = 18)]
+            public string expance { get; set; }
 
         }
 
@@ -359,21 +363,9 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (userId == null) throw new Exception("userId is required");
 
 
-                    ConsumerFinancesEntry[] PastRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getPastAccountRunningBalance(date, account, transaction));
 
                     string runningBalance = amount;
-                    if (PastRunningBal.Length > 0 )
-                    {
-                        PastRunningBal[0].balance = PastRunningBal[0].balance == "" ? "0" : PastRunningBal[0].balance; 
-                        if (amountType == "E")
-                        {
-                            runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) - Convert.ToDecimal(runningBalance)).ToString();
-                        }
-                        else
-                        {
-                            runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) + Convert.ToDecimal(runningBalance)).ToString();
-                        }
-                    }
+
 
                     String RegisterID;
 
@@ -387,21 +379,28 @@ namespace Anywhere.service.Data.ConsumerFinances
                     }
 
                     ConsumerFinancesEntry[] nextRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getNextAccountRunningBalance(date, account, transaction));
-
+                    int counterbal = 0;
                     foreach (ConsumerFinancesEntry updateAmount in nextRunningBal)
                     {
                         string balance;
-                        updateAmount.balance = updateAmount.balance == "" ? "0" : updateAmount.balance;
-                        if (updateAmount.amount == "0") 
+
+                        if (updateAmount.deposit == "0" || updateAmount.deposit == "0.00")
                         {
-                            balance = (Convert.ToDecimal(updateAmount.balance) - Convert.ToDecimal(runningBalance)).ToString();
+                            if (counterbal == 0)
+                                balance = (Convert.ToDecimal("0") - Convert.ToDecimal(updateAmount.expance)).ToString();
+                            else
+                                balance = (Convert.ToDecimal(runningBalance) - Convert.ToDecimal(updateAmount.expance)).ToString();
                         }
                         else
                         {
-                            balance = (Convert.ToDecimal(updateAmount.balance) + Convert.ToDecimal(runningBalance)).ToString();
+                            if (counterbal == 0)
+                                balance = (Convert.ToDecimal("0") + Convert.ToDecimal(updateAmount.deposit)).ToString();
+                            else
+                                balance = (Convert.ToDecimal(runningBalance) + Convert.ToDecimal(updateAmount.deposit)).ToString();
                         }
-                        runningBalance = balance; 
+                        runningBalance = balance;
                         Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
+                        counterbal++;
                     }
 
                     if (attachmentId != null)
