@@ -656,7 +656,7 @@ var timeEntryReview = (function () {
       element.id = `${seID}-seRecordActivity`;
       element.innerText = `${status}: ${dateVal} - ${timeVal} - ${user}`;
      // if (rejected) element.classList.add('error'); //add red text to the message for rejected records
-      if (rejected) element.style.color = "red"; //add red text to the message for rejected records
+     // if (rejected) element.style.color = "red"; //add red text to the message for rejected records
       const tableRow = document.getElementById(seID);
       tableRow.appendChild(element);
     }

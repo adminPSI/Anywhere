@@ -1345,7 +1345,7 @@ var timeApproval = (function () {
             element.classList.add('seRecordActivity');
             element.id = `${seID}-seRecordActivity`;
             element.innerText = `${status}: ${dateVal} - ${timeVal} - ${user}`;
-            if (rejected) element.classList.add('rejected'); //add red text to the message for rejected records
+           // if (rejected) element.classList.add('rejected'); //add red text to the message for rejected records
             const tableRow = document.getElementById(seID);
             tableRow.appendChild(element);
         }
