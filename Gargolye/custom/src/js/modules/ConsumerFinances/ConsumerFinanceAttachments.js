@@ -3,6 +3,7 @@ const consumerFinanceAttachment = (() => {
     let registerID;
     let IsDisabledBtn;
     let attachmentArray = [];
+    let attachID;
     /** Class for attachments in Plan Module */
     class ConsumerFinanceAttachment {
         /**
@@ -11,10 +12,11 @@ const consumerFinanceAttachment = (() => {
          * @param {string} regId question ID the attachment button is assoicated with
          * @param {string} assessmentId Assessment ID
          */
-        constructor(header, regId, IsDisabled) {
+        constructor(header, regId, IsDisabled, attachID) {
             this.attachmentsForQuestion = header;
             this.regId = regId;
             this.IsDisabledBtn = IsDisabled;
+            this.attachID = attachID;
         }
 
         buildAttachmentButton() {
@@ -39,7 +41,7 @@ const consumerFinanceAttachment = (() => {
             const regId = this.regId;
             const attachmentsForQuestion = this.attachmentsForQuestion;
             const attachmentsToDelete = [];
-            const attachmentsAdded = [];
+            const attachmentsAdded = this.attachID;
 
             // PERMISSIONS
             let ro;
@@ -163,9 +165,6 @@ const consumerFinanceAttachment = (() => {
                         attachmentsAdded.push(att);
                     });
 
-                    POPUP.hide(popup);
-                    NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded)
-
                 }
                 // DELETE ATTACHMENTS
                 attachmentsToDelete.forEach(attachment => {
@@ -180,7 +179,7 @@ const consumerFinanceAttachment = (() => {
                 }
 
                 let attachmentProms = [];
-
+                let attachmentArray = [];
                 attachmentInputs.forEach(inputElement => {
                     if (inputElement.value === '') {
                         return;
@@ -196,6 +195,7 @@ const consumerFinanceAttachment = (() => {
                         new Response(attachmentFile).arrayBuffer().then(res => {
                             attachmentObj.arrayBuffer = res;
                             attachmentArray.push(attachmentObj);
+                            attachmentsForQuestion.push(attachmentObj);
                             resolve();
                         });
                     });
@@ -207,7 +207,7 @@ const consumerFinanceAttachment = (() => {
                 await saveAttachmentsToDB();
 
                 POPUP.hide(popup);
-                NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded)
+                NewEntryCF.buildNewEntryForm(regId, attachmentsForQuestion, attachmentsAdded)
             }
             //===========================================
             //===========================================
@@ -241,6 +241,7 @@ const consumerFinanceAttachment = (() => {
                 callback: async () => {
                     try {
                         await saveAction();
+                       // await this.cleanAttachmentLists(attachmentsAdded, attachmentsToDelete);
                     } catch (error) {
                         pendingSave.reject('Error saving attachment changes');
                         setTimeout(() => {
@@ -352,17 +353,16 @@ const consumerFinanceAttachment = (() => {
     }
 
     async function getConsumerFinanceAttachments(regID) {
+        //attachments = new Map();
         const retData = {
             token: $.session.Token,
             regId: regID,
         };
         const res = await ConsumerFinancesAjax.getCFAttachmentsList(retData);
         let attArray = [];
-        if (res != undefined) {
-            res.forEach(attachment => {
-                attArray.push(attachment);
-            });
-        }
+        res.forEach(attachment => {
+            attArray.push(attachment);
+        });
         return attArray;
     }
 
