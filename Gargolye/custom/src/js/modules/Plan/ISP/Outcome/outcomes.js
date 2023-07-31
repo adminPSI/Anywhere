@@ -2459,28 +2459,28 @@ const planOutcomes = (() => {
 
     //const planOutcomesData = validationCheck.outcomesData;
 
-    if (
-      !planOutcomesData.planProgressSummary ||
-      planOutcomesData.planProgressSummary.length === 0
-    ) {
-      let summaryId = await planOutcomesAjax.insertPlanOutcomeProgressSummary({
-        token: $.session.Token,
-        planId: parseInt(planId),
-        progressSummary: '',
-      });
-      summaryId = summaryId.split(':');
-      summaryId = summaryId[1];
-      summaryId = summaryId.replace('}]', '').replace('"', '');
+    //if (
+    //  !planOutcomesData.planProgressSummary ||
+    //  planOutcomesData.planProgressSummary.length === 0
+    //) {
+    //  let summaryId = await planOutcomesAjax.insertPlanOutcomeProgressSummary({
+    //    token: $.session.Token,
+    //    planId: parseInt(planId),
+    //    progressSummary: '',
+    //  });
+    //  summaryId = summaryId.split(':');
+    //  summaryId = summaryId[1];
+    //  summaryId = summaryId.replace('}]', '').replace('"', '');
 
-      progressSummary = '';
-      progressSummaryId = summaryId;
-    } else {
-      progressSummary = planOutcomesData.planProgressSummary[0].progressSummary;
-      progressSummaryId = planOutcomesData.planProgressSummary[0].progressSummaryId;
-    }
+    //  progressSummary = '';
+    //  progressSummaryId = summaryId;
+    //} else {
+    //  progressSummary = planOutcomesData.planProgressSummary[0].progressSummary;
+    //  progressSummaryId = planOutcomesData.planProgressSummary[0].progressSummaryId;
+    //}
 
     dropdownData = planData.getDropdownData();
-    outcomesData = mapOutcomesDetails(planOutcomesData);
+    //outcomesData = mapOutcomesDetails(planOutcomesData);
     hasPreviousPlan = plan.getHasPreviousPlans();
 
     const ddData = dropdownData.serviceVendors.map(dd => {

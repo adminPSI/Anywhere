@@ -1688,14 +1688,14 @@ const plan = (function () {
     return morepopupmenu;
   }
   async function showMorePopup() {
-    sentToOnet = await assessmentAjax.getSentToONETDate({
-      token: $.session.Token,
-      assessmentId: planId,
-    });
-    sentToOnet = sentToOnet[0].sentDate;
-    morePopup = POPUP.build({
-      classNames: 'moreMenuPopup',
-    });
+    //sentToOnet = await assessmentAjax.getSentToONETDate({
+    //  token: $.session.Token,
+    //  assessmentId: planId,
+    //});
+    //sentToOnet = sentToOnet[0].sentDate;
+    //morePopup = POPUP.build({
+    //  classNames: 'moreMenuPopup',
+    //});
 
     menuInnerWrap = document.createElement('div');
     menuInnerWrap.classList.add('moreMenuPopup__innerWrap');
@@ -2021,11 +2021,11 @@ const plan = (function () {
 
     // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
-    sentToOnet = await assessmentAjax.getSentToONETDate({
-      token: $.session.Token,
-      assessmentId: planId,
-    });
-    sentToOnet = sentToOnet[0].sentDate;
+    //sentToOnet = await assessmentAjax.getSentToONETDate({
+    //  token: $.session.Token,
+    //  assessmentId: planId,
+    //});
+    //sentToOnet = sentToOnet[0].sentDate;
   }
 
   // New Plan Setup Page
