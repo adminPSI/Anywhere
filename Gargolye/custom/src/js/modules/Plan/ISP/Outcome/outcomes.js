@@ -1948,7 +1948,7 @@ const planOutcomes = (() => {
       columnHeadings: [
         `What will progress look like? How will we know it's happening?`,
         'Who?',
-        'When to check in?',
+        //'When to check in?',
       ],
       sortable: isSortable,
       onSortCallback: async sortData => {
