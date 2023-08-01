@@ -79,7 +79,7 @@ const EmploymentInformation = (() => {
             employmentPath = getEmployeepath.getEmployeementPathResult[0].employmentPath;
             peopleID = consumersID;
         }
-        existingEndDate = moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD'); 
+        existingEndDate = moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD');
         tempstartDatePosition = '';
         tempendDatePosition = '';
         tempposition = '';
@@ -372,7 +372,12 @@ const EmploymentInformation = (() => {
             SAVE_BTN.classList.add('disabled');
             return;
         } else {
-            SAVE_BTN.classList.remove('disabled');
+            if (tempstartDatePosition != '' || tempendDatePosition != '' || tempposition != '' || tempjobStanding != '' || tempemployer != '' || temptransportation != '' || temptypeOfWork != '' || tempselfEmployed != '' || tempname != '' || tempphone != '' || tempemail != '') {               
+                SAVE_BTN.classList.remove('disabled');
+            }
+            else {
+                SAVE_BTN.classList.add('disabled');
+            }
         }
     }
 
@@ -385,7 +390,7 @@ const EmploymentInformation = (() => {
         positionEndDate.addEventListener('input', event => {
             endDatePosition = event.target.value;
             tempendDatePosition = event.target.value;
-            getRequiredFieldsOfEmployeeInfo();  
+            getRequiredFieldsOfEmployeeInfo();
         });
         positionDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
@@ -409,27 +414,33 @@ const EmploymentInformation = (() => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             transportation = selectedConsumerOption.id;
             temptransportation = event.target.value;
+            getRequiredFieldsOfEmployeeInfo();
         });
         typeOfWorkDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             typeOfWork = selectedConsumerOption.id;
             temptypeOfWork = event.target.value;
+            getRequiredFieldsOfEmployeeInfo();
         });
         isSelfEmployed.addEventListener('change', event => {
             selfEmployed = event.target.checked == true ? 'Y' : 'N';
             tempselfEmployed = event.target.value;
+            getRequiredFieldsOfEmployeeInfo();
         });
         nameInput.addEventListener('input', event => {
             name = event.target.value;
             tempname = event.target.value;
+            getRequiredFieldsOfEmployeeInfo();
         });
         phoneInput.addEventListener('input', event => {
             phone = event.target.value;
             tempphone = event.target.value;
+            getRequiredFieldsOfEmployeeInfo();
         });
         emailInput.addEventListener('input', event => {
             email = event.target.value;
             tempemail = event.target.value;
+            getRequiredFieldsOfEmployeeInfo(); 
         });
     }
 

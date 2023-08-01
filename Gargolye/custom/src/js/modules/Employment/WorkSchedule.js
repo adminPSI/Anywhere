@@ -80,7 +80,7 @@ const WorkSchedule = (() => {
         };
 
         let tableData = ScheduleEntries.getWorkScheduleEntriesResult.map((entry) => ({
-            values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : 'Saturday', entry.startTime, entry.endTime],
+            values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : 'Saturday', UTIL.convertFromMilitary(entry.startTime), UTIL.convertFromMilitary(entry.endTime)],  
             attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)
@@ -176,6 +176,10 @@ const WorkSchedule = (() => {
         timebtnWrap.appendChild(NewEndTime);
         addWorkSchedulePopup.appendChild(timebtnWrap);
 
+        var confirmMessage = document.createElement('div');
+        confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
+        addWorkSchedulePopup.appendChild(confirmMessage); 
+
         var popupbtnWrap = document.createElement('div');
         popupbtnWrap.classList.add('btnWrap');
         if ($.session.EmploymentUpdate) {
@@ -269,10 +273,20 @@ const WorkSchedule = (() => {
     async function saveNewWagesPopup() {
         const result = await EmploymentAjax.insertWorkScheduleAsync(dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
         const { insertWorkScheduleResult } = result;
-        if (insertWorkScheduleResult.WorkScheduleId != null) {
-            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 3);
+
+        var messagetext = document.getElementById('confirmMessage');
+        messagetext.innerHTML = ``; 
+        if (insertWorkScheduleResult.WorkScheduleId == '-1') {
+            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
+            messagetext.classList.add('password-error');
         }
-        POPUP.hide(addWorkSchedulePopup);
+        else if (insertWorkScheduleResult.WorkScheduleId == null || insertWorkScheduleResult.WorkScheduleId == '') {
+
+        }
+        else {
+            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 3);
+            POPUP.hide(addWorkSchedulePopup); 
+        }
     }
 
 

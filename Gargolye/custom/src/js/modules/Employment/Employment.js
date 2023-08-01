@@ -225,8 +225,8 @@ const Employment = (() => {
         }
 
         filteredBy.style.maxWidth = '100%';
-        const startDate = moment(filterValues.positionStartDate, 'YYYY-MM-DD').format('M/D/YYYY');
-        const endDate = filterValues.positionEndDate == null ? 'none' : moment(filterValues.positionEndDate, 'YYYY-MM-DD').format('M/D/YYYY');
+        const startDate = moment(filterValues.positionStartDate, 'YYYY-MM-DD').format('MM/DD/YYYY');
+        const endDate = filterValues.positionEndDate == null ? 'none' : moment(filterValues.positionEndDate, 'YYYY-MM-DD').format('MM/DD/YYYY');
 
         filteredBy.innerHTML = `<div class="filteredByData">
 			<p>                         
