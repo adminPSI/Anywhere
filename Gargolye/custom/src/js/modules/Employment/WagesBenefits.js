@@ -201,14 +201,14 @@ const WagesBenefits = (() => {
             tableId: 'singleEntryAdminReviewTable',
             columnHeadings: ['Hours/Week', 'Hourly Wages', 'Start Date', 'End Date'],
         };
-
+         
         let tableData = EmploymentsEntries.getWagesEntriesResult.map((entry) => ({
-            values: [entry.hoursPerWeek, '$' + entry.wagesPerHour, moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY')],
+            values: [entry.hoursPerWeek, '$' + parseFloat(entry.wagesPerHour).toFixed(2), moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY')],
             attributes: [{ key: 'wagesId', value: entry.wagesId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
             },
-        }));
+        })); 
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
 
@@ -229,7 +229,7 @@ const WagesBenefits = (() => {
         else {
             let empValue = EmploymentsEntries.getWagesEntriesResult.find(x => x.wagesId == wagesId);
             hoursWeek = empValue.hoursPerWeek;
-            hoursWages = empValue.wagesPerHour;
+            hoursWages = parseFloat(empValue.wagesPerHour).toFixed(2) ;
             startDate = moment(empValue.startDate).format('YYYY-MM-DD');
             endDate = empValue.endDate == '' ? '' : moment(empValue.endDate).format('YYYY-MM-DD');
         }
@@ -330,14 +330,22 @@ const WagesBenefits = (() => {
                 document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
                 return;
             }
+            if (hoursWeek.includes('-')) {
+                document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
+                return;
+            }
             checkRequiredFieldsOfPopup();
         });
 
         wagesHours.addEventListener('input', event => {
-            hoursWages = event.target.value;
+            hoursWages = event.target.value; 
             if (hoursWages.includes('.') && (hoursWages.match(/\./g).length > 1 || hoursWages.toString().split('.')[1].length > 2)) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
-                return;
+                return; 
+            }
+            if (hoursWages.includes('-')) {
+                document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
+                return; 
             }
             checkRequiredFieldsOfPopup();
         });
@@ -416,6 +424,9 @@ const WagesBenefits = (() => {
         if (insertWagesResult.wagesId == '-1') {
             messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
             messagetext.classList.add('password-error');
+        }
+        else if (insertWagesResult.wagesId == '' || insertWagesResult.wagesId == null) {
+
         }
         else {
             NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 1);

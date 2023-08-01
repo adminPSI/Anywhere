@@ -249,10 +249,15 @@ const assessmentAjax = (function () {
   }
 
   async function updateConsumerAssessmentAnswer(answerObject) {
+    // const retrieveData = {
+    //   token: $.session.Token,
+    //   consumerPlanId: plan.getCurrentPlanId(),
+    //   ...answerObject,
+    // };
+
     const retrieveData = {
       token: $.session.Token,
-      consumerPlanId: plan.getCurrentPlanId(),
-      ...answerObject,
+      answers: [answerObject],
     };
 
     try {
@@ -266,13 +271,13 @@ const assessmentAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/insertConsumerAssessmentAnswer/',
+          '/updateAssessmentAnswers/',
         data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
 
-      return data.insertConsumerAssessmentAnswerResult;
+      return data.updateAssessmentAnswersResult;
     } catch (error) {
       console.log(error);
     }

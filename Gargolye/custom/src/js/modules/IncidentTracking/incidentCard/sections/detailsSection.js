@@ -264,17 +264,58 @@ var itDetailsSection = (function () {
       incidentCard.checkEntireIncidentCardforErrors();
     });
 
+    // $.session.updateIncidentSummaryText
+    // $.session.updateIncidentActionText
+    // $.session.updateIncidentPreventionText
+    // $.session.updateIncidentCauseText
+
     summaryTextarea.addEventListener('change', e => {
-      incidentCard.checkEntireIncidentCardforErrors();
+      if ($.session.updateIncidentSummaryText) {
+        incidentCard.checkEntireIncidentCardforErrors();
+        return;
+      }
+
+      const newText = e.target.value;
+      if (!newText.includes(summaryText)) {
+        summaryTextarea.classList.add('error');
+        incidentCard.checkEntireIncidentCardforErrors();
+      }
     });
     actionTextarea.addEventListener('change', e => {
-      incidentCard.checkEntireIncidentCardforErrors();
+      if ($.session.updateIncidentActionText) {
+        incidentCard.checkEntireIncidentCardforErrors();
+        return;
+      }
+
+      const newText = e.target.value;
+      if (!newText.includes(actionText)) {
+        summaryTextarea.classList.add('error');
+        incidentCard.checkEntireIncidentCardforErrors();
+      }
     });
     preventionTextarea.addEventListener('change', e => {
-      incidentCard.checkEntireIncidentCardforErrors();
+      if ($.session.updateIncidentPreventionText) {
+        incidentCard.checkEntireIncidentCardforErrors();
+        return;
+      }
+
+      const newText = e.target.value;
+      if (!newText.includes(preventionText)) {
+        summaryTextarea.classList.add('error');
+        incidentCard.checkEntireIncidentCardforErrors();
+      }
     });
     causeTextarea.addEventListener('change', e => {
-      incidentCard.checkEntireIncidentCardforErrors();
+      if ($.session.updateIncidentCauseText) {
+        incidentCard.checkEntireIncidentCardforErrors();
+        return;
+      }
+
+      const newText = e.target.value;
+      if (!newText.includes(causeText)) {
+        summaryTextarea.classList.add('error');
+        incidentCard.checkEntireIncidentCardforErrors();
+      }
     });
     categoryDropdown.addEventListener('change', e => {
       incidentCard.checkEntireIncidentCardforErrors();
