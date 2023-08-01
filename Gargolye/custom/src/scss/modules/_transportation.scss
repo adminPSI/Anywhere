@@ -559,6 +559,13 @@
     .checkbox-mtd > span::after {
         left: -24px;
     }
+
+    .attachmentBtn {
+        &.hasAttachments {
+            background-color: $secondary;
+            pointer-events: all !important;
+        }
+    }
 }
 
 [data-active-module="resetPassword"] {

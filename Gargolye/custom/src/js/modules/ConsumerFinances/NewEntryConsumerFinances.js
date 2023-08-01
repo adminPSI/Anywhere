@@ -14,6 +14,7 @@ const NewEntryCF = (() => {
     let NEW_CANCEL_BTN;
 
     let attachmentArray = [];
+    let prevAttachmentArray = [];
     let attachmentId = [];
     let attachmentDesc = [];
     let categoryID;
@@ -25,7 +26,7 @@ const NewEntryCF = (() => {
     let IsReconciled = 'N';
     let IsAddNewPayDisable = true;
     let IsSaveDisable = true;
-    let IsDeleteDisable = true; 
+    let IsDeleteDisable = true;
     let inputElement;
 
     async function init() {
@@ -33,23 +34,9 @@ const NewEntryCF = (() => {
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
-        if (attachment) {
-            attachmentArray = attachment;
-            attachmentId = attachmentID;
-
-            attachment.forEach(att => {
-                attachmentDesc.push(att.description);
-            });
-        }
-        else {
-            attachmentArray = [];
-            attachmentId = [];
-            attachmentDesc = [];
-        }
 
         if (registerId) {
-            attachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
-
+            prevAttachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
             BtnName = 'UPDATE'
             regId = registerId;
             const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
@@ -90,14 +77,32 @@ const NewEntryCF = (() => {
             IsReconciled = 'N';
             IsDisabledBtn = false;
         }
+
+        if (attachment) {
+            attachmentArray = attachment;
+            attachmentId = attachmentID;
+            attachment.forEach(att => {
+                if (att.attachmentID == undefined) {
+                    attachmentDesc.push(att.description);
+                }
+            });
+            NEW_SAVE_BTN.classList.remove('disabled');
+        }
+        else {
+            attachmentArray = [];
+            attachmentId = [];
+            attachmentDesc = [];
+            prevAttachmentArray.forEach(att => {
+                attachmentArray.push(att);
+            });
+        }
+
         DOM.clearActionCenter();
 
         const column1 = document.createElement('div')
         const column2 = document.createElement('div')
         column1.classList.add('col-1')
         column2.classList.add('col-2')
-
-
 
         newDateInput = input.build({
             id: 'newDateInput',
@@ -112,7 +117,7 @@ const NewEntryCF = (() => {
             type: 'number',
             label: 'Amount',
             style: 'secondary',
-            value:  (amount) ? amount : '',            
+            value: (amount) ? amount : '',
         });
 
         newAccountDropdown = dropdown.build({
@@ -273,7 +278,7 @@ const NewEntryCF = (() => {
         addRightCard.appendChild(addRightBody);
 
         addRightBody.appendChild(newDescriptionInput);
-        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId, IsDisabledBtn);
+        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId, IsDisabledBtn, attachmentId);
         addRightBody.appendChild(questionAttachment.attachmentButton);
 
         addRightBody.appendChild(newReceiptInput);
@@ -298,6 +303,7 @@ const NewEntryCF = (() => {
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
         disabledUpdateBtn();
+       
     }
 
     function enableDisabledInputs() {
@@ -397,8 +403,8 @@ const NewEntryCF = (() => {
         } else {
             newDateInput.classList.remove('error');
         }
-          
-        if (amount.value === '') {   
+
+        if (amount.value === '') {
             newAmountInput.classList.add('error');
         } else {
             newAmountInput.classList.remove('error');
@@ -438,16 +444,16 @@ const NewEntryCF = (() => {
     }
 
     function eventListeners() {
-        ADD_NEW_PAYEE_BTN.addEventListener('keypress', event => { 
-            if (event.keyCode === 13 && ADD_NEW_PAYEE_BTN.classList.contains('disabled')) { 
+        ADD_NEW_PAYEE_BTN.addEventListener('keypress', event => {
+            if (event.keyCode === 13 && ADD_NEW_PAYEE_BTN.classList.contains('disabled')) {
                 IsAddNewPayDisable = false;
             }
         });
         ADD_NEW_PAYEE_BTN.addEventListener('click', event => {
             if (IsAddNewPayDisable) {
-                buildNewPayeePopUp();  
+                buildNewPayeePopUp();
             }
-            IsAddNewPayDisable = true; 
+            IsAddNewPayDisable = true;
         });
         NEW_SAVE_BTN.addEventListener('keypress', event => {
             if (event.keyCode === 13 && NEW_SAVE_BTN.classList.contains('disabled')) {
@@ -465,7 +471,7 @@ const NewEntryCF = (() => {
                 IsDeleteDisable = false;
             }
         });
-        NEW_DELETE_BTN.addEventListener('click', event => { 
+        NEW_DELETE_BTN.addEventListener('click', event => {
             if (IsDeleteDisable) {
                 deleteAccount();
             }
@@ -480,7 +486,7 @@ const NewEntryCF = (() => {
             if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
                 document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
                 return;
-            }  
+            }
             checkRequiredFieldsOfNewEntry();
         });
         newPayeeDropdown.addEventListener('change', event => {
@@ -496,7 +502,7 @@ const NewEntryCF = (() => {
         });
         newCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
-            category = event.target.options[event.target.selectedIndex].text;      
+            category = event.target.options[event.target.selectedIndex].text;
             populateSubCategoryDropdown(category);
             checkRequiredFieldsOfNewEntry();
         });
@@ -692,7 +698,7 @@ const NewEntryCF = (() => {
             classNames: ['zip'],
             attributes: [{ key: 'maxlength', value: '10' }],
             value: (payeezipcode) ? payeezipcode : '',
-        }); 
+        });
 
         saveBtn = button.build({
             id: "addpayeeSaveBtn",
@@ -834,7 +840,7 @@ const NewEntryCF = (() => {
         const { insertPayeeResult } = result;
         let regionID = insertPayeeResult.RegionID;
         POPUP.hide(addPayeePopup);
-        payee = payeeName;  
+        payee = payeeName;
         populatePayeeDropdown();
     }
 
@@ -844,5 +850,5 @@ const NewEntryCF = (() => {
         populatePayeeDropdown,
         populateCategoryDropdown,
         populateAccountDropdown,
-    };  
+    };
 })(); 

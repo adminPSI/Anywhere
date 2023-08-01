@@ -54,6 +54,9 @@ const plan = (function () {
   let planAttBody;
   let workflowAttBody;
   let signatureAttBody;
+  let portalPlanAttBody;
+  let portalWorkflowAttBody;
+  let portalSignatureAttBody;
   let DODDplanAttBody;
   let DODDsignAttBody;
   let DODDworkflowAttBody;
@@ -815,15 +818,15 @@ const plan = (function () {
     attachHeading.innerText = `Please select the attachment(s) that should be included with the report.`;
     attachmentsWrap.appendChild(attachHeading);
 
-    const planAttWrap = document.createElement('div');
-    planAttWrap.classList.add('planAttWrap');
-    const workflowAttWrap = document.createElement('div');
-    workflowAttWrap.classList.add('workflowAttWrap');
-    const signatureAttWrap = document.createElement('div');
-    signatureAttWrap.classList.add('signatureAttWrap');
-    attachmentsWrap.appendChild(planAttWrap);
-    attachmentsWrap.appendChild(workflowAttWrap);
-    attachmentsWrap.appendChild(signatureAttWrap);
+    const portalPlanAttWrap = document.createElement('div');
+    portalPlanAttWrap.classList.add('planAttWrap');
+    const portalWorkflowAttWrap = document.createElement('div');
+    portalWorkflowAttWrap.classList.add('workflowAttWrap');
+    const portalSignatureAttWrap = document.createElement('div');
+    portalSignatureAttWrap.classList.add('signatureAttWrap');
+    attachmentsWrap.appendChild(portalPlanAttWrap);
+    attachmentsWrap.appendChild(portalWorkflowAttWrap);
+    attachmentsWrap.appendChild(portalSignatureAttWrap);
 
     const planHeading = document.createElement('h2');
     const workflowHeading = document.createElement('h2');
@@ -831,16 +834,16 @@ const plan = (function () {
     planHeading.innerText = 'Plan Attachments';
     workflowHeading.innerText = 'Workflow Attachments';
     signHeading.innerText = 'Signature Attachments';
-    planAttWrap.appendChild(planHeading);
-    workflowAttWrap.appendChild(workflowHeading);
-    signatureAttWrap.appendChild(signHeading);
+    portalPlanAttWrap.appendChild(planHeading);
+    portalWorkflowAttWrap.appendChild(workflowHeading);
+    portalSignatureAttWrap.appendChild(signHeading);
 
-    planAttBody = document.createElement('div');
-    signatureAttBody = document.createElement('div');
-    workflowAttBody = document.createElement('div');
-    planAttWrap.appendChild(planAttBody);
-    signatureAttWrap.appendChild(signatureAttBody);
-    workflowAttWrap.appendChild(workflowAttBody);
+    portalPlanAttBody = document.createElement('div');
+    portalSignatureAttBody = document.createElement('div');
+    portalWorkflowAttBody = document.createElement('div');
+    portalPlanAttWrap.appendChild(portalPlanAttBody);
+    portalSignatureAttWrap.appendChild(portalSignatureAttBody);
+    portalWorkflowAttWrap.appendChild(portalWorkflowAttBody);
 
     screen.appendChild(attachmentsWrap);
 
@@ -1140,20 +1143,20 @@ const plan = (function () {
     const selectedAttachmentsPlan = {};
     const selectedAttachmentsWorkflow = {};
     const selectedAttachmentsSignature = {};
-
+  
     // clear out body before each run to prevent dups
-    planAttBody.innerHTML = '';
-    workflowAttBody.innerHTML = '';
-    signatureAttBody.innerHTML = '';
-
+    portalPlanAttBody.innerHTML = '';
+    portalWorkflowAttBody.innerHTML = '';
+    portalSignatureAttBody.innerHTML = '';
+  
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,
       assessmentId: planId,
     });
-
+  
     let index = 0;
-
+  
     if (attachments) {
       for (const prop in attachments) {
         attachments[prop].order = index;
@@ -1163,7 +1166,7 @@ const plan = (function () {
         const description = document.createElement('p');
         description.innerText = a.description;
         attachment.appendChild(description);
-
+  
         attachment.addEventListener('click', () => {
           if (!attachment.classList.contains('selected')) {
             attachment.classList.add('selected');
@@ -1185,29 +1188,29 @@ const plan = (function () {
             }
           }
         });
-
+  
         if (a.sigAttachmentId) {
-          signatureAttBody.appendChild(attachment);
+          portalSignatureAttBody.appendChild(attachment);
         } else if (a.whereFrom === 'Plan') {
-          planAttBody.appendChild(attachment);
+          portalPlanAttBody.appendChild(attachment);
         } else {
-          workflowAttBody.appendChild(attachment);
+          portalWorkflowAttBody.appendChild(attachment);
         }
-
+  
         index++;
       }
     }
-
+  
     // checkbox
     includeCheckbox = input.buildCheckbox({
       id: 'portalCheckbox',
       isChecked: include === 'Y' ? true : false,
     });
-
-    includeCheckbox.addEventListener('change', event => {
+  
+    includeCheckbox.addEventListener('change', (event) => {
       include = event.target.checked ? 'Y' : 'N';
     });
-
+  
     const doneBtn = button.build({
       text: 'Done',
       style: 'secondary',
@@ -1257,9 +1260,9 @@ const plan = (function () {
             include, // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
           );
         }
-
+  
         sendToPortalAlert(sendSuccess);
-
+  
         // remove spinner
         portalScreen.removeChild(spinner);
         portalScreen.appendChild(screenInner);
@@ -1267,7 +1270,7 @@ const plan = (function () {
         morePopupMenu.classList.add('visible');
       },
     });
-
+  
     const checkboxText = document.createElement('div');
     checkboxText.innerHTML =
       'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
