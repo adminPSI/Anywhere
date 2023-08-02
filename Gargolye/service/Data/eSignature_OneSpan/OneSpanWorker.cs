@@ -376,8 +376,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
         public byte[] createImage(string date, string name)
         {
-            string firstName = name;
-            string lastName = "E-Signed via OneSpan";
+            string firstName = "E-SIGNED by " + name; 
+            string lastName = "on " + date + " GMT";
             int width = 1400;
             int height = 400;
             using (Bitmap image = new Bitmap(width, height))
@@ -391,12 +391,12 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                     int xFirstName = (width - (int)g.MeasureString(firstName, font).Width) / 2;
                     int xLastName = (width - (int)g.MeasureString(lastName, font).Width) / 2;
-                    int xDate = (width - (int)g.MeasureString(date, font).Width) / 2;
+                    //int xDate = (width - (int)g.MeasureString(date, font).Width) / 2;
                     int y = (height - (int)g.MeasureString(firstName, font).Height * 3) / 2;
 
                     g.DrawString(firstName, font, brush, new PointF(xFirstName, y));
                     g.DrawString(lastName, font, brush, new PointF(xLastName, y + font.Height));
-                    g.DrawString(date, font, brush, new PointF(xDate, y + font.Height * 2));
+                    //g.DrawString(date, font, brush, new PointF(xDate, y + font.Height * 2));
                 }
 
                 using (MemoryStream memoryStream = new MemoryStream())
