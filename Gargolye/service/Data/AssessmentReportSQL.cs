@@ -790,6 +790,7 @@ namespace Anywhere.service.Data
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             if (dt.Rows.Count > 0)
             {
+                string fPath = string.Empty;
                 DataRow row = dt.Rows[0];
                 if (row["Use_Consumer_Plan_Image"].ToString() == "1") //Custom
                 {
@@ -802,10 +803,16 @@ namespace Anywhere.service.Data
                 else if (row["Use_Consumer_Plan_Image"].ToString() == "2") //No Picture
                 {
                     ba = null;
+                    fPath = @".\Images\new-icons\default.jpg";
+                    if (File.Exists(fPath))
+                    {
+                        ba = File.ReadAllBytes(fPath);
+                    }
                 }
+
                 else
                 {
-                    string fPath = string.Empty;
+                    fPath = string.Empty;
                     sb.Clear();
                     sb.Append("SELECT   setting ");
                     sb.Append("FROM sysoption ");
