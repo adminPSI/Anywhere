@@ -137,7 +137,7 @@ const WorkSchedule = (() => {
         NewStartTime = input.build({
             id: 'NewStartTime',
             type: 'time',
-            label: 'Strat Time',
+            label: 'Start Time',
             style: 'secondary',
             value: startTime,
         });
@@ -234,7 +234,7 @@ const WorkSchedule = (() => {
             NewEndTime.classList.remove('errorPopup');
         }
 
-        if (timeStart.value === '' || (timeEnd.value != '' && timeStart.value > timeEnd.value)) {  
+        if (timeStart.value === '') {    
             NewStartTime.classList.add('errorPopup');
         } else {
             NewStartTime.classList.remove('errorPopup');

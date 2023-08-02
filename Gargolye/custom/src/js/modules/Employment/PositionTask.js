@@ -157,7 +157,7 @@ const PositionTask = (() => {
         newStartDate = input.build({
             id: 'newStartDate',
             type: 'date',
-            label: 'Strat Date',
+            label: 'Start Date',
             style: 'secondary',
             value: startDate,
         });
