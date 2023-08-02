@@ -75,28 +75,28 @@ var itDetailsSection = (function () {
       factorsText = '';
     }
   }
-  function showTextErrorPopup() {
-    const errorPop = POPUP.build({
-      classNames: 'textErrorPopup',
-    });
+  // function showTextErrorPopup() {
+  //   const errorPop = POPUP.build({
+  //     classNames: 'textErrorPopup',
+  //   });
 
-    const message = document.createElement('p');
-    message.innerText = `You are not allowed to edit previously entered text.`;
+  //   const message = document.createElement('p');
+  //   message.innerText = `You are not allowed to edit previously entered text.`;
 
-    var okButton = button.build({
-      text: 'Ok',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        POPUP.hide(errorPop);
-      },
-    });
+  //   var okButton = button.build({
+  //     text: 'Ok',
+  //     style: 'secondary',
+  //     type: 'contained',
+  //     callback: function () {
+  //       POPUP.hide(errorPop);
+  //     },
+  //   });
 
-    errorPop.appendChild(message);
-    errorPop.appendChild(okButton);
+  //   errorPop.appendChild(message);
+  //   errorPop.appendChild(okButton);
 
-    POPUP.show(errorPop);
-  }
+  //   POPUP.show(errorPop);
+  // }
 
   // Section
   //-----------------------------------------------
@@ -286,66 +286,17 @@ var itDetailsSection = (function () {
       incidentCard.checkEntireIncidentCardforErrors();
     });
 
-    // $.session.updateIncidentSummaryText
-    // $.session.updateIncidentActionText
-    // $.session.updateIncidentPreventionText
-    // $.session.updateIncidentCauseText
-
     summaryTextarea.addEventListener('change', e => {
       incidentCard.checkEntireIncidentCardforErrors();
     });
-
-    summaryTextarea.addEventListener('change', e => {
-      if ($.session.updateIncidentSummaryText) {
-        incidentCard.checkEntireIncidentCardforErrors();
-        return;
-      }
-
-      const newText = e.target.value;
-      if (!newText.includes(summaryText)) {
-        summaryTextarea.classList.add('error');
-        incidentCard.checkEntireIncidentCardforErrors();
-        showTextErrorPopup();
-      }
-    });
     actionTextarea.addEventListener('change', e => {
-      if ($.session.updateIncidentActionText) {
-        incidentCard.checkEntireIncidentCardforErrors();
-        return;
-      }
-
-      const newText = e.target.value;
-      if (!newText.includes(actionText)) {
-        summaryTextarea.classList.add('error');
-        incidentCard.checkEntireIncidentCardforErrors();
-        showTextErrorPopup();
-      }
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     preventionTextarea.addEventListener('change', e => {
-      if ($.session.updateIncidentPreventionText) {
-        incidentCard.checkEntireIncidentCardforErrors();
-        return;
-      }
-
-      const newText = e.target.value;
-      if (!newText.includes(preventionText)) {
-        summaryTextarea.classList.add('error');
-        incidentCard.checkEntireIncidentCardforErrors();
-        showTextErrorPopup();
-      }
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     causeTextarea.addEventListener('change', e => {
-      if ($.session.updateIncidentCauseText) {
-        incidentCard.checkEntireIncidentCardforErrors();
-        return;
-      }
-
-      const newText = e.target.value;
-      if (!newText.includes(causeText)) {
-        summaryTextarea.classList.add('error');
-        incidentCard.checkEntireIncidentCardforErrors();
-        showTextErrorPopup();
-      }
+      incidentCard.checkEntireIncidentCardforErrors();
     });
     categoryDropdown.addEventListener('change', e => {
       incidentCard.checkEntireIncidentCardforErrors();
