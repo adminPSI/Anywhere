@@ -167,7 +167,8 @@ const signatureWidget = (function () {
       } else {
         filteredSignatures = missingSignatureData.filter(ms => {
           return (
-            ms.planStatus === signaturePlanStatus && ms.locationId === signatureWidgetLocationId
+            ms.planStatus === signaturePlanStatus &&
+            (ms.locationId === signatureWidgetLocationId || signatureWidgetLocationId === '%')
           );
         });
         populateMissingSignatures(filteredSignatures);
@@ -272,7 +273,8 @@ const signatureWidget = (function () {
 
     const sigTable = table.build(tableOptions);
     table.populate(sigTable, tableData);
-    widgetBody.appendChild(sigTable);
+    missingSignaturesList.innerHTML = '';
+    missingSignaturesList.appendChild(sigTable);
   }
 
   function init() {
