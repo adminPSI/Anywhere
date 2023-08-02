@@ -75,6 +75,28 @@ var itDetailsSection = (function () {
       factorsText = '';
     }
   }
+  function showTextErrorPopup() {
+    const errorPop = POPUP.build({
+      classNames: 'textErrorPopup',
+    });
+
+    const message = document.createElement('p');
+    message.innerText = `You are not allowed to edit previously entered text.`;
+
+    var okButton = button.build({
+      text: 'Ok',
+      style: 'secondary',
+      type: 'contained',
+      callback: function () {
+        POPUP.hide(errorPop);
+      },
+    });
+
+    errorPop.appendChild(message);
+    errorPop.appendChild(okButton);
+
+    POPUP.show(errorPop);
+  }
 
   // Section
   //-----------------------------------------------
@@ -270,6 +292,10 @@ var itDetailsSection = (function () {
     // $.session.updateIncidentCauseText
 
     summaryTextarea.addEventListener('change', e => {
+      incidentCard.checkEntireIncidentCardforErrors();
+    });
+
+    summaryTextarea.addEventListener('change', e => {
       if ($.session.updateIncidentSummaryText) {
         incidentCard.checkEntireIncidentCardforErrors();
         return;
@@ -279,6 +305,7 @@ var itDetailsSection = (function () {
       if (!newText.includes(summaryText)) {
         summaryTextarea.classList.add('error');
         incidentCard.checkEntireIncidentCardforErrors();
+        showTextErrorPopup();
       }
     });
     actionTextarea.addEventListener('change', e => {
@@ -291,6 +318,7 @@ var itDetailsSection = (function () {
       if (!newText.includes(actionText)) {
         summaryTextarea.classList.add('error');
         incidentCard.checkEntireIncidentCardforErrors();
+        showTextErrorPopup();
       }
     });
     preventionTextarea.addEventListener('change', e => {
@@ -303,6 +331,7 @@ var itDetailsSection = (function () {
       if (!newText.includes(preventionText)) {
         summaryTextarea.classList.add('error');
         incidentCard.checkEntireIncidentCardforErrors();
+        showTextErrorPopup();
       }
     });
     causeTextarea.addEventListener('change', e => {
@@ -315,6 +344,7 @@ var itDetailsSection = (function () {
       if (!newText.includes(causeText)) {
         summaryTextarea.classList.add('error');
         incidentCard.checkEntireIncidentCardforErrors();
+        showTextErrorPopup();
       }
     });
     categoryDropdown.addEventListener('change', e => {

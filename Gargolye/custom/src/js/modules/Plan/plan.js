@@ -862,6 +862,8 @@ const plan = (function () {
   }
   function buildChangePlanTypeScreen() {
     let newType;
+    let previousPlansTable;
+    let datesBoxDiv;
 
     const screen = document.createElement('div');
     screen.id = 'changePlanTypeScreen';
@@ -895,6 +897,30 @@ const plan = (function () {
         updateBtn.classList.add('disabled');
       } else {
         updateBtn.classList.remove('disabled');
+
+        if (newType === 'r') {
+          // prev plans table
+          previousPlansTable = buildPreviousPlansTable(true, (selectedPlan, planData) => {
+            const previouslySeletedRow = previousPlansTable.querySelector('.selected');
+            if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
+            selectedPlan.classList.add('selected');
+
+            planDates.setRevisionPlanDates(planData);
+
+            if (screen.contains(datesBoxDiv)) screen.removeChild(datesBoxDiv);
+            datesBoxDiv = planDates.buildDatesBox(isValid => {
+              if (isValid) {
+                updateBtn.classList.remove('disabled');
+              } else {
+                updateBtn.classList.add('disabled');
+              }
+            });
+            screen.insertBefore(datesBoxDiv, previousPlansTable);
+          });
+        } else {
+          if (previousPlansTable) screen.removeChild(previousPlansTable);
+          if (datesBoxDiv) screen.removeChild(datesBoxDiv);
+        }
       }
     });
 
@@ -969,6 +995,7 @@ const plan = (function () {
 
     screen.appendChild(currentType);
     screen.appendChild(typeDropdown);
+    screen.appendChild(previousPlansTable);
     screen.appendChild(btnWrap);
 
     return screen;
@@ -1143,20 +1170,20 @@ const plan = (function () {
     const selectedAttachmentsPlan = {};
     const selectedAttachmentsWorkflow = {};
     const selectedAttachmentsSignature = {};
-  
+
     // clear out body before each run to prevent dups
     portalPlanAttBody.innerHTML = '';
     portalWorkflowAttBody.innerHTML = '';
     portalSignatureAttBody.innerHTML = '';
-  
+
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
       token: $.session.Token,
       assessmentId: planId,
     });
-  
+
     let index = 0;
-  
+
     if (attachments) {
       for (const prop in attachments) {
         attachments[prop].order = index;
@@ -1166,7 +1193,7 @@ const plan = (function () {
         const description = document.createElement('p');
         description.innerText = a.description;
         attachment.appendChild(description);
-  
+
         attachment.addEventListener('click', () => {
           if (!attachment.classList.contains('selected')) {
             attachment.classList.add('selected');
@@ -1188,7 +1215,7 @@ const plan = (function () {
             }
           }
         });
-  
+
         if (a.sigAttachmentId) {
           portalSignatureAttBody.appendChild(attachment);
         } else if (a.whereFrom === 'Plan') {
@@ -1196,21 +1223,21 @@ const plan = (function () {
         } else {
           portalWorkflowAttBody.appendChild(attachment);
         }
-  
+
         index++;
       }
     }
-  
+
     // checkbox
     includeCheckbox = input.buildCheckbox({
       id: 'portalCheckbox',
       isChecked: include === 'Y' ? true : false,
     });
-  
-    includeCheckbox.addEventListener('change', (event) => {
+
+    includeCheckbox.addEventListener('change', event => {
       include = event.target.checked ? 'Y' : 'N';
     });
-  
+
     const doneBtn = button.build({
       text: 'Done',
       style: 'secondary',
@@ -1260,9 +1287,9 @@ const plan = (function () {
             include, // 'Y' or 'N' -- Include Important to, Important For, Skills and Abilities, and Risks in assessment
           );
         }
-  
+
         sendToPortalAlert(sendSuccess);
-  
+
         // remove spinner
         portalScreen.removeChild(spinner);
         portalScreen.appendChild(screenInner);
@@ -1270,7 +1297,7 @@ const plan = (function () {
         morePopupMenu.classList.add('visible');
       },
     });
-  
+
     const checkboxText = document.createElement('div');
     checkboxText.innerHTML =
       'Include Important to, Important For, Skills and Abilities, and Risks in assessment';
@@ -2193,48 +2220,52 @@ const plan = (function () {
     }
   }
 
-  function buildPreviousPlansTable() {
+  function buildPreviousPlansTable(forChangeType, callbackForChangeType) {
     const tableOptions = {
       plain: true,
       columnHeadings: ['Type', 'Rev #', 'PY Start', 'Eff Start', 'Review'],
-      tableId: 'previousPlanTable',
+      tableId: forChangeType ? 'previousPlanTableMoreMenu' : 'previousPlanTable',
       headline: 'Select a plan below for revision',
     };
 
     const tableData = previousPlansData
-      .filter(plan => {
-        return plan.active === 'True';
+      .filter(prevPlan => {
+        return prevPlan.active === 'True';
       })
-      .map(plan => {
-        const type = plan.planType === 'A' ? 'Ann' : 'Rev';
-        const revisionNum = plan.revisionNumber !== '0' ? plan.revisionNumber : '';
-        const start = plan.planYearStart.split(' ')[0];
-        const effectiveStart = plan.effectiveStart.split(' ')[0];
-        const reviewDate = plan.reviewDate ? plan.reviewDate.split(' ')[0] : 'n/a';
+      .map(prevPlan => {
+        const type = prevPlan.planType === 'A' ? 'Ann' : 'Rev';
+        const revisionNum = prevPlan.revisionNumber !== '0' ? prevPlan.revisionNumber : '';
+        const start = prevPlan.planYearStart.split(' ')[0];
+        const effectiveStart = prevPlan.effectiveStart.split(' ')[0];
+        const reviewDate = prevPlan.reviewDate ? prevPlan.reviewDate.split(' ')[0] : 'n/a';
 
         return {
           values: [type, revisionNum, start, effectiveStart, reviewDate],
-          attributes: [{ key: 'data-plan-id', value: plan.consumerPlanId }],
+          attributes: [{ key: 'data-plan-id', value: prevPlan.consumerPlanId }],
           onClick: e => {
-            const row = e.target;
-            const previouslySeletedRow = prevPlanTable.querySelector('.selected');
-            if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
+            if (!forChangeType) {
+              const row = e.target;
+              const previouslySeletedRow = prevPlanTable.querySelector('.selected');
+              if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
 
-            row.classList.add('selected');
+              row.classList.add('selected');
 
-            priorConsumerPlanId = plan.consumerPlanId;
+              planDates.setRevisionPlanDates(prevPlan);
 
-            planDates.setRevisionPlanDates(plan);
+              priorConsumerPlanId = prevPlan.consumerPlanId;
 
-            if (setupWrap.contains(datesBoxDiv)) setupWrap.removeChild(datesBoxDiv);
-            datesBoxDiv = planDates.buildDatesBox(isValid => {
-              if (isValid) {
-                doneBtn.classList.remove('disabled');
-              } else {
-                doneBtn.classList.add('disabled');
-              }
-            });
-            setupWrap.insertBefore(datesBoxDiv, prevPlanTable);
+              if (setupWrap.contains(datesBoxDiv)) setupWrap.removeChild(datesBoxDiv);
+              datesBoxDiv = planDates.buildDatesBox(isValid => {
+                if (isValid) {
+                  doneBtn.classList.remove('disabled');
+                } else {
+                  doneBtn.classList.add('disabled');
+                }
+              });
+              setupWrap.insertBefore(datesBoxDiv, prevPlanTable);
+            } else {
+              callbackForChangeType(row, prevPlan);
+            }
           },
         };
       });
@@ -2573,6 +2604,7 @@ const plan = (function () {
     toggleNewPlanDoneBtn,
     handleActionNavEvent,
     buildPlanPage,
+    buildPreviousPlansTable,
     loadLanding: loadLandingPage,
     init,
   };
