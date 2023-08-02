@@ -5,6 +5,7 @@ using OneSpanSign.Sdk.Builder;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -13,14 +14,18 @@ using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Web.UI.MobileControls.Adapters;
 using static Anywhere.service.Data.eSignature___OneSpan.OneSpanWorker;
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using Org.BouncyCastle.Cms;
 
 
 namespace Anywhere.service.Data.eSignature___OneSpan
 {
     public class OneSpanWorker
     {
-        //private static String apiUrl = "https://sandbox.esignlive.com/api";
-        private static String apiUrl = "https://sandbox.esignlive.com/apitoken/clientApp/accessToken";
+        private static String apiUrl = "https://sandbox.esignlive.com/api";
+        //private static String apiUrl = "https://sandbox.esignlive.com/apitoken/clientApp/accessToken";
         // USE https://apps.e-signlive.com/api FOR PRODUCTION
         private static String apiKey = "MEhOb1ptNkhXd1FaOnhqSTdUYXZlaFowSQ==";
         OssClient ossClient = new OssClient(apiKey, apiUrl);
@@ -31,7 +36,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         public string oneSpanBuildSigners(string token, string assessmentID, MemoryStream ms)
         {
 
-            string applicationVersion = ossClient.SystemService.GetApplicationVersion();
+            //string applicationVersion = ossClient.SystemService.GetApplicationVersion();
             if (tokenValidator(token) == false) return null;
             if (!osdg.validateToken(token))
             {
@@ -369,22 +374,58 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             public string signedStatus { get; set; }
         }
 
+        public byte[] createImage(string date, string name)
+        {
+            string firstName = name;
+            string lastName = "E-Signed via OneSpan";
+            int width = 1400;
+            int height = 400;
+            using (Bitmap image = new Bitmap(width, height))
+            {
+                using (Graphics g = Graphics.FromImage(image))
+                {
+                    g.Clear(Color.White);
+
+                    Font font = new Font("Arial", 40, FontStyle.Regular);
+                    Brush brush = Brushes.Black;
+
+                    int xFirstName = (width - (int)g.MeasureString(firstName, font).Width) / 2;
+                    int xLastName = (width - (int)g.MeasureString(lastName, font).Width) / 2;
+                    int xDate = (width - (int)g.MeasureString(date, font).Width) / 2;
+                    int y = (height - (int)g.MeasureString(firstName, font).Height * 3) / 2;
+
+                    g.DrawString(firstName, font, brush, new PointF(xFirstName, y));
+                    g.DrawString(lastName, font, brush, new PointF(xLastName, y + font.Height));
+                    g.DrawString(date, font, brush, new PointF(xDate, y + font.Height * 2));
+                }
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    image.Save(memoryStream, ImageFormat.Png);
+                    return memoryStream.ToArray();
+                }
+            }
+        }
+
         public string oneSpanGetSignedDocuments(string token, string packageId, string assessmentID)
         {
             long assessmentId = long.Parse(assessmentID);
             string input = osdg.OneSpanGetSignatures(token, assessmentId);
             bool updateTeamMemberTable = false;
+            string signatureImageString = "";
 
             List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
             List<string> signatureIds = new List<string>();
             List<string> datesSigned = new List<string>();
             List<string> signatureTypes = new List<string>();
+            List<string> names = new List<string>();
 
             foreach (var item in result)
             {
                 signatureIds.Add(item["signatureId"]);
                 datesSigned.Add(item["dateSigned"]);
                 signatureTypes.Add(item["signatureType"]);
+                names.Add(item["name"]);
             }
 
             PackageId currentPackageId = new PackageId(packageId);
@@ -447,7 +488,13 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                             string dateString = fieldSummary.FieldValue;
                             DateTime dateTime = DateTime.ParseExact(dateString, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
                             string date_signed = dateTime.ToString("yyyy-MM-dd");
+
+                            // sets the format of time needed for signature image
+                            string dateSignedImage = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
                             fieldDictionary.Add(fieldId, date_signed);
+
+                            byte[] signatureImage = createImage(dateSignedImage, names[i]);
+                            signatureImageString = Convert.ToBase64String(signatureImage);
                         }
                     }
 
@@ -473,7 +520,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                         fieldDictionary["csSupportsHealthNeeds"],
                         fieldDictionary["csTechnology"],
                         fieldDictionary["dissentAreaDisagree"],
-                        fieldDictionary["dissentHowToAddress"]
+                        fieldDictionary["dissentHowToAddress"],
+                        signatureImageString
                     );
                     i++;
                     updateTeamMemberTable = true;
@@ -506,7 +554,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             }
         }
 
-        public class OneSpanSigner
+    public class OneSpanSigner
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }

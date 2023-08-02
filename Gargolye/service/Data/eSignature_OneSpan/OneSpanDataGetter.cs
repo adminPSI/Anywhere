@@ -72,7 +72,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
             }
         }
 
-        public string UpdateOneSpanPlanConsentStatements(string token, string signatureId, string dateSigned, string csChangeMind, string csContact, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string dissentAreaDisagree, string dissentHowToAdress)
+        public string UpdateOneSpanPlanConsentStatements(string token, string signatureId, string dateSigned, string csChangeMind, string csContact, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string dissentAreaDisagree, string dissentHowToAdress, string signatureImage)
         {
             if (validateToken(token) == false) return null;
             logger.debug("UpdateConsentStatements ");
@@ -91,6 +91,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
             list.Add(csTechnology);
             list.Add(dissentAreaDisagree);
             list.Add(dissentHowToAdress);
+            list.Add(signatureImage);
 
             string text = "CALL DBA.ANYW_ISP_UpdateOneSpanPlanConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
