@@ -11,14 +11,25 @@ const incidentPermissions = (function () {
     const textareas = [...document.querySelectorAll('textarea')];
 
     textareas.forEach(textarea => {
-      if (
-        (textarea.classList.contains('summary') && $.session.updateIncidentSummaryText) ||
-        (textarea.classList.contains('action') && $.session.updateIncidentActionText) ||
-        (textarea.classList.contains('prevention') && $.session.updateIncidentPreventionText) ||
-        (textarea.classList.contains('factors') && $.session.updateIncidentCauseText)
-      ) {
-        if ($.session.UserId.toLowerCase() !== enteredBy.toLowerCase()) {
+      if ($.session.UserId.toLowerCase() === enteredBy.toLowerCase()) {
+        return; // do nothing
+      } else {
+        if (
+          (textarea.classList.contains('summary') && $.session.updateIncidentSummaryText) ||
+          (textarea.classList.contains('action') && $.session.updateIncidentActionText) ||
+          (textarea.classList.contains('prevention') && $.session.updateIncidentPreventionText) ||
+          (textarea.classList.contains('factors') && $.session.updateIncidentCauseText)
+        ) {
+          // only append
+        } else {
+          return; // do nothing
         }
+      }
+
+      // if Im the person then don't check permission
+      // if Im the person then check permission if checked only append, if not checked the go back to top
+
+      if ($.session.UserId.toLowerCase() !== enteredBy.toLowerCase()) {
       }
 
       const nonEditableText = textarea.value;

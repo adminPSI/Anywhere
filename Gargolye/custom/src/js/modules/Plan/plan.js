@@ -995,7 +995,6 @@ const plan = (function () {
 
     screen.appendChild(currentType);
     screen.appendChild(typeDropdown);
-    screen.appendChild(previousPlansTable);
     screen.appendChild(btnWrap);
 
     return screen;
