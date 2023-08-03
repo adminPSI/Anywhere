@@ -201,7 +201,7 @@ const Employment = (() => {
             token: $.session.Token,
             employer: '%',
             position: '%',
-            positionStartDate: '1990-01-01', // UTIL.formatDateFromDateObj(dates.subDays(new Date('1/1/1990'))),  
+            positionStartDate: '1900-01-01', // UTIL.formatDateFromDateObj(dates.subDays(new Date('1/1/1990'))),  
             positionEndDate: null,// UTIL.getTodaysDate(),           
             jobStanding: '%',
         }

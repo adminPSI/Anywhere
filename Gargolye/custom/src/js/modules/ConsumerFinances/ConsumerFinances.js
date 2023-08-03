@@ -25,6 +25,7 @@ const ConsumerFinances = (() => {
         switch (targetAction) {
             case 'miniRosterDone': {
                 selectedConsumers = roster2.getActiveConsumers();
+                filterValues = undefined;
                 await loadConsumerFinanceLanding();
                 DOM.toggleNavLayout();
                 break;
@@ -98,7 +99,7 @@ const ConsumerFinances = (() => {
             filterValues.category,
             filterValues.minamount,
             filterValues.maxamount,
-            filterValues.checkNo, 
+            filterValues.checkNo,
             filterValues.Balance,
             filterValues.enteredBy,
             filterValues.isattachment,
@@ -211,7 +212,7 @@ const ConsumerFinances = (() => {
             checkNo: '',
             Balance: '',
             enteredBy: '%',
-            isattachment: '%', 
+            isattachment: '%',
         }
 
         return button.build({
@@ -274,29 +275,29 @@ const ConsumerFinances = (() => {
             hideX: true,
         });
 
-        fromDateInput = input.build({ 
+        fromDateInput = input.build({
             id: 'fromDateInput',
             type: 'date',
-            label: 'From Date', 
+            label: 'From Date',
             style: 'secondary',
-            value:filterValues.activityStartDate,
+            value: filterValues.activityStartDate,
         });
- 
- 
+
+
         toDateInput = input.build({
             id: 'toDateInput',
             type: 'date',
             label: 'To Date',
             style: 'secondary',
-            value: filterValues.activityEndDate,  
+            value: filterValues.activityEndDate,
         });
 
         minAmountInput = input.build({
             id: 'minAmountInput',
-            type: 'text',  
+            type: 'text',
             label: 'Min Amount',
             style: 'secondary',
-            value: '$' + ((filterValues.minamount) ? filterValues.minamount : ''), 
+            value: '$' + ((filterValues.minamount) ? filterValues.minamount : ''),
         });
 
         maxAmountInput = input.build({
@@ -342,7 +343,6 @@ const ConsumerFinances = (() => {
             text: 'Apply',
             style: 'secondary',
             type: 'contained',
-            callback: async () => filterPopupDoneBtn()
         });
         CANCEL_BTN = button.build({
             text: 'Cancel',
@@ -391,11 +391,21 @@ const ConsumerFinances = (() => {
 
     // binding filter events 
     function eventListeners() {
+        var tmpactivityStartDate;
+        var tmpactivityEndDate;
+        var tmpminAmount;
+        var tmpmaxAmount;
+        var tmpaccountName;
+        var tmpenteredBy;
+        var tmppayee;
+        var tmpcategory;
+        var tmpisattachment;
+
         fromDateInput.addEventListener('change', event => {
-            filterValues.activityStartDate = event.target.value;
+            tmpactivityStartDate = event.target.value;
         });
         toDateInput.addEventListener('change', event => {
-            filterValues.activityEndDate = event.target.value;   
+            tmpactivityEndDate = event.target.value;
         });
 
         minAmountInput.addEventListener('keyup', event => {
@@ -408,13 +418,13 @@ const ConsumerFinances = (() => {
             else if (minAmount.includes('.') && (minAmount.match(/\./g).length > 1 || minAmount.toString().split('.')[1].length > 2)) {
                 document.getElementById('minAmountInput').value = minAmount.substring(0, minAmount.length - 1);
                 return;
-            }  
-            filterValues.minamount = minAmount.replace('$', '');
+            }
+            tmpminAmount = minAmount.replace('$', '');
         });
 
         maxAmountInput.addEventListener('keyup', event => {
             maxAmount = event.target.value;
-            var reg = new RegExp('^[0-9 . $ -]+$');     
+            var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(maxAmount)) {
                 document.getElementById('maxAmountInput').value = maxAmount.substring(0, maxAmount.length - 1);
                 return;
@@ -422,27 +432,56 @@ const ConsumerFinances = (() => {
             else if (maxAmount.includes('.') && (maxAmount.match(/\./g).length > 1 || maxAmount.toString().split('.')[1].length > 2)) {
                 document.getElementById('maxAmountInput').value = maxAmount.substring(0, maxAmount.length - 1);
                 return;
-            }   
-            filterValues.maxamount = maxAmount.replace('$', ''); 
+            }
+            tmpmaxAmount = maxAmount.replace('$', '');
         });
 
         accountFilterDropdown.addEventListener('change', event => {
-            filterValues.accountName = event.target.value;
+            tmpaccountName = event.target.value;
         });
         lastUpdateDropdown.addEventListener('change', event => {
-            filterValues.enteredBy = event.target.value;
+            tmpenteredBy = event.target.options[event.target.selectedIndex].innerHTML == 'ALL' ? '%' : event.target.options[event.target.selectedIndex].innerHTML;//event.target.value;
             filterValues.userName = event.target.options[event.target.selectedIndex].innerHTML;
         });
         payeeDropdown.addEventListener('change', event => {
-            filterValues.payee = event.target.value;
+            tmppayee = event.target.value;
         });
         categoryDropdown.addEventListener('change', event => {
-            filterValues.category = event.target.value;
+            tmpcategory = event.target.value;
         });
         isAttachedDropdown.addEventListener('change', event => {
-            filterValues.isattachment = event.target.value; 
+            tmpisattachment = event.target.value;
         });
 
+        APPLY_BTN.addEventListener('click', () => {
+            updateFilterData({
+                tmpactivityStartDate,
+                tmpactivityEndDate,
+                tmpminAmount,
+                tmpmaxAmount,
+                tmpaccountName,
+                tmpenteredBy,
+                tmppayee,
+                tmpcategory,
+                tmpisattachment
+            });
+            POPUP.hide(filterPopup);
+            //eventListeners();
+            loadConsumerFinanceLanding();
+        });
+
+    }
+
+    function updateFilterData(data) {
+        if (data.tmpactivityStartDate) filterValues.activityStartDate = data.tmpactivityStartDate;
+        if (data.tmpactivityEndDate) filterValues.activityEndDate = data.tmpactivityEndDate;
+        if (data.tmpminAmount) filterValues.minAmount = data.tmpminAmount;
+        if (data.tmpmaxAmount) filterValues.maxAmount = data.tmpmaxAmount;
+        if (data.tmpaccountName) filterValues.accountName = data.tmpaccountName;
+        if (data.tmpenteredBy) filterValues.enteredBy = data.tmpenteredBy;
+        if (data.tmppayee) filterValues.payee = data.tmppayee;
+        if (data.tmpcategory) filterValues.category = data.tmpcategory;
+        if (data.tmpisattachment) filterValues.isattachment = data.tmpisattachment;
     }
 
     async function populateFilterDropdown() {
@@ -475,7 +514,7 @@ const ConsumerFinances = (() => {
             id: category.CategoryID,
             value: category.CategoryDescription,
             text: category.CategoryDescription
-        })); 
+        }));
         categoryData.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("categoryDropdown", categoryData, filterValues.category);
 
@@ -484,24 +523,18 @@ const ConsumerFinances = (() => {
         } = await ConsumerFinancesAjax.getActiveEmployeesAsync();
         let data = employees.map((employee) => ({
             id: employee.userId,
-            value: employee.userId,
+            value: employee.userName,
             text: employee.userName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
-        dropdown.populate("lastUpdateDropdown", data, filterValues.enteredBy); 
+        dropdown.populate("lastUpdateDropdown", data, filterValues.enteredBy);
 
-        const condfidentialDropdownData = ([ 
+        const condfidentialDropdownData = ([
             { text: 'Yes', value: 'Yes' },
             { text: 'No', value: 'No' },
         ]);
         condfidentialDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
-        dropdown.populate("isAttachedDropdown", condfidentialDropdownData, filterValues.isattachment);   
-    }
-
-    async function filterPopupDoneBtn() {
-        POPUP.hide(filterPopup);
-        eventListeners();
-        loadConsumerFinanceLanding();
+        dropdown.populate("isAttachedDropdown", condfidentialDropdownData, filterValues.isattachment);
     }
 
     function filterPopupCancelBtn() {

@@ -85,7 +85,8 @@ body.planActive {
   }
 }
 
-#previousPlanTable {
+#previousPlanTable,
+#previousPlanTableMoreMenu {
   max-height: 340px;
   overflow: scroll;
 }
@@ -135,7 +136,8 @@ body.planActive {
 
 // OVERVIEW PAGE
 #planOverviewTable,
-#previousPlanTable {
+#previousPlanTable,
+#previousPlanTableMoreMenu {
   .table__row {
     cursor: pointer;
     justify-content: space-between;
