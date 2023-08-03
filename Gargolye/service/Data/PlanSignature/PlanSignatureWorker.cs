@@ -1,6 +1,7 @@
 ﻿using PSIOISP;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanSignature
@@ -12,6 +13,7 @@ namespace Anywhere.service.Data.PlanSignature
         PlanSignatureDataGetter psdg = new PlanSignatureDataGetter();
         OISPWorker oispW = new OISPWorker();
         PlanDataGetter pdg = new PlanDataGetter();
+        static HttpClient client = new HttpClient();
 
         public PlanSignatures[] getSignatures(string token, long assessmentId)
         {
@@ -97,6 +99,7 @@ namespace Anywhere.service.Data.PlanSignature
 
         public string GetSalesForceId(long consumerId, long peopleId)
         {
+            //client.BaseAddress
 
             try
             {
