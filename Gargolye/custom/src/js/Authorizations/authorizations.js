@@ -1,6 +1,7 @@
 const authorizations = (function () {
   // DATA
   let selectedConsumer;
+  let filterValues = {};
   // DOM
   let filterPopup;
   let planTypeDropdown;
@@ -101,21 +102,28 @@ const authorizations = (function () {
     dateWrap.appendChild(yearEndStart);
     dateWrap.appendChild(yearEndEnd);
 
-    const applyBtn = button.build({
+    const btnWrap = document.createElement('div');
+    applyFilterBtn = button.build({
       text: 'Apply',
       style: 'secondary',
       type: 'contained',
+    });
+    const cancelFilterBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
       callback: function () {
-        updateFilteredBy();
-        POPUP.hide(popup);
+        POPUP.hide(filterPopup);
       },
     });
+    btnWrap.appendChild(applyFilterBtn);
+    btnWrap.appendChild(cancelFilterBtn);
 
     filterPopup.appendChild(planTypeDropdown);
     filterPopup.appendChild(vendorDropdown);
     filterPopup.appendChild(matchSourceDropdown);
     filterPopup.appendChild(dateWrap);
-    filterPopup.appendChild(applyBtn);
+    filterPopup.appendChild(btnWrap);
 
     POPUP.show(filterPopup);
 
@@ -156,15 +164,42 @@ const authorizations = (function () {
     dropdown.populate(matchSourceDropdown, data, filterValues.matchSource);
   }
   function setupFilterEvents() {
-    planTypeDropdown.addEventListener('change', e => {});
-    vendorDropdown.addEventListener('change', e => {});
-    matchSourceDropdown.addEventListener('change', e => {});
-    completedDateStart.addEventListener('change', e => {});
-    completedDateEnd.addEventListener('change', e => {});
-    yearStartStart.addEventListener('change', e => {});
-    yearStartEnd.addEventListener('change', e => {});
-    yearEndStart.addEventListener('change', e => {});
-    yearEndEnd.addEventListener('change', e => {});
+    const newFilterValues = {};
+
+    planTypeDropdown.addEventListener('change', e => {
+      var selectedOption = e.target.options[e.target.selectedIndex];
+      newFilterValues.planType = selectedOption.value;
+    });
+    vendorDropdown.addEventListener('change', e => {
+      var selectedOption = e.target.options[e.target.selectedIndex];
+      newFilterValues.vendor = selectedOption.value;
+    });
+    matchSourceDropdown.addEventListener('change', e => {
+      var selectedOption = e.target.options[e.target.selectedIndex];
+      newFilterValues.matchSource = selectedOption.value;
+    });
+    completedDateStart.addEventListener('change', e => {
+      newFilterValues.completedDateStart = e.target.value;
+    });
+    completedDateEnd.addEventListener('change', e => {
+      newFilterValues.completedDateEnd = e.target.value;
+    });
+    yearStartStart.addEventListener('change', e => {
+      newFilterValues.yearStartStart = e.target.value;
+    });
+    yearStartEnd.addEventListener('change', e => {
+      newFilterValues.yearStartEnd = e.target.value;
+    });
+    yearEndStart.addEventListener('change', e => {
+      newFilterValues.yearEndStart = e.target.value;
+    });
+    yearEndEnd.addEventListener('change', e => {
+      newFilterValues.yearEndEnd = e.target.value;
+    });
+    applyFilterBtn.addEventListener('click', e => {
+      POPUP.hide(filterPopup);
+      filterValues = newFilterValues;
+    });
   }
   function updateFilteredBy() {}
 
@@ -178,7 +213,9 @@ const authorizations = (function () {
 
     return wrap;
   }
-  function buildOverviewTable() {}
+  function buildOverviewTable() {
+    // todo
+  }
 
   function loadPage() {
     DOM.clearActionCenter();
