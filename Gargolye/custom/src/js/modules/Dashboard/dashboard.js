@@ -171,7 +171,7 @@
     `,
     missingSignatures: `
     <div class="widget__header">
-      <h3>Plan Missing Signatures</h3>
+      <h3>Plans Missing Signatures</h3>
     </div>
     <div class="widget__body">
     <div class="missingSignatures"></div>

@@ -731,7 +731,7 @@ const planConsentAndSign = (() => {
         const name = contactInformation.cleanName({
           lastName: m.lastName,
           firstName: m.name,
-          middleName: '',
+          middleName: m.middleName,
         });
         const participated = m.participated === '' ? '' : m.participated === 'Y' ? 'Yes' : 'No';
         const signatureType = csTeamMember.getSignatureTypeByID(m.signatureType);

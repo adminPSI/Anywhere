@@ -1,50 +1,65 @@
 // Used For Incident Review Page
-var incidentPermissions = (function() {
-
+const incidentPermissions = (function () {
   function incidentDetails(enteredBy) {
-    if ($.session.UserId.toLowerCase() !== enteredBy.toLowerCase()) {
-      var textarea = document.querySelector('textarea.summary');
-      var nonEditableText = textarea.value;
-      var newlyEnteredText = ``;
+    const textareas = [...document.querySelectorAll('textarea')];
 
-      textarea.addEventListener('keyup', event => {
-        var updatedText = event.target.value;
-        var updatedContainsNonEditable = updatedText.indexOf(nonEditableText);
-        // if noneditable text is not at the beginning or has been changed
-        if (updatedContainsNonEditable !== 0) {
-          textarea.blur();
-          // create and append popup
-          var popupElement = POPUP.build({
-            id: 'js-incidentSummaryWarning',
-            closeCallback: () => {
-              //POPUP.hide(popupElement);
-              newlyEnteredText = textarea.value.slice(nonEditableText.length, textarea.value.length);
-              textarea.value = `${nonEditableText} ${newlyEnteredText}`;
-              newlyEnteredText = '';
+    textareas.forEach(textarea => {
+      if ($.session.UserId.toLowerCase() !== enteredBy.toLowerCase()) {
+        if (
+          (textarea.classList.contains('summary') && $.session.updateIncidentSummaryText) ||
+          (textarea.classList.contains('action') && $.session.updateIncidentActionText) ||
+          (textarea.classList.contains('prevention') && $.session.updateIncidentPreventionText) ||
+          (textarea.classList.contains('factors') && $.session.updateIncidentCauseText)
+        ) {
+          const nonEditableText = textarea.value;
+          let newlyEnteredText = ``;
+
+          textarea.addEventListener('keyup', event => {
+            const updatedText = event.target.value;
+            const updatedContainsNonEditable = updatedText.indexOf(nonEditableText);
+            // if noneditable text is not at the beginning or has been changed
+            if (updatedContainsNonEditable !== 0) {
+              textarea.blur();
+              // create and append popup
+              const popupElement = POPUP.build({
+                id: 'js-incidentSummaryWarning',
+                closeCallback: () => {
+                  //POPUP.hide(popupElement);
+                  newlyEnteredText = textarea.value.slice(
+                    nonEditableText.length,
+                    textarea.value.length,
+                  );
+                  textarea.value = `${nonEditableText} ${newlyEnteredText}`;
+                  newlyEnteredText = '';
+                },
+              });
+              const message = document.createElement('div');
+              message.innerHTML = 'You are not allowed to edit previously entered text.';
+
+              const okButton = button.build({
+                text: 'Ok',
+                style: 'secondary',
+                type: 'contained',
+                callback: function () {
+                  POPUP.hide(popupElement);
+                  newlyEnteredText = textarea.value.slice(
+                    nonEditableText.length,
+                    textarea.value.length,
+                  );
+                  textarea.value = `${nonEditableText} ${newlyEnteredText}`;
+                  newlyEnteredText = '';
+                },
+              });
+
+              popupElement.appendChild(message);
+              popupElement.appendChild(okButton);
+
+              POPUP.show(popupElement);
             }
           });
-          var message = document.createElement('div');
-          message.innerHTML = 'You are not allowed to edit previously entered text.';
-          
-          var okButton = button.build({
-            text: 'Ok',
-            style: 'secondary',
-            type: 'contained',
-            callback: function() {
-              POPUP.hide(popupElement);
-              newlyEnteredText = textarea.value.slice(nonEditableText.length, textarea.value.length);
-              textarea.value = `${nonEditableText} ${newlyEnteredText}`;
-              newlyEnteredText = '';
-            }
-          });
-
-          popupElement.appendChild(message);
-          popupElement.appendChild(okButton);
-
-          POPUP.show(popupElement);
         }
-      });
-    }
+      }
+    });
   }
 
   function permissions(originallyEnteredByUserId) {
@@ -70,6 +85,6 @@ var incidentPermissions = (function() {
 
   return {
     incidentDetails,
-    permissions
-  }
-}());
+    permissions,
+  };
+})();
