@@ -2831,7 +2831,7 @@ namespace Anywhere
         WorkflowWorker.DocumentAttachment updateWorkflowStepDocument(string token, string documentId, string attachmentType, string attachment, string documentEdited);
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2839,7 +2839,7 @@ namespace Anywhere
         String setWorkflowStatus(string token, string workflowId, string statusId);
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2855,7 +2855,7 @@ namespace Anywhere
         String setWorkflowStepDueDate(string token, string stepId, string dueDate);
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2863,7 +2863,7 @@ namespace Anywhere
         String setWorkflowStepDocumentOrder(string token, WorkflowWorker.OrderObject[] orderArray);
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2871,7 +2871,7 @@ namespace Anywhere
         String setWorkflowStepOrder(string token, WorkflowWorker.OrderObject[] orderArray);
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
@@ -2879,7 +2879,7 @@ namespace Anywhere
         String updateWorkflowStep(string token, WorkflowWorker.WorkflowStep step);
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
         BodyStyle = WebMessageBodyStyle.Wrapped,
         ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
@@ -2888,7 +2888,7 @@ namespace Anywhere
 
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
            BodyStyle = WebMessageBodyStyle.Wrapped,
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
