@@ -80,7 +80,7 @@ const PositionTask = (() => {
         };
 
         let tableData = PositionEntries.getPositionTaskEntriesResult.map((entry) => ({
-            values: [entry.task, entry.description, entry.startDate == '' ? '' : moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY'), entry.initialPerformance, entry.initialPerformanceNotes, entry.employeeStandard],
+            values: [entry.task, entry.description, entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY'), entry.initialPerformance, entry.initialPerformanceNotes, entry.employeeStandard],
             attributes: [{ key: 'jobTaskId', value: entry.jobTaskId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.jobTaskId.value)
@@ -149,7 +149,7 @@ const PositionTask = (() => {
         descriptionInput = input.build({
             id: 'descriptionInput',
             type: 'text',
-            label: 'description',
+            label: 'Description',
             style: 'secondary',
             value: description,
         });
