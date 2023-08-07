@@ -33,6 +33,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAssessmentWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
@@ -1665,6 +1666,11 @@ namespace Anywhere
         public AnywherePlanWorker.ConsumerPlans[] getConsumerPlans(string token, string consumerId)
         {
             return aPW.getConsumerPlans(token, consumerId);
+        }
+
+        public AnywhereAssessmentWorker.AuthorizationPageData[] authorizationGetPageData(string token)
+        {
+            return aAW.authorizationGetPageData(token);
         }
 
         public AnywherePlanWorker.AddAttachment[] addPlanAttachment(string token, long assessmentId, string description, string attachmentType, string attachment, string section, long questionId)

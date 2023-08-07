@@ -2463,6 +2463,14 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/authorizationGetPageData/")]
+        AnywhereAssessmentWorker.AuthorizationPageData[] authorizationGetPageData(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getPlanAttachmentsList/")]
         AnywherePlanWorker.AttachmentList[] getPlanAttachmentsList(string token, long planId, string section);
 
