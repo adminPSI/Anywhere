@@ -12,20 +12,29 @@ namespace Anywhere.service.Data
         StringBuilder sb = new StringBuilder();
         Data.Sybase di = new Data.Sybase();
 
-        public DataSet AssesmentHeader(long AssesmentID)
+        public DataSet AssesmentHeader(long AssesmentID, Boolean Advisor = false)
         {
             sb.Clear();
             sb.Append("SELECT   DBA.anyw_isp_consumer_plans.plan_type, DBA.anyw_isp_consumer_plans.plan_year_start, ");
             sb.Append("DBA.anyw_isp_consumer_plans.plan_year_end, DBA.anyw_isp_consumer_plans.active, ");
             sb.Append("DBA.anyw_isp_consumer_plans.revision_number, DBA.anyw_isp_consumer_plans.plan_status, ");
             sb.Append("DBA.People.Last_Name, DBA.People.First_Name, DBA.anyw_isp_consumer_plans.effective_start, ");
-            sb.Append("DBA.People.Middle_Name, DBA.People.generation ");
+            sb.Append("DBA.People.Middle_Name, ");
+            if (Advisor == true)
+            {
+                sb.Append("'' AS generation ");
+            }
+            else
+            {
+                sb.Append("DBA.People.generation ");
+            }
             sb.Append("FROM     DBA.anyw_isp_consumer_plans ");
             sb.Append("LEFT OUTER JOIN DBA.People ON DBA.anyw_isp_consumer_plans.consumer_id = DBA.People.ID ");
             sb.AppendFormat("WHERE DBA.anyw_isp_consumer_plans.isp_consumer_plan_id = {0} ", AssesmentID);
             //MessageBox.Show("AssesmentHeader");
             return di.SelectRowsDS(sb.ToString());
         }
+
 
         public DataSet AssesmentAnswers(long AssesmentID, bool Assessment)
         {

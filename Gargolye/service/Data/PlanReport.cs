@@ -104,7 +104,7 @@ namespace Anywhere.service.Data
             //crName = @"C:\Work\AssesmentReports\OISPIntro.rpt";
             //cr.Load(crName);
             var crViewer = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
-            DataTable dt = ars.AssesmentHeader(ID).Tables[0];
+            DataTable dt = ars.AssesmentHeader(ID, Advisor).Tables[0];
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.OpenSubreport("Header").SetDataSource(dt);
             cr.OpenSubreport("ISPIntroduction").SetDataSource(ars.ISPIntroduction(ID, Advisor));
@@ -199,7 +199,7 @@ namespace Anywhere.service.Data
             var crViewer = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
             cr.SetDataSource(ars.AssesmentAnswers(long.Parse(assessmentID), Advisor));
 
-            DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID)).Tables[0];
+            DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID), Advisor).Tables[0];
             cr.OpenSubreport("Header").SetDataSource(dt);
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = eS.ToString(); // Option for expanded text for editing
@@ -271,7 +271,7 @@ namespace Anywhere.service.Data
             //cr.Load(crName);
             cr.SetDataSource(ars.AssesmentAnswers(ID, Advisor));
 
-            DataTable dt = ars.AssesmentHeader(ID).Tables[0];
+            DataTable dt = ars.AssesmentHeader(ID, Advisor).Tables[0];
             cr.OpenSubreport("Header").SetDataSource(dt);
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = string.Format("'{0}'", dt.Rows[0]["plan_status"].ToString());
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
@@ -364,7 +364,7 @@ namespace Anywhere.service.Data
                 logger.debug(builder.ToString());
             }
             cr.SetDataSource(ars.AssesmentAnswers(long.Parse(assessmentID), true));
-            DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID)).Tables[0];
+            DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID), Advisor).Tables[0];
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = String.Format("'{0}'", dt.Rows[0]["plan_status"]);
             cr.DataDefinition.FormulaFields["PageNumberStart"].Text = TotalPage.ToString();
             cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = eS.ToString();
@@ -445,7 +445,7 @@ namespace Anywhere.service.Data
                 logger.debug(builder.ToString());
             }
             cr.SetDataSource(ars.AssesmentAnswers(long.Parse(assessmentID), true));
-            DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID)).Tables[0];
+            DataTable dt = ars.AssesmentHeader(long.Parse(assessmentID), Advisor).Tables[0];
             cr.DataDefinition.FormulaFields["PlanStatus"].Text = String.Format("'{0}'", dt.Rows[0]["plan_status"]);
             cr.DataDefinition.FormulaFields["ExpandedAnswers"].Text = eS.ToString();
             cr.OpenSubreport("Header").SetDataSource(dt);
