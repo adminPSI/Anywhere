@@ -1,4 +1,6 @@
-﻿using System;
+﻿using iAnywhere.Data.SQLAnywhere;
+using System;
+using System.Net;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
 
@@ -84,6 +86,21 @@ namespace Anywhere.service.Data
             public string cQFullName { get; set; }
         }
 
+        public class AuthorizationPageData
+        {
+            public string CompletionDate { get; set; }
+            public string plan_year_start { get; set; }
+            public string plan_year_end { get; set; }
+            public string sourceCaption { get; set; }
+            public string frequency { get; set; }
+            public string vendorName { get; set; }
+            public string BeginDate { get; set; }
+            public string EndDate { get; set; }
+            public string description { get; set; }
+            public string service_code { get; set; }
+            public string planType { get; set; }
+        }
+
         [DataContract]
         public class Answer
         {
@@ -118,6 +135,14 @@ namespace Anywhere.service.Data
                 }
             }
             return "success";
+        }
+
+        public AuthorizationPageData[] authorizationGetPageData(string token)
+        {
+            string authPageData = adg.authorizationGetPageData(token);
+            js.MaxJsonLength = Int32.MaxValue;
+            AuthorizationPageData[] authorizationPageData = js.Deserialize<AuthorizationPageData[]>(authPageData);
+            return authorizationPageData;
         }
 
         public ConsumerPlans[] getConsumerPlans(string token, string consumerId)
