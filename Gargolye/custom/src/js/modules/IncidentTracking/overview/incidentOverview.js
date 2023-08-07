@@ -2,7 +2,7 @@ var incidentOverview = (function () {
   // DOM Elements
   var overviewTable;
   //Incident Tracking Report Data
-  let incidentTrackingEmailData = {emailSubject: 'Incidents [Composite] by Consumer, Date'};
+  let incidentTrackingEmailData = { emailSubject: 'Incidents [Composite] by Consumer, Date' };
   //filters
   var filterPopup;
   var filterBtn;
@@ -62,7 +62,7 @@ var incidentOverview = (function () {
       filterData.alphaName = $.session.LName + ', ' + $.session.Name;
     if (filterData.locationName === null || filterData.locationName === 'All')
       filterData.locationName = 'All Locations';
-      if (filterData.consumerName === null || filterData.consumerName === 'All')
+    if (filterData.consumerName === null || filterData.consumerName === 'All')
       filterData.consumerName = 'All Consumers';
     if (filterData.betaName === null || filterData.betaName === 'All')
       filterData.betaName = 'All Employees';
@@ -186,7 +186,7 @@ var incidentOverview = (function () {
   }
   function setupFiltering() {
     const filterAndReportsBtnsWrap = document.createElement('div');
-    filterAndReportsBtnsWrap.classList.add('filterAndReportsBtnsWrap')
+    filterAndReportsBtnsWrap.classList.add('filterAndReportsBtnsWrap');
 
     filterBtn = button.build({
       text: 'Filter',
@@ -197,12 +197,20 @@ var incidentOverview = (function () {
       callback: showFilterPopup,
     });
 
-        let filterValues = {};
-        reportsBtn = generateReports.createMainReportButton([{ text: 'Individual Reporting Log', callback: generateReports.passFilterValuesForReport('Individual Reporting Log', filterValues) }])
+    let filterValues = {};
+    reportsBtn = generateReports.createMainReportButton([
+      {
+        text: 'Individual Reporting Log',
+        callback: generateReports.passFilterValuesForReport(
+          'Individual Reporting Log',
+          filterValues,
+        ),
+      },
+    ]);
 
-        DOM.ACTIONCENTER.appendChild(filterAndReportsBtnsWrap);
-        filterAndReportsBtnsWrap.appendChild(filterBtn);
-        filterAndReportsBtnsWrap.appendChild(reportsBtn);
+    DOM.ACTIONCENTER.appendChild(filterAndReportsBtnsWrap);
+    filterAndReportsBtnsWrap.appendChild(filterBtn);
+    filterAndReportsBtnsWrap.appendChild(reportsBtn);
 
     buildFilterPopup();
   }
@@ -524,7 +532,6 @@ var incidentOverview = (function () {
       id: 'sig_mainPopup',
     });
 
-
     //* INPUTS
     //*------------------------------
     const toAddress = input.build({
@@ -592,9 +599,12 @@ var incidentOverview = (function () {
       style: 'secondary',
       type: 'contained',
       callback: () => {
-        incidentTrackingAjax.generateIncidentTrackingReport(incidentId, checkIfITReportIsReadyInterval);
+        incidentTrackingAjax.generateIncidentTrackingReport(
+          incidentId,
+          checkIfITReportIsReadyInterval,
+        );
         POPUP.hide(incidentEmailPopup);
-      }
+      },
     });
 
     const cancelBtn = button.build({
@@ -604,7 +614,7 @@ var incidentOverview = (function () {
       type: 'outlined',
       callback: () => {
         POPUP.hide(incidentEmailPopup);
-      }
+      },
     });
 
     //* Add elements to popup
@@ -650,7 +660,7 @@ var incidentOverview = (function () {
       reportRunning = false;
 
       // Reset values of email data
-      incidentTrackingEmailData = {emailSubject: 'Incidents [Composite] by Consumer, Date'}
+      incidentTrackingEmailData = { emailSubject: 'Incidents [Composite] by Consumer, Date' };
     }
   }
 
@@ -667,13 +677,13 @@ var incidentOverview = (function () {
       };
     } else {
       var tableOptions = {
-      tableId: 'incidentOverviewTable',
-      heading: 'Incident Overview',
-      columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
-      endIcon: true
-    };
+        tableId: 'incidentOverviewTable',
+        heading: 'Incident Overview',
+        columnHeadings: ['Location', 'Entered By', 'Date', 'Time', 'Type', 'Consumer(s) Involved'],
+        endIcon: true,
+      };
     }
-  
+
     overviewTable = table.build(tableOptions);
     DOM.ACTIONCENTER.appendChild(overviewTable);
   }
@@ -706,13 +716,13 @@ var incidentOverview = (function () {
       var viewedOn = obj.viewedOn ? true : false;
       var orginUser =
         obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
-      var userHasViewed = (obj.viewedBy).includes($.session.UserId) ? true : false;
+      var userHasViewed = obj.viewedBy.includes($.session.UserId) ? true : false;
       var showBold;
 
       if (!orginUser && !userHasViewed) {
         showBold = true;
       }
-      
+
       var incidentEmailBtn = document.createElement('button');
       incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
       incidentEmailBtn.textContent = 'EMAIL';
@@ -735,28 +745,28 @@ var incidentOverview = (function () {
         };
       } else {
         return {
-        id: rowId,
-        values: [location, enteredBy, date, time, category, consumersInvolved],
-        attributes: [{ key: 'data-viewed', value: showBold }],
-        endIcon: incidentEmailBtn.outerHTML,
-        endIconCallback: e => {
-          e.stopPropagation();
-          var isParentRow = e.target.parentNode.classList.contains('table__row');
-          if (!isParentRow) return;
+          id: rowId,
+          values: [location, enteredBy, date, time, category, consumersInvolved],
+          attributes: [{ key: 'data-viewed', value: showBold }],
+          endIcon: incidentEmailBtn.outerHTML,
+          endIconCallback: e => {
+            e.stopPropagation();
+            var isParentRow = e.target.parentNode.classList.contains('table__row');
+            if (!isParentRow) return;
 
-          showIncidentEmailPopup(obj.incidentId);
+            showIncidentEmailPopup(obj.incidentId);
           },
-        onClick: async event => {
-          await incidentTrackingAjax.updateIncidentViewByUser({
-            token: $.session.Token,
-            incidentId: rowId,
-            userId: $.session.UserId,
-          });
-          DOM.scrollToTopOfPage();
-          reviewIncident.init(event.target.id);
-        },
-      };
-      }      
+          onClick: async event => {
+            await incidentTrackingAjax.updateIncidentViewByUser({
+              token: $.session.Token,
+              incidentId: rowId,
+              userId: $.session.UserId,
+            });
+            DOM.scrollToTopOfPage();
+            reviewIncident.init(event.target.id);
+          },
+        };
+      }
     });
 
     data.sort(function (a, b) {
