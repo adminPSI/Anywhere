@@ -217,7 +217,7 @@ const authorizations = (function () {
     // todo
   }
 
-  function loadPage() {
+  async function loadPage() {
     DOM.clearActionCenter();
 
     const pageWrap = document.createElement('div');
@@ -235,6 +235,9 @@ const authorizations = (function () {
     pageWrap.appendChild(consumerCard);
     pageWrap.appendChild(filterBtn);
     DOM.ACTIONCENTER.appendChild(pageWrap);
+
+    authData = await authorizationsAjax.getPageData();
+    debugger;
   }
 
   function init() {

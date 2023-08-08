@@ -895,8 +895,8 @@ function getDefaultAnywhereSettings() {
         res.incidentTrackingShowPreventionPlan === 'Y' ? true : false;
 
       $.session.updateIncidentSummaryText = res.appendITSummary === 'Y' ? true : false;
-      $.session.updateIncidentActionText = res.appendITAction === 'Y' ? true : false;
-      $.session.updateIncidentPreventionText = res.appendITPlan === 'Y' ? true : false;
+      $.session.updateIncidentActionText = res.appendITImmediateAction === 'Y' ? true : false;
+      $.session.updateIncidentPreventionText = res.appendITPreventionPlan === 'Y' ? true : false;
       $.session.updateIncidentCauseText = res.appendITCause === 'Y' ? true : false;
 
       //Hide stuff
