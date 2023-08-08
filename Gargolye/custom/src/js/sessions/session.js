@@ -565,7 +565,6 @@ function setSessionVariables() {
 
     //Incident Tracking Permissons
     if (tmpWindow == 'Anywhere Incident Tracking') {
-      console.log(tmpPerm);
       if (tmpPerm == 'View Case Load') {
         $.session.incidentTrackingViewCaseLoad = true;
       }
@@ -587,9 +586,6 @@ function setSessionVariables() {
       if (tmpPerm == 'Email Incident') {
         $.session.incidentTrackingEmailIncident = true;
       }
-    }
-    if (tmpWindow == 'Incident Tracking') {
-      console.log(tmpPerm);
     }
 
     //Anywhere Plan
