@@ -2856,7 +2856,7 @@ namespace Anywhere
         String setWorkflowStepDoneDate(string token, string stepId, string doneDate);
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
                   BodyStyle = WebMessageBodyStyle.Wrapped,
                   ResponseFormat = WebMessageFormat.Json,
                   RequestFormat = WebMessageFormat.Json,

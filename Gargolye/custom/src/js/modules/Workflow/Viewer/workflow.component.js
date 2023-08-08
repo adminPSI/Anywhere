@@ -14,7 +14,7 @@ class WorkflowComponent {
     async setStatusAsync(workflowId, statusId){
         try {
             const result = await $.ajax({
-                type: 'PUT',
+                type: 'POST',
                 url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/setWorkflowStatus/',
                 data: '{"token":"' + $.session.Token + '", "workflowId":"' + workflowId + '", "statusId":"' + statusId + '"}',
                 contentType: 'application/json; charset=utf-8',
