@@ -300,15 +300,8 @@ var notesOverview = (function () {
         showCNReportsPopup();
       },
     });
-
-  let reportRUnning = false;
-  let filterValues = {};
-  cnADVReportBtn = generateReports.createMainReportButton(reportRUnning, null, [
-    {
-      text: 'Detailed Case Notes By Biller',
-      callback: generateReports.passFilterValuesForReport(filterValues),
-    },
-  ]);
+    
+    cnADVReportBtn = generateReports.createMainReportButton([{ text: 'Detailed Case Notes By Biller', filterValues }]);
 
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('cnbtnWrap');

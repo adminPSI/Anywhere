@@ -1655,11 +1655,31 @@ const dayServices = (function () {
         multiSelectAllNoneArea.appendChild(multiSelectNoneBtn);
         multiSelectAllNoneArea.classList.add('hidden');
 
-        let filterValues = {
-            dayServiceLocation: locationCache[locationID].locationName,
-            dayServiceServiceDate: serviceDate
-        };
-        reportsBtn = generateReports.createMainReportButton([{ text: 'Individual Day Service Activity Report', filterValues}])
+        function getFilterValues() {
+          return (filterValues = {
+            dayServiceLocation: locationID,
+            dayServiceServiceDate: serviceDate,
+          });
+        }
+        // Helper function to create the main reports button on the module page
+        function createMainReportButton(buttonsData) {
+          return button.build({
+            text: 'Reports',
+            icon: 'add',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'reportBtn',
+            callback: function () {
+              // Iterate through each item in the buttonsData array
+              buttonsData.forEach(function (buttonData) {
+                buttonData.filterValues = getFilterValues();
+              });
+
+              generateReports.showReportsPopup(buttonsData);
+            },
+          });
+        }
+        reportsBtn = createMainReportButton([{ text: 'Individual Day Service Activity Report' }]);
 
         batchedMessageDisplay.innerHTML = 'The selected location is batched for this date.';
         batchedMessageDisplay.classList.add('batchedMessageDisplay');

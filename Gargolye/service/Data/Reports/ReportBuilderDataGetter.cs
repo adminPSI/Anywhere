@@ -8,6 +8,8 @@ using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.CaseNoteSSA.CaseNoteSSAWorker;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 
 namespace Anywhere.service.Data.ReportBuilder
 {
@@ -259,7 +261,47 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateOutcomeDocumentationReport(string token, string category, string title, string reportServerList)
+        public string generateDetailedCaseNotesReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string consumerName,
+                                              string serviceStartDate, string serviceEndDate, string location, string originallyEnteredStart, string originallyEnteredEnd, string billingCode, string service,
+                                              string need, string contact)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("generateDetailedCaseNotesReport ");
+            string source = "";
+            string filterSyntax = "";
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(source);
+            //list.Add(userId);
+            list.Add(billerId);
+            list.Add(consumerId);
+            list.Add(consumerName);
+            list.Add(serviceStartDate);
+            list.Add(serviceEndDate);
+            list.Add(location);
+            list.Add(originallyEnteredStart);
+            list.Add(originallyEnteredEnd);
+            list.Add(billingCode);
+            list.Add(service);
+            list.Add(need);
+            list.Add(contact);
+            list.Add(filterSyntax);
+            string text = "CALL DBA.ANYW_CaseNotes_GenerateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1CNR", ex.Message + "ANYW_CaseNotes_GenerateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1CNR: error ANYW_CaseNotes_GenerateDetailReport";
+            }
+        }
+
+        public string generateOutcomeDocumentationReport(string token, string category, string title, string reportServerList, string outcomesService, string outcomesDate, string outcomesConsumer, string outcomesType)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("generateOutcomeDocumentationReport ");
@@ -268,6 +310,10 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(category);
             list.Add(title);
             list.Add(reportServerList);
+            list.Add(outcomesDate); 
+            list.Add(outcomesConsumer);
+            //list.Add(outcomesService);
+            //list.Add(outcomesType);
             string text = "CALL DBA.ANYW_GenerateOutcomeDocumentationReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -280,7 +326,7 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateOutcomeActivityReport(string token, string category, string title, string reportServerList)
+        public string generateOutcomeActivityReport(string token, string category, string title, string reportServerList, string outcomesService, string outcomesDate, string outcomesConsumer)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("generateOutcomeActivityReport ");
@@ -289,6 +335,9 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(category);
             list.Add(title);
             list.Add(reportServerList);
+            list.Add(outcomesDate);
+            list.Add(outcomesConsumer);
+            //list.Add(outcomesService);
             string text = "CALL DBA.ANYW_GenerateOutcomeActivityReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -301,7 +350,7 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generatejobActivityReport(string token, string category, string title, string reportServerList)
+        public string generateJobActivityReport(string token, string category, string title, string reportServerList, string location, string date, string job)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("generatejobActivityReport ");
@@ -310,6 +359,9 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(category);
             list.Add(title);
             list.Add(reportServerList);
+            list.Add(location); 
+            list.Add(date);
+            list.Add(job);
             string text = "CALL DBA.ANYW_GeneratejobActivityReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -322,33 +374,38 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateIncidentReport(string token, string category, string title, string reportServerList)
+        public string generateIndividualReportingLog(string token, string category, string title, string reportServerList, string location, string consumer, string fromDate, string toDate)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("generateIncidentReport ");
+
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(category);
             list.Add(title);
             list.Add(reportServerList);
-            string text = "CALL DBA.ANYW_GenerateIncidentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            list.Add(location);
+            list.Add(consumer);
+            list.Add(fromDate);
+            list.Add(toDate);
+            string text = "CALL DBA.ANYW_GenerateIndividualReportingLog(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("1ITR", ex.Message + "ANYW_GenerateIncidentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "1ITR: error ANYW_GenerateIncidentReport";
+                logger.error("1ITR", ex.Message + "ANYW_GenerateIndividualReportingLog(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_GenerateIndividualReportingLog";
             }
         }
 
-        public string checkIfReportExists(string token, string reportScheduleId)
+        public string checkIfReportExists(string token, string reportRequestId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("checkIfReportExists  ");
             List<string> list = new List<string>();
-            list.Add(reportScheduleId);
+            list.Add(reportRequestId);
             string text = "CALL DBA.ANYW_CheckIfReportExists (" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
