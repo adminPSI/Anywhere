@@ -39,7 +39,7 @@ namespace Anywhere.service.Data
         public DataSet AssesmentAnswers(long AssesmentID, bool Assessment)
         {
             sb.Clear();
-            sb.Append("SELECT  DBA.anyw_isp_consumer_assessment_answers.answer, DBA.anyw_isp_assessment_sections.section_title, ");
+            sb.Append("SELECT  LTRIM(RTRIM(DBA.anyw_isp_consumer_assessment_answers.answer)) AS answer, DBA.anyw_isp_assessment_sections.section_title, ");
             sb.Append("DBA.anyw_isp_assessment_sections.section_order, DBA.anyw_isp_assessment_subsections.subsection_title, ");
             sb.Append("DBA.anyw_isp_assessment_subsections.subsection_order, DBA.anyw_isp_assessment_questions.isp_assessment_question_id, ");
             sb.Append("DBA.anyw_isp_assessment_questions.question_text, DBA.anyw_isp_assessment_questions.question_order, ");
@@ -67,6 +67,7 @@ namespace Anywhere.service.Data
             sb.Append("DBA.anyw_isp_assessment_subsections.subsection_order, ");
             sb.Append("DBA.anyw_isp_assessment_questions.question_order ");
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+
 
             //MessageBox.Show(string.Format("AssesmentAnswers dt row count {0}",dt.Rows.Count));
 

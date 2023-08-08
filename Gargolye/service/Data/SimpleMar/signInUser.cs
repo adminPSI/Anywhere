@@ -19,7 +19,7 @@ namespace Anywhere.service.Data.SimpleMar
 
         public string createSimpleMarLoginURL(string anywhereToken)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3 ;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3 ;
             string userId = getUserId(anywhereToken);
             string password = getCred(userId);
             string userName = getUserName(anywhereToken);
