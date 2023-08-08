@@ -720,18 +720,18 @@ const roster2 = (function () {
 
   // Roster Consumers
   //---------------------------------------------
-   function populateConsumerCardPortraits() {
-     const consumerCards = [...document.querySelectorAll('.consumerCard')];
-     consumerCards.forEach(card => {
-       const id = card.dataset.consumerId;
-       const portrait = card.querySelector('.portrait');
-       portrait.innerHTML = `
+  function populateConsumerCardPortraits() {
+    const consumerCards = [...document.querySelectorAll('.consumerCard')];
+    consumerCards.forEach(card => {
+      const id = card.dataset.consumerId;
+      const portrait = card.querySelector('.portrait');
+      portrait.innerHTML = `
        <img
          src="./images/portraits/${id}.png"
          onerror="this.src='./images/new-icons/default.jpg'"
        />`;
-     });
-   }
+    });
+  }
   function buildConsumerCard(consumerData) {
     const fName = consumerData.FN ? consumerData.FN.trim() : '';
     const lName = consumerData.LN ? consumerData.LN.trim() : '';
@@ -791,8 +791,8 @@ const roster2 = (function () {
     const time = d.getTime();
     portrait.classList.add('portrait');
     details.classList.add('details');
-      alertIcons.classList.add('icons');
-      portrait.innerHTML = `''`;
+    alertIcons.classList.add('icons');
+    portrait.innerHTML = `''`;
     portrait.innerHTML = `
       <img 
         src="./images/portraits/${id}.png?${time}"
@@ -904,7 +904,7 @@ const roster2 = (function () {
         if (!consumercount) return `Select consumer(s) below`;
         return `Select consumer(s) below <span>Total Consumer Count:</span> ${consumercount}`;
         break;
-      } 
+      }
     }
   }
   function buildMiniRosterPopup(rosterMarkup) {
@@ -932,8 +932,8 @@ const roster2 = (function () {
     if (
       $.loadedApp === 'outcomes' ||
       $.loadedApp === 'plan' ||
-      $.loadedApp === 'ConsumerFinances' || 
-      $.loadedApp === 'employment' ||  
+      $.loadedApp === 'ConsumerFinances' ||
+      $.loadedApp === 'employment' ||
       $.loadedApp === 'covid' ||
       $.loadedApp === 'forms' ||
       activeSection === 'caseNotesSSA-new' ||
@@ -990,10 +990,10 @@ const roster2 = (function () {
       id: 'mini_roster',
       // classNames: ['floatingActionBtn', 'consumerListBtn', 'disabled'],
       classNames: ['floatingActionBtn', 'consumerListBtn'],
-        callback: async () => {          
-            if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'employment') {
-            clearSelectedConsumers(); 
-            clearActiveConsumers();   
+      callback: async () => {
+        if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'employment') {
+          clearSelectedConsumers();
+          clearActiveConsumers();
         }
         MINI_ROSTER_BTN.classList.add('disabled');
         await showMiniRoster(rosterOptions);
@@ -1089,7 +1089,7 @@ const roster2 = (function () {
     // I am not sure why consumer location was being set to the selected location ID?
     const seenIds = {};
 
-    rosterConsumers = rosterConsumers.filter((consumer) => {
+    rosterConsumers = rosterConsumers.filter(consumer => {
       if (seenIds[consumer.id]) {
         return false;
       } else {
@@ -1100,9 +1100,8 @@ const roster2 = (function () {
     groupRosterConsumers();
 
     if (selectedLocationId !== '0') {
-      const consumersWithUnreadNotesResults = await getConsumersWithUnreadNotesByEmployeeAndLocationData(
-        selectedLocationId,
-      );
+      const consumersWithUnreadNotesResults =
+        await getConsumersWithUnreadNotesByEmployeeAndLocationData(selectedLocationId);
       consumersWithUnreadNotes = progressNotes.createConsumersWithUnreadNotesObj(
         consumersWithUnreadNotesResults,
       );
@@ -1191,8 +1190,9 @@ const roster2 = (function () {
       if (
         $.loadedApp === 'outcomes' ||
         $.loadedApp === 'plan' ||
-        $.loadedApp === 'ConsumerFinances' ||  
-        $.loadedApp === 'employment' ||  
+        $.loadedApp === 'authorizations' ||
+        $.loadedApp === 'ConsumerFinances' ||
+        $.loadedApp === 'employment' ||
         $.loadedApp === 'covid' ||
         $.loadedApp === 'forms' ||
         // $.loadedApp === 'OOD' ||
@@ -1355,7 +1355,7 @@ const roster2 = (function () {
     }
 
     updateTotalConsumerCount();
-   // populateConsumerCardPortraits();
+    // populateConsumerCardPortraits();
   }
   function groupRosterConsumers(consumers) {
     const chunkBy = 50;

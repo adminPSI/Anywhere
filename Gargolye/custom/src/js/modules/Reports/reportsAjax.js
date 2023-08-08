@@ -50,7 +50,7 @@ var generateReportsAjax = (function () {
           dataType: 'json',
           success: function (response, status, xhr) {
             var res = response.checkIfReportExistsResult;
-            //callback(res, data.reportScheduleId);
+            callback(res, data.reportScheduleId);
           },
           error: function (xhr, status, error) {
             //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
