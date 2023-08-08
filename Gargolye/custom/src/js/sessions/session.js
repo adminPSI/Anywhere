@@ -618,6 +618,9 @@ function setSessionVariables() {
         $.session.planClearSignature = true;
       }
     }
+    if (tmpWindow == 'Anywhere Authorization' || $.session.isPSI == true) {
+      debugger;
+    }
     //AeMAR
     if (tmpWindow == 'Anywhere eMAR' || $.session.isPSI == true) {
       if (tmpPerm == 'View' || $.session.isPSI == true) {
@@ -1922,6 +1925,10 @@ function disableModules() {
     $('#OODsettingsdiv').css('display', 'none');
 
     $('#customlinks').css('display', 'none');
+  }
+
+  if ($.session.applicationName == 'Advisor') {
+    $('#authorizationsdiv').css('display', 'none');
   }
 
   if ($.session.dayServicesPermission == 'Anywhere_DayServices') {

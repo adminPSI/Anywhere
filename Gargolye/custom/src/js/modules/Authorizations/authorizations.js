@@ -1,8 +1,11 @@
 const authorizations = (function () {
   // DATA
   let selectedConsumer;
-  let filterValues = {};
+  let filterValues;
   // DOM
+  let pageWrap;
+  let overviewTable;
+  //--
   let filterPopup;
   let planTypeDropdown;
   let vendorDropdown;
@@ -22,6 +25,7 @@ const authorizations = (function () {
         DOM.scrollToTopOfPage();
         DOM.clearActionCenter();
         selectedConsumer = roster2.getActiveConsumers()[0];
+        DOM.clearActionCenter();
         loadPage();
         DOM.toggleNavLayout();
 
@@ -35,6 +39,29 @@ const authorizations = (function () {
     }
   }
 
+  // Filter Popup
+  //----------------------------------------
+  function initFilterValues() {
+    filterValues = {
+      planType: '%',
+      vendor: '%',
+      matchSource: '%',
+      completedDateStart: dates
+        .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 2))
+        .slice(0, 10),
+      completedDateEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
+      yearStartStart: dates
+        .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 2))
+        .slice(0, 10),
+      yearStartEnd: dates
+        .formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1))
+        .slice(0, 10),
+      yearEndStart: '',
+      yearEndEnd: '',
+    };
+
+    console.table(filterValues);
+  }
   function showFilterPopup() {
     filterPopup = POPUP.build({
       classNames: 'authorizationsReviewFilterPopup',
@@ -134,13 +161,13 @@ const authorizations = (function () {
     setupFilterEvents();
   }
   function populatePlanTypeDropdown() {
-    const data = [].map((b, index) => {
-      return {
-        value: b.billerId,
-        text: b.billerName,
-      };
-    });
-    data.unshift({ value: '%', text: 'All' });
+    const data = [
+      { value: '%', text: 'All' },
+      { text: 'Final', value: 'F' },
+      { text: 'Initial', value: 'I' },
+      { text: 'Revision', value: 'V' },
+      { text: 'Redetermination', value: 'R' },
+    ];
     dropdown.populate(planTypeDropdown, data, filterValues.planType);
   }
   function populateVendorDropdown() {
@@ -196,13 +223,30 @@ const authorizations = (function () {
     yearEndEnd.addEventListener('change', e => {
       newFilterValues.yearEndEnd = e.target.value;
     });
-    applyFilterBtn.addEventListener('click', e => {
+    applyFilterBtn.addEventListener('click', async e => {
       POPUP.hide(filterPopup);
       filterValues = newFilterValues;
+
+      authData = await authorizationsAjax.getPageData({
+        code: '',
+        matchSource: filterValues.matchSource,
+        vendorId: filterValues.vendor,
+        planType: filterValues.planType,
+        planYearStartStart: filterValues.yearStartStart,
+        planYearStartEnd: filterValues.yearStartEnd,
+        planYearEndStart: filterValues.yearEndStart,
+        planYearEndEnd: filterValues.yearEndEnd,
+        completedDateStart: filterValues.completedDateStart,
+        completedDateEnd: filterValues.completedDateEnd,
+      });
+
+      updateFilteredBy();
+      buildOverviewTable();
     });
   }
   function updateFilteredBy() {}
 
+  //----------------------------------------
   function buildConsumerCard() {
     selectedConsumer.card.classList.remove('highlighted');
 
@@ -214,13 +258,17 @@ const authorizations = (function () {
     return wrap;
   }
   function buildOverviewTable() {
-    // todo
+    console.table(authData);
+    overviewTable = document.createElement('div');
+
+    if (overviewTable) pageWrap.removeChild(overviewTable);
+    pageWrap.appendChild(overviewTable);
   }
 
   async function loadPage() {
-    DOM.clearActionCenter();
+    initFilterValues();
 
-    const pageWrap = document.createElement('div');
+    pageWrap = document.createElement('div');
     const consumerCard = buildConsumerCard();
 
     filterBtn = button.build({
@@ -236,7 +284,18 @@ const authorizations = (function () {
     pageWrap.appendChild(filterBtn);
     DOM.ACTIONCENTER.appendChild(pageWrap);
 
-    authData = await authorizationsAjax.getPageData();
+    authData = await authorizationsAjax.getPageData({
+      code: filterValues.vendor,
+      matchSource: filterValues.vendor,
+      vendorId: filterValues.vendor,
+      planType: filterValues.planType,
+      planYearStartStart: filterValues.yearStartStart,
+      planYearStartEnd: filterValues.yearStartEnd,
+      planYearEndStart: filterValues.yearEndStart,
+      planYearEndEnd: filterValues.yearEndEnd,
+      completedDateStart: filterValues.completedDateStart,
+      completedDateEnd: filterValues.completedDateEnd,
+    });
     debugger;
   }
 
