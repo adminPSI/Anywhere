@@ -3,6 +3,7 @@ using Anywhere.Data;
 using Anywhere.Log;
 using Anywhere.service.Data;
 using Anywhere.service.Data.AssessmentReOrderRows;
+using Anywhere.service.Data.Authorization;
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.CaseNoteSSA;
 using Anywhere.service.Data.ConsumerDemographics;
@@ -98,6 +99,7 @@ namespace Anywhere
         EmploymentWorker emp = new EmploymentWorker();
         AssessmentDataGetter assDG = new AssessmentDataGetter();
         ReportBuilderWorker rbw = new ReportBuilderWorker();
+        AuthorizationWorker authWorker = new AuthorizationWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure(); 
@@ -2338,8 +2340,20 @@ namespace Anywhere
             return poW.deletePlanOutcomeReview(token, outcomeId, reviewId);
         }
 
-        //Plan Services And Supports
-        public ServicesAndSupportsWorker.ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId)
+        //Authorization
+        public AuthorizationWorker.AuthorizationPopup getAuthorizationFilterData(string token)
+        {
+            return authWorker.getAuthorizationFilterData(token);
+        }
+
+        public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+                                string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd)
+        {
+            return authWorker.getAuthorizationPageData(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
+                                planYearEndStart, planYearEndEnd, completedDateStart, completedDateEnd);
+        }
+            //Plan Services And Supports
+            public ServicesAndSupportsWorker.ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId)
         {
             return ssw.getServicesAndSupports(token, anywAssessmentId, consumerId);
         }

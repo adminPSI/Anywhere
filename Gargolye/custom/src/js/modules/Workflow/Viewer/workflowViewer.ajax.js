@@ -628,7 +628,7 @@ const WorkflowViewerAjax = (() => {
   async function updateRelationshipResponsiblePartyID(peopleId, WFID, responsiblePartyType) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +

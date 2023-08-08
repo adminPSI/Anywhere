@@ -1,4 +1,5 @@
 using Anywhere.service.Data;
+using Anywhere.service.Data.Authorization;
 using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.CaseNoteSSA;
 using Anywhere.service.Data.ConsumerFinances;
@@ -2855,7 +2856,7 @@ namespace Anywhere
         String setWorkflowStepDoneDate(string token, string stepId, string doneDate);
 
         [OperationContract]
-        [WebInvoke(Method = "PUT",
+        [WebInvoke(Method = "POST",
                   BodyStyle = WebMessageBodyStyle.Wrapped,
                   ResponseFormat = WebMessageFormat.Json,
                   RequestFormat = WebMessageFormat.Json,
@@ -3324,8 +3325,25 @@ namespace Anywhere
             UriTemplate = "/deletePlanOutcomeReview/")]
         string deletePlanOutcomeReview(string token, string outcomeId, string reviewId);
 
-        //Plan services and supports
+        //Authorization
         [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getAuthorizationFilterData/")]
+        AuthorizationWorker.AuthorizationPopup getAuthorizationFilterData(string token);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getAuthorizationPageData/")]
+        string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+                                string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd);
+        
+
+            //Plan services and supports
+            [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
