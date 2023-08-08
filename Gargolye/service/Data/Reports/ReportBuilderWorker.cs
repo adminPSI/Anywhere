@@ -1,4 +1,5 @@
 ﻿using Anywhere.Data;
+using Anywhere.service.Data.CaseNoteReportBuilder;
 using Anywhere.service.Data.PlanInformedConsent;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAttachmentWorker;
+using static Anywhere.service.Data.CaseNoteSSA.CaseNoteSSAWorker;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.service.Data.ReportBuilder
 {
@@ -15,6 +19,7 @@ namespace Anywhere.service.Data.ReportBuilder
         JavaScriptSerializer js = new JavaScriptSerializer();
         ReportBuilderDataGetter rbdg = new ReportBuilderDataGetter();
         AnywhereWorker anywhereWorker = new AnywhereWorker();
+        CaseNoteReportBuilderDataGetter cnrdG = new CaseNoteReportBuilderDataGetter();
 
         public ReportScheduleId[] generateReport(string token, string reportType, ReportData reportData)
         {
@@ -36,36 +41,36 @@ namespace Anywhere.service.Data.ReportBuilder
 
                     break;
                 //Outcomes
-                case "Outcome Documentation":
+                case "Documentation - Completed With Percentages":
                     result = generateOutcomeDocumentationReport(token, reportType, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
 
-                case "outcomeActivity":
+                case "Outcome Activity - With Community Integration by Employee, Consumer, Date":
                     result = generateOutcomeActivityReport(token, reportType, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
                 //Case Notes
-                case "caseNotes":
+                case "Detailed Case Notes By Biller":
                     result = generateDetailedCaseNotesReport(token, reportType, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
                 //Workshop
-                case "jobActivity":
+                case "Job Activity Detail Report by Employee and Job":
                     result = generatejobActivityReport(token, reportType, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
                 //Incident Tracking
-                case "incidentReporting":
-                    result = generateIncidentReport(token, reportType, reportData);
+                case "Individual Reporting Log":
+                    result = generateIndividualReportingLog(token, reportType, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
@@ -101,60 +106,60 @@ namespace Anywhere.service.Data.ReportBuilder
 
         public string generateOutcomeDocumentationReport(string token, string reportType, ReportData reportData)
         {
-            string category = "";
-            string title = "";
+            string category = "Outcomes and Services";
+            string title = "Habilitation Documentation - Completed with Percentages";
             string reportServerList = "Primary";
             string result = "";
 
-            //result = rbdg.generateIncidentTrackingReport(token, category, title, reportServerList);
+            result = rbdg.generateOutcomeDocumentationReport(token, category, title, reportServerList, reportData.outcomesService, reportData.outcomesDate, reportData.outcomesConsumer, reportData.outcomesType);
 
             return result;
         }
 
         public string generateOutcomeActivityReport(string token, string reportType, ReportData reportData)
         {
-            string category = "";
-            string title = "";
+            string category = "Outcomes and Services";
+            string title = "Outcome Activity - With Community Integration by Employee, Consumer, Date";
             string reportServerList = "Primary";
             string result = "";
 
-            //result = rbdg.generateIncidentTrackingReport(token, category, title, reportServerList);
+            result = rbdg.generateOutcomeActivityReport(token, category, title, reportServerList, reportData.outcomesService, reportData.outcomesDate, reportData.outcomesConsumer);
 
             return result;
         }
 
         public string generateDetailedCaseNotesReport(string token, string reportType, ReportData reportData)
         {
-            string category = "";
-            string title = "";
+            string category = "Case Notes";
+            string title = "Detailed Case Notes";
             string reportServerList = "Primary";
             string result = "";
 
-            //result = rbdg.generateIncidentTrackingReport(token, category, title, reportServerList);
+            result = rbdg.generateDetailedCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
+                reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billingCode, reportData.service, reportData.need, reportData.contact);
 
             return result;
         }
 
         public string generatejobActivityReport(string token, string reportType, ReportData reportData)
         {
-            string category = "";
-            string title = "";
+            string category = "Workshop";
+            string title = "Job Activity Detail Report by Employee and Job";
             string reportServerList = "Primary";
             string result = "";
 
-            //result = rbdg.generateIncidentTrackingReport(token, category, title, reportServerList);
-
+            result = rbdg.generateJobActivityReport(token, category, title, reportServerList, reportData.workshopLocation, reportData.workshopDate, reportData.workshopJob);
             return result;
         }
 
-        public string generateIncidentReport(string token, string reportType, ReportData reportData)
+        public string generateIndividualReportingLog(string token, string reportType, ReportData reportData)
         {
-            string category = "";
-            string title = "";
+            string category = "Incident Tracking";
+            string title = "Individual Reporting Log";
             string reportServerList = "Primary";
             string result = "";
 
-            //result = rbdg.generateIncidentTrackingReport(token, category, title, reportServerList);
+            result = rbdg.generateIndividualReportingLog(token, category, title, reportServerList, reportData.ITLocation, reportData.ITConsumer, reportData.ITFromDate, reportData.ITToDate);
 
             return result;
         }
@@ -162,7 +167,7 @@ namespace Anywhere.service.Data.ReportBuilder
         public void viewReport(string token, string reportScheduleId)
         {
             Attachment attachment = new Attachment();
-            attachment.filename = "Case Note Report";
+            attachment.filename = "Anywhere Report";
             attachment.data = null;
             bool isTokenValid = anywhereWorker.ValidateToken(token);
             if (isTokenValid)
@@ -218,9 +223,53 @@ namespace Anywhere.service.Data.ReportBuilder
 
         public class ReportData
         {
+            public string userId { get; set; }
+
+            // DAY SERVICES
             public string dayServiceLocation { get; set; }
             public string dayServiceServiceDate { get; set; }
+
+            // FORMS
             public string formsConsumer { get; set; }
+            
+            // OUTCOMES
+            public string outcomesConsumer { get; set; }
+            public string outcomesDate { get; set; }
+            public string outcomesService { get; set; }
+            public string outcomesType { get; set; }
+
+            // CASE NOTES
+            public string billerId { get; set; }
+            public string consumer { get; set; }
+            public string consumerName { get; set; }
+            public string billingCode { get; set; }
+            public string reviewStatus { get; set; }
+            public string serviceDateStart { get; set; }
+            public string serviceDateEnd { get; set; }
+            public string enteredDateStart { get; set; }
+            public string enteredDateEnd { get; set; }
+            public string location { get; set; }
+            public string service { get; set; }
+            public string need { get; set; }
+            public string contact { get; set; }
+            public string confidential { get; set; }
+            public string corrected { get; set; }
+            public string billed { get; set; }
+            public string attachments { get; set; }
+            public string overlaps { get; set; }
+            public string noteText { get; set; }
+            public string noteTextValue { get; set; }
+
+            // INCIDENT TRACKING
+            public string ITLocation { get; set; }
+            public string ITConsumer { get; set; }
+            public string ITFromDate { get; set; }
+            public string ITToDate { get; set; }
+
+            // WORKSHOP
+            public string workshopLocation { get; set; }
+            public string workshopJob { get; set; }
+            public string workshopDate { get; set; }
 
         }
 

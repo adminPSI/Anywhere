@@ -57,11 +57,11 @@ const generateReports = (() =>  {
     );
 
     // Disable buttons if the report is running
-    if (reportRunning) {
-      buttons.forEach(button => {
-        button.disabled = true;
-      });
-    }
+    // if (reportRunning) {
+    //   buttons.forEach(button => {
+    //     button.disabled = true;
+    //   });
+    // }
 
     popup.appendChild(header);
     buttons.forEach(button => {

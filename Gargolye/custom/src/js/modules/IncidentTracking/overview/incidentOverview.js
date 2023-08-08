@@ -197,16 +197,34 @@ var incidentOverview = (function () {
       callback: showFilterPopup,
     });
 
-    let filterValues = {};
-    reportsBtn = generateReports.createMainReportButton([
-      {
-        text: 'Individual Reporting Log',
-        callback: generateReports.passFilterValuesForReport(
-          'Individual Reporting Log',
-          filterValues,
-        ),
-      },
-    ]);
+    function getFilterValues() {
+      return (filterValues = {
+        ITLocation: retrieveData.locationId,
+        ITConsumer: retrieveData.consumerId,
+        ITFromDate: filterData.fromDate,
+        ITToDate: filterData.toDate,
+      });
+    }
+    // Helper function to create the main reports button on the module page
+    function createMainReportButton(buttonsData) {
+      return button.build({
+        text: 'Reports',
+        icon: 'add',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'reportBtn',
+        callback: function () {
+          // Iterate through each item in the buttonsData array
+          buttonsData.forEach(function (buttonData) {
+            buttonData.filterValues = getFilterValues();
+          });
+
+          generateReports.showReportsPopup(buttonsData);
+        },
+      });
+    }
+
+    reportsBtn = createMainReportButton([{ text: 'Individual Reporting Log' }]);
 
     DOM.ACTIONCENTER.appendChild(filterAndReportsBtnsWrap);
     filterAndReportsBtnsWrap.appendChild(filterBtn);

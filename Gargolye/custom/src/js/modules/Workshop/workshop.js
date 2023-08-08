@@ -425,6 +425,34 @@ var workshop = (function() {
       }
     });
 
+    function getFilterValues() {
+      return (filterValues = {
+        workshopLocation: workshopFilterListData.locationId,
+        workshopJob: workshopFilterListData.jobStepId,
+        workshopDate: workshopFilterListData.selectedDate
+      });
+    }
+    // Helper function to create the main reports button on the module page
+    function createMainReportButton(buttonsData) {
+      return button.build({
+        text: 'Reports',
+        icon: 'add',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'reportBtn',
+        callback: function () {
+          // Iterate through each item in the buttonsData array
+          buttonsData.forEach(function (buttonData) {
+            buttonData.filterValues = getFilterValues();
+          });
+
+          generateReports.showReportsPopup(buttonsData);
+        },
+      });
+    }
+
+    reportsBtn = createMainReportButton([{ text: 'Job Activity Detail Report by Employee and Job' }])
+
     var workshopTableOpts = {
       headline: `Batch Period:  ${UTIL.formatDateFromIso(
         minDateIso
@@ -515,6 +543,7 @@ var workshop = (function() {
     btnWrap.classList.add("btnWrap");
     btnWrap.appendChild(filterBtn);
     btnWrap.appendChild(multiSelectBtn);
+    btnWrap.appendChild(reportsBtn);
   
   
 
