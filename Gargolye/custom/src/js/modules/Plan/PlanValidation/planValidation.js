@@ -678,8 +678,25 @@ const planValidation = (function () {
     //ISP EXPERIENCES
     //checks if the outcome has an experience, if not, set the alert next to the add experience button
     function experiencesValidationCheck(validationCheck, outcomeId, alertDiv) {
-      const display = (validationCheck.missingExperiences.includes(outcomeId) || validationCheck.invalidProviders.length > 0) ? 'flex' : 'none';
+      // Checks each experience and compares repsonsible party Ids with the invalid providers array
+      function checkResponsibleProvider(outcomesData, outcomeID, presetArray) {
+        for (const planOutcomeExperience of outcomesData.planOutcomeExperiences) {
+            if (planOutcomeExperience.outcomeId === outcomeID) {
+                for (const experienceResponsibility of planOutcomeExperience.planExperienceResponsibilities) {
+                    if (presetArray.includes(experienceResponsibility.responsibleProvider)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    const invalidProvidersCheck = checkResponsibleProvider(validationCheck.outcomesData, outcomeId, validationCheck.invalidProviders);
+
+      const display = (validationCheck.missingExperiences.includes(outcomeId) || invalidProvidersCheck) ? 'flex' : 'none';
       alertDiv.style.display = display;
+      //validationCheck.invalidProviders.length > 0
     }
 
     // checks if the provider selected for the experience is also in the paid supports
