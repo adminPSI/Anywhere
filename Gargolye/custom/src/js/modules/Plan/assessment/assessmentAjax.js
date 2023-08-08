@@ -249,12 +249,6 @@ const assessmentAjax = (function () {
   }
 
   async function updateConsumerAssessmentAnswer(answerObject) {
-    // const retrieveData = {
-    //   token: $.session.Token,
-    //   consumerPlanId: plan.getCurrentPlanId(),
-    //   ...answerObject,
-    // };
-
     const retrieveData = {
       token: $.session.Token,
       answers: [answerObject],
