@@ -1,17 +1,7 @@
 const consumerFinanceAttachment = (() => {
-    let attachments;
-    let registerID;
-    let IsDisabledBtn;
-    let attachmentArray = [];
-    let attachID;
-    /** Class for attachments in Plan Module */
+    let attachments = [];
     class ConsumerFinanceAttachment {
-        /**
-         * Create a new attachment instance
-         * @param {[string]} header Header for Attachment Popup
-         * @param {string} regId question ID the attachment button is assoicated with
-         * @param {string} assessmentId Assessment ID
-         */
+
         constructor(header, regId, IsDisabled, attachID) {
             this.attachmentsForQuestion = header;
             this.regId = regId;
@@ -41,19 +31,11 @@ const consumerFinanceAttachment = (() => {
             const regId = this.regId;
             const attachmentsForQuestion = this.attachmentsForQuestion;
             const attachmentsToDelete = [];
-            const attachmentsAdded = this.attachID;
+            const attachmentsAdded = [];
 
-            // PERMISSIONS
-            let ro;
-            const planStatus = plan.getPlanStatus();
-            const planActiveStatus = plan.getPlanActiveStatus();
-
-            ro = false;
-            // =========================
-            // UTIL FUNCTIONS
-            // =============================
             // Adds attachments to the existing attachments section in popup
             function populateExistingAttachments() {
+
                 const header = document.createElement('h5');
                 header.innerText = 'Existing Attachments:';
                 reviewAttachmentList.appendChild(header);
@@ -71,7 +53,7 @@ const consumerFinanceAttachment = (() => {
                     });
                     const file = document.createElement('p');
                     file.innerText = attachment.description;
-                    if (!ro) fileContainer.appendChild(removeAttachmentBtn);
+                    fileContainer.appendChild(removeAttachmentBtn);
                     fileContainer.appendChild(file);
                     file.addEventListener('click', event => {
                         const attachmentId = event.target.parentElement.id;
@@ -161,8 +143,14 @@ const consumerFinanceAttachment = (() => {
                     });
 
                     const attSaveRes = await Promise.all(attachmentSaveArray);
+                    let count = 0;
                     attSaveRes.forEach(att => {
                         attachmentsAdded.push(att);
+                    });
+                    attachmentArray.forEach(att => {
+                        att.attachmentID = attSaveRes[count];
+                        attachments.push(att);
+                        count++;
                     });
 
                 }
@@ -191,11 +179,12 @@ const consumerFinanceAttachment = (() => {
                         const attachmentType = attachmentFile.name.split('.').pop();
                         attachmentObj.description = attachmentName;
                         attachmentObj.type = attachmentType;
+                        attachmentObj.attachmentID = 0;
+                        attachmentObj.registerID = 0;
                         // new Response(file) was added for Safari compatibility
                         new Response(attachmentFile).arrayBuffer().then(res => {
                             attachmentObj.arrayBuffer = res;
                             attachmentArray.push(attachmentObj);
-                            attachmentsForQuestion.push(attachmentObj);
                             resolve();
                         });
                     });
@@ -207,7 +196,7 @@ const consumerFinanceAttachment = (() => {
                 await saveAttachmentsToDB();
 
                 POPUP.hide(popup);
-                NewEntryCF.buildNewEntryForm(regId, attachmentsForQuestion, attachmentsAdded)
+                //NewEntryCF.buildNewEntryForm(regId, attachmentsForQuestion, attachmentsAdded) 
             }
             //===========================================
             //===========================================
@@ -241,7 +230,7 @@ const consumerFinanceAttachment = (() => {
                 callback: async () => {
                     try {
                         await saveAction();
-                       // await this.cleanAttachmentLists(attachmentsAdded, attachmentsToDelete);
+                        await this.cleanAttachmentLists(attachmentsAdded, attachmentsToDelete);
                     } catch (error) {
                         pendingSave.reject('Error saving attachment changes');
                         setTimeout(() => {
@@ -254,7 +243,7 @@ const consumerFinanceAttachment = (() => {
             });
             const cancelBtn = button.build({
                 id: 'attachmentCancel',
-                text: ro ? 'close' : 'cancel',
+                text: 'cancel',
                 style: 'secondary',
                 type: 'outlined',
                 callback: () => {
@@ -298,12 +287,12 @@ const consumerFinanceAttachment = (() => {
             btnWrap.classList.add('btnWrap');
 
             popup.appendChild(reviewAttachmentList);
-            if (!ro) {
-                popup.appendChild(newAttachmentList);
-                popup.appendChild(attachmentList);
-                popup.appendChild(addAttachmentBtn);
-                btnWrap.appendChild(saveBtn);
-            }
+
+            popup.appendChild(newAttachmentList);
+            popup.appendChild(attachmentList);
+            popup.appendChild(addAttachmentBtn);
+            btnWrap.appendChild(saveBtn);
+
 
             btnWrap.appendChild(cancelBtn);
             popup.appendChild(btnWrap);
@@ -322,26 +311,28 @@ const consumerFinanceAttachment = (() => {
         }
 
         cleanAttachmentLists(attachmentsToAdd, attachmentsToRemove) {
-            attachmentsToRemove.forEach(attachmentId => {
-                let list = attachments.get(this.regId);
-                let newList = list.filter(a => a.attachmentId !== attachmentId);
-                attachments.set(this.regId, newList);
-            });
-            attachmentsToAdd.forEach(attachment => {
-                let list = [];
-                if (attachments.has(this.regId)) {
-                    list = attachments.get(this.regId);
-                }
-                list.push(attachment);
-                attachments.set(this.regId, list);
-            });
-            if (attachments.has(this.regId)) {
-                this.attachmentsForQuestion = attachments.get(this.regId);
-            } else {
-                this.attachmentsForQuestion = [];
-            }
+            let newList = [];
 
-            const attachmentBtn = document.getElementById(`attach-${this.regId}`);
+            attachmentsToRemove.forEach(attId => {
+                attachments.forEach(attach => {
+                    if (attach.attachmentID == attId) {
+                        const index = attachments.indexOf(attach);
+                        attachments.splice(index, 1)
+                        this.attachmentsForQuestion = attachments;
+                    }
+                });
+            });
+
+            attachmentsToAdd.forEach(attId => {
+                attachments.forEach(attach => {
+                    if (attach.attachmentID == attId) {
+                        this.attachmentsForQuestion.push(attach);
+                    }
+                });
+            });
+
+
+            const attachmentBtn = document.getElementById(`attachConsumer`);
             attachmentBtn.innerText = `ATTACHMENTS (${this.attachmentsForQuestion.length})`;
 
             if (this.attachmentsForQuestion.length > 0) {
@@ -349,21 +340,22 @@ const consumerFinanceAttachment = (() => {
             } else {
                 attachmentBtn.classList.remove('hasAttachments');
             }
+
+            NewEntryCF.buildNewEntryForm(this.regId, this.attachmentsForQuestion, attachmentsToAdd)
         }
     }
 
     async function getConsumerFinanceAttachments(regID) {
-        //attachments = new Map();
+        attachments = [];
         const retData = {
             token: $.session.Token,
             regId: regID,
         };
         const res = await ConsumerFinancesAjax.getCFAttachmentsList(retData);
-        let attArray = [];
         res.forEach(attachment => {
-            attArray.push(attachment);
+            attachments.push(attachment);
         });
-        return attArray;
+        return attachments;
     }
 
     return {

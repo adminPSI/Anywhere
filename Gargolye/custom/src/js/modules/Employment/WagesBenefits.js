@@ -203,7 +203,7 @@ const WagesBenefits = (() => {
         };
          
         let tableData = EmploymentsEntries.getWagesEntriesResult.map((entry) => ({
-            values: [entry.hoursPerWeek, '$' + parseFloat(entry.wagesPerHour).toFixed(2), moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY')],
+            values: [entry.hoursPerWeek, '$' + parseFloat(entry.wagesPerHour).toFixed(2), moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY')],
             attributes: [{ key: 'wagesId', value: entry.wagesId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)

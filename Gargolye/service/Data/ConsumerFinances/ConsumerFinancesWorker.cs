@@ -142,6 +142,8 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string attachmentID { get; set; }
             [DataMember(Order = 1)]
             public string description { get; set; }
+            [DataMember(Order = 2)]
+            public string registerID { get; set; }
 
         }
 

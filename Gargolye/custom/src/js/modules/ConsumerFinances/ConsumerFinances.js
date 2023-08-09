@@ -86,7 +86,8 @@ const ConsumerFinances = (() => {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
             headline: 'Consumer: ' + selectedConsumersName,
-            columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By', ''],
+            columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By'],
+            endIcon: true,
         };
 
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
@@ -100,7 +101,7 @@ const ConsumerFinances = (() => {
             filterValues.minamount,
             filterValues.maxamount,
             filterValues.checkNo,
-            filterValues.Balance,
+            filterValues.Balance, 
             filterValues.enteredBy,
             filterValues.isattachment,
         );
@@ -109,15 +110,16 @@ const ConsumerFinances = (() => {
             let newDate = new Date(entry.activityDate);
             let theMonth = newDate.getMonth() + 1;
             let formatActivityDate = UTIL.leadingZero(theMonth) + '/' + UTIL.leadingZero(newDate.getDate()) + '/' + newDate.getFullYear();
-            entry.activityDate = formatActivityDate;
+            entry.activityDate = formatActivityDate; 
         });
-
+       
         let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
-            values: [entry.activityDate, entry.account, entry.payee, entry.category, '$' + entry.amount, entry.checkno, '$' + entry.balance, entry.enteredby, entry.AttachmentsID == 0 ? '' : `${icons['attachmentSmall']}`],
+            values: [entry.activityDate, entry.account, entry.payee, entry.category, '$' + entry.amount, entry.checkno, '$' + entry.balance, entry.enteredby],
             attributes: [{ key: 'registerId', value: entry.ID }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.registerId.value)
             },
+            endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`, 
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);

@@ -58,6 +58,8 @@ const ISP = (function () {
   async function refreshISP(planID) {
     planId = planID;
 
+    validationCheck = await planValidation.ISPValidation(planId);
+
     const ispWrap = document.getElementById('planISP');
 
     const loadingBar = PROGRESS.SPINNER.get('Loading ISP...');
@@ -174,6 +176,8 @@ const ISP = (function () {
         // If a plan returns an error on the validation check, show the alert div
         if (validationCheck.complete === false) {
           outcomesAlertDiv.style.display = 'flex';
+        } else {
+          outcomesAlertDiv.style.display = 'none';
         }
       }
 
@@ -241,9 +245,6 @@ const ISP = (function () {
     } else {
       readOnly = false;
     }
-
-    validationCheck = plan.getISPValidation();
-    //planValidation.getAssessmentValidation(planId);
 
     ispNav = buildNavigation();
     ispDiv.appendChild(ispNav);
