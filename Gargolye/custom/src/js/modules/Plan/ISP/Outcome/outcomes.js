@@ -1574,8 +1574,10 @@ const planOutcomes = (() => {
               ),
           };
 
-          validationCheck.selectedProviders.push(respObj[0].responsibleProvider);
-
+          if (respObj[0].responsibleProvider) {
+            validationCheck.selectedProviders.push(respObj[0].responsibleProvider);
+          }
+          
           const experiencesTable = table.build(tableOptions);
           experiencesTable.classList.add('experiencesTable');
           experiencesTable.classList.add('sortableTable');

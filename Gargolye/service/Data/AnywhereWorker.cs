@@ -541,6 +541,10 @@ namespace Anywhere.service.Data
             public string anywhereEmploymentPermission { get; set; }
             public string warningStartTime { get; set; }
             public string warningEndTime { get; set; }
+            public string appendITSummary { get; set; }
+            public string appendITImmediateAction { get; set; }
+            public string appendITPreventionPlan { get; set; }
+            public string appendITCause { get; set; }
 
         }
 

@@ -256,6 +256,7 @@ $.session.planDelete = false;
 $.session.planView = false;
 $.session.planInsertNewTeamMember = false;
 $.session.planAssignCaseload = false;
+$.session.downloadPlans = false;
 $.session.planSignatureUpdateDOB = false;
 $.session.planSignatureUpdateBuildingNumber = false;
 $.session.planClearSignature = false;
@@ -565,7 +566,6 @@ function setSessionVariables() {
 
     //Incident Tracking Permissons
     if (tmpWindow == 'Anywhere Incident Tracking') {
-      console.log(tmpPerm);
       if (tmpPerm == 'View Case Load') {
         $.session.incidentTrackingViewCaseLoad = true;
       }
@@ -587,9 +587,6 @@ function setSessionVariables() {
       if (tmpPerm == 'Email Incident') {
         $.session.incidentTrackingEmailIncident = true;
       }
-    }
-    if (tmpWindow == 'Incident Tracking') {
-      console.log(tmpPerm);
     }
 
     //Anywhere Plan
@@ -621,6 +618,13 @@ function setSessionVariables() {
       if (tmpPerm == 'Clear Signatures' || $.session.isPSI == true) {
         $.session.planClearSignature = true;
       }
+      if (tmpPerm == 'Download Plans' || $.session.isPSI == true) {
+        $.session.downloadPlans = true;
+      }
+      
+    }
+    if (tmpWindow == 'Anywhere Authorization' || $.session.isPSI == true) {
+      debugger;
     }
     //AeMAR
     if (tmpWindow == 'Anywhere eMAR' || $.session.isPSI == true) {
@@ -1926,6 +1930,10 @@ function disableModules() {
     $('#OODsettingsdiv').css('display', 'none');
 
     $('#customlinks').css('display', 'none');
+  }
+
+  if ($.session.applicationName == 'Advisor') {
+    $('#authorizationsdiv').css('display', 'none');
   }
 
   if ($.session.dayServicesPermission == 'Anywhere_DayServices') {

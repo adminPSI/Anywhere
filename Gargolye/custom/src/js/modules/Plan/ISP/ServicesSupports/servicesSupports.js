@@ -1648,9 +1648,9 @@ const servicesSupports = (() => {
             const rowOrder = table.getRowCount('paidSupportsTable');
             saveUpdateData.rowOrder = rowOrder + 1;
           }
-          insertPaidSupport(saveUpdateData, fromAssessment);
+          await insertPaidSupport(saveUpdateData, fromAssessment);
         } else {
-          updatePaidSupport(saveUpdateData);
+          await updatePaidSupport(saveUpdateData);
         }
 
         const vendorIds = getSelectedVendorIds();
@@ -1668,6 +1668,7 @@ const servicesSupports = (() => {
 
         let ISPValidation = await planValidation.ISPValidation(planID);
         planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
+        planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
 
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
         planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
@@ -1696,8 +1697,16 @@ const servicesSupports = (() => {
       type: 'contained',
       callback: async () => {
         const message = 'Do you want to delete this Paid Support?';
-        ISP.showDeleteWarning(paidSupportPopup, message, () => {
-          deletePaidSupport(saveUpdateData.paidSupportsId);
+        ISP.showDeleteWarning(paidSupportPopup, message, async () => {
+          await deletePaidSupport(saveUpdateData.paidSupportsId);
+
+          let ISPValidation = await planValidation.ISPValidation(planID);
+          planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
+          planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
+
+          let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+          planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         });
 
         fundingSourceDropdownSelectedText = undefined;
@@ -1707,13 +1716,6 @@ const servicesSupports = (() => {
 
         hcbsSelected = undefined;
         saveUpdateProvider = '';
-
-        let ISPValidation = await planValidation.ISPValidation(planID);
-        planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
-
-        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
-        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
     const btnWrap = document.createElement('div');

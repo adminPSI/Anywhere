@@ -1,7 +1,11 @@
 const authorizations = (function () {
   // DATA
   let selectedConsumer;
+  let filterValues;
   // DOM
+  let pageWrap;
+  let overviewTable;
+  //--
   let filterPopup;
   let planTypeDropdown;
   let vendorDropdown;
@@ -21,6 +25,7 @@ const authorizations = (function () {
         DOM.scrollToTopOfPage();
         DOM.clearActionCenter();
         selectedConsumer = roster2.getActiveConsumers()[0];
+        DOM.clearActionCenter();
         loadPage();
         DOM.toggleNavLayout();
 
@@ -34,6 +39,29 @@ const authorizations = (function () {
     }
   }
 
+  // Filter Popup
+  //----------------------------------------
+  function initFilterValues() {
+    filterValues = {
+      planType: '%',
+      vendor: '%',
+      matchSource: '%',
+      completedDateStart: dates
+        .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 2))
+        .slice(0, 10),
+      completedDateEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
+      yearStartStart: dates
+        .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 2))
+        .slice(0, 10),
+      yearStartEnd: dates
+        .formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1))
+        .slice(0, 10),
+      yearEndStart: '',
+      yearEndEnd: '',
+    };
+
+    console.table(filterValues);
+  }
   function showFilterPopup() {
     filterPopup = POPUP.build({
       classNames: 'authorizationsReviewFilterPopup',
@@ -101,21 +129,28 @@ const authorizations = (function () {
     dateWrap.appendChild(yearEndStart);
     dateWrap.appendChild(yearEndEnd);
 
-    const applyBtn = button.build({
+    const btnWrap = document.createElement('div');
+    applyFilterBtn = button.build({
       text: 'Apply',
       style: 'secondary',
       type: 'contained',
+    });
+    const cancelFilterBtn = button.build({
+      text: 'Cancel',
+      style: 'secondary',
+      type: 'outlined',
       callback: function () {
-        updateFilteredBy();
-        POPUP.hide(popup);
+        POPUP.hide(filterPopup);
       },
     });
+    btnWrap.appendChild(applyFilterBtn);
+    btnWrap.appendChild(cancelFilterBtn);
 
     filterPopup.appendChild(planTypeDropdown);
     filterPopup.appendChild(vendorDropdown);
     filterPopup.appendChild(matchSourceDropdown);
     filterPopup.appendChild(dateWrap);
-    filterPopup.appendChild(applyBtn);
+    filterPopup.appendChild(btnWrap);
 
     POPUP.show(filterPopup);
 
@@ -126,13 +161,13 @@ const authorizations = (function () {
     setupFilterEvents();
   }
   function populatePlanTypeDropdown() {
-    const data = [].map((b, index) => {
-      return {
-        value: b.billerId,
-        text: b.billerName,
-      };
-    });
-    data.unshift({ value: '%', text: 'All' });
+    const data = [
+      { value: '%', text: 'All' },
+      { text: 'Final', value: 'F' },
+      { text: 'Initial', value: 'I' },
+      { text: 'Revision', value: 'V' },
+      { text: 'Redetermination', value: 'R' },
+    ];
     dropdown.populate(planTypeDropdown, data, filterValues.planType);
   }
   function populateVendorDropdown() {
@@ -156,18 +191,62 @@ const authorizations = (function () {
     dropdown.populate(matchSourceDropdown, data, filterValues.matchSource);
   }
   function setupFilterEvents() {
-    planTypeDropdown.addEventListener('change', e => {});
-    vendorDropdown.addEventListener('change', e => {});
-    matchSourceDropdown.addEventListener('change', e => {});
-    completedDateStart.addEventListener('change', e => {});
-    completedDateEnd.addEventListener('change', e => {});
-    yearStartStart.addEventListener('change', e => {});
-    yearStartEnd.addEventListener('change', e => {});
-    yearEndStart.addEventListener('change', e => {});
-    yearEndEnd.addEventListener('change', e => {});
+    const newFilterValues = {};
+
+    planTypeDropdown.addEventListener('change', e => {
+      var selectedOption = e.target.options[e.target.selectedIndex];
+      newFilterValues.planType = selectedOption.value;
+    });
+    vendorDropdown.addEventListener('change', e => {
+      var selectedOption = e.target.options[e.target.selectedIndex];
+      newFilterValues.vendor = selectedOption.value;
+    });
+    matchSourceDropdown.addEventListener('change', e => {
+      var selectedOption = e.target.options[e.target.selectedIndex];
+      newFilterValues.matchSource = selectedOption.value;
+    });
+    completedDateStart.addEventListener('change', e => {
+      newFilterValues.completedDateStart = e.target.value;
+    });
+    completedDateEnd.addEventListener('change', e => {
+      newFilterValues.completedDateEnd = e.target.value;
+    });
+    yearStartStart.addEventListener('change', e => {
+      newFilterValues.yearStartStart = e.target.value;
+    });
+    yearStartEnd.addEventListener('change', e => {
+      newFilterValues.yearStartEnd = e.target.value;
+    });
+    yearEndStart.addEventListener('change', e => {
+      newFilterValues.yearEndStart = e.target.value;
+    });
+    yearEndEnd.addEventListener('change', e => {
+      newFilterValues.yearEndEnd = e.target.value;
+    });
+    applyFilterBtn.addEventListener('click', async e => {
+      POPUP.hide(filterPopup);
+      filterValues = newFilterValues;
+
+      authData = await authorizationsAjax.getPageData({
+        code: '',
+        matchSource: filterValues.matchSource,
+        vendorId: filterValues.vendor,
+        planType: filterValues.planType,
+        planYearStartStart: filterValues.yearStartStart,
+        planYearStartEnd: filterValues.yearStartEnd,
+        planYearEndStart: filterValues.yearEndStart,
+        planYearEndEnd: filterValues.yearEndEnd,
+        completedDateStart: filterValues.completedDateStart,
+        completedDateEnd: filterValues.completedDateEnd,
+      });
+
+      updateFilteredBy();
+      buildOverviewTable();
+    });
   }
   function updateFilteredBy() {}
 
+  //----------------------------------------
   function buildConsumerCard() {
     selectedConsumer.card.classList.remove('highlighted');
 
@@ -178,12 +257,18 @@ const authorizations = (function () {
 
     return wrap;
   }
-  function buildOverviewTable() {}
+  function buildOverviewTable() {
+    console.table(authData);
+    overviewTable = document.createElement('div');
 
-  function loadPage() {
-    DOM.clearActionCenter();
+    if (overviewTable) pageWrap.removeChild(overviewTable);
+    pageWrap.appendChild(overviewTable);
+  }
 
-    const pageWrap = document.createElement('div');
+  async function loadPage() {
+    initFilterValues();
+
+    pageWrap = document.createElement('div');
     const consumerCard = buildConsumerCard();
 
     filterBtn = button.build({
@@ -198,6 +283,20 @@ const authorizations = (function () {
     pageWrap.appendChild(consumerCard);
     pageWrap.appendChild(filterBtn);
     DOM.ACTIONCENTER.appendChild(pageWrap);
+
+    authData = await authorizationsAjax.getPageData({
+      code: filterValues.vendor,
+      matchSource: filterValues.vendor,
+      vendorId: filterValues.vendor,
+      planType: filterValues.planType,
+      planYearStartStart: filterValues.yearStartStart,
+      planYearStartEnd: filterValues.yearStartEnd,
+      planYearEndStart: filterValues.yearEndStart,
+      planYearEndEnd: filterValues.yearEndEnd,
+      completedDateStart: filterValues.completedDateStart,
+      completedDateEnd: filterValues.completedDateEnd,
+    });
+    debugger;
   }
 
   function init() {

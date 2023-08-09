@@ -15,6 +15,24 @@ namespace Anywhere.service.Data
         private static Loger logger = new Loger();
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
+        public string authorizationGetPageData(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("authorizationGetPageData");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Authorization_GetPageData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("539.4", ex.Message + "ANYW_Authorization_GetPageData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "539.4: error ANYW_Authorization_GetPageData";
+            }
+        }
+
         public string getConsumerPlans(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;
@@ -305,6 +323,24 @@ namespace Anywhere.service.Data
             {
                 logger.error("8ADG", ex.Message + "ANYW_ISP_GetServiceVendors(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "8ADG: error ANYW_ISP_GetServiceVendors";
+            }
+        }
+
+        public string getMatchSources(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getMatchSources ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Authorization_GetMatchSources(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("8ADG", ex.Message + "ANYW_Authorization_GetMatchSources(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "8ADG: error ANYW_Authorization_GetMatchSources";
             }
         }
 

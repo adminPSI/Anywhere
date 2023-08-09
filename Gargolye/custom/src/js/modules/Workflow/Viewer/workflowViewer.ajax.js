@@ -343,7 +343,7 @@ const WorkflowViewerAjax = (() => {
   async function setStepDoneDateAsync(stepId, doneDate) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -370,7 +370,7 @@ const WorkflowViewerAjax = (() => {
   async function setStepDueDateAsync(stepId, dueDate) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -397,7 +397,7 @@ const WorkflowViewerAjax = (() => {
   async function setDocumentOrderAsync(documentOrderArray) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -423,7 +423,7 @@ const WorkflowViewerAjax = (() => {
   async function setStepOrderAsync(stepOrderArray) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -450,7 +450,7 @@ const WorkflowViewerAjax = (() => {
     try {
       const { people, events, ...stepData } = step;
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -476,7 +476,7 @@ const WorkflowViewerAjax = (() => {
   async function processStepEventsAsync(events) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -628,7 +628,7 @@ const WorkflowViewerAjax = (() => {
   async function updateRelationshipResponsiblePartyID(peopleId, WFID, responsiblePartyType) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +

@@ -156,7 +156,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
             string beginDate = "";
             string endDateT = "";
             string endDate = "";
-            int result = 0;
+            int result = 1;
             //Paid supports
             string paidSupportString = dg.getPaidSupports(token, priorPlanId, int.Parse(targetAssessmentVersionId));
             PaidSupports[] paidSupportObj = js.Deserialize<PaidSupports[]>(paidSupportString);
@@ -175,7 +175,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
                     endDateT = edT.ToString("yyyy-MM-dd");
                     DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
                     DateTime endTestDate = DateTime.Parse(endDateT);
-                    result = DateTime.Compare(endTestDate, previousEndDate);
+                    //result = DateTime.Compare(endTestDate, previousEndDate);
                 }
                 else
                 {
@@ -189,7 +189,7 @@ namespace Anywhere.service.Data.PlanServicesAndSupports
                     endDateT = edT.ToString("yyyy-MM-dd");
                     DateTime previousEndDate = DateTime.Parse(previousEnd[0].endDate);
                     DateTime endTestDate = DateTime.Parse(endDateT);
-                    result = DateTime.Compare(endTestDate, previousEndDate);
+                    //result = DateTime.Compare(endTestDate, previousEndDate);
                 }
                 if (result < 0)
                 {
