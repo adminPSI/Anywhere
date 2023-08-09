@@ -520,6 +520,7 @@ const NewEntryCF = (() => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             category = event.target.options[event.target.selectedIndex].text;
             tempcategory = event.target.options[event.target.selectedIndex].text;
+            subCategory = '';
             populateSubCategoryDropdown(category);
             checkRequiredFieldsOfNewEntry();
         });
