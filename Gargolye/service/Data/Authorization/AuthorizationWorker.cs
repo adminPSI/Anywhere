@@ -23,8 +23,22 @@ namespace Anywhere.service.Data.Authorization
         Sybase di = new Data.Sybase();
         string percent = "%";
         AssessmentDataGetter adg = new AssessmentDataGetter();
+        public class FilterResults
+        {
+            public string CompletionDate { get; set; }
+            public string plan_year_start { get; set; }
+            public string plan_year_end { get; set; }
+            public string sourceAndCaption { get; set; }
+            public string frequency { get; set; }
+            public string vendorName { get; set; }
+            public string BeginDate { get; set; }
+            public string EndDate { get; set; }
+            public string description { get; set; }
+            public string service_code { get; set; }
 
-        public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        }
+
+        public FilterResults[] getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd)
         {
             string jsonResult = "";
@@ -48,7 +62,9 @@ namespace Anywhere.service.Data.Authorization
 
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             jsonResult = DataTableToJSONWithJSONNet(dt);
-            return sb.ToString();
+            FilterResults[] filterResultssObj = js.Deserialize<FilterResults[]>(jsonResult.ToString());
+
+            return filterResultssObj;
         }
 
         public string DataTableToJSONWithJSONNet(DataTable table)
@@ -112,5 +128,7 @@ namespace Anywhere.service.Data.Authorization
             public string code { get; set; }
             public string caption { get; set; }
         }
+
+        
     }
 }
