@@ -24,9 +24,9 @@ class FormsWorkflowStepComponent {
         if (isTemplate) {
             forms.displayWFStepFormPopup(this.templateId, this.templateName, this.step.stepId, this.docOrder, isTemplate, documentEdited, activeConsumerId);  
         } else {
-            // need intermediate call 
-            formsAjax.openFormEditor(this.formId, "1", activeConsumerId, false, "0", $.session.applicationName, '05/22/2022', true);   
-            //formsAjax.openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, $.session.applicationName, formCompleteDate, isFormLocked);   
+            
+            forms.displayStepFormPopup(this.formId, "1", activeConsumerId, false, "0", '05/22/2022', this.step.stepId, this.docOrder, this.formName );
+           
         }
        
           

@@ -342,6 +342,66 @@
 		isFormLocked = false;
 	}
 
+	async function displayStepFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate, formCompleteDate, stepId, docOrder, formName ) {
+
+		let formPopup = POPUP.build({
+			header: "",
+			hideX: true,
+			id: "formPopup"
+		  });
+
+		  const viewer = document.createElement('div')
+
+		var viewerWrap = document.createElement('div');
+		viewerWrap.style = 'width: 1300px; height: 600px; margin: 0;';
+		viewerWrap.id = 'viewer';
+
+		viewer.appendChild(viewerWrap);
+		
+		formPopup.appendChild(viewer);
+
+		POPUP.show(formPopup);
+
+		// If the form is new, skip the forms lock check
+		if (isTemplate !== '1') {
+      		const checkFormsLockValue = await formsAjax.checkFormsLock(formId, $.session.UserId);
+
+			// if the forms lock value returns a non empty string, display the forms lock popup
+			if (checkFormsLockValue !== '') {
+				isFormLocked = true;
+
+				const popup = POPUP.build({
+				id: 'formLocksPopup',
+				classNames: 'warning',
+				});
+
+				const btnWrap = document.createElement('div');
+				btnWrap.classList.add('btnWrap');
+				
+				const okBtn = button.build({
+				text: 'OK',
+				style: 'secondary',
+				type: 'contained',
+				icon: 'checkmark',
+				callback: async function () {
+					POPUP.hide(popup);
+					overlay.show();
+				},
+				});
+
+				btnWrap.appendChild(okBtn);
+				const warningMessage = document.createElement('p');
+				warningMessage.innerHTML = `This form is currently locked by ${checkFormsLockValue}. Any changes you make to this form will not be saved.`;
+				popup.appendChild(warningMessage);
+				popup.appendChild(btnWrap);
+				POPUP.show(popup);
+			}
+    	}
+		
+		formsAjax.openStepFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, $.session.applicationName, formCompleteDate, isFormLocked, stepId, docOrder, formName);
+		isFormLocked = false;
+	}
+
 	function displayWFStepFormPopup(templateId, templateName, stepId, docOrder, isTemplate, documntEdited, consumerId) {
 		
 	  isTemplate ? documntId = 0 : documntId = templateId;
@@ -540,6 +600,7 @@
 		loadPDFFormsLanding,
 		displayWFStepFormPopup,
 		displayFormPopup,
+		displayStepFormPopup,
 		handleActionNavEvent,
     };
 })();

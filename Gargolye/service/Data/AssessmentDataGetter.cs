@@ -364,6 +364,25 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string updateAfterSuccessfullPlanDownload(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateAfterSuccessfullPlanDownload ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_Plan_UpdateAfterSuccessfullPlanDownload(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("8ADG", ex.Message + "ANYW_Plan_UpdateAfterSuccessfullPlanDownload(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "8ADG: error ANYW_Plan_UpdateAfterSuccessfullPlanDownload";
+            }
+        }
+
 
         public string getPaidSupportsVendors(string fundingSourceName, string serviceName, string areInSalesForce)
         {

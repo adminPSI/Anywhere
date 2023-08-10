@@ -493,6 +493,191 @@
       });
   }
 
+  function openStepFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, applicationName, formCompleteDate, isFormLocked, stepId, docOrder, formName) {
+ 
+    $.ajax({
+        type: 'POST',
+        url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/openFormEditor/',
+        data: '{"formId":"' + formId + '", "documentEdited":"' + documentEdited + '", "consumerId":"' + consumerId + '", "isRefresh":"' + isRefresh + '", "isTemplate":"' + isTemplate + '", "applicationName":"' + applicationName + '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (response, status, xhr) {
+            var arr = response.openFormEditorResult;
+
+            WebViewer({
+                path: './WebViewer/lib', // path to the PDFTron 'lib' folder on your server
+                // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
+                // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
+                licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20230512):A9A5F75D0437C60AF360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
+                documentType: 'pdf',
+                 // initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/webviewer-demo.pdf',
+                // initialDoc: 'test.pdf',  // You can also use documents on your server
+             }, document.getElementById('viewer'))
+                .then(instance => {
+                    console.log('success with S3 file');
+                    var FitMode = instance.FitMode;
+                    instance.setFitMode(FitMode.FitWidth);
+                // hide the ribbons
+                 instance.disableElements(['ribbons']);
+               //  instance.disableFeatures([instance.Feature.Download]);
+             
+                    const { docViewer, annotManager } = instance;
+                                  
+                    instance.setHeaderItems(header => {
+                      if ($.session.formsUpdate) { 
+                        header.push({
+                            type: 'actionButton',
+                            // img: '../../../../images/new-icons/default.png',
+                           // img: 'icon-annotation-status-accepted',
+                           img: 'icon-tool-pen-fill',
+                            title: 'Save Current Data',
+                            onClick: async () => {
+                                    const doc = docViewer.getDocument();
+                                    const xfdfString = await annotManager.exportAnnotations();
+                                                          
+                                    const data = await doc.getFileData({
+                                        // saves the document with annotations in it
+                                        xfdfString
+                                    });          
+                                
+                                    let documentEdited = "1"; // documentEdited = T 
+                        const result = await WorkflowViewerAjax.insertStepDocumentAsync(stepId, docOrder, formName + '.pdf', 'pdf', data, documentEdited); 
+                        const {insertWorkflowStepDocumentResult: {attachmentId, documentId}} = result;
+
+                        const newDocObj = {
+                          documentId: documentId,
+                          stepId: stepId,
+                          docOrder: `"${docOrder}"`,
+                          description: formName + '.pdf',
+                          attachmentId: attachmentId,
+                          documentEdited: documentEdited,
+                                        attachmentType: 'pdf'
+
+                                      }
+  
+                                      const newStepDocComponent = new WorkflowDocumentComponent(newDocObj).render();  
+                
+                                                  alert('Document has been saved.');
+                
+                                      POPUP.hide(formPopup);
+                
+                                      const stepsContainer = document.querySelector(`.wf-steps-container[data-id='${stepId}']`);
+                                      const documentsList = stepsContainer.querySelector(".wf-documents-list");
+                     
+                                      documentsList.appendChild(newStepDocComponent);
+                
+                                  
+
+                            } //onclick
+                        }); // push
+                      } //if
+                            header.push({
+                                type: 'actionButton',
+                               // img: '../../../../images/new-icons/default.png',
+                               img: 'icon-close',
+                                title: 'Close Window',
+                                onClick: async () => {
+                                   // let PDFForm = document.getElementById('formPopup');
+                                    //POPUP.hide(formPopup);
+                                    if ($.session.formsUpdate) { 
+                                      closewarningPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
+                                      removeFormsLock(formId, consumerId);
+                                    } else {
+                                      POPUP.hide(formPopup);
+                                      removeFormsLock(formId, consumerId);
+                                    }
+
+                                }
+                            });  
+                            
+                            if (isTemplate == "0" && $.session.formsUpdate == true) {
+
+                                header.push({
+                                    type: 'actionButton',
+                                   // img: '../../../../images/new-icons/default.png',
+                                   // img: 'icon-chevron-down',
+                                   img: 'icon-tool-stamp-fill',
+                                    title: 'Refresh with original data',
+                                    onClick: async () => {
+
+                                        const doc = docViewer.getDocument();
+                                        const xfdfString = await annotManager.exportAnnotations();
+                                                     
+                                        const data = await doc.getFileData({
+                                            // saves the document with annotations in it
+                                            xfdfString
+                                            });   
+
+                                        docViewer.closeDocument();
+                                        // get the data for annotated version of the document 
+                                        let isRefresh = true; 
+                                        const result = await formsAjax.getPDFFormData(formId, "0", consumerId, isRefresh, isTemplate, $.session.applicationName);
+
+                                        if (result) {
+
+                                            const binaryString = window.atob(result);
+                                            const len = binaryString.length;
+                                            const bytes = new Uint8Array(len);
+                            
+                                            for (let i = 0; i < len; ++i) {
+                                                bytes[i] = binaryString.charCodeAt(i);
+                                            }
+                                            // display annotated version of the document 
+                                            const blob = new Blob([bytes], { type: 'application/pdf' });
+                                            var FitMode = docViewer.FitMode;
+                                            docViewer.setFitMode(FitMode.FitWidth);
+                                            docViewer.loadDocument(blob, { filename: 'myfile.pdf'});
+                          
+                                          }          
+                                            
+                                    }
+                                });
+
+                           }     
+                       
+                    });
+
+                    
+                    // -- Display PDF (from memorystream/string)   --  https://www.pdftron.com/documentation/web/guides/basics/open/base64/
+    
+                    const binaryString = window.atob(arr);
+                    const len = binaryString.length;
+                    const bytes = new Uint8Array(len);
+    
+                    for (let i = 0; i < len; ++i) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+    
+                    // const arr = new Uint8Array(bytes);
+                    const blob = new Blob([bytes], { type: 'application/pdf' });
+                    instance.loadDocument(blob, { filename: 'myfile.pdf'});
+                    instance.disableElements(['toolsHeader']);
+                     
+                    docViewer.on('documentLoaded', async () => {
+                        try {
+
+                            const doc = docViewer.getDocument();
+                            const xfdfString = await annotManager.exportAnnotations();
+                                                  
+                            const data = await doc.getFileData({
+                                 // saves the document with annotations in it
+                                 xfdfString
+                             });
+
+                        } catch {
+
+                            documentNotAllowedSaveAlert();
+                           // alert('This PDF document format does not allow saving. Any entered data can not be saved to the database.');
+                        }
+                       
+                    });
+                });
+        },
+        error: function (xhr, status, error) {
+            //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+        },
+    });
+}
   async function getUserFormTemplatesAsync(userId, hasAssignedFormTypes) {
       try {
         const result = await $.ajax({
@@ -791,7 +976,7 @@
            POPUP.hide(formPopup);
           // if (documentEdited === "0") forms.loadPDFFormsLanding();
           //overlay.hide();
-          forms.loadPDFFormsLanding();
+         // forms.loadPDFFormsLanding();
          // overlay.show();
 
         } //callback
@@ -869,6 +1054,7 @@
       openEditor,
       openPDFEditor,
       openFormEditor,
+      openStepFormEditor,
       getUserFormTemplatesAsync,
       insertConsumerFormAsync,
       updateConsumerFormAsync,
