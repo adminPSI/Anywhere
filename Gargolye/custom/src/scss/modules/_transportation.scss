@@ -566,6 +566,20 @@
             pointer-events: all !important;
         }
     }
+
+    #singleEntryAdminReviewTable {
+
+        .table__row {
+            > div {
+                margin-top: 10px;
+            }
+        }
+
+        .endIcon {
+            cursor: pointer;
+            margin-left: 50px;
+        }
+    }
 }
 
 [data-active-module="resetPassword"] {

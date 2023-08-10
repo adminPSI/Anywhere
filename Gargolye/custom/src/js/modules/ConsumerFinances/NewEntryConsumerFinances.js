@@ -27,14 +27,13 @@ const NewEntryCF = (() => {
     let IsAddNewPayDisable = true;
     let IsSaveDisable = true;
     let IsDeleteDisable = true;
-    let inputElement;
 
     async function init() {
-        buildNewEntryForm();
+        buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined);  
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
-
+        prevAttachmentArray = [];
         if (registerId) {
             prevAttachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
             BtnName = 'UPDATE'
@@ -78,15 +77,28 @@ const NewEntryCF = (() => {
             IsDisabledBtn = false;
         }
 
+        tempdate = '';
+        tempamount = '';
+        tempaccount = '';
+        tempaccountType = '';
+        temppayee = '';
+        tempcategory = '';
+        tempsubCategory = '';
+        tempcheckNo = '';
+        tempdescription = '';
+        tempattachment = '';
+        tempreceipt = '';
+
         if (attachment) {
             attachmentArray = attachment;
             attachmentId = attachmentID;
             attachment.forEach(att => {
-                if (att.attachmentID == undefined) {
+                if (att.registerID == 0) {
                     attachmentDesc.push(att.description);
+                    tempattachment = attachmentID;
                 }
             });
-            NEW_SAVE_BTN.classList.remove('disabled');
+
         }
         else {
             attachmentArray = [];
@@ -302,8 +314,6 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
-       
     }
 
     function enableDisabledInputs() {
@@ -383,14 +393,9 @@ const NewEntryCF = (() => {
         expenseRadio.classList.remove('disabled');
         depositRadio.classList.remove('disabled');
         IsDisabledBtn = false;
-    }
+    }  
 
-    function disabledUpdateBtn() {
-        //Disable the UPDATE button until the user makes a change to the record. 
-        NEW_SAVE_BTN.classList.add('disabled');
-    }
-
-    function checkRequiredFieldsOfNewEntry() {
+    function checkRequiredFieldsOfNewEntry() { 
         var date = newDateInput.querySelector('#newDateInput');
         var amount = newAmountInput.querySelector('#newAmountInput');
         var account = newAccountDropdown.querySelector('#newAccountDropdown');
@@ -439,7 +444,13 @@ const NewEntryCF = (() => {
             NEW_SAVE_BTN.classList.add('disabled');
             return;
         } else {
-            NEW_SAVE_BTN.classList.remove('disabled');
+            if (tempdate != '' || tempamount != '' || tempaccount != '' || tempaccountType != '' || temppayee != '' || tempcategory != '' || tempsubCategory != '' || tempcheckNo != '' || tempdescription != '' || tempattachment != '' || tempreceipt != '') {
+                NEW_SAVE_BTN.classList.remove('disabled');
+            }
+            else {
+                NEW_SAVE_BTN.classList.add('disabled');
+            }
+
         }
     }
 
@@ -477,8 +488,10 @@ const NewEntryCF = (() => {
             }
             IsDeleteDisable = true;
         });
+
         newDateInput.addEventListener('input', event => {
             date = event.target.value;
+            tempdate = event.target.value;
             checkRequiredFieldsOfNewEntry();
         });
         newAmountInput.addEventListener('input', event => {
@@ -487,48 +500,59 @@ const NewEntryCF = (() => {
                 document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
                 return;
             }
+            tempamount = event.target.value;
             checkRequiredFieldsOfNewEntry();
         });
         newPayeeDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             getCategorySubCategorybyPayee(categoryID);
             payee = event.target.options[event.target.selectedIndex].text;
+            temppayee = event.target.options[event.target.selectedIndex].text;
             checkRequiredFieldsOfNewEntry();
         });
         newAccountDropdown.addEventListener('change', event => {
             accountID = event.target.options[event.target.selectedIndex].id;
             account = event.target.options[event.target.selectedIndex].text;
+            tempaccount = event.target.options[event.target.selectedIndex].text;
             checkRequiredFieldsOfNewEntry();
         });
         newCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             category = event.target.options[event.target.selectedIndex].text;
+            tempcategory = event.target.options[event.target.selectedIndex].text;
+            subCategory = '';
             populateSubCategoryDropdown(category);
             checkRequiredFieldsOfNewEntry();
         });
         newSubCategoryDropdown.addEventListener('change', event => {
             categoryID = event.target.options[event.target.selectedIndex].id;
             subCategory = event.target.options[event.target.selectedIndex].text;
+            tempsubCategory = event.target.options[event.target.selectedIndex].text;
             checkRequiredFieldsOfNewEntry();
         });
         newCheckNoInput.addEventListener('input', event => {
             checkNo = event.target.value;
+            tempcheckNo = event.target.value;
             checkRequiredFieldsOfNewEntry();
         });
         newDescriptionInput.addEventListener('input', event => {
             description = event.target.value;
+            tempdescription = event.target.value;
             checkRequiredFieldsOfNewEntry();
         });
         newReceiptInput.addEventListener('input', event => {
             receipt = event.target.value;
+            tempreceipt = event.target.value;
             checkRequiredFieldsOfNewEntry();
         });
         expenseRadio.addEventListener('change', event => {
             accountType = 'E';
+            tempaccountType = 'E';
             checkRequiredFieldsOfNewEntry();
         });
         depositRadio.addEventListener('change', event => {
             accountType = 'D';
+            tempaccountType = 'D';
             checkRequiredFieldsOfNewEntry();
         });
     }
@@ -566,8 +590,8 @@ const NewEntryCF = (() => {
         subCategory = CategoriesSubCategory[0].SubCategoryDescription;
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
-        checkRequiredFieldsOfNewEntry();
-        //disabledUpdateBtn(); 
+        checkRequiredFieldsOfNewEntry(); 
+
     }
 
     // Populate the Account DDL 
@@ -583,9 +607,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+       
     }
 
     async function populatePayeeDropdown() {
@@ -600,9 +622,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newPayeeDropdown", data, payee);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+       
     }
 
     async function populateCategoryDropdown(categoryID) {
@@ -617,9 +637,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+      
     }
 
     async function populateSubCategoryDropdown(category) {
@@ -634,9 +652,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
-        //if (regId > 0) { 
-        //    disabledUpdateBtn(); 
-        //}
+       
     }
 
 

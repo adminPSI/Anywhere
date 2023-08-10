@@ -2346,7 +2346,7 @@ namespace Anywhere
             return authWorker.getAuthorizationFilterData(token);
         }
 
-        public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        public AuthorizationWorker.FilterResults[] getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd)
         {
             return authWorker.getAuthorizationPageData(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
@@ -3050,6 +3050,13 @@ namespace Anywhere
             //MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             return osw.oneSpanBuildSigners(token, assessmentID, ms);
         }
+        //public string oneSpanBuildSigners(string token)
+        //{
+        //    //MemoryStream ms = dpra.generateReportForOneSpan(token, userID, assessmentID, versionID, extraSpace, false, isp, oneSpan, false, "Y");
+        //    //bool signatureOnly = false;
+        //    //MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+        //    return osw.oneSpanBuildSigners(token);
+        //}
 
         //Defaults
         public DefaultsWorker.InvalidDefaults[] getInvalidDefaults(string token)

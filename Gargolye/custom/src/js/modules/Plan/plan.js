@@ -6,6 +6,7 @@ const plan = (function () {
   let overviewTable;
   let newPlanBtn;
   let assignCaseLoadBtn;
+  let downloadPlanBtn;
   // new plan setup
   let planSetupPage;
   let setupWrap;
@@ -2465,6 +2466,18 @@ const plan = (function () {
     });
   }
 
+  function buildDownloadPlanBtn() {
+    return button.build({
+      text: 'DOWNLOAD PLAN',
+      style: 'secondary',
+      type: 'contained',
+      classNames:['downloadPlanBtn'],
+      callback: () => {
+
+      }
+    })
+  }
+
   function buildConsumerCard() {
     selectedConsumer.card.classList.remove('highlighted');
 
@@ -2478,24 +2491,29 @@ const plan = (function () {
   function buildOverviewTable() {
     const tableOptions = {
       plain: false,
-      columnHeadings: ['Type', 'Rev #', 'PY Start', 'Eff Start', 'Review', 'Sent To DODD'],
+      columnHeadings: ['Type', 'Rev #', 'Downloaded', 'PY Start', 'Eff Start', 'Review', 'Sent To DODD'],
       tableId: 'planOverviewTable',
     };
 
     const tableData = previousPlansData.map(pd => {
       const type = pd.planType === 'A' ? 'Annual' : 'Revision';
       const revisionNum = pd.revisionNumber !== '0' ? pd.revisionNumber : '';
+      const downloadedDate = pd.downloadDate ? pd.downloadDate.split(' ')[0] : '';
       const startDate = pd.planYearStart.split(' ')[0];
       const endDate = pd.planYearEnd.split(' ')[0];
       const effectiveStart = pd.effectiveStart.split(' ')[0];
       const effectiveEnd = pd.effectiveEnd.split(' ')[0];
-      const isActive = pd.active === 'True' ? true : false;
+      let isActive = pd.active === 'True' ? true : false;
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
       let sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
       sentToDODD = `${pd.userSentDODD} - ${sentToDODD}`;
+      if (downloadedDate !== "" ) {
+        downloadPlanBtn.classList.add('disabled');
+        isActive = false;
+      };
 
       return {
-        values: [type, revisionNum, startDate, effectiveStart, reviewDate, sentToDODD],
+        values: [type, revisionNum, downloadedDate, startDate, effectiveStart, reviewDate, sentToDODD],
         attributes: [
           { key: 'data-plan-active', value: isActive },
           { key: 'data-plan-id', value: pd.consumerPlanId },
@@ -2534,12 +2552,14 @@ const plan = (function () {
     const consumerCard = buildConsumerCard();
     newPlanBtn = buildNewPlanBtn();
     assignCaseLoadBtn = buildAssignCaseloadBtn();
+    downloadPlanBtn = buildDownloadPlanBtn();
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('topOutcomeWrap');
 
     btnWrap.appendChild(newPlanBtn);
     if ($.session.planAssignCaseload) btnWrap.appendChild(assignCaseLoadBtn);
+    if ($.session.downloadPlans) btnWrap.appendChild(downloadPlanBtn);
 
     landingPage.appendChild(consumerCard);
     landingPage.appendChild(btnWrap);

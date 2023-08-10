@@ -18,24 +18,62 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Org.BouncyCastle.Cms;
-
+using System.Net;
 
 namespace Anywhere.service.Data.eSignature___OneSpan
 {
     public class OneSpanWorker
     {
         private static String apiUrl = "https://sandbox.esignlive.com/api";
+        private static String apiUrlToken = "https://sandbox.esignlive.com/apitoken/clientApp/accessToken";
         //private static String apiUrl = "https://sandbox.esignlive.com/apitoken/clientApp/accessToken";
         // USE https://apps.e-signlive.com/api FOR PRODUCTION
         private static String apiKey = "MEhOb1ptNkhXd1FaOnhqSTdUYXZlaFowSQ==";
+        private static string tokenOS = "";
         OssClient ossClient = new OssClient(apiKey, apiUrl);
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
+        public void generateToken()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(apiUrlToken);
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "POST";
+            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            {
+
+                string json = new JavaScriptSerializer().Serialize(new
+                {
+                    clientId = "1850dcdebdd0a5a712d58cf1a12",
+                    secret = "68796472616f4c5a350113d22f22e4c5e9bca733483456acd0a7513ef0862e8077d6370e49",
+                    type = "OWNER"
+                });
+
+                streamWriter.Write(json);
+            }
+
+            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                var result = streamReader.ReadToEnd();
+                var tokenResult = JsonConvert.DeserializeObject<TokenResponse>(result);
+                tokenOS = tokenResult.accessToken;
+            }
+            //return tokenOS;
+        }
+
+        public class TokenResponse
+        {
+            public string accessToken { get; set; }
+        }
 
         public string oneSpanBuildSigners(string token, string assessmentID, MemoryStream ms)
+        //public string oneSpanBuildSigners(string token)
         {
-
+            generateToken();
+            OssClient ossClient = new OssClient(tokenOS, apiUrl);
             //string applicationVersion = ossClient.SystemService.GetApplicationVersion();
             if (tokenValidator(token) == false) return null;
             if (!osdg.validateToken(token))
@@ -117,7 +155,8 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     lastName = "(No Last Name Provided)";
                 }
 
-                return createDocument(token, assessmentID, allOneSpanSigners, namesList, superPackage, ms);
+                //return "";
+                return createDocument(token, assessmentID, allOneSpanSigners, namesList, superPackage, ms, ossClient);
             }
         }
 
@@ -195,7 +234,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             return textAreaInput;
         }
 
-        public string createDocument(string token, string assessmentID, List<OneSpanSigner> allSigners, List<string> names, PackageBuilder package, MemoryStream ms)
+        public string createDocument(string token, string assessmentID, List<OneSpanSigner> allSigners, List<string> names, PackageBuilder package, MemoryStream ms, OssClient ossClient)
         {
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Plan Report")
                                 .FromStream(ms, DocumentType.PDF)
@@ -343,10 +382,10 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 i++;
             }
 
-            return sendToOneSpan(token, assessmentID, package, document);
+            return sendToOneSpan(token, assessmentID, package, document, ossClient);
         }
 
-        public string sendToOneSpan(string token, string assessmentID, PackageBuilder package, DocumentBuilder document)
+        public string sendToOneSpan(string token, string assessmentID, PackageBuilder package, DocumentBuilder document, OssClient ossClient)
         {
             package.WithDocument(document);
             DocumentPackage pack = package.Build();

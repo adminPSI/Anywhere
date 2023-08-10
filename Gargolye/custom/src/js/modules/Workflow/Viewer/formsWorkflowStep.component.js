@@ -6,6 +6,8 @@ class FormsWorkflowStepComponent {
         this.docOrder = docOrder; 
         this.templateId;
         this.templateName;
+        this.formName;
+        this.formId;
         this.createPopup();
         this.populateDropdown();
     }
@@ -13,12 +15,21 @@ class FormsWorkflowStepComponent {
     formsWorkflowStepFinished(){
         let {step, cache, callback} = this;
         POPUP.hide(selectTemplatePopup);  
-        let isTemplate = true;   
+        let isTemplate = (this.templateId === 0) ? false : true;   
+        this.templateId = (this.templateId !== 0) ? this.templateId : this.formId; 
         let documentEdited = "0"; //   document not previously edited              
        // return callback(step, cache);   
         let activeConsumers = roster2.getActiveConsumers();   
         let activeConsumerId = activeConsumers[0].id;
-       forms.displayWFStepFormPopup(this.templateId, this.templateName, this.step.stepId, this.docOrder, isTemplate, documentEdited, activeConsumerId);        
+        if (isTemplate) {
+            forms.displayWFStepFormPopup(this.templateId, this.templateName, this.step.stepId, this.docOrder, isTemplate, documentEdited, activeConsumerId);  
+        } else {
+            // need intermediate call 
+            formsAjax.openFormEditor(this.formId, "1", activeConsumerId, false, "0", $.session.applicationName, '05/22/2022', true);   
+            //formsAjax.openFormEditor(formId, documentEdited, consumerId, isRefresh, isTemplate, $.session.applicationName, formCompleteDate, isFormLocked);   
+        }
+       
+          
     }
 
     formsWorkflowStepCancelled(){
@@ -78,10 +89,32 @@ class FormsWorkflowStepComponent {
             var templateddl = document.getElementById("templateDropdown");
             this.templateName = templateddl.options[templateddl.selectedIndex].innerHTML;
             
+            var formddl = document.getElementById("userFormDropdown");
+            this.formName = formddl.options[0].innerHTML;
+            formddl.selectedIndex = 0;
+            this.formId = 0;
+
             // responsiblePartyId
          
         });
 
+        let userFormDropdown = dropdown.build({
+            label: "User Forms",
+            dropdownId: "userFormDropdown",
+        });   
+
+        userFormDropdown.addEventListener("change", (e)=> {
+            this.formId = e.target.value;
+            var formddl = document.getElementById("userFormDropdown");
+            this.formName = formddl.options[formddl.selectedIndex].innerHTML;
+            
+            var templateddl = document.getElementById("templateDropdown");
+            this.templateName = templateddl.options[0].innerHTML;
+            templateddl.selectedIndex = 0;
+            this.templateId = 0;
+            // responsiblePartyId
+         
+        });
       
         let doneBtn = button.build({
             id: "wfStepDoneBtn",
@@ -105,6 +138,7 @@ class FormsWorkflowStepComponent {
         btnWrap.appendChild(doneBtn);
         btnWrap.appendChild(cancelBtn);        
         selectTemplatePopup.appendChild(templateDropdown);
+        selectTemplatePopup.appendChild(userFormDropdown);
         selectTemplatePopup.appendChild(btnWrap);
 
         
@@ -120,7 +154,7 @@ class FormsWorkflowStepComponent {
         POPUP.show(selectTemplatePopup);
     }
 
-    populateDropdown() { 
+    async populateDropdown() { 
 
         const templates = WorkflowViewerComponent.getTemplates();
         let data = templates.map((template) => ({
@@ -128,8 +162,24 @@ class FormsWorkflowStepComponent {
             value: template.formTemplateId,
             text: template.formType + " -- " + template.formDescription
         })); 
+
+        let hasAssignedFormTypes = $.session.formsFormtype ? "1" : "0";
+        let selectedConsumer = roster2.getActiveConsumers()[0];
+		const { getconsumerFormsResult: consumerForms } = await formsAjax.getconsumerFormsAsync(
+			$.session.UserId,
+			selectedConsumer.id,
+			hasAssignedFormTypes,
+		  );
+          let data2 = consumerForms.map((usrForm) => ({
+            id: usrForm.formId, 
+            value: usrForm.formId,
+            text: usrForm.formDescription
+        })); 
+        
         data.unshift({ id: null, value: '', text: '' }); //ADD Blank value         
+        data2.unshift({ id: null, value: '', text: '' }); //ADD Blank value         
         dropdown.populate("templateDropdown", data);        
+        dropdown.populate("userFormDropdown", data2);  
     }
 
     

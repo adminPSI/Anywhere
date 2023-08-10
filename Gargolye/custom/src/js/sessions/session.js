@@ -256,6 +256,7 @@ $.session.planDelete = false;
 $.session.planView = false;
 $.session.planInsertNewTeamMember = false;
 $.session.planAssignCaseload = false;
+$.session.downloadPlans = false;
 $.session.planSignatureUpdateDOB = false;
 $.session.planSignatureUpdateBuildingNumber = false;
 $.session.planClearSignature = false;
@@ -617,6 +618,10 @@ function setSessionVariables() {
       if (tmpPerm == 'Clear Signatures' || $.session.isPSI == true) {
         $.session.planClearSignature = true;
       }
+      if (tmpPerm == 'Download Plans' || $.session.isPSI == true) {
+        $.session.downloadPlans = true;
+      }
+      
     }
     if (tmpWindow == 'Anywhere Authorization' || $.session.isPSI == true) {
       debugger;

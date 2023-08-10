@@ -83,7 +83,7 @@ namespace Anywhere.service.Data
                 public string sentToDODD { get; set; }
                 public string userSentDODD { get; set; }
                 public string dateSentDODD { get; set; }
-
+                public string downloadDate { get; set; }
 
             }
 
