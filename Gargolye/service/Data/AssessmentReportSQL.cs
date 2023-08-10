@@ -68,7 +68,6 @@ namespace Anywhere.service.Data
             sb.Append("DBA.anyw_isp_assessment_questions.question_order ");
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
 
-
             //MessageBox.Show(string.Format("AssesmentAnswers dt row count {0}",dt.Rows.Count));
 
             foreach (DataRow row in dt.Rows)
@@ -104,13 +103,23 @@ namespace Anywhere.service.Data
                 {
                     if (row["answer"].ToString() != string.Empty)
                     {
-                        sb.Clear();
-                        sb.Append("SELECT  DBA.People.Last_Name, DBA.People.First_Name ");
-                        sb.Append("FROM  DBA.People ");
-                        sb.AppendFormat("WHERE DBA.People.id = {0} ", row["answer"]);
-                        DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
-                        string Name = string.Format("{0}, {1}", row2["Last_Name"], row2["First_Name"]);
-                        row["answer"] = Name;
+                        if (row["answer"].ToString() != "0")
+                        {
+                            sb.Clear();
+                            sb.Append("SELECT  DBA.People.Last_Name, DBA.People.First_Name ");
+                            sb.Append("FROM  DBA.People ");
+                            sb.AppendFormat("WHERE DBA.People.id = {0} ", row["answer"]);
+                            DataSet dsName = di.SelectRowsDS(sb.ToString());
+                            if (dsName.Tables.Count > 0)
+                            {
+                                if (dsName.Tables[0].Rows.Count > 0)
+                                {
+                                    DataRow row2 = dsName.Tables[0].Rows[0];
+                                    string Name = string.Format("{0}, {1}", row2["Last_Name"], row2["First_Name"]);
+                                    row["answer"] = Name;
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -151,6 +160,7 @@ namespace Anywhere.service.Data
 
             return dt.DataSet;
         }
+
 
         public DataSet ISPSummary(long AssesmentID, bool Assessment, string WhichISPArea, Boolean Advisor = false)
         {
