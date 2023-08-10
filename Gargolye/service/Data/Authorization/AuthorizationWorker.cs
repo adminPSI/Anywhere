@@ -38,7 +38,7 @@ namespace Anywhere.service.Data.Authorization
 
         }
 
-        public FilterResults[] getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd)
         {
             string jsonResult = "";
@@ -62,9 +62,9 @@ namespace Anywhere.service.Data.Authorization
 
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             jsonResult = DataTableToJSONWithJSONNet(dt);
-            FilterResults[] filterResultssObj = js.Deserialize<FilterResults[]>(jsonResult.ToString());
+            //FilterResults[] filterResultssObj = js.Deserialize<FilterResults[]>(jsonResult.ToString());
 
-            return filterResultssObj;
+            return jsonResult;
         }
 
         public string DataTableToJSONWithJSONNet(DataTable table)

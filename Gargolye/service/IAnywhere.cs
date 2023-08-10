@@ -2586,7 +2586,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/switchPlanType/")]
-        string switchPlanType(string token, string consumerPlanId, string planType);
+        string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3338,7 +3338,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getAuthorizationPageData/")]
-        AuthorizationWorker.FilterResults[] getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd);
         
 
