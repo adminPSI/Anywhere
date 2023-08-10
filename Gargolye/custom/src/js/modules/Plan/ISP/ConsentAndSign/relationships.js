@@ -69,6 +69,16 @@ const csRelationship = (() => {
 
     POPUP.show(existingRelationshipPopup);
   }
+  function removeDups(data) {
+    let uniqueArray = Array.from(new Set(data.map(d => `${d.peopleId}|${d.relationship}`))).map(
+      id => {
+        let parts = id.split('|');
+        return data.find(a => a.peopleId === Number(parts[0]) && a.relationship === parts[1]);
+      },
+    );
+
+    return uniqueArray;
+  }
   const removeExisting = data => {
     const teamMembers = planConsentAndSign.getTeamMemberData();
     const teamMemberIDs = teamMembers.map(tm => tm.contactId);
@@ -132,7 +142,7 @@ const csRelationship = (() => {
   }
   function showMainPopup() {
     gkRelationships = planData.getDropdownData().relationshipsWithDups;
-    gkRelationships = removeExisting(gkRelationships);
+    gkRelationships = removeDups(removeExisting(gkRelationships));
     teamMemberPopup = document.getElementById('sig_mainPopup');
 
     importPopup = POPUP.build({

@@ -59,8 +59,6 @@ const authorizations = (function () {
       yearEndStart: '',
       yearEndEnd: '',
     };
-
-    console.table(filterValues);
   }
   function showFilterPopup() {
     filterPopup = POPUP.build({
@@ -228,6 +226,7 @@ const authorizations = (function () {
       filterValues = newFilterValues;
 
       authData = await authorizationsAjax.getPageData({
+        token: $.session.Token,
         code: '',
         matchSource: filterValues.matchSource,
         vendorId: filterValues.vendor,
@@ -296,7 +295,6 @@ const authorizations = (function () {
       completedDateStart: filterValues.completedDateStart,
       completedDateEnd: filterValues.completedDateEnd,
     });
-    debugger;
   }
 
   function init() {
