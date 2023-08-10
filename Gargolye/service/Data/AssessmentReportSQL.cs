@@ -824,6 +824,17 @@ namespace Anywhere.service.Data
                 {
                     ba = null;
                     fPath = @".\Images\new-icons\default.jpg";
+                    //"\\\\endor\\wwwroot\\GKUnit\\Anywhere\\webroot\\Images\\new-icons\\default.jpg"
+                    if (File.Exists(fPath))
+                    {
+                        ba = File.ReadAllBytes(fPath);
+                    }
+                }
+                else if (row["Use_Consumer_Plan_Image"].ToString() == string.Empty) //null Value
+                {
+                    ba = null;
+                    fPath = @".\Images\new-icons\default.jpg";
+                    //"\\\\endor\\wwwroot\\GKUnit\\Anywhere\\webroot\\Images\\new-icons\\default.jpg"
                     if (File.Exists(fPath))
                     {
                         ba = File.ReadAllBytes(fPath);
@@ -832,7 +843,7 @@ namespace Anywhere.service.Data
 
                 else
                 {
-                    fPath = string.Empty;
+
                     sb.Clear();
                     sb.Append("SELECT   setting ");
                     sb.Append("FROM sysoption ");
@@ -894,6 +905,8 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
+
+
 
         public long HideSubSectionTitle(long AssesmentID, string SubSectionName, long SectionOrder)
         {
