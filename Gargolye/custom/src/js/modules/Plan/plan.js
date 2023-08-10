@@ -46,6 +46,7 @@ const plan = (function () {
   let planActiveStatus;
   let revisionNumber;
   let sentToOnet;
+  let downloadedFromSalesforce;
   // prior plan data
   let hasPreviousPlans;
   let priorConsumerPlanId;
@@ -230,6 +231,7 @@ const plan = (function () {
     planStatus = undefined;
     planActiveStatus = undefined;
     revisionNumber = undefined;
+    downloadedFromSalesforce = undefined;
 
     hasPreviousPlans = undefined;
     priorConsumerPlanId = undefined;
@@ -918,6 +920,7 @@ const plan = (function () {
             });
             screen.insertBefore(datesBoxDiv, previousPlansTable);
           });
+          screen.appendChild(previousPlansTable);
         } else {
           if (previousPlansTable) screen.removeChild(previousPlansTable);
           if (datesBoxDiv) screen.removeChild(datesBoxDiv);
@@ -1593,15 +1596,16 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames:
-        !planActiveStatus && $.session.planUpdate
-          ? ['reactivateBtn']
-          : ['reactivateBtn', 'disabled'],
+        downloadedFromSalesforce
+        ? ['reactivateBtn', 'disabled']
+        : ((!planActiveStatus && $.session.planUpdate) ? ['reactivateBtn'] : ['reactivateBtn', 'disabled']),    
     });
     const changeTypeBtn = button.build({
       text: 'Change Plan Type',
       style: 'secondary',
       type: 'contained',
-      classNames: ['planTypeBtn'],
+      classNames: 
+        downloadedFromSalesforce ? ['planTypeBtn', 'disabled'] : ['planTypeBtn'],
     });
 
     //morepopupmenu.appendChild(addWorkflowBtn);
@@ -2473,7 +2477,10 @@ const plan = (function () {
       type: 'contained',
       classNames:['downloadPlanBtn'],
       callback: () => {
-
+        planAjax.downloadPlanFromSalesforce( {
+          token: $.session.Token, 
+          consumerId: selectedConsumer.id,  
+          userId: $.session.UserId} );
       }
     })
   }
@@ -2491,7 +2498,15 @@ const plan = (function () {
   function buildOverviewTable() {
     const tableOptions = {
       plain: false,
-      columnHeadings: ['Type', 'Rev #', 'Downloaded', 'PY Start', 'Eff Start', 'Review', 'Sent To DODD'],
+      columnHeadings: [
+        'Type',
+        'Rev #',
+        'Downloaded',
+        'PY Start',
+        'Eff Start',
+        'Review',
+        'Sent To DODD',
+      ],
       tableId: 'planOverviewTable',
     };
 
@@ -2509,11 +2524,18 @@ const plan = (function () {
       sentToDODD = `${pd.userSentDODD} - ${sentToDODD}`;
       if (downloadedDate !== "" ) {
         downloadPlanBtn.classList.add('disabled');
-        isActive = false;
       };
 
       return {
-        values: [type, revisionNum, downloadedDate, startDate, effectiveStart, reviewDate, sentToDODD],
+        values: [
+          type,
+          revisionNum,
+          downloadedDate,
+          startDate,
+          effectiveStart,
+          reviewDate,
+          sentToDODD,
+        ],
         attributes: [
           { key: 'data-plan-active', value: isActive },
           { key: 'data-plan-id', value: pd.consumerPlanId },
@@ -2524,6 +2546,7 @@ const plan = (function () {
           planStatus = pd.planStatus ? pd.planStatus : 'D';
           planActiveStatus = isActive;
           revisionNumber = pd.revisionNumber;
+          downloadedFromSalesforce = downloadedDate ? true : false;
 
           planDates.setReviewPlanDates({
             startDate: new Date(startDate),

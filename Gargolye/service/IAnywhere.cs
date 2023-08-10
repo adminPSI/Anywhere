@@ -2586,7 +2586,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/switchPlanType/")]
-        string switchPlanType(string token, string consumerPlanId, string planType);
+        string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3338,7 +3338,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/getAuthorizationPageData/")]
-        AuthorizationWorker.FilterResults[] getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd);
         
 
@@ -3811,6 +3811,13 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/downloadPlanFromSalesforce/")]
+        string downloadPlanFromSalesforce(string token, string consumerId, string userId);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updateAssessmentSummaryAnswers/")]
         string updateAssessmentSummaryAnswers(string token, long anywAssessmentId, long[] anywAnswerIds, string[] answers, string userId);
 
@@ -4250,6 +4257,7 @@ namespace Anywhere
        ResponseFormat = WebMessageFormat.Json,
        RequestFormat = WebMessageFormat.Json,
        UriTemplate = "/oneSpanBuildSigners/")]
+        //string oneSpanBuildSigners(string token);
         string oneSpanBuildSigners(string token, string assessmentID, string userID, string versionID, string extraSpace, bool isp, bool oneSpan);
         //string token, string packageName, string documentName, string filePath, string[] emails, string[] names, string[] memberTypes, string[] signatureIds
 

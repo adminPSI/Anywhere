@@ -1047,7 +1047,7 @@ namespace Anywhere.Data
                     // File.WriteAllBytes(@"C:\\Projects\\anywhere-4\\Gargolye\\webroot\\Images\\portraits\\" + id + ".png", Convert.FromBase64String(imageFile));
                     File.WriteAllBytes(@portraitPath + id + ".png", Convert.FromBase64String(imageFile));
                 }
-                
+
 
                 return executeDataBaseCall("CALL DBA.ANYW_Roster_UpdatePortrait('" + token + "', '" + employeeUserName + "', '" + imageFile + "', '" + id + "');", "results", "results");
             }
@@ -6004,7 +6004,7 @@ namespace Anywhere.Data
             string waitFor = "WAITFOR DELAY";
             string dropTable = "DROP TABLE";
             string deleteFrom = "DELETE FROM";
-            if (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom))
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom)))
             {
                 return false;
             }

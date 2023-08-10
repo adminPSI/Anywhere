@@ -1,5 +1,8 @@
-﻿using iAnywhere.Data.SQLAnywhere;
+﻿using Anywhere.service.Data.PlanSignature;
+using iAnywhere.Data.SQLAnywhere;
+using PSIOISP;
 using System;
+using System.Management.Automation.Language;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
@@ -10,6 +13,7 @@ namespace Anywhere.service.Data
     {
         AssessmentDataGetter adg = new AssessmentDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
+        PlanSignatureWorker psw = new PlanSignatureWorker();
 
         public class ConsumerAssessment
         {
@@ -159,9 +163,9 @@ namespace Anywhere.service.Data
             return assessmentObj;
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate)
         {
-            string resultString = adg.switchPlanType(token, consumerPlanId, planType);
+            string resultString = adg.switchPlanType( token,  consumerPlanId,  planType,  effectiveStartDate,  effectiveEndDate,  reviewDate);
             return resultString;
         }
 
@@ -238,6 +242,31 @@ namespace Anywhere.service.Data
             //sASData.fundingSource = fundingObj;
             sASData.relationships = relationshipObj;
             return sASData;
+        }
+
+        public string downloadPlanFromSalesforce(string token, string consumerId, string userId)
+        {
+            try
+            {
+                long consumerIdLong = long.Parse(consumerId);
+
+                ISPDTData psiOispDT = new ISPDTData();
+
+                object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong, userId);
+
+                string downloadPlanResultString = downloadPlanResult.ToString();
+
+                if (downloadPlanResultString == "Download complete")
+                {
+                    adg.updateAfterSuccessfullPlanDownload(token, consumerId);
+                }
+
+                return downloadPlanResultString;
+            }
+            catch (Exception)
+            {
+                return "Download Plan Failed";
+            }
         }
 
         public ServiceVendors[] getPaidSupportsVendors(string fundingSourceName, string serviceName, string areInSalesForce)

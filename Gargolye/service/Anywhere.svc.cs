@@ -1753,15 +1753,20 @@ namespace Anywhere
             return assDG.runReOrderSQL(token);
         }
 
+        public string downloadPlanFromSalesforce(string token, string consumerId, string userId)
+        {
+            return aAW.downloadPlanFromSalesforce(token, consumerId, userId);
+        }
+
         public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate, string salesForceCaseManagerId)
         {
             // insert the annaul consumer plan and assessment
             return aPW.insertConsumerPlanAnnual(token, consumerId, planYearStart, reviewDate, salesForceCaseManagerId);
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate)
         {
-            return aAW.switchPlanType(token, consumerPlanId, planType);
+            return aAW.switchPlanType( token,  consumerPlanId,  planType,  effectiveStartDate,  effectiveEndDate,  reviewDate);
         }
 
         public int updateConsumerNameInfo(string token, string consumerId, string firstName, string lastName, string middleName, string nickName)
@@ -2346,7 +2351,7 @@ namespace Anywhere
             return authWorker.getAuthorizationFilterData(token);
         }
 
-        public AuthorizationWorker.FilterResults[] getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd)
         {
             return authWorker.getAuthorizationPageData(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
@@ -3050,6 +3055,13 @@ namespace Anywhere
             //MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
             return osw.oneSpanBuildSigners(token, assessmentID, ms);
         }
+        //public string oneSpanBuildSigners(string token)
+        //{
+        //    //MemoryStream ms = dpra.generateReportForOneSpan(token, userID, assessmentID, versionID, extraSpace, false, isp, oneSpan, false, "Y");
+        //    //bool signatureOnly = false;
+        //    //MemoryStream ms = planRep.createOISPlan(token, userID, assessmentID, versionID, extraSpace, isp, oneSpan, signatureOnly);
+        //    return osw.oneSpanBuildSigners(token);
+        //}
 
         //Defaults
         public DefaultsWorker.InvalidDefaults[] getInvalidDefaults(string token)

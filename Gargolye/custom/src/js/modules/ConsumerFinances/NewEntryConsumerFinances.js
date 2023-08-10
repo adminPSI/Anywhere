@@ -93,7 +93,7 @@ const NewEntryCF = (() => {
             attachmentArray = attachment;
             attachmentId = attachmentID;
             attachment.forEach(att => {
-                if (att.attachmentID == undefined) {
+                if (att.registerID == 0) {
                     attachmentDesc.push(att.description);
                     tempattachment = attachmentID;
                 }
