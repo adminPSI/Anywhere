@@ -311,8 +311,9 @@ const consumerFinanceAttachment = (() => {
         }
 
         cleanAttachmentLists(attachmentsToAdd, attachmentsToRemove) {
-            let newList = [];
-
+            if (attachmentsToRemove.length > 0) {
+                attachments = this.attachmentsForQuestion;
+            }
             attachmentsToRemove.forEach(attId => {
                 attachments.forEach(attach => {
                     if (attach.attachmentID == attId) {
@@ -325,7 +326,8 @@ const consumerFinanceAttachment = (() => {
 
             attachmentsToAdd.forEach(attId => {
                 attachments.forEach(attach => {
-                    if (attach.attachmentID == attId) {
+                    let isAttacExist = this.attachmentsForQuestion.filter(a => a.attachmentID === attId);
+                    if (attach.attachmentID == attId && isAttacExist.length == 0) {
                         this.attachmentsForQuestion.push(attach);
                     }
                 });
