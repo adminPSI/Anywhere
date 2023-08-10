@@ -1,5 +1,5 @@
 const authorizationsAjax = (function () {
-  async function getPageData() {
+  async function getPageData(retrieveData) {
     // token
     try {
       const data = await $.ajax({
@@ -13,7 +13,7 @@ const authorizationsAjax = (function () {
           '/' +
           $.webServer.serviceName +
           '/authorizationGetPageData/',
-        data: JSON.stringify({ token: $.session.Token }),
+        data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
