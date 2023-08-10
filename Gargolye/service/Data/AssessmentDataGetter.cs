@@ -119,14 +119,16 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertConsumerPlan ");
             List<string> list = new List<string>();
             list.Add(consumerPlanId);
             list.Add(planType);
-
+            list.Add(effectiveStartDate);
+            list.Add(effectiveEndDate);
+            list.Add(reviewDate);
             string text = "CALL DBA.ANYW_ISP_SwitchPlanType(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
