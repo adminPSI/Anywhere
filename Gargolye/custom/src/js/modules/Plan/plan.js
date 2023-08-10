@@ -46,6 +46,7 @@ const plan = (function () {
   let planActiveStatus;
   let revisionNumber;
   let sentToOnet;
+  let downloadedFromSalesforce;
   // prior plan data
   let hasPreviousPlans;
   let priorConsumerPlanId;
@@ -230,6 +231,7 @@ const plan = (function () {
     planStatus = undefined;
     planActiveStatus = undefined;
     revisionNumber = undefined;
+    downloadedFromSalesforce = undefined;
 
     hasPreviousPlans = undefined;
     priorConsumerPlanId = undefined;
@@ -1594,15 +1596,16 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames:
-        !planActiveStatus && $.session.planUpdate
-          ? ['reactivateBtn']
-          : ['reactivateBtn', 'disabled'],
+        downloadedFromSalesforce
+        ? ['reactivateBtn', 'disabled']
+        : ((!planActiveStatus && $.session.planUpdate) ? ['reactivateBtn'] : ['reactivateBtn', 'disabled']),    
     });
     const changeTypeBtn = button.build({
       text: 'Change Plan Type',
       style: 'secondary',
       type: 'contained',
-      classNames: ['planTypeBtn'],
+      classNames: 
+        downloadedFromSalesforce ? ['planTypeBtn', 'disabled'] : ['planTypeBtn'],
     });
 
     //morepopupmenu.appendChild(addWorkflowBtn);
@@ -2472,9 +2475,14 @@ const plan = (function () {
       text: 'DOWNLOAD PLAN',
       style: 'secondary',
       type: 'contained',
-      classNames: ['downloadPlanBtn'],
-      callback: () => {},
-    });
+      classNames:['downloadPlanBtn'],
+      callback: () => {
+        planAjax.downloadPlanFromSalesforce( {
+          token: $.session.Token, 
+          consumerId: selectedConsumer.id,  
+          userId: $.session.UserId} );
+      }
+    })
   }
 
   function buildConsumerCard() {
@@ -2514,10 +2522,9 @@ const plan = (function () {
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
       let sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
       sentToDODD = `${pd.userSentDODD} - ${sentToDODD}`;
-      if (downloadedDate !== '') {
+      if (downloadedDate !== "" ) {
         downloadPlanBtn.classList.add('disabled');
-        isActive = false;
-      }
+      };
 
       return {
         values: [
@@ -2539,6 +2546,7 @@ const plan = (function () {
           planStatus = pd.planStatus ? pd.planStatus : 'D';
           planActiveStatus = isActive;
           revisionNumber = pd.revisionNumber;
+          downloadedFromSalesforce = downloadedDate ? true : false;
 
           planDates.setReviewPlanDates({
             startDate: new Date(startDate),

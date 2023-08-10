@@ -1753,6 +1753,11 @@ namespace Anywhere
             return assDG.runReOrderSQL(token);
         }
 
+        public string downloadPlanFromSalesforce(string token, string consumerId, string userId)
+        {
+            return aAW.downloadPlanFromSalesforce(token, consumerId, userId);
+        }
+
         public string insertConsumerPlanAnnual(string token, string consumerId, string planYearStart, string reviewDate, string salesForceCaseManagerId)
         {
             // insert the annaul consumer plan and assessment

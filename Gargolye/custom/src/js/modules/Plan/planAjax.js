@@ -637,6 +637,30 @@ const planAjax = (function () {
     }
   }
 
+  async function downloadPlanFromSalesforce(retrieveData) {
+    // string token, string userId, string consumerId
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/downloadPlanFromSalesforce/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return data.downloadPlanFromSalesforceResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
   return {
     getConsumerPlans,
     getConsumerPlanYearInfo,
@@ -663,5 +687,6 @@ const planAjax = (function () {
     getConsumerPeopleId,
     getConsumerPeopleIdAsync,
     runReOrderSQL,
+    downloadPlanFromSalesforce
   };
 })();
