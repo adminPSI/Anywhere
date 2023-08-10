@@ -918,6 +918,7 @@ const plan = (function () {
             });
             screen.insertBefore(datesBoxDiv, previousPlansTable);
           });
+          screen.appendChild(previousPlansTable);
         } else {
           if (previousPlansTable) screen.removeChild(previousPlansTable);
           if (datesBoxDiv) screen.removeChild(datesBoxDiv);
@@ -2471,11 +2472,9 @@ const plan = (function () {
       text: 'DOWNLOAD PLAN',
       style: 'secondary',
       type: 'contained',
-      classNames:['downloadPlanBtn'],
-      callback: () => {
-
-      }
-    })
+      classNames: ['downloadPlanBtn'],
+      callback: () => {},
+    });
   }
 
   function buildConsumerCard() {
@@ -2491,7 +2490,15 @@ const plan = (function () {
   function buildOverviewTable() {
     const tableOptions = {
       plain: false,
-      columnHeadings: ['Type', 'Rev #', 'Downloaded', 'PY Start', 'Eff Start', 'Review', 'Sent To DODD'],
+      columnHeadings: [
+        'Type',
+        'Rev #',
+        'Downloaded',
+        'PY Start',
+        'Eff Start',
+        'Review',
+        'Sent To DODD',
+      ],
       tableId: 'planOverviewTable',
     };
 
@@ -2507,13 +2514,21 @@ const plan = (function () {
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
       let sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
       sentToDODD = `${pd.userSentDODD} - ${sentToDODD}`;
-      if (downloadedDate !== "" ) {
+      if (downloadedDate !== '') {
         downloadPlanBtn.classList.add('disabled');
         isActive = false;
-      };
+      }
 
       return {
-        values: [type, revisionNum, downloadedDate, startDate, effectiveStart, reviewDate, sentToDODD],
+        values: [
+          type,
+          revisionNum,
+          downloadedDate,
+          startDate,
+          effectiveStart,
+          reviewDate,
+          sentToDODD,
+        ],
         attributes: [
           { key: 'data-plan-active', value: isActive },
           { key: 'data-plan-id', value: pd.consumerPlanId },
