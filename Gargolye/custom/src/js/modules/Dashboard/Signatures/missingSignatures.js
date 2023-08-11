@@ -218,6 +218,18 @@ const signatureWidget = (function () {
 
     const tableData = [];
 
+    data.sort((a, b) => {
+      const aname = splitName(a.individual);
+      const bname = splitName(b.individual);
+
+      if (aname.last !== bname.last) {
+        return aname.last.localeCompare(bname.last);
+      }
+      if (aname.first !== bname.first) {
+        return aname.first.localeCompare(bname.first);
+      }
+      return b.planYear - a.planYear;
+    });
     data.forEach(d => {
       const type = d.planType === 'A' ? 'Annual' : 'Revision';
       const startDate = d.planYearStart.split(' ')[0];
@@ -243,15 +255,21 @@ const signatureWidget = (function () {
               plan.setSelectedConsumer({
                 id: $.session.planPeopleId,
                 consumerId: d.consumerId,
+                firstName: first,
+                lastName: last,
               });
             } else {
               plan.setSelectedConsumer({
                 id: d.consumerId,
+                firstName: first,
+                lastName: last,
               });
             }
           } else {
             plan.setSelectedConsumer({
               id: d.consumerId,
+              firstName: first,
+              lastName: last,
             });
           }
 
@@ -273,22 +291,7 @@ const signatureWidget = (function () {
           UTIL.toggleMenuItemHighlight('plan');
           plan.buildPlanPage(['a']);
         },
-        sortBy: {
-          lastName: last,
-          firstName: first,
-          planYear: startDate,
-        },
       });
-    });
-
-    data.sort((a, b) => {
-      if (a.sortBy.lastName !== b.sortBy.lastName) {
-        return a.sortBy.lastName.localeCompare(b.sortBy.lastName);
-      }
-      if (a.sortBy.firstName !== b.sortBy.firstName) {
-        return a.sortBy.firstName - b.sortBy.firstName;
-      }
-      return b.sortBy.planYear - a.sortBy.planYear;
     });
 
     const sigTable = table.build(tableOptions);
