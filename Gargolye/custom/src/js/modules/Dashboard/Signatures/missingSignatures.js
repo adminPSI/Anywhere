@@ -286,10 +286,10 @@ const signatureWidget = (function () {
           });
 
           $.loadedApp = 'plan';
-          DOM.clearActionCenter();
-          document.body.classList.add('planActive');
           setActiveModuleAttribute('plan');
-          setActiveModuleSectionAttribute('plan-questionsAndAnswers');
+          //document.body.classList.add('planActive');
+          //DOM.clearActionCenter();
+          //setActiveModuleSectionAttribute('plan-questionsAndAnswers');
           UTIL.toggleMenuItemHighlight('plan');
           plan.buildPlanPage(['a']);
         },
