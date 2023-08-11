@@ -36,7 +36,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
         public void generateToken()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
 
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(apiUrlToken);
             httpWebRequest.ContentType = "application/json";
