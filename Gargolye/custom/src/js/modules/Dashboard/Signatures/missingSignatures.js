@@ -74,6 +74,11 @@ const signatureWidget = (function () {
     dropdown.populate(groupDropdown, dropdownData, signatureWidgetGroupCode);
   }
 
+  function splitName(fullName) {
+    const [last, first] = fullName.split(', ');
+    return { first, last };
+  }
+
   function buildFilterPopup() {
     var widgetFilter = widget.querySelector('.widget__filters');
     if (widgetFilter) return;
@@ -225,50 +230,65 @@ const signatureWidget = (function () {
 
       const planType = d.planType === 'R' ? `${type} ${revisionNumber}` : type;
 
-      const individuals = d.individual.split(',');
-      individuals.forEach(i => {
-        tableData.push({
-          values: [i, startDate, planType],
-          onClick: async () => {
-            if ($.session.applicationName === 'Advisor') {
-              const newId = await planAjax.getConsumerPeopleIdAsync(d.consumerId);
-              if (newId.length) {
-                $.session.planPeopleId = newId[0].id;
-                plan.setSelectedConsumer({
-                  id: $.session.planPeopleId,
-                  consumerId: d.consumerId,
-                });
-              } else {
-                plan.setSelectedConsumer({
-                  id: d.consumerId,
-                });
-              }
+      const individual = d.individual;
+      const { first, last } = splitName(individual);
+
+      tableData.push({
+        values: [individual, startDate, planType],
+        onClick: async () => {
+          if ($.session.applicationName === 'Advisor') {
+            const newId = await planAjax.getConsumerPeopleIdAsync(d.consumerId);
+            if (newId.length) {
+              $.session.planPeopleId = newId[0].id;
+              plan.setSelectedConsumer({
+                id: $.session.planPeopleId,
+                consumerId: d.consumerId,
+              });
             } else {
               plan.setSelectedConsumer({
                 id: d.consumerId,
               });
             }
-
-            plan.setPlanId(d.planID);
-            plan.setPlanType(d.planType);
-            plan.setPlanStatus(d.planStatus);
-
-            planDates.setReviewPlanDates({
-              startDate: new Date(startDate),
-              endDate: new Date(endDate),
-              effectiveStart: new Date(effectiveStart),
-              effectiveEnd: new Date(effectiveEnd),
-              reviewDate: new Date(reviewDate),
+          } else {
+            plan.setSelectedConsumer({
+              id: d.consumerId,
             });
+          }
 
-            $.loadedApp = 'plan';
-            DOM.clearActionCenter();
-            setActiveModuleAttribute('plan');
-            UTIL.toggleMenuItemHighlight('plan');
-            plan.buildPlanPage(['a']);
-          },
-        });
+          plan.setPlanId(d.planID);
+          plan.setPlanType(d.planType);
+          plan.setPlanStatus(d.planStatus);
+
+          planDates.setReviewPlanDates({
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            effectiveStart: new Date(effectiveStart),
+            effectiveEnd: new Date(effectiveEnd),
+            reviewDate: new Date(reviewDate),
+          });
+
+          $.loadedApp = 'plan';
+          DOM.clearActionCenter();
+          setActiveModuleAttribute('plan');
+          UTIL.toggleMenuItemHighlight('plan');
+          plan.buildPlanPage(['a']);
+        },
+        sortBy: {
+          lastName: last,
+          firstName: first,
+          planYear: startDate,
+        },
       });
+    });
+
+    data.sort((a, b) => {
+      if (a.sortBy.lastName !== b.sortBy.lastName) {
+        return a.sortBy.lastName.localeCompare(b.sortBy.lastName);
+      }
+      if (a.sortBy.firstName !== b.sortBy.firstName) {
+        return a.sortBy.firstName - b.sortBy.firstName;
+      }
+      return b.sortBy.planYear - a.sortBy.planYear;
     });
 
     const sigTable = table.build(tableOptions);
