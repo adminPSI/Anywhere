@@ -441,8 +441,8 @@ const ConsumerFinances = (() => {
         accountFilterDropdown.addEventListener('change', event => {
             tmpaccountName = event.target.value;
         });
-        lastUpdateDropdown.addEventListener('change', event => {
-            tmpenteredBy = event.target.options[event.target.selectedIndex].innerHTML == 'ALL' ? '%' : event.target.options[event.target.selectedIndex].innerHTML;//event.target.value;
+        lastUpdateDropdown.addEventListener('change', event => { 
+            tmpenteredBy = event.target.options[event.target.selectedIndex].innerHTML == 'ALL' ? '%' : event.target.options[event.target.selectedIndex].id; //event.target.options[event.target.selectedIndex].innerHTML;
             filterValues.userName = event.target.options[event.target.selectedIndex].innerHTML;
         });
         payeeDropdown.addEventListener('change', event => {
@@ -525,7 +525,7 @@ const ConsumerFinances = (() => {
         } = await ConsumerFinancesAjax.getActiveEmployeesAsync();
         let data = employees.map((employee) => ({
             id: employee.userId,
-            value: employee.userName,
+            value: employee.userId, 
             text: employee.userName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
