@@ -274,7 +274,7 @@ const signatureWidget = (function () {
           }
 
           plan.setPlanId(d.planID);
-          plan.setPlanType(d.planType);
+          plan.setPlanType(d.planType.toLowerCase());
           plan.setPlanStatus(d.planStatus);
 
           planDates.setReviewPlanDates({
@@ -287,7 +287,9 @@ const signatureWidget = (function () {
 
           $.loadedApp = 'plan';
           DOM.clearActionCenter();
+          document.body.classList.add('planActive');
           setActiveModuleAttribute('plan');
+          setActiveModuleSectionAttribute('plan-questionsAndAnswers');
           UTIL.toggleMenuItemHighlight('plan');
           plan.buildPlanPage(['a']);
         },
