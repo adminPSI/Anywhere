@@ -15,17 +15,23 @@ class FormsWorkflowStepComponent {
     formsWorkflowStepFinished(){
         let {step, cache, callback} = this;
         POPUP.hide(selectTemplatePopup);  
-        let isTemplate = (this.templateId === 0) ? false : true;   
+        let isTemplate = (this.templateId === 0) ? "0" : "1";   
         this.templateId = (this.templateId !== 0) ? this.templateId : this.formId; 
         let documentEdited = "0"; //   document not previously edited              
        // return callback(step, cache);   
         let activeConsumers = roster2.getActiveConsumers();   
         let activeConsumerId = activeConsumers[0].id;
-        if (isTemplate) {
+
+        let newDate = new Date();
+		let theMonth = newDate.getMonth() + 1;
+		let formCompleteDate = UTIL.leadingZero(theMonth) + '/' + UTIL.leadingZero(newDate.getDate()) + '/' + newDate.getFullYear();
+
+        if (isTemplate === "1") {
             forms.displayWFStepFormPopup(this.templateId, this.templateName, this.step.stepId, this.docOrder, isTemplate, documentEdited, activeConsumerId);  
         } else {
-            
-            forms.displayStepFormPopup(this.formId, "1", activeConsumerId, false, "0", '05/22/2022', this.step.stepId, this.docOrder, this.formName );
+            // displayStepFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate, formCompleteDate, stepId, docOrder, formName )
+            //  forms.displayStepFormPopup(this.formId, "1", activeConsumerId, false, "0", '05/22/2022', this.step.stepId, this.docOrder, this.formName );
+            forms.displayStepFormPopup(this.formId, documentEdited, activeConsumerId, false, isTemplate, formCompleteDate, this.step.stepId, this.docOrder, this.formName );
            
         }
        
@@ -93,13 +99,24 @@ class FormsWorkflowStepComponent {
             this.formName = formddl.options[0].innerHTML;
             formddl.selectedIndex = 0;
             this.formId = 0;
-
+            doneBtn.classList.remove('disabled');
             // responsiblePartyId
          
+            if (templateddl.selectedIndex === 0 && formddl.selectedIndex === 0) {
+                doneBtn.classList.add('disabled');
+            } else {
+                doneBtn.classList.remove('disabled');
+            }
+         
         });
+        
+        let activeConsumer = roster2.getActiveConsumers();   
+        let consumerName = activeConsumer[0].card.innerText.replaceAll(' ','').replaceAll('\n', '').replaceAll('\t', '');
+        let fullNameArray = consumerName.split(',')
+        let firstName = fullNameArray[fullNameArray.length - 1];
 
         let userFormDropdown = dropdown.build({
-            label: "User Forms",
+            label: `${firstName}'s Forms`,
             dropdownId: "userFormDropdown",
         });   
 
@@ -113,9 +130,23 @@ class FormsWorkflowStepComponent {
             templateddl.selectedIndex = 0;
             this.templateId = 0;
             // responsiblePartyId
+
+            if (templateddl.selectedIndex === 0 && formddl.selectedIndex === 0) {
+                doneBtn.classList.add('disabled');
+            } else {
+                doneBtn.classList.remove('disabled');
+            }
+            
          
         });
       
+        if ($.session.formsUpdate && $.session.formsView) {
+            userFormDropdown.classList.remove('disabled');    
+        } else {
+            userFormDropdown.classList.add('disabled');
+        }
+        
+
         let doneBtn = button.build({
             id: "wfStepDoneBtn",
             text: "done",
@@ -124,6 +155,7 @@ class FormsWorkflowStepComponent {
             callback: this.formsWorkflowStepFinished.bind(this)            
         });
         this.doneButton = doneBtn;
+        doneBtn.classList.add('disabled');
 
         let cancelBtn = button.build({
             id: "wfStepCancelBtn",
@@ -175,11 +207,17 @@ class FormsWorkflowStepComponent {
             value: usrForm.formId,
             text: usrForm.formDescription
         })); 
+ 
+         data2.sort((a, b) => {
+             return a.text.toLowerCase() < b.text.toLowerCase() ? -1 : 1;
+          });
         
-        data.unshift({ id: null, value: '', text: '' }); //ADD Blank value         
-        data2.unshift({ id: null, value: '', text: '' }); //ADD Blank value         
+        data.unshift({ id: null, value: '', text: 'No Template Selected' }); //ADD Blank value         
+        data2.unshift({ id: null, value: '', text: 'No Form Selected' }); //ADD Blank value         
         dropdown.populate("templateDropdown", data);        
         dropdown.populate("userFormDropdown", data2);  
+
+
     }
 
     
