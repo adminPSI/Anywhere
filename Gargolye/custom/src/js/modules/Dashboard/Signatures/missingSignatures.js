@@ -276,6 +276,8 @@ const signatureWidget = (function () {
           plan.setPlanId(d.planID);
           plan.setPlanType(d.planType.toLowerCase());
           plan.setPlanStatus(d.planStatus);
+          plan.setRevisionNumber(d.revisionNumber);
+          // planActiveStatus??
 
           planDates.setReviewPlanDates({
             startDate: new Date(startDate),
@@ -287,6 +289,7 @@ const signatureWidget = (function () {
 
           $.loadedApp = 'plan';
           setActiveModuleAttribute('plan');
+          DOM.scrollToTopOfPage();
           //document.body.classList.add('planActive');
           //DOM.clearActionCenter();
           //setActiveModuleSectionAttribute('plan-questionsAndAnswers');

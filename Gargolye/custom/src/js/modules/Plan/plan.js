@@ -220,6 +220,9 @@ const plan = (function () {
       // contactInformation.planStatusChange();
     }
   }
+  function setRevisionNumber(revNum) {
+    revisionNumber = revNum;
+  }
   //-- clear
   function clearAllData() {
     selectedConsumer = undefined;
@@ -1595,17 +1598,17 @@ const plan = (function () {
       text: 'Reactivate Plan',
       style: 'secondary',
       type: 'contained',
-      classNames:
-        downloadedFromSalesforce
+      classNames: downloadedFromSalesforce
         ? ['reactivateBtn', 'disabled']
-        : ((!planActiveStatus && $.session.planUpdate) ? ['reactivateBtn'] : ['reactivateBtn', 'disabled']),    
+        : !planActiveStatus && $.session.planUpdate
+        ? ['reactivateBtn']
+        : ['reactivateBtn', 'disabled'],
     });
     const changeTypeBtn = button.build({
       text: 'Change Plan Type',
       style: 'secondary',
       type: 'contained',
-      classNames: 
-        downloadedFromSalesforce ? ['planTypeBtn', 'disabled'] : ['planTypeBtn'],
+      classNames: downloadedFromSalesforce ? ['planTypeBtn', 'disabled'] : ['planTypeBtn'],
     });
 
     //morepopupmenu.appendChild(addWorkflowBtn);
@@ -2475,14 +2478,15 @@ const plan = (function () {
       text: 'DOWNLOAD PLAN',
       style: 'secondary',
       type: 'contained',
-      classNames:['downloadPlanBtn'],
+      classNames: ['downloadPlanBtn'],
       callback: () => {
-        planAjax.downloadPlanFromSalesforce( {
-          token: $.session.Token, 
-          consumerId: selectedConsumer.id,  
-          userId: $.session.UserId} );
-      }
-    })
+        planAjax.downloadPlanFromSalesforce({
+          token: $.session.Token,
+          consumerId: selectedConsumer.id,
+          userId: $.session.UserId,
+        });
+      },
+    });
   }
 
   function buildConsumerCard() {
@@ -2522,9 +2526,9 @@ const plan = (function () {
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
       let sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
       sentToDODD = `${pd.userSentDODD} - ${sentToDODD}`;
-      if (downloadedDate !== "" ) {
+      if (downloadedDate !== '') {
         downloadPlanBtn.classList.add('disabled');
-      };
+      }
 
       return {
         values: [
@@ -2638,6 +2642,7 @@ const plan = (function () {
     getWorkflowMarkup,
     getHasPreviousPlans,
     setSelectedConsumer,
+    setRevisionNumber,
     getISPValidation,
     getAssessmentValidation,
     setPlanType,
