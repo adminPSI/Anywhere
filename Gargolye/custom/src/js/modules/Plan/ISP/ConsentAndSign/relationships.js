@@ -73,7 +73,7 @@ const csRelationship = (() => {
     let uniqueArray = Array.from(new Set(data.map(d => `${d.peopleId}|${d.relationship}`))).map(
       id => {
         let parts = id.split('|');
-        return data.find(a => a.peopleId === Number(parts[0]) && a.relationship === parts[1]);
+        return data.find(a => a.peopleId === parts[0] && a.relationship === parts[1]);
       },
     );
 

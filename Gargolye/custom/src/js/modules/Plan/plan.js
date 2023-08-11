@@ -916,9 +916,9 @@ const plan = (function () {
                 updateBtn.classList.add('disabled');
               }
             });
-            screen.insertBefore(datesBoxDiv, previousPlansTable);
+            screen.insertBefore(datesBoxDiv, btnWrap);
           });
-          screen.appendChild(previousPlansTable);
+          screen.insertBefore(previousPlansTable, btnWrap);
         } else {
           if (previousPlansTable) screen.removeChild(previousPlansTable);
           if (datesBoxDiv) screen.removeChild(datesBoxDiv);
@@ -2265,7 +2265,7 @@ const plan = (function () {
               });
               setupWrap.insertBefore(datesBoxDiv, prevPlanTable);
             } else {
-              callbackForChangeType(row, prevPlan);
+              callbackForChangeType(e.target, prevPlan);
             }
           },
         };
