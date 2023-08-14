@@ -378,6 +378,8 @@ function setSessionVariables() {
   var cookieInnards = $.session.permissionString;
   //checkForErrors();
 
+  let itPerm = [];
+
   $('result', cookieInnards).each(function () {
     tmpWindow = $('window_name', this).text();
     tmpPerm = $('permission', this).text();
@@ -566,6 +568,7 @@ function setSessionVariables() {
 
     //Incident Tracking Permissons
     if (tmpWindow == 'Anywhere Incident Tracking') {
+      itPerm.push(tmpPerm);
       if (tmpPerm == 'View Case Load') {
         $.session.incidentTrackingViewCaseLoad = true;
       }
@@ -808,6 +811,8 @@ function setSessionVariables() {
       $.session.defaultDayServiceLocation = tmpPerm;
     }
   });
+
+  console.log(itPerm);
 
   if ($.session.UserId === 'ash' || $.session.UserId === 'mike') {
     $.session.ViewMyInformation = true;
