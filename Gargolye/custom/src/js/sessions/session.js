@@ -209,6 +209,7 @@ $.session.SingleEntryEditTimeEntry = false; // MAT changed
 $.session.singleEntryGottenById = false;
 $.session.singleEntrycrossMidnight = false;
 //Incident Tracking
+$.session.incidentTrackingView = [];
 $.session.incidentTrackingView = false;
 $.session.incidentTrackingReviewedBy = false;
 $.session.incidentTrackingUpdate = false;
@@ -565,27 +566,22 @@ function setSessionVariables() {
 
     //Incident Tracking Permissons
     if (tmpWindow == 'Anywhere Incident Tracking') {
-      itPerm.push(tmpPerm);
       if (tmpPerm == 'View Case Load') {
         $.session.incidentTrackingViewCaseLoad = true;
-      }
-      if (tmpPerm == 'Delete') {
+      } else if (tmpPerm == 'Delete') {
         $.session.incidentTrackingDelete = true;
-      }
-      if (tmpPerm == 'Insert') {
+      } else if (tmpPerm == 'Insert') {
         $.session.incidentTrackingInsert = true;
-      }
-      if (tmpPerm == 'Update') {
+      } else if (tmpPerm == 'Update') {
         $.session.incidentTrackingUpdate = true;
-      }
-      if (tmpPerm == 'View') {
+      } else if (tmpPerm == 'View') {
         $.session.incidentTrackingView = true;
-      }
-      if (tmpPerm == 'Reviewed By User') {
+      } else if (tmpPerm == 'Reviewed By User') {
         $.session.incidentTrackingReviewedBy = true;
-      }
-      if (tmpPerm == 'Email Incident') {
+      } else if (tmpPerm == 'Email Incident') {
         $.session.incidentTrackingEmailIncident = true;
+      } else {
+        $.session.incidentTrackingView.push(tmpPerm);
       }
     }
 
