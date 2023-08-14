@@ -353,9 +353,10 @@
         questionSetGridRows.forEach(row => {
           const rowCells = row.querySelectorAll('.grid__cell');
           rowCells.forEach(cell => {
+            const cellInput = cell.querySelector('.input-field__input');
+
             addAnswer(cellInput.id, '', '', skipped);
 
-            const cellInput = cell.querySelector('.input-field__input');
             if (isChecked) {
               cellInput.value = '';
               input.disableInputField(cellInput);
