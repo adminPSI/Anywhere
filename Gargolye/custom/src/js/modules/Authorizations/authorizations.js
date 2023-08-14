@@ -284,6 +284,7 @@ const authorizations = (function () {
     DOM.ACTIONCENTER.appendChild(pageWrap);
 
     authData = await authorizationsAjax.getPageData({
+      token: $.session.Token,
       code: filterValues.vendor,
       matchSource: filterValues.vendor,
       vendorId: filterValues.vendor,

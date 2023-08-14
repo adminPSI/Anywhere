@@ -376,9 +376,6 @@ function eraseCookie(name) {
 
 function setSessionVariables() {
   var cookieInnards = $.session.permissionString;
-  //checkForErrors();
-
-  let itPerm = [];
 
   $('result', cookieInnards).each(function () {
     tmpWindow = $('window_name', this).text();
@@ -811,8 +808,6 @@ function setSessionVariables() {
       $.session.defaultDayServiceLocation = tmpPerm;
     }
   });
-
-  console.log(itPerm);
 
   if ($.session.UserId === 'ash' || $.session.UserId === 'mike') {
     $.session.ViewMyInformation = true;

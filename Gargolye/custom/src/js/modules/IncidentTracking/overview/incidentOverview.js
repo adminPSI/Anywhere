@@ -1,22 +1,22 @@
-var incidentOverview = (function () {
+const incidentOverview = (function () {
   // DOM Elements
-  var overviewTable;
+  let overviewTable;
   //Incident Tracking Report Data
   let incidentTrackingEmailData = { emailSubject: 'Incidents [Composite] by Consumer, Date' };
   //filters
-  var filterPopup;
-  var filterBtn;
-  var applyFilterBtn;
-  var alphaDropdown;
-  var locationDropdown;
-  var consumerDropdown;
-  var betaDropdown;
-  var fromDateInput;
-  var toDateInput;
-  var categoryDropdown;
+  let filterPopup;
+  let filterBtn;
+  let applyFilterBtn;
+  let alphaDropdown;
+  let locationDropdown;
+  let consumerDropdown;
+  let betaDropdown;
+  let fromDateInput;
+  let toDateInput;
+  let categoryDropdown;
   let consumerDropdownData;
   // filter values for remembering
-  var filterData = {
+  let filterData = {
     alpha: null,
     alphaName: null,
     beta: null,
@@ -31,14 +31,14 @@ var incidentOverview = (function () {
     toDate: null,
   };
   // alpha beta stuff
-  var changedSelectedAlphaBetas;
-  var alphaBetaData;
-  var selectedAlphaId;
-  var selectedBetaData = {
+  let changedSelectedAlphaBetas;
+  let alphaBetaData;
+  let selectedAlphaId;
+  let selectedBetaData = {
     id: '',
     name: '',
   };
-  var retrieveData = {
+  let retrieveData = {
     token: '',
     locationId: '%',
     employeeId: null,
