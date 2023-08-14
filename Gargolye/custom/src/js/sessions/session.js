@@ -209,8 +209,8 @@ $.session.SingleEntryEditTimeEntry = false; // MAT changed
 $.session.singleEntryGottenById = false;
 $.session.singleEntrycrossMidnight = false;
 //Incident Tracking
-$.session.incidentTrackingView = [];
 $.session.incidentTrackingView = false;
+$.session.incidentTrackingViewPerm = [];
 $.session.incidentTrackingReviewedBy = false;
 $.session.incidentTrackingUpdate = false;
 $.session.incidentTrackingInsert = false;
@@ -581,7 +581,7 @@ function setSessionVariables() {
       } else if (tmpPerm == 'Email Incident') {
         $.session.incidentTrackingEmailIncident = true;
       } else {
-        $.session.incidentTrackingView.push(tmpPerm);
+        $.session.incidentTrackingViewPerm.push(tmpPerm);
       }
     }
 
