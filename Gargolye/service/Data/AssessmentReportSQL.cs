@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Anywhere.service.Data
 {
@@ -820,21 +821,20 @@ namespace Anywhere.service.Data
                         ba = null;
                     }
                 }
-                else if (row["Use_Consumer_Plan_Image"].ToString() == "2") //No Picture
+                else if (row["Use_Consumer_Plan_Image"].ToString() == string.Empty || row["Use_Consumer_Plan_Image"].ToString() == "0" || row["Use_Consumer_Plan_Image"].ToString() == "2") //null Value
                 {
                     ba = null;
-                    fPath = @".\Images\new-icons\default.jpg";
-                    //"\\\\endor\\wwwroot\\GKUnit\\Anywhere\\webroot\\Images\\new-icons\\default.jpg"
-                    if (File.Exists(fPath))
+
+                    sb.Clear();
+                    sb.Append("SELECT   setting ");
+                    sb.Append("FROM sysoption ");
+                    sb.AppendFormat("WHERE {0}  = 'Anywhere_Portrait_Path' ", @"""option""");
+                    if (di.SelectRowsDS(sb.ToString()).Tables[0].Rows.Count > 0)
                     {
-                        ba = File.ReadAllBytes(fPath);
+                        fPath = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0]["setting"].ToString().Replace("portraits\\", "new-icons\\default.jpg");
+                        row["PlanPicture"] = 0;
                     }
-                }
-                else if (row["Use_Consumer_Plan_Image"].ToString() == string.Empty) //null Value
-                {
-                    ba = null;
-                    fPath = @".\Images\new-icons\default.jpg";
-                    //"\\\\endor\\wwwroot\\GKUnit\\Anywhere\\webroot\\Images\\new-icons\\default.jpg"
+
                     if (File.Exists(fPath))
                     {
                         ba = File.ReadAllBytes(fPath);
@@ -873,7 +873,6 @@ namespace Anywhere.service.Data
                     };
                 }
 
-
                 if (ba != null)
 
                 {
@@ -901,10 +900,16 @@ namespace Anywhere.service.Data
                     ms2.Close();
                     ms2.Dispose();
                 }
+                else
+                {
+                    row["PlanPicture"] = null;
+                }
             }
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
+
+
 
 
 

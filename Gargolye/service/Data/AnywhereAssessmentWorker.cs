@@ -116,6 +116,8 @@ namespace Anywhere.service.Data
 
             [DataMember]
             public string answerText { get; set; }
+            [DataMember]
+            public string skipped { get; set; }
         }
 
         public string updateAssessmentAnswers(string token, Answer[] answers)

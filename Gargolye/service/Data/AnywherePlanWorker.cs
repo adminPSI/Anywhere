@@ -636,6 +636,7 @@ namespace Anywhere.service.Data
                     [DataMember(Order = 3)]
                     public string answerStyle { get; set; }
                     [DataMember(Order = 4)]
+                    public string skipped { get; set; }
                     public string hideOnAssessment { get; set; }
 
                 }
@@ -1002,7 +1003,7 @@ namespace Anywhere.service.Data
                             {
                                 if (answer.answerId == null) throw new Exception("answerId is required for update");
                                 // update the answer
-                                rowsUpdated += adg.updateAssessmentAnswer(answer.answerId, answer.answerText, userId, transaction);
+                                rowsUpdated += adg.updateAssessmentAnswer(answer.answerId, answer.answerText, answer.skipped, userId, transaction);
                             }
 
                             return rowsUpdated;
