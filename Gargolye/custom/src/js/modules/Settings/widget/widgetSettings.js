@@ -413,7 +413,7 @@ const widgetSettings = (function () {
       application: 'adv',
     },
     17: {
-      name: 'Plan Missing Signatures',
+      name: 'Plans Missing Signatures',
       settings: {},
       showHide: '',
       application: 'gk,adv',
