@@ -503,7 +503,7 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
-        public int updateAssessmentAnswer(string answerId, string answer, string updatedBy, DistributedTransaction transaction)
+        public int updateAssessmentAnswer(string answerId, string answer, string skipped, string updatedBy, DistributedTransaction transaction)
         {
             try
             {
@@ -511,9 +511,10 @@ namespace Anywhere.service.Data
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answerId", DbType.String, answerId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answer", DbType.String, answer);
-                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@updatedBy", DbType.String, updatedBy);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@skipped", DbType.String, skipped);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@updatedBy", DbType.String, updatedBy);
                 // returns 1 if the row updated or 0 if it was not updated
-                return (int)DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_updateConsumerAssessmentAnswer(?, ?, ?)", args, ref transaction);
+                return (int)DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_ISP_updateConsumerAssessmentAnswer(?, ?, ?, ?)", args, ref transaction);
             }
             catch (Exception ex)
             {
