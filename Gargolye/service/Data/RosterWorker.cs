@@ -46,6 +46,12 @@ namespace Anywhere.service.Data
             DemographicInformation[] demoInfoObj = js.Deserialize<DemographicInformation[]>(demoInfoString);
             return demoInfoObj;
         }
+        public DemographicInformation[] GetValidateEmailInformation(string token, string email)
+        {
+            string demoInfoString = dg.GetValidateEmailInformation(token, email);
+            DemographicInformation[] demoInfoObj = js.Deserialize<DemographicInformation[]>(demoInfoString);
+            return demoInfoObj;
+        }
         public MobileCarrierDropdown[] getMobileCarrierDropdown(string token)
         {
             string mobileCarrierDropdownString = dg.getMobileCarrierDropdown(token);
@@ -149,6 +155,7 @@ namespace Anywhere.service.Data
             public string mobilePhone { get; set; }
             public string carrier { get; set; }
             public string email { get; set; }
+            public string isEmailExist { get; set; }
         }
         public class ConsumerRelationships
         {

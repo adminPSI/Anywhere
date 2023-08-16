@@ -534,6 +534,10 @@ namespace Anywhere
         {
             return rosterWorker.GetDemographicInformation(token);
         }
+        public RosterWorker.DemographicInformation[] GetValidateEmailInformation(string token, string email)
+        {
+            return rosterWorker.GetValidateEmailInformation(token, email);
+        }
         public RosterWorker.MobileCarrierDropdown[] getMobileCarrierDropdown(string token)
         {
             return rosterWorker.getMobileCarrierDropdown(token);
