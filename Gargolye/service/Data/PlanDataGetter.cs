@@ -508,7 +508,7 @@ namespace Anywhere.service.Data
             try
             {
                 logger.debug("updateAssessmentAnswer ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[4];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answerId", DbType.String, answerId);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@answer", DbType.String, answer);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@skipped", DbType.String, skipped);
