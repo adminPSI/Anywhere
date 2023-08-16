@@ -870,6 +870,8 @@ const plan = (function () {
     let newType;
     let previousPlansTable;
     let datesBoxDiv;
+    //
+    let newPlan, newPlanData;
 
     const screen = document.createElement('div');
     screen.id = 'changePlanTypeScreen';
@@ -907,6 +909,9 @@ const plan = (function () {
         if (newType === 'r') {
           // prev plans table
           previousPlansTable = buildPreviousPlansTable(true, (selectedPlan, planData) => {
+            newPlan = selectedPlan;
+            newPlanData = planData;
+
             const previouslySeletedRow = previousPlansTable.querySelector('.selected');
             if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
             selectedPlan.classList.add('selected');
@@ -941,6 +946,9 @@ const plan = (function () {
           token: $.session.Token,
           consumerPlanId: planId,
           planType: newType.toUpperCase(),
+          effectiveStartDate: newPlanData.effectiveStart,
+          effectiveEndDate: newPlanData.effectiveEnd,
+          reviewDate: newPlanData.reviewDate,
         });
 
         if (success === 'Success') {

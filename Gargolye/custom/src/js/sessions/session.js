@@ -581,7 +581,7 @@ function setSessionVariables() {
       } else if (tmpPerm == 'Email Incident') {
         $.session.incidentTrackingEmailIncident = true;
       } else {
-        $.session.incidentTrackingViewPerm.push(tmpPerm);
+        $.session.incidentTrackingViewPerm.push(tmpPerm.replace('View ', '').toLowerCase());
       }
     }
 
