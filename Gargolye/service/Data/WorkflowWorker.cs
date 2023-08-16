@@ -97,6 +97,8 @@ namespace Anywhere.service.Data
             public string docOrder { get; set; }
             public string description { get; set; }
             public string attachmentId { get; set; }
+            public string wfName { get; set; }
+
         }
 
         public class ActionInfo
@@ -2066,6 +2068,13 @@ namespace Anywhere.service.Data
             string wfList = wfdg.getManualWorkflowList(token, processId, planId);
             ManualWorkflowList[] wfListObj = js.Deserialize<ManualWorkflowList[]>(wfList);
             return wfListObj;
+        }
+
+        public WorkflowTemplateStepDocument[] getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId)
+        {
+            string wfFormList = wfdg.getWorkFlowFormsfromPreviousPlan(token, selectedWFTemplateIds, previousPlanId);
+            WorkflowTemplateStepDocument[] wfFormListObj = js.Deserialize<WorkflowTemplateStepDocument[]>(wfFormList);
+            return wfFormListObj;
         }
 
         public class ManualWorkflowList

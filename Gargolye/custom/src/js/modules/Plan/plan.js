@@ -2115,7 +2115,13 @@ const plan = (function () {
       return;
     }
 
-    const workflowCallback = selectedWorkflows => {
+    const wfFormsData = await WorkflowViewerAjax.getWorkFlowFormsfromPreviousPlan({
+      token: $.session.Token,
+      selectedWFTemplateIds: 2,
+      previousPlanId: 287,
+    });
+
+    const workflowCallback = selectedWorkflows  => {
       PROGRESS__BTN.SPINNER.show('workflowContinueBtn', '', false);
       // TODO 100969 -- display list of User Forms for the selected Workflows
 
@@ -2131,7 +2137,9 @@ const plan = (function () {
       //   var revise_plan_ID = priorConsumerPlanId;
       //   var annual_plan_ID = previousPlansData;
       //   // *********FAKE DATA for Step Docs in a Workflow*****Albert Annual 6/23******Annual -- 279, Antnio -- 934*******************
-      //   const wfFormsData = [{ docId : 6052 , docDescription : 'Expert 15 test.pdf', WFId: 934, WFName: 'Antinono 3' },{ docId : 6053 , docDescription : 'FORMS -- General.pdf', WFId: 934, WFName: 'Antinono 3' }, { docId : 1836 , docDescription : 'Medication -- Med Assessment.pdf', WFId: 279, WFName: 'Annual - Waver'},{ docId : 3201 , docDescription : 'Signed_Plan.pdf', WFId: 279, WFName: 'Annual - Waver'} ];
+      // //  const wfFormsData = [{ docId : 6052 , docDescription : 'Expert 15 test.pdf', WFId: 934, WFName: 'Antinono 3' },{ docId : 6053 , docDescription : 'FORMS -- General.pdf', WFId: 934, WFName: 'Antinono 3' }, { docId : 1836 , docDescription : 'Medication -- Med Assessment.pdf', WFId: 279, WFName: 'Annual - Waver'},{ docId : 3201 , docDescription : 'Signed_Plan.pdf', WFId: 279, WFName: 'Annual - Waver'} ];
+          
+
 
       // const wfFormsPopup = POPUP.build({
       //   classNames: ['wfFormsPopup'],
@@ -2153,7 +2161,7 @@ const plan = (function () {
       //     var wf_template_selected  = selectedWorkflows;
 
       //     POPUP.hide(wfFormsPopup);
-      //    // createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+      //     createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
       //   },
       // });
 

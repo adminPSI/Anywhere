@@ -38,6 +38,7 @@ using static Anywhere.service.Data.AnywhereAssessmentWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
+using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 
 namespace Anywhere
@@ -1898,6 +1899,12 @@ namespace Anywhere
         {
             return wfw.getManualWorkflowList(token, processId, planId);
         }
+
+        public WorkflowWorker.WorkflowTemplateStepDocument[] getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId)
+        {
+            return wfw.getWorkFlowFormsfromPreviousPlan(token, selectedWFTemplateIds, previousPlanId);
+        }
+
         public string insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId)
         {
             return wfw.insertAutomatedWorkflows(token, processId, peopleId, referenceId);
