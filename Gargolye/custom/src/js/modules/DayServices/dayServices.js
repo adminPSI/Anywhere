@@ -1685,12 +1685,12 @@ const dayServices = (function () {
         batchedMessageDisplay.classList.add('batchedMessageDisplay');
         batchedMessageDisplay.classList.add('hidden');
 
-        let btnWrap = document.createElement('div');
-        btnWrap.classList.add('btnWrap');
-        btnWrap.appendChild(filterBtn);
-        if ($.session.DayServiceUpdate) btnWrap.appendChild(mulitSelectBtn); //No need to multi select for view only
-        btnWrap.appendChild(reportsBtn);
-        DOM.ACTIONCENTER.appendChild(btnWrap);
+        let filterSelectReportBtnWrap = document.createElement('div');
+        filterSelectReportBtnWrap.classList.add('btnWrap', 'filterSelectReportBtnWrap');
+        filterSelectReportBtnWrap.appendChild(filterBtn);
+        if ($.session.DayServiceUpdate) filterSelectReportBtnWrap.appendChild(mulitSelectBtn); //No need to multi select for view only
+        filterSelectReportBtnWrap.appendChild(reportsBtn);
+        DOM.ACTIONCENTER.appendChild(filterSelectReportBtnWrap);
         if ($.session.DayServiceUpdate) DOM.ACTIONCENTER.appendChild(multiSelectAllNoneArea); //no need to multi select for view only
         DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
         DOM.ACTIONCENTER.appendChild(currentFilterDisplay);

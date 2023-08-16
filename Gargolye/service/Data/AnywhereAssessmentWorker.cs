@@ -250,20 +250,23 @@ namespace Anywhere.service.Data
         {
             try
             {
-                long consumerIdLong = long.Parse(consumerId);
+                //long consumerIdLong = long.Parse(consumerId);
 
-                ISPDTData psiOispDT = new ISPDTData();
+                //ISPDTData psiOispDT = new ISPDTData();
 
-                object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong, "");
 
-                string downloadPlanResultString = downloadPlanResult.ToString();
+                object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong);
 
-                if (downloadPlanResultString == "Download complete")
-                {
-                    adg.updateAfterSuccessfullPlanDownload(token, consumerId);
-                }
 
-                return downloadPlanResultString;
+                //string downloadPlanResultString = downloadPlanResult.ToString();
+
+                //if (downloadPlanResultString == "Download complete")
+                //{
+                //    adg.updateAfterSuccessfullPlanDownload(token, consumerId);
+                //}
+
+                return "TODO";
+                //return downloadPlanResultString;
             }
             catch (Exception)
             {
