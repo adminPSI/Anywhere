@@ -987,6 +987,13 @@ const plan = (function () {
               isActive: planActiveStatus,
             });
             ISP.refreshISP(planId);
+          } else {
+            if (previousPlansTable) screen.removeChild(previousPlansTable);
+            if (datesBoxDiv) screen.removeChild(datesBoxDiv);
+
+            // reset type dropdown value
+            const typeSelect = typeDropdown.querySelector('select');
+            typeSelect.value = planType;
           }
         }, 1000);
       },
