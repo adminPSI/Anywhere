@@ -201,7 +201,7 @@ const NewEntryCF = (() => {
         });
 
         NEW_DELETE_BTN = button.build({
-            text: 'Delete',
+            text: 'DELETE ENTRY',
             style: 'secondary',
             type: 'outlined',
         });

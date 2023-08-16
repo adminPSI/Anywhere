@@ -474,11 +474,11 @@ const ConsumerFinances = (() => {
 
     }
 
-    function updateFilterData(data) {
+    function updateFilterData(data) { 
         if (data.tmpactivityStartDate) filterValues.activityStartDate = data.tmpactivityStartDate;
         if (data.tmpactivityEndDate) filterValues.activityEndDate = data.tmpactivityEndDate;
-        if (data.tmpminAmount) filterValues.minAmount = data.tmpminAmount;
-        if (data.tmpmaxAmount) filterValues.maxAmount = data.tmpmaxAmount;
+        if (data.tmpminAmount) filterValues.minamount = data.tmpminAmount;
+        if (data.tmpmaxAmount) filterValues.maxamount = data.tmpmaxAmount;
         if (data.tmpaccountName) filterValues.accountName = data.tmpaccountName;
         if (data.tmpenteredBy) filterValues.enteredBy = data.tmpenteredBy;
         if (data.tmppayee) filterValues.payee = data.tmppayee;

@@ -1175,6 +1175,21 @@ namespace Anywhere.Data
             }
         }
 
+        public string GetValidateEmailInformation(string token, string email)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getDemographicsInformation" + token);
+            try
+            {
+                return executeDataBaseCallJSON("CALL DBA.ANYW_Demographics_GetValidateEmailInformation('" + token + "' , '" + email + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("547", ex.Message + " ANYW_Demographics_GetValidateEmailInformation('" + token + "', '" + email + "')");
+                return "547: Error Getting Consumer Demographics";
+            }
+        }
+
         public string updateDemographicInformation(string token, string addressOne, string addressTwo, string city, string state, string zipCode, string mobilePhone, string email, string carrier)
         {
             if (tokenValidator(token) == false) return null;

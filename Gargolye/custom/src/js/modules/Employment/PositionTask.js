@@ -9,6 +9,7 @@ const PositionTask = (() => {
     let name;
     let positionName;
     let selectedConsumersName;
+    let actualTaskNumber;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -96,9 +97,10 @@ const PositionTask = (() => {
         addPositionPopupBtn(jobTaskId)
     }
 
-    function addPositionPopupBtn(jobTaskId) {
+    function addPositionPopupBtn(jobTaskId) {        
         if (jobTaskId == 0 || jobTaskId == undefined) {
-            task = LastTaskNumber.getLastTaskNumberResult[0] == undefined ? 1 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber;
+            actualTaskNumber = LastTaskNumber.getLastTaskNumberResult[0] == undefined ? 1 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber;
+            task = LastTaskNumber.getLastTaskNumberResult[0] == undefined ? 1 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber > 7 ? LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber - 7 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber;
             description = ''; 
             startDate = '';
             endDate = '';
@@ -109,6 +111,7 @@ const PositionTask = (() => {
         }
         else {
             let positionValue = PositionEntries.getPositionTaskEntriesResult.find(x => x.jobTaskId == jobTaskId);
+            actualTaskNumber = positionValue.task;
             task = positionValue.task;
             description = positionValue.description;
             startDate = moment(positionValue.startDate).format('YYYY-MM-DD');
@@ -307,7 +310,7 @@ const PositionTask = (() => {
     }
 
     async function saveNewWagesPopup() {
-        const result = await EmploymentAjax.insertPositionTaskAsync(task, description, startDate, endDate, initialPerformanceID, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, $.session.UserId);
+        const result = await EmploymentAjax.insertPositionTaskAsync(actualTaskNumber, description, startDate, endDate, initialPerformanceID, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, $.session.UserId); 
         const { insertPositionTaskResult } = result;
 
         if (insertPositionTaskResult.jobTaskId != null) {
