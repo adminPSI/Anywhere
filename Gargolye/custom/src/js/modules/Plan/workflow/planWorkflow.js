@@ -1,4 +1,6 @@
 const planWorkflow = (() => {
+
+  let selectedWorkflowForms = [];
   function getProcessId(planType) {
     return planType === 'Revision' || planType === 'r'
       ? WorkflowProcess.CONSUMER_PLAN_REVISION
@@ -34,6 +36,45 @@ const planWorkflow = (() => {
     });
 
     return workflowList;
+  }
+
+  // Workflow Form List
+  function buildWorkflowFormList(formListData) {
+    
+    selectedWorkflowForms = [];
+
+    const workflowFormList = document.createElement('div');
+    workflowFormList.classList.add('workflowFormList');
+
+    formListData.forEach(obj => {
+     
+      const formItem = document.createElement('div');
+      formItem.classList.add('workflowFormListItem');
+      formItem.setAttribute('data-doc-id', obj.docId);
+      formItem.innerHTML = `<h4>${obj.WFName}</h4> <p>${obj.docDescription}</p>`;
+      workflowFormList.appendChild(formItem);
+
+      formItem.addEventListener('click', e => {
+       // if (e.target.classList.contains('workflowFormListItem')) {
+          const docID = e.target.dataset.docId;
+  
+          if (!e.target.classList.contains('selected')) {
+            e.target.classList.add('selected');
+            selectedWorkflowForms.push(docID);
+          } else {
+            e.target.classList.remove('selected');
+            selectedWorkflowForms = selectedWorkflowForms.filter(wf => wf !== docID);
+          }
+        }
+      );
+
+    });
+
+    return workflowFormList;
+  }
+
+  function getselectedWorkFlowForms() {
+    return selectedWorkflowForms;
   }
 
   function showWorkflowListPopup(wfvData, callback) {
@@ -250,7 +291,9 @@ const planWorkflow = (() => {
     getProcessId,
     getWorkflowList,
     buildWorkflowList,
+    buildWorkflowFormList,
     showWorkflowListPopup,
+    getselectedWorkFlowForms,
     addWorkflowPopup,
     displayWFwithMissingResponsibleParties,
   };
