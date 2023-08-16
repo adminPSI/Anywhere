@@ -219,6 +219,13 @@
   max-height: 700px;
   max-width: 600px;
 
+  &.fadeInside {
+    * {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
   .signature-pad {
     margin: 0 0 15px;
   

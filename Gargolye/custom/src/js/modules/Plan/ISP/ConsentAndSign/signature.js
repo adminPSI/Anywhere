@@ -741,8 +741,10 @@ const csSignature = (() => {
       type: 'contained',
       callback: () => {
         clearSignatureBtn.classList.add('disabled');
+        signaturePopup.classList.add('fadeInside');
         showClearConfirmationPopup();
         clearSignatureBtn.classList.remove('disabled');
+        signaturePopup.classList.remove('fadeInside');
       },
     });
     saveBtn = button.build({
