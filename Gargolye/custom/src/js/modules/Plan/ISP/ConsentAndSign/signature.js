@@ -169,6 +169,20 @@ const csSignature = (() => {
     selectedMemberData.dissentAreaDisagree = '';
     selectedMemberData.dissentHowToAddress = '';
   }
+  function resizeSigCanvas(sigWrap) {
+    // <h3 class=\"h3Title\">Signature</h3>
+    // <div class=\"signature-pad\">
+    //    <div class=\"signature-pad--body\">
+    //        <canvas class=\"ispCanvas\" width=\"0\" style=\"touch-action: none;\"></canvas>
+    //    </div >
+    // </div >
+    // <button class=\"btn btn--secondary btn--outlined\">clear</button>"
+
+    const sigBody = sigWrap.querySelector('.signature-pad--body');
+    const sigCanvas = sigWrap.querySelector('.ispCanvas');
+
+    sigCanvas.width = sigBody.offsetWidth;
+  }
 
   //*------------------------------------------------------
   //* MARKUP
@@ -187,6 +201,7 @@ const csSignature = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
+        yesBtn.classList.add('disabled');
         const planId = plan.getCurrentPlanId();
         const attachmentId = selectedMemberData.attachmentId;
         clearSignature = true;
@@ -195,10 +210,12 @@ const csSignature = (() => {
         const updatedSignatureSection = buildSignatureSection();
         signaturePopup.replaceChild(updatedSignatureSection, signatureSection);
         signatureSection = updatedSignatureSection;
+        resizeSigCanvas(updatedSignatureSection);
         await planConsentAndSign.updateTeamMember(selectedMemberData, clearSignature);
         if (signatureType === '2') {
           planAjax.deletePlanAttachment(planId, attachmentId);
         }
+        yesBtn.classList.remove('disabled');
         DOM.ACTIONCENTER.removeChild(confirmPop);
         planConsentAndSign.refreshTable();
       },
@@ -383,8 +400,6 @@ const csSignature = (() => {
       sigCanvas.classList.add('ispCanvas');
       sigBody.appendChild(sigCanvas);
       sigPad = new SignaturePad(sigCanvas);
-
-      sigCanvas.width = sigBody.width;
     } else {
       const sigImage = document.createElement('img');
       sigImage.src = selectedMemberData.signature;
@@ -725,7 +740,9 @@ const csSignature = (() => {
       style: 'danger',
       type: 'contained',
       callback: () => {
+        clearSignatureBtn.classList.add('disabled');
         showClearConfirmationPopup();
+        clearSignatureBtn.classList.remove('disabled');
       },
     });
     saveBtn = button.build({
