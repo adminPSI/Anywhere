@@ -254,7 +254,7 @@ namespace Anywhere.service.Data
 
                 ISPDTData psiOispDT = new ISPDTData();
 
-                object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong);
+                object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong, "");
 
                 string downloadPlanResultString = downloadPlanResult.ToString();
 

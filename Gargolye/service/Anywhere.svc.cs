@@ -1908,9 +1908,9 @@ namespace Anywhere
             return wfw.isWorkflowAutoCreated(token, workflowName);
         }
 
-        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId)
+        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormIds)
         {
-            return wfw.insertWorkflow(token, templateId, peopleId, referenceId);
+            return wfw.insertWorkflow(token, templateId, peopleId, referenceId, wantedFormIds);
         }
         public string insertWorkflowStep(string token, WorkflowWorker.WorkflowStep step)
         {
@@ -1960,9 +1960,9 @@ namespace Anywhere
             return wfw.processWorkflowStepEvent(token, thisEvent);
         }
 
-        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId)
+        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormIds)
         {
-            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
+            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormIds);
         }
         #endregion
 

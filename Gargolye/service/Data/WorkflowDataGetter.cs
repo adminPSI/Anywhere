@@ -235,14 +235,15 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
-        public string getWorkflowTemplateStepDocuments(string stepId, DistributedTransaction transaction)
+        public string getWorkflowTemplateStepDocuments(string stepId, string wantedFormIds, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("getWorkflowTemplateStepDocuments ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetWorkflowTemplateStepDocuments(?)", args, ref transaction);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wantedFormIds", DbType.String, wantedFormIds);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetWorkflowTemplateStepDocuments(?, ?)", args, ref transaction);
                 return convertToJSON(returnMsg);
             }
             catch (Exception ex)
