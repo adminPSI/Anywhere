@@ -74,6 +74,10 @@ var newNote = (function () {
         new Promise(function (fulfill, reject) {
           overlapData.consumerId = cId;
 
+          if (saveData.casenotetraveltime === 'N') {
+            saveData.casenotetraveltime = 0;
+          }
+
           caseNotesAjax.caseNoteOverlapCheck(overlapData, function handleOverlapCheck(results) {
             if (results.length > 0) {
               //If the warning popup is already being displayed, skip and just save the record.
@@ -93,7 +97,7 @@ var newNote = (function () {
               var warningText = `Time Overlap(s): ${uniqueConsumers.join(', ')}`;
               warningPopup(warningText, function () {
                 saveData.consumerGroupCount = selectedConsumerIds.length;
-                saveData.consumerId = cId;
+                saveData.consumerId = cId;  
                 caseNotesAjax.saveGroupCaseNote(saveData, function (results) {
                   fulfill();
                 });
