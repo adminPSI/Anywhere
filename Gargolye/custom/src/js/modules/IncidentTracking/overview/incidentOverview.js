@@ -724,7 +724,12 @@ const incidentOverview = (function () {
     var data = keys.map(key => {
       var obj = incidents[key];
 
-      if (!$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())) return;
+      if (
+        obj.description !== '' &&
+        !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
+      ) {
+        return;
+      }
 
       var rowId = obj.incidentId;
       var location = obj.locationName;
