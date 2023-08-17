@@ -1,5 +1,7 @@
 const authorizations = (function () {
   // DATA
+  let authData;
+  let filterDropdownData;
   let selectedConsumer;
   let filterValues;
   // DOM
@@ -285,6 +287,7 @@ const authorizations = (function () {
 
     authData = await authorizationsAjax.getPageData({
       token: $.session.Token,
+      selectedConsumerId: selectedConsumer.id,
       code: filterValues.vendor,
       matchSource: filterValues.vendor,
       vendorId: filterValues.vendor,
@@ -295,6 +298,9 @@ const authorizations = (function () {
       planYearEndEnd: filterValues.yearEndEnd,
       completedDateStart: filterValues.completedDateStart,
       completedDateEnd: filterValues.completedDateEnd,
+    });
+    filterDropdownData = await authorizationsAjax.getPageData({
+      token: $.session.Token,
     });
   }
 

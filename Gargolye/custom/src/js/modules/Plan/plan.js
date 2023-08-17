@@ -64,7 +64,7 @@ const plan = (function () {
   let DODDworkflowAttBody;
   // runReports screen
   let include = 'N';
-  let includeCheckbox;
+  let includeCheckbox;//
   // plan validation
   let ISPValidationCheck;
   let assessmentValidationCheck;
