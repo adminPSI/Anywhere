@@ -2363,10 +2363,10 @@ namespace Anywhere
         }
 
         public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
-                                string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd)
+                                string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
             return authWorker.getAuthorizationPageData(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
-                                planYearEndStart, planYearEndEnd, completedDateStart, completedDateEnd);
+                                planYearEndStart, planYearEndEnd, completedDateStart, completedDateEnd, selectedConsumerId);
         }
             //Plan Services And Supports
             public ServicesAndSupportsWorker.ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId)
