@@ -114,7 +114,7 @@ const Employment = (() => {
             onClick: (e) => {
                 handleAccountTableEvents(e)
             },
-            endIcon: $.session.OODView == true ? additionalInformation.outerHTML : '',
+            endIcon: $.session.OODView == true ? '' : '', //ToDo  //additionalInformation.outerHTML : '', 
             endIconCallback: e => {
                 // TODO
                 //buildChangePasswordPopup(userID, FirstName, LastName); 
