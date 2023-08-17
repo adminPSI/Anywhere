@@ -299,7 +299,7 @@ const authorizations = (function () {
       completedDateStart: filterValues.completedDateStart,
       completedDateEnd: filterValues.completedDateEnd,
     });
-    filterDropdownData = await authorizationsAjax.getPageData({
+    filterDropdownData = await authorizationsAjax.getFilterDropdownData({
       token: $.session.Token,
     });
   }
