@@ -57,7 +57,7 @@ const WagesBenefits = (() => {
         DiscountChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].empDiscount;
         otherChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].other;
         otherValue = CheckBoxEntries.getWagesCheckboxEntriesResult[0].otherText;
-
+       
         vacationSickchkBox = input.buildCheckbox({
             text: 'Vacation/Sick',
             id: 'chkVacationSick',
@@ -171,7 +171,7 @@ const WagesBenefits = (() => {
     function eventListeners() {
         otherInput.addEventListener('focusout', event => {
             otherInputText = event.target.value;
-            saveWagesChecked('other', true, otherInputText);
+            saveWagesChecked('other', true, otherInputText); 
         });
     }
 
@@ -182,16 +182,20 @@ const WagesBenefits = (() => {
             retirementchkBox.classList.remove('disabled');
             empDiscountchkBox.classList.remove('disabled');
             otherchkBox.classList.remove('disabled');
+            if (otherChk == 'Y') {
+                otherInput.classList.remove('disabled');
+            } else {
+                otherInput.classList.add('disabled');
+            }
         }
         else {
             vacationSickchkBox.classList.add('disabled');
             medicalVisionchkbox.classList.add('disabled');
             retirementchkBox.classList.add('disabled');
             empDiscountchkBox.classList.add('disabled');
-            otherchkBox.classList.add('disabled');
-
+            otherchkBox.classList.add('disabled'); 
+            otherInput.classList.add('disabled');
         }
-        otherInput.classList.add('disabled');
     }
 
     function buildWagesEntriesTable() {
@@ -407,6 +411,7 @@ const WagesBenefits = (() => {
     function otherChecked(event) {
         if (event == true) {
             otherInput.classList.remove('disabled');
+            saveWagesChecked('other', true, '');
         } else {
             otherInput.classList.add('disabled');
             otherValue = '';

@@ -2764,8 +2764,17 @@ namespace Anywhere
            BodyStyle = WebMessageBodyStyle.Wrapped,
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getWorkFlowFormsfromPreviousPlan/")]
+        WorkflowWorker.WorkflowTemplateStepDocument[] getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/copyWorkflowtemplateToRecord/")]
-        string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId);
+        string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormIds);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -2821,7 +2830,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertWorkflow/")]
-        String insertWorkflow(string token, string templateId, string peopleId, string referenceId);
+        String insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormIds);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

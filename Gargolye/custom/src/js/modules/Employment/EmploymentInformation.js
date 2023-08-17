@@ -624,7 +624,7 @@ const EmploymentInformation = (() => {
             currentPathEndDate.classList.remove('errorPopup');
         }
 
-        if (newStartDate.value === '' || newStartDate.value <= existingEndDate || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {
+        if (newStartDate.value === '' || existingEndDate > newStartDate.value || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {  
             newPathStartDate.classList.add('errorPopup');
         } else {
             newPathStartDate.classList.remove('errorPopup');
@@ -668,8 +668,8 @@ const EmploymentInformation = (() => {
     async function saveEmployeeInfo() {
         const result = await EmploymentAjax.insertEmploymentInfoAsync(startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, consumersID, $.session.UserId, PositionId);
         const { insertEmploymentInfoResult } = result;
-        if (insertEmploymentInfoResult.positionID != null) {
-            Employment.loadEmploymentLanding();
+        if (insertEmploymentInfoResult.positionID != null) {          
+            NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);   
         }
     }
 

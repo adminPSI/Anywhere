@@ -50,8 +50,8 @@ const planWorkflow = (() => {
      
       const formItem = document.createElement('div');
       formItem.classList.add('workflowFormListItem');
-      formItem.setAttribute('data-doc-id', obj.docId);
-      formItem.innerHTML = `<h4>${obj.WFName}</h4> <p>${obj.docDescription}</p>`;
+      formItem.setAttribute('data-doc-id', obj.stepDocumentId);
+      formItem.innerHTML = `<h4>${obj.wfName}</h4> <p>${obj.description}</p>`;
       workflowFormList.appendChild(formItem);
 
       formItem.addEventListener('click', e => {

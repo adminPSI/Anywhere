@@ -235,14 +235,15 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
-        public string getWorkflowTemplateStepDocuments(string stepId, DistributedTransaction transaction)
+        public string getWorkflowTemplateStepDocuments(string stepId, string wantedFormIds, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("getWorkflowTemplateStepDocuments ");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetWorkflowTemplateStepDocuments(?)", args, ref transaction);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wantedFormIds", DbType.String, wantedFormIds);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetWorkflowTemplateStepDocuments(?, ?)", args, ref transaction);
                 return convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -1193,6 +1194,27 @@ namespace Anywhere.service.Data
             }
         }
         #endregion
+
+        public string getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId)
+        {
+            logger.debug("getWorkFlowFormsfromPreviousPlan ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(selectedWFTemplateIds);
+            list.Add(previousPlanId);
+
+            string text = "CALL DBA.ANYW_WF_getWorkFlowFormsfromPreviousPlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("501", ex.Message + "DBA.ANYW_WF_getWorkFlowFormsfromPreviousPlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "501: error ANYW_WF_getWorkFlowFormsfromPreviousPlan";
+            }
+        }
+
 
         #region WORKFLOW DASHBOARD WIDGETS        
         public string getDashboardPlanWorkflowWidget(string responsiblePartyId, DistributedTransaction transaction)

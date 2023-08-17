@@ -38,6 +38,7 @@ using static Anywhere.service.Data.AnywhereAssessmentWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
+using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 
 namespace Anywhere
@@ -1898,6 +1899,12 @@ namespace Anywhere
         {
             return wfw.getManualWorkflowList(token, processId, planId);
         }
+
+        public WorkflowWorker.WorkflowTemplateStepDocument[] getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId)
+        {
+            return wfw.getWorkFlowFormsfromPreviousPlan(token, selectedWFTemplateIds, previousPlanId);
+        }
+
         public string insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId)
         {
             return wfw.insertAutomatedWorkflows(token, processId, peopleId, referenceId);
@@ -1908,9 +1915,9 @@ namespace Anywhere
             return wfw.isWorkflowAutoCreated(token, workflowName);
         }
 
-        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId)
+        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormIds)
         {
-            return wfw.insertWorkflow(token, templateId, peopleId, referenceId);
+            return wfw.insertWorkflow(token, templateId, peopleId, referenceId, wantedFormIds);
         }
         public string insertWorkflowStep(string token, WorkflowWorker.WorkflowStep step)
         {
@@ -1960,9 +1967,9 @@ namespace Anywhere
             return wfw.processWorkflowStepEvent(token, thisEvent);
         }
 
-        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId)
+        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormIds)
         {
-            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
+            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormIds);
         }
         #endregion
 

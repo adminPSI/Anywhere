@@ -204,8 +204,8 @@ namespace Anywhere.service.Data.PlanSignature
 
                     return sigObjPeop;
                 }
-                if (salesforceId == "")
-                {
+                //if (salesforceId == "")
+                //{
                     newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
 
                     if (newSalesForceId != null)
@@ -216,7 +216,7 @@ namespace Anywhere.service.Data.PlanSignature
                     {
                         salesforceId = "";
                     }
-                }
+                //}
                 if (createRelationship == "T")
                 {
 
