@@ -254,19 +254,16 @@ namespace Anywhere.service.Data
 
                 ISPDTData psiOispDT = new ISPDTData();
 
-
                 object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong, userId);
 
+                string downloadPlanResultString = downloadPlanResult.ToString();
 
-                //string downloadPlanResultString = downloadPlanResult.ToString();
+                if (downloadPlanResultString == "Download complete")
+                {
+                    adg.updateAfterSuccessfullPlanDownload(token, consumerId);
+                }
 
-                //if (downloadPlanResultString == "Download complete")
-                //{
-                //    adg.updateAfterSuccessfullPlanDownload(token, consumerId);
-                //}
-
-                return "TODO";
-                //return downloadPlanResultString;
+                return downloadPlanResultString;
             }
             catch (Exception)
             {
