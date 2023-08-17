@@ -250,12 +250,12 @@ namespace Anywhere.service.Data
         {
             try
             {
-                //long consumerIdLong = long.Parse(consumerId);
+                long consumerIdLong = long.Parse(consumerId);
 
-                //ISPDTData psiOispDT = new ISPDTData();
+                ISPDTData psiOispDT = new ISPDTData();
 
 
-                object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong);
+                object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong, userId);
 
 
                 //string downloadPlanResultString = downloadPlanResult.ToString();
