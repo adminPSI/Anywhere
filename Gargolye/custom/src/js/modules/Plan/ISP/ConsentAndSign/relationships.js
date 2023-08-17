@@ -101,7 +101,8 @@ const csRelationship = (() => {
     const name = contactInformation.cleanName(rel);
     const dob = dates.removeTimestamp(rel.dateOfBirth);
     const adress = `${rel.buildingNumber}`;
-    const relationshipType = rel.relationship ? rel.relationship : '';
+    let relationshipType = rel.relationship ? rel.relationship : '';
+    if (relationshipType === 'Self') relationshipType = 'Person Supported';
 
     const relationshipDiv = document.createElement('div');
     relationshipDiv.classList.add('relationship');
