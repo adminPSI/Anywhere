@@ -106,63 +106,74 @@ namespace Anywhere.service.Data.DocumentConversion
                 {
                     return "Error uploading ISP. Error details: <br><br> " + sendtoDODDResult;
                 }
-
-                if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
+                if(wfAttachmentIds != null)
                 {
-                    long wfAttachId;
-                    //Repeatedly call this function to send attachments to DODD
-                    foreach (string wfAttachmentId in wfAttachmentIds)
+                    if (wfAttachmentIds.Length > 0 && !wfAttachmentIds[0].Equals(""))
                     {
-                        //Type cast wfAttachmentId from string to long
-                        wfAttachId = long.Parse(wfAttachmentId);
-
-                        // success -- Successful
-                        sendtoDODDResult = psiOispDT.Attachment(wfAttachId, true);
-                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        long wfAttachId;
+                        //Repeatedly call this function to send attachments to DODD
+                        foreach (string wfAttachmentId in wfAttachmentIds)
                         {
-                            return "Error uploading Workflow Attachment. Please try again.";
-                        }
+                            //Type cast wfAttachmentId from string to long
+                            wfAttachId = long.Parse(wfAttachmentId);
 
+                            // success -- Successful
+                            sendtoDODDResult = psiOispDT.Attachment(wfAttachId, true);
+                            if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                            {
+                                return "Error uploading Workflow Attachment. Please try again.";
+                            }
+
+                        }
                     }
                 }
-                if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
+                
+                if(sigAttachmentIds != null)
                 {
-                    long sigAttachId;
-                    //Repeatedly call this function to send attachments to DODD
-                    foreach (string sigAttachmentId in sigAttachmentIds)
+                    if (sigAttachmentIds.Length > 0 && !sigAttachmentIds[0].Equals(""))
                     {
-                        //Type cast sigAttachmentId from string to long
-                        sigAttachId = long.Parse(sigAttachmentId);
-
-                        sendtoDODDResult = psiOispDT.Attachment(sigAttachId, false);
-                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        long sigAttachId;
+                        //Repeatedly call this function to send attachments to DODD
+                        foreach (string sigAttachmentId in sigAttachmentIds)
                         {
-                            return "Error uploading Signature Attachment. Please try again.";
-                        }
+                            //Type cast sigAttachmentId from string to long
+                            sigAttachId = long.Parse(sigAttachmentId);
 
+                            sendtoDODDResult = psiOispDT.Attachment(sigAttachId, false);
+                            if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                            {
+                                return "Error uploading Signature Attachment. Please try again.";
+                            }
+
+                        }
                     }
                 }
-                if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
+                
+                if(planAttachmentIds != null)
                 {
-                    long planAttachId;
-                    //Repeatedly call this function to send attachments to DODD
-                    foreach (string planAttachmentId in planAttachmentIds)
+                    if (planAttachmentIds.Length != 0 && !planAttachmentIds[0].Equals(""))
                     {
-                        //Type cast planAttachmentId from string to long
-                        planAttachId = long.Parse(planAttachmentId);
-
-                        sendtoDODDResult = psiOispDT.Attachment(planAttachId, false);
-                        if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                        long planAttachId;
+                        //Repeatedly call this function to send attachments to DODD
+                        foreach (string planAttachmentId in planAttachmentIds)
                         {
-                            return "Error uploading Plan Attachment. Please try again.";
-                        }
+                            //Type cast planAttachmentId from string to long
+                            planAttachId = long.Parse(planAttachmentId);
 
+                            sendtoDODDResult = psiOispDT.Attachment(planAttachId, false);
+                            if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                            {
+                                return "Error uploading Plan Attachment. Please try again.";
+                            }
+
+                        }
                     }
                 }
+                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return "There was failure in the send process. Please contact your administrator.";
+                return "There was failure in the send process. Please contact your administrator." + ex.ToString();
             }
 
             if (wfAttachmentIds.Length == 0 && sigAttachmentIds.Length == 0 && planAttachmentIds.Length == 0)
