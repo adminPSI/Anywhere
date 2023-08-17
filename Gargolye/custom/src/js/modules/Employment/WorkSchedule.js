@@ -228,13 +228,13 @@ const WorkSchedule = (() => {
             dayOfWeekDropdown.classList.remove('errorPopup');
         }
 
-        if (timeEnd.value === '') {
+        if (timeEnd.value === '' || timeStart.value > timeEnd.value) { 
             NewEndTime.classList.add('errorPopup');
         } else {
             NewEndTime.classList.remove('errorPopup');
         }
 
-        if (timeStart.value === '') {    
+        if (timeStart.value === '') {      
             NewStartTime.classList.add('errorPopup');
         } else {
             NewStartTime.classList.remove('errorPopup');
