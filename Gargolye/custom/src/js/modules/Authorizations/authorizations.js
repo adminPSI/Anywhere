@@ -285,6 +285,7 @@ const authorizations = (function () {
 
     authData = await authorizationsAjax.getPageData({
       token: $.session.Token,
+      selectedConsumerId: selectedConsumer.id,
       code: filterValues.vendor,
       matchSource: filterValues.vendor,
       vendorId: filterValues.vendor,
