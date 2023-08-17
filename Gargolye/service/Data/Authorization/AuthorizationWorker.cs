@@ -39,7 +39,7 @@ namespace Anywhere.service.Data.Authorization
         }
 
         public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
-                                string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd)
+                                string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
             string jsonResult = "";
             string fieldId = "Match Source";
@@ -59,7 +59,7 @@ namespace Anywhere.service.Data.Authorization
             sb.AppendFormat("p.plan_year_start between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
             sb.AppendFormat("p.Plan_Year_End between '{0}' and '{1}' ", planYearEndStart, planYearEndEnd);
             sb.AppendFormat("p.CompletionDate between '{0}' and '{1}' ", completedDateStart, completedDateEnd);
-
+            sb.AppendFormat("p.Id = '{0}' ", selectedConsumerId);
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
             jsonResult = DataTableToJSONWithJSONNet(dt);
             //FilterResults[] filterResultssObj = js.Deserialize<FilterResults[]>(jsonResult.ToString());

@@ -382,64 +382,64 @@ const EmploymentInformation = (() => {
     }
 
     function eventListeners() {
-        positionStartDate.addEventListener('input', event => {
+        positionStartDate.addEventListener('input', event => {            
             startDatePosition = event.target.value;
-            tempstartDatePosition = event.target.value;
+            tempstartDatePosition = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         positionEndDate.addEventListener('input', event => {
             endDatePosition = event.target.value;
-            tempendDatePosition = event.target.value;
+            tempendDatePosition = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         positionDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             position = selectedConsumerOption.id;
-            tempposition = event.target.value;
+            tempposition = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         jobStandingDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             jobStanding = selectedConsumerOption.id;
-            tempjobStanding = event.target.value;
+            tempjobStanding = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         employerDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             employer = selectedConsumerOption.id;
-            tempemployer = event.target.value;
+            tempemployer = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         transportationDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             transportation = selectedConsumerOption.id;
-            temptransportation = event.target.value;
+            temptransportation = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         typeOfWorkDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             typeOfWork = selectedConsumerOption.id;
-            temptypeOfWork = event.target.value;
+            temptypeOfWork = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         isSelfEmployed.addEventListener('change', event => {
             selfEmployed = event.target.checked == true ? 'Y' : 'N';
-            tempselfEmployed = event.target.value;
+            tempselfEmployed = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         nameInput.addEventListener('input', event => {
             name = event.target.value;
-            tempname = event.target.value;
+            tempname = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         phoneInput.addEventListener('input', event => {
             phone = event.target.value;
-            tempphone = event.target.value;
+            tempphone = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         emailInput.addEventListener('input', event => {
             email = event.target.value;
-            tempemail = event.target.value;
+            tempemail = 'ChangeValue'; 
             getRequiredFieldsOfEmployeeInfo(); 
         });
     }
@@ -624,7 +624,7 @@ const EmploymentInformation = (() => {
             currentPathEndDate.classList.remove('errorPopup');
         }
 
-        if (newStartDate.value === '' || newStartDate.value <= existingEndDate || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {
+        if (newStartDate.value === '' || existingEndDate > newStartDate.value || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {  
             newPathStartDate.classList.add('errorPopup');
         } else {
             newPathStartDate.classList.remove('errorPopup');
@@ -668,8 +668,8 @@ const EmploymentInformation = (() => {
     async function saveEmployeeInfo() {
         const result = await EmploymentAjax.insertEmploymentInfoAsync(startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, consumersID, $.session.UserId, PositionId);
         const { insertEmploymentInfoResult } = result;
-        if (insertEmploymentInfoResult.positionID != null) {
-            Employment.loadEmploymentLanding();
+        if (insertEmploymentInfoResult.positionID != null) {          
+            NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);   
         }
     }
 

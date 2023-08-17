@@ -12,12 +12,38 @@ const authorizationsAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/authorizationGetPageData/',
+          '/getAuthorizationPageData/',
         data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      return data.authorizationGetPageDataResult;
+      console.log(data.getAuthorizationPageDataResult);
+      return data.getAuthorizationPageDataResult;
+    } catch (error) {
+      console.log(error.responseText);
+    }
+  }
+
+  async function getFilterDropdownData(retrieveData) {
+    // token
+    try {
+      const data = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getAuthorizationFilterData/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      console.log(data.getAuthorizationFilterDataResult);
+      return data.getAuthorizationFilterDataResult;
     } catch (error) {
       console.log(error.responseText);
     }
@@ -25,5 +51,6 @@ const authorizationsAjax = (function () {
 
   return {
     getPageData,
+    getFilterDropdownData,
   };
 })();
