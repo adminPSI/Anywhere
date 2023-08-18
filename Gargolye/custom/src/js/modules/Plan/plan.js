@@ -2171,7 +2171,7 @@ const plan = (function () {
       //     var wf_template_selected  = selectedWorkflows;
 
       //     POPUP.hide(wfFormsPopup);
-      //     //createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+      //     createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
       //   },
       // });
 
@@ -2247,13 +2247,30 @@ const plan = (function () {
       currentPlanId = returnString[0];
       insertedSSA = returnString[1];
     }
-
+    // handle selected workflows
     if (selectedWorkflows && selectedWorkflows.length > 0) {
       for (i = 0; i < selectedWorkflows.length; i++) {
         let wftemplateId = selectedWorkflows[i];
         // does this have any attached WF Forms, if so then wantedFormIds: selectedPreviousWfForms, otherwise wantedFormIds: ""
         let thiswfForms;
 
+        // handle selected forms
+        if (selectedPreviousWfForms && selectedPreviousWfForms.length > 0) {
+        let thiswfFormslist = [];
+             for (j = 0; j < selectedPreviousWfForms.length; j++) {
+                    if (wftemplateId === selectedPreviousWfForms[j].WFtemplateId) {
+                      thiswfFormslist.push(selectedPreviousWfForms[j].attachmentId)
+                    }
+                }
+          if (thiswfFormslist && thiswfFormslist.length > 0) {
+            thiswfForms = thiswfFormslist.join(", ");
+          } else {
+            thiswfForms = "";
+          }
+          
+        } else {
+          thiswfForms = "";
+        }
 
 
         workflowId = await WorkflowViewerAjax.copyWorkflowtemplateToRecord({
@@ -2261,23 +2278,9 @@ const plan = (function () {
           templateId: wftemplateId,
           referenceId: currentPlanId,
           peopleId: selectedConsumer.id,
-         // wantedFormIds: selectedPreviousWfForms,
+          wantedFormIds: thiswfForms,
         });
         workflowIds.push(workflowId);
-      }
-    }
-
-    // selectedPreviousWfForms
-    if (selectedPreviousWfForms && selectedPreviousWfForms.length > 0) {
-      for (i = 0; i < selectedPreviousWfForms.length; i++) {
-        let wfFormId = selectedPreviousWfForms[i];
-        // wfDocId = await WorkflowViewerAjax.insertFormRecord({
-        //   token: $.session.Token,
-        //   wfFormId: wfFormId,
-        //   referenceId: currentPlanId,
-        //   peopleId: selectedConsumer.id,
-        // });
-        wfDocIds.push(wfDocId);
       }
     }
 
