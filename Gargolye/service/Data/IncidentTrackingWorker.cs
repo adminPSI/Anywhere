@@ -52,6 +52,24 @@ namespace Anywhere.service.Data
         {
             string itReviewTableDataString = dg.getITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
             IncidentTrackingReviewTableData[] itReviewTableData = js.Deserialize<IncidentTrackingReviewTableData[]>(itReviewTableDataString);
+
+            if (consumerId != "" && consumerId != "%" && consumerId != null)
+            {
+                // Get all incidentIds for the provided consumerId
+                var incidentIdsForConsumer = itReviewTableData
+                    .Where(item => item.consumerId == consumerId)
+                    .Select(item => item.incidentId)
+                    .Distinct()
+                    .ToList();
+
+                // Filter the array based on incidentIds
+                var filteredData = itReviewTableData
+                    .Where(item => incidentIdsForConsumer.Contains(item.incidentId))
+                    .ToArray();
+
+                return filteredData;
+            }
+
             return itReviewTableData;
         }
 
