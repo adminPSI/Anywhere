@@ -57,7 +57,7 @@ const WagesBenefits = (() => {
         DiscountChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].empDiscount;
         otherChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].other;
         otherValue = CheckBoxEntries.getWagesCheckboxEntriesResult[0].otherText;
-       
+
         vacationSickchkBox = input.buildCheckbox({
             text: 'Vacation/Sick',
             id: 'chkVacationSick',
@@ -171,7 +171,7 @@ const WagesBenefits = (() => {
     function eventListeners() {
         otherInput.addEventListener('focusout', event => {
             otherInputText = event.target.value;
-            saveWagesChecked('other', true, otherInputText); 
+            saveWagesChecked('other', true, otherInputText);
         });
     }
 
@@ -193,7 +193,7 @@ const WagesBenefits = (() => {
             medicalVisionchkbox.classList.add('disabled');
             retirementchkBox.classList.add('disabled');
             empDiscountchkBox.classList.add('disabled');
-            otherchkBox.classList.add('disabled'); 
+            otherchkBox.classList.add('disabled');
             otherInput.classList.add('disabled');
         }
     }
@@ -202,17 +202,22 @@ const WagesBenefits = (() => {
 
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
+            tableId: 'singleEntryReviewTable',  
             columnHeadings: ['Hours/Week', 'Hourly Wages', 'Start Date', 'End Date'],
+            endIcon: true,
         };
-         
+
         let tableData = EmploymentsEntries.getWagesEntriesResult.map((entry) => ({
             values: [entry.hoursPerWeek, '$' + parseFloat(entry.wagesPerHour).toFixed(2), moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY')],
             attributes: [{ key: 'wagesId', value: entry.wagesId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
             },
-        })); 
+            endIcon: `${icons['Empty']}`,// `${icons['delete']}`,//entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['delete']}`,
+            endIconCallback: (e) => {
+                deleteWagesBenefitsPOPUP(entry.wagesId);
+            },
+        }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
 
@@ -221,6 +226,56 @@ const WagesBenefits = (() => {
 
     function handleAccountTableEvents(wagesId) {
         addWagesPopupBtn(wagesId)
+    }
+
+    function deleteWagesBenefitsPOPUP(wagesId) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+               
+                deleteWagesBenefits(wagesId);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you would like to remove this Wage & Benefit record?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    function deleteWagesBenefits(wagesId) {
+        EmploymentAjax.deleteWagesBenefits(
+            {
+                wagesID: wagesId
+            },
+            function (results, error) {
+                POPUP.hide(confirmPopup);
+            },
+        );
     }
 
     function addWagesPopupBtn(wagesId) {
@@ -233,7 +288,7 @@ const WagesBenefits = (() => {
         else {
             let empValue = EmploymentsEntries.getWagesEntriesResult.find(x => x.wagesId == wagesId);
             hoursWeek = empValue.hoursPerWeek;
-            hoursWages = parseFloat(empValue.wagesPerHour).toFixed(2) ;
+            hoursWages = parseFloat(empValue.wagesPerHour).toFixed(2);
             startDate = moment(empValue.startDate).format('YYYY-MM-DD');
             endDate = empValue.endDate == '' ? '' : moment(empValue.endDate).format('YYYY-MM-DD');
         }
@@ -342,14 +397,14 @@ const WagesBenefits = (() => {
         });
 
         wagesHours.addEventListener('input', event => {
-            hoursWages = event.target.value; 
+            hoursWages = event.target.value;
             if (hoursWages.includes('.') && (hoursWages.match(/\./g).length > 1 || hoursWages.toString().split('.')[1].length > 2)) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
-                return; 
+                return;
             }
             if (hoursWages.includes('-')) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
-                return; 
+                return;
             }
             checkRequiredFieldsOfPopup();
         });

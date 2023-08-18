@@ -708,6 +708,46 @@ var EmploymentAjax = (function () {
         }
     }
 
+    function deleteWagesBenefits(dataObj, callback) {
+        $.ajax({
+            type: 'POST',
+            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/deleteWagesBenefits/',
+            data:
+                '{"token":"' +
+                $.session.Token +
+                '","wagesID":"' +
+                dataObj.wagesID +               
+                '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                var res = response.deleteWagesBenefitsJSONResult;
+                //callback(res);
+            },
+            error: function (xhr, status, error) { },
+        });
+    }
+
+    function deleteWorkSchedule(dataObj, callback) {
+        $.ajax({
+            type: 'POST',
+            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/deleteWorkSchedule/',
+            data:
+                '{"token":"' +
+                $.session.Token +
+                '","WorkScheduleID":"' +
+                dataObj.WorkScheduleID +
+                '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                var res = response.deleteWorkScheduleJSONResult;
+                //callback(res);
+            },
+            error: function (xhr, status, error) { },
+        });
+    }
+
     return {
         getEmploymentEntriesAsync,
         getEmployersAsync,
@@ -733,5 +773,7 @@ var EmploymentAjax = (function () {
         getEmployeementPathAsync,
         insertWorkScheduleAsync,
         getLastTaskNumberAsync,
+        deleteWagesBenefits,
+        deleteWorkSchedule,
     };
 })();
