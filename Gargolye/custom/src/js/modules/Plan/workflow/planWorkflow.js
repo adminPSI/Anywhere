@@ -50,26 +50,31 @@ const planWorkflow = (() => {
      
       const formItem = document.createElement('div');
       formItem.classList.add('workflowFormListItem');
-      formItem.setAttribute('data-doc-id', obj.stepDocumentId);
+      formItem.setAttribute('data-attachment-id', obj.attachmentId);
+      formItem.setAttribute('data-workflow-id', obj.workflowId);
+      formItem.setAttribute('data-WFTemplate-id', obj.WFTemplateId);
       formItem.innerHTML = `<h4>${obj.wfName}</h4> <p>${obj.description}</p>`;
       workflowFormList.appendChild(formItem);
 
       formItem.addEventListener('click', e => {
        // if (e.target.classList.contains('workflowFormListItem')) {
-          const docID = e.target.dataset.docId;
+          const attachmentID = e.target.dataset.attachmentId;
+          const workflowID = e.target.dataset.workflowId;
+          const WFTemplateID = e.target.dataset.wftemplateId;
   
           if (!e.target.classList.contains('selected')) {
             e.target.classList.add('selected');
-            selectedWorkflowForms.push(docID);
+            selectedWorkflowForms.push({attachmentId: attachmentID, workflowId: workflowID, WFtemplateId: WFTemplateID });
           } else {
             e.target.classList.remove('selected');
-            selectedWorkflowForms = selectedWorkflowForms.filter(wf => wf !== docID);
+            selectedWorkflowForms = selectedWorkflowForms.filter(wf => wf !== attachmentID);
           }
         }
       );
 
     });
 
+    let test = selectedWorkflowForms;
     return workflowFormList;
   }
 

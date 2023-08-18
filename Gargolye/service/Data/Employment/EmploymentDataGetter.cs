@@ -18,6 +18,19 @@ namespace Anywhere.service.Data.Employment
         Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
 
+
+        public bool tokenValidator(string token)
+        {
+            if (token.Contains(" "))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         public string getEmploymentEntries(string token, string consumerIds, string employer, string position, string positionStartDate, string positionEndDate, string jobStanding, DistributedTransaction transaction)
         {
             try
@@ -465,6 +478,46 @@ namespace Anywhere.service.Data.Employment
                 logger.error("WFDG", ex.Message + "ANYW_getLastTaskNumber(" + positionID + ")");
                 throw ex;
             }
+        }
+
+        public string deleteWagesBenefits(string token, string wagesID, DistributedTransaction transaction)
+        {           
+            try
+            {
+                if (tokenValidator(token) == false) return null;
+                logger.debug("deleteWagesBenefits");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wagesID", DbType.String, wagesID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deleteWagesBenefits(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_deleteWagesBenefits(" + wagesID + ")");
+                throw ex;
+            }
+
+        }
+
+        public string deleteWorkSchedule(string token, string WorkScheduleID, DistributedTransaction transaction)
+        {
+            try
+            {
+                if (tokenValidator(token) == false) return null;
+                logger.debug("deleteWorkSchedule");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@WorkScheduleID", DbType.String, WorkScheduleID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deleteWorkSchedule(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_deleteWorkSchedule(" + WorkScheduleID + ")");
+                throw ex;
+            }
+
         }
 
     }

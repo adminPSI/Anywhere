@@ -3445,5 +3445,15 @@ namespace Anywhere
             return emp.getLastTaskNumber(token, positionID);
         }
 
+        public string deleteWagesBenefits(string token, string wagesID)
+        {
+            return emp.deleteWagesBenefits(token, wagesID);
+        }
+
+        public string deleteWorkSchedule(string token, string WorkScheduleID)
+        {
+            return emp.deleteWorkSchedule(token, WorkScheduleID);
+        }
+
     }
 }

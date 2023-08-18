@@ -4678,6 +4678,21 @@ namespace Anywhere
        UriTemplate = "/viewReport/")]
         void viewReport(System.IO.Stream testInput);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/deleteWagesBenefits/")]
+        string deleteWagesBenefits(string token, string wagesID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/deleteWorkSchedule/")]
+        string deleteWorkSchedule(string token, string WorkScheduleID);
     }
 
 

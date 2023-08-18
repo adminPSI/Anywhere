@@ -26,19 +26,28 @@ var incidentTrackingWidget = (function () {
         incidents[r.incidentId].viewedBy += `, ${r.viewedBy}`;
       }
     });
-    
+
     var keys = Object.keys(incidents);
 
     var data = keys.map(r => {
       var obj = incidents[r];
-      
+
+      if ($.session.incidentTrackingViewPerm.length !== 0) {
+        if (
+          obj.description !== '' &&
+          !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
+        ) {
+          return;
+        }
+      }
+
       var name = obj.consumerName.split(',');
       name = `${name[1]}, ${name[0]}`;
       var date = UTIL.abbreviateDateYear(obj.incidentDate.split(' ')[0]);
       var viewedOn = r.viewedOn ? true : false;
       var orginUser =
         obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
-      var userHasViewed = (obj.viewedBy).includes($.session.UserId) ? true : false;
+      var userHasViewed = obj.viewedBy.includes($.session.UserId) ? true : false;
       var showBold;
 
       if (!orginUser && !userHasViewed) {

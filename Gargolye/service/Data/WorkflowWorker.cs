@@ -98,6 +98,8 @@ namespace Anywhere.service.Data
             public string description { get; set; }
             public string attachmentId { get; set; }
             public string wfName { get; set; }
+            public string workflowId { get; set; }
+            public string WFTemplateId { get; set; }
 
         }
 

@@ -90,7 +90,7 @@ namespace Anywhere.service.Data.Employment
             public string positionID { get; set; }
 
             [DataMember(Order = 14)]
-            public string existingEndDate { get; set; }           
+            public string existingEndDate { get; set; }
         }
 
 
@@ -754,6 +754,42 @@ namespace Anywhere.service.Data.Employment
                 }
             }
 
+        }
+
+        public string deleteWagesBenefits(string token, string wagesID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+
+                try
+                {
+                    Odg.deleteWagesBenefits(token, wagesID, transaction);
+                    return "sucess";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return "failed";
+                }
+            }
+        }
+
+        public string deleteWorkSchedule(string token, string WorkScheduleID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+
+                try
+                {
+                    Odg.deleteWorkSchedule(token, WorkScheduleID, transaction);
+                    return "sucess";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return "failed";
+                }
+            }
         }
 
 

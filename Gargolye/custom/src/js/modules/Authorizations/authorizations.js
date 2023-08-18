@@ -1,5 +1,7 @@
 const authorizations = (function () {
   // DATA
+  let authData;
+  let filterDropdownData;
   let selectedConsumer;
   let filterValues;
   // DOM
@@ -169,20 +171,20 @@ const authorizations = (function () {
     dropdown.populate(planTypeDropdown, data, filterValues.planType);
   }
   function populateVendorDropdown() {
-    const data = [].map((b, index) => {
+    const data = filterDropdownData.planVendors.map(pv => {
       return {
-        value: b.billerId,
-        text: b.billerName,
+        value: pv.vendorName,
+        text: pv.vendorId,
       };
     });
     data.unshift({ value: '%', text: 'All' });
     dropdown.populate(vendorDropdown, data, filterValues.vendor);
   }
   function populateMatchSourceDropdown() {
-    const data = [].map((b, index) => {
+    const data = filterDropdownData.matchSources.map(ms => {
       return {
-        value: b.billerId,
-        text: b.billerName,
+        value: ms.caption,
+        text: ms.code,
       };
     });
     data.unshift({ value: '%', text: 'All' });
@@ -296,6 +298,9 @@ const authorizations = (function () {
       planYearEndEnd: filterValues.yearEndEnd,
       completedDateStart: filterValues.completedDateStart,
       completedDateEnd: filterValues.completedDateEnd,
+    });
+    filterDropdownData = await authorizationsAjax.getFilterDropdownData({
+      token: $.session.Token,
     });
   }
 
