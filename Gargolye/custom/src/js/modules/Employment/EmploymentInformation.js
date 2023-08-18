@@ -429,7 +429,7 @@ const EmploymentInformation = (() => {
         });
         nameInput.addEventListener('input', event => {
             name = event.target.value;
-            tempname = 'ChangeValue';
+            tempname = 'ChangeValue'; 
             getRequiredFieldsOfEmployeeInfo();
         });
         phoneInput.addEventListener('input', event => {

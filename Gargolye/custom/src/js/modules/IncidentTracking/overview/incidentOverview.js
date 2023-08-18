@@ -724,11 +724,13 @@ const incidentOverview = (function () {
     var data = keys.map(key => {
       var obj = incidents[key];
 
-      if (
-        obj.description !== '' &&
-        !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
-      ) {
-        return;
+      if ($.session.incidentTrackingViewPerm.length !== 0) {
+        if (
+          obj.description !== '' &&
+          !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
+        ) {
+          return;
+        }
       }
 
       var rowId = obj.incidentId;

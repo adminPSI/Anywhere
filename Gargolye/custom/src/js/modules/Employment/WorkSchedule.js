@@ -75,8 +75,9 @@ const WorkSchedule = (() => {
     function buildworkScheduleEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
+            tableId: 'singleEntryReviewTable',
             columnHeadings: ['Day Of Week', 'Start Time', 'End Time'],
+            endIcon: true,
         };
 
         let tableData = ScheduleEntries.getWorkScheduleEntriesResult.map((entry) => ({
@@ -84,6 +85,10 @@ const WorkSchedule = (() => {
             attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)
+            },
+            endIcon: `${icons['Empty']}`,// `${icons['delete']}`,//entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['delete']}`,
+            endIconCallback: (e) => { 
+                deleteWorkSchedulePOPUP(entry.WorkScheduleId);
             },
         }));
         const oTable = table.build(tableOptions);
@@ -94,6 +99,55 @@ const WorkSchedule = (() => {
 
     function handleAccountTableEvents(WorkScheduleId) {
         addWorkSchedulePopupBtn(WorkScheduleId)
+    }
+
+    function deleteWorkSchedulePOPUP(WorkScheduleId) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                deleteWorkSchedule(WorkScheduleId);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you would like to remove this Work Schedule record?'; 
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    function deleteWorkSchedule(WorkScheduleId) {
+        EmploymentAjax.deleteWagesBenefits(
+            {
+                WorkScheduleID: WorkScheduleId
+            },
+            function (results, error) {
+                POPUP.hide(confirmPopup);
+            },
+        );
     }
 
     function addWorkSchedulePopupBtn(WorkScheduleId) {

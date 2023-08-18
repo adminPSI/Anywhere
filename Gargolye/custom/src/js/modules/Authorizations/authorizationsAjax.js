@@ -12,13 +12,13 @@ const authorizationsAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '/getAuthorizationPageData/',
+          '//',
         data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
       console.log(data.getAuthorizationPageDataResult);
-      return data.getAuthorizationPageDataResult;
+      return JSON.parse(`${data.getAuthorizationPageDataResult}`);
     } catch (error) {
       console.log(error.responseText);
     }
