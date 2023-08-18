@@ -32,11 +32,13 @@ var incidentTrackingWidget = (function () {
     var data = keys.map(r => {
       var obj = incidents[r];
 
-      if (
-        obj.description !== '' &&
-        !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
-      ) {
-        return;
+      if ($.session.incidentTrackingViewPerm.length !== 0) {
+        if (
+          obj.description !== '' &&
+          !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
+        ) {
+          return;
+        }
       }
 
       var name = obj.consumerName.split(',');
