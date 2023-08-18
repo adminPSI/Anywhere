@@ -539,16 +539,16 @@ var workshop = (function() {
 
     DOM.clearActionCenter();
 
-    btnWrap = document.createElement("div");
-    btnWrap.classList.add("btnWrap");
-    btnWrap.appendChild(filterBtn);
-    btnWrap.appendChild(multiSelectBtn);
-    btnWrap.appendChild(reportsBtn);
+    filterSelectReportBtnWrap = document.createElement("div");
+    filterSelectReportBtnWrap.classList.add("btnWrap", "filterSelectReportBtnWrap");
+    filterSelectReportBtnWrap.appendChild(filterBtn);
+    filterSelectReportBtnWrap.appendChild(multiSelectBtn);
+    filterSelectReportBtnWrap.appendChild(reportsBtn);
   
   
 
 
-    DOM.ACTIONCENTER.appendChild(btnWrap);
+    DOM.ACTIONCENTER.appendChild(filterSelectReportBtnWrap);
     DOM.ACTIONCENTER.appendChild(currentFilterDisplay);
     currentFilterDisplay.classList.add("filteredByData");
     updateCurrentFilterDisplay();

@@ -37,9 +37,9 @@ namespace Anywhere.service.Data.ResetPassword
         public string updateActiveInactiveUserDateJSON(string token, string isInactiveUser, string userId)
         {
             if (tokenValidator(token) == false) return null;
-            logger.debug("updateActiveInactiveUserDateJSON Token:" + token + " UserId:" + isInactiveUser + "isInactiveUser:" + isInactiveUser); 
+            logger.debug("updateActiveInactiveUserDateJSON Token:" + token + " UserId:" + isInactiveUser + "isInactiveUser:" + isInactiveUser);
             List<string> list = new List<string>();
-            list.Add(isInactiveUser); 
+            list.Add(isInactiveUser);
             list.Add(userId);
             string text = "CALL DBA.ANYW_updateUserStatus(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
 
@@ -53,23 +53,6 @@ namespace Anywhere.service.Data.ResetPassword
                 return "561: Error getting single entry by id";
             }
 
-        }
-
-        public string removeUnsavableNoteText(string note)
-        {
-            if (note == "" || note is null)
-            {
-                return note;
-            }
-            if (note.Contains("'"))
-            {
-                note = note.Replace("'", "''");
-            }
-            if (note.Contains("\\"))
-            {
-                note = note.Replace("\\", "");
-            }
-            return note;
         }
 
         public string executeDataBaseCallJSON(string storedProdCall)

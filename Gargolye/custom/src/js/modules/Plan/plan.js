@@ -52,6 +52,7 @@ const plan = (function () {
   let priorConsumerPlanId;
   // more popup
   let selectedWorkflows;
+  //let selectedPreviousWfForms;
   let addWorkflowDoneBtn;
   let planAttBody;
   let workflowAttBody;
@@ -2115,13 +2116,10 @@ const plan = (function () {
       return;
     }
 
-    const wfFormsData = await WorkflowViewerAjax.getWorkFlowFormsfromPreviousPlan({
-      token: $.session.Token,
-      selectedWFTemplateIds: 2,
-      previousPlanId: 287,
-    });
-
-    const workflowCallback = selectedWorkflows  => {
+    
+    //const foo = async (selectedWorkflows) => {
+    //  const workflowCallback = selectedWorkflows  => {
+    const workflowCallback = async (selectedWorkflows) => {
       PROGRESS__BTN.SPINNER.show('workflowContinueBtn', '', false);
       // TODO 100969 -- display list of User Forms for the selected Workflows
 
@@ -2132,14 +2130,26 @@ const plan = (function () {
       //     POPUP.hide(wfvPopup);
       //   }
 
-      //   var wf_template_selected  = selectedWorkflows;
-
-      //   var revise_plan_ID = priorConsumerPlanId;
-      //   var annual_plan_ID = previousPlansData;
       //   // *********FAKE DATA for Step Docs in a Workflow*****Albert Annual 6/23******Annual -- 279, Antnio -- 934*******************
       // //  const wfFormsData = [{ docId : 6052 , docDescription : 'Expert 15 test.pdf', WFId: 934, WFName: 'Antinono 3' },{ docId : 6053 , docDescription : 'FORMS -- General.pdf', WFId: 934, WFName: 'Antinono 3' }, { docId : 1836 , docDescription : 'Medication -- Med Assessment.pdf', WFId: 279, WFName: 'Annual - Waver'},{ docId : 3201 , docDescription : 'Signed_Plan.pdf', WFId: 279, WFName: 'Annual - Waver'} ];
-          
-
+      // let thisPreviousPlanId = 0;
+      // let thisannual_plan;
+      // // inserting a new plan based on a selected prior plan
+      // if (priorConsumerPlanId && priorConsumerPlanId !== '') {
+      //   thisPreviousPlanId = priorConsumerPlanId;
+      // } else {  // // inserting a new plan based on the most recent existing plan
+      //   thisannual_plan = previousPlansData.filter(wf => wf.active === 'True');
+      //   if (thisannual_plan && thisannual_plan.length > 0) {
+      //     thisPreviousPlanId = thisannual_plan[0].consumerPlanId
+      //   }
+      // }
+    
+      // const wfFormsData = await WorkflowViewerAjax.getWorkFlowFormsfromPreviousPlan({
+      //   token: $.session.Token,
+      //   selectedWFTemplateIds: selectedWorkflows.join(", "), 
+      //   previousPlanId: thisPreviousPlanId
+        
+      // });
 
       // const wfFormsPopup = POPUP.build({
       //   classNames: ['wfFormsPopup'],
@@ -2161,7 +2171,7 @@ const plan = (function () {
       //     var wf_template_selected  = selectedWorkflows;
 
       //     POPUP.hide(wfFormsPopup);
-      //     createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+      //     //createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
       //   },
       // });
 
@@ -2241,11 +2251,17 @@ const plan = (function () {
     if (selectedWorkflows && selectedWorkflows.length > 0) {
       for (i = 0; i < selectedWorkflows.length; i++) {
         let wftemplateId = selectedWorkflows[i];
+        // does this have any attached WF Forms, if so then wantedFormIds: selectedPreviousWfForms, otherwise wantedFormIds: ""
+        let thiswfForms;
+
+
+
         workflowId = await WorkflowViewerAjax.copyWorkflowtemplateToRecord({
           token: $.session.Token,
           templateId: wftemplateId,
           referenceId: currentPlanId,
           peopleId: selectedConsumer.id,
+         // wantedFormIds: selectedPreviousWfForms,
         });
         workflowIds.push(workflowId);
       }
