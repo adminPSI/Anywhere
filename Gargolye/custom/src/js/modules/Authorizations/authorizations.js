@@ -18,6 +18,7 @@ const authorizations = (function () {
   let yearStartEnd;
   let yearEndStart;
   let yearEndEnd;
+  let applyFilterBtn;
 
   function handleActionNavEvent(target) {
     const targetAction = target.dataset.actionNav;
@@ -43,6 +44,16 @@ const authorizations = (function () {
 
   // Filter Popup
   //----------------------------------------
+  function checkFilterPopForErrors() {
+    const errors = filterPopup.querySelectorAll('.error');
+    const hasErrors = errors.legnth > 0 ? true : false;
+
+    if (hasErrors) {
+      applyFilterBtn.classList.add('disabled');
+    } else {
+      applyFilterBtn.classList.remove('disabled');
+    }
+  }
   function initFilterValues() {
     filterValues = {
       planType: '%',
@@ -207,15 +218,39 @@ const authorizations = (function () {
     });
     completedDateStart.addEventListener('change', e => {
       newFilterValues.completedDateStart = e.target.value;
+      if (e.target.value === '') {
+        completedDateStart.classList.add('error');
+      } else {
+        completedDateStart.classList.remove('error');
+      }
+      checkFilterPopForErrors();
     });
     completedDateEnd.addEventListener('change', e => {
       newFilterValues.completedDateEnd = e.target.value;
+      if (e.target.value === '') {
+        completedDateEnd.classList.add('error');
+      } else {
+        completedDateEnd.classList.remove('error');
+      }
+      checkFilterPopForErrors();
     });
     yearStartStart.addEventListener('change', e => {
       newFilterValues.yearStartStart = e.target.value;
+      if (e.target.value === '') {
+        yearStartStart.classList.add('error');
+      } else {
+        yearStartStart.classList.remove('error');
+      }
+      checkFilterPopForErrors();
     });
     yearStartEnd.addEventListener('change', e => {
       newFilterValues.yearStartEnd = e.target.value;
+      if (e.target.value === '') {
+        yearStartEnd.classList.add('error');
+      } else {
+        yearStartEnd.classList.remove('error');
+      }
+      checkFilterPopForErrors();
     });
     yearEndStart.addEventListener('change', e => {
       newFilterValues.yearEndStart = e.target.value;
