@@ -1747,11 +1747,11 @@ const plan = (function () {
     return morepopupmenu;
   }
   async function showMorePopup() {
-    sentToOnet = await assessmentAjax.getSentToONETDate({
-      token: $.session.Token,
-      assessmentId: planId,
-    });
-    sentToOnet = sentToOnet[0].sentDate;
+    //sentToOnet = await assessmentAjax.getSentToONETDate({
+    //  token: $.session.Token,
+    //  assessmentId: planId,
+    //});
+    //sentToOnet = sentToOnet[0].sentDate;
     morePopup = POPUP.build({
       classNames: 'moreMenuPopup',
     });
