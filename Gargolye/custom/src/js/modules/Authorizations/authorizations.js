@@ -41,6 +41,54 @@ const authorizations = (function () {
       }
     }
   }
+  function groupAuthData() {
+    const groupedData = {};
+
+    authData.map(ad => {
+      const id = `${ad.CompletionDate.split('T')[0]}${ad.plan_year_start.split('T')[0]}${
+        ad.plan_year_end.split('T')[0]
+      }${ad.plantype}${ad.vendorName.replaceAll(' ', '')}`;
+
+      if (!groupedData[id]) {
+        groupedData[id] = {
+          CompletionDate: UTIL.formatDateFromIso(ad.CompletionDate.split('T')[0]),
+          plan_year_start: UTIL.formatDateFromIso(ad.plan_year_start.split('T')[0]),
+          plan_year_end: UTIL.formatDateFromIso(ad.plan_year_end.split('T')[0]),
+          plantype: ad.plantype,
+          vendorName: ad.vendorName,
+          children: [
+            {
+              //serivce: ad.service,
+              service_code: ad.service_code,
+              BeginDate: UTIL.formatDateFromIso(ad.BeginDate.split('T')[0]),
+              EndDate: UTIL.formatDateFromIso(ad.EndDate.split('T')[0]),
+              FY1_units: parseInt(ad.FY1_units),
+              FY2_units: parseInt(ad.FY2_units),
+              frequency: ad.frequency,
+              vendorName: ad.vendorName,
+              FY1_total_Cost: ad.FY1_total_Cost,
+              FY2_total_Cost: ad.FY2_total_Cost,
+            },
+          ],
+        };
+      } else {
+        groupedData[id].children.push({
+          //serivce: ad.service,
+          service_code: ad.service_code,
+          BeginDate: UTIL.formatDateFromIso(ad.BeginDate.split('T')[0]),
+          EndDate: UTIL.formatDateFromIso(ad.EndDate.split('T')[0]),
+          FY1_units: parseInt(ad.FY1_units),
+          FY2_units: parseInt(ad.FY2_units),
+          frequency: ad.frequency,
+          vendorName: ad.vendorName,
+          FY1_total_Cost: ad.FY1_total_Cost,
+          FY2_total_Cost: ad.FY2_total_Cost,
+        });
+      }
+    });
+
+    return groupedData;
+  }
 
   // Filter Popup
   //----------------------------------------
@@ -294,6 +342,10 @@ const authorizations = (function () {
     return wrap;
   }
   function buildOverviewTable() {
+    if (overviewTable) pageWrap.removeChild(overviewTable);
+
+    const tableData = groupAuthData();
+
     overviewTable = document.createElement('div');
     overviewTable.classList.add('authTable');
 
@@ -312,15 +364,15 @@ const authorizations = (function () {
 
     // BODY
     //---------------------------------------------------------
-    authData.forEach(ad => {
+    Object.values(tableData).forEach(ad => {
       const rowWrap = document.createElement('div');
+      rowWrap.classList.add('authTable__subTableWrap');
 
       // TOP LEVEL ROW
       //---------------------------------
       const mainDataRow = document.createElement('div');
-      mainDataRow.classList.add('authTable__mainDataRow');
+      mainDataRow.classList.add('authTable__mainDataRow', 'authTable__dataRow');
       mainDataRow.innerHTML = `
-        <span>'>'</span>
         <div>${ad.CompletionDate.split('T')[0]}</div>
         <div>${ad.plan_year_start.split('T')[0]}</div>
         <div>${ad.plan_year_end.split('T')[0]}</div>
@@ -332,6 +384,7 @@ const authorizations = (function () {
       // SUB ROWS
       //---------------------------------
       const subRowWrap = document.createElement('div');
+      subRowWrap.classList.add('authTable__subRowWrap');
 
       const subHeading = document.createElement('div');
       subHeading.classList.add('authTable__subHeader');
@@ -350,12 +403,12 @@ const authorizations = (function () {
 
       ad.children.forEach((acd, i) => {
         const subDataRow = document.createElement('div');
-        subDataRow.classList.add('authTable__subDataRow');
+        subDataRow.classList.add('authTable__subDataRow', 'authTable__dataRow');
         subDataRow.innerHTML = `
-          <div>${acd.service}</div>
           <div>${acd.service_code}</div>
-          <div>${acd.BeginDate.split('T')[0]}</div>
-          <div>${acd.EndDate.split('T')[0]}</div>
+          <div>${acd.service_code}</div>
+          <div>${UTIL.abbreviateDateYear(acd.BeginDate.split('T')[0])}</div>
+          <div>${UTIL.abbreviateDateYear(acd.EndDate.split('T')[0])}</div>
           <div>${parseInt(acd.FY1_units) + parseInt(acd.FY2_units)}</div>
           <div>${acd.frequency}</div>
           <div>${acd.vendorName}</div>
@@ -365,12 +418,19 @@ const authorizations = (function () {
         subRowWrap.appendChild(subDataRow);
       });
 
+      mainDataRow.addEventListener('click', e => {
+        if (subRowWrap.classList.contains('active')) {
+          subRowWrap.classList.remove('active');
+        } else {
+          subRowWrap.classList.add('active');
+        }
+      });
+
       // ASSEMBLY
       rowWrap.appendChild(subRowWrap);
       overviewTable.appendChild(rowWrap);
     });
 
-    if (overviewTable) pageWrap.removeChild(overviewTable);
     pageWrap.appendChild(overviewTable);
   }
 
