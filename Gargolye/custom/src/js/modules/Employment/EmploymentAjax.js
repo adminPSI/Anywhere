@@ -720,9 +720,9 @@ var EmploymentAjax = (function () {
                 '"}',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            success: function (response, status, xhr) {
-                var res = response.deleteWagesBenefitsJSONResult;
-                //callback(res);
+            success: function (response) {
+                var res = response.deleteWagesBenefitsResult;
+                callback(res);
             },
             error: function (xhr, status, error) { },
         });
@@ -740,9 +740,9 @@ var EmploymentAjax = (function () {
                 '"}',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            success: function (response, status, xhr) {
-                var res = response.deleteWorkScheduleJSONResult;
-                //callback(res);
+            success: function (response) {
+                var res = response.deleteWorkScheduleResult;
+                callback(res); 
             },
             error: function (xhr, status, error) { },
         });
