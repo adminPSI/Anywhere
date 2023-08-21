@@ -50,6 +50,7 @@ const plan = (function () {
   // prior plan data
   let hasPreviousPlans;
   let priorConsumerPlanId;
+  let thisPreviousPlanId = 0;
   // more popup
   let selectedWorkflows;
   //let selectedPreviousWfForms;
@@ -2123,68 +2124,68 @@ const plan = (function () {
       PROGRESS__BTN.SPINNER.show('workflowContinueBtn', '', false);
       // TODO 100969 -- display list of User Forms for the selected Workflows
 
-      //   let selectedwfForms = [];
+         let selectedwfForms = [];
 
-      //   const wfvPopup = document.querySelector('.workflowListPopup');
-      //   if (wfvPopup) {
-      //     POPUP.hide(wfvPopup);
-      //   }
+         const wfvPopup = document.querySelector('.workflowListPopup');
+         if (wfvPopup) {
+           POPUP.hide(wfvPopup);
+         }
 
-      //   // *********FAKE DATA for Step Docs in a Workflow*****Albert Annual 6/23******Annual -- 279, Antnio -- 934*******************
-      // //  const wfFormsData = [{ docId : 6052 , docDescription : 'Expert 15 test.pdf', WFId: 934, WFName: 'Antinono 3' },{ docId : 6053 , docDescription : 'FORMS -- General.pdf', WFId: 934, WFName: 'Antinono 3' }, { docId : 1836 , docDescription : 'Medication -- Med Assessment.pdf', WFId: 279, WFName: 'Annual - Waver'},{ docId : 3201 , docDescription : 'Signed_Plan.pdf', WFId: 279, WFName: 'Annual - Waver'} ];
-      // let thisPreviousPlanId = 0;
-      // let thisannual_plan;
-      // // inserting a new plan based on a selected prior plan
-      // if (priorConsumerPlanId && priorConsumerPlanId !== '') {
-      //   thisPreviousPlanId = priorConsumerPlanId;
-      // } else {  // // inserting a new plan based on the most recent existing plan
-      //   thisannual_plan = previousPlansData.filter(wf => wf.active === 'True');
-      //   if (thisannual_plan && thisannual_plan.length > 0) {
-      //     thisPreviousPlanId = thisannual_plan[0].consumerPlanId
-      //   }
-      // }
+         // *********FAKE DATA for Step Docs in a Workflow*****Albert Annual 6/23******Annual -- 279, Antnio -- 934*******************
+       //  const wfFormsData = [{ docId : 6052 , docDescription : 'Expert 15 test.pdf', WFId: 934, WFName: 'Antinono 3' },{ docId : 6053 , docDescription : 'FORMS -- General.pdf', WFId: 934, WFName: 'Antinono 3' }, { docId : 1836 , docDescription : 'Medication -- Med Assessment.pdf', WFId: 279, WFName: 'Annual - Waver'},{ docId : 3201 , docDescription : 'Signed_Plan.pdf', WFId: 279, WFName: 'Annual - Waver'} ];
+       
+       let thisannual_plan;
+       // inserting a new plan based on a selected prior plan
+       if (priorConsumerPlanId && priorConsumerPlanId !== '') {
+         thisPreviousPlanId = priorConsumerPlanId;
+       } else {  // // inserting a new plan based on the most recent existing plan
+         thisannual_plan = previousPlansData.filter(wf => wf.active === 'True');
+         if (thisannual_plan && thisannual_plan.length > 0) {
+           thisPreviousPlanId = thisannual_plan[0].consumerPlanId
+         }
+       }
     
-      // const wfFormsData = await WorkflowViewerAjax.getWorkFlowFormsfromPreviousPlan({
-      //   token: $.session.Token,
-      //   selectedWFTemplateIds: selectedWorkflows.join(", "), 
-      //   previousPlanId: thisPreviousPlanId
+       const wfFormsData = await WorkflowViewerAjax.getWorkFlowFormsfromPreviousPlan({
+         token: $.session.Token,
+         selectedWFTemplateIds: selectedWorkflows.join(", "), 
+         previousPlanId: thisPreviousPlanId
         
-      // });
+       });
 
-      // const wfFormsPopup = POPUP.build({
-      //   classNames: ['wfFormsPopup'],
-      // });
+       const wfFormsPopup = POPUP.build({
+         classNames: ['wfFormsPopup'],
+       });
 
-      // const title = document.createElement('h2');
-      // title.innerHTML = 'Select forms to attach.';
-      // wfFormsPopup.appendChild(title);
+       const title = document.createElement('h2');
+       title.innerHTML = 'Select forms to attach.';
+       wfFormsPopup.appendChild(title);
 
-      // const doneBtn = button.build({
-      //   id: 'wfFormsContinueBtn',
-      //   text: 'Continue',
-      //   type: 'contained',
-      //   style: 'secondary',
-      //   // classNames: ['copySelectedBtn', 'disabled'],
-      //   classNames: 'copySelectedBtn',
-      //   callback: () => {
-      //     var selectedPreviousWfForms = planWorkflow.getselectedWorkFlowForms();
-      //     var wf_template_selected  = selectedWorkflows;
+       const doneBtn = button.build({
+         id: 'wfFormsContinueBtn',
+         text: 'Continue',
+         type: 'contained',
+         style: 'secondary',
+         // classNames: ['copySelectedBtn', 'disabled'],
+         classNames: 'copySelectedBtn',
+         callback: () => {
+           var selectedPreviousWfForms = planWorkflow.getselectedWorkFlowForms();
+           var wf_template_selected  = selectedWorkflows;
 
-      //     POPUP.hide(wfFormsPopup);
-      //     createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
-      //   },
-      // });
+           POPUP.hide(wfFormsPopup);
+           createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+         },
+       });
 
-      // if (wfFormsData && wfFormsData.length > 0) {
-      //   const list = planWorkflow.buildWorkflowFormList(wfFormsData);
-      //   wfFormsPopup.appendChild(list);
-      // }
+       if (wfFormsData && wfFormsData.length > 0) {
+         const list = planWorkflow.buildWorkflowFormList(wfFormsData);
+         wfFormsPopup.appendChild(list);
+       }
 
-      // wfFormsPopup.appendChild(doneBtn);
+       wfFormsPopup.appendChild(doneBtn);
 
-      // POPUP.show(wfFormsPopup);
+       POPUP.show(wfFormsPopup);
 
-      createNewPlan(selectedConsumer, processId, selectedWorkflows);
+      //createNewPlan(selectedConsumer, processId, selectedWorkflows);
     };
     planWorkflow.showWorkflowListPopup(wfvData, workflowCallback);
   }
@@ -2258,12 +2259,12 @@ const plan = (function () {
         if (selectedPreviousWfForms && selectedPreviousWfForms.length > 0) {
         let thiswfFormslist = [];
              for (j = 0; j < selectedPreviousWfForms.length; j++) {
-                    if (wftemplateId === selectedPreviousWfForms[j].WFtemplateId) {
-                      thiswfFormslist.push(selectedPreviousWfForms[j].attachmentId)
+                 if (wftemplateId === selectedPreviousWfForms[j].WFtemplateId) {
+                     thiswfFormslist.push(selectedPreviousWfForms[j].description)
                     }
                 }
           if (thiswfFormslist && thiswfFormslist.length > 0) {
-            thiswfForms = thiswfFormslist.join(", ");
+            thiswfForms = thiswfFormslist.join(",");
           } else {
             thiswfForms = "";
           }
@@ -2279,6 +2280,7 @@ const plan = (function () {
           referenceId: currentPlanId,
           peopleId: selectedConsumer.id,
           wantedFormIds: thiswfForms,
+          priorConsumerPlanId: thisPreviousPlanId,
         });
         workflowIds.push(workflowId);
       }

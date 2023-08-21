@@ -552,7 +552,8 @@ const WorkflowViewerAjax = (() => {
   async function copyWorkflowtemplateToRecord(retrieveData) {
     try {
       //token, templateId, peopleId, referenceId, wantedFormIds
-      //referenceId is isp_consumer_plan_id
+      //referenceId is isp_consumer_plan_id,
+      //priorConsumerPlanId
       const result = await $.ajax({
         type: 'POST',
         url:

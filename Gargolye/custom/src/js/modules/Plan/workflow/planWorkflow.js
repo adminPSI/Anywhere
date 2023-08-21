@@ -61,10 +61,11 @@ const planWorkflow = (() => {
           const attachmentID = e.target.dataset.attachmentId;
           const workflowID = e.target.dataset.workflowId;
           const WFTemplateID = e.target.dataset.wftemplateId;
+          const description = e.target.dataset.description;
   
           if (!e.target.classList.contains('selected')) {
             e.target.classList.add('selected');
-            selectedWorkflowForms.push({attachmentId: attachmentID, workflowId: workflowID, WFtemplateId: WFTemplateID });
+            selectedWorkflowForms.push({attachmentId: attachmentID, workflowId: workflowID, WFtemplateId: WFTemplateID, description: description });
           } else {
             e.target.classList.remove('selected');
             selectedWorkflowForms = selectedWorkflowForms.filter(wf => wf !== attachmentID);
