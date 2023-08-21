@@ -58,7 +58,7 @@ const authorizations = (function () {
           vendorName: ad.vendorName,
           children: [
             {
-              serivce: acd.service,
+              //serivce: acd.service,
               service_code: acd.service_code,
               BeginDate: acd.BeginDate.split('T')[0],
               EndDate: acd.EndDate.split('T')[0],
@@ -73,7 +73,7 @@ const authorizations = (function () {
         };
       } else {
         groupedData[id].children.push({
-          serivce: acd.service,
+          //serivce: acd.service,
           service_code: acd.service_code,
           BeginDate: acd.BeginDate.split('T')[0],
           EndDate: acd.EndDate.split('T')[0],
@@ -400,7 +400,7 @@ const authorizations = (function () {
         const subDataRow = document.createElement('div');
         subDataRow.classList.add('authTable__subDataRow');
         subDataRow.innerHTML = `
-          <div>${acd.service}</div>
+          <div>${acd.service_code}</div>
           <div>${acd.service_code}</div>
           <div>${acd.BeginDate.split('T')[0]}</div>
           <div>${acd.EndDate.split('T')[0]}</div>
