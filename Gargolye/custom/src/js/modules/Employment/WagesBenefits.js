@@ -202,7 +202,7 @@ const WagesBenefits = (() => {
 
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryReviewTable',  
+            tableId: 'singleEntryReviewTable',
             columnHeadings: ['Hours/Week', 'Hourly Wages', 'Start Date', 'End Date'],
             endIcon: true,
         };
@@ -213,7 +213,7 @@ const WagesBenefits = (() => {
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
             },
-            endIcon: `${icons['Empty']}`,// `${icons['delete']}`,//entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['delete']}`,
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : `${icons['Empty']}`, 
             endIconCallback: (e) => {
                 deleteWagesBenefitsPOPUP(entry.wagesId);
             },
@@ -238,8 +238,7 @@ const WagesBenefits = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-               
-                deleteWagesBenefits(wagesId);
+                deleteWagesBenefits(wagesId, confirmPopup);
             },
         });
 
@@ -267,13 +266,16 @@ const WagesBenefits = (() => {
         POPUP.show(confirmPopup);
     }
 
-    function deleteWagesBenefits(wagesId) {
+    function deleteWagesBenefits(wagesId, confirmPopup) {
         EmploymentAjax.deleteWagesBenefits(
             {
                 wagesID: wagesId
             },
-            function (results, error) {
-                POPUP.hide(confirmPopup);
+            function (results) {  
+                if (results = 'sucess') {
+                    POPUP.hide(confirmPopup);
+                    NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 1);
+                }
             },
         );
     }
