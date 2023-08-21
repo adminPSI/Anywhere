@@ -53,6 +53,7 @@ const planWorkflow = (() => {
       formItem.setAttribute('data-attachment-id', obj.attachmentId);
       formItem.setAttribute('data-workflow-id', obj.workflowId);
       formItem.setAttribute('data-WFTemplate-id', obj.WFTemplateId);
+      formItem.setAttribute('data-description', obj.description);
       formItem.innerHTML = `<h4>${obj.wfName}</h4> <p>${obj.description}</p>`;
       workflowFormList.appendChild(formItem);
 
