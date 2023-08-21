@@ -366,11 +366,12 @@ const authorizations = (function () {
     //---------------------------------------------------------
     Object.values(tableData).forEach(ad => {
       const rowWrap = document.createElement('div');
+      rowWrap.classList.add('authTable__subTableWrap');
 
       // TOP LEVEL ROW
       //---------------------------------
       const mainDataRow = document.createElement('div');
-      mainDataRow.classList.add('authTable__mainDataRow');
+      mainDataRow.classList.add('authTable__mainDataRow', 'authTable__dataRow');
       mainDataRow.innerHTML = `
         <span>'>'</span>
         <div>${ad.CompletionDate.split('T')[0]}</div>
@@ -402,7 +403,7 @@ const authorizations = (function () {
 
       ad.children.forEach((acd, i) => {
         const subDataRow = document.createElement('div');
-        subDataRow.classList.add('authTable__subDataRow');
+        subDataRow.classList.add('authTable__subDataRow', 'authTable__dataRow');
         subDataRow.innerHTML = `
           <div>${acd.service_code}</div>
           <div>${acd.service_code}</div>
