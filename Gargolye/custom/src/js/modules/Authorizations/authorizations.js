@@ -51,17 +51,17 @@ const authorizations = (function () {
 
       if (!groupedData[id]) {
         groupedData[id] = {
-          CompletionDate: ad.CompletionDate.split('T')[0],
-          plan_year_start: ad.plan_year_start.split('T')[0],
-          plan_year_end: ad.plan_year_end.split('T')[0],
+          CompletionDate: UTIL.formatDateFromIso(ad.CompletionDate.split('T')[0]),
+          plan_year_start: UTIL.formatDateFromIso(ad.plan_year_start.split('T')[0]),
+          plan_year_end: UTIL.formatDateFromIso(ad.plan_year_end.split('T')[0]),
           plantype: ad.plantype,
           vendorName: ad.vendorName,
           children: [
             {
               //serivce: ad.service,
               service_code: ad.service_code,
-              BeginDate: ad.BeginDate.split('T')[0],
-              EndDate: ad.EndDate.split('T')[0],
+              BeginDate: UTIL.formatDateFromIso(ad.BeginDate.split('T')[0]),
+              EndDate: UTIL.formatDateFromIso(ad.EndDate.split('T')[0]),
               FY1_units: parseInt(ad.FY1_units),
               FY2_units: parseInt(ad.FY2_units),
               frequency: ad.frequency,
@@ -75,8 +75,8 @@ const authorizations = (function () {
         groupedData[id].children.push({
           //serivce: ad.service,
           service_code: ad.service_code,
-          BeginDate: ad.BeginDate.split('T')[0],
-          EndDate: ad.EndDate.split('T')[0],
+          BeginDate: UTIL.formatDateFromIso(ad.BeginDate.split('T')[0]),
+          EndDate: UTIL.formatDateFromIso(ad.EndDate.split('T')[0]),
           FY1_units: parseInt(ad.FY1_units),
           FY2_units: parseInt(ad.FY2_units),
           frequency: ad.frequency,
