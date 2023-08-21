@@ -41,6 +41,52 @@ const authorizations = (function () {
       }
     }
   }
+  function groupAuthData() {
+    const groupedData = {};
+
+    authData.map(ad => {
+      const id = `${ad.CompletionDate.split('T')[0]}${ad.plan_year_start.split('T')[0]}${
+        ad.plan_year_end.split('T')[0]
+      }${ad.plantype}${ad.vendorName.replaceAll(' ', '')}`;
+
+      if (!groupedData[id]) {
+        groupedData[id] = {
+          CompletionDate: ad.CompletionDate.split('T')[0],
+          plan_year_start: ad.plan_year_start.split('T')[0],
+          plan_year_start: ad.plan_year_end.split('T')[0],
+          plantype: ad.plantype,
+          vendorName: ad.vendorName,
+          children: [
+            {
+              serivce: acd.service,
+              service_code: acd.service_code,
+              BeginDate: acd.BeginDate.split('T')[0],
+              EndDate: acd.EndDate.split('T')[0],
+              FY1_units: parseInt(acd.FY1_units),
+              FY2_units: parseInt(acd.FY2_units),
+              frequency: acd.frequency,
+              vendorName: acd.vendorName,
+              FY1_total_Cost: acd.FY1_total_Cost,
+              FY2_total_Cost: acd.FY2_total_Cost,
+            },
+          ],
+        };
+      } else {
+        groupedData[id].children.push({
+          serivce: acd.service,
+          service_code: acd.service_code,
+          BeginDate: acd.BeginDate.split('T')[0],
+          EndDate: acd.EndDate.split('T')[0],
+          FY1_units: parseInt(acd.FY1_units),
+          FY2_units: parseInt(acd.FY2_units),
+          frequency: acd.frequency,
+          vendorName: acd.vendorName,
+          FY1_total_Cost: acd.FY1_total_Cost,
+          FY2_total_Cost: acd.FY2_total_Cost,
+        });
+      }
+    });
+  }
 
   // Filter Popup
   //----------------------------------------
@@ -294,6 +340,8 @@ const authorizations = (function () {
     return wrap;
   }
   function buildOverviewTable() {
+    groupAuthData();
+
     overviewTable = document.createElement('div');
     overviewTable.classList.add('authTable');
 
