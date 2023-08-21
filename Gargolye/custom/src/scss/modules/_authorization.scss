@@ -1,0 +1,30 @@
+.authTable {
+  &__header,
+  &__subHeader {
+    background: $bg-dark;
+  }
+
+  &__header,
+  &__subHeader,
+  &__dataRow {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+  }
+
+  &__header,
+  &__mainDataRow {
+    div:nth-child(1) {
+      min-width: 50px;
+      max-width: 100px;
+    }
+  }
+
+  &__subHeader,
+  &__subDataRow {
+    div:nth-child(1) {
+      min-width: 50px;
+      max-width: 100px;
+    }
+  }
+}
