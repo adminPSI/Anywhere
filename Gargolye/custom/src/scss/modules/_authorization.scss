@@ -17,15 +17,28 @@
       flex-grow: 1;
       margin: 0 5px 0 0;
       padding: 0 5px;
+      pointer-events: none;
     }
 
     div:first-child {
       padding-left: 0;
-  }
+    }
   }
 
   &__mainDataRow {
     cursor: pointer;
+    padding: 10px 6px;
+  }
+  &__subDataRow {
+    padding: 8px 6px;
+  }
+
+  &__subRowWrap {
+    display: none;
+
+    &.active {
+      display: block;
+    }
   }
 
   // COLUMN WIDTHS
@@ -34,14 +47,14 @@
     div:nth-child(1),
     div:nth-child(2),
     div:nth-child(3) {
-      // DATE
+      // DATES
       min-width: 90px;
       max-width: 120px;
     }
     div:nth-child(4) {
       // PLAN TYPE
       min-width: 70px;
-      max-width: 80px;
+      max-width: 82px;
       text-align: center;
     }
     div:nth-child(5) {
@@ -66,7 +79,7 @@
     div:nth-child(4) {
       // DATE
       min-width: 90px;
-      max-width: 120px;
+      max-width: 100px;
     }
     div:nth-child(5) {
       // UNITS

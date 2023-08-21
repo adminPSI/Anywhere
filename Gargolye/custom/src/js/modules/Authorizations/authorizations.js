@@ -384,6 +384,7 @@ const authorizations = (function () {
       // SUB ROWS
       //---------------------------------
       const subRowWrap = document.createElement('div');
+      subRowWrap.classList.add('authTable__subRowWrap');
 
       const subHeading = document.createElement('div');
       subHeading.classList.add('authTable__subHeader');
@@ -406,8 +407,8 @@ const authorizations = (function () {
         subDataRow.innerHTML = `
           <div>${acd.service_code}</div>
           <div>${acd.service_code}</div>
-          <div>${acd.BeginDate.split('T')[0]}</div>
-          <div>${acd.EndDate.split('T')[0]}</div>
+          <div>${UTIL.abbreviateDateYear(acd.BeginDate.split('T')[0])}</div>
+          <div>${UTIL.abbreviateDateYear(acd.EndDate.split('T')[0])}</div>
           <div>${parseInt(acd.FY1_units) + parseInt(acd.FY2_units)}</div>
           <div>${acd.frequency}</div>
           <div>${acd.vendorName}</div>
@@ -415,6 +416,14 @@ const authorizations = (function () {
           <div>${acd.FY2_total_Cost}</div>
         `;
         subRowWrap.appendChild(subDataRow);
+      });
+
+      mainDataRow.addEventListener('click', e => {
+        if (subRowWrap.classList.contains('active')) {
+          subRowWrap.classList.remove('active');
+        } else {
+          subRowWrap.classList.add('active');
+        }
       });
 
       // ASSEMBLY
