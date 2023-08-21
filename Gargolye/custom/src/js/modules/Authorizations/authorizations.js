@@ -86,6 +86,8 @@ const authorizations = (function () {
         });
       }
     });
+
+    return groupedData;
   }
 
   // Filter Popup
@@ -340,7 +342,7 @@ const authorizations = (function () {
     return wrap;
   }
   function buildOverviewTable() {
-    groupAuthData();
+    const tableData = groupAuthData();
 
     overviewTable = document.createElement('div');
     overviewTable.classList.add('authTable');
@@ -360,7 +362,7 @@ const authorizations = (function () {
 
     // BODY
     //---------------------------------------------------------
-    authData.forEach(ad => {
+    tableData.forEach(ad => {
       const rowWrap = document.createElement('div');
 
       // TOP LEVEL ROW
