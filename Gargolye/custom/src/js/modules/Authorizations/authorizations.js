@@ -53,7 +53,7 @@ const authorizations = (function () {
         groupedData[id] = {
           CompletionDate: ad.CompletionDate.split('T')[0],
           plan_year_start: ad.plan_year_start.split('T')[0],
-          plan_year_start: ad.plan_year_end.split('T')[0],
+          plan_year_end: ad.plan_year_end.split('T')[0],
           plantype: ad.plantype,
           vendorName: ad.vendorName,
           children: [
@@ -342,6 +342,8 @@ const authorizations = (function () {
     return wrap;
   }
   function buildOverviewTable() {
+    if (overviewTable) pageWrap.removeChild(overviewTable);
+
     const tableData = groupAuthData();
 
     overviewTable = document.createElement('div');
@@ -362,7 +364,7 @@ const authorizations = (function () {
 
     // BODY
     //---------------------------------------------------------
-    tableData.forEach(ad => {
+    Object.values(tableData).forEach(ad => {
       const rowWrap = document.createElement('div');
 
       // TOP LEVEL ROW
@@ -420,7 +422,6 @@ const authorizations = (function () {
       overviewTable.appendChild(rowWrap);
     });
 
-    if (overviewTable) pageWrap.removeChild(overviewTable);
     pageWrap.appendChild(overviewTable);
   }
 
