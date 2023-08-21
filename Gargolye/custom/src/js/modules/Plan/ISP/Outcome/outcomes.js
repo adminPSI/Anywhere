@@ -2109,6 +2109,10 @@ const planOutcomes = (() => {
 
             validationCheck = await planValidation.ISPValidation(planId);
             planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+
+            assessmentPlanValidation = await planValidation.getAssessmentValidation(planId);
+            planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, outcomesUpdateData.sectionId);
+            planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
           },
         });
         const noBtn = button.build({
