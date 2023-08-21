@@ -321,11 +321,11 @@ const authorizations = (function () {
       mainDataRow.classList.add('authTable__mainDataRow');
       mainDataRow.innerHTML = `
         <span>'>'</span>
-        <div>${ad.completed}</div>
-        <div>${ad.yearstart}</div>
-        <div>${ad.yearEnd}</div>
-        <div>${ad.planType}</div>
-        <div>${ad.vendor}</div>
+        <div>${ad.CompletionDate.split('T')[0]}</div>
+        <div>${ad.plan_year_start.split('T')[0]}</div>
+        <div>${ad.plan_year_end.split('T')[0]}</div>
+        <div>${ad.plantype}</div>
+        <div>${ad.vendorName}</div>
       `;
       rowWrap.appendChild(mainDataRow);
 
@@ -348,19 +348,19 @@ const authorizations = (function () {
       `;
       subRowWrap.appendChild(subHeading);
 
-      ad.children.forEach((cd, i) => {
+      ad.children.forEach((acd, i) => {
         const subDataRow = document.createElement('div');
         subDataRow.classList.add('authTable__subDataRow');
         subDataRow.innerHTML = `
-          <div>${cd.service}</div>
-          <div>${cd.serviceCode}</div>
-          <div>${cd.beginDate}</div>
-          <div>${cd.endDate}</div>
-          <div>${cd.units}</div>
-          <div>${cd.frequency}</div>
-          <div>${cd.vendor}</div>
-          <div>${cd.authCost1}</div>
-          <div>${cd.authCost2}</div>
+          <div>${acd.service}</div>
+          <div>${acd.service_code}</div>
+          <div>${acd.BeginDate.split('T')[0]}</div>
+          <div>${acd.EndDate.split('T')[0]}</div>
+          <div>${parseInt(acd.FY1_units) + parseInt(acd.FY2_units)}</div>
+          <div>${acd.frequency}</div>
+          <div>${acd.vendorName}</div>
+          <div>${acd.FY1_total_Cost}</div>
+          <div>${acd.FY2_total_Cost}</div>
         `;
         subRowWrap.appendChild(subDataRow);
       });
@@ -410,6 +410,8 @@ const authorizations = (function () {
     filterDropdownData = await authorizationsAjax.getFilterDropdownData({
       token: $.session.Token,
     });
+
+    buildOverviewTable();
   }
 
   function init() {

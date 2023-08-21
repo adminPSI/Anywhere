@@ -17,7 +17,6 @@ const authorizationsAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      console.log(data.getAuthorizationPageDataResult);
       return JSON.parse(`${data.getAuthorizationPageDataResult}`);
     } catch (error) {
       console.log(error.responseText);
