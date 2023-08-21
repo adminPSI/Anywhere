@@ -12,19 +12,83 @@
     justify-content: space-between;
   }
 
+  &__mainDataRow {
+    cursor: pointer;
+  }
+
   &__header,
   &__mainDataRow {
     div:nth-child(1) {
-      min-width: 50px;
+      // DATE
+      min-width: 90px;
       max-width: 100px;
+    }
+    div:nth-child(2) {
+      // DATE
+      min-width: 90px;
+      max-width: 100px;
+    }
+    div:nth-child(3) {
+      // DATE
+      min-width: 90px;
+      max-width: 100px;
+    }
+    div:nth-child(4) {
+      // PLAN TYPE
+      min-width: 70px;
+      max-width: 80px;
+    }
+    div:nth-child(5) {
+      // PLAN VENDOR
+      min-width: 100px;
     }
   }
 
   &__subHeader,
   &__subDataRow {
     div:nth-child(1) {
-      min-width: 50px;
+      // SERVICE
+      min-width: 90px;
       max-width: 100px;
+    }
+    div:nth-child(2) {
+      // SERVICE CODE
+      min-width: 70px;
+      max-width: 80px;
+    }
+    div:nth-child(3) {
+      // DATE
+      min-width: 90px;
+      max-width: 100px;
+    }
+    div:nth-child(4) {
+      // DATE
+      min-width: 90px;
+      max-width: 100px;
+    }
+    div:nth-child(5) {
+      // UNITS
+      min-width: 70px;
+      max-width: 80px;
+    }
+    div:nth-child(6) {
+      // FREQUENCY
+      min-width: 70px;
+      max-width: 80px;
+    }
+    div:nth-child(7) {
+      // VENDOR NAME
+      min-width: 100px;
+    }
+    div:nth-child(8) {
+      // TOTAL COST 1
+      min-width: 70px;
+      max-width: 80px;
+    }
+    div:nth-child(9) {
+      // TOTAL COST 2
+      min-width: 70px;
+      max-width: 80px;
     }
   }
 }

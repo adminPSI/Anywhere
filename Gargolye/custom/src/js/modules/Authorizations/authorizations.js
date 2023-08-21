@@ -373,7 +373,6 @@ const authorizations = (function () {
       const mainDataRow = document.createElement('div');
       mainDataRow.classList.add('authTable__mainDataRow', 'authTable__dataRow');
       mainDataRow.innerHTML = `
-        <span>'>'</span>
         <div>${ad.CompletionDate.split('T')[0]}</div>
         <div>${ad.plan_year_start.split('T')[0]}</div>
         <div>${ad.plan_year_end.split('T')[0]}</div>
