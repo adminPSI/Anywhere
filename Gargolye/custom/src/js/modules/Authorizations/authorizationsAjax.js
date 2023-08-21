@@ -12,7 +12,7 @@ const authorizationsAjax = (function () {
           $.webServer.port +
           '/' +
           $.webServer.serviceName +
-          '//',
+          '/getAuthorizationPageData/',
         data: JSON.stringify(retrieveData),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
@@ -42,7 +42,6 @@ const authorizationsAjax = (function () {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
       });
-      console.log(data.getAuthorizationFilterDataResult);
       return data.getAuthorizationFilterDataResult;
     } catch (error) {
       console.log(error.responseText);

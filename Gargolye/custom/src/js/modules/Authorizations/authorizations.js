@@ -294,8 +294,81 @@ const authorizations = (function () {
     return wrap;
   }
   function buildOverviewTable() {
-    console.table(authData);
     overviewTable = document.createElement('div');
+    overviewTable.classList.add('authTable');
+
+    // HEADING
+    //---------------------------------------------------------
+    const mainHeading = document.createElement('div');
+    mainHeading.classList.add('authTable__header');
+    mainHeading.innerHTML = `
+      <div>Completed</div>
+      <div>Year Start</div>
+      <div>Year End</div>
+      <div>Plan Type</div>
+      <div>PL Vendor</div>
+    `;
+    overviewTable.appendChild(mainHeading);
+
+    // BODY
+    //---------------------------------------------------------
+    authData.forEach(ad => {
+      const rowWrap = document.createElement('div');
+
+      // TOP LEVEL ROW
+      //---------------------------------
+      const mainDataRow = document.createElement('div');
+      mainDataRow.classList.add('authTable__mainDataRow');
+      mainDataRow.innerHTML = `
+        <span>'>'</span>
+        <div>${ad.completed}</div>
+        <div>${ad.yearstart}</div>
+        <div>${ad.yearEnd}</div>
+        <div>${ad.planType}</div>
+        <div>${ad.vendor}</div>
+      `;
+      rowWrap.appendChild(mainDataRow);
+
+      // SUB ROWS
+      //---------------------------------
+      const subRowWrap = document.createElement('div');
+
+      const subHeading = document.createElement('div');
+      subHeading.classList.add('authTable__subHeader');
+      subHeading.innerHTML = `
+        <div>Service</div>
+        <div>Service Code</div>
+        <div>Begin Date</div>
+        <div>End Date</div>
+        <div>Units</div>
+        <div>Frequency</div>
+        <div>Vendor</div>
+        <div>Auth Cost FY1</div>
+        <div>Auth Cost FY2</div>
+      `;
+      subRowWrap.appendChild(subHeading);
+
+      ad.children.forEach((cd, i) => {
+        const subDataRow = document.createElement('div');
+        subDataRow.classList.add('authTable__subDataRow');
+        subDataRow.innerHTML = `
+          <div>${cd.service}</div>
+          <div>${cd.serviceCode}</div>
+          <div>${cd.beginDate}</div>
+          <div>${cd.endDate}</div>
+          <div>${cd.units}</div>
+          <div>${cd.frequency}</div>
+          <div>${cd.vendor}</div>
+          <div>${cd.authCost1}</div>
+          <div>${cd.authCost2}</div>
+        `;
+        subRowWrap.appendChild(subDataRow);
+      });
+
+      // ASSEMBLY
+      rowWrap.appendChild(subRowWrap);
+      overviewTable.appendChild(rowWrap);
+    });
 
     if (overviewTable) pageWrap.removeChild(overviewTable);
     pageWrap.appendChild(overviewTable);
