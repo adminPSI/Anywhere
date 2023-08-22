@@ -46,15 +46,24 @@ const planWorkflow = (() => {
     const workflowFormList = document.createElement('div');
     workflowFormList.classList.add('workflowFormList');
 
-    formListData.forEach(obj => {
-     
+    for (let i = 0; i < formListData.length; i++) {
+        //formListData.forEach(obj => {
+        if (i === 0) {
+          const formHeader = document.createElement('div');
+          formHeader.innerHTML = `<h4>${formListData[i].wfName}</h4>`;
+          workflowFormList.appendChild(formHeader);
+        } else if  (formListData[i].wfName !== formListData[i-1].wfName ) {
+          const formHeader = document.createElement('div');
+          formHeader.innerHTML = `<h4>${formListData[i].wfName}</h4>`;
+          workflowFormList.appendChild(formHeader);
+        }
       const formItem = document.createElement('div');
       formItem.classList.add('workflowFormListItem');
-      formItem.setAttribute('data-attachment-id', obj.attachmentId);
-      formItem.setAttribute('data-workflow-id', obj.workflowId);
-      formItem.setAttribute('data-WFTemplate-id', obj.WFTemplateId);
-      formItem.setAttribute('data-description', obj.description);
-      formItem.innerHTML = `<h4>${obj.wfName}</h4> <p>${obj.description}</p>`;
+      formItem.setAttribute('data-attachment-id', formListData[i].attachmentId);
+      formItem.setAttribute('data-workflow-id', formListData[i].workflowId);
+      formItem.setAttribute('data-WFTemplate-id', formListData[i].WFTemplateId);
+      formItem.setAttribute('data-description', formListData[i].description);
+      formItem.innerHTML = `&nbsp&nbsp&nbsp${formListData[i].description}`;
       workflowFormList.appendChild(formItem);
 
       formItem.addEventListener('click', e => {
@@ -73,8 +82,8 @@ const planWorkflow = (() => {
           }
         }
       );
-
-    });
+      };
+    //});
 
     let test = selectedWorkflowForms;
     return workflowFormList;

@@ -2156,8 +2156,11 @@ const plan = (function () {
       });
 
       const title = document.createElement('h2');
-      title.innerHTML = 'Select forms to attach.';
+      title.innerHTML = 'Select forms to attach.</br>';
+      const linebr = document.createElement('div')
+      linebr.innerHTML = '</br>'
       wfFormsPopup.appendChild(title);
+      wfFormsPopup.appendChild(linebr);
 
       const doneBtn = button.build({
         id: 'wfFormsContinueBtn',
@@ -2171,7 +2174,7 @@ const plan = (function () {
           var wf_template_selected = selectedWorkflows;
 
           POPUP.hide(wfFormsPopup);
-          createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+         // createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
         },
       });
 
