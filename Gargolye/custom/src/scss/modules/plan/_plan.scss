@@ -185,12 +185,12 @@ body.planActive {
     > div:nth-child(1) {
       // PLAN TYPE
       min-width: 64px;
-      max-width: 80px;
+      max-width: 90px;
     }
     > div:nth-child(2) {
       // REVISION #
       min-width: 50px;
-      max-width: 70px;
+      max-width: 80px;
     }
     div:nth-child(3) {
       // Downloaded Date
@@ -214,7 +214,7 @@ body.planActive {
       // SENT TO DODD DATE
       display: none;
       min-width: 94px;
-      max-width: 150px;
+      max-width: 300px;
     }
 
     @media screen and (min-width: 500px) {
