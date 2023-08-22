@@ -29,7 +29,7 @@ const NewEntryCF = (() => {
     let IsDeleteDisable = true;
 
     async function init() {
-        buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined);  
+        buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined);
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
@@ -393,9 +393,9 @@ const NewEntryCF = (() => {
         expenseRadio.classList.remove('disabled');
         depositRadio.classList.remove('disabled');
         IsDisabledBtn = false;
-    }  
+    }
 
-    function checkRequiredFieldsOfNewEntry() { 
+    function checkRequiredFieldsOfNewEntry() {
         var date = newDateInput.querySelector('#newDateInput');
         var amount = newAmountInput.querySelector('#newAmountInput');
         var account = newAccountDropdown.querySelector('#newAccountDropdown');
@@ -490,70 +490,92 @@ const NewEntryCF = (() => {
         });
 
         newDateInput.addEventListener('input', event => {
-            date = event.target.value;
-            tempdate = event.target.value;
-            checkRequiredFieldsOfNewEntry();
+            if (!newDateInput.classList.contains('disabled')) {            
+                date = event.target.value;
+                tempdate = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newAmountInput.addEventListener('input', event => {
-            amount = event.target.value;
-            if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
-                document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
-                return;
+            if (!newAmountInput.classList.contains('disabled')) {
+                amount = event.target.value;
+                if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
+                    document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
+                    return;
+                }
+                tempamount = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
             }
-            tempamount = event.target.value;
-            checkRequiredFieldsOfNewEntry();
         });
         newPayeeDropdown.addEventListener('change', event => {
-            categoryID = event.target.options[event.target.selectedIndex].id;
-            getCategorySubCategorybyPayee(categoryID);
-            payee = event.target.options[event.target.selectedIndex].text;
-            temppayee = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            if (!newPayeeDropdown.classList.contains('disabled')) {
+                categoryID = event.target.options[event.target.selectedIndex].id;
+                getCategorySubCategorybyPayee(categoryID);
+                payee = event.target.options[event.target.selectedIndex].text;
+                temppayee = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newAccountDropdown.addEventListener('change', event => {
-            accountID = event.target.options[event.target.selectedIndex].id;
-            account = event.target.options[event.target.selectedIndex].text;
-            tempaccount = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            if (!newAccountDropdown.classList.contains('disabled')) {
+                accountID = event.target.options[event.target.selectedIndex].id;
+                account = event.target.options[event.target.selectedIndex].text;
+                tempaccount = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newCategoryDropdown.addEventListener('change', event => {
-            categoryID = event.target.options[event.target.selectedIndex].id;
-            category = event.target.options[event.target.selectedIndex].text;
-            tempcategory = event.target.options[event.target.selectedIndex].text;
-            subCategory = '';
-            populateSubCategoryDropdown(category);
-            checkRequiredFieldsOfNewEntry();
+            if (!newCategoryDropdown.classList.contains('disabled')) {
+                categoryID = event.target.options[event.target.selectedIndex].id;
+                category = event.target.options[event.target.selectedIndex].text;
+                tempcategory = 'ChangedValue';
+                subCategory = '';
+                populateSubCategoryDropdown(category);
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newSubCategoryDropdown.addEventListener('change', event => {
-            categoryID = event.target.options[event.target.selectedIndex].id;
-            subCategory = event.target.options[event.target.selectedIndex].text;
-            tempsubCategory = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            if (!newSubCategoryDropdown.classList.contains('disabled')) {
+                categoryID = event.target.options[event.target.selectedIndex].id;
+                subCategory = event.target.options[event.target.selectedIndex].text;
+                tempsubCategory = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newCheckNoInput.addEventListener('input', event => {
-            checkNo = event.target.value;
-            tempcheckNo = event.target.value;
-            checkRequiredFieldsOfNewEntry();
+            if (!newCheckNoInput.classList.contains('disabled')) {
+                checkNo = event.target.value;
+                tempcheckNo = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newDescriptionInput.addEventListener('input', event => {
-            description = event.target.value;
-            tempdescription = event.target.value;
-            checkRequiredFieldsOfNewEntry();
+            if (!newDescriptionInput.classList.contains('disabled')) {
+                description = event.target.value;
+                tempdescription = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newReceiptInput.addEventListener('input', event => {
-            receipt = event.target.value;
-            tempreceipt = event.target.value;
-            checkRequiredFieldsOfNewEntry();
+            if (!newReceiptInput.classList.contains('disabled')) {
+                receipt = event.target.value;
+                tempreceipt = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         expenseRadio.addEventListener('change', event => {
-            accountType = 'E';
-            tempaccountType = 'E';
-            checkRequiredFieldsOfNewEntry();
+            if (!expenseRadio.classList.contains('disabled')) {
+                accountType = 'E';
+                tempaccountType = 'E';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         depositRadio.addEventListener('change', event => {
-            accountType = 'D';
-            tempaccountType = 'D';
-            checkRequiredFieldsOfNewEntry();
+            if (!depositRadio.classList.contains('disabled')) {
+                accountType = 'D';
+                tempaccountType = 'D';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
     }
 
@@ -590,7 +612,7 @@ const NewEntryCF = (() => {
         subCategory = CategoriesSubCategory[0].SubCategoryDescription;
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
-        checkRequiredFieldsOfNewEntry(); 
+        checkRequiredFieldsOfNewEntry();
 
     }
 
@@ -607,7 +629,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
         checkRequiredFieldsOfNewEntry();
-       
+
     }
 
     async function populatePayeeDropdown() {
@@ -622,7 +644,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newPayeeDropdown", data, payee);
         checkRequiredFieldsOfNewEntry();
-       
+
     }
 
     async function populateCategoryDropdown(categoryID) {
@@ -637,7 +659,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
         checkRequiredFieldsOfNewEntry();
-      
+
     }
 
     async function populateSubCategoryDropdown(category) {
@@ -652,7 +674,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
-       
+
     }
 
 
@@ -857,6 +879,7 @@ const NewEntryCF = (() => {
         let regionID = insertPayeeResult.RegionID;
         POPUP.hide(addPayeePopup);
         payee = payeeName;
+        temppayee = 'ChangedValue';
         populatePayeeDropdown();
     }
 

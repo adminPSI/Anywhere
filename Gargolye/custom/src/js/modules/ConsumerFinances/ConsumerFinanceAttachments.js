@@ -211,7 +211,11 @@ const consumerFinanceAttachment = (() => {
                 style: 'secondary',
                 type: 'text',
                 icon: 'add',
-                callback: () => addNewAttachment(),
+                callback: () => {
+                    if (!addAttachmentBtn.classList.contains('disabled')) {
+                        addNewAttachment();  
+                    }
+                },
             });
             addAttachmentBtn.type = 'button';
 
@@ -229,8 +233,10 @@ const consumerFinanceAttachment = (() => {
                 type: 'contained',
                 callback: async () => {
                     try {
-                        await saveAction();
-                        await this.cleanAttachmentLists(attachmentsAdded, attachmentsToDelete);
+                        if (!saveBtn.classList.contains('disabled')) {
+                            await saveAction();
+                            await this.cleanAttachmentLists(attachmentsAdded, attachmentsToDelete);
+                        }  
                     } catch (error) {
                         pendingSave.reject('Error saving attachment changes');
                         setTimeout(() => {
