@@ -2292,6 +2292,7 @@ const plan = (function () {
       processId,
       peopleId: selectedConsumer.id,
       referenceId: currentPlanId,
+      priorConsumerPlanId: thisPreviousPlanId,
     });
     var autoWFIds = autoworkflowIds.split(',');
     workflowIds.push(...autoWFIds);

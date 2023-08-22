@@ -2814,7 +2814,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/insertAutomatedWorkflows/")]
-        String insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId);
+        String insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId, string priorConsumerPlanId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

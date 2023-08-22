@@ -1905,9 +1905,9 @@ namespace Anywhere
             return wfw.getWorkFlowFormsfromPreviousPlan(token, selectedWFTemplateIds, previousPlanId);
         }
 
-        public string insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId)
+        public string insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId, string priorConsumerPlanId)
         {
-            return wfw.insertAutomatedWorkflows(token, processId, peopleId, referenceId);
+            return wfw.insertAutomatedWorkflows(token, processId, peopleId, referenceId, priorConsumerPlanId);
         }
 
         public string isWorkflowAutoCreated(string token, string workflowName)

@@ -643,7 +643,7 @@ namespace Anywhere.service.Data
                 }
             }
         }
-        public string insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId)
+        public string insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId, string priorConsumerPlanId)
         {
 
             try
@@ -674,7 +674,7 @@ namespace Anywhere.service.Data
 
                         try
                         {
-                            string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", "", transaction_insertWF);
+                            string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", priorConsumerPlanId, transaction_insertWF);
                              
                             workflowIds.Add(workflowId);
                         }
