@@ -90,7 +90,7 @@ const Employment = (() => {
             tableId: 'singleEntryAdminReviewTable',
             headline: 'Consumer: ' + selectedConsumersName,
             columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing'],
-            endIcon: $.session.OODView == true ? true : false,
+            endIcon: false, //ToDo   //$.session.OODView == true ? true : false, 
         };
 
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
