@@ -2251,7 +2251,7 @@ const plan = (function () {
     if (selectedWorkflows && selectedWorkflows.length > 0) {
       for (i = 0; i < selectedWorkflows.length; i++) {
         let wftemplateId = selectedWorkflows[i];
-        // does this have any attached WF Forms, if so then wantedFormIds: selectedPreviousWfForms, otherwise wantedFormIds: ""
+        // does this have any attached WF Forms, if so then wantedFormIds: selectedPreviousWfForms, otherwise wantedFormDescriptions: ""
         let thiswfForms;
 
         // handle selected forms
@@ -2276,7 +2276,7 @@ const plan = (function () {
           templateId: wftemplateId,
           referenceId: currentPlanId,
           peopleId: selectedConsumer.id,
-          wantedFormIds: thiswfForms,
+          wantedFormDescriptions: thiswfForms,
           priorConsumerPlanId: thisPreviousPlanId,
         });
         workflowIds.push(workflowId);
