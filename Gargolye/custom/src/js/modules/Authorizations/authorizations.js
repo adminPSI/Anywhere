@@ -342,8 +342,6 @@ const authorizations = (function () {
     return wrap;
   }
   function buildOverviewTable() {
-    if (overviewTable) pageWrap.removeChild(overviewTable);
-
     const tableData = groupAuthData();
 
     overviewTable = document.createElement('div');
