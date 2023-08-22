@@ -2774,7 +2774,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/copyWorkflowtemplateToRecord/")]
-        string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormIds);
+        string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormIds, string priorConsumerPlanId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

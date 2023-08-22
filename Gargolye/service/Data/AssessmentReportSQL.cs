@@ -480,13 +480,22 @@ namespace Anywhere.service.Data
 
         }
 
-        public DataSet ISPSignatures(long AssesmentID)
+        public DataSet ISPSignatures(long AssesmentID, Boolean Advisor = false)
         {
             sb.Clear();
             sb.Append("SELECT ISP_Consumer_Signature_ID, ISP_Consumer_Plan_ID, Team_Member, Name, Relationship, Participated, ");
             sb.Append("Signature, Date_Signed, Dissent_Area_Disagree, Dissent_How_To_Address, Dissent_Date, dba.ANYW_ISP_Signatures.User_ID, ");
             sb.Append("dba.ANYW_ISP_Signatures.Last_Update, Signature_Order, ");
-            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type ");
+            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type, ");
+            if (Advisor == false)
+            {
+                sb.Append("DBA.People.Generation, ");
+            }
+            if (Advisor == true)
+            {
+                sb.Append("'' AS Generation, ");
+            }
+            sb.Append("DBA.People.First_Name, DBA.People.Last_Name, DBA.People.Middle_Name, DBA.People.Last_Name ");
             sb.Append("FROM dba.ANYW_ISP_Signatures ");
             sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
@@ -525,6 +534,7 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPSignatures");
             return dt.DataSet;
         }
+
 
         public DataSet Dissenting(long AssesmentID, Boolean OneSpan)
         {

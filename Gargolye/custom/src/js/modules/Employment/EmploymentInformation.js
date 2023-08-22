@@ -47,7 +47,7 @@ const EmploymentInformation = (() => {
         employeeInfoDiv.classList.add('additionalQuestionWrap');
 
         if (PositionId != undefined) {
-            BtnName = 'SAVE'
+            BtnName = 'SAVE';
             startDatePosition = moment(getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionStartDate).format('YYYY-MM-DD');
             endDatePosition = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionEndDate == '' ? '' : moment(getEmployeeInfoByID.getEmployeeInfoByIDResult[0].positionEndDate).format('YYYY-MM-DD');
             position = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].position;

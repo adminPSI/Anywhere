@@ -1967,9 +1967,9 @@ namespace Anywhere
             return wfw.processWorkflowStepEvent(token, thisEvent);
         }
 
-        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormIds)
+        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormIds, string priorConsumerPlanId)
         {
-            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormIds);
+            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormIds, priorConsumerPlanId);
         }
         #endregion
 

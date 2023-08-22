@@ -213,7 +213,7 @@ const WagesBenefits = (() => {
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
             },
-            endIcon: `${icons['Empty']}`,//$.session.EmploymentDelete == true ? `${icons['delete']}` : `${icons['Empty']}`, 
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : `${icons['Empty']}`,   
             endIconCallback: (e) => {
                 deleteWagesBenefitsPOPUP(entry.wagesId);
             },
