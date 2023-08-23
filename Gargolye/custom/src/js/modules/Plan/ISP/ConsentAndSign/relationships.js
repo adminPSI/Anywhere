@@ -98,9 +98,10 @@ const csRelationship = (() => {
     const pplID = rel.peopleId;
     const salesforceID = rel.salesForceId;
     const contactID = rel.contactId;
+    const lastName = rel.lastName.replace('|', ' ');
     const name = contactInformation.cleanName({
       firstName: rel.firstName,
-      lastName: rel.lastName.replace('|', ' '),
+      lastName: lastName,
       middleName: rel.middleName,
     });
     const dob = dates.removeTimestamp(rel.dateOfBirth);
