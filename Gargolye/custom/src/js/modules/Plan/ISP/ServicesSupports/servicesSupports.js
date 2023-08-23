@@ -2077,13 +2077,17 @@ const servicesSupports = (() => {
       isSortable,
     );
   }
-  async function deleteAdditionalSupport(additionalSupportId) {
+  async function deleteAdditionalSupport(additionalSupportData) {
     await servicesSupportsAjax.deleteAdditionalSupports({
       token: $.session.Token,
-      additionalSupportsId: additionalSupportId,
+      additionalSupportsId: additionalSupportData.additionalSupportsId,
     });
 
-    table.deleteRow(`as${additionalSupportId}`);
+    table.deleteRow(`as${additionalSupportData.additionalSupportsId}`);
+
+    let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, additionalSupportData.assessmentAreaId);
+    planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
   }
   //-- Markup ---------
   function toggleAdditionalSupportDoneBtn() {
@@ -2350,7 +2354,7 @@ const servicesSupports = (() => {
       callback: () => {
         const message = 'Do you want to delete this Additional Support?';
         ISP.showDeleteWarning(additionalSupportPopup, message, () => {
-          deleteAdditionalSupport(saveUpdateData.additionalSupportsId);
+          deleteAdditionalSupport(saveUpdateData);
         });
       },
     });
@@ -2565,13 +2569,17 @@ const servicesSupports = (() => {
       isSortable,
     );
   }
-  async function deleteProfessionalReferral(profRefId) {
+  async function deleteProfessionalReferral(saveUpdateData) {
     await servicesSupportsAjax.deleteProfessionalReferral({
       token: $.session.Token,
-      professionalReferralId: profRefId,
+      professionalReferralId: saveUpdateData.professionalReferralId,
     });
 
-    table.deleteRow(`pr${profRefId}`);
+    table.deleteRow(`pr${saveUpdateData.professionalReferralId}`);
+
+    let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+    planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
   }
   //-- Markup ---------
   function toggleProfessionalReferralDoneBtn() {
@@ -2736,7 +2744,7 @@ const servicesSupports = (() => {
       callback: () => {
         const message = 'Do you want to delete this Professional Referral?';
         ISP.showDeleteWarning(professionalReferralPopup, message, () => {
-          deleteProfessionalReferral(saveUpdateData.professionalReferralId);
+          deleteProfessionalReferral(saveUpdateData);
         });
       },
     });
