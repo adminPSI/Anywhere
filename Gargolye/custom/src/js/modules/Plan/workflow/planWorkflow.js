@@ -50,10 +50,12 @@ const planWorkflow = (() => {
         //formListData.forEach(obj => {
         if (i === 0) {
           const formHeader = document.createElement('div');
+          formHeader.classList.add('workflowFormHeader');
           formHeader.innerHTML = `<h4>${formListData[i].wfName}</h4>`;
           workflowFormList.appendChild(formHeader);
         } else if  (formListData[i].wfName !== formListData[i-1].wfName ) {
           const formHeader = document.createElement('div');
+          formHeader.classList.add('workflowFormHeader');
           formHeader.innerHTML = `<h4>${formListData[i].wfName}</h4>`;
           workflowFormList.appendChild(formHeader);
         }
@@ -78,7 +80,7 @@ const planWorkflow = (() => {
             selectedWorkflowForms.push({attachmentId: attachmentID, workflowId: workflowID, WFtemplateId: WFTemplateID, description: description });
           } else {
             e.target.classList.remove('selected');
-            selectedWorkflowForms = selectedWorkflowForms.filter(wf => wf !== attachmentID);
+            selectedWorkflowForms = selectedWorkflowForms.filter(wf => wf.attachmentId !== attachmentID);
           }
         }
       );
