@@ -2814,7 +2814,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/insertAutomatedWorkflows/")]
-        String insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId);
+        String insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId, string priorConsumerPlanId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3357,14 +3357,14 @@ namespace Anywhere
             UriTemplate = "/getAuthorizationPageData/")]
         string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId);
-        
 
-            //Plan services and supports
-            [WebInvoke(Method = "POST",
-            BodyStyle = WebMessageBodyStyle.Wrapped,
-            ResponseFormat = WebMessageFormat.Json,
-            RequestFormat = WebMessageFormat.Json,
-            UriTemplate = "/getServicesAndSupports/")]
+
+        //Plan services and supports
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getServicesAndSupports/")]
         ServicesAndSupportsWorker.ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId);
 
         [WebInvoke(Method = "POST",
@@ -4693,6 +4693,14 @@ namespace Anywhere
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/deleteWorkSchedule/")]
         string deleteWorkSchedule(string token, string WorkScheduleID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/deletePostionTask/")]
+        string deletePostionTask(string token, string jobTaskID ,string PositionID);
     }
 
 

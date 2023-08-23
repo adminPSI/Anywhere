@@ -210,6 +210,8 @@ namespace Anywhere.service.Data.Employment
             public int lastTaskNumber { get; set; }
             [DataMember(Order = 9)]
             public string initialPerformanceID { get; set; }
+            [DataMember(Order = 10)]
+            public int taskNumberToBeDeleted { get; set; }
         }
 
 
@@ -778,10 +780,34 @@ namespace Anywhere.service.Data.Employment
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
-
                 try
                 {
                     Odg.deleteWorkSchedule(token, WorkScheduleID, transaction);
+                    return "sucess";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return "failed";
+                }
+            }
+        }
+
+        public string deletePostionTask(string token, string jobTaskID, string PositionID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+
+                try
+                {
+                    PositionTaskEntries[] updateEntriesList = js.Deserialize<PositionTaskEntries[]>(Odg.deletePostionTask(token, jobTaskID, PositionID, transaction));
+                    int taskNumberToBeUpdated = updateEntriesList[0].taskNumberToBeDeleted;
+
+                    foreach (PositionTaskEntries updateTaskNumber in updateEntriesList)
+                    {
+                        Odg.updatePositionTaskNumber(token, updateTaskNumber.jobTaskId, taskNumberToBeUpdated, transaction);
+                        taskNumberToBeUpdated++;
+                    }
                     return "sucess";
                 }
                 catch (Exception ex)
