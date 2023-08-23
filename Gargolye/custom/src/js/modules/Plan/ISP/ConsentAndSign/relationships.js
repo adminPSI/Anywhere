@@ -99,9 +99,9 @@ const csRelationship = (() => {
     const salesforceID = rel.salesForceId;
     const contactID = rel.contactId;
     const name = contactInformation.cleanName({
-      firstName: val.firstName,
-      lastName: val.lastName.replace('|', ' '),
-      middleName: val.middleName,
+      firstName: rel.firstName,
+      lastName: rel.lastName.replace('|', ' '),
+      middleName: rel.middleName,
     });
     const dob = dates.removeTimestamp(rel.dateOfBirth);
     const adress = `${rel.buildingNumber}`;
