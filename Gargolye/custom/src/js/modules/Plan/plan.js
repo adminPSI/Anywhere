@@ -918,8 +918,6 @@ const plan = (function () {
             if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
             selectedPlan.classList.add('selected');
 
-            planDates.setRevisionPlanDates(planData);
-
             if (screen.contains(datesBoxDiv)) screen.removeChild(datesBoxDiv);
             datesBoxDiv = planDates.buildDatesBox(isValid => {
               if (isValid) {
@@ -927,7 +925,7 @@ const plan = (function () {
               } else {
                 updateBtn.classList.add('disabled');
               }
-            });
+            }, true);
             screen.insertBefore(datesBoxDiv, btnWrap);
           });
           screen.insertBefore(previousPlansTable, btnWrap);
@@ -954,6 +952,7 @@ const plan = (function () {
         });
 
         if (success === 'Success') {
+          planDates.setRevisionPlanDates(newPlanData);
           planType = newType;
           currentType.innerHTML = `<p>Current Type:</p> ${
             planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'
@@ -2711,14 +2710,6 @@ const plan = (function () {
 
     const spinner = PROGRESS.SPINNER.get('Gathering Plans...');
     landingPage.appendChild(spinner);
-
-    // selectedConsumer = roster2.getActiveConsumers()[0];
-    // if ($.session.applicationName === 'Advisor') {
-    //   planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
-    //     $.session.planPeopleId = results[0].id;
-    //     selectedConsumer.id = $.session.planPeopleId;
-    //   });
-    // }
 
     previousPlansData = await planAjax.getConsumerPlans({
       token: $.session.Token,

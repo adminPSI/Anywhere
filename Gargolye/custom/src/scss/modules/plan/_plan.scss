@@ -90,6 +90,10 @@ body.planActive {
   max-height: 340px;
   overflow: scroll;
 }
+#previousPlanTableMoreMenu {
+  max-height: 340px;
+  overflow: none;
+}
 
 .workflowListPopup {
   .closePopupBtn {
@@ -158,9 +162,7 @@ body.planActive {
 }
 
 // OVERVIEW PAGE
-#planOverviewTable,
-#previousPlanTable,
-#previousPlanTableMoreMenu {
+#planOverviewTable {
   .table__row {
     cursor: pointer;
     //justify-content: space-between;
@@ -231,6 +233,51 @@ body.planActive {
       div:nth-child(7) {
         display: block;
       }
+    }
+  }
+}
+
+#previousPlanTable,
+#previousPlanTableMoreMenu {
+  .table__row {
+    cursor: pointer;
+
+    &[data-plan-active='true'] {
+      font-weight: $bold;
+      color: $font-dark;
+      background: $secondary;
+    }
+    &.selected {
+      font-weight: $bold;
+      color: $font-dark;
+      background: $secondary;
+    }
+    > div {
+      margin: 0 5px 0 0;
+      flex-grow: 1;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+    > div:nth-child(1) {
+      // PLAN TYPE
+      min-width: 64px;
+      max-width: 90px;
+    }
+    > div:nth-child(2) {
+      // REVISION #
+      min-width: 50px;
+      max-width: 80px;
+    }
+    > div:nth-child(3),
+    > div:nth-child(4) {
+      // START DATES
+      min-width: 94px;
+      max-width: 120px;
+    }
+    div:nth-child(5) {
+      // REVIEW DATE
+      display: none;
     }
   }
 }

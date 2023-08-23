@@ -262,12 +262,26 @@ const planDates = (function () {
 
   // Date Box
   //------------------------------------
-  function toggleDateInputDisable() {
+  function toggleDateInputDisable(forMoreMenu) {
     let startInput = startDateInput.querySelector('input');
     let endInput = endDateInput.querySelector('input');
     let effectiveStartInput = effectiveStartDateInput.querySelector('input');
     let effectiveEndInput = effectiveEndDateInput.querySelector('input');
     let planType = plan.getCurrentPlanType();
+
+    if (forMoreMenu) {
+      //startDateInput.classList.add('disabled');
+      //endDateInput.classList.add('disabled');
+
+      effectiveStartDateInput.classList.remove('disabled');
+      effectiveEndDateInput.classList.remove('disabled');
+
+      startInput.setAttribute('tabIndex', '-1');
+      endInput.setAttribute('tabIndex', '-1');
+      effectiveStartInput.setAttribute('tabIndex', '0');
+      effectiveEndInput.setAttribute('tabIndex', '0');
+      return;
+    }
 
     if (!planType) {
       startDateInput.classList.add('disabled');
@@ -615,7 +629,7 @@ const planDates = (function () {
     datesBoxDiv.appendChild(reviewDateInput);
     datesBoxDiv.appendChild(dateErrorMessage);
 
-    toggleDateInputDisable();
+    toggleDateInputDisable(forMoreMenu);
     checkRequiredFields();
 
     datesBoxDiv.addEventListener('change', handleDateBoxChange);
