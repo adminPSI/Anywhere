@@ -869,6 +869,7 @@ const plan = (function () {
     return screen;
   }
   function buildChangePlanTypeScreen() {
+    let origDateCache;
     let newType;
     let previousPlansTable;
     let datesBoxDiv;
@@ -914,6 +915,8 @@ const plan = (function () {
             newPlan = selectedPlan;
             newPlanData = planData;
 
+            origDateCache = planDates.setRevisionPlanDates(newPlanData);
+
             const previouslySeletedRow = previousPlansTable.querySelector('.selected');
             if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
             selectedPlan.classList.add('selected');
@@ -932,6 +935,7 @@ const plan = (function () {
         } else {
           if (previousPlansTable) screen.removeChild(previousPlansTable);
           if (datesBoxDiv) screen.removeChild(datesBoxDiv);
+          if (origDateCache) planDates.resetPlanDatesFromChangeTypeMenu(origDateCache);
         }
       }
     });
@@ -952,7 +956,6 @@ const plan = (function () {
         });
 
         if (success === 'Success') {
-          planDates.setRevisionPlanDates(newPlanData);
           planType = newType;
           currentType.innerHTML = `<p>Current Type:</p> ${
             planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'
@@ -1014,6 +1017,8 @@ const plan = (function () {
 
         screen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
+
+        if (origDateCache) planDates.resetPlanDatesFromChangeTypeMenu(origDateCache);
       },
     });
 
@@ -2156,8 +2161,8 @@ const plan = (function () {
 
       const title = document.createElement('h2');
       title.innerHTML = 'Select forms to attach.</br>';
-      const linebr = document.createElement('div')
-      linebr.innerHTML = '</br>'
+      const linebr = document.createElement('div');
+      linebr.innerHTML = '</br>';
       wfFormsPopup.appendChild(title);
       wfFormsPopup.appendChild(linebr);
 
@@ -2173,7 +2178,7 @@ const plan = (function () {
           var wf_template_selected = selectedWorkflows;
 
           POPUP.hide(wfFormsPopup);
-         // createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+          // createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
         },
       });
 

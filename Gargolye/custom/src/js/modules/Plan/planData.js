@@ -79,6 +79,7 @@ const planData = (() => {
     relationships.forEach(el => {
       if (!flag[el.peopleId]) {
         flag[el.peopleId] = true;
+        el.lastName = el.lastName.split('|')[0];
         unique.push(el);
       }
     });

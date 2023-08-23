@@ -81,7 +81,23 @@ const planDates = (function () {
 
   // Dates
   //------------------------------------
+  function resetPlanDatesFromChangeTypeMenu(cachedDates) {
+    cachedDates.planYearStartDate = planYearStartDate;
+    cachedDates.planYearEndDate = planYearEndDate;
+    cachedDates.effectiveStartDate = effectiveStartDate;
+    cachedDates.effectiveEndDate = effectiveEndDate;
+    cachedDates.planReviewDate = planReviewDate;
+  }
   function setRevisionPlanDates(planDates) {
+    // cache dates
+    const cahce = {
+      planYearStartDate,
+      planYearEndDate,
+      effectiveStartDate,
+      effectiveEndDate,
+      planReviewDate,
+    };
+
     let { effectiveEnd, effectiveStart, planYearStart, planYearEnd, reviewDate } = planDates;
     const today = UTIL.getTodaysDate(true);
     today.setHours(0, 0, 0, 0);
@@ -97,12 +113,13 @@ const planDates = (function () {
     effectiveEndDate = new Date(effectiveEnd);
     planYearStartDate = new Date(planYearStart);
     planYearEndDate = new Date(planYearEnd);
-    //planReviewDate = new Date(reviewDate);
     planReviewDate = dates.addMonths(effectiveEndDate, -1);
 
     priorPlanYearEndDate = planYearEndDate;
     priorPlanYearStartDate = planYearStartDate;
     priorEffectiveStartDate = new Date(effectiveStart);
+
+    return cahce;
   }
   async function setAnnualPlanDates(previousPlans) {
     selectedConsumer = plan.getSelectedConsumer();
@@ -678,6 +695,7 @@ const planDates = (function () {
     setRevisionPlanDates,
     setReviewPlanDates,
     resetPlanDatesToOriginal,
+    resetPlanDatesFromChangeTypeMenu,
     toggleDateInputDisable,
     updatePlanDates,
     validateAnnualDates,

@@ -98,7 +98,11 @@ const csRelationship = (() => {
     const pplID = rel.peopleId;
     const salesforceID = rel.salesForceId;
     const contactID = rel.contactId;
-    const name = contactInformation.cleanName(rel);
+    const name = contactInformation.cleanName({
+      firstName: val.firstName,
+      lastName: val.lastName.replace('|', ' '),
+      middleName: val.middleName,
+    });
     const dob = dates.removeTimestamp(rel.dateOfBirth);
     const adress = `${rel.buildingNumber}`;
     let relationshipType = rel.relationship ? rel.relationship : '';
