@@ -2569,13 +2569,17 @@ const servicesSupports = (() => {
       isSortable,
     );
   }
-  async function deleteProfessionalReferral(profRefId) {
+  async function deleteProfessionalReferral(saveUpdateData) {
     await servicesSupportsAjax.deleteProfessionalReferral({
       token: $.session.Token,
-      professionalReferralId: profRefId,
+      professionalReferralId: saveUpdateData.professionalReferralId,
     });
 
-    table.deleteRow(`pr${profRefId}`);
+    table.deleteRow(`pr${saveUpdateData.professionalReferralId}`);
+
+    let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+    planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
   }
   //-- Markup ---------
   function toggleProfessionalReferralDoneBtn() {
@@ -2740,7 +2744,7 @@ const servicesSupports = (() => {
       callback: () => {
         const message = 'Do you want to delete this Professional Referral?';
         ISP.showDeleteWarning(professionalReferralPopup, message, () => {
-          deleteProfessionalReferral(saveUpdateData.professionalReferralId);
+          deleteProfessionalReferral(saveUpdateData);
         });
       },
     });
