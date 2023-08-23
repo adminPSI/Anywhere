@@ -103,7 +103,7 @@ const csTeamMember = (() => {
     selectedMemberData.dateOfBirth = relData.dateOfBirth;
     selectedMemberData.buildingNumber = relData.buildingNumber;
     selectedMemberData.name = relData.firstName;
-    selectedMemberData.lastName = relData.lastName;
+    selectedMemberData.lastName = relData.lastName.split('|')[0];
     selectedMemberData.relationship = relData.relationship;
 
     // update inputs with selected data

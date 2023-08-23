@@ -525,12 +525,16 @@
     #changePlanTypeScreen {
         .currentType {
             display: flex;
-            margin: 0 0 20px;
+            margin: 0 0 16px;
 
             p:first-child {
                 font-weight: $bold;
                 margin: 0 8px 0 0;
             }
+        }
+
+        > .dropdown {
+          margin-bottom: 0px;
         }
 
         &.visible {
