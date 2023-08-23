@@ -103,7 +103,7 @@ namespace Anywhere
         AuthorizationWorker authWorker = new AuthorizationWorker();
         public AnywhereService()
         {
-            log4net.Config.XmlConfigurator.Configure(); 
+            log4net.Config.XmlConfigurator.Configure();
         }
 
         public string getLocations(string token)//MAT need to see if I can remove
@@ -1771,7 +1771,7 @@ namespace Anywhere
 
         public string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate)
         {
-            return aAW.switchPlanType( token,  consumerPlanId,  planType,  effectiveStartDate,  effectiveEndDate,  reviewDate);
+            return aAW.switchPlanType(token, consumerPlanId, planType, effectiveStartDate, effectiveEndDate, reviewDate);
         }
 
         public int updateConsumerNameInfo(string token, string consumerId, string firstName, string lastName, string middleName, string nickName)
@@ -2368,8 +2368,8 @@ namespace Anywhere
             return authWorker.getAuthorizationPageData(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
                                 planYearEndStart, planYearEndEnd, completedDateStart, completedDateEnd, selectedConsumerId);
         }
-            //Plan Services And Supports
-            public ServicesAndSupportsWorker.ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId)
+        //Plan Services And Supports
+        public ServicesAndSupportsWorker.ServicesAndSupports getServicesAndSupports(string token, long anywAssessmentId, int consumerId)
         {
             return ssw.getServicesAndSupports(token, anywAssessmentId, consumerId);
         }
@@ -3454,6 +3454,11 @@ namespace Anywhere
         {
             return emp.deleteWorkSchedule(token, WorkScheduleID);
         }
+        public string deletePostionTask(string token, string jobTaskID, string PositionID)
+        {
+            return emp.deletePostionTask(token, jobTaskID, PositionID);
+        }
+
 
     }
 }

@@ -76,8 +76,9 @@ const PositionTask = (() => {
     function buildPositionEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',  
+            tableId: 'singleEntryReviewTable',
             columnHeadings: ['Task #', 'Description', 'Start Date', 'End Date', 'Initial Performance', 'Initial Performance Notes', 'Employer Standerd'],
+            endIcon: true,
         };
 
         let tableData = PositionEntries.getPositionTaskEntriesResult.map((entry) => ({
@@ -85,6 +86,10 @@ const PositionTask = (() => {
             attributes: [{ key: 'jobTaskId', value: entry.jobTaskId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.jobTaskId.value)
+            },
+            endIcon: `${icons['Empty']}`,  //$.session.EmploymentDelete == true ? `${icons['delete']}` : `${icons['Empty']}`,  
+            endIconCallback: (e) => {
+                deletePositionTaskPOPUP(entry.jobTaskId);
             },
         }));
         const oTable = table.build(tableOptions);
@@ -97,11 +102,64 @@ const PositionTask = (() => {
         addPositionPopupBtn(jobTaskId)
     }
 
-    function addPositionPopupBtn(jobTaskId) {        
+    function deletePositionTaskPOPUP(jobTaskId) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                deletePositionTask(jobTaskId, confirmPopup);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you would like to delete this Position Task?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    function deletePositionTask(jobTaskId, confirmPopup) {
+        EmploymentAjax.deletePostionTask(
+            {
+                jobTaskID: jobTaskId,
+                PositionID: PositionId,
+            },
+            function (results) {
+                if (results = 'sucess') {
+                    POPUP.hide(confirmPopup);
+                    NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 2);
+                }
+            },
+        );
+    }
+
+    function addPositionPopupBtn(jobTaskId) {
         if (jobTaskId == 0 || jobTaskId == undefined) {
             actualTaskNumber = LastTaskNumber.getLastTaskNumberResult[0] == undefined ? 1 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber;
             task = LastTaskNumber.getLastTaskNumberResult[0] == undefined ? 1 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber > 7 ? LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber - 7 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber;
-            description = ''; 
+            description = '';
             startDate = '';
             endDate = '';
             initialPerformance = '';
@@ -310,7 +368,7 @@ const PositionTask = (() => {
     }
 
     async function saveNewWagesPopup() {
-        const result = await EmploymentAjax.insertPositionTaskAsync(actualTaskNumber, description, startDate, endDate, initialPerformanceID, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, $.session.UserId); 
+        const result = await EmploymentAjax.insertPositionTaskAsync(actualTaskNumber, description, startDate, endDate, initialPerformanceID, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, $.session.UserId);
         const { insertPositionTaskResult } = result;
 
         if (insertPositionTaskResult.jobTaskId != null) {

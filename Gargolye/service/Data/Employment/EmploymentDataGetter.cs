@@ -517,6 +517,46 @@ namespace Anywhere.service.Data.Employment
                 logger.error("WFDG", ex.Message + "ANYW_deleteWorkSchedule(" + WorkScheduleID + ")");
                 throw ex;
             }
+        }
+
+        public string deletePostionTask(string token, string jobTaskID,string PositionID, DistributedTransaction transaction)
+        {
+            try
+            {
+                if (tokenValidator(token) == false) return null;
+                logger.debug("deletePostionTask");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@jobTaskID", DbType.String, jobTaskID);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionID", DbType.String, PositionID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deletePostionTask(?,?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_deletePostionTask(" + jobTaskID + ")");
+                throw ex;
+            }
+        }
+
+        public string updatePositionTaskNumber(string token, string jobTaskID,int taskNumberToBeUpdated, DistributedTransaction transaction)
+        {
+            try
+            {
+                if (tokenValidator(token) == false) return null;
+                logger.debug("updatePositionTaskNumber");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@jobTaskID", DbType.String, jobTaskID);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@taskNumber", DbType.String, taskNumberToBeUpdated);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updatePositionTaskNumber(?,?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_updatePositionTaskNumber(" + jobTaskID + "," + taskNumberToBeUpdated + ")");
+                throw ex;
+            }
 
         }
 
