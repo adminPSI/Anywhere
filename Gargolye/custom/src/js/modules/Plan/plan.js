@@ -2135,7 +2135,10 @@ const plan = (function () {
       }
 
       // *********FAKE DATA for Step Docs in a Workflow*****Albert Annual 6/23******Annual -- 279, Antnio -- 934*******************
-      //  const wfFormsData = [{ docId : 6052 , docDescription : 'Expert 15 test.pdf', WFId: 934, WFName: 'Antinono 3' },{ docId : 6053 , docDescription : 'FORMS -- General.pdf', WFId: 934, WFName: 'Antinono 3' }, { docId : 1836 , docDescription : 'Medication -- Med Assessment.pdf', WFId: 279, WFName: 'Annual - Waver'},{ docId : 3201 , docDescription : 'Signed_Plan.pdf', WFId: 279, WFName: 'Annual - Waver'} ];
+     //  const wfFormsData2 = [{ docId : 6052 , description : 'Expert 15 test.pdf', WFId: 934, wfName: 'Antinono 3' },
+     // { docId : 6053 , description : 'FORMS -- General.pdf', WFId: 934, wfName: 'Antinono 3' }, 
+     // { docId : 1836 , description : 'Medication -- Med Assessment.pdf', WFId: 279, wfName: 'Annual - Waver'},
+    ///  { docId : 3201 , description : 'Signed_Plan.pdf', WFId: 279, wfName: 'Annual - Waver'} ];
 
       let thisannual_plan;
       // inserting a new plan based on a selected prior plan
@@ -2178,20 +2181,24 @@ const plan = (function () {
           var wf_template_selected = selectedWorkflows;
 
           POPUP.hide(wfFormsPopup);
+<<<<<<< HEAD
           // createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+=======
+          createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+>>>>>>> d772f9fd269155c9cf2e5138368e78877cbcbe34
         },
       });
 
       if (wfFormsData && wfFormsData.length > 0) {
         const list = planWorkflow.buildWorkflowFormList(wfFormsData);
         wfFormsPopup.appendChild(list);
+        wfFormsPopup.appendChild(doneBtn);
+        POPUP.show(wfFormsPopup);
+      } else {
+        createNewPlan(selectedConsumer, processId, selectedWorkflows);
       }
 
-      wfFormsPopup.appendChild(doneBtn);
-
-      POPUP.show(wfFormsPopup);
-
-      //createNewPlan(selectedConsumer, processId, selectedWorkflows);
+      
     };
     planWorkflow.showWorkflowListPopup(wfvData, workflowCallback);
   }
