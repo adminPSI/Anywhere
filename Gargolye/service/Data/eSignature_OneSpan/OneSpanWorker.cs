@@ -438,7 +438,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         {
             string firstName = "E-SIGNED by " + name; 
             string lastName = "on " + date + " GMT";
-            int width = 1400;
+            int width = 2000;
             int height = 400;
             using (Bitmap image = new Bitmap(width, height))
             {
@@ -446,7 +446,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 {
                     g.Clear(Color.White);
 
-                    Font font = new Font("Arial", 40, FontStyle.Regular);
+                    Font font = new Font("Arial", 85, FontStyle.Regular);
                     Brush brush = Brushes.Black;
 
                     int xFirstName = (width - (int)g.MeasureString(firstName, font).Width) / 2;
