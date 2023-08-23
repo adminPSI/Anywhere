@@ -19,6 +19,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Org.BouncyCastle.Cms;
 using System.Net;
+using System.ServiceModel.Description;
+using static Anywhere.service.Data.AnywhereWorker;
 
 namespace Anywhere.service.Data.eSignature___OneSpan
 {
@@ -36,7 +38,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
         public void generateToken()
         {
-            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
 
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(apiUrlToken);
             httpWebRequest.ContentType = "application/json";
@@ -46,8 +48,9 @@ namespace Anywhere.service.Data.eSignature___OneSpan
 
                 string json = new JavaScriptSerializer().Serialize(new
                 {
-                    clientId = "1850dcdebdd0a5a712d58cf1a12",
-                    secret = "68796472616f4c5a350113d22f22e4c5e9bca733483456acd0a7513ef0862e8077d6370e49",
+                    //TODO: Need to change for Franklin County when we go live
+                    clientId = "189e5a980c50a5a712d58cf1561",
+                    secret = "6879647261f9f203eea3c876287aed5c7dc4991e6358a9bc71ff04590eb7333ce2ead6dd82",
                     type = "OWNER"
                 });
 
@@ -73,7 +76,16 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         //public string oneSpanBuildSigners(string token)
         {
             generateToken();
-            OssClient ossClient = new OssClient(tokenOS, apiUrl);
+
+            var apiTokenConfig = new ApiTokenConfig
+            {
+                BaseUrl = "https://sandbox.esignlive.com",
+                ClientAppId = "189e5a980c50a5a712d58cf1561",
+                ClientAppSecret = "6879647261f9f203eea3c876287aed5c7dc4991e6358a9bc71ff04590eb7333ce2ead6dd82",
+                TokenType = ApiTokenType.OWNER,
+            };
+            IDictionary<string, string> headers = new Dictionary<string, string>();
+            OssClient ossClient = new OssClient(apiTokenConfig, apiUrl, false, null, headers);
             //string applicationVersion = ossClient.SystemService.GetApplicationVersion();
             if (tokenValidator(token) == false) return null;
             if (!osdg.validateToken(token))
@@ -114,6 +126,15 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 // Sets the senders info
                 string senderFirstName = senderInfoObj[0].FirstName;
                 string senderLastName = senderInfoObj[0].LastName;
+
+                AccountMember member = AccountMemberBuilder.NewAccountMember(senderInfoObj[0].Email)
+                .WithFirstName(senderFirstName)
+                .WithLastName(senderLastName)
+                //.WithStatus(SenderStatus.ACTIVE)
+                .Build();
+
+                ossClient.AccountService.InviteUser(member);
+
                 SenderInfoBuilder sender = SenderInfoBuilder
                     .NewSenderInfo(senderInfoObj[0].Email)
                     .WithName(senderFirstName, senderLastName);
@@ -468,6 +489,17 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             }
 
             PackageId currentPackageId = new PackageId(packageId);
+            // generateToken();
+
+            // var apiTokenConfig = new ApiTokenConfig
+            // {
+            //     BaseUrl = "https://sandbox.esignlive.com",
+            //     ClientAppId = "189e5a980c50a5a712d58cf1561",
+            //     ClientAppSecret = "6879647261f9f203eea3c876287aed5c7dc4991e6358a9bc71ff04590eb7333ce2ead6dd82",
+            //     TokenType = ApiTokenType.OWNER,
+            // };
+            // IDictionary<string, string> headers = new Dictionary<string, string>();
+            // OssClient ossClient = new OssClient(apiTokenConfig, apiUrl, false, null, headers);
             DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
             DocumentPackageStatus packageStatus = sentPackage.Status;
 

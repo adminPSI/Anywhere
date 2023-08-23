@@ -748,6 +748,28 @@ var EmploymentAjax = (function () {
         });
     }
 
+    function deletePostionTask(dataObj, callback) {
+        $.ajax({
+            type: 'POST',
+            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/deletePostionTask/',
+            data:
+                '{"token":"' +
+                $.session.Token +
+                '","jobTaskID":"' +
+                dataObj.jobTaskID +
+                '","PositionID":"' +
+                dataObj.PositionID +
+                '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response) {
+                var res = response.deletePostionTaskResult;
+                callback(res);
+            },
+            error: function (xhr, status, error) { },
+        });
+    }
+
     return {
         getEmploymentEntriesAsync,
         getEmployersAsync,
@@ -775,5 +797,6 @@ var EmploymentAjax = (function () {
         getLastTaskNumberAsync,
         deleteWagesBenefits,
         deleteWorkSchedule,
+        deletePostionTask,
     };
 })();
