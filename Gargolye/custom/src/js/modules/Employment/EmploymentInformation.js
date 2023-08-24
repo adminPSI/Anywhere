@@ -79,7 +79,8 @@ const EmploymentInformation = (() => {
             employmentPath = getEmployeepath.getEmployeementPathResult[0].employmentPath;
             peopleID = consumersID;
         }
-        existingEndDate = moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD');
+
+        existingEndDate = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingEndDate == '' ? '' : moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD');
         tempstartDatePosition = '';
         tempendDatePosition = '';
         tempposition = '';
@@ -372,7 +373,7 @@ const EmploymentInformation = (() => {
             SAVE_BTN.classList.add('disabled');
             return;
         } else {
-            if (tempstartDatePosition != '' || tempendDatePosition != '' || tempposition != '' || tempjobStanding != '' || tempemployer != '' || temptransportation != '' || temptypeOfWork != '' || tempselfEmployed != '' || tempname != '' || tempphone != '' || tempemail != '') {               
+            if (tempstartDatePosition != '' || tempendDatePosition != '' || tempposition != '' || tempjobStanding != '' || tempemployer != '' || temptransportation != '' || temptypeOfWork != '' || tempselfEmployed != '' || tempname != '' || tempphone != '' || tempemail != '') {
                 SAVE_BTN.classList.remove('disabled');
             }
             else {
@@ -382,7 +383,7 @@ const EmploymentInformation = (() => {
     }
 
     function eventListeners() {
-        positionStartDate.addEventListener('input', event => {            
+        positionStartDate.addEventListener('input', event => {
             startDatePosition = event.target.value;
             tempstartDatePosition = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
@@ -429,7 +430,7 @@ const EmploymentInformation = (() => {
         });
         nameInput.addEventListener('input', event => {
             name = event.target.value;
-            tempname = 'ChangeValue'; 
+            tempname = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
         phoneInput.addEventListener('input', event => {
@@ -439,8 +440,8 @@ const EmploymentInformation = (() => {
         });
         emailInput.addEventListener('input', event => {
             email = event.target.value;
-            tempemail = 'ChangeValue'; 
-            getRequiredFieldsOfEmployeeInfo(); 
+            tempemail = 'ChangeValue';
+            getRequiredFieldsOfEmployeeInfo();
         });
     }
 
@@ -624,7 +625,7 @@ const EmploymentInformation = (() => {
             currentPathEndDate.classList.remove('errorPopup');
         }
 
-        if (newStartDate.value === '' || existingEndDate > newStartDate.value || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {  
+        if (newStartDate.value === '' || existingEndDate > newStartDate.value || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {
             newPathStartDate.classList.add('errorPopup');
         } else {
             newPathStartDate.classList.remove('errorPopup');
@@ -668,8 +669,8 @@ const EmploymentInformation = (() => {
     async function saveEmployeeInfo() {
         const result = await EmploymentAjax.insertEmploymentInfoAsync(startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, consumersID, $.session.UserId, PositionId);
         const { insertEmploymentInfoResult } = result;
-        if (insertEmploymentInfoResult.positionID != null) {          
-            NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);   
+        if (insertEmploymentInfoResult.positionID != null) {
+            NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);
         }
     }
 

@@ -194,7 +194,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public Payees[] getPayees(string token, string UserId)
+        public Payees[] getPayees(string token, string consumerId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -202,7 +202,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    Payees[] payees = js.Deserialize<Payees[]>(Odg.getPayees(transaction, UserId));
+                    Payees[] payees = js.Deserialize<Payees[]>(Odg.getPayees(transaction, consumerId));
                     return payees;
                 }
                 catch (Exception ex)
@@ -289,7 +289,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId)
+        public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId, string consumerId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -302,10 +302,11 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (city == null) throw new Exception("city is required");
                     if (state == null) throw new Exception("state is required");
                     if (zipcode == null) throw new Exception("zipcode is required");
+                    if (consumerId == null) throw new Exception("consumerId is required");
                     if (userId == null) throw new Exception("userId is required");
 
                     // insert document
-                    String RegionID = Odg.insertPayee(payeeName, address1, address2, city, state, zipcode, userId, transaction);
+                    String RegionID = Odg.insertPayee(payeeName, address1, address2, city, state, zipcode, userId, consumerId, transaction);
 
                     ActivePayee payee = new ActivePayee();
                     payee.RegionID = RegionID;

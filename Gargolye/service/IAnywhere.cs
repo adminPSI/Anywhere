@@ -4346,7 +4346,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getPayees/")]
-        ConsumerFinancesWorker.Payees[] getPayees(string token, string UserId);
+        ConsumerFinancesWorker.Payees[] getPayees(string token, string consumerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4386,7 +4386,7 @@ namespace Anywhere
                  ResponseFormat = WebMessageFormat.Json,
                  RequestFormat = WebMessageFormat.Json,
                  UriTemplate = "/insertPayee/")]
-        ConsumerFinancesWorker.ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId);
+        ConsumerFinancesWorker.ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId, string consumerId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
