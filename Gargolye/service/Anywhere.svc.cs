@@ -1769,9 +1769,9 @@ namespace Anywhere
             return aPW.insertConsumerPlanAnnual(token, consumerId, planYearStart, reviewDate, salesForceCaseManagerId);
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate)
         {
-            return aAW.switchPlanType(token, consumerPlanId, planType, effectiveStartDate, effectiveEndDate, reviewDate);
+            return aAW.switchPlanType(token, consumerPlanId, planType, planYearStart, planYearEnd, effectiveStartDate, effectiveEndDate, reviewDate);
         }
 
         public int updateConsumerNameInfo(string token, string consumerId, string firstName, string lastName, string middleName, string nickName)
@@ -3242,9 +3242,9 @@ namespace Anywhere
             return cf.getActiveAccount(token, consumerId);
         }
 
-        public Payees[] getPayees(string token, string userId)
+        public Payees[] getPayees(string token, string consumerId)
         {
-            return cf.getPayees(token, userId);
+            return cf.getPayees(token, consumerId);
         }
 
         public Category[] getCatogories(string token, string categoryID)
@@ -3267,9 +3267,9 @@ namespace Anywhere
             return cf.getCategoriesSubCategoriesByPayee(token, categoryID);
         }
 
-        public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId)
+        public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId, string consumerId)
         {
-            return cf.insertPayee(token, payeeName, address1, address2, city, state, zipcode, userId);
+            return cf.insertPayee(token, payeeName, address1, address2, city, state, zipcode, userId, consumerId);
         }
 
         public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId)

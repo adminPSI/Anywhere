@@ -77,7 +77,7 @@ const WorkSchedule = (() => {
             plain: false,
             tableId: 'singleEntryReviewTable',
             columnHeadings: ['Day Of Week', 'Start Time', 'End Time'],
-            endIcon: true,
+            endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
         let tableData = ScheduleEntries.getWorkScheduleEntriesResult.map((entry) => ({
@@ -86,7 +86,7 @@ const WorkSchedule = (() => {
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)
             },
-            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : `${icons['Empty']}`,
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',  
             endIconCallback: (e) => {
                 deleteWorkSchedulePOPUP(entry.WorkScheduleId);
             },

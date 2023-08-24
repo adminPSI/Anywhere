@@ -635,7 +635,7 @@ const NewEntryCF = (() => {
     async function populatePayeeDropdown() {
         const {
             getPayeesResult: Payees,
-        } = await ConsumerFinancesAjax.getPayeesAsync();
+        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);
         let data = Payees.map((payees) => ({
             id: payees.CategoryID,
             value: payees.Description,
