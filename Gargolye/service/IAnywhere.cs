@@ -2594,7 +2594,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/switchPlanType/")]
-        string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate);
+        string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

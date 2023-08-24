@@ -119,13 +119,15 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType, string effectiveStartDate, string effectiveEndDate, string reviewDate)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertConsumerPlan ");
             List<string> list = new List<string>();
             list.Add(consumerPlanId);
             list.Add(planType);
+            list.Add(planYearStart);
+            list.Add(planYearEnd);
             list.Add(effectiveStartDate);
             list.Add(effectiveEndDate);
             list.Add(reviewDate);

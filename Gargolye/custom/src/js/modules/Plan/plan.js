@@ -950,6 +950,8 @@ const plan = (function () {
           token: $.session.Token,
           consumerPlanId: planId,
           planType: newType.toUpperCase(),
+          planYearStart: UTIL.formatDateToIso(newPlanData.planYearStart.split(' ')[0]),
+          planYearEnd: UTIL.formatDateToIso(newPlanData.planYearEnd.split(' ')[0]),
           effectiveStartDate: UTIL.formatDateToIso(newPlanData.effectiveStart.split(' ')[0]),
           effectiveEndDate: UTIL.formatDateToIso(newPlanData.effectiveEnd.split(' ')[0]),
           reviewDate: UTIL.formatDateToIso(newPlanData.reviewDate.split(' ')[0]),
