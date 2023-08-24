@@ -1672,6 +1672,9 @@ const servicesSupports = (() => {
 
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
         planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+        if (!isNew) {
+          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, popupData.assessmentAreaId);
+        }
         planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
@@ -2325,15 +2328,17 @@ const servicesSupports = (() => {
             const rowOrder = table.getRowCount('additionalSupportsTable');
             saveUpdateData.rowOrder = rowOrder + 1;
           }
-
           insertAdditionalSupport(saveUpdateData, fromAssessment);
-
-          let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
-          planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         } else {
           updateAdditionalSupport(saveUpdateData);
         }
+
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+        if (!isNew) {
+          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, popupData.assessmentAreaId);
+        }
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(additionalSupportPopup);
@@ -2723,8 +2728,11 @@ const servicesSupports = (() => {
 
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
         planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+        if (!isNew) {
+          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, popupData.assessmentAreaId);
+        }
         planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
-
+        
         doneBtn.classList.remove('disabled');
         POPUP.hide(professionalReferralPopup);
       },
