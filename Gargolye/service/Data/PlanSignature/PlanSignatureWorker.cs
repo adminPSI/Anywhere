@@ -362,7 +362,7 @@ namespace Anywhere.service.Data.PlanSignature
                 {
                     valid = false;
                 }
-                else if (cSFID.ToUpper().IndexOf("NO SALES") == -1)
+                else if (cSFID.ToUpper().IndexOf("NO SALES") != -1)
                 {
                     valid = false;
                 }

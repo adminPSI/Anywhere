@@ -204,7 +204,7 @@ const WagesBenefits = (() => {
             plain: false,
             tableId: 'singleEntryReviewTable',
             columnHeadings: ['Hours/Week', 'Hourly Wages', 'Start Date', 'End Date'],
-            endIcon: true,
+            endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
         let tableData = EmploymentsEntries.getWagesEntriesResult.map((entry) => ({
@@ -213,7 +213,7 @@ const WagesBenefits = (() => {
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
             },
-            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : `${icons['Empty']}`,   
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',     
             endIconCallback: (e) => {
                 deleteWagesBenefitsPOPUP(entry.wagesId);
             },

@@ -76,7 +76,7 @@ var ConsumerFinancesAjax = (function () {
         }
     }
 
-    async function getPayeesAsync() {
+    async function getPayeesAsync(ConsumersId) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -91,7 +91,7 @@ var ConsumerFinancesAjax = (function () {
                     '/getPayees/',
                 data: JSON.stringify({
                     token: $.session.Token,
-                    UserId: $.session.UserId,
+                    consumerId: ConsumersId, 
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -208,7 +208,8 @@ var ConsumerFinancesAjax = (function () {
                     city: payeecity,
                     state: payeestate,
                     zipcode: payeezipcode,
-                    userId: $.session.UserId
+                    userId: $.session.UserId,
+                    consumerId: $.session.consumerId 
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
