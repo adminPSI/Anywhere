@@ -78,7 +78,7 @@ const PositionTask = (() => {
             plain: false,
             tableId: 'singleEntryReviewTable',
             columnHeadings: ['Task #', 'Description', 'Start Date', 'End Date', 'Initial Performance', 'Initial Performance Notes', 'Employer Standerd'],
-            endIcon: true,
+            endIcon: $.session.EmploymentDelete == true ? true :false,
         };
 
         let tableData = PositionEntries.getPositionTaskEntriesResult.map((entry) => ({
@@ -87,7 +87,7 @@ const PositionTask = (() => {
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.jobTaskId.value)
             },
-            endIcon: `${icons['Empty']}`,  //$.session.EmploymentDelete == true ? `${icons['delete']}` : `${icons['Empty']}`,  
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',  
             endIconCallback: (e) => {
                 deletePositionTaskPOPUP(entry.jobTaskId);
             },
