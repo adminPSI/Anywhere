@@ -1326,6 +1326,7 @@ namespace Anywhere.service.Data
                 case "[Step Name]":
                     dictPlaceHolderValuesforStep.Add(param, thisStep.StepName);
                     break;
+                  
             }
 
             return dictPlaceHolderValuesforStep;
@@ -1393,7 +1394,7 @@ namespace Anywhere.service.Data
                 case "[Service Providers]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.serviceProviders);
                     break;
-                case "[Case Manager(Last, First)]":
+                case "[Case Manager(Last First)]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.CaseManagerNameLastFirst);
                     break;
                 case "[Case Manager(First Last)]":
