@@ -289,7 +289,7 @@ namespace Anywhere.service.Data
             cr.OpenSubreport("Referrals").SetDataSource(ars.ISPReferrals(long.Parse(assessmentID)));
             cr.OpenSubreport("TeamMembers").SetDataSource(ars.ISPTeamMembers(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("TeamMembers2").SetDataSource(ars.ISPTeamMembers2(long.Parse(assessmentID), Advisor));
-            cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID)));
+            cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("Dissenting").SetDataSource(ars.Dissenting(long.Parse(assessmentID), oneSpan));
             cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(long.Parse(assessmentID), Advisor));
             cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(long.Parse(assessmentID)));          
@@ -383,8 +383,8 @@ namespace Anywhere.service.Data
                 cr.OpenSubreport("Referrals").SetDataSource(ars.ISPReferrals(ID));
                 cr.OpenSubreport("TeamMembers").SetDataSource(ars.ISPTeamMembers(ID, Advisor));
                 cr.OpenSubreport("TeamMembers2").SetDataSource(ars.ISPTeamMembers2(ID, Advisor));
-                cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(ID));
-                cr.OpenSubreport("Dissenting").SetDataSource(ars.ISPSignatures(ID));
+                cr.OpenSubreport("Signatures").SetDataSource(ars.ISPTeamMembers2(ID, Advisor));
+                cr.OpenSubreport("Dissenting").SetDataSource(ars.ISPSignatures(ID, true));
                 cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(ID, Advisor));
                 cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(ID));
                 cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(ID));
@@ -463,8 +463,8 @@ namespace Anywhere.service.Data
                 cr.OpenSubreport("Referrals").SetDataSource(ars.ISPReferrals(ID));
                 cr.OpenSubreport("TeamMembers").SetDataSource(ars.ISPTeamMembers(ID, Advisor));
                 cr.OpenSubreport("TeamMembers2").SetDataSource(ars.ISPTeamMembers2(ID, Advisor));
-                cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(ID));
-                cr.OpenSubreport("Dissenting").SetDataSource(ars.ISPSignatures(ID));
+                cr.OpenSubreport("Signatures").SetDataSource(ars.ISPSignatures(ID,Advisor));
+                cr.OpenSubreport("Dissenting").SetDataSource(ars.ISPSignatures(ID, true));
                 cr.OpenSubreport("ContactInfo").SetDataSource(ars.ISPContacts(ID, Advisor));
                 cr.OpenSubreport("ImportantPeople").SetDataSource(ars.ISPImportantPeople(ID));
                 cr.OpenSubreport("Clubs").SetDataSource(ars.ISPClubs(ID));
