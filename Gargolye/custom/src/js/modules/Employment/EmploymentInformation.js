@@ -16,7 +16,7 @@ const EmploymentInformation = (() => {
     let tempphone = '';
     let tempemail = '';
     let consumersID;
-    let name;
+    let employerName;
     let positionName;
     let selectedConsumersName;
     let getEmployeepath = [];
@@ -25,7 +25,7 @@ const EmploymentInformation = (() => {
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
         consumersID = ConsumersId;
-        name = Name;
+        employerName = Name;
         positionName = PositionName;
         selectedConsumersName = SelectedConsumersName;
         getEmployeepath = await EmploymentAjax.getEmployeementPathAsync(ConsumersId);
@@ -396,6 +396,7 @@ const EmploymentInformation = (() => {
         positionDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             position = selectedConsumerOption.id;
+            positionName = selectedConsumerOption.text;
             tempposition = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
@@ -408,6 +409,7 @@ const EmploymentInformation = (() => {
         employerDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             employer = selectedConsumerOption.id;
+            employerName = selectedConsumerOption.text; 
             tempemployer = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
@@ -661,7 +663,7 @@ const EmploymentInformation = (() => {
         const result = await EmploymentAjax.insertEmploymentPathAsync(employmentPath, newStartDate, newEndDate, currentEndDate, consumersID, $.session.UserId);
         const { insertEmploymentPathResult } = result;
         if (insertEmploymentPathResult.pathId != null) {
-            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID);
+            NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
         }
         POPUP.hide(updatePathPopup);
     }
@@ -670,7 +672,7 @@ const EmploymentInformation = (() => {
         const result = await EmploymentAjax.insertEmploymentInfoAsync(startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, consumersID, $.session.UserId, PositionId);
         const { insertEmploymentInfoResult } = result;
         if (insertEmploymentInfoResult.positionID != null) {
-            NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);
+            NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, employerName, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);
         }
     }
 
