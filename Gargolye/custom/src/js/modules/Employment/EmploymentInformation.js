@@ -180,7 +180,10 @@ const EmploymentInformation = (() => {
             text: BtnName,
             style: 'secondary',
             type: 'contained',
-            callback: async () => { saveEmployeeInfo() },
+            callback: async () => {
+                SAVE_BTN.classList.add('disabled'); 
+                saveEmployeeInfo()
+            },
         });
         CANCEL_BTN = button.build({
             text: 'Cancel',
@@ -192,7 +195,10 @@ const EmploymentInformation = (() => {
             text: 'Update',
             style: 'secondary',
             type: 'contained',
-            callback: () => updatePathPopupBtn()
+            callback: () => {
+                UPDATE_BTN.classList.add('disabled');  
+                updatePathPopupBtn()
+            },
         });
 
         var LineBr = document.createElement('br');
