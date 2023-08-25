@@ -224,8 +224,8 @@ const signatureWidget = (function () {
       if (aname.first !== bname.first) {
         return aname.first.localeCompare(bname.first);
       }
-      const aDate = new Date(a.planYear).getTime();
-      const bDate = new Date(b.planYear).getTime();
+      const aDate = new Date(a.planYearStart).getTime();
+      const bDate = new Date(b.planYearStart).getTime();
       return aDate < bDate ? -1 : 1;
     });
     data.forEach(d => {
