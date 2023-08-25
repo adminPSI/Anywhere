@@ -26,6 +26,8 @@ const generateReports = (() =>  {
       style: 'secondary',
       type: 'contained',
       callback: function () {
+        reportRunning = true;
+        passFilterValuesForReport(text, filterValues);
         showWarningPopup(text, filterValues);
       },
     });
@@ -57,11 +59,12 @@ const generateReports = (() =>  {
     );
 
     // Disable buttons if the report is running
-    // if (reportRunning) {
-    //   buttons.forEach(button => {
-    //     button.disabled = true;
-    //   });
-    // }
+    if (reportRunning) {
+      buttons.forEach(button => {
+        button.disabled = true;
+        button.classList.add('disabled');
+      });
+    }
 
     popup.appendChild(header);
     buttons.forEach(button => {
@@ -76,12 +79,9 @@ const generateReports = (() =>  {
 
   // Function to generate the warning popup
   function showWarningPopup(reportType, filterValues) {
-    if (reportRunning) return;
-
-    reportRunning = true;
     const reportWarningPopup = POPUP.build({
       id: `reportWarningPopup${reportType}`,
-      hideX: false,
+      hideX: true,
       classNames: 'warning',
     });
 
@@ -100,14 +100,13 @@ const generateReports = (() =>  {
 
         bodyScrollLock.enableBodyScroll(popup);
         actioncenter.removeChild(popup);
-        passFilterValuesForReport(reportType, filterValues);
       },
     });
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(acceptBtn);
-
+    
     reportWarningPopup.appendChild(warningMessage);
     reportWarningPopup.appendChild(btnWrap);
     POPUP.show(reportWarningPopup);
@@ -141,36 +140,6 @@ const generateReports = (() =>  {
       reportRunning = false;
     }
   }
-
-  //* AJAX CALLS
-  // function checkIfReportExists(res, callback) {
-  //   data = {
-  //     token: $.session.Token,
-  //     reportScheduleId: res[0].reportScheduleId,
-  //   };
-  //   $.ajax({
-  //     type: 'POST',
-  //     url:
-  //       $.webServer.protocol +
-  //       '://' +
-  //       $.webServer.address +
-  //       ':' +
-  //       $.webServer.port +
-  //       '/' +
-  //       $.webServer.serviceName +
-  //       '/checkIfReportExists/',
-  //     data: JSON.stringify(data),
-  //     contentType: 'application/json; charset=utf-8',
-  //     dataType: 'json',
-  //     success: function (response, status, xhr) {
-  //       var res = response.checkIfCNReportExistsResult;
-  //       callback(res, data.reportScheduleId);
-  //     },
-  //     error: function (xhr, status, error) {
-  //       //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-  //     },
-  //   });
-  // }
 
   return {
     createMainReportButton,

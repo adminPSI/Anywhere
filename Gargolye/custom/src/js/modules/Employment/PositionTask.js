@@ -77,7 +77,7 @@ const PositionTask = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'singleEntryReviewTable',
-            columnHeadings: ['Task #', 'Description', 'Start Date', 'End Date', 'Initial Performance', 'Initial Performance Notes', 'Employer Standerd'],
+            columnHeadings: ['Task #', 'Description', 'Start Date', 'End Date', 'Initial Performance', 'Initial Performance Notes', 'Employer Standard'],
             endIcon: $.session.EmploymentDelete == true ? true :false,
         };
 
@@ -323,7 +323,8 @@ const PositionTask = (() => {
         });
 
         APPLY_BTN.addEventListener('click', () => {
-            saveNewWagesPopup();
+            APPLY_BTN.classList.add('disabled');
+            saveNewPositionPopup();
         });
 
         CANCEL_BTN.addEventListener('click', () => {
@@ -367,7 +368,7 @@ const PositionTask = (() => {
         dropdown.populate("initialPerformanceDropdown", initialPerformanceData, initialPerformance);
     }
 
-    async function saveNewWagesPopup() {
+    async function saveNewPositionPopup() {
         const result = await EmploymentAjax.insertPositionTaskAsync(actualTaskNumber, description, startDate, endDate, initialPerformanceID, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, $.session.UserId);
         const { insertPositionTaskResult } = result;
 
