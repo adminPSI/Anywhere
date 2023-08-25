@@ -97,12 +97,12 @@ const signatureWidget = (function () {
       style: 'secondary',
       readonly: false,
     });
-    groupDropdown = dropdown.build({
-      dropdownId: 'missingSignaturesGroup',
-      label: 'Group',
-      style: 'secondary',
-      readonly: false,
-    });
+    // groupDropdown = dropdown.build({
+    //   dropdownId: 'missingSignaturesGroup',
+    //   label: 'Group',
+    //   style: 'secondary',
+    //   readonly: false,
+    // });
     applyFiltersBtn = button.build({
       text: 'Apply',
       style: 'secondary',
@@ -121,7 +121,7 @@ const signatureWidget = (function () {
 
     filterPopup.appendChild(planStatusDropdown);
     filterPopup.appendChild(locationDropdown);
-    filterPopup.appendChild(groupDropdown);
+    //filterPopup.appendChild(groupDropdown);
     filterPopup.appendChild(btnWrap);
     widget.insertBefore(filterPopup, widgetBody);
 
@@ -151,33 +151,29 @@ const signatureWidget = (function () {
       signatureWidgetLocationId = selectedOption.value;
       signatureWidgetLocationName = selectedOption.innerHTML;
     });
-    groupDropdown.addEventListener('change', event => {
-      const selectedOption = event.target.options[event.target.selectedIndex];
-      // cache
-      oldSignatureWidgetGroupId = signatureWidgetGroupId;
-      oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
-      oldSignatureWidgetGroupName = signatureWidgetGroupName;
-      // update
-      signatureWidgetGroupId = selectedOption.value;
-      signatureWidgetGroupCode = selectedOption.id;
-      signatureWidgetGroupName = selectedOption.innerHTML;
-    });
+    // groupDropdown.addEventListener('change', event => {
+    //   const selectedOption = event.target.options[event.target.selectedIndex];
+    //   // cache
+    //   oldSignatureWidgetGroupId = signatureWidgetGroupId;
+    //   oldSignatureWidgetGroupCode = signatureWidgetGroupCode;
+    //   oldSignatureWidgetGroupName = signatureWidgetGroupName;
+    //   // update
+    //   signatureWidgetGroupId = selectedOption.value;
+    //   signatureWidgetGroupCode = selectedOption.id;
+    //   signatureWidgetGroupName = selectedOption.innerHTML;
+    // });
     applyFiltersBtn.addEventListener('click', event => {
       filterPopup.classList.remove('visible');
       overlay.hide();
       bodyScrollLock.enableBodyScroll(filterPopup);
 
-      if (signaturePlanStatus === '%') {
-        populateMissingSignatures(missingSignatureData);
-      } else {
-        filteredSignatures = missingSignatureData.filter(ms => {
-          return (
-            ms.planStatus === signaturePlanStatus &&
-            (ms.locationId === signatureWidgetLocationId || signatureWidgetLocationId === '%')
-          );
-        });
-        populateMissingSignatures(filteredSignatures);
-      }
+      filteredSignatures = missingSignatureData.filter(ms => {
+        return (
+          (ms.planStatus === signaturePlanStatus || signaturePlanStatus === '%') &&
+          (ms.locationId === signatureWidgetLocationId || signatureWidgetLocationId === '%')
+        );
+      });
+      populateMissingSignatures(filteredSignatures);
     });
     cancelFilterBtn.addEventListener('click', event => {
       filterPopup.classList.remove('visible');
@@ -228,7 +224,9 @@ const signatureWidget = (function () {
       if (aname.first !== bname.first) {
         return aname.first.localeCompare(bname.first);
       }
-      return b.planYear - a.planYear;
+      const aDate = new Date(a.planYear).getTime();
+      const bDate = new Date(b.planYear).getTime();
+      return aDate < bDate ? -1 : 1;
     });
     data.forEach(d => {
       const type = d.planType === 'A' ? 'Annual' : 'Revision';
@@ -328,11 +326,11 @@ const signatureWidget = (function () {
       missingSignatureData = res;
       populateMissingSignatures(missingSignatureData);
       locationDropdownData = await missingSignatureAjax.getLocationDropdownData();
-      groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
-        signatureWidgetLocationId,
-      );
+      // groupDropdownData = await missingSignatureAjax.getGroupsDropdownData(
+      //   signatureWidgetLocationId,
+      // );
       populateLocationDropdown(locationDropdownData);
-      populateGroupDropdown(groupDropdownData);
+      //populateGroupDropdown(groupDropdownData);
     });
   }
 
