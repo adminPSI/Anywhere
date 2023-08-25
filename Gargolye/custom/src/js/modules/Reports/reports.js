@@ -26,6 +26,8 @@ const generateReports = (() =>  {
       style: 'secondary',
       type: 'contained',
       callback: function () {
+        reportRunning = true;
+        passFilterValuesForReport(text, filterValues);
         showWarningPopup(text, filterValues);
       },
     });
@@ -77,9 +79,6 @@ const generateReports = (() =>  {
 
   // Function to generate the warning popup
   function showWarningPopup(reportType, filterValues) {
-    //if (reportRunning) return;
-
-    reportRunning = true;
     const reportWarningPopup = POPUP.build({
       id: `reportWarningPopup${reportType}`,
       hideX: true,
@@ -101,32 +100,13 @@ const generateReports = (() =>  {
 
         bodyScrollLock.enableBodyScroll(popup);
         actioncenter.removeChild(popup);
-        passFilterValuesForReport(reportType, filterValues);
-      },
-    });
-
-    const cancelBtn = button.build({
-      text: 'Cancel',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        POPUP.hide(reportWarningPopup);
-        overlay.hide();
-
-        let popup = document.querySelector('.generateReportsPopup');
-
-        bodyScrollLock.enableBodyScroll(popup);
-        actioncenter.removeChild(popup);
-
-        reportRunning = false;
       },
     });
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(acceptBtn);
-    btnWrap.appendChild(cancelBtn);
-
+    
     reportWarningPopup.appendChild(warningMessage);
     reportWarningPopup.appendChild(btnWrap);
     POPUP.show(reportWarningPopup);
