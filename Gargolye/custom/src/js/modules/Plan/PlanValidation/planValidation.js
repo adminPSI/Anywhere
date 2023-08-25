@@ -386,7 +386,10 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT SERVICES AND SUPPORTS
-    function servicesAndSupportsBtnCheck(assessmentValidationCheck, id) {
+    function servicesAndSupportsBtnCheck(assessmentValidationCheck) {
+      const idsToCheck = [34, 35, 36, 37, 38, 39, 40];
+
+      idsToCheck.forEach(id => {
         let paidSupportBtn = document.getElementById(`paidSupportBtn${id}`);
         let additionalSupportBtn = document.getElementById(`additionalSupportBtn${id}`);
         let profRefBtn = document.getElementById(`profRefBtn${id}`);
@@ -446,7 +449,8 @@ const planValidation = (function () {
           section.button.innerHTML = `${section.errorText} (${section.count})`;
         }
       });
-      
+
+    });
 
       // if any of the classes have an error then add the alert if it is not already there
       if (assessmentValidationCheck.servicesAndSupportsError === true) {
