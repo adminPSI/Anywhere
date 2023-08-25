@@ -170,7 +170,7 @@ const signatureWidget = (function () {
       filteredSignatures = missingSignatureData.filter(ms => {
         return (
           (ms.planStatus === signaturePlanStatus || signaturePlanStatus === '%') &&
-          (ms.locationId === signatureWidgetLocationId || signatureWidgetLocationId === '%')
+          (ms.locationId.includes(signatureWidgetLocationId) || signatureWidgetLocationId === '%')
         );
       });
       populateMissingSignatures(filteredSignatures);
