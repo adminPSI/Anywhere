@@ -566,7 +566,7 @@ const planOutcomes = (() => {
 
         validationCheck = await planValidation.ISPValidation(planId);
         assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
-        planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
+        planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck);
         planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
         const ISPAlertDiv = document.getElementById('navAlertISP');
@@ -2111,7 +2111,7 @@ const planOutcomes = (() => {
             planValidation.updatedIspOutcomesSetAlerts(validationCheck);
 
             assessmentPlanValidation = await planValidation.getAssessmentValidation(planId);
-            planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, outcomesUpdateData.sectionId);
+            planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
             planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
           },
         });
@@ -2150,9 +2150,9 @@ const planOutcomes = (() => {
       // dropdownId: 'assessmentAreaDropdown',
       label: 'Assessment Area',
       style: 'secondary',
-      callback: (e, selectedOption) => {
+      callback: async (e, selectedOption) => {
         outcomesUpdateData.sectionId = selectedOption.value;
-        updateOutcome({
+        await updateOutcome({
           status: outcomesUpdateData.status,
           carryOverReason: outcomesUpdateData.carryOverReason,
           outcome: outcomesUpdateData.outcome,
@@ -2162,6 +2162,10 @@ const planOutcomes = (() => {
           outcomeId: outcomesUpdateData.outcomeId,
           sectionId: outcomesUpdateData.sectionId,
         });
+
+            assessmentPlanValidation = await planValidation.getAssessmentValidation(planId);
+            planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+            planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
     // Status
