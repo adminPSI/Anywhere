@@ -197,6 +197,13 @@ namespace Anywhere.service.Data.PlanOutcomes
             return "Sucess";
         }
 
+        public string updatePlanOutcomesOrder(string token, long planId, long outcomeId, int newPos, int oldPos)
+        {
+            pdg.updatePlanOutcomesOrder(token, planId, outcomeId, newPos, oldPos);
+
+            return "Sucess";
+        }
+
         public string updatePlanOutcomesReviewOrder(string token, long outcomeId, long reviewId, int newPos, int oldPos)
         {
             pdg.updatePlanOutcomesReviewOrder(token, outcomeId, reviewId, newPos, oldPos);

@@ -487,6 +487,35 @@ const planOutcomesAjax = (() => {
 
   // row re-order
   //------------------
+    async function updatePlanOutcomesOrder(retrieveData) {
+        // string token,
+        // integer planId,
+        // integer outcomeId
+        // integer newPos,
+        // integer oldPos
+
+        try {
+            const data = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/updatePlanOutcomesOrder/',
+                data: JSON.stringify(retrieveData),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+
+            return data.updatePlanOutcomesReviewOrderResult;
+        } catch (error) {
+            console.log(error);
+        }
+    }
   async function updateOutcomesReviewOrder(retrieveData) {
     // string token,
     // integer outcomeId,

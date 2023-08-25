@@ -342,6 +342,29 @@ namespace Anywhere.service.Data.PlanOutcomes
             }
         }
 
+        public string updatePlanOutcomesOrder(string token, long planId, long outcomeId, int newPos, int oldPos)
+        {
+
+            logger.debug("insertPlanOutcomesExperiences ");
+            if (tokenValidator(token) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(planId.ToString());
+            list.Add(outcomeId.ToString());
+            list.Add(newPos.ToString());
+            list.Add(oldPos.ToString());
+            string text = "CALL DBA.ANYW_ISP_UpdateOutcomesOrder(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("5PODG", ex.Message + "ANYW_ISP_UpdateOutcomesOrder(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "5APODG: error ANYW_ISP_UpdateOutcomesOrder";
+            }
+        }
+
         public string updatePlanOutcomesReviewOrder(string token, long outcomeId, long reviewId, int newPos, int oldPos)
         {
 

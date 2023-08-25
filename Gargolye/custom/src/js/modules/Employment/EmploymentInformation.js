@@ -196,7 +196,6 @@ const EmploymentInformation = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                UPDATE_BTN.classList.add('disabled');  
                 updatePathPopupBtn()
             },
         });
@@ -562,7 +561,10 @@ const EmploymentInformation = (() => {
             text: 'APPLY',
             style: 'secondary',
             type: 'contained',
-            callback: () => saveNewPathPopup()
+            callback: () => {
+                APPLY_BTN.classList.add('disabled');  
+                saveNewPathPopup();
+            }
         });
 
         CANCEL_BTN = button.build({

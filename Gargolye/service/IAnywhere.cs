@@ -3318,6 +3318,13 @@ namespace Anywhere
             BodyStyle = WebMessageBodyStyle.Wrapped,
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/updatePlanOutcomesOrder/")]
+        string updatePlanOutcomesOrder(string token, long planId, long outcomeId, int newPos, int oldPos);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updatePlanOutcomesReviewOrder/")]
         string updatePlanOutcomesReviewOrder(string token, long outcomeId, long reviewId, int newPos, int oldPos);
 
