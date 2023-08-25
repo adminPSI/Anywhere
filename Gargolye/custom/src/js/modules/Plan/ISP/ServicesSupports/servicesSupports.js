@@ -1671,10 +1671,7 @@ const servicesSupports = (() => {
         planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
 
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
-        if (!isNew) {
-          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, popupData.assessmentAreaId);
-        }
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
         planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
@@ -1708,7 +1705,7 @@ const servicesSupports = (() => {
           planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
 
           let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
           planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         });
 
@@ -2089,7 +2086,7 @@ const servicesSupports = (() => {
     table.deleteRow(`as${additionalSupportData.additionalSupportsId}`);
 
     let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, additionalSupportData.assessmentAreaId);
+    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
     planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
   }
   //-- Markup ---------
@@ -2334,10 +2331,7 @@ const servicesSupports = (() => {
         }
 
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
-        if (!isNew) {
-          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, popupData.assessmentAreaId);
-        }
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
         planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
 
         doneBtn.classList.remove('disabled');
@@ -2583,7 +2577,7 @@ const servicesSupports = (() => {
     table.deleteRow(`pr${saveUpdateData.professionalReferralId}`);
 
     let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
+    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
     planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
   }
   //-- Markup ---------
@@ -2727,10 +2721,7 @@ const servicesSupports = (() => {
         }
 
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, saveUpdateData.assessmentAreaId);
-        if (!isNew) {
-          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation, popupData.assessmentAreaId);
-        }
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
         planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         
         doneBtn.classList.remove('disabled');
