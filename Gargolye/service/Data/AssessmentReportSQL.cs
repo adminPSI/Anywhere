@@ -819,6 +819,8 @@ namespace Anywhere.service.Data
             sb.Append("LEFT OUTER JOIN DBA.People ON DBA.anyw_isp_consumer_plans.consumer_id = DBA.People.ID ");
             sb.AppendFormat("WHERE DBA.anyw_isp_consumer_plans.isp_consumer_plan_id = {0} ", AssesmentID);
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+
+            // 0= Demographics 1=Custom Photo Photo 2=No Photo
             if (dt.Rows.Count > 0)
             {
                 string fPath = string.Empty;
@@ -831,7 +833,7 @@ namespace Anywhere.service.Data
                         ba = null;
                     }
                 }
-                else if (row["Use_Consumer_Plan_Image"].ToString() == string.Empty || row["Use_Consumer_Plan_Image"].ToString() == "0" || row["Use_Consumer_Plan_Image"].ToString() == "2") //null Value
+                else if (row["Use_Consumer_Plan_Image"].ToString() == string.Empty || row["Use_Consumer_Plan_Image"].ToString() == "2") //null Value
                 {
                     ba = null;
 
@@ -841,7 +843,15 @@ namespace Anywhere.service.Data
                     sb.AppendFormat("WHERE {0}  = 'Anywhere_Portrait_Path' ", @"""option""");
                     if (di.SelectRowsDS(sb.ToString()).Tables[0].Rows.Count > 0)
                     {
-                        fPath = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0]["setting"].ToString().Replace("portraits\\", "new-icons\\default.jpg");
+                        fPath = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0]["setting"].ToString();
+                        if (fPath.Contains("portraits\\"))
+                        {
+                            fPath = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0]["setting"].ToString().Replace("portraits\\", "new-icons\\default.jpg");
+                        }
+                        if (fPath.Contains("portraits"))
+                        {
+                            fPath = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0]["setting"].ToString().Replace("portraits", "new-icons\\default.jpg");
+                        }
                         row["PlanPicture"] = 0;
                     }
 
@@ -851,7 +861,7 @@ namespace Anywhere.service.Data
                     }
                 }
 
-                else
+                else if (row["Use_Consumer_Plan_Image"].ToString() == "0")
                 {
 
                     sb.Clear();
@@ -918,6 +928,7 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPIntroduction");
             return dt.DataSet;
         }
+
 
 
 

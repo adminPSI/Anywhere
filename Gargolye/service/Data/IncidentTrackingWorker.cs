@@ -681,6 +681,7 @@ namespace Anywhere.service.Data
             public string viewedOn { get; set; }
             public string originallyEnteredBy { get; set; }
             public string viewedBy { get; set; }
+            public string description { get; set; }
         }
 
         public class IncidentTrackingReviewTableData
