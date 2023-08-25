@@ -2336,6 +2336,11 @@ namespace Anywhere
             return poW.updatePlanOutcomesExperienceOrder(token, outcomeId, experienceId, newPos, oldPos);
         }
 
+        public string updatePlanOutcomesOrder(string token, long planId, long outcomeId, int newPos, int oldPos)
+        {
+            return poW.updatePlanOutcomesOrder(token, planId, outcomeId, newPos, oldPos);
+        }
+
         public string updatePlanOutcomesReviewOrder(string token, long outcomeId, long reviewId, int newPos, int oldPos)
         {
             return poW.updatePlanOutcomesReviewOrder(token, outcomeId, reviewId, newPos, oldPos);
