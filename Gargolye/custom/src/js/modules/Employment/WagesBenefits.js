@@ -52,8 +52,8 @@ const WagesBenefits = (() => {
         otherInputText = '';
 
         vacationSickChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].vacationSick;
-        retirementChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].medical;
-        medicialChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].retirement;
+        retirementChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].retirement;
+        medicialChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].medical;
         DiscountChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].empDiscount;
         otherChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].other;
         otherValue = CheckBoxEntries.getWagesCheckboxEntriesResult[0].otherText;
@@ -169,9 +169,11 @@ const WagesBenefits = (() => {
     }
 
     function eventListeners() {
-        otherInput.addEventListener('focusout', event => {
-            otherInputText = event.target.value;
-            saveWagesChecked('other', true, otherInputText);
+        otherInput.addEventListener('focusout', event => { 
+            if (!otherInput.classList.contains('disabled')) {
+                otherInputText = event.target.value;
+                saveWagesChecked('other', true, otherInputText);
+            }
         });
     }
 
