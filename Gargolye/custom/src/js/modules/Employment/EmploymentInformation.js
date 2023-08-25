@@ -23,7 +23,7 @@ const EmploymentInformation = (() => {
     let existingEndDate;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
-        PositionId = positionId;
+        PositionId = positionId; 
         consumersID = ConsumersId;
         employerName = Name;
         positionName = PositionName;
@@ -76,7 +76,7 @@ const EmploymentInformation = (() => {
             name = '';
             phone = '';
             email = '';
-            employmentPath = getEmployeepath.getEmployeementPathResult[0].employmentPath;
+            employmentPath = getEmployeepath.getEmployeementPathResult.length > 0 ? getEmployeepath.getEmployeementPathResult[0].employmentPath : '';
             peopleID = consumersID;
         }
 
