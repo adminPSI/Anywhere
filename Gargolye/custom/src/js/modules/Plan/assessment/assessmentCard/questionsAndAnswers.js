@@ -456,7 +456,7 @@
           addAnswer(answerId, answer);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
-            //if (!sectionQuestionCount[sectionId][setId][questionId]) return; // idk why this is needed but its breaking stuff
+            if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
 
             if (sectionId === '41') {
@@ -474,7 +474,7 @@
           addAnswer(answerId);
 
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
-            //if (!sectionQuestionCount[sectionId][setId][questionId]) return; // idk why this is needed but its breaking stuff
+            if (!sectionQuestionCount[sectionId][setId][questionId]) return;
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
