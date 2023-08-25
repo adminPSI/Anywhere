@@ -468,11 +468,13 @@ const NewEntryCF = (() => {
         });
         NEW_SAVE_BTN.addEventListener('keypress', event => {
             if (event.keyCode === 13 && NEW_SAVE_BTN.classList.contains('disabled')) {
+                NEW_SAVE_BTN.classList.add('disabled');
                 IsSaveDisable = false;
             }
         });
         NEW_SAVE_BTN.addEventListener('click', event => {
             if (IsSaveDisable) {
+                NEW_SAVE_BTN.classList.add('disabled'); 
                 saveNewAccount();
             }
             IsSaveDisable = true;
