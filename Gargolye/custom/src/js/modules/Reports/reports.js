@@ -26,6 +26,13 @@ const generateReports = (() =>  {
       style: 'secondary',
       type: 'contained',
       callback: function () {
+        //Hide the popup after it is clicked
+        let popup = document.getElementById('generateReportsPopup');
+        POPUP.hide(popup);
+        overlay.hide();
+        bodyScrollLock.enableBodyScroll(popup);
+
+        // set report running to true to stop mulitple reports being ran, run report, then show popup while report runs in background
         reportRunning = true;
         passFilterValuesForReport(text, filterValues);
         showWarningPopup(text, filterValues);
@@ -35,22 +42,21 @@ const generateReports = (() =>  {
 
   function showReportsPopup(buttonsData) {
     // Popup
-    const popup = document.createElement('div');
-    popup.classList.add(
-      'popup',
-      'visible',
-      'popup--filter',
-      buttonsData.text,
-      'generateReportsPopup',
-    );
+    const popup = POPUP.build({
+      id: `generateReportsPopup`,
+      hideX: true,
+      classNames: ['popup',
+        'visible',
+        'popup--filter',
+        buttonsData.text,
+        'generateReportsPopup']
+    });
+
     popup.setAttribute('data-popup', 'true');
 
     // Header
     const header = document.createElement('h5');
     header.innerHTML = 'Select A Report To View';
-
-    // Reports list
-    const reports = '<ul></ul>';
 
     // Create buttons dynamically using the helper function
     // example: [{ text: 'Detail Report', callback: passFilterValuesForDetailReport },{ text: 'Time Analysis Report', callback: passFilterValuesForTimeEntryReport }];
@@ -78,7 +84,7 @@ const generateReports = (() =>  {
   }
 
   // Function to generate the warning popup
-  function showWarningPopup(reportType, filterValues) {
+  function showWarningPopup(reportType) {
     const reportWarningPopup = POPUP.build({
       id: `reportWarningPopup${reportType}`,
       hideX: true,
@@ -99,14 +105,13 @@ const generateReports = (() =>  {
         let popup = document.querySelector('.generateReportsPopup');
 
         bodyScrollLock.enableBodyScroll(popup);
-        actioncenter.removeChild(popup);
       },
     });
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
     btnWrap.appendChild(acceptBtn);
-    
+
     reportWarningPopup.appendChild(warningMessage);
     reportWarningPopup.appendChild(btnWrap);
     POPUP.show(reportWarningPopup);
