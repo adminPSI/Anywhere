@@ -75,7 +75,7 @@
     subSections = {};
     questionSectionSets = {};
     questionSubSectionSets = {};
-    sectionQuestionCount = 0;
+    sectionQuestionCount = {};
     subSectionsWithAttachments = [];
   }
   function getSectionQuestionCount() {
@@ -785,7 +785,7 @@
   //------------------------------------
   // Grids
   //---------
-  async function deleteSelectedRows(grid, gridBody, questionSetId) {
+  async function deleteSelectedRows(grid, gridBody, questionSetId, sectionId) {
     const planId = plan.getCurrentPlanId();
     const successfulDelete = await assessment.deleteGridRows(planId, questionSetId, [
       selectedRow.id,
@@ -795,8 +795,10 @@
 
     //* TEMP -REMOVE THIS ONCE HANDELED IN BACKEND
     updateRowOrderAfterDelete(grid, questionSetId);
-
     //* END TEMP
+
+    // may not need below, this won't be accessed bc there is not input to tirgger event handler
+    // delete sectionQuestionCount[sectionId][questionSetId] loop over each cell for these => [questionId];
   }
   function buildGridHeaderRow() {
     const gridHeaderRow = document.createElement('div');
@@ -1191,8 +1193,7 @@
             const isAnswered = answerText && answerText !== '' ? true : false;
             if (hideOnAssessment === '1') return;
 
-            // TODO: might need to set this below
-            // sectionQuestionCount[sectionId][questionSetId][questionId].answered = false;
+            sectionQuestionCount[sectionId][questionSetId][questionId].answered = false;
 
             const colName = COL_NAME_MAP[index];
 
@@ -1316,7 +1317,7 @@
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
-            deleteSelectedRows(grid, gridBody, questionSetId);
+            deleteSelectedRows(grid, gridBody, questionSetId, sectionId);
           }
 
           deleteRowsActive = !deleteRowsActive;

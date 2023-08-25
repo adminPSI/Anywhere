@@ -26,6 +26,15 @@ const generateReports = (() =>  {
       style: 'secondary',
       type: 'contained',
       callback: function () {
+        //Hide the popup after it is clicked
+        let popup = document.getElementById('generateReportsPopup');
+        POPUP.hide(popup);
+        overlay.hide();
+        bodyScrollLock.enableBodyScroll(popup);
+
+        // set report running to true to stop mulitple reports being ran, run report, then show popup while report runs in background
+        reportRunning = true;
+        passFilterValuesForReport(text, filterValues);
         showWarningPopup(text, filterValues);
       },
     });
@@ -33,22 +42,21 @@ const generateReports = (() =>  {
 
   function showReportsPopup(buttonsData) {
     // Popup
-    const popup = document.createElement('div');
-    popup.classList.add(
-      'popup',
-      'visible',
-      'popup--filter',
-      buttonsData.text,
-      'generateReportsPopup',
-    );
+    const popup = POPUP.build({
+      id: `generateReportsPopup`,
+      hideX: true,
+      classNames: ['popup',
+        'visible',
+        'popup--filter',
+        buttonsData.text,
+        'generateReportsPopup']
+    });
+
     popup.setAttribute('data-popup', 'true');
 
     // Header
     const header = document.createElement('h5');
     header.innerHTML = 'Select A Report To View';
-
-    // Reports list
-    const reports = '<ul></ul>';
 
     // Create buttons dynamically using the helper function
     // example: [{ text: 'Detail Report', callback: passFilterValuesForDetailReport },{ text: 'Time Analysis Report', callback: passFilterValuesForTimeEntryReport }];
@@ -57,11 +65,12 @@ const generateReports = (() =>  {
     );
 
     // Disable buttons if the report is running
-    // if (reportRunning) {
-    //   buttons.forEach(button => {
-    //     button.disabled = true;
-    //   });
-    // }
+    if (reportRunning) {
+      buttons.forEach(button => {
+        button.disabled = true;
+        button.classList.add('disabled');
+      });
+    }
 
     popup.appendChild(header);
     buttons.forEach(button => {
@@ -75,13 +84,10 @@ const generateReports = (() =>  {
   }
 
   // Function to generate the warning popup
-  function showWarningPopup(reportType, filterValues) {
-    if (reportRunning) return;
-
-    reportRunning = true;
+  function showWarningPopup(reportType) {
     const reportWarningPopup = POPUP.build({
       id: `reportWarningPopup${reportType}`,
-      hideX: false,
+      hideX: true,
       classNames: 'warning',
     });
 
@@ -99,8 +105,6 @@ const generateReports = (() =>  {
         let popup = document.querySelector('.generateReportsPopup');
 
         bodyScrollLock.enableBodyScroll(popup);
-        actioncenter.removeChild(popup);
-        passFilterValuesForReport(reportType, filterValues);
       },
     });
 
@@ -141,36 +145,6 @@ const generateReports = (() =>  {
       reportRunning = false;
     }
   }
-
-  //* AJAX CALLS
-  // function checkIfReportExists(res, callback) {
-  //   data = {
-  //     token: $.session.Token,
-  //     reportScheduleId: res[0].reportScheduleId,
-  //   };
-  //   $.ajax({
-  //     type: 'POST',
-  //     url:
-  //       $.webServer.protocol +
-  //       '://' +
-  //       $.webServer.address +
-  //       ':' +
-  //       $.webServer.port +
-  //       '/' +
-  //       $.webServer.serviceName +
-  //       '/checkIfReportExists/',
-  //     data: JSON.stringify(data),
-  //     contentType: 'application/json; charset=utf-8',
-  //     dataType: 'json',
-  //     success: function (response, status, xhr) {
-  //       var res = response.checkIfCNReportExistsResult;
-  //       callback(res, data.reportScheduleId);
-  //     },
-  //     error: function (xhr, status, error) {
-  //       //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-  //     },
-  //   });
-  // }
 
   return {
     createMainReportButton,

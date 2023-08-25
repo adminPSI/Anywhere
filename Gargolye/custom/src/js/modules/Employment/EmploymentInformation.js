@@ -23,7 +23,7 @@ const EmploymentInformation = (() => {
     let existingEndDate;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
-        PositionId = positionId;
+        PositionId = positionId; 
         consumersID = ConsumersId;
         employerName = Name;
         positionName = PositionName;
@@ -76,7 +76,7 @@ const EmploymentInformation = (() => {
             name = '';
             phone = '';
             email = '';
-            employmentPath = getEmployeepath.getEmployeementPathResult[0].employmentPath;
+            employmentPath = getEmployeepath.getEmployeementPathResult.length > 0 ? getEmployeepath.getEmployeementPathResult[0].employmentPath : '';
             peopleID = consumersID;
         }
 
@@ -180,7 +180,10 @@ const EmploymentInformation = (() => {
             text: BtnName,
             style: 'secondary',
             type: 'contained',
-            callback: async () => { saveEmployeeInfo() },
+            callback: async () => {
+                SAVE_BTN.classList.add('disabled'); 
+                saveEmployeeInfo()
+            },
         });
         CANCEL_BTN = button.build({
             text: 'Cancel',
@@ -192,7 +195,9 @@ const EmploymentInformation = (() => {
             text: 'Update',
             style: 'secondary',
             type: 'contained',
-            callback: () => updatePathPopupBtn()
+            callback: () => {
+                updatePathPopupBtn()
+            },
         });
 
         var LineBr = document.createElement('br');
@@ -556,7 +561,10 @@ const EmploymentInformation = (() => {
             text: 'APPLY',
             style: 'secondary',
             type: 'contained',
-            callback: () => saveNewPathPopup()
+            callback: () => {
+                APPLY_BTN.classList.add('disabled');  
+                saveNewPathPopup();
+            }
         });
 
         CANCEL_BTN = button.build({
