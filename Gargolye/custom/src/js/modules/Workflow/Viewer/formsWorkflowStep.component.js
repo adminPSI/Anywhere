@@ -205,7 +205,8 @@ class FormsWorkflowStepComponent {
           let data2 = consumerForms.map((usrForm) => ({
             id: usrForm.formId, 
             value: usrForm.formId,
-            text: usrForm.formDescription
+            text: usrForm.formDescription.replace(/\.[^/.]+$/, "")
+           // text: usrForm.formDescription.replace(/\.[^/.]+$/, "")
         })); 
  
          data2.sort((a, b) => {

@@ -561,7 +561,10 @@
                                       const newStepDocComponent = new WorkflowDocumentComponent(newDocObj).render();  
                 
                                                   alert('Document has been saved.');
-                
+
+
+
+                                                  removeFormsLock(formId, consumerId);
                                       POPUP.hide(formPopup);
                 
                                       const stepsContainer = document.querySelector(`.wf-steps-container[data-id='${stepId}']`);
