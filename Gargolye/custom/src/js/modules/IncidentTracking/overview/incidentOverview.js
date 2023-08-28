@@ -721,80 +721,86 @@ const incidentOverview = (function () {
 
     var keys = Object.keys(incidents);
 
-    var data = keys.map(key => {
-      var obj = incidents[key];
+    var data = keys
+      .filter(k => {
+        var obj = incidents[k];
 
-      if ($.session.incidentTrackingViewPerm.length !== 0) {
-        if (
-          obj.description !== '' &&
-          !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
-        ) {
-          return;
+        if ($.session.incidentTrackingViewPerm.length !== 0) {
+          if (
+            obj.description !== '' &&
+            !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
+          ) {
+            return false;
+          }
         }
-      }
 
-      var rowId = obj.incidentId;
-      var location = obj.locationName;
-      var enteredBy = obj.supervisorName;
-      var date = obj.incidentDate.split(' ')[0];
-      var time = UTIL.convertFromMilitary(obj.incidentTime);
-      var category = obj.incidentCategory;
-      var consumersInvolved = obj.consumerName;
-      var viewedOn = obj.viewedOn ? true : false;
-      var orginUser =
-        obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
-      var userHasViewed = obj.viewedBy.includes($.session.UserId) ? true : false;
-      var showBold;
+        return true;
+      })
+      .map(key => {
+        var obj = incidents[key];
 
-      if (!orginUser && !userHasViewed) {
-        showBold = true;
-      }
+        var rowId = obj.incidentId;
+        var location = obj.locationName;
+        var enteredBy = obj.supervisorName;
+        var date = obj.incidentDate.split(' ')[0];
+        var time = UTIL.convertFromMilitary(obj.incidentTime);
+        var category = obj.incidentCategory;
+        var consumersInvolved = obj.consumerName;
+        var viewedOn = obj.viewedOn ? true : false;
+        var orginUser =
+          obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
+        var userHasViewed = obj.viewedBy.includes($.session.UserId) ? true : false;
+        var showBold;
 
-      var incidentEmailBtn = document.createElement('button');
-      incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
-      incidentEmailBtn.textContent = 'EMAIL';
-      incidentEmailBtn.style.zIndex = '9999';
+        if (!orginUser && !userHasViewed) {
+          showBold = true;
+        }
 
-      if (!$.session.incidentTrackingEmailIncident) {
-        return {
-          id: rowId,
-          values: [location, enteredBy, date, time, category, consumersInvolved],
-          attributes: [{ key: 'data-viewed', value: showBold }],
-          onClick: async event => {
-            await incidentTrackingAjax.updateIncidentViewByUser({
-              token: $.session.Token,
-              incidentId: rowId,
-              userId: $.session.UserId,
-            });
-            DOM.scrollToTopOfPage();
-            reviewIncident.init(event.target.id);
-          },
-        };
-      } else {
-        return {
-          id: rowId,
-          values: [location, enteredBy, date, time, category, consumersInvolved],
-          attributes: [{ key: 'data-viewed', value: showBold }],
-          endIcon: incidentEmailBtn.outerHTML,
-          endIconCallback: e => {
-            e.stopPropagation();
-            var isParentRow = e.target.parentNode.classList.contains('table__row');
-            if (!isParentRow) return;
+        var incidentEmailBtn = document.createElement('button');
+        incidentEmailBtn.classList.add('btn', 'btn--secondary', 'btn--contained');
+        incidentEmailBtn.textContent = 'EMAIL';
+        incidentEmailBtn.style.zIndex = '9999';
 
-            showIncidentEmailPopup(obj.incidentId);
-          },
-          onClick: async event => {
-            await incidentTrackingAjax.updateIncidentViewByUser({
-              token: $.session.Token,
-              incidentId: rowId,
-              userId: $.session.UserId,
-            });
-            DOM.scrollToTopOfPage();
-            reviewIncident.init(event.target.id);
-          },
-        };
-      }
-    });
+        if (!$.session.incidentTrackingEmailIncident) {
+          return {
+            id: rowId,
+            values: [location, enteredBy, date, time, category, consumersInvolved],
+            attributes: [{ key: 'data-viewed', value: showBold }],
+            onClick: async event => {
+              await incidentTrackingAjax.updateIncidentViewByUser({
+                token: $.session.Token,
+                incidentId: rowId,
+                userId: $.session.UserId,
+              });
+              DOM.scrollToTopOfPage();
+              reviewIncident.init(event.target.id);
+            },
+          };
+        } else {
+          return {
+            id: rowId,
+            values: [location, enteredBy, date, time, category, consumersInvolved],
+            attributes: [{ key: 'data-viewed', value: showBold }],
+            endIcon: incidentEmailBtn.outerHTML,
+            endIconCallback: e => {
+              e.stopPropagation();
+              var isParentRow = e.target.parentNode.classList.contains('table__row');
+              if (!isParentRow) return;
+
+              showIncidentEmailPopup(obj.incidentId);
+            },
+            onClick: async event => {
+              await incidentTrackingAjax.updateIncidentViewByUser({
+                token: $.session.Token,
+                incidentId: rowId,
+                userId: $.session.UserId,
+              });
+              DOM.scrollToTopOfPage();
+              reviewIncident.init(event.target.id);
+            },
+          };
+        }
+      });
 
     data.sort(function (a, b) {
       var dateOne = UTIL.formatDateToIso(a.values[2]);
