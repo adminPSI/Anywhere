@@ -594,6 +594,7 @@ const planOutcomesAjax = (() => {
     updatePlanOutcomesExperienceOrder,
     deletePlanOutcomeProgressSummary,
     updatePlanOutcomeProgressSummary,
-    insertPlanOutcomeProgressSummary,
+      insertPlanOutcomeProgressSummary,
+      updatePlanOutcomesOrder,
   };
 })();
