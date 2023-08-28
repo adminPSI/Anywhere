@@ -165,9 +165,9 @@ namespace Anywhere.service.Data
             return assessmentObj;
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate, string prevPlanId)
         {
-            string resultString = adg.switchPlanType( token,  consumerPlanId,  planType, planYearStart, planYearEnd,  effectiveStartDate,  effectiveEndDate,  reviewDate);
+            string resultString = adg.switchPlanType( token,  consumerPlanId,  planType, planYearStart, planYearEnd,  effectiveStartDate,  effectiveEndDate,  reviewDate, prevPlanId);
             return resultString;
         }
 
