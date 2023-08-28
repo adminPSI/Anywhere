@@ -1769,9 +1769,9 @@ namespace Anywhere
             return aPW.insertConsumerPlanAnnual(token, consumerId, planYearStart, reviewDate, salesForceCaseManagerId);
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate, string prevPlanId)
         {
-            return aAW.switchPlanType(token, consumerPlanId, planType, planYearStart, planYearEnd, effectiveStartDate, effectiveEndDate, reviewDate);
+            return aAW.switchPlanType(token, consumerPlanId, planType, planYearStart, planYearEnd, effectiveStartDate, effectiveEndDate, reviewDate, prevPlanId);
         }
 
         public int updateConsumerNameInfo(string token, string consumerId, string firstName, string lastName, string middleName, string nickName)
@@ -2334,6 +2334,11 @@ namespace Anywhere
         public string updatePlanOutcomesExperienceOrder(string token, long outcomeId, long experienceId, int newPos, int oldPos)
         {
             return poW.updatePlanOutcomesExperienceOrder(token, outcomeId, experienceId, newPos, oldPos);
+        }
+
+        public string updatePlanOutcomesOrder(string token, long planId, long outcomeId, int newPos, int oldPos)
+        {
+            return poW.updatePlanOutcomesOrder(token, planId, outcomeId, newPos, oldPos);
         }
 
         public string updatePlanOutcomesReviewOrder(string token, long outcomeId, long reviewId, int newPos, int oldPos)

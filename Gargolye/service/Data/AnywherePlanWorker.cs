@@ -639,6 +639,8 @@ namespace Anywhere.service.Data
                     public string skipped { get; set; }
                     public string hideOnAssessment { get; set; }
 
+                    public string questionId { get; set; }
+
                 }
                 public class Question
                 {
@@ -905,7 +907,8 @@ namespace Anywhere.service.Data
                                     answerRow = rowNumber.ToString(),
                                     answerText = answerText,
                                     answerStyle = question.questionAnswerStyle,
-                                    hideOnAssessment = question.hideOnAssessment
+                                    hideOnAssessment = question.hideOnAssessment,
+                                    questionId = question.questionId
                                 };
 
                                 gridRowAnswers.Add(answer);

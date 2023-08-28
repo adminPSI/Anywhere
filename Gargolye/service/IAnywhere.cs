@@ -2594,7 +2594,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/switchPlanType/")]
-        string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate);
+        string switchPlanType(string token, string consumerPlanId, string planType, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate, string prevPlanId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -3313,6 +3313,13 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/updatePlanOutcomesExperienceOrder/")]
         string updatePlanOutcomesExperienceOrder(string token, long outcomeId, long experienceId, int newPos, int oldPos);
+
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/updatePlanOutcomesOrder/")]
+        string updatePlanOutcomesOrder(string token, long planId, long outcomeId, int newPos, int oldPos);
 
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.Wrapped,
