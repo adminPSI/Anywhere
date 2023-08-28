@@ -1949,7 +1949,9 @@ const planSummary = (function () {
             { key: 'data-questionSetId', value: questionSetId },
             {
               key: 'data-answerIds',
-              value: `${val.whatIsRisk.answerId}|${val.whatSupportLooksLike.answerId}|${val.riskSupervision.answerId}|${val.whoResponsible.answerId}`,
+              value: `${val.whatIsRisk.answerId}|${val.whatSupportLooksLike.answerId}|${
+                val.riskSupervision.answerId
+              }|${whoResponsible ? whoResponsible : ''}`,
             },
           ],
           onClick: e => {
@@ -1973,7 +1975,7 @@ const planSummary = (function () {
                 },
                 whoResponsible: {
                   answer: whoResponsible,
-                  answerId: val.whoResponsible.answerId,
+                  answerId: val.whoResponsible ? val.whoResponsible.answerId : '',
                 },
               },
               false,
