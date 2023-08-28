@@ -1189,7 +1189,8 @@
           }
 
           newRowData.forEach((nrd, index) => {
-            let { answerId, answerRow, answerText, answerStyle, hideOnAssessment } = nrd;
+            let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment } =
+              nrd;
             const isAnswered = answerText && answerText !== '' ? true : false;
             if (hideOnAssessment === '1') return;
 
