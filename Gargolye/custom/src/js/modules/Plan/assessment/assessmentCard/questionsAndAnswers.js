@@ -1192,9 +1192,10 @@
             let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment } =
               nrd;
             const isAnswered = answerText && answerText !== '' ? true : false;
+            const questionRowId = `${questionId}${rowOrderKeys.length}`;
             if (hideOnAssessment === '1') return;
 
-            sectionQuestionCount[sectionId][questionSetId][questionId].answered = false;
+            sectionQuestionCount[sectionId][questionSetId][questionRowId].answered = false;
 
             const colName = COL_NAME_MAP[index];
 
