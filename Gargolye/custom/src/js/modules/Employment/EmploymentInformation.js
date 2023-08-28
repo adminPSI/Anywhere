@@ -376,13 +376,16 @@ const EmploymentInformation = (() => {
         var hasErrors = [].slice.call(document.querySelectorAll('.error'));
         if (hasErrors.length !== 0) {
             SAVE_BTN.classList.add('disabled');
+            BACK_BTN.classList.remove('disabled'); 
             return;
         } else {
             if (tempstartDatePosition != '' || tempendDatePosition != '' || tempposition != '' || tempjobStanding != '' || tempemployer != '' || temptransportation != '' || temptypeOfWork != '' || tempselfEmployed != '' || tempname != '' || tempphone != '' || tempemail != '') {
                 SAVE_BTN.classList.remove('disabled');
+                BACK_BTN.classList.add('disabled');
             }
             else {
                 SAVE_BTN.classList.add('disabled');
+                BACK_BTN.classList.remove('disabled');
             }
         }
     }
