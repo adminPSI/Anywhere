@@ -1202,7 +1202,7 @@
 
             const colName = COL_NAME_MAP[index];
 
-            if (index === 0) gridRow.id = `roworder${answerRow}`;
+            //if (index === 0) gridRow.id = `roworder${answerRow}`;
 
             const gridCell = document.createElement('div');
             gridCell.classList.add('grid__cell');
