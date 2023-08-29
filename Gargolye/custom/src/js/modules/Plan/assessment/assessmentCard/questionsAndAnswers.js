@@ -1202,7 +1202,8 @@
             if (index === 0) gridRow.id = `roworder${answerRow}`;
 
             const gridCell = document.createElement('div');
-            gridCell.classList.add('grid__cell', `question${questionRowId}`);
+            gridCell.classList.add('grid__cell');
+            gridCell.id = `question${questionRowId}`;
 
             let textAreaCharLimit = 10000;
 
