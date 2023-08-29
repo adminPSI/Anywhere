@@ -952,7 +952,7 @@ const plan = (function () {
         const success = await planAjax.updatePlanType({
           token: $.session.Token,
           consumerPlanId: planId,
-          prevPlanId: newPlanData.planId,
+          prevPlanId: newPlanData.consumerPlanId,
           planType: newType.toUpperCase(),
           planYearStart: UTIL.formatDateToIso(newPlanData.planYearStart.split(' ')[0]),
           planYearEnd: UTIL.formatDateToIso(newPlanData.planYearEnd.split(' ')[0]),

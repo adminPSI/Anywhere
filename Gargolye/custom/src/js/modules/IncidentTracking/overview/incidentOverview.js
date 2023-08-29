@@ -745,7 +745,7 @@ const incidentOverview = (function () {
         var date = obj.incidentDate.split(' ')[0];
         var time = UTIL.convertFromMilitary(obj.incidentTime);
         var category = obj.incidentCategory;
-        var consumersInvolved = obj.consumerName;
+        var consumersInvolved = obj.consumerName.replace(/\|/g, ', ');
         var viewedOn = obj.viewedOn ? true : false;
         var orginUser =
           obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
