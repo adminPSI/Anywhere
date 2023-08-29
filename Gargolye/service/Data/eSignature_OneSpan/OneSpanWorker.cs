@@ -299,6 +299,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     i++;
                     continue;
                 }
+                string sigAnchor = names[i] + " Signature";
                 string anchor = names[i] + " /";
                 string dateAnchor = names[i] + " Date";
 
@@ -353,19 +354,19 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                         .WithField(createTextAreaField("dissentHowToAddress-", i, anchor, signer.Title))
 
                                         // Creates signature and date signature fields
-                                        .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
+                                        .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(sigAnchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
-                                                                    .WithOffset(450, 8)
+                                                                    .WithOffset(75, 5)
                                                                     .WithCharacter(0)
                                                                     .WithOccurrence(0))
                                                                     .WithField(FieldBuilder.SignatureDate()
                                                                     .WithId("Date_Signed-" + i)
-                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
+                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(dateAnchor)
                                                                                             .AtPosition(TextAnchorPosition.BOTTOMLEFT)
                                                                                             .WithSize(75, 40)
                                                                                             .WithCharacter(4)
-                                                                                            .WithOffset(725, 8)
+                                                                                            .WithOffset(15, -10)
                                                                                             .WithOccurrence(0)))
                                             .Build();
                     occurence += 1;
@@ -382,19 +383,19 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                            .WithField(createTextAreaField("dissentHowToAddress-", i, anchor, signer.Title))
 
                                            // Creates signature and date signature fields
-                                           .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
+                                           .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(sigAnchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
-                                                                    .WithOffset(450, 8)
+                                                                    .WithOffset(75, 5)
                                                                     .WithCharacter(0)
                                                                     .WithOccurrence(0))
                                                                     .WithField(FieldBuilder.SignatureDate()
                                                                     .WithId("Date_Signed-" + i)
-                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
+                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(dateAnchor)
                                                                                             .AtPosition(TextAnchorPosition.BOTTOMLEFT)
                                                                                             .WithSize(75, 40)
                                                                                             .WithCharacter(4)
-                                                                                            .WithOffset(725, 0)
+                                                                                            .WithOffset(15, -10)
                                                                                             .WithOccurrence(0)))
                                             .Build();
                     document.WithSignature(sig1);

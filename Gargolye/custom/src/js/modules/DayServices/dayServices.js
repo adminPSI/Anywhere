@@ -687,8 +687,8 @@ const dayServices = (function () {
                 cardRow.innerHTML = `
           <div>${displayStartTime}</div>
           <div>${displayEndTime === '' ? icons.error : displayEndTime}</div>
-          <div>${dayServiceDisplay}</div>
-          <div>${dsGroupValue ? dsGroupValue : '-'}</div>          
+          <div>${dayServiceDisplay}</div> 
+          <div>${dsGroupValue ? dsGroupValue : act.Day_Service_Type === 'S' || act.Day_Service_Type === 'X' ? icons.error : '-'}</div>           
           `;
                 //<div>${allowCI === true ? (hasCI === true ? icons.checkmark : '-') : '-'}</div>
                 //View only has no need to click on a row:

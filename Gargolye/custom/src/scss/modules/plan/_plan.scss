@@ -91,6 +91,7 @@ body.planActive {
 }
 #previousPlanTableMoreMenu {
   max-height: 340px;
+  overflow-y: auto;
 }
 
 .workflowListPopup {
