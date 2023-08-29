@@ -12,25 +12,20 @@ const incidentPermissions = (function () {
           (textarea.classList.contains('factors') && $.session.updateIncidentCauseText)
         ) {
           const nonEditableText = textarea.value;
-          let newlyEnteredText = ``;
 
           textarea.addEventListener('keyup', event => {
             const updatedText = event.target.value;
-            const updatedContainsNonEditable = updatedText.indexOf(nonEditableText);
+
             // if noneditable text is not at the beginning or has been changed
-            if (updatedContainsNonEditable !== 0) {
+            if (!updatedText.startsWith(nonEditableText)) {
               textarea.blur();
               // create and append popup
               const popupElement = POPUP.build({
                 id: 'js-incidentSummaryWarning',
                 closeCallback: () => {
-                  //POPUP.hide(popupElement);
-                  newlyEnteredText = textarea.value.slice(
-                    nonEditableText.length,
-                    textarea.value.length,
-                  );
-                  textarea.value = `${nonEditableText} ${newlyEnteredText}`;
-                  newlyEnteredText = '';
+                  const resetValue =
+                    nonEditableText + updatedText.substr(nonEditableText.length + 1);
+                  textarea.value = resetValue;
                 },
               });
               const message = document.createElement('div');
@@ -42,12 +37,9 @@ const incidentPermissions = (function () {
                 type: 'contained',
                 callback: function () {
                   POPUP.hide(popupElement);
-                  newlyEnteredText = textarea.value.slice(
-                    nonEditableText.length,
-                    textarea.value.length,
-                  );
-                  textarea.value = `${nonEditableText} ${newlyEnteredText}`;
-                  newlyEnteredText = '';
+                  const resetValue =
+                    nonEditableText + updatedText.substr(nonEditableText.length + 1);
+                  textarea.value = resetValue;
                 },
               });
 
