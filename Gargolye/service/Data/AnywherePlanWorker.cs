@@ -637,8 +637,9 @@ namespace Anywhere.service.Data
                     public string answerStyle { get; set; }
                     [DataMember(Order = 4)]
                     public string skipped { get; set; }
+                    [DataMember(Order = 5)]
                     public string hideOnAssessment { get; set; }
-
+                    [DataMember(Order = 6)]
                     public string questionId { get; set; }
 
                 }
