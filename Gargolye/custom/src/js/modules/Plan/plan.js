@@ -956,9 +956,15 @@ const plan = (function () {
           planType: newType.toUpperCase(),
           planYearStart: UTIL.formatDateToIso(newPlanData.planYearStart.split(' ')[0]),
           planYearEnd: UTIL.formatDateToIso(newPlanData.planYearEnd.split(' ')[0]),
-          effectiveStartDate: UTIL.formatDateToIso(newPlanData.effectiveStart.split(' ')[0]),
-          effectiveEndDate: UTIL.formatDateToIso(newPlanData.effectiveEnd.split(' ')[0]),
-          reviewDate: UTIL.formatDateToIso(newPlanData.reviewDate.split(' ')[0]),
+          effectiveStartDate: UTIL.formatDateToIso(
+            dates.formatISO(planDates.getEffectiveStartDate()).split('T')[0],
+          ),
+          effectiveEndDate: UTIL.formatDateToIso(
+            dates.formatISO(planDates.getEffectiveEndDate()),
+          ).split('T')[0],
+          reviewDate: UTIL.formatDateToIso(dates.formatISO(planDates.getPlanReviewDate())).split(
+            'T',
+          )[0],
         });
 
         if (success === 'Success') {
