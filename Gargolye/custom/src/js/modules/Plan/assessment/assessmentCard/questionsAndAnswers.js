@@ -1195,7 +1195,10 @@
             const questionRowId = `${questionId}${rowOrderKeys.length + 1}`;
             if (hideOnAssessment === '1') return;
 
-            sectionQuestionCount[sectionId][questionSetId][questionRowId].answered = false;
+            sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
+              answered: false,
+              rowOrder: rowOrderKeys.length + 1,
+            };
 
             const colName = COL_NAME_MAP[index];
 
