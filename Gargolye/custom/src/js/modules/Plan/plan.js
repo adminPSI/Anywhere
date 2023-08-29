@@ -870,10 +870,11 @@ const plan = (function () {
   }
   function buildChangePlanTypeScreen() {
     let origDateCache;
+    let origType;
     let newType;
     let previousPlansTable;
     let datesBoxDiv;
-    //
+    // data from prev plan
     let newPlan, newPlanData;
 
     const screen = document.createElement('div');
@@ -915,7 +916,9 @@ const plan = (function () {
             newPlan = selectedPlan;
             newPlanData = planData;
 
+            origType = planType;
             origDateCache = planDates.setRevisionPlanDates(newPlanData);
+            planType = newType;
 
             const previouslySeletedRow = previousPlansTable.querySelector('.selected');
             if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
@@ -959,7 +962,6 @@ const plan = (function () {
         });
 
         if (success === 'Success') {
-          planType = newType;
           currentType.innerHTML = `<p>Current Type:</p> ${
             planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'
           }`;
@@ -1001,6 +1003,10 @@ const plan = (function () {
             // reset type dropdown value
             const typeSelect = typeDropdown.querySelector('select');
             typeSelect.value = planType;
+            // reset dates
+            if (origDateCache) planDates.resetPlanDatesFromChangeTypeMenu(origDateCache);
+            // reset type
+            plantype = origType;
           }
         }, 1000);
       },
@@ -1017,11 +1023,13 @@ const plan = (function () {
         // reset type dropdown value
         const typeSelect = typeDropdown.querySelector('select');
         typeSelect.value = planType;
+        // reset dates
+        if (origDateCache) planDates.resetPlanDatesFromChangeTypeMenu(origDateCache);
+        // reset type
+        plantype = origType;
 
         screen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
-
-        if (origDateCache) planDates.resetPlanDatesFromChangeTypeMenu(origDateCache);
       },
     });
 
