@@ -1178,7 +1178,7 @@
           const newRowData = await assessment.insertAssessmentGridRowAnswers(planId, questionSetId);
           const gridRow = document.createElement('div');
           gridRow.classList.add('grid__row');
-          gridRow.id = `roworder${rowOrderKeys.length}`;
+          gridRow.id = `roworder${rowOrderKeys.length + 1}`;
 
           if (isSortable) {
             var cell = document.createElement('div');
@@ -1192,7 +1192,7 @@
             let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment } =
               nrd;
             const isAnswered = answerText && answerText !== '' ? true : false;
-            const questionRowId = `${questionId}${rowOrderKeys.length}`;
+            const questionRowId = `${questionId}${rowOrderKeys.length + 1}`;
             if (hideOnAssessment === '1') return;
 
             sectionQuestionCount[sectionId][questionSetId][questionRowId].answered = false;
@@ -1202,7 +1202,7 @@
             if (index === 0) gridRow.id = `roworder${answerRow}`;
 
             const gridCell = document.createElement('div');
-            gridCell.classList.add('grid__cell');
+            gridCell.classList.add('grid__cell', `question${questionRowId}`);
 
             let textAreaCharLimit = 10000;
 
