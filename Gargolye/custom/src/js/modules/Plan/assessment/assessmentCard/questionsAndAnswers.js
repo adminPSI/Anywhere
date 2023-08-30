@@ -1334,8 +1334,8 @@
             let isGridEmptyNow = true;
 
             Object.values(sectionQuestionCount[sectionId][questionSetId]).forEach(q => {
-              if (q.answerText !== '') {
-                isGridEmptyNow = true;
+              if (q.answered) {
+                isGridEmptyNow = false;
               }
             });
 
