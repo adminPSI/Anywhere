@@ -952,7 +952,7 @@ const plan = (function () {
         const success = await planAjax.updatePlanType({
           token: $.session.Token,
           consumerPlanId: planId,
-          prevPlanId: newPlanData.consumerPlanId,
+          prevPlanId: newType === 'a' ? planId : newPlanData.consumerPlanId,
           planType: newType.toUpperCase(),
           planYearStart: UTIL.formatDateToIso(newPlanData.planYearStart.split(' ')[0]),
           planYearEnd: UTIL.formatDateToIso(newPlanData.planYearEnd.split(' ')[0]),
@@ -2624,7 +2624,7 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames: ['downloadPlanBtn'],
-      callback: downloadPlanFromSalesforceProgress
+      callback: downloadPlanFromSalesforceProgress,
     });
   }
 
