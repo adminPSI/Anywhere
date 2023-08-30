@@ -35,6 +35,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAssessmentWorker;
+using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
@@ -2367,7 +2368,7 @@ namespace Anywhere
             return authWorker.getAuthorizationFilterData(token);
         }
 
-        public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        public AuthorizationWorker.PageData getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
             return authWorker.getAuthorizationPageData(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,

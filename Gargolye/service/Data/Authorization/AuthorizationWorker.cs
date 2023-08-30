@@ -11,6 +11,8 @@ using System.Web;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using Newtonsoft.Json;
+using static Anywhere.service.Data.IncidentTrackingWorker;
+using System.Management.Automation.Language;
 
 namespace Anywhere.service.Data.Authorization
 {
@@ -23,22 +25,63 @@ namespace Anywhere.service.Data.Authorization
         Sybase di = new Data.Sybase();
         string percent = "%";
         AssessmentDataGetter adg = new AssessmentDataGetter();
-        public class FilterResults
+        public class PDParent
         {
             public string CompletionDate { get; set; }
             public string plan_year_start { get; set; }
             public string plan_year_end { get; set; }
+            public string plantype { get; set; }
             public string sourceAndCaption { get; set; }
+            public string plVendorId { get; set; }
+            public string pas_id { get; set; }
+
+        }
+
+        public class PDChild
+        {
+            public string pas_id { get; set; }
             public string frequency { get; set; }
             public string vendorName { get; set; }
             public string BeginDate { get; set; }
             public string EndDate { get; set; }
+            public string itemnum { get; set; }
             public string description { get; set; }
             public string service_code { get; set; }
-
+            public string MaxUnits { get; set; }
+            public string authCostFY1 { get; set; }
+            public string authCostFY2 { get; set; }    
+                
+            
+            
         }
 
-        public string getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        public class PageData
+        {
+            public PDParent[] pageDataParent { get; set; }
+            public PDChild[] pageDataChild { get; set; }
+        }
+        public PageData getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+                                string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
+        {
+            PageData pageData = new PageData();
+
+            string parentString = getAuthorizationPageDataParent( code,  matchSource,  vendorId,  planType,  planYearStartStart,  planYearStartEnd,
+                                 planYearEndStart,  planYearEndEnd,  completedDateStart,  completedDateEnd,  selectedConsumerId);
+            PDParent[] parentObj = js.Deserialize<PDParent[]>(parentString);
+
+            string childString = getAuthorizationPageDataParent(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
+                                 planYearEndStart, planYearEndEnd, completedDateStart, completedDateEnd, selectedConsumerId);
+            PDChild[] childObj = js.Deserialize<PDChild[]>(childString);
+
+            pageData.pageDataParent = parentObj;
+            pageData.pageDataChild = childObj;
+
+            return pageData;
+        }
+
+
+            //Parent
+        public string getAuthorizationPageDataParent(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
             bool yesYEEBoth = true;
@@ -96,7 +139,15 @@ namespace Anywhere.service.Data.Authorization
             return jsonResult;
         }
 
-        public string DataTableToJSONWithJSONNet(DataTable table)
+        //Child
+        //public string getAuthorizationPageDataChildren(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
+        //                        string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
+        //{
+
+        //}
+        
+
+            public string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
