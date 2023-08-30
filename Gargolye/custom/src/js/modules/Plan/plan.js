@@ -2624,14 +2624,46 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames: ['downloadPlanBtn'],
-      callback: () => {
-        planAjax.downloadPlanFromSalesforce({
-          token: $.session.Token,
-          consumerId: selectedConsumer.id,
-          userId: $.session.UserId,
-        });
-      },
+      callback: downloadPlanFromSalesforceProgress
     });
+  }
+
+  async function downloadPlanFromSalesforceProgress() {
+    pendingSave.show('Downloading Plan...');
+
+    const sentStatus = await planAjax.downloadPlanFromSalesforce({
+      token: $.session.Token,
+      consumerId: selectedConsumer.id,
+      userId: $.session.UserId,
+    });
+
+    if (sentStatus === 'Download Complete') {
+      success = true;
+    } else {
+      success = false;
+    }
+
+    const pendingSavePopup = document.querySelector('.pendingSavePopup');
+    pendingSavePopup.style.display = 'none';
+
+    // Handles popup actions based on whether the One Span delivery was successsful
+    if (success) {
+      pendingSave.fulfill('Download Successful!');
+      setTimeout(() => {
+        const savePopup = document.querySelector('.successfulSavePopup');
+        DOM.ACTIONCENTER.removeChild(savePopup);
+        overlay.hide();
+
+        loadLandingPage();
+      }, 700);
+    } else {
+      pendingSave.reject('Failed to download plan, please try again.');
+      setTimeout(() => {
+        const failPopup = document.querySelector('.failSavePopup');
+        DOM.ACTIONCENTER.removeChild(failPopup);
+        overlay.hide();
+      }, 2000);
+    }
   }
 
   function buildConsumerCard() {

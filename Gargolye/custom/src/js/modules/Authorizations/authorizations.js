@@ -232,8 +232,8 @@ const authorizations = (function () {
   function populateVendorDropdown() {
     const data = filterDropdownData.planVendors.map(pv => {
       return {
-        value: pv.vendorName,
-        text: pv.vendorId,
+        value: pv.vendorId,
+        text: pv.vendorName,
       };
     });
     data.unshift({ value: '%', text: 'All' });
@@ -242,8 +242,8 @@ const authorizations = (function () {
   function populateMatchSourceDropdown() {
     const data = filterDropdownData.matchSources.map(ms => {
       return {
-        value: ms.caption,
-        text: ms.code,
+        value: ms.code,
+        text: ms.caption,
       };
     });
     data.unshift({ value: '%', text: 'All' });
@@ -312,6 +312,7 @@ const authorizations = (function () {
 
       authData = await authorizationsAjax.getPageData({
         token: $.session.Token,
+        selectedConsumerId: selectedConsumer.id,
         code: '',
         matchSource: filterValues.matchSource,
         vendorId: filterValues.vendor,
