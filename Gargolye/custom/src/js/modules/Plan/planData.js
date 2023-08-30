@@ -79,12 +79,7 @@ const planData = (() => {
     relationships.forEach(el => {
       if (!flag[el.peopleId]) {
         flag[el.peopleId] = true;
-        //el.lastName = el.lastName.split('|')[0];
-        // Checks for a generational tag in last name (jr, sr, IV, etc.), keeps it in the name if it is there
-        const generaltionalTagCheck = el.lastName.split('|');
-        if (generaltionalTagCheck.length > 1 && generaltionalTagCheck[1].trim() === '') {
-          el.lastName = generaltionalTagCheck[0];
-        }
+        el.lastName = el.lastName.split('|')[0];
         unique.push(el);
       }
     });

@@ -237,6 +237,7 @@ namespace Anywhere.service.Data
             // get relationships for dropdowns and in contact information section
             string relationshipString = adg.getConsumerRelationships(token, consumerId, effectiveStartDate, effectiveEndDate, areInSalesForce, planId);
             ConsumerRelationships[] relationshipObj = js.Deserialize<ConsumerRelationships[]>(relationshipString);
+            // Fix last names to include generatational tags
             ServiceAndsSupportData sASData = new ServiceAndsSupportData();
             sASData.assessmentAreas = assessmentAreasObj;
             sASData.serviceVendors = vendorObj;
@@ -347,6 +348,7 @@ namespace Anywhere.service.Data
             public string dateOfBirth { get; set; }
             public string signatureId { get; set; }
             public string teamMember { get; set; }
+            public string generation { get; set; }
         }
     }
 }
