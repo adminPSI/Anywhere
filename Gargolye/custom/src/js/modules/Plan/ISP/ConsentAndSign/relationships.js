@@ -98,11 +98,14 @@ const csRelationship = (() => {
     const pplID = rel.peopleId;
     const salesforceID = rel.salesForceId;
     const contactID = rel.contactId;
-    const name = contactInformation.cleanName({
+    let name = contactInformation.cleanName({
       firstName: rel.firstName,
       lastName: rel.lastName.replace('|', ' '),
       middleName: rel.middleName,
     });
+    if (rel.generation) {
+      name = name + " " + rel.generation;
+    }
     const dob = dates.removeTimestamp(rel.dateOfBirth);
     const adress = `${rel.buildingNumber}`;
     let relationshipType = rel.relationship ? rel.relationship : '';
