@@ -1062,10 +1062,6 @@
 
         const questionRowId = `${questionId}${rok}`;
 
-        if (questionIndex === 0) {
-          questionIds.push(questionId);
-        }
-
         if (answerStyle !== 'STATICTEXT') {
           sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
             answered: false,
@@ -1080,6 +1076,8 @@
         }
 
         if (rowIndex === 0) {
+          questionIds.push(questionId);
+
           COL_NAME_MAP[questionIndex] = text;
 
           const gridHeaderCell = buildGridHeaderCell(text, prompt);
