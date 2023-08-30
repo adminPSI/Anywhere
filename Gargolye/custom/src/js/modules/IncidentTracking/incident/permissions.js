@@ -13,7 +13,7 @@ const incidentPermissions = (function () {
         ) {
           const nonEditableText = textarea.value;
 
-          textarea.addEventListener('keyup', event => {
+          textarea.addEventListener('keydown', event => {
             const updatedText = event.target.value;
 
             // if noneditable text is not at the beginning or has been changed

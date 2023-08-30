@@ -785,7 +785,7 @@
   //------------------------------------
   // Grids
   //---------
-  async function deleteSelectedRows(grid, gridBody, questionSetId, sectionId) {
+  async function deleteSelectedRows(grid, gridBody, questionSetId) {
     const planId = plan.getCurrentPlanId();
     const successfulDelete = await assessment.deleteGridRows(planId, questionSetId, [
       selectedRow.id,
@@ -796,9 +796,6 @@
     //* TEMP -REMOVE THIS ONCE HANDELED IN BACKEND
     updateRowOrderAfterDelete(grid, questionSetId);
     //* END TEMP
-
-    // may not need below, this won't be accessed bc there is not input to tirgger event handler
-    // delete sectionQuestionCount[sectionId][questionSetId] loop over each cell for these => [questionId];
   }
   function buildGridHeaderRow() {
     const gridHeaderRow = document.createElement('div');
@@ -935,6 +932,7 @@
     let addRowBtn, deleteRowsBtn, cancelDeleteRowsBtn;
     let hasStaticText = false;
     let areAllGridAnswersEmpty = true;
+    let questionIds = [];
 
     const COL_NAME_MAP = {};
     sectionQuestionCount[sectionId][questionSetId] = {};
@@ -1061,7 +1059,12 @@
           answerStyle,
           prompt,
         } = questions[rok][qok];
+
         const questionRowId = `${questionId}${rok}`;
+
+        if (questionIndex === 0) {
+          questionIds.push(questionId);
+        }
 
         if (answerStyle !== 'STATICTEXT') {
           sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
@@ -1323,7 +1326,25 @@
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
-            deleteSelectedRows(grid, gridBody, questionSetId, sectionId);
+            deleteSelectedRows(grid, gridBody, questionSetId);
+
+            questionIds.forEach(qId => {
+              const key = `${qId}${selectedRow.id}`;
+              delete sectionQuestionCount[sectionId][questionSetId][key];
+            });
+
+            let isGridEmptyNow = true;
+
+            Object.values(sectionQuestionCount[sectionId][questionSetId]).forEach(q => {
+              if (q.answerText !== '') {
+                isGridEmptyNow = true;
+              }
+            });
+
+            if (isGridEmptyNow) {
+              grid.classList.add('unanswered');
+              toggleIntentionallyBlankCheckbox('', questionSetId, false);
+            }
           }
 
           deleteRowsActive = !deleteRowsActive;
