@@ -2637,7 +2637,7 @@ const plan = (function () {
       userId: $.session.UserId,
     });
 
-    if (sentStatus === 'Download Complete') {
+    if (sentStatus === 'Download complete') {
       success = true;
     } else {
       success = false;

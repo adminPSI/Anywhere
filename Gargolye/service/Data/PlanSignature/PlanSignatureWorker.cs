@@ -47,6 +47,7 @@ namespace Anywhere.service.Data.PlanSignature
             public string name { get; set; }
             public string lastName { get; set; }
             public string middleName { get; set; }
+            public string generation { get; set; }
             public string relationship { get; set; }
             public string participated { get; set; }
             public string signature { get; set; }
