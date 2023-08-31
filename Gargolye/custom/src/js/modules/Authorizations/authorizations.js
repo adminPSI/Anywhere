@@ -330,6 +330,8 @@ const authorizations = (function () {
   function buildOverviewTable() {
     groupChildData();
 
+    if (overviewTable) pageWrap.removeChild(overviewTable);
+
     overviewTable = document.createElement('div');
     overviewTable.classList.add('authTable');
 
@@ -426,7 +428,6 @@ const authorizations = (function () {
       overviewTable.appendChild(rowWrap);
     });
 
-    if (overviewTable) pageWrap.removeChild(overviewTable);
     pageWrap.appendChild(overviewTable);
   }
 
