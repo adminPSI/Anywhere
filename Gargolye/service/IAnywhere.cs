@@ -4522,7 +4522,7 @@ namespace Anywhere
                 ResponseFormat = WebMessageFormat.Json,
        RequestFormat = WebMessageFormat.Json,
        UriTemplate = "/insertEmploymentPath/")]
-        EmploymentWorker.EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID);
+        EmploymentWorker.EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID, string existingPathID);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

@@ -146,7 +146,7 @@ var EmploymentAjax = (function () {
     }
 
     async function insertEmploymentPathAsync(
-        employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID
+        employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID, existingPathID
     ) {
         try {
             const result = await $.ajax({
@@ -167,7 +167,8 @@ var EmploymentAjax = (function () {
                     newEndDate: newEndDate,
                     currentEndDate: currentEndDate,
                     peopleID: peopleID,
-                    userID: userID
+                    userID: userID,
+                    existingPathID: existingPathID,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

@@ -91,6 +91,10 @@ namespace Anywhere.service.Data.Employment
 
             [DataMember(Order = 14)]
             public string existingEndDate { get; set; }
+            [DataMember(Order = 15)]
+            public string existingStartDate { get; set; }
+            [DataMember(Order = 16)]
+            public string existingPathID { get; set; }           
         }
 
 
@@ -344,7 +348,7 @@ namespace Anywhere.service.Data.Employment
             }
         }
 
-        public EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID)
+        public EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID, string existingPathID)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -359,7 +363,7 @@ namespace Anywhere.service.Data.Employment
                         endDate = null;
                     else
                         endDate = newEndDate;
-                    PathID = Odg.insertEmploymentPath(token, employmentPath, newStartDate, endDate, currentEndDate, peopleID, userID, transaction);
+                    PathID = Odg.insertEmploymentPath(token, employmentPath, newStartDate, endDate, currentEndDate, peopleID, userID, transaction, existingPathID);
 
                     employeePath.pathId = PathID;
                     return employeePath;

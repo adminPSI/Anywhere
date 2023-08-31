@@ -500,10 +500,11 @@ const WagesBenefits = (() => {
     }
 
     async function saveWagesChecked(chkboxName, event, textboxValue) {
-        let IsChacked = event == true ? 'Y' : 'N';
-        const result = await EmploymentAjax.saveCheckboxWagesAsync(chkboxName, IsChacked, PositionId, textboxValue, $.session.UserId);
-        const { saveCheckboxWagesResult } = result;
-
+        if ($.session.EmploymentUpdate) {
+            let IsChacked = event == true ? 'Y' : 'N';
+            const result = await EmploymentAjax.saveCheckboxWagesAsync(chkboxName, IsChacked, PositionId, textboxValue, $.session.UserId);
+            const { saveCheckboxWagesResult } = result;
+        }
     }
 
     return {
