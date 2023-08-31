@@ -74,7 +74,7 @@ const planValidation = (function () {
       complete: false
     };
     const servicesAndSupportsQuestionIds = {
-      noSupportQuestionIds: ['509', '526', '84', '95', '162', '500'],
+      noSupportQuestionIds: ['509', '526', '84', '95', '162', '500', '575'],
       paidSupportQuestionIds: [
         '631',
         '612',
