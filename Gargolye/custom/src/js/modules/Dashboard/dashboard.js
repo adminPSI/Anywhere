@@ -552,6 +552,7 @@
   }
   function initSignaturesWidget() {
     const showHide = getWidgetSettings(widgetIds.missingSignatures).showHide;
+    if (!$.session.planView) return;
     if (!infalOnly) {
       (function loadSignatureWidget() {
         var div = document.createElement('div');
