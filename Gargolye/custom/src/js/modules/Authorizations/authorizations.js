@@ -298,16 +298,16 @@ const authorizations = (function () {
       authData = await authorizationsAjax.getPageData({
         token: $.session.Token,
         selectedConsumerId: selectedConsumer.id,
-        code: '',
+        code: '%',
         matchSource: filterValues.matchSource,
         vendorId: filterValues.vendor,
         planType: filterValues.planType,
-        planYearStartStart: filterValues.yearStartStart,
-        planYearStartEnd: filterValues.yearStartEnd,
-        planYearEndStart: filterValues.yearEndStart,
-        planYearEndEnd: filterValues.yearEndEnd,
-        completedDateStart: filterValues.completedDateStart,
-        completedDateEnd: filterValues.completedDateEnd,
+        planYearStartStart: UTIL.formatDateToIso(filterValues.yearStartStart),
+        planYearStartEnd: UTIL.formatDateToIso(filterValues.yearStartEnd),
+        planYearEndStart: UTIL.formatDateToIso(filterValues.yearEndStart),
+        planYearEndEnd: UTIL.formatDateToIso(filterValues.yearEndEnd),
+        completedDateStart: UTIL.formatDateToIso(filterValues.completedDateStart),
+        completedDateEnd: UTIL.formatDateToIso(filterValues.completedDateEnd),
       });
 
       updateFilteredBy();
@@ -426,6 +426,7 @@ const authorizations = (function () {
       overviewTable.appendChild(rowWrap);
     });
 
+    if (overviewTable) pageWrap.removeChild(overviewTable);
     pageWrap.appendChild(overviewTable);
   }
 
@@ -451,7 +452,7 @@ const authorizations = (function () {
     authData = await authorizationsAjax.getPageData({
       token: $.session.Token,
       selectedConsumerId: selectedConsumer.id,
-      code: filterValues.vendor,
+      code: '%',
       matchSource: filterValues.vendor,
       vendorId: filterValues.vendor,
       planType: filterValues.planType,
