@@ -41,53 +41,19 @@ const authorizations = (function () {
       }
     }
   }
-  function groupAuthData() {
-    const groupedData = {};
-
-    authData.map(ad => {
-      const id = `${ad.CompletionDate.split('T')[0]}${ad.plan_year_start.split('T')[0]}${
-        ad.plan_year_end.split('T')[0]
-      }${ad.plantype}${ad.vendorName.replaceAll(' ', '')}`;
-
-      if (!groupedData[id]) {
-        groupedData[id] = {
-          CompletionDate: UTIL.formatDateFromIso(ad.CompletionDate.split('T')[0]),
-          plan_year_start: UTIL.formatDateFromIso(ad.plan_year_start.split('T')[0]),
-          plan_year_end: UTIL.formatDateFromIso(ad.plan_year_end.split('T')[0]),
-          plantype: ad.plantype,
-          vendorName: ad.vendorName,
-          children: [
-            {
-              //serivce: ad.service,
-              service_code: ad.service_code,
-              BeginDate: UTIL.formatDateFromIso(ad.BeginDate.split('T')[0]),
-              EndDate: UTIL.formatDateFromIso(ad.EndDate.split('T')[0]),
-              FY1_units: parseInt(ad.FY1_units),
-              FY2_units: parseInt(ad.FY2_units),
-              frequency: ad.frequency,
-              vendorName: ad.vendorName,
-              FY1_total_Cost: ad.FY1_total_Cost,
-              FY2_total_Cost: ad.FY2_total_Cost,
-            },
-          ],
-        };
+  function groupChildData() {
+    const groupedChildren = authData.pageDataChild.reduce((obj, child) => {
+      if (!obj[child.pas_id]) {
+        obj[child.pas_id] = [];
+        obj[child.pas_id].push(child);
       } else {
-        groupedData[id].children.push({
-          //serivce: ad.service,
-          service_code: ad.service_code,
-          BeginDate: UTIL.formatDateFromIso(ad.BeginDate.split('T')[0]),
-          EndDate: UTIL.formatDateFromIso(ad.EndDate.split('T')[0]),
-          FY1_units: parseInt(ad.FY1_units),
-          FY2_units: parseInt(ad.FY2_units),
-          frequency: ad.frequency,
-          vendorName: ad.vendorName,
-          FY1_total_Cost: ad.FY1_total_Cost,
-          FY2_total_Cost: ad.FY2_total_Cost,
-        });
+        obj[child.pas_id].push(child);
       }
-    });
 
-    return groupedData;
+      return obj;
+    }, {});
+
+    authData.pageDataChild = { ...groupedChildren };
   }
 
   // Filter Popup
@@ -229,6 +195,25 @@ const authorizations = (function () {
     ];
     dropdown.populate(planTypeDropdown, data, filterValues.planType);
   }
+  function getPlanTypeFullName(value) {
+    switch (value) {
+      case 'F': {
+        return 'Final';
+      }
+      case 'I': {
+        return 'Initial';
+      }
+      case 'V': {
+        return 'Revision';
+      }
+      case 'R': {
+        return 'Redetermination';
+      }
+      default: {
+        return 'All';
+      }
+    }
+  }
   function populateVendorDropdown() {
     const data = filterDropdownData.planVendors.map(pv => {
       return {
@@ -343,10 +328,105 @@ const authorizations = (function () {
     return wrap;
   }
   function buildOverviewTable() {
-    const tableData = groupAuthData();
+    groupChildData();
 
     overviewTable = document.createElement('div');
     overviewTable.classList.add('authTable');
+
+    const mainHeading = document.createElement('div');
+    mainHeading.classList.add('authTable__header');
+    mainHeading.innerHTML = `
+      <div>Completed</div>
+      <div>Year Start</div>
+      <div>Year End</div>
+      <div>Plan Type</div>
+      <div>PL Vendor</div>
+      <div>Match Source</div>
+    `;
+    overviewTable.appendChild(mainHeading);
+
+    authData.pageDataParent.forEach(parent => {
+      const pasID = parent.pas_id;
+
+      const rowWrap = document.createElement('div');
+      rowWrap.classList.add('authTable__subTableWrap');
+
+      // TOP LEVEL ROW
+      //---------------------------------
+      const mainDataRow = document.createElement('div');
+      mainDataRow.classList.add('authTable__mainDataRow', 'authTable__dataRow');
+      mainDataRow.innerHTML = `
+        <div>${UTIL.formatDateFromIso(parent.CompletionDate.split('T')[0])}</div>
+        <div>${UTIL.formatDateFromIso(parent.plan_year_start.split('T')[0])}</div>
+        <div>${UTIL.formatDateFromIso(parent.plan_year_end.split('T')[0])}</div>
+        <div>${getPlanTypeFullName(parent.plantype)}</div>
+        <div>${parent.plVendorId ? parent.plVendorId : ''}</div>
+        <div>${parent.sourceAndCaption}</div>
+      `;
+      rowWrap.appendChild(mainDataRow);
+
+      // SUB ROWS
+      //---------------------------------
+      const subRowWrap = document.createElement('div');
+      subRowWrap.classList.add('authTable__subRowWrap');
+
+      const subHeading = document.createElement('div');
+      subHeading.classList.add('authTable__subHeader');
+      subHeading.innerHTML = `
+        <div>#</div>
+        <div>Service</div>
+        <div>Service Code</div>
+        <div>Begin Date</div>
+        <div>End Date</div>
+        <div>Units</div>
+        <div>Frequency</div>
+        <div>Vendor</div>
+        <div>Auth Cost FY1</div>
+        <div>Auth Cost FY2</div>
+      `;
+      subRowWrap.appendChild(subHeading);
+
+      authData.pageDataChild[pasID].sort((a, b) => {
+        return parseInt(a.itemnum) - parseInt(b.itemnum);
+      });
+
+      authData.pageDataChild[pasID].forEach(child => {
+        const subDataRow = document.createElement('div');
+        subDataRow.classList.add('authTable__subDataRow', 'authTable__dataRow');
+        subDataRow.innerHTML = `
+          <div>${child.itemnum}</div>
+          <div>${child.service_code}</div>
+          <div>${child.service_code}</div>
+          <div>${UTIL.abbreviateDateYear(
+            UTIL.formatDateFromIso(child.BeginDate.split('T')[0]),
+          )}</div>
+          <div>${UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.EndDate.split('T')[0]))}</div>
+          <div>${child.MaxUnits}</div>
+          <div>${child.frequency}</div>
+          <div>${child.vendorName}</div>
+          <div>${child.authCostFY1}</div>
+          <div>${child.authCostFY2}</div>
+        `;
+        subRowWrap.appendChild(subDataRow);
+      });
+
+      // EVENT
+      //---------------------------------
+      mainDataRow.addEventListener('click', e => {
+        if (subRowWrap.classList.contains('active')) {
+          subRowWrap.classList.remove('active');
+        } else {
+          subRowWrap.classList.add('active');
+        }
+      });
+
+      // ASSEMBLY
+      //---------------------------------
+      rowWrap.appendChild(subRowWrap);
+      overviewTable.appendChild(rowWrap);
+    });
+
+    pageWrap.appendChild(overviewTable);
   }
 
   async function loadPage() {
