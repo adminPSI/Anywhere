@@ -395,7 +395,7 @@ const authorizations = (function () {
         subDataRow.classList.add('authTable__subDataRow', 'authTable__dataRow');
         subDataRow.innerHTML = `
           <div>${child.itemnum}</div>
-          <div>${child.service_code}</div>
+          <div>${child.description}</div>
           <div>${child.service_code}</div>
           <div>${UTIL.abbreviateDateYear(
             UTIL.formatDateFromIso(child.BeginDate.split('T')[0]),
