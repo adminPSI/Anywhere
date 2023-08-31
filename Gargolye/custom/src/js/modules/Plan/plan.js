@@ -1634,10 +1634,11 @@ const plan = (function () {
       text: 'Delete Plan',
       style: 'secondary',
       type: 'contained',
-      classNames:
-        planStatus === 'D' && planActiveStatus && $.session.planUpdate && $.session.planDelete
-          ? ['deleteBtn']
-          : ['deleteBtn', 'disabled'],
+      classNames: downloadedFromSalesforce && !$.session.planUpdate
+        ? ['deleteBtn', 'disabled']
+        : (!planActiveStatus && $.session.planUpdate)
+        ? ['deleteBtn']
+        : ['deleteBtn', 'disabled']
     });
     const reactivateBtn = button.build({
       text: 'Reactivate Plan',
@@ -2763,7 +2764,17 @@ const plan = (function () {
 
     btnWrap.appendChild(newPlanBtn);
     if ($.session.planAssignCaseload) btnWrap.appendChild(assignCaseLoadBtn);
-    if ($.session.downloadPlans) btnWrap.appendChild(downloadPlanBtn);
+
+    if ($.session.downloadPlans && $.session.areInSalesForce) {
+      // validate salesforce
+      isValidSalesforce = await consentAndSignAjax.validateConsumerForSalesForceId({
+        consumerId: selectedConsumer.id,
+      });
+
+      if (isValidSalesforce) {
+        btnWrap.appendChild(downloadPlanBtn);
+      }
+    }
 
     landingPage.appendChild(consumerCard);
     landingPage.appendChild(btnWrap);
