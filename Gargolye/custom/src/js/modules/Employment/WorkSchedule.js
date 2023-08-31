@@ -75,7 +75,7 @@ const WorkSchedule = (() => {
     function buildworkScheduleEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryReviewTable',
+            tableId: 'employmentCommonTable',  
             columnHeadings: ['Day Of Week', 'Start Time', 'End Time'],
             endIcon: $.session.EmploymentDelete == true ? true : false,
         };

@@ -204,8 +204,8 @@ const WagesBenefits = (() => {
 
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryReviewTable',
-            columnHeadings: ['Hours/Week', 'Hourly Wages', 'Start Date', 'End Date'],
+            tableId: 'employmentCommonTable',
+            columnHeadings: ['Hours/ Week', 'Hourly Wages', 'Start Date', 'End Date'], 
             endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 

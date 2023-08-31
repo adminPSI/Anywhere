@@ -76,7 +76,7 @@ const PositionTask = (() => {
     function buildPositionEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryReviewTable',
+            tableId: 'employmentPositionTable',
             columnHeadings: ['Task #', 'Description', 'Start Date', 'End Date', 'Initial Performance', 'Initial Performance Notes', 'Employer Standard'],
             endIcon: $.session.EmploymentDelete == true ? true :false,
         };
