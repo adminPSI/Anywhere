@@ -293,7 +293,7 @@ const authorizations = (function () {
     });
     applyFilterBtn.addEventListener('click', async e => {
       POPUP.hide(filterPopup);
-      filterValues = newFilterValues;
+      filterValues = { ...filterValues, ...newFilterValues };
 
       authData = await authorizationsAjax.getPageData({
         token: $.session.Token,
