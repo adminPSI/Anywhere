@@ -678,13 +678,11 @@ const EmploymentInformation = (() => {
         const result = await EmploymentAjax.insertEmploymentPathAsync(employmentPath, newStartDate, newEndDate, currentEndDate, consumersID, $.session.UserId, existingPathID);
         const { insertEmploymentPathResult } = result;
         var messagetext = document.getElementById('confirmMessage');
+
         messagetext.innerHTML = ``;
         if (insertEmploymentPathResult.pathId == '-1') {
             messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.'; 
             messagetext.classList.add('password-error');
-        }
-        else if (insertEmploymentPathResult.pathId == '' || insertEmploymentPathResult.pathId == null) {
-
         }
         else {
             NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);

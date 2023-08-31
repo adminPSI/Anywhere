@@ -489,9 +489,6 @@ const WagesBenefits = (() => {
             messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
             messagetext.classList.add('password-error');
         }
-        else if (insertWagesResult.wagesId == '' || insertWagesResult.wagesId == null) {
-
-        }
         else {
             NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 1);
             POPUP.hide(addWagesPopup);
