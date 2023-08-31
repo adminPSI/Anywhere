@@ -117,19 +117,20 @@ namespace Anywhere.service.Data.Employment
             }
         }
 
-        public string insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID, DistributedTransaction transaction)
+        public string insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID, DistributedTransaction transaction, string existingPathID)
         {
             try
             {
                 logger.debug("insertEmploymentPath");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[6];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[7];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@employmentPath", DbType.String, employmentPath);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@newStartDate", DbType.String, newStartDate);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@newEndDate", DbType.String, newEndDate);
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@currentEndDate", DbType.String, currentEndDate);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@peopleID", DbType.Double, peopleID);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertEmploymentPath(?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@existingPathID", DbType.String, existingPathID);
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertEmploymentPath(?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {

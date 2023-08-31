@@ -75,7 +75,7 @@ const WorkSchedule = (() => {
     function buildworkScheduleEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryReviewTable',
+            tableId: 'employmentCommonTable',  
             columnHeadings: ['Day Of Week', 'Start Time', 'End Time'],
             endIcon: $.session.EmploymentDelete == true ? true : false,
         };
@@ -86,7 +86,7 @@ const WorkSchedule = (() => {
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)
             },
-            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',  
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',
             endIconCallback: (e) => {
                 deleteWorkSchedulePOPUP(entry.WorkScheduleId);
             },
@@ -140,7 +140,7 @@ const WorkSchedule = (() => {
     }
 
     function deleteWorkSchedule(WorkScheduleId, confirmPopup) {
-        EmploymentAjax.deleteWorkSchedule( 
+        EmploymentAjax.deleteWorkSchedule(
             {
                 WorkScheduleID: WorkScheduleId
             },
@@ -336,9 +336,6 @@ const WorkSchedule = (() => {
         if (insertWorkScheduleResult.WorkScheduleId == '-1') {
             messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
             messagetext.classList.add('password-error');
-        }
-        else if (insertWorkScheduleResult.WorkScheduleId == null || insertWorkScheduleResult.WorkScheduleId == '') {
-
         }
         else {
             NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 3);

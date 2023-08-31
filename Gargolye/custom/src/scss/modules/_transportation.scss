@@ -671,10 +671,112 @@
         }
     }
 
-    #singleEntryReviewTable {
+    #employmentPositionTable {
         .endIcon {
             margin-left: 5px;
             max-width: 30px !important;
+        }
+
+        .table__row {
+            &.selected {
+                background: $secondary;
+            }
+
+            > div {
+                flex-grow: 1;
+            }
+
+            > div:nth-child(1) {
+                width: 7%;
+            }
+
+            > div:nth-child(2) {
+                width: 15%;
+            }
+
+            > div:nth-child(3) {
+                width: 10%;
+            }
+
+            > div:nth-child(4) {
+                display: none; 
+                width: 10%;
+            }
+
+            > div:nth-child(5) {
+                width: 18%;
+            }
+
+            > div:nth-child(6) {
+                display: none;
+                width: 18%;
+            }
+
+            > div:nth-child(7) {
+                display: none;
+                width: 17%;
+            }
+
+            > div:nth-child(8) {
+                width: 5%;
+            }
+
+            @media screen and (min-width: 560px) {
+                > div:nth-child(4) {
+                    display: block;
+                }
+
+                > div:nth-child(6) {
+                    display: block;
+                }
+
+                > div:nth-child(7) {
+                    display: block;
+                }
+            }
+        }
+
+        .multiSelectBtn {
+            &.enabled {
+                background: pink;
+            }
+        }
+    }
+
+    #employmentCommonTable {
+        .endIcon {
+            margin-left: 5px;
+            max-width: 30px !important;
+        }
+
+        .table__row {
+            &.selected {
+                background: $secondary;
+            }
+
+            > div {
+                flex-grow: 1;
+            }
+
+            > div:nth-child(1) {
+                width: 70px;
+            }
+
+            > div:nth-child(2) {
+                width: 68px;
+            }
+
+            > div:nth-child(3) {
+                width: 86px;
+            }
+
+            > div:nth-child(4) {
+                width: 86px;
+            }
+
+            > div:nth-child(5) {
+                width: 52px;
+            }
         }
     }
 } 

@@ -23,7 +23,7 @@ const EmploymentInformation = (() => {
     let existingEndDate;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
-        PositionId = positionId; 
+        PositionId = positionId;
         consumersID = ConsumersId;
         employerName = Name;
         positionName = PositionName;
@@ -59,7 +59,6 @@ const EmploymentInformation = (() => {
             name = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].name;
             phone = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].phone;
             email = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].email;
-            employmentPath = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].employmentPath;
             peopleID = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].peopleId;
         }
         else {
@@ -76,10 +75,12 @@ const EmploymentInformation = (() => {
             name = '';
             phone = '';
             email = '';
-            employmentPath = getEmployeepath.getEmployeementPathResult.length > 0 ? getEmployeepath.getEmployeementPathResult[0].employmentPath : '';
             peopleID = consumersID;
         }
 
+        employmentPath = getEmployeepath.getEmployeementPathResult.length > 0 ? getEmployeepath.getEmployeementPathResult[0].employmentPath : '';
+        existingPathID = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingPathID == '' ? '' : getEmployeepath.getEmployeementPathResult[0].existingPathID;
+        existingStartDate = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingStartDate == '' ? '' : moment(getEmployeepath.getEmployeementPathResult[0].existingStartDate).format('YYYY-MM-DD');
         existingEndDate = getEmployeepath.getEmployeementPathResult[0] == undefined || getEmployeepath.getEmployeementPathResult[0].existingEndDate == '' ? '' : moment(getEmployeepath.getEmployeementPathResult[0].existingEndDate).format('YYYY-MM-DD');
         tempstartDatePosition = '';
         tempendDatePosition = '';
@@ -181,7 +182,7 @@ const EmploymentInformation = (() => {
             style: 'secondary',
             type: 'contained',
             callback: async () => {
-                SAVE_BTN.classList.add('disabled'); 
+                SAVE_BTN.classList.add('disabled');
                 saveEmployeeInfo()
             },
         });
@@ -376,7 +377,7 @@ const EmploymentInformation = (() => {
         var hasErrors = [].slice.call(document.querySelectorAll('.error'));
         if (hasErrors.length !== 0) {
             SAVE_BTN.classList.add('disabled');
-            BACK_BTN.classList.remove('disabled'); 
+            BACK_BTN.classList.remove('disabled');
             return;
         } else {
             if (tempstartDatePosition != '' || tempendDatePosition != '' || tempposition != '' || tempjobStanding != '' || tempemployer != '' || temptransportation != '' || temptypeOfWork != '' || tempselfEmployed != '' || tempname != '' || tempphone != '' || tempemail != '') {
@@ -417,7 +418,7 @@ const EmploymentInformation = (() => {
         employerDropdown.addEventListener('change', event => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             employer = selectedConsumerOption.id;
-            employerName = selectedConsumerOption.text; 
+            employerName = selectedConsumerOption.text;
             tempemployer = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
         });
@@ -565,7 +566,7 @@ const EmploymentInformation = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                APPLY_BTN.classList.add('disabled');  
+                APPLY_BTN.classList.add('disabled');
                 saveNewPathPopup();
             }
         });
@@ -582,6 +583,10 @@ const EmploymentInformation = (() => {
         updatePathPopup.appendChild(newPathEmploymentDropdown);
         updatePathPopup.appendChild(newPathStartDate);
         updatePathPopup.appendChild(newPathEndDate);
+
+        var confirmMessage = document.createElement('div');
+        confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
+        updatePathPopup.appendChild(confirmMessage);
 
         var popupbtnWrap = document.createElement('div');
         popupbtnWrap.classList.add('btnWrap');
@@ -611,7 +616,6 @@ const EmploymentInformation = (() => {
         });
         currentPathEndDate.addEventListener('input', event => {
             currentEndDate = event.target.value;
-            existingEndDate = event.target.value;
             checkRequiredFieldsOfEmploymentPath();
         });
 
@@ -632,13 +636,13 @@ const EmploymentInformation = (() => {
             newPathEmploymentDropdown.classList.remove('errorPopup');
         }
 
-        if (CurrentEndDate.value === '') {
+        if (CurrentEndDate.value === '' || CurrentEndDate.value < existingStartDate) {
             currentPathEndDate.classList.add('errorPopup');
         } else {
             currentPathEndDate.classList.remove('errorPopup');
         }
 
-        if (newStartDate.value === '' || existingEndDate > newStartDate.value || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {
+        if (newStartDate.value === '' || CurrentEndDate.value > newStartDate.value || (newEndDate.value != '' && newStartDate.value > newEndDate.value)) {
             newPathStartDate.classList.add('errorPopup');
         } else {
             newPathStartDate.classList.remove('errorPopup');
@@ -671,12 +675,20 @@ const EmploymentInformation = (() => {
 
 
     async function saveNewPathPopup() {
-        const result = await EmploymentAjax.insertEmploymentPathAsync(employmentPath, newStartDate, newEndDate, currentEndDate, consumersID, $.session.UserId);
+        const result = await EmploymentAjax.insertEmploymentPathAsync(employmentPath, newStartDate, newEndDate, currentEndDate, consumersID, $.session.UserId, existingPathID);
         const { insertEmploymentPathResult } = result;
-        if (insertEmploymentPathResult.pathId != null) {
-            NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
+        var messagetext = document.getElementById('confirmMessage');
+
+        messagetext.innerHTML = ``;
+        if (insertEmploymentPathResult.pathId == '-1') {
+            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.'; 
+            messagetext.classList.add('password-error');
         }
-        POPUP.hide(updatePathPopup);
+        else {
+            NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
+            POPUP.hide(updatePathPopup);
+        }
+
     }
 
     async function saveEmployeeInfo() {

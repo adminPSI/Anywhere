@@ -204,8 +204,8 @@ const WagesBenefits = (() => {
 
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryReviewTable',
-            columnHeadings: ['Hours/Week', 'Hourly Wages', 'Start Date', 'End Date'],
+            tableId: 'employmentCommonTable',
+            columnHeadings: ['Hours/ Week', 'Hourly Wages', 'Start Date', 'End Date'], 
             endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
@@ -489,9 +489,6 @@ const WagesBenefits = (() => {
             messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
             messagetext.classList.add('password-error');
         }
-        else if (insertWagesResult.wagesId == '' || insertWagesResult.wagesId == null) {
-
-        }
         else {
             NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 1);
             POPUP.hide(addWagesPopup);
@@ -500,10 +497,11 @@ const WagesBenefits = (() => {
     }
 
     async function saveWagesChecked(chkboxName, event, textboxValue) {
-        let IsChacked = event == true ? 'Y' : 'N';
-        const result = await EmploymentAjax.saveCheckboxWagesAsync(chkboxName, IsChacked, PositionId, textboxValue, $.session.UserId);
-        const { saveCheckboxWagesResult } = result;
-
+        if ($.session.EmploymentUpdate) {
+            let IsChacked = event == true ? 'Y' : 'N';
+            const result = await EmploymentAjax.saveCheckboxWagesAsync(chkboxName, IsChacked, PositionId, textboxValue, $.session.UserId);
+            const { saveCheckboxWagesResult } = result;
+        }
     }
 
     return {
