@@ -389,6 +389,7 @@ const ConsumerFinances = (() => {
         eventListeners();
         populateFilterDropdown();
         POPUP.show(filterPopup);
+        checkValidationOfFilter();
     }
 
     // binding filter events 
@@ -405,9 +406,11 @@ const ConsumerFinances = (() => {
 
         fromDateInput.addEventListener('change', event => {
             tmpactivityStartDate = event.target.value;
+            checkValidationOfFilter();
         });
         toDateInput.addEventListener('change', event => {
             tmpactivityEndDate = event.target.value;
+            checkValidationOfFilter();
         });
 
         minAmountInput.addEventListener('keyup', event => {
@@ -456,20 +459,21 @@ const ConsumerFinances = (() => {
         });
 
         APPLY_BTN.addEventListener('click', () => {
-            updateFilterData({
-                tmpactivityStartDate,
-                tmpactivityEndDate,
-                tmpminAmount,
-                tmpmaxAmount,
-                tmpaccountName,
-                tmpenteredBy,
-                tmppayee,
-                tmpcategory,
-                tmpisattachment
-            });
-            POPUP.hide(filterPopup);
-            //eventListeners();
-            loadConsumerFinanceLanding();
+            if (!APPLY_BTN.classList.contains('disabled')) { 
+                updateFilterData({
+                    tmpactivityStartDate,
+                    tmpactivityEndDate,
+                    tmpminAmount,
+                    tmpmaxAmount,
+                    tmpaccountName,
+                    tmpenteredBy,
+                    tmppayee,
+                    tmpcategory,
+                    tmpisattachment
+                });
+                POPUP.hide(filterPopup);
+                loadConsumerFinanceLanding();
+            }
         });
 
     }
@@ -484,6 +488,28 @@ const ConsumerFinances = (() => {
         if (data.tmppayee) filterValues.payee = data.tmppayee;
         if (data.tmpcategory) filterValues.category = data.tmpcategory;
         if (data.tmpisattachment) filterValues.isattachment = data.tmpisattachment;
+    }
+
+    function checkValidationOfFilter() {
+        var fromDate = fromDateInput.querySelector('#fromDateInput');
+        var toDate = toDateInput.querySelector('#toDateInput');
+
+        if (fromDate.value > toDate.value ) {
+            toDateInput.classList.add('errorPopup');
+        } else {
+            toDateInput.classList.remove('errorPopup');
+        }
+        setBtnStatusOfFilter();
+    }
+
+    function setBtnStatusOfFilter() {
+        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup'));
+        if (hasErrors.length !== 0) {
+            APPLY_BTN.classList.add('disabled');
+            return;
+        } else {
+            APPLY_BTN.classList.remove('disabled');
+        }
     }
 
     async function populateFilterDropdown() {

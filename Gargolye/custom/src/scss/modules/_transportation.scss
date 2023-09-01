@@ -673,8 +673,8 @@
 
     #employmentPositionTable {
         .endIcon {
-            margin-left: 5px;
-            max-width: 30px !important;
+            margin-left: 2px;
+            max-width: 25px !important;   
         }
 
         .table__row {
@@ -687,11 +687,11 @@
             }
 
             > div:nth-child(1) {
-                width: 7%;
+                width: 0%;
             }
 
             > div:nth-child(2) {
-                width: 15%;
+                width: 10%;
             }
 
             > div:nth-child(3) {
@@ -699,7 +699,7 @@
             }
 
             > div:nth-child(4) {
-                display: none; 
+                display: none;
                 width: 10%;
             }
 
@@ -714,14 +714,22 @@
 
             > div:nth-child(7) {
                 display: none;
-                width: 17%;
+                width: 17%; 
             }
 
             > div:nth-child(8) {
-                width: 5%;
+                width: 0%;
             }
 
             @media screen and (min-width: 560px) {
+                > div:nth-child(1) {
+                    width: 7%;
+                }
+
+                > div:nth-child(2) {
+                    width: 15%;
+                }
+
                 > div:nth-child(4) {
                     display: block;
                 }
@@ -732,6 +740,10 @@
 
                 > div:nth-child(7) {
                     display: block;
+                }
+
+                > div:nth-child(8) {
+                    width: 5%;
                 }
             }
         }
