@@ -1738,11 +1738,12 @@ function disableModules() {
   //} else {
   //  $('#Adminsettingdiv').css('display', 'none');
   //}
-  if ($.session.anywhereAuthorizationsPermission == 'Anywhere_Authorizations') {
-    //Leave module on
-  } else {
-    $('#authorizationsdiv').css('display', 'none');
-  }
+  // TODO: ASH
+  // if ($.session.anywhereAuthorizationsPermission == 'Anywhere_Authorizations') {
+  //   //Leave module on
+  // } else {
+  //   $('#authorizationsdiv').css('display', 'none');
+  // }
   if ($.session.anywherePlanPermission == 'Anywhere_Plan') {
     //Leave module on
   } else {

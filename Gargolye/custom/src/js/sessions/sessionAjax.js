@@ -920,7 +920,8 @@ function getDefaultAnywhereSettings() {
       $.session.emarPermission = res.emarPermission;
       $.session.formsPermission = res.formsPermission;
       $.session.OODPermission = res.OODPermission;
-      $.session.anywhereAuthorizationsPermission = res.anywhereAuthorizationsPermission;
+      // TODO: ASH
+      //$.session.anywhereAuthorizationsPermission = res.anywhereAuthorizationsPermission;
       $.session.anywherePlanPermission = res.anywherePlanPermission;
       $.session.singleEntryApproveEnabled = res.singleEntryApproveEnabled;
       $.session.singleEntryLocationRequired = res.singleEntryLocationRequired;
