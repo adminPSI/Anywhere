@@ -148,7 +148,7 @@ namespace Anywhere.service.Data.ReportBuilder
             string reportServerList = "Primary";
             string result = "";
 
-            result = rbdg.generateJobActivityReport(token, category, title, reportServerList, reportData.workshopLocation, reportData.workshopDate, reportData.workshopJob);
+            result = rbdg.generateJobActivityReport(token, category, title, reportServerList, reportData.workshopLocation, reportData.workshopJob, reportData.workshopStartDate, reportData.workshopEndDate);
             return result;
         }
 
@@ -270,6 +270,8 @@ namespace Anywhere.service.Data.ReportBuilder
             public string workshopLocation { get; set; }
             public string workshopJob { get; set; }
             public string workshopDate { get; set; }
+            public string workshopStartDate { get; set; }
+            public string workshopEndDate { get; set; }
 
         }
 

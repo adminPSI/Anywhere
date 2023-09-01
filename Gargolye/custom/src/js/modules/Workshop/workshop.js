@@ -164,7 +164,7 @@ var workshop = (function() {
           style: "secondary"
           });
           let today = UTIL.getTodaysDate();
-          let defaultId = 000;
+          let defaultId = 0;
         today = new Date(today.replace(/-/g, '\/'));
         openBatches.forEach(findCorrectDates);
         function findCorrectDates(ele) {
@@ -429,7 +429,9 @@ var workshop = (function() {
       return (filterValues = {
         workshopLocation: workshopFilterListData.locationId,
         workshopJob: workshopFilterListData.jobStepId,
-        workshopDate: workshopFilterListData.selectedDate
+        workshopDate: workshopFilterListData.selectedDate,
+        workshopStartDate: minDateIso,
+        workshopEndDate: maxDateIso
       });
     }
     // Helper function to create the main reports button on the module page
