@@ -63,22 +63,17 @@
     div:nth-child(2){
       // COMPLETED DATE
       display: none;
-      min-width: 90px;
-      max-width: 120px;
     }
-    div:nth-child(3){
-      // YEAR START DATE
-      min-width: 90px;
-      max-width: 120px;
-    }
+    div:nth-child(2),
+    div:nth-child(3),
     div:nth-child(4) {
-      // YEAR END DATE
-      min-width: 90px;
-      max-width: 120px;
+      // ALL DATES
+      min-width: 80px;
+      max-width: 90px;
     }
     div:nth-child(5) {
       // PLAN TYPE
-      min-width: 70px;
+      min-width: 100px;
     }
     div:nth-child(6) {
       // PLAN VENDOR
@@ -91,11 +86,13 @@
       min-width: 100px;
     }
 
-    @media screen and (min-width: 1000px) {
+    @media screen and (min-width: 600px) {
       div:nth-child(2) {
         // COMPLETED DATE
         display: block;
       }
+    }
+    @media screen and (min-width: 900px) {
       div:nth-child(6) {
         // PLAN VENDOR
         display: block;
