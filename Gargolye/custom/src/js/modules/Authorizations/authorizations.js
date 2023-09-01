@@ -43,23 +43,23 @@ const authorizations = (function () {
   }
   function clearAllData() {
     // DATA
-    let authData = undefined;
-    let filterDropdownData = undefined;
-    let selectedConsumer = undefined;
-    let filterValues = undefined;
-    let pageWrap = undefined;
-    let overviewTable = undefined;
-    let filterPopup = undefined;
-    let planTypeDropdown = undefined;
-    let vendorDropdown = undefined;
-    let matchSourceDropdown = undefined;
-    let completedDateStart = undefined;
-    let completedDateEnd = undefined;
-    let yearStartStart = undefined;
-    let yearStartEnd = undefined;
-    let yearEndStart = undefined;
-    let yearEndEnd = undefined;
-    let applyFilterBtn = undefined;
+    authData = undefined;
+    filterDropdownData = undefined;
+    selectedConsumer = undefined;
+    filterValues = undefined;
+    pageWrap = undefined;
+    overviewTable = undefined;
+    filterPopup = undefined;
+    planTypeDropdown = undefined;
+    vendorDropdown = undefined;
+    matchSourceDropdown = undefined;
+    completedDateStart = undefined;
+    completedDateEnd = undefined;
+    yearStartStart = undefined;
+    yearStartEnd = undefined;
+    yearEndStart = undefined;
+    yearEndEnd = undefined;
+    applyFilterBtn = undefined;
   }
   function groupChildData() {
     const groupedChildren = authData.pageDataChild.reduce((obj, child) => {
@@ -359,7 +359,7 @@ const authorizations = (function () {
     const mainHeading = document.createElement('div');
     mainHeading.classList.add('authTable__header');
     mainHeading.innerHTML = `
-      <div id="authToggle" class="closed">${icons.keyArrowRight}</div>
+      <div></div>
       <div>Completed</div>
       <div>Year Start</div>
       <div>Year End</div>
@@ -438,22 +438,16 @@ const authorizations = (function () {
       // EVENT
       //---------------------------------
       mainDataRow.addEventListener('click', e => {
-        // if (e.target.id === 'authToggle') {
-        //   if (e.target.classList.contains('closed')) {
-        //     e.target.classList.remove('closed');
-        //     e.target.innerHTML = icons.keyArrowDown;
-        //   } else {
-        //     e.target.classList.add('closed');
-        //     e.target.innerHTML = icons.keyArrowRight;
-        //   }
-        // }
+        const toggle = e.target.querySelector('#authToggle');
 
         if (subRowWrap.classList.contains('active')) {
           // close it
           subRowWrap.classList.remove('active');
+          toggle.innerHTML = icons.keyArrowRight;
         } else {
           // open it
           subRowWrap.classList.add('active');
+          toggle.innerHTML = icons.keyArrowDown;
         }
       });
 
