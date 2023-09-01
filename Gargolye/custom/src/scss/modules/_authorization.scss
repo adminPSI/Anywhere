@@ -91,7 +91,7 @@
       min-width: 100px;
     }
 
-    @media screen and (max-width: 1000px) {
+    @media screen and (min-width: 1000px) {
       div:nth-child(2) {
         // COMPLETED DATE
         display: block;
@@ -168,7 +168,7 @@
       text-align: center;
     }
 
-    @media screen and (max-width: 600Px) {
+    @media screen and (min-width: 600Px) {
       div:nth-child(8) {
         // VENDOR NAME
         display: block;
