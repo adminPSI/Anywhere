@@ -359,6 +359,7 @@ const authorizations = (function () {
     const mainHeading = document.createElement('div');
     mainHeading.classList.add('authTable__header');
     mainHeading.innerHTML = `
+      <div id="authToggle" class="closed">${icons.keyArrowRight}</div>
       <div>Completed</div>
       <div>Year Start</div>
       <div>Year End</div>
@@ -379,6 +380,7 @@ const authorizations = (function () {
       const mainDataRow = document.createElement('div');
       mainDataRow.classList.add('authTable__mainDataRow', 'authTable__dataRow');
       mainDataRow.innerHTML = `
+        <div id="authToggle">${icons.keyArrowRight}</div>
         <div>${UTIL.formatDateFromIso(parent.CompletionDate.split('T')[0])}</div>
         <div>${UTIL.formatDateFromIso(parent.plan_year_start.split('T')[0])}</div>
         <div>${UTIL.formatDateFromIso(parent.plan_year_end.split('T')[0])}</div>
@@ -436,9 +438,21 @@ const authorizations = (function () {
       // EVENT
       //---------------------------------
       mainDataRow.addEventListener('click', e => {
+        // if (e.target.id === 'authToggle') {
+        //   if (e.target.classList.contains('closed')) {
+        //     e.target.classList.remove('closed');
+        //     e.target.innerHTML = icons.keyArrowDown;
+        //   } else {
+        //     e.target.classList.add('closed');
+        //     e.target.innerHTML = icons.keyArrowRight;
+        //   }
+        // }
+
         if (subRowWrap.classList.contains('active')) {
+          // close it
           subRowWrap.classList.remove('active');
         } else {
+          // open it
           subRowWrap.classList.add('active');
         }
       });

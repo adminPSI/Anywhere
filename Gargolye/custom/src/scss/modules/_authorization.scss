@@ -25,6 +25,13 @@
     }
   }
 
+  &__mainDataRow,
+  &__subDataRow {
+    * {
+      pointer-events: none;
+    }
+  }
+
   &__mainDataRow {
     cursor: pointer;
     padding: 10px 6px;
