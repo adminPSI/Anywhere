@@ -169,7 +169,7 @@ const WagesBenefits = (() => {
     }
 
     function eventListeners() {
-        otherInput.addEventListener('focusout', event => { 
+        otherInput.addEventListener('focusout', event => {
             if (!otherInput.classList.contains('disabled')) {
                 otherInputText = event.target.value;
                 saveWagesChecked('other', true, otherInputText);
@@ -205,7 +205,7 @@ const WagesBenefits = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'employmentCommonTable',
-            columnHeadings: ['Hours/ Week', 'Hourly Wages', 'Start Date', 'End Date'], 
+            columnHeadings: ['Hours/ Week', 'Hourly Wages', 'Start Date', 'End Date'],
             endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
@@ -215,11 +215,11 @@ const WagesBenefits = (() => {
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
             },
-            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',     
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',
             endIconCallback: (e) => {
                 deleteWagesBenefitsPOPUP(entry.wagesId);
             },
-        })); 
+        }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
 
@@ -273,7 +273,7 @@ const WagesBenefits = (() => {
             {
                 wagesID: wagesId
             },
-            function (results) {  
+            function (results) {
                 if (results = 'sucess') {
                     POPUP.hide(confirmPopup);
                     NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 1);
@@ -468,15 +468,17 @@ const WagesBenefits = (() => {
     }
 
     function otherChecked(event) {
-        if (event == true) {
-            otherInput.classList.remove('disabled');
-            saveWagesChecked('other', true, '');
-        } else {
-            otherInput.classList.add('disabled');
-            otherValue = '';
-            otherInput.querySelector('#otherInput').value = '';
-            saveWagesChecked('other', false, '');
+        if ($.session.EmploymentUpdate) {
+            if (event == true) {
+                otherInput.classList.remove('disabled');
+                saveWagesChecked('other', true, '');
+            } else {
+                otherInput.classList.add('disabled');
+                otherValue = '';
+                otherInput.querySelector('#otherInput').value = '';
+                saveWagesChecked('other', false, '');
 
+            }
         }
     }
 
