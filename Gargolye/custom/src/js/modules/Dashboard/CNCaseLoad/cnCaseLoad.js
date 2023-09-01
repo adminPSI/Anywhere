@@ -11,6 +11,133 @@ const CN_CaseLoadWidget = (function () {
   // dates
   let lastNoteEnteredDaysBackDate;
 
+  function showSendReportPopup() {
+    const emailData = {
+      to: '',
+      cc: '',
+      bcc: '',
+      subject: '',
+      body: '',
+    };
+    const sendReportPopup = POPUP.build({
+      id: 'myCaseLoadSendReportPopup',
+      header: 'Email Report',
+    });
+
+    const emailTo = input.build({
+      type: 'email',
+      label: 'Email To Addresses:',
+      callback: e => {
+        emailData.to = e.target.value;
+      },
+    });
+    const emailCC = input.build({
+      type: 'email',
+      label: 'Email Cc Addresses:',
+      callback: e => {
+        emailData.cc = e.target.value;
+      },
+    });
+    const emailBCC = input.build({
+      type: 'email',
+      label: 'Email Bcc Addresses:',
+      callback: e => {
+        emailData.bcc = e.target.value;
+      },
+    });
+    const emailSubject = input.build({
+      type: 'text',
+      label: 'Email Subject:',
+      callback: e => {
+        emailData.subject = e.target.value;
+      },
+    });
+    const emailBody = input.build({
+      type: 'text',
+      label: 'Email Body:',
+      callback: e => {
+        emailData.body = e.target.value;
+      },
+    });
+
+    const btnWrap = document.createElement('div');
+    const okBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(sendReportPopup);
+      },
+    });
+    const cancelBtn = button.build({
+      text: 'CANCEL',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(sendReportPopup);
+        showReportPopup();
+      },
+    });
+    btnWrap.appendChild(okBtn);
+    btnWrap.appendChild(cancelBtn);
+
+    sendReportPopup.appendChild(emailTo);
+    sendReportPopup.appendChild(emailCC);
+    sendReportPopup.appendChild(emailBCC);
+    sendReportPopup.appendChild(emailSubject);
+    sendReportPopup.appendChild(emailBody);
+    sendReportPopup.appendChild(btnWrap);
+
+    POPUP.show(sendReportPopup);
+  }
+  function showReportDownloadPopup() {
+    const createReportPopup = POPUP.build({
+      id: 'myCaseLoadCreateReportPopup',
+    });
+    const message = document.createElement('div');
+    message.innerText =
+      'Your report is beig generated and will be downloaded when finished, in the meantime you may continue to work.';
+    const okBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(createReportPopup);
+      },
+    });
+    createReportPopup.appendChild(message);
+    createReportPopup.appendChild(okBtn);
+  }
+  function showReportPopup() {
+    quickPrintPopup = POPUP.build({
+      id: 'myCaseLoadReportPopup',
+    });
+
+    const createReportBtn = button.build({
+      text: 'Create Report',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(quickPrintPopup);
+        showReportDownloadPopup();
+      },
+    });
+    const sendReportBtn = button.build({
+      text: 'Send Report',
+      style: 'secondary',
+      type: 'contained',
+      callback: () => {
+        POPUP.hide(quickPrintPopup);
+        showSendReportPopup();
+      },
+    });
+
+    quickPrintPopup.appendChild(createReportBtn);
+    quickPrintPopup.appendChild(sendReportBtn);
+
+    POPUP.show(quickPrintPopup);
+  }
+
   function displayConsumerCount(caseLoad) {
     if (caseLoad && caseLoad.length !== 0) {
       consumerCountlbl = document.createElement('div');

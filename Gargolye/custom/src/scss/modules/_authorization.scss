@@ -28,9 +28,11 @@
   &__mainDataRow {
     cursor: pointer;
     padding: 10px 6px;
+    border: $w-sm solid rgba($black, 0.12);
   }
   &__subDataRow {
     padding: 8px 6px;
+    border: $w-sm solid rgba($black, 0.12);
   }
 
   &__subRowWrap {
@@ -54,60 +56,99 @@
     div:nth-child(4) {
       // PLAN TYPE
       min-width: 70px;
-      max-width: 82px;
       text-align: center;
     }
     div:nth-child(5) {
       // PLAN VENDOR
+      display: none;
       min-width: 100px;
+    }
+    div:nth-child(6) {
+      // MATCH SOURCE
+      display: none;
+      min-width: 100px;
+    }
+
+    @media screen and (max-width: 1000px) {
+      div:nth-child(5) {
+        // PLAN VENDOR
+        display: block;
+      }
+      div:nth-child(6) {
+        // MATCH SOURCE
+        display: block;
+      }
     }
   }
 
   &__subHeader,
   &__subDataRow {
     div:nth-child(1) {
-      // SERVICE
-      min-width: 90px;
-      max-width: 100px;
+      // ITEM NUM
+      max-width: 30px;
+      flex-grow: 0;
     }
     div:nth-child(2) {
+      // SERVICE
+      min-width: 100px;
+    }
+    div:nth-child(3) {
       // SERVICE CODE
-      min-width: 70px;
+      display: none;
+      min-width: 60px;
       max-width: 80px;
     }
-    div:nth-child(3),
     div:nth-child(4) {
-      // DATE
+      // BEGIN DATE
       min-width: 90px;
       max-width: 100px;
     }
     div:nth-child(5) {
+      // END DATE
+      display: none;
+      min-width: 90px;
+      max-width: 100px;
+    }
+    div:nth-child(6) {
       // UNITS
       min-width: 70px;
       max-width: 80px;
       text-align: center;
     }
-    div:nth-child(6) {
+    div:nth-child(7) {
       // FREQUENCY
+      display: none;
       min-width: 70px;
       max-width: 80px;
       text-align: center;
     }
-    div:nth-child(7) {
+    div:nth-child(8) {
       // VENDOR NAME
+      display: none;
       min-width: 100px;
     }
-    div:nth-child(8) {
+    div:nth-child(9) {
       // TOTAL COST 1
       min-width: 70px;
       max-width: 80px;
       text-align: center;
     }
-    div:nth-child(9) {
+    div:nth-child(10) {
       // TOTAL COST 2
       min-width: 70px;
       max-width: 80px;
       text-align: center;
+    }
+
+    @media screen and (max-width: 1000px) {
+      div:nth-child(5) {
+        // PLAN VENDOR
+        display: block;
+      }
+      div:nth-child(6) {
+        // MATCH SOURCE
+        display: block;
+      }
     }
   }
 }

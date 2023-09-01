@@ -41,6 +41,26 @@ const authorizations = (function () {
       }
     }
   }
+  function clearAllData() {
+    // DATA
+    let authData = undefined;
+    let filterDropdownData = undefined;
+    let selectedConsumer = undefined;
+    let filterValues = undefined;
+    let pageWrap = undefined;
+    let overviewTable = undefined;
+    let filterPopup = undefined;
+    let planTypeDropdown = undefined;
+    let vendorDropdown = undefined;
+    let matchSourceDropdown = undefined;
+    let completedDateStart = undefined;
+    let completedDateEnd = undefined;
+    let yearStartStart = undefined;
+    let yearStartEnd = undefined;
+    let yearEndStart = undefined;
+    let yearEndEnd = undefined;
+    let applyFilterBtn = undefined;
+  }
   function groupChildData() {
     const groupedChildren = authData.pageDataChild.reduce((obj, child) => {
       if (!obj[child.pas_id]) {
@@ -86,6 +106,55 @@ const authorizations = (function () {
     } else {
       applyFilterBtn.classList.remove('disabled');
     }
+  }
+  function populatePlanTypeDropdown() {
+    const data = [
+      { value: '%', text: 'All' },
+      { text: 'Final', value: 'F' },
+      { text: 'Initial', value: 'I' },
+      { text: 'Revision', value: 'V' },
+      { text: 'Redetermination', value: 'R' },
+    ];
+    dropdown.populate(planTypeDropdown, data, filterValues.planType);
+  }
+  function getPlanTypeFullName(value) {
+    switch (value) {
+      case 'F': {
+        return 'Final';
+      }
+      case 'I': {
+        return 'Initial';
+      }
+      case 'V': {
+        return 'Revision';
+      }
+      case 'R': {
+        return 'Redetermination';
+      }
+      default: {
+        return 'All';
+      }
+    }
+  }
+  function populateVendorDropdown() {
+    const data = filterDropdownData.planVendors.map(pv => {
+      return {
+        value: pv.vendorId,
+        text: pv.vendorName,
+      };
+    });
+    data.unshift({ value: '%', text: 'All' });
+    dropdown.populate(vendorDropdown, data, filterValues.vendor);
+  }
+  function populateMatchSourceDropdown() {
+    const data = filterDropdownData.matchSources.map(ms => {
+      return {
+        value: ms.code,
+        text: ms.caption,
+      };
+    });
+    data.unshift({ value: '%', text: 'All' });
+    dropdown.populate(matchSourceDropdown, data, filterValues.matchSource);
   }
   function showFilterPopup() {
     filterPopup = POPUP.build({
@@ -155,6 +224,7 @@ const authorizations = (function () {
     dateWrap.appendChild(yearEndEnd);
 
     const btnWrap = document.createElement('div');
+    btnWrap.classList.add('btnWrap');
     applyFilterBtn = button.build({
       text: 'Apply',
       style: 'secondary',
@@ -184,55 +254,6 @@ const authorizations = (function () {
     populateMatchSourceDropdown();
 
     setupFilterEvents();
-  }
-  function populatePlanTypeDropdown() {
-    const data = [
-      { value: '%', text: 'All' },
-      { text: 'Final', value: 'F' },
-      { text: 'Initial', value: 'I' },
-      { text: 'Revision', value: 'V' },
-      { text: 'Redetermination', value: 'R' },
-    ];
-    dropdown.populate(planTypeDropdown, data, filterValues.planType);
-  }
-  function getPlanTypeFullName(value) {
-    switch (value) {
-      case 'F': {
-        return 'Final';
-      }
-      case 'I': {
-        return 'Initial';
-      }
-      case 'V': {
-        return 'Revision';
-      }
-      case 'R': {
-        return 'Redetermination';
-      }
-      default: {
-        return 'All';
-      }
-    }
-  }
-  function populateVendorDropdown() {
-    const data = filterDropdownData.planVendors.map(pv => {
-      return {
-        value: pv.vendorId,
-        text: pv.vendorName,
-      };
-    });
-    data.unshift({ value: '%', text: 'All' });
-    dropdown.populate(vendorDropdown, data, filterValues.vendor);
-  }
-  function populateMatchSourceDropdown() {
-    const data = filterDropdownData.matchSources.map(ms => {
-      return {
-        value: ms.code,
-        text: ms.caption,
-      };
-    });
-    data.unshift({ value: '%', text: 'All' });
-    dropdown.populate(matchSourceDropdown, data, filterValues.matchSource);
   }
   function setupFilterEvents() {
     const newFilterValues = {};
@@ -479,6 +500,7 @@ const authorizations = (function () {
 
   return {
     handleActionNavEvent,
+    clearAllData,
     init,
   };
 })();
