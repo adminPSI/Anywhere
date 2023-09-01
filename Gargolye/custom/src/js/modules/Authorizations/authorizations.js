@@ -381,9 +381,15 @@ const authorizations = (function () {
       mainDataRow.classList.add('authTable__mainDataRow', 'authTable__dataRow');
       mainDataRow.innerHTML = `
         <div id="authToggle">${icons.keyArrowRight}</div>
-        <div>${UTIL.formatDateFromIso(parent.CompletionDate.split('T')[0])}</div>
-        <div>${UTIL.formatDateFromIso(parent.plan_year_start.split('T')[0])}</div>
-        <div>${UTIL.formatDateFromIso(parent.plan_year_end.split('T')[0])}</div>
+        <div>${UTIL.abbreviateDateYear(
+          UTIL.formatDateFromIso(parent.CompletionDate.split('T')[0]),
+        )}</div>
+        <div>${UTIL.abbreviateDateYear(
+          UTIL.formatDateFromIso(parent.plan_year_start.split('T')[0]),
+        )}</div>
+        <div>${UTIL.abbreviateDateYear(
+          UTIL.formatDateFromIso(parent.plan_year_end.split('T')[0]),
+        )}</div>
         <div>${getPlanTypeFullName(parent.plantype)}</div>
         <div>${parent.plVendorId ? parent.plVendorId : ''}</div>
         <div>${parent.sourceAndCaption}</div>
