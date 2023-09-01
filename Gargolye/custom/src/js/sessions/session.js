@@ -817,6 +817,7 @@ function setSessionVariables() {
     $.session.ViewMyInformation = true;
     $.session.UpdateMyInformation = true;
     $.session.authorizationsView = true;
+    $.session.planView = true;
   }
   // TODO-ASH: move this somewhere else eventually
   if (!$.session.ViewMyInformation) {
@@ -1600,7 +1601,9 @@ function checkModulePermissions() {
   if ($.session.schedulingView == false) {
     $('#schedulersettingsdiv').addClass('disabledModule');
   }
-
+  if ($.session.authorizationsView == false) {
+    $('#authorizationsdiv').addClass('disabledModule');
+  }
   if ($.session.planView == false) {
     $('#plansettingsdiv').addClass('disabledModule');
   }
@@ -1735,7 +1738,12 @@ function disableModules() {
   //} else {
   //  $('#Adminsettingdiv').css('display', 'none');
   //}
-  if ($.session.UserId === 'ash' || $.session.anywherePlanPermission == 'Anywhere_Plan') {
+  if ($.session.anywhereAuthorizationsPermission == 'Anywhere_Authorizations') {
+    //Leave module on
+  } else {
+    $('#authorizationsdiv').css('display', 'none');
+  }
+  if ($.session.anywherePlanPermission == 'Anywhere_Plan') {
     //Leave module on
   } else {
     $('#plansettingsdiv').css('display', 'none');
