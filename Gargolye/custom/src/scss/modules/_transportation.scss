@@ -634,12 +634,50 @@
     }
 
     .employmentDTWrap {
+        display: flow;
+
+        .width20Per, .width25Per, .width27Per, .width30Per, .width32Per, .width35Per {
+            width: 97%;
+        }
+
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .checkbox-mtd > span:after {
+                top: 24px !important;
+            }
+
+            .width20Per {
+                width: 20%;
+            }
+
+            .width25Per {
+                width: 25%;
+            }
+
+            .width27Per {
+                width: 27%;
+            }
+
+            .width30Per {
+                width: 30%;
+            }
+
+            .width32Per {
+                width: 32%;
+            }
+
+            .width35Per {
+                width: 35%;
+            }
+        }
+    }
+
+    .employmentBtnWrap {
         display: flex;
         justify-content: space-between;
-
-        .checkbox-mtd > span:after {
-            top: 24px !important;
-        }
     }
 
 
@@ -674,7 +712,7 @@
     #employmentPositionTable {
         .endIcon {
             margin-left: 2px;
-            max-width: 25px !important;   
+            max-width: 25px !important;
         }
 
         .table__row {
@@ -695,12 +733,12 @@
             }
 
             > div:nth-child(3) {
-                width: 10%;
+                width: 11%;
             }
 
             > div:nth-child(4) {
                 display: none;
-                width: 10%;
+                width: 11%;
             }
 
             > div:nth-child(5) {
@@ -714,7 +752,7 @@
 
             > div:nth-child(7) {
                 display: none;
-                width: 17%; 
+                width: 17%;
             }
 
             > div:nth-child(8) {
@@ -791,4 +829,4 @@
             }
         }
     }
-} 
+}
