@@ -954,7 +954,7 @@ const plan = (function () {
           consumerPlanId: planId,
           prevPlanId: newType === 'a' ? planId : newPlanData.consumerPlanId,
           planType: newType.toUpperCase(),
-          revisionNumber: newType === 'r' ? `${parseInt(newPlanData.revisionNumber) + 1}` : '',
+          revisionNumber: newType === 'r' ? parseInt(newPlanData.revisionNumber) + 1 : '',
           planYearStart: UTIL.formatDateToIso(newPlanData.planYearStart.split(' ')[0]),
           planYearEnd: UTIL.formatDateToIso(newPlanData.planYearEnd.split(' ')[0]),
           effectiveStartDate: UTIL.formatDateToIso(
