@@ -135,7 +135,7 @@ const authorizations = (function () {
     ];
     dropdown.populate(planTypeDropdown, data, filterValues.planType);
   }
-  function getPlanTypeFullName(value) {
+  function getPlanTypeFullName(value, revisionNumber) {
     switch (value) {
       case 'F': {
         return 'Final';
@@ -144,7 +144,7 @@ const authorizations = (function () {
         return 'Initial';
       }
       case 'V': {
-        return 'Revision';
+        return revisionNumber ? `Revision ${revisionNumber}` : 'Revision';
       }
       case 'R': {
         return 'Redetermination';
@@ -448,7 +448,7 @@ const authorizations = (function () {
         <div>${UTIL.abbreviateDateYear(
           UTIL.formatDateFromIso(parent.plan_year_end.split('T')[0]),
         )}</div>
-        <div>${getPlanTypeFullName(parent.plantype)}</div>
+        <div>${getPlanTypeFullName(parent.plantype, parent.revisionNum)}</div>
         <div>${parent.plVendorId ? parent.plVendorId : ''}</div>
         <div>${parent.sourceAndCaption}</div>
       `;
