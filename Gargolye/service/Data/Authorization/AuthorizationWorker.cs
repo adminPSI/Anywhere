@@ -199,7 +199,7 @@ namespace Anywhere.service.Data.Authorization
             string matchSourcesString = adg.getMatchSources(token);
             MatchSources[] matchSourcesObj = js.Deserialize<MatchSources[]>(matchSourcesString);
             //Vendors
-            string vendorsString = adg.getServiceVendors(token);
+            string vendorsString = getPlanServiceVendors();
             PlanVendors[] vendorsObj = js.Deserialize<PlanVendors[]>(vendorsString);
 
             AuthorizationPopup ap = new AuthorizationPopup();
@@ -209,7 +209,36 @@ namespace Anywhere.service.Data.Authorization
             return ap;
         }
 
-        
+        public string getPlanServiceVendors()
+        {
+
+            try
+            {
+
+                string jsonResult = "";
+                sb.Clear();
+
+                sb.Append("select Distinct p.PL_Vendor_ID as vendorId, v.name as vendorName ");
+                sb.Append("from dba.pas as p ");
+                sb.Append("left outer join vendor as v on v.Vendor_ID = p.PL_Vendor_ID where active = 'Y' ");
+                sb.Append("order by vendorName");
+                
+                DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+                jsonResult = DataTableToJSONWithJSONNet(dt);
+                //FilterResults[] filterResultssObj = js.Deserialize<FilterResults[]>(jsonResult.ToString());
+
+                return jsonResult;
+
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+            return String.Empty;
+
+        }
+
 
         public class AuthorizationPopup
         {
