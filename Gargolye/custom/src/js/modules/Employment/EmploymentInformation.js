@@ -286,11 +286,12 @@ const EmploymentInformation = (() => {
         btnWrap.style.width = '50%';
 
         if ($.session.EmploymentUpdate) {
-            SAVE_BTN.style.width = '48%';  
+            SAVE_BTN.style.width = '52%';  
             btnWrap.appendChild(SAVE_BTN);
         }
 
-        CANCEL_BTN.style.width = '48%';
+        CANCEL_BTN.style.width = '52%';
+        CANCEL_BTN.style.marginLeft = '5%'; 
         btnWrap.appendChild(CANCEL_BTN);
         addNewCardBody.appendChild(btnWrap);
 

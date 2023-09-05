@@ -221,7 +221,7 @@ const NewEntryCF = (() => {
         });
 
         const radioDiv = document.createElement("div");
-        radioDiv.classList.add("addRouteRadioDiv");
+        radioDiv.classList.add("addCFRadioDiv"); 
         radioDiv.appendChild(expenseRadio);
         radioDiv.appendChild(depositRadio);
         /////////////////

@@ -75,6 +75,24 @@ const authorizations = (function () {
 
     authData.pageDataChild = { ...groupedChildren };
   }
+  function convertToCurrency(dirtyNumber) {
+    const numberValue = parseFloat(dirtyNumber);
+
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+      numberValue,
+    );
+  }
+  function getFreqName(key) {
+    const freqObj = {
+      W: 'Week',
+      S: 'Span',
+      D: 'Day',
+      M: 'Month',
+      N: 'None',
+    };
+
+    return freqObj[key];
+  }
 
   // Filter Popup
   //----------------------------------------
@@ -145,6 +163,13 @@ const authorizations = (function () {
     });
     data.unshift({ value: '%', text: 'All' });
     dropdown.populate(vendorDropdown, data, filterValues.vendor);
+  }
+  function getVendorFullName(id) {
+    if (id === '%') return 'All';
+
+    filterDropdownData.planVendors.filter(pv => {
+      return pv.vendorId === id;
+    });
   }
   function populateMatchSourceDropdown() {
     const data = filterDropdownData.matchSources.map(ms => {
@@ -331,11 +356,35 @@ const authorizations = (function () {
         completedDateEnd: UTIL.formatDateToIso(filterValues.completedDateEnd),
       });
 
-      updateFilteredBy();
       buildOverviewTable();
     });
   }
-  function updateFilteredBy() {}
+  function buildFilteredByData() {
+    const currentFilterDisplay = document.createElement('div');
+    currentFilterDisplay.classList.add('filteredByData');
+
+    currentFilterDisplay.innerHTML = `
+      <p><span>Plan Type: </span> ${getPlanTypeFullName(filterValues.plantype)} </P>
+      <p><span>PL Vendor: </span> ${getVendorFullName(filterValues.vendor)} </P>
+      <p><span>Completed Dates: </span>${UTIL.abbreviateDateYear(
+        UTIL.formatDateFromIso(filterValues.completedDateStart.split('T')[0]),
+      )} - ${UTIL.abbreviateDateYear(
+      UTIL.formatDateFromIso(filterValues.completedDateEnd.split('T')[0]),
+    )}</p>
+      <p><span>Year Start: </span>${UTIL.abbreviateDateYear(
+        UTIL.formatDateFromIso(filterValues.yearStartStart.split('T')[0]),
+      )} - ${UTIL.abbreviateDateYear(
+      UTIL.formatDateFromIso(filterValues.yearStartEnd.split('T')[0]),
+    )}</p>
+       <p><span>Year End: </span>${UTIL.abbreviateDateYear(
+         UTIL.formatDateFromIso(filterValues.yearEndStart.split('T')[0]),
+       )} - ${UTIL.abbreviateDateYear(
+      UTIL.formatDateFromIso(filterValues.yearEndEnd.split('T')[0]),
+    )}</p>
+    `;
+
+    return currentFilterDisplay;
+  }
 
   //----------------------------------------
   function buildConsumerCard() {
@@ -433,10 +482,10 @@ const authorizations = (function () {
           )}</div>
           <div>${UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.EndDate.split('T')[0]))}</div>
           <div>${child.MaxUnits}</div>
-          <div>${child.frequency}</div>
+          <div>${getFreqName(child.frequency)}</div>
           <div>${child.vendorName}</div>
-          <div>${child.authCostFY1}</div>
-          <div>${child.authCostFY2}</div>
+          <div>${convertToCurrency(child.authCostFY1)}</div>
+          <div>${convertToCurrency(child.authCostFY2)}</div>
         `;
         subRowWrap.appendChild(subDataRow);
       });
@@ -481,8 +530,11 @@ const authorizations = (function () {
       callback: showFilterPopup,
     });
 
+    filteredByData = buildFilteredByData();
+
     pageWrap.appendChild(consumerCard);
     pageWrap.appendChild(filterBtn);
+    pageWrap.appendChild(filteredByData);
     DOM.ACTIONCENTER.appendChild(pageWrap);
 
     authData = await authorizationsAjax.getPageData({
