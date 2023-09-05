@@ -93,6 +93,11 @@ const authorizations = (function () {
 
     return freqObj[key];
   }
+  function formatDate(date) {
+    if (!date) return '';
+
+    return UTIL.abbreviateDateYear(UTIL.formatDateFromIso(date.split('T')[0]));
+  }
 
   // Filter Popup
   //----------------------------------------
@@ -372,24 +377,19 @@ const authorizations = (function () {
     const currentFilterDisplay = document.createElement('div');
     currentFilterDisplay.classList.add('filteredByData');
 
+    const completedDateStart = `${formatDate(filterValues.completedDateStart)}`;
+    const completedDateEnd = `${formatDate(filterValues.completedDateEnd)}`;
+    const yearStartStart = `${formatDate(filterValues.yearStartStart)}`;
+    const yearStartEnd = `${formatDate(filterValues.yearStartEnd)}`;
+    const yearEndStart = `${formatDate(filterValues.yearEndStart)}`;
+    const yearEndEnd = `${formatDate(filterValues.yearEndEnd)}`;
+
     currentFilterDisplay.innerHTML = `
       <p><span>Plan Type: </span> ${getPlanTypeFullName(filterValues.plantype)} </P>
       <p><span>PL Vendor: </span> ${getVendorFullName(filterValues.vendor)} </P>
-      <p><span>Completed Dates: </span>${UTIL.abbreviateDateYear(
-        UTIL.formatDateFromIso(filterValues.completedDateStart.split('T')[0]),
-      )} - ${UTIL.abbreviateDateYear(
-      UTIL.formatDateFromIso(filterValues.completedDateEnd.split('T')[0]),
-    )}</p>
-      <p><span>Year Start: </span>${UTIL.abbreviateDateYear(
-        UTIL.formatDateFromIso(filterValues.yearStartStart.split('T')[0]),
-      )} - ${UTIL.abbreviateDateYear(
-      UTIL.formatDateFromIso(filterValues.yearStartEnd.split('T')[0]),
-    )}</p>
-       <p><span>Year End: </span>${UTIL.abbreviateDateYear(
-         UTIL.formatDateFromIso(filterValues.yearEndStart.split('T')[0]),
-       )} - ${UTIL.abbreviateDateYear(
-      UTIL.formatDateFromIso(filterValues.yearEndEnd.split('T')[0]),
-    )}</p>
+      <p><span>Completed Dates: </span>${completedDateStart} - ${completedDateEnd}</p>
+      <p><span>Year Start: </span>${yearStartStart} - ${yearStartEnd}</p>
+      <p><span>Year End: </span>${yearEndStart} - ${yearEndEnd}</p>
     `;
 
     return currentFilterDisplay;
