@@ -1,6 +1,11 @@
 .authTable {
   border-radius: $r-sm;
   overflow: hidden;
+  font-size: 16px;
+
+  &__subTableWrap {
+    font-size: 14px;
+  }
 
   &__header,
   &__subHeader {
