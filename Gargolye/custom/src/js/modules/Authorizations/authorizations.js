@@ -162,6 +162,15 @@ const authorizations = (function () {
       };
     });
     data.unshift({ value: '%', text: 'All' });
+    data.sort((a, b) => {
+      if (a.vendorName < b.vendorName) {
+        return -1;
+      }
+      if (a.vendorName > b.vendorName) {
+        return 1;
+      }
+      return 0;
+    });
     dropdown.populate(vendorDropdown, data, filterValues.vendor);
   }
   function getVendorFullName(id) {
