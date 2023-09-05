@@ -37,6 +37,7 @@ namespace Anywhere.service.Data.Authorization
             public string sourceAndCaption { get; set; }
             public string plVendorId { get; set; }
             public string pas_id { get; set; }
+            public string revisionNum { get; set; }
 
         }
 
@@ -94,7 +95,7 @@ namespace Anywhere.service.Data.Authorization
                 string fieldId = "Match Source";
                 sb.Clear();
   
-                sb.Append("select p.CompletionDate,p.plan_year_start,p.plan_year_end,p.plantype,p.match_source + ' ' + ct.caption as sourceAndCaption, p.ID, p.PL_Vendor_ID as plVendorId, v.name, p.pas_id "); 
+                sb.Append("select p.CompletionDate,p.plan_year_start,p.plan_year_end,p.plantype,p.match_source + ' ' + ct.caption as sourceAndCaption, p.ID, p.PL_Vendor_ID as plVendorId, v.name, p.pas_id, p.RevisionNum as revisionNum "); 
                 sb.Append("from dba.pas as p ");
                 sb.Append("join code_table as ct on ct.code = p.Match_Source ");
                 sb.Append("left outer join vendor as v on v.Vendor_ID = p.PL_Vendor_ID ");
