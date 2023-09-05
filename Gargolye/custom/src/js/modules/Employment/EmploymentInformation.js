@@ -243,21 +243,21 @@ const EmploymentInformation = (() => {
 
         var dropWrap = document.createElement('div');
         dropWrap.classList.add('employmentDTWrap');
-        jobStandingDropdown.style.width = '27%';
+        jobStandingDropdown.classList.add('width27Per');
         dropWrap.appendChild(jobStandingDropdown);
-        transportationDropdown.style.width = '27%';
+        transportationDropdown.classList.add('width27Per');
         dropWrap.appendChild(transportationDropdown);
-        positionStartDate.style.width = '20%';
+        positionStartDate.classList.add('width20Per');
         dropWrap.appendChild(positionStartDate);
-        positionEndDate.style.width = '20%';
+        positionEndDate.classList.add('width20Per');
         dropWrap.appendChild(positionEndDate);
         addNewCardBody.appendChild(dropWrap);
 
         var drWrap = document.createElement('div');
         drWrap.classList.add('employmentDTWrap');
-        typeOfWorkDropdown.style.width = '35%';
+        typeOfWorkDropdown.classList.add('width35Per');
         drWrap.appendChild(typeOfWorkDropdown);
-        isSelfEmployed.style.width = '25%';
+        isSelfEmployed.classList.add('width27Per');
         isSelfEmployed.style.marginRight = '35%';
         drWrap.appendChild(isSelfEmployed);
         addNewCardBody.appendChild(drWrap);
@@ -272,25 +272,26 @@ const EmploymentInformation = (() => {
 
         var infoWrap = document.createElement('div');
         infoWrap.classList.add('employmentDTWrap');
-        nameInput.style.width = '30%';
+        nameInput.classList.add('width30Per');
         infoWrap.appendChild(nameInput);
-        phoneInput.style.width = '32%';
+        phoneInput.classList.add('width32Per');
         infoWrap.appendChild(phoneInput);
-        emailInput.style.width = '32%';
-        infoWrap.appendChild(emailInput);
+        emailInput.classList.add('width32Per');
+        infoWrap.appendChild(emailInput); 
         addNewCardBody.appendChild(infoWrap);
 
         var btnWrap = document.createElement('div');
-        btnWrap.classList.add('employmentDTWrap');
+        btnWrap.classList.add('employmentBtnWrap');
         btnWrap.style.marginLeft = '25%';
         btnWrap.style.width = '50%';
 
         if ($.session.EmploymentUpdate) {
-            SAVE_BTN.style.width = '48%';
+            SAVE_BTN.style.width = '52%';  
             btnWrap.appendChild(SAVE_BTN);
         }
 
-        CANCEL_BTN.style.width = '48%';
+        CANCEL_BTN.style.width = '52%';
+        CANCEL_BTN.style.marginLeft = '5%'; 
         btnWrap.appendChild(CANCEL_BTN);
         addNewCardBody.appendChild(btnWrap);
 

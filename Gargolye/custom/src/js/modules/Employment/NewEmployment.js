@@ -45,7 +45,7 @@ const NewEmployment = (function () {
         DOM.clearActionCenter();
 
         var headingWrap = document.createElement('div');
-        headingWrap.classList.add('employmentDTWrap');  
+        headingWrap.classList.add('employmentBtnWrap');  
         const heading = document.createElement('div');
         const headingName = document.createElement('div');
         const head = document.createElement('div');

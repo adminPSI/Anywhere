@@ -567,17 +567,77 @@
         }
     }
 
+    .addCFRadioDiv {
+        :first-child {
+            padding-right: 12px;
+        }
+    }
+
+
     #singleEntryAdminReviewTable {
 
         .table__row {
             > div {
                 margin-top: 10px;
             }
+
+            > div:nth-child(1) {
+                width: 13%;
+            }
+
+            > div:nth-child(2) {
+                width: 15%;
+            }
+
+            > div:nth-child(3) {
+                width: 15%;
+            }
+
+            > div:nth-child(4) {
+                width: 15%;
+            }
+
+            > div:nth-child(5) {
+                width: 9%;
+            }
+
+            > div:nth-child(6) {
+                width: 10%;
+            }
+
+            > div:nth-child(7) {
+                width: 10%;
+            }
+
+            > div:nth-child(8) {
+                width: 8%;
+            }
+
+            > div:nth-child(9) {
+                width: 1%;
+            }
+
+            @media screen and (min-width: 560px) {
+                > div:nth-child(1) {
+                    width: 10%;
+                }
+
+                > div:nth-child(3) {
+                    width: 13%;
+                }
+
+                > div:nth-child(4) {
+                    width: 13%; 
+                }
+
+                > div:nth-child(7) {
+                    width: 8%;
+                }
+            }
         }
 
         .endIcon {
             cursor: pointer;
-            margin-left: 50px;
         }
     }
 }
@@ -634,12 +694,55 @@
     }
 
     .employmentDTWrap {
+        display: flow;
+
+        .width25Per, .width27Per, .width35Per {
+            width: 97%;
+        }
+
+        .width20Per, .width30Per, .width32Per {
+            margin-left: 1.5%;
+            width: 97%;
+        } 
+
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .checkbox-mtd > span:after {
+                top: 24px !important;
+            }
+
+            .width20Per {
+                width: 20%;
+            }
+
+            .width25Per {
+                width: 25%;
+            }
+
+            .width27Per {
+                width: 27%;
+            }
+
+            .width30Per {
+                width: 30%;
+            }
+
+            .width32Per {
+                width: 32%;
+            }
+
+            .width35Per {
+                width: 35%;
+            }
+        }
+    }
+
+    .employmentBtnWrap {
         display: flex;
         justify-content: space-between;
-
-        .checkbox-mtd > span:after {
-            top: 24px !important;
-        }
     }
 
 
@@ -674,7 +777,7 @@
     #employmentPositionTable {
         .endIcon {
             margin-left: 2px;
-            max-width: 25px !important;   
+            max-width: 25px !important;
         }
 
         .table__row {
@@ -691,16 +794,16 @@
             }
 
             > div:nth-child(2) {
-                width: 10%;
+                width: 14%;
             }
 
             > div:nth-child(3) {
-                width: 10%;
+                width: 11%;
             }
 
             > div:nth-child(4) {
                 display: none;
-                width: 10%;
+                width: 11%;
             }
 
             > div:nth-child(5) {
@@ -791,4 +894,4 @@
             }
         }
     }
-} 
+}
