@@ -150,8 +150,9 @@ namespace Anywhere.service.Data.Authorization
                 sb.Append("and pd.Detail_Type = 'C' ");
                 sb.AppendFormat("and pd.BeginDate between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
                 sb.AppendFormat("and pd.enddate between '{0}' and '{1}'", planYearStartStart, planYearStartEnd);
+                //sb.AppendFormat("and pd.enddate between '{0}' and '{1}'", planYearEndStart, planYearEndEnd);
 
-   
+
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
                 //FilterResults[] filterResultssObj = js.Deserialize<FilterResults[]>(jsonResult.ToString());

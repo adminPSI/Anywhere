@@ -174,6 +174,7 @@ const signatureWidget = (function () {
         );
       });
       populateMissingSignatures(filteredSignatures);
+      displayFilteredBy();
     });
     cancelFilterBtn.addEventListener('click', event => {
       filterPopup.classList.remove('visible');
@@ -201,7 +202,7 @@ const signatureWidget = (function () {
     filteredBy.innerHTML = `<div class="filteredByData">
       <p><span>Plan Status:</span> ${statusName}</p>
       <p><span>Location:</span> ${signatureWidgetLocationName}</p>
-      <p><span>Group:</span> ${signatureWidgetGroupName}</p>
+      <!--<p><span>Group:</span> ${signatureWidgetGroupName}</p>-->
     </div>`;
   }
 
