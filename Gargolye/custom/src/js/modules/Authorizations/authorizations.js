@@ -179,6 +179,7 @@ const authorizations = (function () {
     dropdown.populate(vendorDropdown, data, filterValues.vendor);
   }
   function getVendorFullName(id) {
+    if (id === '') return '';
     if (id === '%') return 'All';
 
     filterDropdownData.planVendors.filter(pv => {
@@ -371,6 +372,9 @@ const authorizations = (function () {
       });
 
       buildOverviewTable();
+      const newfilteredByData = buildFilteredByData();
+      pageWrap.appendChild(newfilteredByData, filteredByData);
+      filteredByData = newfilteredByData;
     });
   }
   function buildFilteredByData() {
@@ -449,7 +453,7 @@ const authorizations = (function () {
           UTIL.formatDateFromIso(parent.plan_year_end.split('T')[0]),
         )}</div>
         <div>${getPlanTypeFullName(parent.plantype, parent.revisionNum)}</div>
-        <div>${parent.plVendorId ? parent.plVendorId : ''}</div>
+        <div>${parent.plVendorId ? getVendorFullName(parent.plVendorId) : ''}</div>
         <div>${parent.sourceAndCaption}</div>
       `;
       rowWrap.appendChild(mainDataRow);
