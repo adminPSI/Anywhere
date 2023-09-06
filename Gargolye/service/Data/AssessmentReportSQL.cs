@@ -256,26 +256,28 @@ namespace Anywhere.service.Data
                 {
                     if (row["answer"].ToString() != string.Empty)
                     {
-                        if (row["answer"].ToString().ToUpper().Contains("V"))
+                        if (row["answer"].ToString() != "0")
                         {
-                            sb.Clear();
-                            sb.AppendFormat("SELECT  DBA.{0}.Name ", Vendor);
-                            sb.AppendFormat("FROM  DBA.{0} ", Vendor);
-                            sb.AppendFormat("WHERE DBA.{0}.Vendor_ID = {1} ", Vendor, row["answer"].ToString().ToUpper().Replace("V", ""));
-                            DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
-                            name = string.Format("{0}", row2["Name"].ToString());
-                        }
+                            if (row["answer"].ToString().ToUpper().Contains("V"))
+                            {
+                                sb.Clear();
+                                sb.AppendFormat("SELECT  DBA.{0}.Name ", Vendor);
+                                sb.AppendFormat("FROM  DBA.{0} ", Vendor);
+                                sb.AppendFormat("WHERE DBA.{0}.Vendor_ID = {1} ", Vendor, row["answer"].ToString().ToUpper().Replace("V", ""));
+                                DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
+                                name = string.Format("{0}", row2["Name"].ToString());
+                            }
 
-                        else
-                        {
-                            sb.Clear();
-                            sb.Append("SELECT  DBA.People.Last_Name, DBA.People.First_Name ");
-                            sb.Append("FROM  DBA.People ");
-                            sb.AppendFormat("WHERE DBA.People.id = {0} ", row["answer"]);
-                            DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
-                            name = string.Format("{0}, {1}", row2["Last_Name"], row2["First_Name"]);
+                            else
+                            {
+                                sb.Clear();
+                                sb.Append("SELECT  DBA.People.Last_Name, DBA.People.First_Name ");
+                                sb.Append("FROM  DBA.People ");
+                                sb.AppendFormat("WHERE DBA.People.id = {0} ", row["answer"]);
+                                DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
+                                name = string.Format("{0}, {1}", row2["Last_Name"], row2["First_Name"]);
+                            }
                         }
-
                         row["answer"] = name;
                     }
                 }
@@ -283,6 +285,7 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPSummary");
             return dt.DataSet;
         }
+
 
         public DataSet ISPOutcomes(long AssesmentID, Boolean Advisor = false)
         {
