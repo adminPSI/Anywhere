@@ -186,7 +186,7 @@ const authorizations = (function () {
       return pv.vendorId === id;
     });
 
-    if (filteredVendor.legnth > 0) {
+    if (filteredVendor.length > 0) {
       return filteredVendor[0].vendorName;
     }
   }
