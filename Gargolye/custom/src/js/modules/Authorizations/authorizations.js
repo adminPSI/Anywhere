@@ -182,9 +182,13 @@ const authorizations = (function () {
     if (id === '') return '';
     if (id === '%') return 'All';
 
-    filterDropdownData.planVendors.filter(pv => {
+    const filteredVendor = filterDropdownData.planVendors.filter(pv => {
       return pv.vendorId === id;
     });
+
+    if (filteredVendor.legnth > 0) {
+      return filteredVendor[0].vendorName;
+    }
   }
   function populateMatchSourceDropdown() {
     const data = filterDropdownData.matchSources.map(ms => {
@@ -373,7 +377,7 @@ const authorizations = (function () {
 
       buildOverviewTable();
       const newfilteredByData = buildFilteredByData();
-      pageWrap.appendChild(newfilteredByData, filteredByData);
+      pageWrap.replaceChild(newfilteredByData, filteredByData);
       filteredByData = newfilteredByData;
     });
   }
