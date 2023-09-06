@@ -230,6 +230,10 @@ const signatureWidget = (function () {
       return aDate < bDate ? -1 : 1;
     });
     data.forEach(d => {
+      //if (
+      // (d.planStatus === signaturePlanStatus || signaturePlanStatus === '%') &&
+      // (d.locationId.includes(signatureWidgetLocationId) || signatureWidgetLocationId === '%')
+      //) {
       const type = d.planType === 'A' ? 'Annual' : 'Revision';
       const startDate = d.planYearStart.split(' ')[0];
       const endDate = d.planYearEnd.split(' ')[0];
@@ -296,6 +300,7 @@ const signatureWidget = (function () {
           plan.buildPlanPage(['a']);
         },
       });
+      //}
     });
 
     const sigTable = table.build(tableOptions);
@@ -305,12 +310,18 @@ const signatureWidget = (function () {
   }
 
   function init() {
-    if (!signaturePlanStatus) signaturePlanStatus = '%';
-    if (!signatureWidgetGroupId) signatureWidgetGroupId = '0';
-    if (!signatureWidgetGroupName) signatureWidgetGroupName = 'Everyone';
-    if (!signatureWidgetGroupCode) signatureWidgetGroupCode = 'ALL';
-    if (!signatureWidgetLocationId) signatureWidgetLocationId = '%';
-    if (!signatureWidgetLocationName) signatureWidgetLocationName = 'ALL';
+    // if (!signaturePlanStatus) signaturePlanStatus = '%';
+    // if (!signatureWidgetGroupId) signatureWidgetGroupId = '0';
+    // if (!signatureWidgetGroupName) signatureWidgetGroupName = 'Everyone';
+    // if (!signatureWidgetGroupCode) signatureWidgetGroupCode = 'ALL';
+    // if (!signatureWidgetLocationId) signatureWidgetLocationId = '%';
+    // if (!signatureWidgetLocationName) signatureWidgetLocationName = 'ALL';
+    signaturePlanStatus = '%';
+    signatureWidgetGroupId = '0';
+    signatureWidgetGroupName = 'Everyone';
+    signatureWidgetGroupCode = 'ALL';
+    signatureWidgetLocationId = '%';
+    signatureWidgetLocationName = 'ALL';
 
     widget = document.getElementById('dashmissingsignatures');
     widgetBody = widget.querySelector('.widget__body');
