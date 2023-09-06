@@ -1636,9 +1636,9 @@ const plan = (function () {
       style: 'secondary',
       type: 'contained',
       classNames:
-        downloadedFromSalesforce && !$.session.planUpdate
-          ? ['deleteBtn', 'disabled']
-          : !planActiveStatus && $.session.planUpdate
+        downloadedFromSalesforce
+          ? $.session.planDelete ? ['deleteBtn'] : ['deleteBtn', 'disabled'] 
+          :  planStatus === 'D' && planActiveStatus && $.session.planUpdate && $.session.planDelete
           ? ['deleteBtn']
           : ['deleteBtn', 'disabled'],
     });
