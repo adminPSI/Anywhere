@@ -197,6 +197,15 @@ const authorizations = (function () {
         text: ms.caption,
       };
     });
+    data.sort((a, b) => {
+      if (a.caption < b.caption) {
+        return -1;
+      }
+      if (a.caption > b.caption) {
+        return 1;
+      }
+      return 0;
+    });
     data.unshift({ value: '%', text: 'All' });
     dropdown.populate(matchSourceDropdown, data, filterValues.matchSource);
   }

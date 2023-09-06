@@ -955,8 +955,12 @@ const plan = (function () {
           prevPlanId: newType === 'a' ? planId : newPlanData.consumerPlanId,
           planType: newType.toUpperCase(),
           revisionNumber: newType === 'r' ? parseInt(newPlanData.revisionNumber) + 1 : '',
-          planYearStart: UTIL.formatDateToIso(newPlanData.planYearStart.split(' ')[0]),
-          planYearEnd: UTIL.formatDateToIso(newPlanData.planYearEnd.split(' ')[0]),
+          planYearStart: UTIL.formatDateToIso(
+            dates.formatISO(planDates.getPlanYearStartDate()).split('T')[0],
+          ),
+          planYearEnd: UTIL.formatDateToIso(
+            dates.formatISO(planDates.getPlanYearEndDate()).split('T')[0],
+          ),
           effectiveStartDate: UTIL.formatDateToIso(
             dates.formatISO(planDates.getEffectiveStartDate()).split('T')[0],
           ),
@@ -1635,12 +1639,13 @@ const plan = (function () {
       text: 'Delete Plan',
       style: 'secondary',
       type: 'contained',
-      classNames:
-        downloadedFromSalesforce
-          ? $.session.planDelete ? ['deleteBtn'] : ['deleteBtn', 'disabled'] 
-          :  planStatus === 'D' && planActiveStatus && $.session.planUpdate && $.session.planDelete
+      classNames: downloadedFromSalesforce
+        ? $.session.planDelete
           ? ['deleteBtn']
-          : ['deleteBtn', 'disabled'],
+          : ['deleteBtn', 'disabled']
+        : planStatus === 'D' && planActiveStatus && $.session.planUpdate && $.session.planDelete
+        ? ['deleteBtn']
+        : ['deleteBtn', 'disabled'],
     });
     const reactivateBtn = button.build({
       text: 'Reactivate Plan',
