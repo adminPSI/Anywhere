@@ -162,9 +162,9 @@ class FormsWorkflowStepComponent {
     });
 
     if ($.session.formsUpdate && $.session.formsView) {
-      userFormDropdown.classList.remove('disabled');
+      input.enableInputField(userFormDropdown);
     } else {
-      userFormDropdown.classList.add('disabled');
+      input.disableInputField(userFormDropdown);
     }
 
     let doneBtn = button.build({
