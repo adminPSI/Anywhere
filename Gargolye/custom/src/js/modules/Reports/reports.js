@@ -121,7 +121,7 @@ const generateReports = (() =>  {
   function checkIfReportIsReadyInterval(res) {
     // Get the interval in seconds from the session and convert it to milliseconds
     seconds = parseInt($.session.reportSeconds);
-    intSeconds = seconds * 1000;
+    intSeconds = seconds * 250;
 
     // Set up an interval to execute the checkCNReportExists function periodically
     interval = setInterval(async () => {

@@ -131,7 +131,7 @@ namespace Anywhere.service.Data.ReportBuilder
         public string generateDetailedCaseNotesReport(string token, string reportType, ReportData reportData)
         {
             string category = "Case Notes";
-            string title = "Detailed Case Notes";
+            string title = "Detailed Case Notes By Biller";
             string reportServerList = "Primary";
             string result = "";
 
@@ -155,7 +155,7 @@ namespace Anywhere.service.Data.ReportBuilder
         public string generateIndividualReportingLog(string token, string reportType, ReportData reportData)
         {
             string category = "Incident Tracking";
-            string title = "Individual Reporting Log";
+            string title = "Incident Reporting Log";
             string reportServerList = "Primary";
             string result = "";
 

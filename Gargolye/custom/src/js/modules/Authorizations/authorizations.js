@@ -134,8 +134,9 @@ const authorizations = (function () {
     const yearEndEnd = `${formatDate(filterValues.yearEndEnd)}`;
 
     currentFilterDisplay.innerHTML = `
-      <p><span>Plan Type: </span> ${getPlanTypeFullName(filterValues.plantype)} </P>
-      <p><span>PL Vendor: </span> ${getVendorFullName(filterValues.vendor)} </P>
+      <p><span>Plan Type: </span> ${getPlanTypeFullName(filterValues.plantype)}</P>
+      <p><span>PL Vendor: </span> ${getVendorFullName(filterValues.vendor)}</P>
+      <p><span>Match Source: </span> ${getMatchSourceName(filterValues.matchSource)}</P>
       <p><span>Completed Dates: </span>${completedDateStart} - ${completedDateEnd}</p>
       <p><span>Year Start: </span>${yearStartStart} - ${yearStartEnd}</p>
       <p><span>Year End: </span>${yearEndStart} - ${yearEndEnd}</p>
@@ -230,6 +231,17 @@ const authorizations = (function () {
       default: {
         return 'All';
       }
+    }
+  }
+  function getMatchSourceName() {
+    if (id === '%') return 'All';
+
+    const filteredMatch = filterDropdownData.matchSources.filter(ms => {
+      return ms.code === code;
+    });
+
+    if (filteredMatch.length > 0) {
+      return filteredMatch[0].caption;
     }
   }
   function showFilterPopup() {
