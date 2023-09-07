@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
@@ -1495,6 +1496,56 @@ namespace Anywhere.service.Data
                                 var returnStartDate = new { ActionId = thisAction.WF_Action_ID, StepId = thisAction.WF_Step_ID, ActionDate = startDate };
                                 returnActionJSON = Newtonsoft.Json.JsonConvert.SerializeObject(returnStartDate);
                                 // }
+
+                                break;
+                            case 7:
+                                // 'set next steps start date'
+                                string nextStepStartDateSetStatus = "";
+                                string setStartDateNextStepId = wfdg.getNextWorkflowStepId(thisAction.WF_Step_ID, transaction);
+                                if (setStartDateNextStepId == null)
+                                {
+                                    break;
+                                }
+                                if (thisEvent.modified == null)
+                                {
+                                    nextStepStartDateSetStatus = wfdg.setWorkflowStepStartDate(setStartDateNextStepId, null, transaction);
+                                    break;
+                                }
+                                string nextStepStartDate = "";
+
+                                Dictionary<string, string> nextStepStartDateActionParameters = new Dictionary<string, string>();
+                                nextStepStartDateActionParameters = getDateActionParameters(thisAction);
+                                double startDateChangeAmount = double.Parse(nextStepStartDateActionParameters["Days"]);
+
+                                DateTime thisStartDate = DateTime.ParseExact(thisEvent.modified, "M/d/yyyy", CultureInfo.InvariantCulture);
+                                DateTime newStartDate = thisStartDate.AddDays(startDateChangeAmount);
+                                nextStepStartDate = newStartDate.ToString("M/d/yy");
+                                nextStepStartDateSetStatus = wfdg.setWorkflowStepStartDate(setStartDateNextStepId, nextStepStartDate, transaction);
+
+                                break;
+                            case 8:
+                                // 'set next steps due date'
+                                string nextStepDueDateSetStatus = "";
+                                string setDueDateNextStepId = wfdg.getNextWorkflowStepId(thisAction.WF_Step_ID, transaction);
+                                if (setDueDateNextStepId == null)
+                                {
+                                    break;
+                                }
+                                if (thisEvent.modified == null)
+                                {
+                                    nextStepDueDateSetStatus = wfdg.setWorkflowStepDueDate(setDueDateNextStepId, null, transaction);
+                                    break;
+                                }
+                                string nextStepDueDate = "";
+
+                                Dictionary<string, string> nextStepDueDateActionParameters = new Dictionary<string, string>();
+                                nextStepDueDateActionParameters = getDateActionParameters(thisAction);
+                                double dueDateChangeAmount = double.Parse(nextStepDueDateActionParameters["Days"]);
+
+                                DateTime thisDueDate = DateTime.ParseExact(thisEvent.modified, "M/d/yyyy", CultureInfo.InvariantCulture);
+                                DateTime newDueDate = thisDueDate.AddDays(dueDateChangeAmount);
+                                nextStepDueDate = newDueDate.ToString("M/d/yy");
+                                nextStepDueDateSetStatus = wfdg.setWorkflowStepDueDate(setDueDateNextStepId, nextStepDueDate, transaction);
 
                                 break;
                         }
