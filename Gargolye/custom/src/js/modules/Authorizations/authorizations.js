@@ -233,7 +233,7 @@ const authorizations = (function () {
       }
     }
   }
-  function getMatchSourceName() {
+  function getMatchSourceName(id) {
     if (id === '%') return 'All';
 
     const filteredMatch = filterDropdownData.matchSources.filter(ms => {
