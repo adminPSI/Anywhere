@@ -124,6 +124,27 @@ const authorizations = (function () {
         .slice(0, 10),
     };
   }
+  function buildFilteredByData() {
+    const currentFilterDisplay = document.createElement('div');
+    currentFilterDisplay.classList.add('filteredByData');
+
+    const completedDateStart = `${formatDate(filterValues.completedDateStart)}`;
+    const completedDateEnd = `${formatDate(filterValues.completedDateEnd)}`;
+    const yearStartStart = `${formatDate(filterValues.yearStartStart)}`;
+    const yearStartEnd = `${formatDate(filterValues.yearStartEnd)}`;
+    const yearEndStart = `${formatDate(filterValues.yearEndStart)}`;
+    const yearEndEnd = `${formatDate(filterValues.yearEndEnd)}`;
+
+    currentFilterDisplay.innerHTML = `
+      <p><span>Plan Type: </span> ${getPlanTypeFullName(filterValues.plantype)} </P>
+      <p><span>PL Vendor: </span> ${getVendorFullName(filterValues.vendor)} </P>
+      <p><span>Completed Dates: </span>${completedDateStart} - ${completedDateEnd}</p>
+      <p><span>Year Start: </span>${yearStartStart} - ${yearStartEnd}</p>
+      <p><span>Year End: </span>${yearEndStart} - ${yearEndEnd}</p>
+    `;
+
+    return currentFilterDisplay;
+  }
   function checkFilterPopForErrors() {
     const errors = filterPopup.querySelectorAll('.error');
     const hasErrors = errors.legnth > 0 ? true : false;
@@ -144,25 +165,6 @@ const authorizations = (function () {
     ];
     dropdown.populate(planTypeDropdown, data, filterValues.planType);
   }
-  function getPlanTypeFullName(value, revisionNumber) {
-    switch (value) {
-      case 'F': {
-        return 'Final';
-      }
-      case 'I': {
-        return 'Initial';
-      }
-      case 'V': {
-        return revisionNumber ? `Revision ${revisionNumber}` : 'Revision';
-      }
-      case 'R': {
-        return 'Redetermination';
-      }
-      default: {
-        return 'All';
-      }
-    }
-  }
   function populateVendorDropdown() {
     const data = filterDropdownData.planVendors.map(pv => {
       return {
@@ -182,18 +184,6 @@ const authorizations = (function () {
     });
     dropdown.populate(vendorDropdown, data, filterValues.vendor);
   }
-  function getVendorFullName(id) {
-    if (id === '') return '';
-    if (id === '%') return 'All';
-
-    const filteredVendor = filterDropdownData.planVendors.filter(pv => {
-      return pv.vendorId === id;
-    });
-
-    if (filteredVendor.length > 0) {
-      return filteredVendor[0].vendorName;
-    }
-  }
   function populateMatchSourceDropdown() {
     const data = filterDropdownData.matchSources.map(ms => {
       return {
@@ -212,6 +202,37 @@ const authorizations = (function () {
     });
     data.unshift({ value: '%', text: 'All' });
     dropdown.populate(matchSourceDropdown, data, filterValues.matchSource);
+  }
+  function getVendorFullName(id) {
+    if (id === '') return '';
+    if (id === '%') return 'All';
+
+    const filteredVendor = filterDropdownData.planVendors.filter(pv => {
+      return pv.vendorId === id;
+    });
+
+    if (filteredVendor.length > 0) {
+      return filteredVendor[0].vendorName;
+    }
+  }
+  function getPlanTypeFullName(value, revisionNumber) {
+    switch (value) {
+      case 'F': {
+        return 'Final';
+      }
+      case 'I': {
+        return 'Initial';
+      }
+      case 'V': {
+        return revisionNumber ? `Revision ${revisionNumber}` : 'Revision';
+      }
+      case 'R': {
+        return 'Redetermination';
+      }
+      default: {
+        return 'All';
+      }
+    }
   }
   function showFilterPopup() {
     filterPopup = POPUP.build({
@@ -365,9 +386,21 @@ const authorizations = (function () {
     });
     yearEndStart.addEventListener('change', e => {
       newFilterValues.yearEndStart = e.target.value;
+      if (e.target.value === '') {
+        completedDateStart.classList.add('error');
+      } else {
+        completedDateStart.classList.remove('error');
+      }
+      checkFilterPopForErrors();
     });
     yearEndEnd.addEventListener('change', e => {
       newFilterValues.yearEndEnd = e.target.value;
+      if (e.target.value === '') {
+        completedDateStart.classList.add('error');
+      } else {
+        completedDateStart.classList.remove('error');
+      }
+      checkFilterPopForErrors();
     });
     applyFilterBtn.addEventListener('click', async e => {
       POPUP.hide(filterPopup);
@@ -393,27 +426,6 @@ const authorizations = (function () {
       pageWrap.replaceChild(newfilteredByData, filteredByData);
       filteredByData = newfilteredByData;
     });
-  }
-  function buildFilteredByData() {
-    const currentFilterDisplay = document.createElement('div');
-    currentFilterDisplay.classList.add('filteredByData');
-
-    const completedDateStart = `${formatDate(filterValues.completedDateStart)}`;
-    const completedDateEnd = `${formatDate(filterValues.completedDateEnd)}`;
-    const yearStartStart = `${formatDate(filterValues.yearStartStart)}`;
-    const yearStartEnd = `${formatDate(filterValues.yearStartEnd)}`;
-    const yearEndStart = `${formatDate(filterValues.yearEndStart)}`;
-    const yearEndEnd = `${formatDate(filterValues.yearEndEnd)}`;
-
-    currentFilterDisplay.innerHTML = `
-      <p><span>Plan Type: </span> ${getPlanTypeFullName(filterValues.plantype)} </P>
-      <p><span>PL Vendor: </span> ${getVendorFullName(filterValues.vendor)} </P>
-      <p><span>Completed Dates: </span>${completedDateStart} - ${completedDateEnd}</p>
-      <p><span>Year Start: </span>${yearStartStart} - ${yearStartEnd}</p>
-      <p><span>Year End: </span>${yearEndStart} - ${yearEndEnd}</p>
-    `;
-
-    return currentFilterDisplay;
   }
 
   //----------------------------------------
