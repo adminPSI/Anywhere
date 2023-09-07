@@ -381,30 +381,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                         RegisterID = Odg.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, runningBalance);
                     }
 
-                    ConsumerFinancesEntry[] nextRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getNextAccountRunningBalance(date, account, transaction));
-                    int counterbal = 0;
-                    foreach (ConsumerFinancesEntry updateAmount in nextRunningBal)
-                    {
-                        string balance;
-
-                        if (updateAmount.deposit == "0" || updateAmount.deposit == "0.00")
-                        {
-                            if (counterbal == 0)
-                                balance = (Convert.ToDecimal("0") - Convert.ToDecimal(updateAmount.expance)).ToString();
-                            else
-                                balance = (Convert.ToDecimal(runningBalance) - Convert.ToDecimal(updateAmount.expance)).ToString();
-                        }
-                        else
-                        {
-                            if (counterbal == 0)
-                                balance = (Convert.ToDecimal("0") + Convert.ToDecimal(updateAmount.deposit)).ToString();
-                            else
-                                balance = (Convert.ToDecimal(runningBalance) + Convert.ToDecimal(updateAmount.deposit)).ToString();
-                        }
-                        runningBalance = balance;
-                        Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
-                        counterbal++;
-                    }
+                    runningBalance = updateAccountBalance(date, account, transaction, runningBalance);
 
                     if (attachmentId != null)
                     {
@@ -424,6 +401,36 @@ namespace Anywhere.service.Data.ConsumerFinances
                     throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
                 }
             }
+        }
+
+        private string updateAccountBalance(string date, string account, DistributedTransaction transaction, string runningBalance)
+        {
+            ConsumerFinancesEntry[] nextRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getNextAccountRunningBalance(date, account, transaction));
+            int counterbal = 0;
+            foreach (ConsumerFinancesEntry updateAmount in nextRunningBal)
+            {
+                string balance;
+
+                if (updateAmount.deposit == "0" || updateAmount.deposit == "0.00")
+                {
+                    if (counterbal == 0)
+                                balance = (Convert.ToDecimal("0") - Convert.ToDecimal(updateAmount.expance)).ToString();
+                    else
+                                balance = (Convert.ToDecimal(runningBalance) - Convert.ToDecimal(updateAmount.expance)).ToString();
+                }
+                else
+                {
+                    if (counterbal == 0)
+                                balance = (Convert.ToDecimal("0") + Convert.ToDecimal(updateAmount.deposit)).ToString();
+                    else
+                                balance = (Convert.ToDecimal(runningBalance) + Convert.ToDecimal(updateAmount.deposit)).ToString();
+                }
+                runningBalance = balance;
+                Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
+                counterbal++;
+            }
+
+            return runningBalance;
         }
 
         public ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId)
@@ -451,8 +458,9 @@ namespace Anywhere.service.Data.ConsumerFinances
             {
                 try
                 {
-                    return Odg.deleteConsumerFinanceAccount(token, registerId, transaction);
-
+                    ConsumerFinancesEntry[] categorySubCategory = js.Deserialize<ConsumerFinancesEntry[]>(Odg.deleteConsumerFinanceAccount(token, registerId, transaction));
+                    updateAccountBalance(categorySubCategory[0].activityDate, categorySubCategory[0].accountID, transaction, categorySubCategory[0].balance); 
+                    return categorySubCategory[0].accountID; 
                 }
                 catch (Exception ex)
                 {
