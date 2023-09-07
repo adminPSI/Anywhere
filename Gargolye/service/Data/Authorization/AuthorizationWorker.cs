@@ -68,7 +68,7 @@ namespace Anywhere.service.Data.Authorization
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
             PageData pageData = new PageData();
-
+            js.MaxJsonLength = Int32.MaxValue;
             string parentString = getAuthorizationPageDataParent( code,  matchSource,  vendorId,  planType,  planYearStartStart,  planYearStartEnd,
                                  planYearEndStart,  planYearEndEnd,  completedDateStart,  completedDateEnd,  selectedConsumerId);
             PDParent[] parentObj = js.Deserialize<PDParent[]>(parentString);
@@ -91,6 +91,13 @@ namespace Anywhere.service.Data.Authorization
             try
             {
 
+                if (vendorId.Equals("%"))
+                { }
+                else
+                {
+                    vendorId = vendorId.Substring(0, vendorId.IndexOf('.', 0));
+                }
+
                 string jsonResult = "";
                 string fieldId = "Match Source";
                 sb.Clear();
@@ -104,8 +111,18 @@ namespace Anywhere.service.Data.Authorization
                 sb.AppendFormat("and p.Match_Source like '{0}' ", matchSource);
                 sb.AppendFormat("and p.planType like '{0}' ", planType);
                 sb.AppendFormat("and p.plan_year_start between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
+                sb.AppendFormat("and p.plan_year_end between '{0}' and '{1}' ", planYearEndStart, planYearEndEnd);
                 sb.AppendFormat("and p.CompletionDate between '{0}' and '{1}' ", completedDateStart, completedDateEnd);
                 sb.AppendFormat("and p.Id = '{0}' and p.permanent = 'Y' ", selectedConsumerId);
+                if(vendorId.Equals("%"))
+                {
+                    sb.AppendFormat("and (p.PL_Vendor_ID like '{0}' or p.PL_Vendor_ID is null) ", vendorId);
+                }
+                else
+                {
+                    sb.AppendFormat("and p.PL_Vendor_ID like '{0}' ", vendorId);
+                }
+                
                 sb.Append("order by p.CompletionDate desc ");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
@@ -130,6 +147,12 @@ namespace Anywhere.service.Data.Authorization
 
             try
             {
+                if (vendorId.Equals("%"))
+                { }
+                else
+                {
+                    vendorId = vendorId.Substring(0, vendorId.IndexOf('.', 0));
+                }
 
                 string jsonResult = "";
                 string fieldId = "Match Source";
@@ -149,8 +172,8 @@ namespace Anywhere.service.Data.Authorization
                 sb.AppendFormat("and p.Id = '{0}' and p.permanent = 'Y') ", selectedConsumerId);
                 sb.Append("and pd.Detail_Type = 'C' ");
                 sb.AppendFormat("and pd.BeginDate between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
-                sb.AppendFormat("and pd.enddate between '{0}' and '{1}'", planYearStartStart, planYearStartEnd);
-                //sb.AppendFormat("and pd.enddate between '{0}' and '{1}'", planYearEndStart, planYearEndEnd);
+                //sb.AppendFormat("and pd.enddate between '{0}' and '{1}'", planYearStartStart, planYearStartEnd);
+                sb.AppendFormat("and pd.enddate between '{0}' and '{1}'", planYearEndStart, planYearEndEnd);
 
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
