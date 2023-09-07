@@ -1053,6 +1053,23 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
+
+        public string getNextWorkflowStepId(string stepId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getNextWorkflowStepId ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
+                // returns the number of rows updated
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetNextWorkflowStepId(?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_WF_setWorkflowStepOrder(" + stepId + "," + ")");
+                throw ex;
+            }
+        }
         public string updateWorkflowStep(string @stepId, string @groupId, string @stepOrder, string @description, string @responsiblePartyId, string @isChecklist, string @dueDate, string @startDate, string @doneDate, string @comments, string @isApplicable, DistributedTransaction transaction)
         {
             try
