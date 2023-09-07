@@ -107,11 +107,11 @@ const authorizations = (function () {
       vendor: '%',
       matchSource: '%',
       completedDateStart: dates
-        .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 3))
+        .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 2))
         .slice(0, 10),
       completedDateEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
       yearStartStart: dates
-        .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 3))
+        .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 2))
         .slice(0, 10),
       yearStartEnd: dates
         .formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1))
@@ -119,9 +119,7 @@ const authorizations = (function () {
       yearEndStart: dates
         .formatISO(new Date(new Date(new Date().getFullYear(), 0, 1).setHours(0, 0, 0, 0)))
         .slice(0, 10),
-      yearEndEnd: dates
-        .formatISO(new Date(new Date(new Date().getFullYear(), 0, 1).setHours(0, 0, 0, 0)))
-        .slice(0, 10),
+      yearEndEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
     };
   }
   function buildFilteredByData() {
