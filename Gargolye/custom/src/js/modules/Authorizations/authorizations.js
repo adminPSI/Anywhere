@@ -116,8 +116,12 @@ const authorizations = (function () {
       yearStartEnd: dates
         .formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1))
         .slice(0, 10),
-      yearEndStart: '',
-      yearEndEnd: '',
+      yearEndStart: dates
+        .formatISO(new Date(new Date(new Date().getFullYear(), 0, 1).setHours(0, 0, 0, 0)))
+        .slice(0, 10),
+      yearEndEnd: dates
+        .formatISO(new Date(new Date(new Date().getFullYear(), 0, 1).setHours(0, 0, 0, 0)))
+        .slice(0, 10),
     };
   }
   function checkFilterPopForErrors() {
@@ -567,7 +571,7 @@ const authorizations = (function () {
       token: $.session.Token,
       selectedConsumerId: selectedConsumer.id,
       code: '%',
-      matchSource: filterValues.vendor,
+      matchSource: filterValues.matchSource,
       vendorId: filterValues.vendor,
       planType: filterValues.planType,
       planYearStartStart: filterValues.yearStartStart,
