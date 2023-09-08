@@ -282,7 +282,7 @@ const signatureWidget = (function () {
           plan.setPlanType(d.planType.toLowerCase());
           plan.setPlanStatus(d.planStatus);
           plan.setRevisionNumber(d.revisionNumber);
-          // planActiveStatus??
+          plan.setPlanActiveStatus(d.activeStatus);
 
           planDates.setReviewPlanDates({
             startDate: new Date(startDate),

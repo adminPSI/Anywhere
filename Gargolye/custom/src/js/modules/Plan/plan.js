@@ -225,6 +225,9 @@ const plan = (function () {
   function setRevisionNumber(revNum) {
     revisionNumber = revNum;
   }
+  function setPlanActiveStatus(newActiveStatus) {
+    planActiveStatus = newActiveStatus;
+  }
   //-- clear
   function clearAllData() {
     selectedConsumer = undefined;
@@ -2835,6 +2838,7 @@ const plan = (function () {
     setPlanType,
     setPlanId,
     setPlanStatus,
+    setPlanActiveStatus,
     toggleNewPlanDoneBtn,
     handleActionNavEvent,
     buildPlanPage,
