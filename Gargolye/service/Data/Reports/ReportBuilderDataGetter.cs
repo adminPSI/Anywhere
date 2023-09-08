@@ -350,7 +350,7 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateJobActivityReport(string token, string category, string title, string reportServerList, string location, string job, string startDate, string endDate)
+        public string generateJobActivityReport(string token, string category, string title, string reportServerList, string location, string job, string startDate, string endDate, string selectedDate)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("generatejobActivityReport ");
@@ -363,6 +363,7 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(job);
             list.Add(startDate);
             list.Add(endDate);
+            list.Add(selectedDate);
             string text = "CALL DBA.ANYW_GeneratejobActivityReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {

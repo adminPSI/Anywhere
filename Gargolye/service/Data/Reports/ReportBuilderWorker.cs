@@ -69,7 +69,7 @@ namespace Anywhere.service.Data.ReportBuilder
 
                     break;
                 //Incident Tracking
-                case "Individual Reporting Log":
+                case "Incident Reporting Log":
                     result = generateIndividualReportingLog(token, reportType, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
@@ -148,7 +148,7 @@ namespace Anywhere.service.Data.ReportBuilder
             string reportServerList = "Primary";
             string result = "";
 
-            result = rbdg.generateJobActivityReport(token, category, title, reportServerList, reportData.workshopLocation, reportData.workshopJob, reportData.workshopStartDate, reportData.workshopEndDate);
+            result = rbdg.generateJobActivityReport(token, category, title, reportServerList, reportData.workshopLocation, reportData.workshopJob, reportData.workshopStartDate, reportData.workshopEndDate, reportData.workshopDate);
             return result;
         }
 
