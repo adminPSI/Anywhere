@@ -181,6 +181,8 @@ const csSignature = (() => {
     const sigBody = sigWrap.querySelector('.signature-pad--body');
     const sigCanvas = sigWrap.querySelector('.ispCanvas');
 
+    if (!sigBody || !sigCanvas) return;
+
     sigCanvas.width = sigBody.offsetWidth;
   }
 
