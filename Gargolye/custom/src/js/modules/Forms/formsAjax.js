@@ -14,7 +14,7 @@
               WebViewer({
                   path: './WebViewer/lib', // path to the PDFTron 'lib' folder on your server
                  // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
-                  licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20230512):A9A5F75D0437C60AF360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
+                  licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20240512):99A5375D0437C60A0360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
                   documentType: 'pdf',
                   // initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/webviewer-demo.pdf',
                   // initialDoc: 'test.pdf',  // You can also use documents on your server
@@ -142,7 +142,7 @@
               WebViewer({
                   path: './WebViewer/lib', // path to the PDFTron 'lib' folder on your server
                   // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
-                  licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20230512):A9A5F75D0437C60AF360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
+                  licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20240512):99A5375D0437C60A0360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
                   documentType: 'pdf',
                    // initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/webviewer-demo.pdf',
                   // initialDoc: 'test.pdf',  // You can also use documents on your server
@@ -316,7 +316,7 @@
                   path: './WebViewer/lib', // path to the PDFTron 'lib' folder on your server
                   // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
                   // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
-                  licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20230512):A9A5F75D0437C60AF360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
+                  licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20240512):99A5375D0437C60A0360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
                   documentType: 'pdf',
                    // initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/webviewer-demo.pdf',
                   // initialDoc: 'test.pdf',  // You can also use documents on your server
@@ -508,7 +508,7 @@
                 path: './WebViewer/lib', // path to the PDFTron 'lib' folder on your server
                 // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
                 // licenseKey: 'Marshall Information Services, LLC(primarysolutions.net):OEM:Advisor/Anywhere;Gatekeeper/Anywhere::B+:AMS(20220512):A8A5354D0437C60A7360B13AC9A2537860614FABB956CD3BD5343BC2C76C38C054C2BEF5C7',
-                licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20230512):A9A5F75D0437C60AF360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
+                licenseKey: 'Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::B+:AMS(20240512):99A5375D0437C60A0360B13AC9A2537860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7',
                 documentType: 'pdf',
                  // initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/webviewer-demo.pdf',
                 // initialDoc: 'test.pdf',  // You can also use documents on your server
