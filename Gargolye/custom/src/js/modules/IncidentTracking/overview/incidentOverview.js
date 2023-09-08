@@ -224,7 +224,7 @@ const incidentOverview = (function () {
       });
     }
 
-    reportsBtn = createMainReportButton([{ text: 'Individual Reporting Log' }]);
+    reportsBtn = createMainReportButton([{ text: 'Incident Reporting Log' }]);
 
     DOM.ACTIONCENTER.appendChild(filterAndReportsBtnsWrap);
     filterAndReportsBtnsWrap.appendChild(filterBtn);
