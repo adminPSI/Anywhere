@@ -188,9 +188,30 @@
 // Consumer Info Card
 //------------------------
 .consumerInfoCloseBtn {
-  // back to roster btn
-  margin: 0 0 12px 0;
+    // back to roster btn
+    margin: 0 0 12px 0;
 }
+
+.consumerInfoForwardBtn {
+    font-size: 14.5px !important;
+    text-align: right;
+
+    svg {
+        width: 24px;
+        vertical-align: middle;
+    }
+}
+
+.consumerInfoBackwardBtn {
+    font-size: 14.5px !important;
+    text-align: left;
+
+    svg {
+        width: 24px;
+        vertical-align: middle;
+    }
+}
+
 .sectionBackBtn {
   // back to menu list
   margin: 0 0 12px 0;

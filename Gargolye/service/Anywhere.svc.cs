@@ -1968,9 +1968,12 @@ namespace Anywhere
             return wfw.processWorkflowStepEvent(token, thisEvent);
         }
 
-        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions, string priorConsumerPlanId)
+        //public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions, string priorConsumerPlanId)
+        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId)
+
         {
-            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormDescriptions, priorConsumerPlanId);
+            //return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormDescriptions, priorConsumerPlanId);
+            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
         }
         #endregion
 
