@@ -283,7 +283,7 @@ var consumerInfo = (function () {
             targetSubSection.classList.add('visible');
         }, 200);
     }
-    function handleBackButtonClick() {
+    function handleBackButtonClick() { 
         backwordBtn.classList.add('hidden');
         forwardBtn.classList.add('hidden');  
         // first check to see if we are on the menulist
@@ -762,7 +762,7 @@ var consumerInfo = (function () {
 
         var cardInner = document.createElement('div');
         cardInner.classList.add('sectionInner');
-
+        menuNewList = []; 
         if ($.session.DemographicsView === false) {
             // pointless reset based off above session variable
             $.session.DemographicsView = false;
@@ -851,125 +851,128 @@ var consumerInfo = (function () {
     }
     // Consumer Info Card
     function setupCardEvents(cardMenu) {
-        cardMenu.addEventListener('click', event => {              
+        cardMenu.addEventListener('click', event => {  
             var action = event.target.dataset.infoTask;
-            var targetSection;          
-
-            currentScreen = event.target.dataset.infoTask;
-            var arraynumber = menuNewList.findIndex(x => x.title == currentScreen);
-            previousScreen = menuNewList[arraynumber - 1] == undefined ? null : menuNewList[arraynumber - 1].title;
-            nextScreen = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title;
-
-            if (previousScreen == null) {
-                backwordBtn.classList.add('hidden'); 
-            }
-            else {
-                backwordBtn.classList.remove('hidden');
-            }
-            if (nextScreen == null) {
-                forwardBtn.classList.add('hidden'); 
-            }
-            else {
-                forwardBtn.classList.remove('hidden'); 
-            }
-              
-            document.getElementById('backwordBtn').innerHTML = menuNewList[arraynumber - 1] == undefined ? null : `${icons['arrowBack']}` + '  ' + menuNewList[arraynumber - 1].title;
-            document.getElementById('forwardBtn').innerHTML = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title + '  ' + `${icons['arrowNext']}`;  
-
-            switch (action) {
-                case 'Mark As Absent': {
-                    targetSection = consumerInfoCard.querySelector('.absentSection');
-                    absentAjax.selectAbsent(
-                        {
-                            token: $.session.Token,
-                            consumerId,
-                            locationId,
-                            statusDate: selectedDate,
-                        },
-                        function (results) {
-                            populateAbsentSection(targetSection, results);
-                        },
-                    );
-                    break;
-                }
-                case 'Change Photo': {
-                    targetSection = consumerInfoCard.querySelector('.photoSection');
-                    populatePhotoSection(targetSection);
-                    break;
-                }
-                case 'Add To Group': {
-                    targetSection = consumerInfoCard.querySelector('.groupSection');
-                    populateGroupSection(targetSection);
-                    break;
-                }
-                case 'Consumer Notes': {
-                    targetSection = consumerInfoCard.querySelector('.notesSection');
-                    rosterAjax.getDemographicsNotes(consumerId, function (results) {
-                        populateNotesSection(targetSection, results);
-                    });
-                    break;
-                }
-                case 'Progress Notes': {
-                    targetSection = consumerInfoCard.querySelector('.progressNotesSection');
-                    progressNotes.init(targetSection, locationId, consumerId);
-                    progressNotes.getConsumerNotes(function (results) {
-                        populateProgressNotesSection(targetSection, results);
-                    });
-                    break;
-                }
-                case 'View Attachments': {
-                    targetSection = consumerInfoCard.querySelector('.attachmentsSection');
-                    rosterAjax.getAllAttachments(
-                        {
-                            token: $.session.Token,
-                            locationId: locationId,
-                            consumerId: consumerId,
-                            checkDate: selectedDate,
-                        },
-                        function (results) {
-                            populateAttachmentsSection(targetSection, results);
-                        },
-                    );
-                    break;
-                }
-                case 'View Schedule': {
-                    targetSection = consumerInfoCard.querySelector('.scheduleSection');
-                    rosterAjax.getConsumerScheduleLocation(consumerId, function (locationResults) {
-                        populateScheduleSection(targetSection, locationResults);
-                    });
-                    break;
-                }
-                case 'Demographics': {
-                    targetSection = consumerInfoCard.querySelector('.demographicsSection');
-                    rosterAjax.getConsumerDemographics(consumerId, function (results) {
-                        demographics.populate(targetSection, results[0], consumerId);
-                    });
-                    break;
-                }
-                case 'Relationships': {
-                    targetSection = consumerInfoCard.querySelector('.relationshipsSection');
-                    rosterAjax.getConsumerRelationships(consumerId, function (results) {
-                        populateRelationshipsSection(targetSection, results);
-                    });
-                    break;
-                }
-                case 'Intellivue': {
-                    //
-                    targetSection = consumerInfoCard.querySelector('.intellivueSection');
-                    intellivue.getApplicationListHostedWithUser(function (results) {
-                        populateIntellivueSection(targetSection, results);
-                    });
-                    break;
-                }
-            }
-
-            if (targetSection) {
-                var sectionBackBtn = document.querySelector('.sectionBackBtn');
-                sectionBackBtn.classList.remove('hidden');
-                showCardSection(targetSection);
-            }
+            setupCard(action);          
         });
     }
+
+    function setupCard(action) { 
+        var targetSection;    
+        currentScreen = action;
+        var arraynumber = menuNewList.findIndex(x => x.title == currentScreen);
+        previousScreen = menuNewList[arraynumber - 1] == undefined ? null : menuNewList[arraynumber - 1].title;
+        nextScreen = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title;
+
+        if (previousScreen == null) {
+            backwordBtn.classList.add('hidden');
+        }
+        else {
+            backwordBtn.classList.remove('hidden');
+        }
+        if (nextScreen == null) {
+            forwardBtn.classList.add('hidden');
+        }
+        else {
+            forwardBtn.classList.remove('hidden');
+        }
+
+        document.getElementById('backwordBtn').innerHTML = menuNewList[arraynumber - 1] == undefined ? null : `${icons['arrowBack']}` + '  ' + menuNewList[arraynumber - 1].title;
+        document.getElementById('forwardBtn').innerHTML = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title + '  ' + `${icons['arrowNext']}`;
+
+        switch (action) {
+            case 'Mark As Absent': {
+                targetSection = consumerInfoCard.querySelector('.absentSection');
+                absentAjax.selectAbsent(
+                    {
+                        token: $.session.Token,
+                        consumerId,
+                        locationId,
+                        statusDate: selectedDate,
+                    },
+                    function (results) {
+                        populateAbsentSection(targetSection, results);
+                    },
+                );
+                break;
+            }
+            case 'Change Photo': {
+                targetSection = consumerInfoCard.querySelector('.photoSection');
+                populatePhotoSection(targetSection);
+                break;
+            }
+            case 'Add To Group': {
+                targetSection = consumerInfoCard.querySelector('.groupSection');
+                populateGroupSection(targetSection);
+                break;
+            }
+            case 'Consumer Notes': {
+                targetSection = consumerInfoCard.querySelector('.notesSection');
+                rosterAjax.getDemographicsNotes(consumerId, function (results) {
+                    populateNotesSection(targetSection, results);
+                });
+                break;
+            }
+            case 'Progress Notes': {
+                targetSection = consumerInfoCard.querySelector('.progressNotesSection');
+                progressNotes.init(targetSection, locationId, consumerId);
+                progressNotes.getConsumerNotes(function (results) {
+                    populateProgressNotesSection(targetSection, results);
+                });
+                break;
+            }
+            case 'View Attachments': {
+                targetSection = consumerInfoCard.querySelector('.attachmentsSection');
+                rosterAjax.getAllAttachments(
+                    {
+                        token: $.session.Token,
+                        locationId: locationId,
+                        consumerId: consumerId,
+                        checkDate: selectedDate,
+                    },
+                    function (results) {
+                        populateAttachmentsSection(targetSection, results);
+                    },
+                );
+                break;
+            }
+            case 'View Schedule': {
+                targetSection = consumerInfoCard.querySelector('.scheduleSection');
+                rosterAjax.getConsumerScheduleLocation(consumerId, function (locationResults) {
+                    populateScheduleSection(targetSection, locationResults);
+                });
+                break;
+            }
+            case 'Demographics': {
+                targetSection = consumerInfoCard.querySelector('.demographicsSection');
+                rosterAjax.getConsumerDemographics(consumerId, function (results) {
+                    demographics.populate(targetSection, results[0], consumerId);
+                });
+                break;
+            }
+            case 'Relationships': {
+                targetSection = consumerInfoCard.querySelector('.relationshipsSection');
+                rosterAjax.getConsumerRelationships(consumerId, function (results) {
+                    populateRelationshipsSection(targetSection, results);
+                });
+                break;
+            }
+            case 'Intellivue': {
+                targetSection = consumerInfoCard.querySelector('.intellivueSection');
+                intellivue.getApplicationListHostedWithUser(function (results) {
+                    populateIntellivueSection(targetSection, results);
+                });
+                break;
+            }
+        }
+
+        if (targetSection) {
+            var sectionBackBtn = document.querySelector('.sectionBackBtn');
+            sectionBackBtn.classList.remove('hidden');
+            showCardSection(targetSection);
+        }
+    }
+
     function buildCard() {
         consumerInfoCard = document.createElement('div');
         consumerInfoCard.classList.add('consumerInfoCard');
@@ -1002,15 +1005,13 @@ var consumerInfo = (function () {
             style: 'secondary', 
             type: 'text',
             classNames: 'consumerInfoBackwardBtn', 
-            callback: handleBackButtonClick,
         });
         var forwardBtn = button.build({
             id: 'forwardBtn',
             text: nextScreen,
             style: 'secondary',
             type: 'text',
-            classNames: 'consumerInfoForwardBtn',
-            callback: closeCard,
+            classNames: 'consumerInfoForwardBtn',  
         });
         btnWrap.appendChild(backBtn);
         btnWrap.appendChild(closeBtn);
@@ -1056,17 +1057,29 @@ var consumerInfo = (function () {
 
         modalOverlay = document.querySelector('.overlay');
 
+      
+   
+        document.body.appendChild(consumerInfoCard);
+  
+        backwordBtn.classList.add('hidden'); 
+        forwardBtn.classList.add('hidden');     
+        eventListeners(); 
+        return consumerInfoCard;
+    }
+
+    function eventListeners() {
         // Add event listener to close the card when clicking outside of it
-        modalOverlay.addEventListener('click', function(event) {
+        modalOverlay.addEventListener('click', function (event) {
             closeCard();
         });
-
-        document.body.appendChild(consumerInfoCard);
-
-        backwordBtn.classList.add('hidden');
-        forwardBtn.classList.add('hidden');     
-
-        return consumerInfoCard;
+        forwardBtn.addEventListener('click', function (event) {
+            handleBackButtonClick();
+            setupCard(nextScreen); 
+        });
+        backwordBtn.addEventListener('click', function (event) {
+            handleBackButtonClick(); 
+            setupCard(previousScreen);
+        });
     }
 
 
