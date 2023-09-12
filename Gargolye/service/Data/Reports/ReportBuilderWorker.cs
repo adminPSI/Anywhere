@@ -76,12 +76,12 @@ namespace Anywhere.service.Data.ReportBuilder
 
                     break;
                 //Case Load 
-                case "Relationships List (Is a) - with page break by person":
-                    result = generateRelationshipsListReport(token, reportType, reportData);
+                //case "Relationships List (Is a) - with page break by person":
+                //    result = generateRelationshipsListReport(token, reportType, reportData);
 
-                    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+                //    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
-                    break;
+                //    break;
             }
 
             return reportScheduleId;
