@@ -441,7 +441,7 @@ const resetPassword = (function () {
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
 
-        INACTIVE_CHKBOX.style = 'margin-right: 400px;padding-bottom: 16px';
+        INACTIVE_CHKBOX.classList.add('chkBoxStyle');  
         var wrap1 = document.createElement('div');
         wrap1.classList.add('btnWrap');
         wrap1.appendChild(INACTIVE_CHKBOX);
