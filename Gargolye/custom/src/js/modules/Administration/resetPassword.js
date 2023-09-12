@@ -145,7 +145,7 @@ const resetPassword = (function () {
 
         var confirmMessage = document.createElement('div');
         confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
-
+      
         changePasswordPopup.appendChild(header);
         changePasswordPopup.appendChild(headerSpace);
         changePasswordPopup.appendChild(newPasswordInput);
@@ -155,7 +155,8 @@ const resetPassword = (function () {
         changePasswordPopup.appendChild(btnWrap);
         setupChangePasswordEvents();
         POPUP.show(changePasswordPopup);
-
+        document.getElementById('newPasswordInput').focus();      
+     
         strongPassword = $.session.strongPassword;
         if (strongPassword === 'Y') {
             //is password strong?            
@@ -386,7 +387,15 @@ const resetPassword = (function () {
 
             additionalInformation.style = 'margin-top: -10px; width: 200px;';
             const activeCheckbox = buildActiveChkBox(Active);
-            activeCheckbox.style = "padding-top: 2px; margin-left: 10px;";   
+            activeCheckbox.style = "padding-top: 2px; margin-left: 10px;";    
+            if ($.session.ResetPasswordUpdate) {  
+                activeCheckbox.classList.remove('disabled'); 
+                additionalInformation.classList.remove('disabled');
+            } else {
+                activeCheckbox.classList.add('disabled');
+                additionalInformation.classList.add('disabled');
+            }
+
             return {
                 id: userID,
                 endIcon: additionalInformation.outerHTML,
@@ -400,10 +409,14 @@ const resetPassword = (function () {
                     { key: 'data-consumer-id', value: userID },
                 ],
                 endIconCallback: e => {
-                    buildChangePasswordPopup(userID, FirstName, LastName);
+                    if ($.session.ResetPasswordUpdate) {
+                        buildChangePasswordPopup(userID, FirstName, LastName);
+                    }
                 },
                 secondendIconCallback: e => {
-                    setCheckUpdateUserStatus(Active, userID);
+                    if ($.session.ResetPasswordUpdate) {
+                        setCheckUpdateUserStatus(Active, userID); 
+                    } 
                 },
             };
         });
