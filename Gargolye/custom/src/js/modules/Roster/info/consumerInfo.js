@@ -151,8 +151,8 @@ var consumerInfo = (function () {
         var absentMenuItem = menulist.querySelector('[data-info-task="Mark As Absent"]');
         if ((locationid === '000' || locationid === '0') && absentMenuItem !== null) {
             absentMenuItem.classList.add('hidden');
-            const index = menuNewList.findIndex(x => x.title == 'Mark As Absent');
-            menuNewList.splice(index, 1);  
+            const index = menuNewList.findIndex(x => x.title == 'Mark As Absent');           
+            menuNewList.splice(index, 1);             
         } else if (absentMenuItem !== null) {
             absentMenuItem.classList.remove('hidden');
         }
@@ -195,7 +195,9 @@ var consumerInfo = (function () {
             var menuItem = document.querySelector('.menuList .progressNote');
             if (menuItem) menuItem.classList.add('hidden');
             const index = menuNewList.findIndex(x => x.title == 'Progress Notes');
-            menuNewList.splice(index, 1);
+            if (index != -1) { 
+                menuNewList.splice(index, 1);
+            } 
         } else {
             var menuItem = document.querySelector('.menuList .progressNote');
             if (menuItem) menuItem.classList.remove('hidden');
@@ -230,7 +232,7 @@ var consumerInfo = (function () {
     }
     function closeCard() {
         backwordBtn.classList.add('hidden');
-        forwardBtn.classList.add('hidden'); 
+        forwardBtn.classList.add('hidden');
         roster2.toggleRosterListLockdown(false);
         progressNotes.clearAllGlobalVariables();
         // hides consumer info card
@@ -283,9 +285,9 @@ var consumerInfo = (function () {
             targetSubSection.classList.add('visible');
         }, 200);
     }
-    function handleBackButtonClick() { 
+    function handleBackButtonClick() {
         backwordBtn.classList.add('hidden');
-        forwardBtn.classList.add('hidden');  
+        forwardBtn.classList.add('hidden');
         // first check to see if we are on the menulist
         var menuList = consumerInfoCard.querySelector('.menuList');
         var isMenuListHidden = menuList.classList.contains('fadeOut');
@@ -762,7 +764,7 @@ var consumerInfo = (function () {
 
         var cardInner = document.createElement('div');
         cardInner.classList.add('sectionInner');
-        menuNewList = []; 
+        menuNewList = [];
         if ($.session.DemographicsView === false) {
             // pointless reset based off above session variable
             $.session.DemographicsView = false;
@@ -844,31 +846,33 @@ var consumerInfo = (function () {
 
             cardInner.appendChild(item);
             menuNewList.push(mi);
-        });
+        }); 
         cardMenuList.appendChild(cardInner);
 
         return cardMenuList;
     }
     // Consumer Info Card
     function setupCardEvents(cardMenu) {
-        cardMenu.addEventListener('click', event => {  
+        cardMenu.addEventListener('click', event => {
             var action = event.target.dataset.infoTask;
-            setupCard(action);          
+            setupCard(action);
         });
     }
 
-    function setupCard(action) { 
-        var targetSection;    
+    function setupCard(action) {
+        var targetSection;
         currentScreen = action;
         var arraynumber = menuNewList.findIndex(x => x.title == currentScreen);
         previousScreen = menuNewList[arraynumber - 1] == undefined ? null : menuNewList[arraynumber - 1].title;
         nextScreen = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title;
 
         if (previousScreen == null) {
-            backwordBtn.classList.add('hidden');
+            backwordBtn.classList.remove('hidden');
+            backwordBtn.classList.add('disabled');  
         }
         else {
             backwordBtn.classList.remove('hidden');
+            backwordBtn.classList.remove('disabled');    
         }
         if (nextScreen == null) {
             forwardBtn.classList.add('hidden');
@@ -877,8 +881,8 @@ var consumerInfo = (function () {
             forwardBtn.classList.remove('hidden');
         }
 
-        document.getElementById('backwordBtn').innerHTML = menuNewList[arraynumber - 1] == undefined ? null : `${icons['arrowBack']}` + '  ' + menuNewList[arraynumber - 1].title;
-        document.getElementById('forwardBtn').innerHTML = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title + '  ' + `${icons['arrowNext']}`;
+        document.getElementById('backwordBtn').innerHTML = menuNewList[arraynumber - 1] == undefined ? null : `${icons['arrowBack']}` + '' + menuNewList[arraynumber - 1].title;
+        document.getElementById('forwardBtn').innerHTML = menuNewList[arraynumber + 1] == undefined ? null : menuNewList[arraynumber + 1].title + '' + `${icons['arrowNext']}`; 
 
         switch (action) {
             case 'Mark As Absent': {
@@ -1002,16 +1006,16 @@ var consumerInfo = (function () {
         var backwordBtn = button.build({
             id: 'backwordBtn',
             text: previousScreen,
-            style: 'secondary', 
+            style: 'secondary',
             type: 'text',
-            classNames: 'consumerInfoBackwardBtn', 
+            classNames: 'consumerInfoBackwardBtn',
         });
         var forwardBtn = button.build({
             id: 'forwardBtn',
             text: nextScreen,
             style: 'secondary',
             type: 'text',
-            classNames: 'consumerInfoForwardBtn',  
+            classNames: 'consumerInfoForwardBtn',
         });
         btnWrap.appendChild(backBtn);
         btnWrap.appendChild(closeBtn);
@@ -1057,13 +1061,13 @@ var consumerInfo = (function () {
 
         modalOverlay = document.querySelector('.overlay');
 
-      
-   
+
+
         document.body.appendChild(consumerInfoCard);
-  
-        backwordBtn.classList.add('hidden'); 
-        forwardBtn.classList.add('hidden');     
-        eventListeners(); 
+
+        backwordBtn.classList.add('hidden');
+        forwardBtn.classList.add('hidden');
+        eventListeners();
         return consumerInfoCard;
     }
 
@@ -1074,10 +1078,10 @@ var consumerInfo = (function () {
         });
         forwardBtn.addEventListener('click', function (event) {
             handleBackButtonClick();
-            setupCard(nextScreen); 
+            setupCard(nextScreen);
         });
         backwordBtn.addEventListener('click', function (event) {
-            handleBackButtonClick(); 
+            handleBackButtonClick();
             setupCard(previousScreen);
         });
     }

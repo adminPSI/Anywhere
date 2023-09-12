@@ -193,22 +193,30 @@
 }
 
 .consumerInfoForwardBtn {
-    font-size: 14.5px !important;
+    font-size: 13px !important; 
     text-align: right;
 
     svg {
         width: 24px;
         vertical-align: middle;
     }
+
+    @media screen and (min-width: 450px) {
+        font-size: 14.5px !important;
+    }
 }
 
 .consumerInfoBackwardBtn {
-    font-size: 14.5px !important;
+    font-size: 13px !important;
     text-align: left;
 
     svg {
         width: 24px;
         vertical-align: middle;
+    }
+
+    @media screen and (min-width: 450px) {
+        font-size: 14.5px !important;
     }
 }
 
