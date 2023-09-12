@@ -1046,7 +1046,7 @@ namespace Anywhere.service.Data
                             stepActions = getStepUpdateActions(wfActiontoProcess);
 
                             // For the current Step Event - execute one event/action pairing 
-                            string thisActionJSON = processWorkflowAction(thisEvent, stepActions, transaction2);
+                            string thisActionJSON = processWorkflowAction(token, thisEvent, stepActions, transaction2);
                             listActions.Add(thisActionJSON);
                         }
                         // return a list of executed Actions w/ the data
@@ -1066,7 +1066,7 @@ namespace Anywhere.service.Data
                             List<ActionInfo> wfActionstoProcess = new List<ActionInfo>();
                             wfActionstoProcess.Add(thiswfAction);
                             // For the current Workflow Event - execute one event/action pairing 
-                            string thisActionDateJSON = processWorkflowAction(thisEvent, wfActionstoProcess, transaction2);
+                            string thisActionDateJSON = processWorkflowAction(token, thisEvent, wfActionstoProcess, transaction2);
                             listActionDates.Add(thisActionDateJSON);
 
                         }
@@ -1410,7 +1410,7 @@ namespace Anywhere.service.Data
             return dictPlaceHolderValuesforPlan;
         }
 
-        public string processWorkflowAction(WorkflowEditedStepStatus thisEvent, List<ActionInfo> theseActions, DistributedTransaction transaction)
+        public string processWorkflowAction(string token, WorkflowEditedStepStatus thisEvent, List<ActionInfo> theseActions, DistributedTransaction transaction)
         {
             // For no actions, Actions = "[]" -- which is length = 2
             if (theseActions.Count == 0) return "No actions to process.";
@@ -1514,15 +1514,23 @@ namespace Anywhere.service.Data
                                     break;
                                 }
                                 string nextStepStartDate = "";
-
                                 Dictionary<string, string> nextStepStartDateActionParameters = new Dictionary<string, string>();
                                 nextStepStartDateActionParameters = getDateActionParameters(thisAction);
                                 double startDateChangeAmount = double.Parse(nextStepStartDateActionParameters["Days"]);
-
                                 DateTime thisStartDate = DateTime.ParseExact(thisEvent.modified, "M/d/yyyy", CultureInfo.InvariantCulture);
                                 DateTime newStartDate = thisStartDate.AddDays(startDateChangeAmount);
                                 nextStepStartDate = newStartDate.ToString("M/d/yy");
                                 nextStepStartDateSetStatus = wfdg.setWorkflowStepStartDate(setStartDateNextStepId, nextStepStartDate, transaction);
+
+                                WorkflowEditedStepStatus nextStepStart = new WorkflowEditedStepStatus();
+                                nextStepStart.isChanged = null;
+                                nextStepStart.original = null;
+                                nextStepStart.modified = nextStepStartDate;
+                                nextStepStart.eventId = "4";
+                                nextStepStart.eventType = "step";
+                                nextStepStart.eventTypeId = setStartDateNextStepId;
+                                nextStepStart.stepId = null;
+                                processWorkflowStepEvent(token, nextStepStart);
 
                                 break;
                             case 8:
@@ -1539,15 +1547,23 @@ namespace Anywhere.service.Data
                                     break;
                                 }
                                 string nextStepDueDate = "";
-
                                 Dictionary<string, string> nextStepDueDateActionParameters = new Dictionary<string, string>();
                                 nextStepDueDateActionParameters = getDateActionParameters(thisAction);
                                 double dueDateChangeAmount = double.Parse(nextStepDueDateActionParameters["Days"]);
-
                                 DateTime thisDueDate = DateTime.ParseExact(thisEvent.modified, "M/d/yyyy", CultureInfo.InvariantCulture);
                                 DateTime newDueDate = thisDueDate.AddDays(dueDateChangeAmount);
                                 nextStepDueDate = newDueDate.ToString("M/d/yy");
                                 nextStepDueDateSetStatus = wfdg.setWorkflowStepDueDate(setDueDateNextStepId, nextStepDueDate, transaction);
+
+                                WorkflowEditedStepStatus nextStepDue = new WorkflowEditedStepStatus();
+                                nextStepDue.isChanged = null;
+                                nextStepDue.original = null;
+                                nextStepDue.modified = nextStepDueDate;
+                                nextStepDue.eventId = "4";
+                                nextStepDue.eventType = "step";
+                                nextStepDue.eventTypeId = setDueDateNextStepId;
+                                nextStepDue.stepId = null;
+                                processWorkflowStepEvent(token, nextStepDue);
 
                                 break;
                         }
