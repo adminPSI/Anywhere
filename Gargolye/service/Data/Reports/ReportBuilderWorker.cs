@@ -70,7 +70,14 @@ namespace Anywhere.service.Data.ReportBuilder
                     break;
                 //Incident Tracking
                 case "Incident Reporting Log":
-                    result = generateIndividualReportingLog(token, reportType, reportData);
+                    result = generateIncidentReportingLog(token, reportType, reportData);
+
+                    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+
+                    break;
+                //Case Load 
+                case "Relationships List (Is a) - with page break by person":
+                    result = generateRelationshipsListReport(token, reportType, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
@@ -111,7 +118,7 @@ namespace Anywhere.service.Data.ReportBuilder
             string reportServerList = "Primary";
             string result = "";
 
-            result = rbdg.generateOutcomeDocumentationReport(token, category, title, reportServerList, reportData.outcomesService, reportData.outcomesDate, reportData.outcomesConsumer, reportData.outcomesType);
+            result = rbdg.generateOutcomeDocumentationReport(token, category, title, reportServerList, reportData.outcomesDate, reportData.outcomesConsumer, reportData.outcomesType);
 
             return result;
         }
@@ -152,17 +159,29 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
-        public string generateIndividualReportingLog(string token, string reportType, ReportData reportData)
+        public string generateIncidentReportingLog(string token, string reportType, ReportData reportData)
         {
             string category = "Incident Tracking";
             string title = "Incident Reporting Log";
             string reportServerList = "Primary";
             string result = "";
 
-            result = rbdg.generateIndividualReportingLog(token, category, title, reportServerList, reportData.ITLocation, reportData.ITConsumer, reportData.ITFromDate, reportData.ITToDate);
+            result = rbdg.generateIncidentReportingLog(token, category, title, reportServerList, reportData.ITLocation, reportData.ITConsumer, reportData.ITFromDate, reportData.ITToDate);
 
             return result;
         }
+
+        //public string generateRelationshipsListReport(string token, string reportType, ReportData reportData)
+        //{
+        //    string category = "Case Notes - Case Load";
+        //    string title = "Relationships List (Is a) - with page break by person";
+        //    string reportServerList = "Primary";
+        //    string result = "";
+
+        //    result = rbdg.generateRelationshipsListReport(token, category, title, reportServerList, reportData.ITLocation, reportData.ITConsumer, reportData.ITFromDate, reportData.ITToDate);
+
+        //    return result;
+        //}
 
         public void viewReport(string token, string reportScheduleId)
         {

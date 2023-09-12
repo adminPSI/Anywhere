@@ -200,7 +200,7 @@ const incidentOverview = (function () {
     function getFilterValues() {
       return (filterValues = {
         ITLocation: retrieveData.locationId,
-        ITConsumer: retrieveData.consumerId,
+        ITConsumer: retrieveData.consumerId ? retrieveData.consumerId : '%',
         ITFromDate: filterData.fromDate,
         ITToDate: filterData.toDate,
       });
