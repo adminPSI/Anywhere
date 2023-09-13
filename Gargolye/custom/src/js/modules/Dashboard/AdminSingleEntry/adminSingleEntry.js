@@ -1,4 +1,4 @@
-﻿var adminSingleEntryWidget = (function () {
+﻿const adminSingleEntryWidget = (function () {
   var statuses = {
     A: 'Needs Approval',
     P: 'Pending',
@@ -284,23 +284,23 @@
 
     dashboard.appendFilterButton('admindashsingleentrywidget', 'adminSeFilterBtn');
 
-    adminSingleEntryWidgetAjax.getSingleEntryAdminLocations(function (results, error) {
-      cachedResults_locations = results;
-      // populateLocationsDropDown(results2);
-    });
+    // filtering
+    displayFilteredBy();
+    buildFilterPopup();
+    eventSetup();
 
-    adminSingleEntryWidgetAjax.getSingleEntryAdminApprovalNumbers(function (results, error) {
-      cachedResults = results;
-      groupCountInfo(results, selectedConsumerId, selectedLocationId);
-      // filtering
-      displayFilteredBy();
-      buildFilterPopup();
-      eventSetup();
-      populateConsumerDropdown();
-      populateLocationsDropDown(cachedResults_locations);
-      // info/tabs
-      buildWidgetTabs();
-      populateCountInfo();
+    adminSingleEntryWidgetAjax.getSingleEntryAdminLocations(function (res, error) {
+      cachedResults_locations = res;
+
+      adminSingleEntryWidgetAjax.getSingleEntryAdminApprovalNumbers(function (results, error) {
+        cachedResults = results;
+        groupCountInfo(results, selectedConsumerId, selectedLocationId);
+        populateConsumerDropdown();
+        populateLocationsDropDown(cachedResults_locations);
+        // info/tabs
+        buildWidgetTabs();
+        populateCountInfo();
+      });
     });
   }
 
