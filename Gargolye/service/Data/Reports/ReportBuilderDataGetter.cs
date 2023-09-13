@@ -301,7 +301,7 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateOutcomeDocumentationReport(string token, string category, string title, string reportServerList, string outcomesService, string outcomesDate, string outcomesConsumer, string outcomesType)
+        public string generateOutcomeDocumentationReport(string token, string category, string title, string reportServerList, string outcomesDate, string outcomesConsumer, string outcomesType)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("generateOutcomeDocumentationReport ");
@@ -313,7 +313,7 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(outcomesDate); 
             list.Add(outcomesConsumer);
             //list.Add(outcomesService);
-            //list.Add(outcomesType);
+            list.Add(outcomesType);
             string text = "CALL DBA.ANYW_GenerateOutcomeDocumentationReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -376,7 +376,7 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateIndividualReportingLog(string token, string category, string title, string reportServerList, string location, string consumer, string fromDate, string toDate)
+        public string generateIncidentReportingLog(string token, string category, string title, string reportServerList, string location, string consumer, string fromDate, string toDate)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("generateIncidentReport ");
@@ -399,6 +399,32 @@ namespace Anywhere.service.Data.ReportBuilder
             {
                 logger.error("1ITR", ex.Message + "ANYW_GenerateIndividualReportingLog(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "1ITR: error ANYW_GenerateIndividualReportingLog";
+            }
+        }
+
+        public string generateRelationshipsListReport(string token, string category, string title, string reportServerList, string location, string consumer, string fromDate, string toDate)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("generateRelationshipsListReport ");
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(location);
+            list.Add(consumer);
+            list.Add(fromDate);
+            list.Add(toDate);
+            string text = "CALL DBA.ANYW_GenerateRelationshipsListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_GenerateRelationshipsListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_GenerateRelationshipsListReport";
             }
         }
 

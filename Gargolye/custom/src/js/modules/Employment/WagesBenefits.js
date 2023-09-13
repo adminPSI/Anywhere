@@ -488,7 +488,7 @@ const WagesBenefits = (() => {
         var messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertWagesResult.wagesId == '-1') {
-            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
+            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot be saved.';
             messagetext.classList.add('password-error');
         }
         else {
