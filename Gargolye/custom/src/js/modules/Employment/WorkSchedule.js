@@ -334,7 +334,7 @@ const WorkSchedule = (() => {
         var messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertWorkScheduleResult.WorkScheduleId == '-1') {
-            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
+            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot be saved.';
             messagetext.classList.add('password-error');
         }
         else {
