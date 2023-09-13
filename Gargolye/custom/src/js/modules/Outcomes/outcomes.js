@@ -1886,7 +1886,7 @@ var outcomes = (function() {
     function getFilterValues() {
       return (filterValues = {
         outcomesService: currService ? currService : 'All',
-        outcomesType: currOutcome ? currOutcome : 'All',
+        outcomesType: currOutcomeId ? currOutcomeId : '0',
         outcomesConsumer: selectedConsumerId,
         outcomesDate: currDate
       });
