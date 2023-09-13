@@ -623,8 +623,8 @@ var timeEntryReview = (function () {
             const iconsBox = document.createElement('div');
             iconsBox.classList.add('iconsBox');
             iconsBox.appendChild(additionalInformation);
-
-            if (comments !== "" && comments !== null) { 
+  
+            if (comments !== '' && comments !== null && comments.trim() !== '') {     
                 const commentsBox = document.createElement('div');
                 commentsBox.classList.add('commentsBox');
                 commentsBox.innerHTML = icons.note;
