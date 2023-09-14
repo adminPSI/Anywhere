@@ -414,8 +414,10 @@ const authorizations = (function () {
       POPUP.hide(filterPopup);
       filterValues = { ...filterValues, ...newFilterValues };
 
-      PROGRESS.init();
-      PROGRESS.SPINNER.show('Gathering Data...');
+      const spinner = PROGRESS.SPINNER.get('Gathering Data...');
+      pageWrap.removeChild(overviewTable);
+      pageWrap.appendChild(spinner);
+
       authData = await authorizationsAjax.getPageData({
         token: $.session.Token,
         selectedConsumerId: selectedConsumer.id,
@@ -430,8 +432,7 @@ const authorizations = (function () {
         completedDateStart: UTIL.formatDateToIso(filterValues.completedDateStart),
         completedDateEnd: UTIL.formatDateToIso(filterValues.completedDateEnd),
       });
-      const spinner = document.querySelector('.spinner');
-      spinner.remove();
+      pageWrap.removeChild(spinner);
 
       buildOverviewTable();
       const newfilteredByData = buildFilteredByData();
@@ -453,8 +454,6 @@ const authorizations = (function () {
   }
   function buildOverviewTable() {
     groupChildData();
-
-    if (overviewTable) pageWrap.removeChild(overviewTable);
 
     overviewTable = document.createElement('div');
     overviewTable.classList.add('authTable');
@@ -595,8 +594,9 @@ const authorizations = (function () {
     pageWrap.appendChild(filteredByData);
     DOM.ACTIONCENTER.appendChild(pageWrap);
 
-    PROGRESS.init();
-    PROGRESS.SPINNER.show('Gathering Data...');
+    const spinner = PROGRESS.SPINNER.get('Gathering Data...');
+    pageWrap.appendChild(spinner);
+
     authData = await authorizationsAjax.getPageData({
       token: $.session.Token,
       selectedConsumerId: selectedConsumer.id,
@@ -614,8 +614,8 @@ const authorizations = (function () {
     filterDropdownData = await authorizationsAjax.getFilterDropdownData({
       token: $.session.Token,
     });
-    const spinner = document.querySelector('.spinner');
-    spinner.remove();
+
+    pageWrap.removeChild(spinner);
 
     buildOverviewTable();
   }
