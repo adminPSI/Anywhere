@@ -62,6 +62,10 @@ const authorizations = (function () {
     applyFilterBtn = undefined;
   }
   function groupChildData() {
+    if (!authData.pageDataChild) {
+      return;
+    }
+
     const groupedChildren = authData.pageDataChild.reduce((obj, child) => {
       if (!obj[child.pas_id]) {
         obj[child.pas_id] = [];
