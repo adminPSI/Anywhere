@@ -53,12 +53,12 @@ const authorizations = (function () {
     planTypeDropdown = undefined;
     vendorDropdown = undefined;
     matchSourceDropdown = undefined;
-    completedDateStart = undefined;
-    completedDateEnd = undefined;
-    yearStartStart = undefined;
-    yearStartEnd = undefined;
-    yearEndStart = undefined;
-    yearEndEnd = undefined;
+    completedDateStartInput = undefined;
+    completedDateEndInput = undefined;
+    yearStartStartInput = undefined;
+    yearStartEndInput = undefined;
+    yearEndStartInput = undefined;
+    yearEndEndInput = undefined;
     applyFilterBtn = undefined;
   }
   function groupChildData() {
@@ -270,48 +270,48 @@ const authorizations = (function () {
 
     // Date Inputs
     const dateWrap = document.createElement('div');
-    completedDateStart = input.build({
+    completedDateStartInput = input.build({
       type: 'date',
       label: 'Completed Date (Start)',
       style: 'secondary',
       value: filterValues.completedDateStart,
     });
-    completedDateEnd = input.build({
+    completedDateEndInput = input.build({
       type: 'date',
       label: 'Completed Date (End)',
       style: 'secondary',
       value: filterValues.completedDateEnd,
     });
-    yearStartStart = input.build({
+    yearStartStartInput = input.build({
       type: 'date',
       label: 'Year Start (Start)',
       style: 'secondary',
       value: filterValues.yearStartStart,
     });
-    yearStartEnd = input.build({
+    yearStartEndInput = input.build({
       type: 'date',
       label: 'Year Start (End)',
       style: 'secondary',
       value: filterValues.yearStartEnd,
     });
-    yearEndStart = input.build({
+    yearEndStartInput = input.build({
       type: 'date',
       label: 'Year End (Start)',
       style: 'secondary',
       value: filterValues.yearEndStart,
     });
-    yearEndEnd = input.build({
+    yearEndEndInput = input.build({
       type: 'date',
       label: 'Year End (End)',
       style: 'secondary',
       value: filterValues.yearEndEnd,
     });
-    dateWrap.appendChild(completedDateStart);
-    dateWrap.appendChild(completedDateEnd);
-    dateWrap.appendChild(yearStartStart);
-    dateWrap.appendChild(yearStartEnd);
-    dateWrap.appendChild(yearEndStart);
-    dateWrap.appendChild(yearEndEnd);
+    dateWrap.appendChild(completedDateStartInput);
+    dateWrap.appendChild(completedDateEndInput);
+    dateWrap.appendChild(yearStartStartInput);
+    dateWrap.appendChild(yearStartEndInput);
+    dateWrap.appendChild(yearEndStartInput);
+    dateWrap.appendChild(yearEndEndInput);
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
@@ -360,59 +360,47 @@ const authorizations = (function () {
       var selectedOption = e.target.options[e.target.selectedIndex];
       newFilterValues.matchSource = selectedOption.value;
     });
-    completedDateStart.addEventListener('change', e => {
+    completedDateStartInput.addEventListener('change', e => {
       newFilterValues.completedDateStart = e.target.value;
       if (e.target.value === '') {
-        completedDateStart.classList.add('error');
+        completedDateStartInput.classList.add('error');
       } else {
-        completedDateStart.classList.remove('error');
+        completedDateStartInput.classList.remove('error');
       }
       checkFilterPopForErrors();
     });
-    completedDateEnd.addEventListener('change', e => {
+    completedDateEndInput.addEventListener('change', e => {
       newFilterValues.completedDateEnd = e.target.value;
       if (e.target.value === '') {
-        completedDateEnd.classList.add('error');
+        completedDateEndInput.classList.add('error');
       } else {
-        completedDateEnd.classList.remove('error');
+        completedDateEndInput.classList.remove('error');
       }
       checkFilterPopForErrors();
     });
-    yearStartStart.addEventListener('change', e => {
+    yearStartStartInput.addEventListener('change', e => {
       newFilterValues.yearStartStart = e.target.value;
       if (e.target.value === '') {
-        yearStartStart.classList.add('error');
+        yearStartStartInput.classList.add('error');
       } else {
-        yearStartStart.classList.remove('error');
+        yearStartStartInput.classList.remove('error');
       }
       checkFilterPopForErrors();
     });
-    yearStartEnd.addEventListener('change', e => {
+    yearStartEndInput.addEventListener('change', e => {
       newFilterValues.yearStartEnd = e.target.value;
       if (e.target.value === '') {
-        yearStartEnd.classList.add('error');
+        yearStartEndInput.classList.add('error');
       } else {
-        yearStartEnd.classList.remove('error');
+        yearStartEndInput.classList.remove('error');
       }
       checkFilterPopForErrors();
     });
-    yearEndStart.addEventListener('change', e => {
+    yearEndStartInput.addEventListener('change', e => {
       newFilterValues.yearEndStart = e.target.value;
-      // if (e.target.value === '') {
-      //   yearEndStart.classList.add('error');
-      // } else {
-      //   yearEndStart.classList.remove('error');
-      // }
-      // checkFilterPopForErrors();
     });
-    yearEndEnd.addEventListener('change', e => {
+    yearEndEndInput.addEventListener('change', e => {
       newFilterValues.yearEndEnd = e.target.value;
-      // if (e.target.value === '') {
-      //   yearEndEnd.classList.add('error');
-      // } else {
-      //   yearEndEnd.classList.remove('error');
-      // }
-      // checkFilterPopForErrors();
     });
     applyFilterBtn.addEventListener('click', async e => {
       POPUP.hide(filterPopup);
