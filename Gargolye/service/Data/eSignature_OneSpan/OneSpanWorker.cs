@@ -33,7 +33,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         // USE https://apps.e-signlive.com/api FOR PRODUCTION
         private static String apiKey = "MEhOb1ptNkhXd1FaOnhqSTdUYXZlaFowSQ==";
         private static string tokenOS = "";
-        OssClient ossClient = new OssClient(apiKey, apiUrl);
+        //OssClient ossClient = new OssClient(apiKey, apiUrl);
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
 
@@ -524,6 +524,16 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             // };
             // IDictionary<string, string> headers = new Dictionary<string, string>();
             // OssClient ossClient = new OssClient(apiTokenConfig, apiUrl, false, null, headers);
+            //get api key
+            string apiKeyString = osdg.OneSpanGetAPIKey(token);
+            APIKey[] apiKeyObj = js.Deserialize<APIKey[]>(apiKeyString);
+            string apiKey = apiKeyObj[0].apiKey.ToString();
+            //get url
+            string urlString = osdg.OneSpanGetURL(token);
+            URL[] urlObj = js.Deserialize<URL[]>(urlString);
+            string url = urlObj[0].url.ToString();
+            OssClient ossClient = new OssClient(apiKey, url);
+
             DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
             DocumentPackageStatus packageStatus = sentPackage.Status;
 

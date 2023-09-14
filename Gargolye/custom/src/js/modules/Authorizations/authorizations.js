@@ -116,10 +116,8 @@ const authorizations = (function () {
       yearStartEnd: dates
         .formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1))
         .slice(0, 10),
-      yearEndStart: dates
-        .formatISO(new Date(new Date(new Date().getFullYear(), 0, 1).setHours(0, 0, 0, 0)))
-        .slice(0, 10),
-      yearEndEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
+      yearEndStart: '', //dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
+      yearEndEnd: '', //dates.formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1)).slice(0, 10),
     };
   }
   function buildFilteredByData() {
@@ -145,7 +143,7 @@ const authorizations = (function () {
     return currentFilterDisplay;
   }
   function checkFilterPopForErrors() {
-    const errors = filterPopup.querySelectorAll('.error');
+    const errors = [...filterPopup.querySelectorAll('.error')];
     const hasErrors = errors.legnth > 0 ? true : false;
 
     if (hasErrors) {
@@ -396,26 +394,28 @@ const authorizations = (function () {
     });
     yearEndStart.addEventListener('change', e => {
       newFilterValues.yearEndStart = e.target.value;
-      if (e.target.value === '') {
-        completedDateStart.classList.add('error');
-      } else {
-        completedDateStart.classList.remove('error');
-      }
-      checkFilterPopForErrors();
+      // if (e.target.value === '') {
+      //   yearEndStart.classList.add('error');
+      // } else {
+      //   yearEndStart.classList.remove('error');
+      // }
+      // checkFilterPopForErrors();
     });
     yearEndEnd.addEventListener('change', e => {
       newFilterValues.yearEndEnd = e.target.value;
-      if (e.target.value === '') {
-        completedDateStart.classList.add('error');
-      } else {
-        completedDateStart.classList.remove('error');
-      }
-      checkFilterPopForErrors();
+      // if (e.target.value === '') {
+      //   yearEndEnd.classList.add('error');
+      // } else {
+      //   yearEndEnd.classList.remove('error');
+      // }
+      // checkFilterPopForErrors();
     });
     applyFilterBtn.addEventListener('click', async e => {
       POPUP.hide(filterPopup);
       filterValues = { ...filterValues, ...newFilterValues };
 
+      PROGRESS.init();
+      PROGRESS.SPINNER.show('Gathering Data...');
       authData = await authorizationsAjax.getPageData({
         token: $.session.Token,
         selectedConsumerId: selectedConsumer.id,
@@ -430,6 +430,8 @@ const authorizations = (function () {
         completedDateStart: UTIL.formatDateToIso(filterValues.completedDateStart),
         completedDateEnd: UTIL.formatDateToIso(filterValues.completedDateEnd),
       });
+      const spinner = document.querySelector('.spinner');
+      spinner.remove();
 
       buildOverviewTable();
       const newfilteredByData = buildFilteredByData();
@@ -518,29 +520,33 @@ const authorizations = (function () {
       `;
       subRowWrap.appendChild(subHeading);
 
-      authData.pageDataChild[pasID].sort((a, b) => {
-        return parseInt(a.itemnum) - parseInt(b.itemnum);
-      });
+      if (authData.pageDataChild[pasID]) {
+        authData.pageDataChild[pasID].sort((a, b) => {
+          return parseInt(a.itemnum) - parseInt(b.itemnum);
+        });
 
-      authData.pageDataChild[pasID].forEach(child => {
-        const subDataRow = document.createElement('div');
-        subDataRow.classList.add('authTable__subDataRow', 'authTable__dataRow');
-        subDataRow.innerHTML = `
-          <div>${child.itemnum}</div>
-          <div>${child.description}</div>
-          <div>${child.service_code}</div>
-          <div>${UTIL.abbreviateDateYear(
-            UTIL.formatDateFromIso(child.BeginDate.split('T')[0]),
-          )}</div>
-          <div>${UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.EndDate.split('T')[0]))}</div>
-          <div>${child.MaxUnits}</div>
-          <div>${getFreqName(child.frequency)}</div>
-          <div>${child.vendorName}</div>
-          <div>${convertToCurrency(child.authCostFY1)}</div>
-          <div>${convertToCurrency(child.authCostFY2)}</div>
-        `;
-        subRowWrap.appendChild(subDataRow);
-      });
+        authData.pageDataChild[pasID].forEach(child => {
+          const subDataRow = document.createElement('div');
+          subDataRow.classList.add('authTable__subDataRow', 'authTable__dataRow');
+          subDataRow.innerHTML = `
+            <div>${child.itemnum}</div>
+            <div>${child.description}</div>
+            <div>${child.service_code}</div>
+            <div>${UTIL.abbreviateDateYear(
+              UTIL.formatDateFromIso(child.BeginDate.split('T')[0]),
+            )}</div>
+            <div>${UTIL.abbreviateDateYear(
+              UTIL.formatDateFromIso(child.EndDate.split('T')[0]),
+            )}</div>
+            <div>${child.MaxUnits}</div>
+            <div>${getFreqName(child.frequency)}</div>
+            <div>${child.vendorName}</div>
+            <div>${convertToCurrency(child.authCostFY1)}</div>
+            <div>${convertToCurrency(child.authCostFY2)}</div>
+          `;
+          subRowWrap.appendChild(subDataRow);
+        });
+      }
 
       // EVENT
       //---------------------------------
@@ -589,6 +595,8 @@ const authorizations = (function () {
     pageWrap.appendChild(filteredByData);
     DOM.ACTIONCENTER.appendChild(pageWrap);
 
+    PROGRESS.init();
+    PROGRESS.SPINNER.show('Gathering Data...');
     authData = await authorizationsAjax.getPageData({
       token: $.session.Token,
       selectedConsumerId: selectedConsumer.id,
@@ -606,6 +614,8 @@ const authorizations = (function () {
     filterDropdownData = await authorizationsAjax.getFilterDropdownData({
       token: $.session.Token,
     });
+    const spinner = document.querySelector('.spinner');
+    spinner.remove();
 
     buildOverviewTable();
   }

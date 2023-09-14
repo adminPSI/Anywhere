@@ -104,11 +104,11 @@ namespace Anywhere.service.Data.Authorization
   
                 sb.Append("select p.CompletionDate,p.plan_year_start,p.plan_year_end,p.plantype,p.match_source + ' ' + ct.caption as sourceAndCaption, p.ID, p.PL_Vendor_ID as plVendorId, v.name, p.pas_id, p.RevisionNum as revisionNum "); 
                 sb.Append("from dba.pas as p ");
-                sb.Append("join code_table as ct on ct.code = p.Match_Source ");
+                sb.Append("left outer join code_table as ct on ct.code = p.Match_Source ");
                 sb.Append("left outer join vendor as v on v.Vendor_ID = p.PL_Vendor_ID ");
-                sb.AppendFormat("where ct.Code like '{0}' ", code);
-                sb.AppendFormat("and ct.Field_ID like '{0}' ", fieldId);
-                sb.AppendFormat("and p.Match_Source like '{0}' ", matchSource);
+                sb.AppendFormat("where (ct.Code like '{0}' or ct.Code is null) ", code);
+                sb.AppendFormat("and (ct.Field_ID like '{0}' or ct.Field_ID is null) ", fieldId);
+                sb.AppendFormat("and (p.Match_Source like '{0}' or p.Match_Source is null) ", matchSource);
                 sb.AppendFormat("and p.planType like '{0}' ", planType);
                 sb.AppendFormat("and p.plan_year_start between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
                 if(planYearEndStart != "" && planYearEndEnd != "")
@@ -176,7 +176,7 @@ namespace Anywhere.service.Data.Authorization
                 sb.Append("join dba.service_info as si on si.service_id = pd.service_id ");
                 sb.Append("where pd.pas_id in (select distinct pas_id ");
                 sb.Append("from pas as p ");
-                sb.AppendFormat("where p.Match_Source like '{0}' ", matchSource);
+                sb.AppendFormat("where (p.Match_Source like '{0}' or p.Match_Source is null) ", matchSource);
                 sb.AppendFormat("and p.planType like '{0}' ", planType);
                 sb.AppendFormat("and p.plan_year_start between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
                 sb.AppendFormat("and p.CompletionDate between '{0}' and '{1}' ", completedDateStart, completedDateEnd);
