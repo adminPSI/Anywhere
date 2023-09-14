@@ -116,10 +116,8 @@ const authorizations = (function () {
       yearStartEnd: dates
         .formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1))
         .slice(0, 10),
-      yearEndStart: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
-      yearEndEnd: dates
-        .formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1))
-        .slice(0, 10),
+      yearEndStart: '', //dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
+      yearEndEnd: '', //dates.formatISO(dates.addYears(new Date(new Date().setHours(0, 0, 0, 0)), 1)).slice(0, 10),
     };
   }
   function buildFilteredByData() {
@@ -396,21 +394,21 @@ const authorizations = (function () {
     });
     yearEndStart.addEventListener('change', e => {
       newFilterValues.yearEndStart = e.target.value;
-      if (e.target.value === '') {
-        yearEndStart.classList.add('error');
-      } else {
-        yearEndStart.classList.remove('error');
-      }
-      checkFilterPopForErrors();
+      // if (e.target.value === '') {
+      //   yearEndStart.classList.add('error');
+      // } else {
+      //   yearEndStart.classList.remove('error');
+      // }
+      // checkFilterPopForErrors();
     });
     yearEndEnd.addEventListener('change', e => {
       newFilterValues.yearEndEnd = e.target.value;
-      if (e.target.value === '') {
-        yearEndEnd.classList.add('error');
-      } else {
-        yearEndEnd.classList.remove('error');
-      }
-      checkFilterPopForErrors();
+      // if (e.target.value === '') {
+      //   yearEndEnd.classList.add('error');
+      // } else {
+      //   yearEndEnd.classList.remove('error');
+      // }
+      // checkFilterPopForErrors();
     });
     applyFilterBtn.addEventListener('click', async e => {
       POPUP.hide(filterPopup);
