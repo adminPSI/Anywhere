@@ -51,6 +51,7 @@ namespace Anywhere.service.Data
         public IncidentTrackingReviewTableData[] GetITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
             string itReviewTableDataString = dg.getITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            js.MaxJsonLength = Int32.MaxValue;
             IncidentTrackingReviewTableData[] itReviewTableData = js.Deserialize<IncidentTrackingReviewTableData[]>(itReviewTableDataString);
 
             if (consumerId != "" && consumerId != "%" && consumerId != null)

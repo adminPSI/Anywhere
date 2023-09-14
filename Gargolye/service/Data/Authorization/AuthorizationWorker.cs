@@ -111,7 +111,18 @@ namespace Anywhere.service.Data.Authorization
                 sb.AppendFormat("and p.Match_Source like '{0}' ", matchSource);
                 sb.AppendFormat("and p.planType like '{0}' ", planType);
                 sb.AppendFormat("and p.plan_year_start between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
-                sb.AppendFormat("and p.plan_year_end between '{0}' and '{1}' ", planYearEndStart, planYearEndEnd);
+                if(planYearEndStart != "" && planYearEndEnd != "")
+                {
+                    sb.AppendFormat("and p.plan_year_end between '{0}' and '{1}' ", planYearEndStart, planYearEndEnd);
+                }
+                if (planYearEndStart != "" && planYearEndEnd == "")
+                {
+                    sb.AppendFormat("and p.plan_year_end <= '{0}' ", planYearEndStart);
+                }
+                if (planYearEndStart == "" && planYearEndEnd != "")
+                {
+                    sb.AppendFormat("and p.plan_year_end <= '{0}' ", planYearEndEnd);
+                }
                 sb.AppendFormat("and p.CompletionDate between '{0}' and '{1}' ", completedDateStart, completedDateEnd);
                 sb.AppendFormat("and p.Id = '{0}' and p.permanent = 'Y' ", selectedConsumerId);
                 if(vendorId.Equals("%"))
@@ -173,7 +184,18 @@ namespace Anywhere.service.Data.Authorization
                 sb.Append("and pd.Detail_Type = 'C' ");
                 sb.AppendFormat("and pd.BeginDate between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
                 //sb.AppendFormat("and pd.enddate between '{0}' and '{1}'", planYearStartStart, planYearStartEnd);
-                sb.AppendFormat("and pd.enddate between '{0}' and '{1}'", planYearEndStart, planYearEndEnd);
+                if (planYearEndStart != "" && planYearEndEnd != "")
+                {
+                    sb.AppendFormat("and p.plan_year_end between '{0}' and '{1}' ", planYearEndStart, planYearEndEnd);
+                }
+                if (planYearEndStart != "" && planYearEndEnd == "")
+                {
+                    sb.AppendFormat("and p.plan_year_end <= '{0}' ", planYearEndStart);
+                }
+                if (planYearEndStart == "" && planYearEndEnd != "")
+                {
+                    sb.AppendFormat("and p.plan_year_end <= '{0}' ", planYearEndEnd);
+                }
 
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
