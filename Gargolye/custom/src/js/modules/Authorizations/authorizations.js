@@ -397,18 +397,18 @@ const authorizations = (function () {
     yearEndStart.addEventListener('change', e => {
       newFilterValues.yearEndStart = e.target.value;
       if (e.target.value === '') {
-        completedDateStart.classList.add('error');
+        yearEndStart.classList.add('error');
       } else {
-        completedDateStart.classList.remove('error');
+        yearEndStart.classList.remove('error');
       }
       checkFilterPopForErrors();
     });
     yearEndEnd.addEventListener('change', e => {
       newFilterValues.yearEndEnd = e.target.value;
       if (e.target.value === '') {
-        completedDateStart.classList.add('error');
+        yearEndEnd.classList.add('error');
       } else {
-        completedDateStart.classList.remove('error');
+        yearEndEnd.classList.remove('error');
       }
       checkFilterPopForErrors();
     });
