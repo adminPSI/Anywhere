@@ -414,6 +414,8 @@ const authorizations = (function () {
       POPUP.hide(filterPopup);
       filterValues = { ...filterValues, ...newFilterValues };
 
+      PROGRESS.init();
+      PROGRESS.SPINNER.show('Gathering Data...');
       authData = await authorizationsAjax.getPageData({
         token: $.session.Token,
         selectedConsumerId: selectedConsumer.id,
@@ -428,6 +430,8 @@ const authorizations = (function () {
         completedDateStart: UTIL.formatDateToIso(filterValues.completedDateStart),
         completedDateEnd: UTIL.formatDateToIso(filterValues.completedDateEnd),
       });
+      const spinner = document.querySelector('.spinner');
+      spinner.remove();
 
       buildOverviewTable();
       const newfilteredByData = buildFilteredByData();
@@ -591,6 +595,8 @@ const authorizations = (function () {
     pageWrap.appendChild(filteredByData);
     DOM.ACTIONCENTER.appendChild(pageWrap);
 
+    PROGRESS.init();
+    PROGRESS.SPINNER.show('Gathering Data...');
     authData = await authorizationsAjax.getPageData({
       token: $.session.Token,
       selectedConsumerId: selectedConsumer.id,
@@ -608,6 +614,8 @@ const authorizations = (function () {
     filterDropdownData = await authorizationsAjax.getFilterDropdownData({
       token: $.session.Token,
     });
+    const spinner = document.querySelector('.spinner');
+    spinner.remove();
 
     buildOverviewTable();
   }
