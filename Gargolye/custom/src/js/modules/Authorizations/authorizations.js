@@ -143,7 +143,7 @@ const authorizations = (function () {
     return currentFilterDisplay;
   }
   function checkFilterPopForErrors() {
-    const errors = filterPopup.querySelectorAll('.error');
+    const errors = [...filterPopup.querySelectorAll('.error')];
     const hasErrors = errors.legnth > 0 ? true : false;
 
     if (hasErrors) {
