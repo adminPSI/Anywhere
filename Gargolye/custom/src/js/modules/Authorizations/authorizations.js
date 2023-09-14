@@ -419,14 +419,10 @@ const authorizations = (function () {
         planType: filterValues.planType,
         planYearStartStart: UTIL.formatDateToIso(filterValues.yearStartStart),
         planYearStartEnd: UTIL.formatDateToIso(filterValues.yearStartEnd),
-        planYearEndStart: UTIL.formatDateToIso(filterValues.yearEndStart),
-        planYearEndEnd: UTIL.formatDateToIso(filterValues.yearEndEnd),
-        completedDateStart: filterValues.completedDateStart
-          ? UTIL.formatDateToIso(filterValues.completedDateStart)
-          : '',
-        completedDateEnd: filterValues.completedDateEnd
-          ? UTIL.formatDateToIso(filterValues.completedDateEnd)
-          : '',
+        planYearEndStart: planYearEndStart ? UTIL.formatDateToIso(filterValues.yearEndStart) : '',
+        planYearEndEnd: planYearEndEnd ? UTIL.formatDateToIso(filterValues.yearEndEnd) : '',
+        completedDateStart: UTIL.formatDateToIso(filterValues.completedDateStart),
+        completedDateEnd: UTIL.formatDateToIso(filterValues.completedDateEnd),
       });
       pageWrap.removeChild(spinner);
 
