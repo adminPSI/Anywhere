@@ -589,7 +589,8 @@ const roster2 = (function () {
     });
   }
   function buildSearchBtn() {
-    return button.build({
+      return button.build({
+      id: 'searchBtn',
       text: 'Search',
       icon: 'search',
       style: 'secondary',
@@ -682,8 +683,8 @@ const roster2 = (function () {
     SEARCH_INPUT = document.createElement('input');
     SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
     SEARCH_WRAP.appendChild(SEARCH_BTN);
-    SEARCH_WRAP.appendChild(SEARCH_INPUT);
-
+    SEARCH_WRAP.appendChild(SEARCH_INPUT); 
+       
     if (rosterListSelectable) {
       var wrap1 = document.createElement('div');
       var wrap2 = document.createElement('div');
@@ -712,9 +713,9 @@ const roster2 = (function () {
       wrap2.appendChild(MANAGE_GROUPS_BTN);
 
       btnWrap.appendChild(wrap1);
-      btnWrap.appendChild(wrap2);
-    }
-
+      btnWrap.appendChild(wrap2);      
+      }
+     
     return btnWrap;
   }
 
@@ -1017,7 +1018,8 @@ const roster2 = (function () {
     showMiniRosterPopup(rosterMarkup);
     totalConsumerCount = 0;
     await getRosterConsumersData();
-    populateRoster();
+      populateRoster();
+      document.getElementById('searchBtn').click();         
   }
   /**
    * Enables or disables the mini roster button.
@@ -1394,7 +1396,7 @@ const roster2 = (function () {
     ROSTER_WRAP.appendChild(ROSTER_SPINNER);
     // setup event listener
     rosterEventSetup();
-
+     
     return ROSTER_WRAP;
   }
 
@@ -1429,7 +1431,8 @@ const roster2 = (function () {
 
     totalConsumerCount = 0;
     await getRosterConsumersData();
-    populateRoster();
+      populateRoster();
+      document.getElementById('searchBtn').click();
   }
 
   return {

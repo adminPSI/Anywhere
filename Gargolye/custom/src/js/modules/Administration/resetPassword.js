@@ -23,10 +23,10 @@ const resetPassword = (function () {
         DOM.clearActionCenter();
         const topNav = buildRosterTopNav();
         userTable = buildTable();
-
-        DOM.ACTIONCENTER.appendChild(topNav);
+        
+        DOM.ACTIONCENTER.appendChild(topNav);          
         DOM.ACTIONCENTER.appendChild(userTable);
-
+       
         SEARCH_BTN.addEventListener('click', event => {
             SEARCH_WRAP.classList.toggle('searchOpen');
             SEARCH_INPUT.value = '';
@@ -38,10 +38,12 @@ const resetPassword = (function () {
         });
         isChecked = $.session.isActiveUsers;
         loadReviewPage(isChecked);
+        document.getElementById('searchBtn').click();  
     }
 
     function buildSearchBtn() {
         return button.build({
+            id: 'searchBtn',
             text: 'Search',
             icon: 'search',
             style: 'secondary',
@@ -430,7 +432,7 @@ const resetPassword = (function () {
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('roster-top-nav');
 
-        SEARCH_BTN = buildSearchBtn();
+        SEARCH_BTN = buildSearchBtn(); 
         INACTIVE_CHKBOX = buildInactiveChkBox();
 
         // custom search stuff

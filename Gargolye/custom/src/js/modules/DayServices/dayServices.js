@@ -1522,6 +1522,7 @@ const dayServices = (function () {
     function buildPageComponents() {
         // custom search stuff
         SEARCH_BTN = button.build({
+            id: 'searchBtn',
             text: 'Search',
             icon: 'search',
             style: 'secondary',
@@ -1721,7 +1722,7 @@ const dayServices = (function () {
         buildPageComponents();
         addEventListeners();
         //checkIfBatched();
-
+        document.getElementById('searchBtn').click();
         rosterGroupResults = (await customGroupsAjax.getConsumerGroups(locationID))
             .getConsumerGroupsJSONResult;
     }

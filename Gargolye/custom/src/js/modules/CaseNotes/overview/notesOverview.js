@@ -255,18 +255,19 @@ var notesOverview = (function () {
   }
   function buildTopBtns() {
     // custom search stuff
-    SEARCH_BTN = button.build({
-      text: 'Search',
-      icon: 'search',
-      style: 'secondary',
-      type: 'contained',
+      SEARCH_BTN = button.build({
+          id:'searchBtn',  
+          text: 'Search',
+          icon: 'search',
+          style: 'secondary',
+          type: 'contained',
     });
 
     SEARCH_WRAP = document.createElement('div');
     SEARCH_WRAP.classList.add('consumerSearch');
     SEARCH_INPUT = document.createElement('input');
     SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
-    SEARCH_WRAP.appendChild(SEARCH_BTN);
+    SEARCH_WRAP.appendChild(SEARCH_BTN);     
     SEARCH_WRAP.appendChild(SEARCH_INPUT);
     filterBtn = button.build({
       text: 'Filter',
@@ -305,7 +306,7 @@ var notesOverview = (function () {
 
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('cnbtnWrap');
-    btnWrap.appendChild(filterBtn);
+    btnWrap.appendChild(filterBtn);    
     //PERMISSION// caseNoteUpdate === True means they have they
     //Can create new notes or update/delete notes.
     if ($.session.CaseNotesUpdate) btnWrap.appendChild(newNoteBtn);
@@ -315,8 +316,8 @@ var notesOverview = (function () {
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     currentFilterDisplay.classList.add('filteredByData');
     DOM.ACTIONCENTER.appendChild(currentFilterDisplay);
-
-    initFilterDisplay();
+   
+    initFilterDisplay();     
   }
 
   // Table
@@ -624,6 +625,7 @@ var notesOverview = (function () {
     buildMutationObserver();
     disableMiniRosterBtn();
     mainEventListeners();
+    document.getElementById('searchBtn').click();  
   }
 
   function initialData(callback) {
