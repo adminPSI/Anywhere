@@ -526,7 +526,7 @@ const ConsumerFinances = (() => {
 
         const {
             getPayeesResult: Payees,
-        } = await ConsumerFinancesAjax.getPayeesAsync();
+        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);  
         let payeeData = Payees.map((payees) => ({
             id: payees.CategoryID,
             value: payees.Description,
