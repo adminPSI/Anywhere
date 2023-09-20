@@ -1154,11 +1154,12 @@
 
       grid.addEventListener('click', async e => {
         const gridRows = [...grid.querySelectorAll('.grid__body .grid__row')];
-        if (gridRows.length === 1) return;
 
         const target = e.target;
 
         if (deleteRowsActive && target.classList.contains('grid__row')) {
+          if (gridRows.length === 1) return;
+
           const isSeleted = target.classList.contains('selected');
           const rowId = target.id.replace('roworder', '');
 
