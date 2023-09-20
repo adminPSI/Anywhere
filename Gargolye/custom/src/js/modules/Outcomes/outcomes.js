@@ -1918,7 +1918,7 @@ var outcomes = (function() {
 
     reportsBtn = createMainReportButton([{ text: 'Documentation - Completed With Percentages', filterValues }, { text: 'Outcome Activity - With Community Integration by Employee, Consumer, Date', filterValues } ])
 
-    if($.session.applicationName === 'GateKeeper') {
+    if($.session.applicationName === 'Advisor') {
       topFilterDateWrap.appendChild(reportsBtn);
     }
 
