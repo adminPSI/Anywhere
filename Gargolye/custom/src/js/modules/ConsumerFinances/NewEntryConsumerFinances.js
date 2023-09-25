@@ -221,7 +221,7 @@ const NewEntryCF = (() => {
         });
 
         const radioDiv = document.createElement("div");
-        radioDiv.classList.add("addCFRadioDiv"); 
+        radioDiv.classList.add("addCFRadioDiv");
         radioDiv.appendChild(expenseRadio);
         radioDiv.appendChild(depositRadio);
         /////////////////
@@ -474,7 +474,7 @@ const NewEntryCF = (() => {
         });
         NEW_SAVE_BTN.addEventListener('click', event => {
             if (IsSaveDisable) {
-                NEW_SAVE_BTN.classList.add('disabled'); 
+                NEW_SAVE_BTN.classList.add('disabled');
                 saveNewAccount();
             }
             IsSaveDisable = true;
@@ -492,7 +492,7 @@ const NewEntryCF = (() => {
         });
 
         newDateInput.addEventListener('input', event => {
-            if (!newDateInput.classList.contains('disabled')) {            
+            if (!newDateInput.classList.contains('disabled')) {
                 date = event.target.value;
                 tempdate = 'ChangedValue';
                 checkRequiredFieldsOfNewEntry();
@@ -768,6 +768,11 @@ const NewEntryCF = (() => {
         addPayeePopup.appendChild(cityInput);
         addPayeePopup.appendChild(stateInput);
         addPayeePopup.appendChild(zipcodeInput);
+
+        var confirmMessage = document.createElement('div');
+        confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
+        addPayeePopup.appendChild(confirmMessage);
+
         addPayeePopup.appendChild(btnWrap);
 
         popUpEventHandlers();
@@ -878,11 +883,22 @@ const NewEntryCF = (() => {
     async function addPayeePopupDoneBtn() {
         const result = await ConsumerFinancesAjax.insertPayeeAsync(payeeName, payeeaddress1, payeeaddress2, payeecity, payeestate, payeezipcode);
         const { insertPayeeResult } = result;
-        let regionID = insertPayeeResult.RegionID;
-        POPUP.hide(addPayeePopup);
-        payee = payeeName;
-        temppayee = 'ChangedValue';
-        populatePayeeDropdown();
+
+        var messagetext = document.getElementById('confirmMessage');
+        messagetext.innerHTML = ``;
+        if (insertPayeeResult.RegionID == '-1') {
+            messagetext.innerHTML = 'Payee name is already exists.'; 
+            messagetext.classList.add('password-error'); 
+        }
+        else {
+            POPUP.hide(addPayeePopup);
+            payee = payeeName;
+            document.getElementById('newCategoryDropdown').value = '';
+            document.getElementById('newSubCategoryDropdown').value = '';  
+            temppayee = 'ChangedValue';
+            populatePayeeDropdown();         
+        }
+
     }
 
     return {
