@@ -250,6 +250,7 @@ const planData = (() => {
           text: 'Vocational Habilitation - Both',
           showWith: ['1', '2', '3', '6', '8'],
         },
+        { value: '51', text: 'Other', showWith: ['6'] },
       ],
       newOrExisting: [
         { value: '%', text: '' },
