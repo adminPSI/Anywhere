@@ -2629,9 +2629,9 @@ namespace Anywhere
             return pciw.getPlanContactFundingSources(assessmentId);
         }
 
-        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
+        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext, string typeOther)
         {
-            return pciw.insertPlanContactImportantPeople(token, contactId, type, name, relationship, address, phone, email, phone2, phoneExt, phone2Ext);
+            return pciw.insertPlanContactImportantPeople(token, contactId, type, name, relationship, address, phone, email, phone2, phoneExt, phone2Ext, typeOther);
         }
 
         public string insertPlanContactImportantGroup(string token, string contactId, string status, string name, string address, string phone, string meetingInfo, string whoHelps)
@@ -2639,13 +2639,13 @@ namespace Anywhere
             return pciw.insertPlanContactImportantGroup(token, contactId, status, name, address, phone, meetingInfo, whoHelps);
         }
 
-        public string insertPlanContactImportantPlaces(string token, string contactId, string type, string name, string address, string phone, string schedule, string acuity)
+        public string insertPlanContactImportantPlaces(string token, string contactId, string type, string name, string address, string phone, string schedule, string acuity, string typeOther)
         {
-            return pciw.insertPlanContactImportantPlaces(token, contactId, type, name, address, phone, schedule, acuity);
+            return pciw.insertPlanContactImportantPlaces(token, contactId, type, name, address, phone, schedule, acuity, typeOther);
         }
-        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
+        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext, string typeOther)
         {
-            return pciw.updatePlanContactImportantPeople(token, importantPersonId, type, name, relationship, address, phone, email, phone2, phoneExt, phone2Ext);
+            return pciw.updatePlanContactImportantPeople(token, importantPersonId, type, name, relationship, address, phone, email, phone2, phoneExt, phone2Ext, typeOther);
         }
 
         public string updatePlanContactImportantGroup(string token, string importantGroupId, string status, string name, string address, string phone, string meetingInfo, string whoHelps)
@@ -2653,9 +2653,9 @@ namespace Anywhere
             return pciw.updatePlanContactImportantGroup(token, importantGroupId, status, name, address, phone, meetingInfo, whoHelps);
         }
 
-        public string updatePlanContactImportantPlaces(string token, string importantPlacesId, string type, string name, string address, string phone, string schedule, string acuity)
+        public string updatePlanContactImportantPlaces(string token, string importantPlacesId, string type, string name, string address, string phone, string schedule, string acuity, string typeOther)
         {
-            return pciw.updatePlanContactImportantPlaces(token, importantPlacesId, type, name, address, phone, schedule, acuity);
+            return pciw.updatePlanContactImportantPlaces(token, importantPlacesId, type, name, address, phone, schedule, acuity, typeOther);
         }
         public string updatePlanContact(string token, string contactId, string ohiInfo, string ohiPhone, string ohiPolicy)
         {
