@@ -12,6 +12,7 @@ const isp_ci_importantPeople = (() => {
   let phone2Ext;
   let emailInput;
   let typeDropdown;
+  let typeOtherInput;
   let saveBtn;
 
   function popFromRelationships() {
@@ -141,7 +142,7 @@ const isp_ci_importantPeople = (() => {
     } else {
       phoneInput.classList.remove('error');
     }
-    
+
     checkForErrors();
   }
 
@@ -166,6 +167,7 @@ const isp_ci_importantPeople = (() => {
       const extVal = document.getElementById('isp-ciip-extinput').value;
       const extVal2 = document.getElementById('isp-ciip-extinput2').value;
       const emailVal = document.getElementById('isp-ciip-emailInput').value;
+      const typeOtherVal = document.getElementById('isp-ciip-typeOther').value;
 
       if (isNew) {
         //Insert
@@ -182,6 +184,7 @@ const isp_ci_importantPeople = (() => {
           phoneExt: extVal,
           phone2Ext: extVal2,
           email: emailVal,
+          typeOther: typeOtherVal,
         };
         const importantPersonId = await contactInformationAjax.insertPlanContactImportantPeople(
           data,
@@ -215,6 +218,7 @@ const isp_ci_importantPeople = (() => {
           phoneExt: extVal,
           phone2Ext: extVal2,
           email: emailVal,
+          typeOther: UTIL.removeUnsavableNoteText(typeOtherVal),
         };
         await contactInformationAjax.updatePlanContactImportantPeople(data);
         data.token = null;
@@ -281,9 +285,22 @@ const isp_ci_importantPeople = (() => {
       { text: 'Medical Provider', value: 'Medical Provider' },
       { text: 'Case Manager', value: 'Case Manager' },
       { text: 'Emergency Contact', value: 'Emergency Contact' },
+      { text: 'Primary Doctor', value: 'Primary Doctor' },
+      { text: 'Other', value: 'Other' },
     ];
-
     dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);
+
+    typeOtherInput = input.build({
+      label: 'Type Other',
+      value: popupData.typeOther,
+      id: `isp-ciip-typeOther`,
+      readonly: readOnly,
+    });
+    if (popupData.type !== 'Other') {
+      typeOtherInput.classList.add('disabled');
+    } else {
+      if (popupData.typeOther === '') typeOtherInput.classList.add('error');
+    }
 
     const importFromRelationshipsBtn = button.build({
       text: 'Import from Relationships',
@@ -445,6 +462,7 @@ const isp_ci_importantPeople = (() => {
     }
 
     popup.appendChild(typeDropdown);
+    popup.appendChild(typeOtherInput);
     if (!readOnly) popup.appendChild(importFromRelationshipsBtn);
     if (!readOnly) popup.appendChild(importFromSignaturesBtn);
     popup.appendChild(nameInput);
@@ -510,6 +528,22 @@ const isp_ci_importantPeople = (() => {
       } else {
         typeDropdown.classList.remove('error');
       }
+
+      if (event.target.value === 'Other') {
+        typeOtherInput.classList.remove('error');
+        typeOtherInput.classList.add('disabled');
+      } else {
+        typeOtherInput.classList.remove('disabled');
+        typeOtherInput.classList.add('error');
+      }
+      checkForErrors();
+    });
+    typeOtherInput.addEventListener('input', event => {
+      if (event.target.value === '') {
+        typeOtherInput.classList.add('error');
+      } else {
+        typeOtherInput.classList.remove('error');
+      }
       checkForErrors();
     });
     nameInput.addEventListener('input', event => {
@@ -528,7 +562,6 @@ const isp_ci_importantPeople = (() => {
       }
       checkForErrors();
     });
-
   }
 
   function checkForErrors() {
