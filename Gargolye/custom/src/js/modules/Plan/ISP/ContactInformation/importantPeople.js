@@ -529,7 +529,7 @@ const isp_ci_importantPeople = (() => {
         typeDropdown.classList.remove('error');
       }
 
-      if (event.target.value === 'Other') {
+      if (event.target.value !== 'Other') {
         typeOtherInput.classList.remove('error');
         typeOtherInput.classList.add('disabled');
       } else {
