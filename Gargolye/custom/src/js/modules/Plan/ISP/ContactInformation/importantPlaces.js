@@ -298,6 +298,7 @@ const isp_ci_importantPlaces = (() => {
       if (event.target.value !== 'Other') {
         typeOtherInput.classList.remove('error');
         typeOtherInput.classList.add('disabled');
+        typeOtherInput.querySelector('input').value = '';
       } else {
         typeOtherInput.classList.remove('disabled');
         typeOtherInput.classList.add('error');
