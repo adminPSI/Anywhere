@@ -258,7 +258,7 @@ const planData = (() => {
         {
           value: '52',
           text: 'Vocational Habilitation - Virtual',
-          showWith: ['1', '2', '3', '6', '7'],
+          showWith: ['1', '2', '3', '6'],
         },
       ],
       newOrExisting: [
