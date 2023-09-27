@@ -138,12 +138,12 @@ const isp_ci_importantPlaces = (() => {
 
     const typeDropdownValues = [
       { text: '', value: '' },
-      { text: 'Work', value: 'Work' },
-      { text: 'School', value: 'School' },
-      { text: 'Day Provider', value: 'Day Provider' },
-      { text: 'Primary Hospital', value: 'Primary Hospital' },
       { text: 'ADS Provider', value: 'ADS Provider' },
+      { text: 'Day Provider', value: 'Day Provider' },
       { text: 'Other', value: 'Other' },
+      { text: 'Primary Hospital', value: 'Primary Hospital' },
+      { text: 'School', value: 'School' },
+      { text: 'Work', value: 'Work' },
     ];
     dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);
 

@@ -273,20 +273,20 @@ const isp_ci_importantPeople = (() => {
     if (popupData.type === '') typeDropdown.classList.add('error');
     const typeDropdownValues = [
       { text: '', value: '' },
+      { text: 'Case Manager', value: 'Case Manager' },
+      { text: 'Emergency Contact', value: 'Emergency Contact' },
       { text: 'Family', value: 'Family' },
       { text: 'Friend', value: 'Friend' },
-      { text: 'Partner', value: 'Partner' },
       { text: 'Guardian of Person', value: 'Guardian of Person' },
       { text: 'Guardian of Estate', value: 'Guardian of Estate' },
       { text: 'Guardian of Person AND Estate', value: 'Guardian of Person AND Estate' },
-      { text: 'Payee', value: 'Payee' },
-      { text: 'Support Broker', value: 'Support Broker' },
       { text: 'Home Provider', value: 'Home Provider' },
       { text: 'Medical Provider', value: 'Medical Provider' },
-      { text: 'Case Manager', value: 'Case Manager' },
-      { text: 'Emergency Contact', value: 'Emergency Contact' },
-      { text: 'Primary Doctor', value: 'Primary Doctor' },
       { text: 'Other', value: 'Other' },
+      { text: 'Partner', value: 'Partner' },
+      { text: 'Payee', value: 'Payee' },
+      { text: 'Primary Doctor', value: 'Primary Doctor' },
+      { text: 'Support Broker', value: 'Support Broker' },
     ];
     dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);
 
