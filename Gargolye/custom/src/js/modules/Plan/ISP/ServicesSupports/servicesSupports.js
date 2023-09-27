@@ -344,6 +344,8 @@ const servicesSupports = (() => {
       }
     });
 
+    data.sort((a, b) => a.text.localeCompare(b.text));
+
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
   }
