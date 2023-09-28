@@ -122,6 +122,7 @@ const isp_ci_importantPlaces = (() => {
     if (isNew) {
       popupData = {
         type: '',
+        typeOther: '',
         name: '',
         address: '',
         phone: '',
@@ -152,6 +153,8 @@ const isp_ci_importantPlaces = (() => {
       value: popupData.typeOther,
       id: `isp-ciip-typeOther`,
       readonly: readOnly,
+      type: 'textarea',
+      charLimit: 100,
     });
     if (popupData.type !== 'Other') {
       typeOtherInput.classList.add('disabled');

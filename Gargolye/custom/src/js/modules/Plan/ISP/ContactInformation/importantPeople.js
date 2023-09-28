@@ -258,6 +258,7 @@ const isp_ci_importantPeople = (() => {
     if (isNew) {
       popupData = {
         type: '',
+        typeOther: '',
         name: '',
         relationship: '',
         address: '',
@@ -295,6 +296,8 @@ const isp_ci_importantPeople = (() => {
       value: popupData.typeOther,
       id: `isp-ciip-typeOther`,
       readonly: readOnly,
+      type: 'textarea',
+      charLimit: 100,
     });
     if (popupData.type !== 'Other') {
       typeOtherInput.classList.add('disabled');
