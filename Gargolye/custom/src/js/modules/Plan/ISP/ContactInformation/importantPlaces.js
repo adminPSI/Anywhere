@@ -3,6 +3,7 @@ const isp_ci_importantPlaces = (() => {
   let rawPlacesTableData;
   let readOnly;
   let typeDropdown;
+  let typeOtherInput;
   let nameInput;
   let addressInput;
   let phoneInput;
@@ -24,6 +25,7 @@ const isp_ci_importantPlaces = (() => {
       ).val;
       const scheduleVal = document.getElementById('isp-ciip-scheduleInput').value;
       const acuityVal = document.getElementById('isp-ciip-acuityInput').value;
+      const typeOtherVal = document.getElementById('isp-ciip-typeOther').value;
 
       if (isNew) {
         //Insert
@@ -37,6 +39,7 @@ const isp_ci_importantPlaces = (() => {
           phone: phoneVal,
           schedule: scheduleVal,
           acuity: acuityVal,
+          typeOther: typeOtherVal,
         };
         const insertId = await contactInformationAjax.insertPlanContactImportantPlaces(data);
         data.importantPlacesId = insertId;
@@ -72,6 +75,7 @@ const isp_ci_importantPlaces = (() => {
           phone: UTIL.removeUnsavableNoteText(phoneVal),
           schedule: UTIL.removeUnsavableNoteText(scheduleVal),
           acuity: UTIL.removeUnsavableNoteText(acuityVal),
+          typeOther: UTIL.removeUnsavableNoteText(typeOtherVal),
         };
         await contactInformationAjax.updatePlanContactImportantPlaces(data);
         data.token = null;
@@ -134,13 +138,26 @@ const isp_ci_importantPlaces = (() => {
 
     const typeDropdownValues = [
       { text: '', value: '' },
-      { text: 'Work', value: 'Work' },
-      { text: 'School', value: 'School' },
+      { text: 'ADS Provider', value: 'ADS Provider' },
       { text: 'Day Provider', value: 'Day Provider' },
+      { text: 'Other', value: 'Other' },
       { text: 'Primary Hospital', value: 'Primary Hospital' },
+      { text: 'School', value: 'School' },
+      { text: 'Work', value: 'Work' },
     ];
-
     dropdown.populate(typeDropdown, typeDropdownValues, popupData.type);
+
+    typeOtherInput = input.build({
+      label: 'Type Other',
+      value: popupData.typeOther,
+      id: `isp-ciip-typeOther`,
+      readonly: readOnly,
+    });
+    if (popupData.type !== 'Other') {
+      typeOtherInput.classList.add('disabled');
+    } else {
+      if (popupData.typeOther === '') typeOtherInput.classList.add('error');
+    }
 
     nameInput = input.build({
       label: 'Name',
@@ -244,6 +261,7 @@ const isp_ci_importantPlaces = (() => {
       btnWrap2.appendChild(cancelBtn);
     }
     popup.appendChild(typeDropdown);
+    popup.appendChild(typeOtherInput);
     popup.appendChild(nameInput);
     popup.appendChild(addressInput);
     popup.appendChild(phoneInput);
@@ -275,6 +293,23 @@ const isp_ci_importantPlaces = (() => {
         typeDropdown.classList.add('error');
       } else {
         typeDropdown.classList.remove('error');
+      }
+
+      if (event.target.value !== 'Other') {
+        typeOtherInput.classList.remove('error');
+        typeOtherInput.classList.add('disabled');
+        typeOtherInput.querySelector('input').value = '';
+      } else {
+        typeOtherInput.classList.remove('disabled');
+        typeOtherInput.classList.add('error');
+      }
+      checkForErrors();
+    });
+    typeOtherInput.addEventListener('input', event => {
+      if (event.target.value === '') {
+        typeOtherInput.classList.add('error');
+      } else {
+        typeOtherInput.classList.remove('error');
       }
       checkForErrors();
     });

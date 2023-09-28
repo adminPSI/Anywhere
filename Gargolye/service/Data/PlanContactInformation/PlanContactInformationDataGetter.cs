@@ -176,7 +176,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             }
         }
 
-        public string insertPlanContactImportantPlaces(string token, string contactId, string type, string name, string address, string phone, string schedule, string acuity)
+        public string insertPlanContactImportantPlaces(string token, string contactId, string type, string name, string address, string phone, string schedule, string acuity, string typeOther)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertPlanContactImportantPlaces ");
@@ -189,6 +189,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             list.Add(phone);
             list.Add(schedule);
             list.Add(acuity);
+            list.Add(typeOther);
             string text = "CALL DBA.ANYW_ISP_InsertContactImportantPlace(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -201,7 +202,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             }
         }
 
-        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
+        public string insertPlanContactImportantPeople(string token, string contactId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext, string typeOther)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertPlanContactImportantPeople ");
@@ -217,6 +218,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             list.Add(phone2);
             list.Add(phoneExt);
             list.Add(phone2Ext);
+            list.Add(typeOther);
             string text = "CALL DBA.ANYW_ISP_InsertContactImportantPeople(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
@@ -228,7 +230,7 @@ namespace Anywhere.service.Data.PlanContactInformation
                 return "7APCIDG: error ANYW_ISP_InsertContactImportantPeople";
             }
         }
-        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext)
+        public string updatePlanContactImportantPeople(string token, string importantPersonId, string type, string name, string relationship, string address, string phone, string email, string phone2, string phoneExt, string phone2Ext, string typeOther)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updatePlanContactImportantPeople ");
@@ -244,6 +246,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             list.Add(phone2);
             list.Add(phoneExt);
             list.Add(phone2Ext);
+            list.Add(typeOther);
             string text = "CALL DBA.ANYW_ISP_UpdateContactImportantPeople(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -280,7 +283,7 @@ namespace Anywhere.service.Data.PlanContactInformation
                 return "8APCIDG: error ANYW_ISP_UpdateContactImportantGroup";
             }
         }
-        public string updatePlanContactImportantPlaces(string token, string importantPlacesId, string type, string name, string address, string phone, string schedule, string acuity)
+        public string updatePlanContactImportantPlaces(string token, string importantPlacesId, string type, string name, string address, string phone, string schedule, string acuity, string typeOther)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("updatePlanContactImportantPlaces ");
@@ -293,6 +296,7 @@ namespace Anywhere.service.Data.PlanContactInformation
             list.Add(phone);
             list.Add(schedule);
             list.Add(acuity);
+            list.Add(typeOther);
             string text = "CALL DBA.ANYW_ISP_UpdateContactImportantPlace(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {

@@ -1181,14 +1181,13 @@ const csTeamMember = (() => {
       participatedNoRadio.classList.add('disabled');
       // radioDiv.classList.remove('error');
       signatureTypeDropdown.classList.add('disabled');
-      saveTeamMemberBtn.classList.add('disabled'); //
+      saveTeamMemberBtn.classList.add('disabled');
     }
 
     if ($.session.planUpdate) {
       participatedYesRadio.classList.remove('disabled');
       participatedNoRadio.classList.remove('disabled');
       signatureTypeDropdown.classList.remove('disabled');
-      saveTeamMemberBtn.classList.remove('disabled');
     }
 
     //* Required Fields
