@@ -393,7 +393,7 @@ namespace Anywhere.Data
         public string getLogIn(string userId, string hash)
         {
             logger.trace("100", "getLogIn:" + userId);
-
+            if (stringInjectionValidator(hash) == false) return null;
             try
             {
                 return executeDataBaseCall("CALL DBA.ANYW_getLogIn('" + userId + "','" + hash + "');", "results", "permissions");
@@ -1076,6 +1076,7 @@ namespace Anywhere.Data
         public string featureLogging(string token, string featureDescription)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(featureDescription) == false) return null;
             try
             {
                 return executeDataBaseCall("CALL DBA.ANYW_FeatureLogging('" + token + "', '" + featureDescription + "');", "results", "results");
@@ -1266,6 +1267,7 @@ namespace Anywhere.Data
         public string setupPasswordResetEmail(string userName)
         {
             logger.debug("setupPasswordResetEmail" + userName);
+            if (stringInjectionValidator(userName) == false) return null;
             try
             {
                 return executeDataBaseCall("CALL DBA.ANYW_Login_SetupPasswordResetEmail('" + userName + "');", "results", "results");
@@ -2121,6 +2123,7 @@ namespace Anywhere.Data
         public string updateVersion(string token, string version)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(version) == false) return null;
             logger.debug("updateVersion");
 
             try
@@ -3274,6 +3277,7 @@ namespace Anywhere.Data
         public string getAbsentWidgetFilterData(string token, string absentDate, string absentLocationId, string absentGroupCode, string custGroupId)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(absentDate) == false) return null;
             logger.debug("getAbsentWidgetFilterData " + token);
             List<string> list = new List<string>();
             list.Add(token);
@@ -5895,6 +5899,7 @@ namespace Anywhere.Data
         public string updateUserWidgetSettings(string token, string widgetId, string showHide, string widgetConfig)
         {
             if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(widgetConfig) == false) return null;
             logger.debug("updateUserWidgetShowHide ");
             List<string> list = new List<string>();
             list.Add(token);

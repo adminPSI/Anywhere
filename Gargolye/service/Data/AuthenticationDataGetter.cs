@@ -1,4 +1,5 @@
 ﻿using Anywhere.Log;
+using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -35,7 +36,7 @@ namespace Anywhere.service.Data
         public string generateAuthentication(string userId, string WebPassword)
         {
             logger.trace("100", "getLogIn:" + userId);
-
+            if (stringInjectionValidator(WebPassword) == false) return null;
             try
             {
                 return executeDataBaseCall("CALL DBA.ANYW_Login_GenerateAuthentication('" + userId + "','" + WebPassword + "');", "results", "permissions");
@@ -50,6 +51,7 @@ namespace Anywhere.service.Data
         public string getHashfromKey(string userId, string genKey)
         {
             logger.debug("generateAunthenication ");
+            if (stringInjectionValidator(genKey) == false) return null;
             List<string> list = new List<string>();
             list.Add(userId);
             list.Add(genKey);
@@ -68,6 +70,7 @@ namespace Anywhere.service.Data
         public string checkDeviceAuthentication(string userId, string deviceId)
         {
             logger.debug("generateAunthenication ");
+            if (stringInjectionValidator(deviceId) == false) return null;
             List<string> list = new List<string>();
             list.Add(userId);
             list.Add(deviceId);
@@ -86,6 +89,34 @@ namespace Anywhere.service.Data
         private string executeDataBaseCall(string storedProdCall)
         {
             return executeDataBaseCall(storedProdCall, "results", "result");
+        }
+
+        public bool stringInjectionValidator(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom)))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        public bool tokenValidator(string token)
+        {
+            if (token.Contains(" "))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
