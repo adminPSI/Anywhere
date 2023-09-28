@@ -36,7 +36,6 @@ namespace Anywhere.service.Data
             return di.SelectRowsDS(sb.ToString());
         }
 
-
         public DataSet AssesmentAnswers(long AssesmentID, bool Assessment)
         {
             sb.Clear();
@@ -162,7 +161,6 @@ namespace Anywhere.service.Data
             return dt.DataSet;
         }
 
-
         public DataSet ISPSummary(long AssesmentID, bool Assessment, string WhichISPArea, Boolean Advisor = false)
         {
             String Vendor = "Vendor";
@@ -285,7 +283,6 @@ namespace Anywhere.service.Data
             //MessageBox.Show("ISPSummary");
             return dt.DataSet;
         }
-
 
         public DataSet ISPOutcomes(long AssesmentID, Boolean Advisor = false)
         {
@@ -502,42 +499,46 @@ namespace Anywhere.service.Data
             sb.Append("FROM dba.ANYW_ISP_Signatures ");
             sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
-            DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
-            //int x = 0;
-            foreach (DataRow row in dt.Rows)
+            DataSet ds = di.SelectRowsDS(sb.ToString());
+
+            if (ds.Tables.Count > 0)
             {
-                if (row["Signature"].ToString() != string.Empty)
+                DataTable dt = ds.Tables[0];
+                foreach (DataRow row in dt.Rows)
                 {
-                    var ms = new MemoryStream();
-                    byte[] ba = (byte[])row["Signature"];
-                    ms.Write(ba, 0, ba.Length);
-                    ms.Position = 0L;
+                    if (row["Signature"].ToString() != string.Empty)
+                    {
+                        var ms = new MemoryStream();
+                        byte[] ba = (byte[])row["Signature"];
+                        ms.Write(ba, 0, ba.Length);
+                        ms.Position = 0L;
 
-                    System.Drawing.Image i = System.Drawing.Image.FromStream(ms);
-                    var bm = new System.Drawing.Bitmap(i.Size.Width, i.Size.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-                    var g = System.Drawing.Graphics.FromImage(bm);
-                    g.Clear(System.Drawing.Color.White);
-                    g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
-                    g.DrawImage(i, 0, 0);
-                    var ms2 = new MemoryStream();
-                    bm.Save(ms2, System.Drawing.Imaging.ImageFormat.Bmp);
-                    ms2.Position = 0L;
-                    ba = null;
-                    ba = ms2.ToArray();
-                    row["Signature"] = ba;
+                        System.Drawing.Image i = System.Drawing.Image.FromStream(ms);
+                        var bm = new System.Drawing.Bitmap(i.Size.Width, i.Size.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                        var g = System.Drawing.Graphics.FromImage(bm);
+                        g.Clear(System.Drawing.Color.White);
+                        g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
+                        g.DrawImage(i, 0, 0);
+                        var ms2 = new MemoryStream();
+                        bm.Save(ms2, System.Drawing.Imaging.ImageFormat.Bmp);
+                        ms2.Position = 0L;
+                        ba = null;
+                        ba = ms2.ToArray();
+                        row["Signature"] = ba;
 
-                    //iImage = i;
+                        //iImage = i;
 
-                    ms.Close();
-                    ms.Dispose();
-                    ms2.Close();
-                    ms2.Dispose();
+                        ms.Close();
+                        ms.Dispose();
+                        ms2.Close();
+                        ms2.Dispose();
+                    }
                 }
             }
+            return ds;
             //MessageBox.Show("ISPSignatures");
-            return dt.DataSet;
-        }
 
+        }
 
         public DataSet Dissenting(long AssesmentID, Boolean OneSpan)
         {
@@ -756,7 +757,8 @@ namespace Anywhere.service.Data
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.ISP_Consumer_Contact_Id, DBA.ANYW_ISP_Consumer_Contact_Important_People.Type, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Name, DBA.ANYW_ISP_Consumer_Contact_Important_People.Relationship, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Address, DBA.ANYW_ISP_Consumer_Contact_Important_People.Phone, ");
-            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Row_Order, DBA.ANYW_ISP_Consumer_Contact_Important_People.Email ");
+            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Row_Order, DBA.ANYW_ISP_Consumer_Contact_Important_People.Email, ");
+            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.People_Type_Other  ");
             sb.Append("FROM     DBA.ANYW_ISP_Consumer_Contact_Important_People ");
             sb.Append("LEFT OUTER JOIN DBA.ANYW_ISP_Consumer_Contact ON DBA.ANYW_ISP_Consumer_Contact_Important_People.ISP_Consumer_Contact_Id = DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Contact_Id ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
@@ -789,7 +791,8 @@ namespace Anywhere.service.Data
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.ISP_Consumer_Contact_Id, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Type, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.Name, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Address, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.Phone, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Schedule, ");
-            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.Acuity, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Row_Order ");
+            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.Acuity, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Row_Order, ");
+            sb.Append("ANYW_ISP_Consumer_Contact_Important_Places.Places_Type_Other ");
             sb.Append("FROM DBA.ANYW_ISP_Consumer_Contact ");
             sb.Append("RIGHT OUTER JOIN DBA.ANYW_ISP_Consumer_Contact_Important_Places ON DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Contact_Id = DBA.ANYW_ISP_Consumer_Contact_Important_Places.ISP_Consumer_Contact_Id ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
@@ -932,12 +935,6 @@ namespace Anywhere.service.Data
             return dt.DataSet;
         }
 
-
-
-
-
-
-
         public long HideSubSectionTitle(long AssesmentID, string SubSectionName, long SectionOrder)
         {
             sb.Clear();
@@ -961,6 +958,7 @@ namespace Anywhere.service.Data
             else
                 return 1;
         }
+
 
 
 
