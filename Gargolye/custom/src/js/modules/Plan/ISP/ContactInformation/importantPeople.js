@@ -298,6 +298,7 @@ const isp_ci_importantPeople = (() => {
       readonly: readOnly,
       type: 'textarea',
       charLimit: 100,
+      classNames: 'autosize',
     });
     if (popupData.type !== 'Other') {
       typeOtherInput.classList.add('disabled');
