@@ -155,6 +155,7 @@ const isp_ci_importantPlaces = (() => {
       readonly: readOnly,
       type: 'textarea',
       charLimit: 100,
+      forceCharLimit: true,
       classNames: 'autosize',
     });
     if (popupData.type !== 'Other') {
