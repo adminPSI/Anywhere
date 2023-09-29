@@ -207,8 +207,6 @@ const signatureWidget = (function () {
   }
 
   function populateMissingSignatures(data) {
-    console.clear();
-    console.log(`MITCH: ${data.length} missing signatures in widget.`);
     const tableOptions = {
       plain: true,
       columnHeadings: ['Individual', 'PY Start Date', 'Plan Type'],
