@@ -123,13 +123,19 @@ const planSummary = (function () {
       },
     );
   }
-  async function deleteTableRow(questionSetId, rowsToDelete, rowId) {
+  async function deleteTableRow(questionSetId, rowsToDelete, rowId, dataSection, section) {
     await assessmentAjax.deleteAssessmentGridRowAnswers({
       token: $.session.Token,
       consumerPlanId: planId,
       assessmentQuestionSetId: questionSetId,
       rowsToDelete: [rowsToDelete],
     });
+
+    const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
+      token: $.session.Token,
+      anywAssessmentId: planId,
+    });
+    summaryData = mapSummaryData(SummaryData);
 
     const rowToDelete = document.getElementById(rowId);
     const tableBody = rowToDelete.parentNode;
@@ -143,16 +149,6 @@ const planSummary = (function () {
       const order = parseInt(row.id.replaceAll(/\D+/g, ''));
       // check row for gap in order
       if (order !== i + 1) {
-        //    // update the row order in DB
-        //    await assessmentAjax.updateAssessmentAnswerRowOrder({
-        //      token: $.session.Token,
-        //      assessmentId: parseInt(planId),
-        //      questionSetId: parseInt(questionSetId),
-        //      answerIds: row.dataset.answerids,
-        //      newPos: parseInt(i + 1),
-        //      oldPos: parseInt(order),
-        //    });
-        //    // update row id
         row.id = `${rowIdText}${i + 1}`;
       }
       // if no gap do nothing
@@ -258,7 +254,7 @@ const planSummary = (function () {
 
   // IMPORTANT TO/FOR TABLES
   //--------------------------------------------------------------------
-  function addImportantTableRow(data) {
+  async function addImportantTableRow(data) {
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -294,8 +290,14 @@ const planSummary = (function () {
       ],
       isSortable,
     );
+
+    const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
+      token: $.session.Token,
+      anywAssessmentId: planId,
+    });
+    summaryData = mapSummaryData(SummaryData);
   }
-  function updateImportantTableRow(data) {
+  async function updateImportantTableRow(data) {
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -331,6 +333,12 @@ const planSummary = (function () {
       ],
       isSortable,
     );
+
+    const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
+      token: $.session.Token,
+      anywAssessmentId: planId,
+    });
+    summaryData = mapSummaryData(SummaryData);
   }
   // markup
   //------------------
@@ -480,7 +488,7 @@ const planSummary = (function () {
             ],
           });
 
-          addImportantTableRow({
+          await addImportantTableRow({
             sectionTitle,
             row: rowOrder,
             questionSetId,
@@ -506,7 +514,7 @@ const planSummary = (function () {
             ],
           });
 
-          updateImportantTableRow({
+          await updateImportantTableRow({
             sectionTitle,
             row,
             questionSetId,
@@ -711,7 +719,7 @@ const planSummary = (function () {
 
   // SKILLS & ABILITIES TABLES
   //--------------------------------------------------------------------
-  function addSkillsTableRow(data) {
+  async function addSkillsTableRow(data) {
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const skillAbility = data.skillAbility.answer;
@@ -761,8 +769,14 @@ const planSummary = (function () {
       ],
       isSortable,
     );
+
+    const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
+      token: $.session.Token,
+      anywAssessmentId: planId,
+    });
+    summaryData = mapSummaryData(SummaryData);
   }
-  function updateSkillsTableRow(data) {
+  async function updateSkillsTableRow(data) {
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const skillAbility = data.skillAbility.answer;
@@ -811,6 +825,12 @@ const planSummary = (function () {
       ],
       isSortable,
     );
+
+    const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
+      token: $.session.Token,
+      anywAssessmentId: planId,
+    });
+    summaryData = mapSummaryData(SummaryData);
   }
   // markup
   //------------------
@@ -952,7 +972,7 @@ const planSummary = (function () {
             },
           };
 
-          addSkillsTableRow({
+          await addSkillsTableRow({
             ...popupData,
           });
         } else {
@@ -978,7 +998,7 @@ const planSummary = (function () {
             ...retrieveData,
           });
 
-          updateSkillsTableRow({
+          await updateSkillsTableRow({
             ...popupData,
           });
         }
@@ -1278,7 +1298,7 @@ const planSummary = (function () {
 
   // KNOWN & LIKELY RISKS TABLES
   //--------------------------------------------------------------------
-  function addRisksTableRow(data) {
+  async function addRisksTableRow(data) {
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -1358,8 +1378,14 @@ const planSummary = (function () {
       ],
       isSortable,
     );
+
+    const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
+      token: $.session.Token,
+      anywAssessmentId: planId,
+    });
+    summaryData = mapSummaryData(SummaryData);
   }
-  function updateRisksTableRow(data, oldData) {
+  async function updateRisksTableRow(data, oldData) {
     const sectionTitle = data.sectionTitle;
     const secTitle = sectionTitle.replaceAll(' ', '');
     const row = data.row;
@@ -1451,6 +1477,12 @@ const planSummary = (function () {
       ],
       isSortable,
     );
+
+    const SummaryData = await summaryAjax.getAssessmentSummaryQuestions({
+      token: $.session.Token,
+      anywAssessmentId: planId,
+    });
+    summaryData = mapSummaryData(SummaryData);
   }
   // markup
   //------------------
@@ -1657,7 +1689,7 @@ const planSummary = (function () {
             ],
           });
 
-          addRisksTableRow({
+          await addRisksTableRow({
             sectionTitle,
             row: rowOrder,
             questionSetId,
@@ -1698,7 +1730,7 @@ const planSummary = (function () {
             ],
           });
 
-          updateRisksTableRow(
+          await updateRisksTableRow(
             {
               sectionTitle,
               row,
@@ -1883,7 +1915,7 @@ const planSummary = (function () {
         const riskSupervision = val.riskSupervision.answer;
         const whatIsRisk = val.whatIsRisk.answer;
         const whatSupportLooksLike = val.whatSupportLooksLike.answer;
-        const whoResponsible = val.whoResponsible.answer;
+        const whoResponsible = val.whoResponsible ? val.whoResponsible.answer : '';
         const whoResponsibleText = planData.getRelationshipNameById(whoResponsible);
         const levelOfSupervision = getLevelOfSupervisionById(riskSupervision);
         const secTitle = sectionTitle.replaceAll(' ', '');
@@ -1917,7 +1949,9 @@ const planSummary = (function () {
             { key: 'data-questionSetId', value: questionSetId },
             {
               key: 'data-answerIds',
-              value: `${val.whatIsRisk.answerId}|${val.whatSupportLooksLike.answerId}|${val.riskSupervision.answerId}|${val.whoResponsible.answerId}`,
+              value: `${val.whatIsRisk.answerId}|${val.whatSupportLooksLike.answerId}|${
+                val.riskSupervision.answerId
+              }|${whoResponsible ? whoResponsible : ''}`,
             },
           ],
           onClick: e => {
@@ -1941,7 +1975,7 @@ const planSummary = (function () {
                 },
                 whoResponsible: {
                   answer: whoResponsible,
-                  answerId: val.whoResponsible.answerId,
+                  answerId: val.whoResponsible ? val.whoResponsible.answerId : '',
                 },
               },
               false,

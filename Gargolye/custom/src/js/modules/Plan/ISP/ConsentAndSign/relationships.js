@@ -69,6 +69,16 @@ const csRelationship = (() => {
 
     POPUP.show(existingRelationshipPopup);
   }
+  function removeDups(data) {
+    let uniqueArray = Array.from(new Set(data.map(d => `${d.peopleId}|${d.relationship}`))).map(
+      id => {
+        let parts = id.split('|');
+        return data.find(a => a.peopleId === parts[0] && a.relationship === parts[1]);
+      },
+    );
+
+    return uniqueArray;
+  }
   const removeExisting = data => {
     const teamMembers = planConsentAndSign.getTeamMemberData();
     const teamMemberIDs = teamMembers.map(tm => tm.contactId);
@@ -88,10 +98,18 @@ const csRelationship = (() => {
     const pplID = rel.peopleId;
     const salesforceID = rel.salesForceId;
     const contactID = rel.contactId;
-    const name = contactInformation.cleanName(rel);
+    let name = contactInformation.cleanName({
+      firstName: rel.firstName,
+      lastName: rel.lastName.replace('|', ' '),
+      middleName: rel.middleName,
+    });
+    if (rel.generation) {
+      name = name + " " + rel.generation;
+    }
     const dob = dates.removeTimestamp(rel.dateOfBirth);
     const adress = `${rel.buildingNumber}`;
-    const relationshipType = rel.relationship ? rel.relationship : '';
+    let relationshipType = rel.relationship ? rel.relationship : '';
+    if (relationshipType === 'Self') relationshipType = 'Person Supported';
 
     const relationshipDiv = document.createElement('div');
     relationshipDiv.classList.add('relationship');
@@ -132,7 +150,7 @@ const csRelationship = (() => {
   }
   function showMainPopup() {
     gkRelationships = planData.getDropdownData().relationshipsWithDups;
-    gkRelationships = removeExisting(gkRelationships);
+    gkRelationships = removeDups(removeExisting(gkRelationships));
     teamMemberPopup = document.getElementById('sig_mainPopup');
 
     importPopup = POPUP.build({

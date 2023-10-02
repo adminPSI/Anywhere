@@ -559,6 +559,87 @@
     .checkbox-mtd > span::after {
         left: -24px;
     }
+
+    .attachmentBtn {
+        &.hasAttachments {
+            background-color: $secondary;
+            pointer-events: all !important;
+        }
+    }
+
+    .addCFRadioDiv {
+        :first-child {
+            padding-right: 12px;
+        }
+    }
+
+
+    #singleEntryAdminReviewTable {
+
+        .table__row {
+            > div {
+                margin-top: 10px;
+            }
+
+            > div:nth-child(1) {
+                width: 13%;
+            }
+
+            > div:nth-child(2) {
+                width: 15%;
+            }
+
+            > div:nth-child(3) {
+                width: 15%;
+            }
+
+            > div:nth-child(4) {
+                width: 15%;
+            }
+
+            > div:nth-child(5) {
+                width: 9%;
+            }
+
+            > div:nth-child(6) {
+                width: 10%;
+            }
+
+            > div:nth-child(7) {
+                width: 10%;
+            }
+
+            > div:nth-child(8) {
+                width: 8%;
+            }
+
+            > div:nth-child(9) {
+                width: 1%;
+            }
+
+            @media screen and (min-width: 560px) {
+                > div:nth-child(1) {
+                    width: 10%;
+                }
+
+                > div:nth-child(3) {
+                    width: 13%;
+                }
+
+                > div:nth-child(4) {
+                    width: 13%; 
+                }
+
+                > div:nth-child(7) {
+                    width: 8%;
+                }
+            }
+        }
+
+        .endIcon {
+            cursor: pointer;
+        }
+    }
 }
 
 [data-active-module="resetPassword"] {
@@ -571,12 +652,45 @@
         font-size: 1rem;
     }
 
+    .chkBoxStyle {
+        margin-right: 0;
+        padding-bottom: 0;
+
+        @media screen and (min-width: 560px) {
+            margin-right: 35%;
+            padding-bottom: 16px;
+        }
+    }
+
     #singleEntryAdminReviewTable {
+        margin-top: 10px;
 
         .table__row {
             > div {
                 height: 26px;
                 margin-top: 10px;
+            }
+
+            > div:nth-child(2) {
+                display: none;
+            }
+
+            > div:nth-child(3) {
+                display: none;
+            }
+
+            > div:nth-child(5) {
+                display: block;
+            }
+
+            @media screen and (min-width: 560px) {
+                > div:nth-child(2) {
+                    display: block;
+                }
+
+                > div:nth-child(3) {
+                    display: block;
+                }
             }
         }
 
@@ -602,6 +716,15 @@
 
         .btnWrap {
             flex-flow: row nowrap;
+            display: flex;
+        }
+    }
+
+    .btnWrap {
+        display: contents;
+
+        @media screen and (min-width: 560px) {
+            display: flex;
         }
     }
 }
@@ -613,12 +736,55 @@
     }
 
     .employmentDTWrap {
+        display: flow;
+
+        .width25Per, .width27Per, .width35Per {
+            width: 97%;
+        }
+
+        .width20Per, .width30Per, .width32Per {
+            margin-left: 1.5%;
+            width: 97%;
+        } 
+
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .checkbox-mtd > span:after {
+                top: 24px !important;
+            }
+
+            .width20Per {
+                width: 20%;
+            }
+
+            .width25Per {
+                width: 25%;
+            }
+
+            .width27Per {
+                width: 27%;
+            }
+
+            .width30Per {
+                width: 30%;
+            }
+
+            .width32Per {
+                width: 32%;
+            }
+
+            .width35Per {
+                width: 35%;
+            }
+        }
+    }
+
+    .employmentBtnWrap {
         display: flex;
         justify-content: space-between;
-
-        .checkbox-mtd > span:after {
-            top: 24px !important;
-        }
     }
 
 
@@ -647,6 +813,127 @@
             cursor: pointer;
             margin-right: 100px !important;
             margin-bottom: -20px;
+        }
+    }
+
+    #employmentPositionTable {
+        .endIcon {
+            margin-left: 2px;
+            max-width: 25px !important;
+        }
+
+        .table__row {
+            &.selected {
+                background: $secondary;
+            }
+
+            > div {
+                flex-grow: 1;
+            }
+
+            > div:nth-child(1) {
+                width: 0%;
+            }
+
+            > div:nth-child(2) {
+                width: 14%;
+            }
+
+            > div:nth-child(3) {
+                width: 11%;
+            }
+
+            > div:nth-child(4) {
+                display: none;
+                width: 11%;
+            }
+
+            > div:nth-child(5) {
+                width: 18%;
+            }
+
+            > div:nth-child(6) {
+                display: none;
+                width: 18%;
+            }
+
+            > div:nth-child(7) {
+                display: none;
+                width: 17%; 
+            }
+
+            > div:nth-child(8) {
+                width: 0%;
+            }
+
+            @media screen and (min-width: 560px) {
+                > div:nth-child(1) {
+                    width: 7%;
+                }
+
+                > div:nth-child(2) {
+                    width: 15%;
+                }
+
+                > div:nth-child(4) {
+                    display: block;
+                }
+
+                > div:nth-child(6) {
+                    display: block;
+                }
+
+                > div:nth-child(7) {
+                    display: block;
+                }
+
+                > div:nth-child(8) {
+                    width: 5%;
+                }
+            }
+        }
+
+        .multiSelectBtn {
+            &.enabled {
+                background: pink;
+            }
+        }
+    }
+
+    #employmentCommonTable {
+        .endIcon {
+            margin-left: 5px;
+            max-width: 30px !important;
+        }
+
+        .table__row {
+            &.selected {
+                background: $secondary;
+            }
+
+            > div {
+                flex-grow: 1;
+            }
+
+            > div:nth-child(1) {
+                width: 70px;
+            }
+
+            > div:nth-child(2) {
+                width: 68px;
+            }
+
+            > div:nth-child(3) {
+                width: 86px;
+            }
+
+            > div:nth-child(4) {
+                width: 86px;
+            }
+
+            > div:nth-child(5) {
+                width: 52px;
+            }
         }
     }
 }

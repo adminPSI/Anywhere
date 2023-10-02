@@ -344,6 +344,8 @@ const servicesSupports = (() => {
       }
     });
 
+    data.sort((a, b) => a.text.localeCompare(b.text));
+
     dropdown.populate(dropdownEle, data, defaultValue);
     return defaultValue;
   }
@@ -1648,9 +1650,9 @@ const servicesSupports = (() => {
             const rowOrder = table.getRowCount('paidSupportsTable');
             saveUpdateData.rowOrder = rowOrder + 1;
           }
-          insertPaidSupport(saveUpdateData, fromAssessment);
+          await insertPaidSupport(saveUpdateData, fromAssessment);
         } else {
-          updatePaidSupport(saveUpdateData);
+          await updatePaidSupport(saveUpdateData);
         }
 
         const vendorIds = getSelectedVendorIds();
@@ -1666,12 +1668,13 @@ const servicesSupports = (() => {
         hcbsSelected = undefined;
         saveUpdateProvider = '';
 
-        // let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-        // planValidation.servicesAndSupportsBtnCheck(
-        //   assessmentPlanValidation,
-        //   saveUpdateData.assessmentAreaId,
-        // );
-        // planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
+        let ISPValidation = await planValidation.ISPValidation(planID);
+        planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
+        planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
+
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
     const cancelBtn = button.build({
@@ -1694,10 +1697,18 @@ const servicesSupports = (() => {
       text: 'Delete',
       style: 'danger',
       type: 'contained',
-      callback: () => {
+      callback: async () => {
         const message = 'Do you want to delete this Paid Support?';
-        ISP.showDeleteWarning(paidSupportPopup, message, () => {
-          deletePaidSupport(saveUpdateData.paidSupportsId);
+        ISP.showDeleteWarning(paidSupportPopup, message, async () => {
+          await deletePaidSupport(saveUpdateData.paidSupportsId);
+
+          let ISPValidation = await planValidation.ISPValidation(planID);
+          planValidation.checkExperiencesAfterAddingNewPaidSupport(ISPValidation);
+          planValidation.updatedIspOutcomesSetAlerts(ISPValidation);
+
+          let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+          planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+          planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         });
 
         fundingSourceDropdownSelectedText = undefined;
@@ -2068,13 +2079,17 @@ const servicesSupports = (() => {
       isSortable,
     );
   }
-  async function deleteAdditionalSupport(additionalSupportId) {
+  async function deleteAdditionalSupport(additionalSupportData) {
     await servicesSupportsAjax.deleteAdditionalSupports({
       token: $.session.Token,
-      additionalSupportsId: additionalSupportId,
+      additionalSupportsId: additionalSupportData.additionalSupportsId,
     });
 
-    table.deleteRow(`as${additionalSupportId}`);
+    table.deleteRow(`as${additionalSupportData.additionalSupportsId}`);
+
+    let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+    planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
   }
   //-- Markup ---------
   function toggleAdditionalSupportDoneBtn() {
@@ -2312,18 +2327,21 @@ const servicesSupports = (() => {
             const rowOrder = table.getRowCount('additionalSupportsTable');
             saveUpdateData.rowOrder = rowOrder + 1;
           }
-
           insertAdditionalSupport(saveUpdateData, fromAssessment);
 
-          // let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-          // planValidation.servicesAndSupportsBtnCheck(
-          //   assessmentPlanValidation,
-          //   saveUpdateData.assessmentAreaId,
-          // );
-          // planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
+          let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+          planValidation.servicesAndSupportsBtnCheck(
+            assessmentPlanValidation,
+            saveUpdateData.assessmentAreaId,
+          );
+          planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         } else {
           updateAdditionalSupport(saveUpdateData);
         }
+
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(additionalSupportPopup);
@@ -2344,7 +2362,7 @@ const servicesSupports = (() => {
       callback: () => {
         const message = 'Do you want to delete this Additional Support?';
         ISP.showDeleteWarning(additionalSupportPopup, message, () => {
-          deleteAdditionalSupport(saveUpdateData.additionalSupportsId);
+          deleteAdditionalSupport(saveUpdateData);
         });
       },
     });
@@ -2559,13 +2577,17 @@ const servicesSupports = (() => {
       isSortable,
     );
   }
-  async function deleteProfessionalReferral(profRefId) {
+  async function deleteProfessionalReferral(saveUpdateData) {
     await servicesSupportsAjax.deleteProfessionalReferral({
       token: $.session.Token,
-      professionalReferralId: profRefId,
+      professionalReferralId: saveUpdateData.professionalReferralId,
     });
 
-    table.deleteRow(`pr${profRefId}`);
+    table.deleteRow(`pr${saveUpdateData.professionalReferralId}`);
+
+    let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+    planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+    planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
   }
   //-- Markup ---------
   function toggleProfessionalReferralDoneBtn() {
@@ -2707,12 +2729,9 @@ const servicesSupports = (() => {
           updateProfessionalReferral(saveUpdateData);
         }
 
-        // let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
-        // planValidation.servicesAndSupportsBtnCheck(
-        //   assessmentPlanValidation,
-        //   saveUpdateData.assessmentAreaId,
-        // );
-        // planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
+        let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
 
         doneBtn.classList.remove('disabled');
         POPUP.hide(professionalReferralPopup);
@@ -2733,7 +2752,7 @@ const servicesSupports = (() => {
       callback: () => {
         const message = 'Do you want to delete this Professional Referral?';
         ISP.showDeleteWarning(professionalReferralPopup, message, () => {
-          deleteProfessionalReferral(saveUpdateData.professionalReferralId);
+          deleteProfessionalReferral(saveUpdateData);
         });
       },
     });

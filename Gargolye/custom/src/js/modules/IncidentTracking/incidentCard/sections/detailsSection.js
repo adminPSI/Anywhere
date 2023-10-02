@@ -75,6 +75,28 @@ var itDetailsSection = (function () {
       factorsText = '';
     }
   }
+  // function showTextErrorPopup() {
+  //   const errorPop = POPUP.build({
+  //     classNames: 'textErrorPopup',
+  //   });
+
+  //   const message = document.createElement('p');
+  //   message.innerText = `You are not allowed to edit previously entered text.`;
+
+  //   var okButton = button.build({
+  //     text: 'Ok',
+  //     style: 'secondary',
+  //     type: 'contained',
+  //     callback: function () {
+  //       POPUP.hide(errorPop);
+  //     },
+  //   });
+
+  //   errorPop.appendChild(message);
+  //   errorPop.appendChild(okButton);
+
+  //   POPUP.show(errorPop);
+  // }
 
   // Section
   //-----------------------------------------------

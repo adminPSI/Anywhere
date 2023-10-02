@@ -1883,11 +1883,44 @@ var outcomes = (function() {
       topFilterDateWrap.appendChild(dateInput);
     }
 
-    let filterValues = {
-    };
-    reportsBtn = generateReports.createMainReportButton([{ text: 'Documentation - Completed With Percentages', callback: generateReports.passFilterValuesForReport(filterValues) }, { text: 'Outcome Activity - With Community Integration By Employee, Individual, Date', callback: generateReports.passFilterValuesForReport(filterValues) }])
+    function getFilterValues() {
+      return (filterValues = {
+        outcomesService: currService ? currService : 'All',
+        outcomesType: currOutcomeId ? currOutcomeId : '0',
+        outcomesConsumer: selectedConsumerId,
+        outcomesDate: currDate
+      });
+    }
+    // Helper function to create the main reports button on the module page
+    function createMainReportButton(buttonsData) {
+      return button.build({
+        text: 'Reports',
+        icon: 'add',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'reportBtn',
+        callback: function () {
+          // Iterate through each item in the buttonsData array
+            buttonsData.forEach(function (buttonData) {
+            buttonData.filterValues = getFilterValues();
+          });
 
-    topFilterDateWrap.appendChild(reportsBtn);
+          generateReports.showReportsPopup(buttonsData);
+        },
+      });
+    }
+
+    let filterValues = {
+     // outcomesService: outcome.Objective_id,
+      outcomesConsumer: selectedConsumerId,
+      outcomesDate: currDate
+    };
+
+    reportsBtn = createMainReportButton([{ text: 'Documentation - Completed With Percentages', filterValues }, { text: 'Outcome Activity - With Community Integration by Employee, Consumer, Date', filterValues } ])
+
+    if($.session.applicationName === 'Advisor') {
+      topFilterDateWrap.appendChild(reportsBtn);
+    }
 
     if (!document.querySelector(".topOutcomeWrap")) {
       DOM.ACTIONCENTER.appendChild(topFilterDateWrap);

@@ -343,7 +343,7 @@ const WorkflowViewerAjax = (() => {
   async function setStepDoneDateAsync(stepId, doneDate) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -370,7 +370,7 @@ const WorkflowViewerAjax = (() => {
   async function setStepDueDateAsync(stepId, dueDate) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -397,7 +397,7 @@ const WorkflowViewerAjax = (() => {
   async function setDocumentOrderAsync(documentOrderArray) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -423,7 +423,7 @@ const WorkflowViewerAjax = (() => {
   async function setStepOrderAsync(stepOrderArray) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -450,7 +450,7 @@ const WorkflowViewerAjax = (() => {
     try {
       const { people, events, ...stepData } = step;
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -476,7 +476,7 @@ const WorkflowViewerAjax = (() => {
   async function processStepEventsAsync(events) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+          type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -524,10 +524,36 @@ const WorkflowViewerAjax = (() => {
     }
   }
 
+  async function getWorkFlowFormsfromPreviousPlan(retrieveData) {
+    try {
+      //token, processId
+      //processId = 2 for annual and 3 for revision
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/getWorkFlowFormsfromPreviousPlan/',
+        data: JSON.stringify(retrieveData),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result.getWorkFlowFormsfromPreviousPlanResult;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
+
   async function copyWorkflowtemplateToRecord(retrieveData) {
     try {
-      //token, templateId, peopleId, referenceId
-      //referenceId is isp_consumer_plan_id
+      //token, templateId, peopleId, referenceId, wantedFormIds
+      //referenceId is isp_consumer_plan_id,
+      //priorConsumerPlanId
       const result = await $.ajax({
         type: 'POST',
         url:
@@ -628,7 +654,7 @@ const WorkflowViewerAjax = (() => {
   async function updateRelationshipResponsiblePartyID(peopleId, WFID, responsiblePartyType) {
     try {
       const result = await $.ajax({
-        type: 'PUT',
+        type: 'POST',
         url:
           $.webServer.protocol +
           '://' +
@@ -673,6 +699,7 @@ const WorkflowViewerAjax = (() => {
     updateStepAsync,
     processStepEventsAsync,
     getManualWorkflowList,
+    getWorkFlowFormsfromPreviousPlan,
     copyWorkflowtemplateToRecord,
     getWFResponsibleParties,
     updateRelationshipResponsiblePartyID,

@@ -687,8 +687,8 @@ const dayServices = (function () {
                 cardRow.innerHTML = `
           <div>${displayStartTime}</div>
           <div>${displayEndTime === '' ? icons.error : displayEndTime}</div>
-          <div>${dayServiceDisplay}</div>
-          <div>${dsGroupValue ? dsGroupValue : '-'}</div>          
+          <div>${dayServiceDisplay}</div> 
+          <div>${dsGroupValue ? dsGroupValue : act.Day_Service_Type === 'S' || act.Day_Service_Type === 'X' ? icons.error : '-'}</div>           
           `;
                 //<div>${allowCI === true ? (hasCI === true ? icons.checkmark : '-') : '-'}</div>
                 //View only has no need to click on a row:
@@ -1522,6 +1522,7 @@ const dayServices = (function () {
     function buildPageComponents() {
         // custom search stuff
         SEARCH_BTN = button.build({
+            id: 'searchBtn',
             text: 'Search',
             icon: 'search',
             style: 'secondary',
@@ -1655,22 +1656,42 @@ const dayServices = (function () {
         multiSelectAllNoneArea.appendChild(multiSelectNoneBtn);
         multiSelectAllNoneArea.classList.add('hidden');
 
-        let filterValues = {
-            dayServiceLocation: null,
-            dayServiceServiceDate: null
-        };
-        reportsBtn = generateReports.createMainReportButton([{ text: 'Individual Day Service Activity Report', callback: generateReports.passFilterValuesForReport('Individual Day Service Activity Report', filterValues) }])
+        function getFilterValues() {
+          return (filterValues = {
+            dayServiceLocation: locationID,
+            dayServiceServiceDate: serviceDate,
+          });
+        }
+        // Helper function to create the main reports button on the module page
+        function createMainReportButton(buttonsData) {
+          return button.build({
+            text: 'Reports',
+            icon: 'add',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'reportBtn',
+            callback: function () {
+              // Iterate through each item in the buttonsData array
+              buttonsData.forEach(function (buttonData) {
+                buttonData.filterValues = getFilterValues();
+              });
+
+              generateReports.showReportsPopup(buttonsData);
+            },
+          });
+        }
+        reportsBtn = createMainReportButton([{ text: 'Individual Day Service Activity Report' }]);
 
         batchedMessageDisplay.innerHTML = 'The selected location is batched for this date.';
         batchedMessageDisplay.classList.add('batchedMessageDisplay');
         batchedMessageDisplay.classList.add('hidden');
 
-        let btnWrap = document.createElement('div');
-        btnWrap.classList.add('btnWrap');
-        btnWrap.appendChild(filterBtn);
-        if ($.session.DayServiceUpdate) btnWrap.appendChild(mulitSelectBtn); //No need to multi select for view only
-        btnWrap.appendChild(reportsBtn);
-        DOM.ACTIONCENTER.appendChild(btnWrap);
+        let filterSelectReportBtnWrap = document.createElement('div');
+        filterSelectReportBtnWrap.classList.add('btnWrap', 'filterSelectReportBtnWrap');
+        filterSelectReportBtnWrap.appendChild(filterBtn);
+        if ($.session.DayServiceUpdate) filterSelectReportBtnWrap.appendChild(mulitSelectBtn); //No need to multi select for view only
+        filterSelectReportBtnWrap.appendChild(reportsBtn);
+        DOM.ACTIONCENTER.appendChild(filterSelectReportBtnWrap);
         if ($.session.DayServiceUpdate) DOM.ACTIONCENTER.appendChild(multiSelectAllNoneArea); //no need to multi select for view only
         DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
         DOM.ACTIONCENTER.appendChild(currentFilterDisplay);
@@ -1701,7 +1722,7 @@ const dayServices = (function () {
         buildPageComponents();
         addEventListeners();
         //checkIfBatched();
-
+        document.getElementById('searchBtn').click();
         rosterGroupResults = (await customGroupsAjax.getConsumerGroups(locationID))
             .getConsumerGroupsJSONResult;
     }

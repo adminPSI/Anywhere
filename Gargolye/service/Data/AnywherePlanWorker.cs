@@ -83,7 +83,7 @@ namespace Anywhere.service.Data
                 public string sentToDODD { get; set; }
                 public string userSentDODD { get; set; }
                 public string dateSentDODD { get; set; }
-
+                public string downloadDate { get; set; }
 
             }
 
@@ -636,7 +636,11 @@ namespace Anywhere.service.Data
                     [DataMember(Order = 3)]
                     public string answerStyle { get; set; }
                     [DataMember(Order = 4)]
+                    public string skipped { get; set; }
+                    [DataMember(Order = 5)]
                     public string hideOnAssessment { get; set; }
+                    [DataMember(Order = 6)]
+                    public string questionId { get; set; }
 
                 }
                 public class Question
@@ -904,7 +908,8 @@ namespace Anywhere.service.Data
                                     answerRow = rowNumber.ToString(),
                                     answerText = answerText,
                                     answerStyle = question.questionAnswerStyle,
-                                    hideOnAssessment = question.hideOnAssessment
+                                    hideOnAssessment = question.hideOnAssessment,
+                                    questionId = question.questionId
                                 };
 
                                 gridRowAnswers.Add(answer);
@@ -1002,7 +1007,7 @@ namespace Anywhere.service.Data
                             {
                                 if (answer.answerId == null) throw new Exception("answerId is required for update");
                                 // update the answer
-                                rowsUpdated += adg.updateAssessmentAnswer(answer.answerId, answer.answerText, userId, transaction);
+                                rowsUpdated += adg.updateAssessmentAnswer(answer.answerId, answer.answerText, answer.skipped, userId, transaction);
                             }
 
                             return rowsUpdated;

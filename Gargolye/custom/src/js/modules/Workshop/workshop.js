@@ -164,7 +164,7 @@ var workshop = (function() {
           style: "secondary"
           });
           let today = UTIL.getTodaysDate();
-          let defaultId = 000;
+          let defaultId = 0;
         today = new Date(today.replace(/-/g, '\/'));
         openBatches.forEach(findCorrectDates);
         function findCorrectDates(ele) {
@@ -425,6 +425,36 @@ var workshop = (function() {
       }
     });
 
+    function getFilterValues() {
+      return (filterValues = {
+        workshopLocation: workshopFilterListData.locationId,
+        workshopJob: workshopFilterListData.jobStepId,
+        workshopDate: workshopFilterListData.selectedDate,
+        workshopStartDate: minDateIso,
+        workshopEndDate: maxDateIso
+      });
+    }
+    // Helper function to create the main reports button on the module page
+    function createMainReportButton(buttonsData) {
+      return button.build({
+        text: 'Reports',
+        icon: 'add',
+        style: 'secondary',
+        type: 'contained',
+        classNames: 'reportBtn',
+        callback: function () {
+          // Iterate through each item in the buttonsData array
+          buttonsData.forEach(function (buttonData) {
+            buttonData.filterValues = getFilterValues();
+          });
+
+          generateReports.showReportsPopup(buttonsData);
+        },
+      });
+    }
+
+    reportsBtn = createMainReportButton([{ text: 'Job Activity Detail Report by Employee and Job' }])
+
     var workshopTableOpts = {
       headline: `Batch Period:  ${UTIL.formatDateFromIso(
         minDateIso
@@ -511,15 +541,16 @@ var workshop = (function() {
 
     DOM.clearActionCenter();
 
-    btnWrap = document.createElement("div");
-    btnWrap.classList.add("btnWrap");
-    btnWrap.appendChild(filterBtn);
-    btnWrap.appendChild(multiSelectBtn);
+    filterSelectReportBtnWrap = document.createElement("div");
+    filterSelectReportBtnWrap.classList.add("btnWrap", "filterSelectReportBtnWrap");
+    filterSelectReportBtnWrap.appendChild(filterBtn);
+    filterSelectReportBtnWrap.appendChild(multiSelectBtn);
+    filterSelectReportBtnWrap.appendChild(reportsBtn);
   
   
 
 
-    DOM.ACTIONCENTER.appendChild(btnWrap);
+    DOM.ACTIONCENTER.appendChild(filterSelectReportBtnWrap);
     DOM.ACTIONCENTER.appendChild(currentFilterDisplay);
     currentFilterDisplay.classList.add("filteredByData");
     updateCurrentFilterDisplay();

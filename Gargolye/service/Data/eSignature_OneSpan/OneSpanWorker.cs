@@ -6,6 +6,7 @@ using Org.BouncyCastle.Crypto.Tls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,14 @@ using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Web.UI.MobileControls.Adapters;
 using static Anywhere.service.Data.eSignature___OneSpan.OneSpanWorker;
-
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using Org.BouncyCastle.Cms;
+using System.Net;
+using System.ServiceModel.Description;
+using static Anywhere.service.Data.AnywhereWorker;
+using static Anywhere.service.Data.PlanSignature.PlanSignatureWorker;
 
 namespace Anywhere.service.Data.eSignature___OneSpan
 {
@@ -25,13 +33,13 @@ namespace Anywhere.service.Data.eSignature___OneSpan
     {
         private static String apiUrl = "https://sandbox.esignlive.com/api";
         private static String apiUrlToken = "https://sandbox.esignlive.com/apitoken/clientApp/accessToken";
+        //private static String apiUrl = "https://sandbox.esignlive.com/apitoken/clientApp/accessToken";
         // USE https://apps.e-signlive.com/api FOR PRODUCTION
         private static String apiKey = "MEhOb1ptNkhXd1FaOnhqSTdUYXZlaFowSQ==";
         private static string tokenOS = "";
         //OssClient ossClient = new OssClient(apiKey, apiUrl);
         OneSpanDataGetter osdg = new OneSpanDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
-
 
         public void generateToken()
         {
@@ -41,7 +49,53 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
             using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-            {            
+            {
+
+                string json = new JavaScriptSerializer().Serialize(new
+                {
+                    //TODO: Need to change for Franklin County when we go live
+                    clientId = "189e5a980c50a5a712d58cf1561",
+                    secret = "6879647261f9f203eea3c876287aed5c7dc4991e6358a9bc71ff04590eb7333ce2ead6dd82",
+                    type = "OWNER"
+                });
+
+                streamWriter.Write(json);
+            }
+
+            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                var result = streamReader.ReadToEnd();
+                var tokenResult = JsonConvert.DeserializeObject<TokenResponse>(result);
+                tokenOS = tokenResult.accessToken;
+            }
+            //return tokenOS;
+        }
+
+        public class TokenResponse
+        {
+            public string accessToken { get; set; }
+        }
+
+        public class APIKey
+        {
+            public string apiKey { get; set; }
+        }
+
+        public class URL
+        {
+            public string url { get; set; }
+        }
+
+        public void generateToken()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(apiUrlToken);
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "POST";
+            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            {
 
                 string json = new JavaScriptSerializer().Serialize(new
                 {
@@ -68,7 +122,28 @@ namespace Anywhere.service.Data.eSignature___OneSpan
             public string accessToken { get; set; }
         }
         public string oneSpanBuildSigners(string token, string assessmentID, MemoryStream ms)
+        //public string oneSpanBuildSigners(string token)
         {
+            //generateToken();
+            //get api key
+            string apiKeyString = osdg.OneSpanGetAPIKey(token);
+            APIKey[] apiKeyObj = js.Deserialize<APIKey[]>(apiKeyString);
+            string apiKey = apiKeyObj[0].apiKey.ToString();
+            //get url
+            string urlString = osdg.OneSpanGetURL(token);
+            URL[] urlObj = js.Deserialize<URL[]>(urlString);
+            string url = urlObj[0].url.ToString();
+            OssClient ossClient = new OssClient(apiKey, url);
+            //var apiTokenConfig = new ApiTokenConfig
+            //{
+            //    BaseUrl = "https://sandbox.esignlive.com",
+            //    ClientAppId = "189e5a980c50a5a712d58cf1561",
+            //    ClientAppSecret = "6879647261f9f203eea3c876287aed5c7dc4991e6358a9bc71ff04590eb7333ce2ead6dd82",
+            //    TokenType = ApiTokenType.OWNER,
+            //};
+            //IDictionary<string, string> headers = new Dictionary<string, string>();
+            //OssClient ossClient = new OssClient(apiTokenConfig, apiUrl, false, null, headers);
+            //string applicationVersion = ossClient.SystemService.GetApplicationVersion();
             generateToken();
             OssClient ossClient = new OssClient(tokenOS, apiUrl);
             string applicationVersion = ossClient.SystemService.GetApplicationVersion();
@@ -111,6 +186,15 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 // Sets the senders info
                 string senderFirstName = senderInfoObj[0].FirstName;
                 string senderLastName = senderInfoObj[0].LastName;
+
+                AccountMember member = AccountMemberBuilder.NewAccountMember(senderInfoObj[0].Email)
+                .WithFirstName(senderFirstName)
+                .WithLastName(senderLastName)
+                //.WithStatus(SenderStatus.ACTIVE)
+                .Build();
+
+                ossClient.AccountService.InviteUser(member);
+
                 SenderInfoBuilder sender = SenderInfoBuilder
                     .NewSenderInfo(senderInfoObj[0].Email)
                     .WithName(senderFirstName, senderLastName);
@@ -152,7 +236,9 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     lastName = "(No Last Name Provided)";
                 }
 
+                //return "";
                 return createDocument(token, assessmentID, allOneSpanSigners, namesList, superPackage, ms, ossClient);
+                //return createDocument(token, assessmentID, allOneSpanSigners, namesList, superPackage, ms);
             }
         }
 
@@ -231,6 +317,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
         }
 
         public string createDocument(string token, string assessmentID, List<OneSpanSigner> allSigners, List<string> names, PackageBuilder package, MemoryStream ms, OssClient ossClient)
+        //public string createDocument(string token, string assessmentID, List<OneSpanSigner> allSigners, List<string> names, PackageBuilder package, MemoryStream ms)
         {
             DocumentBuilder document = DocumentBuilder.NewDocumentNamed("Plan Report")
                                 .FromStream(ms, DocumentType.PDF)
@@ -274,6 +361,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                     i++;
                     continue;
                 }
+                string sigAnchor = names[i] + " Signature";
                 string anchor = names[i] + " /";
                 string dateAnchor = names[i] + " Date";
 
@@ -328,19 +416,19 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                         .WithField(createTextAreaField("dissentHowToAddress-", i, anchor, signer.Title))
 
                                         // Creates signature and date signature fields
-                                        .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
+                                        .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(sigAnchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
-                                                                    .WithOffset(450, 8)
+                                                                    .WithOffset(75, 5)
                                                                     .WithCharacter(0)
                                                                     .WithOccurrence(0))
                                                                     .WithField(FieldBuilder.SignatureDate()
                                                                     .WithId("Date_Signed-" + i)
-                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
+                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(dateAnchor)
                                                                                             .AtPosition(TextAnchorPosition.BOTTOMLEFT)
                                                                                             .WithSize(75, 40)
                                                                                             .WithCharacter(4)
-                                                                                            .WithOffset(725, 8)
+                                                                                            .WithOffset(15, -10)
                                                                                             .WithOccurrence(0)))
                                             .Build();
                     occurence += 1;
@@ -357,212 +445,284 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                                            .WithField(createTextAreaField("dissentHowToAddress-", i, anchor, signer.Title))
 
                                            // Creates signature and date signature fields
-                                           .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
+                                           .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(sigAnchor)
                                                                     .AtPosition(TextAnchorPosition.TOPLEFT)
                                                                     .WithSize(150, 40)
-                                                                    .WithOffset(450, 8)
+                                                                    .WithOffset(75, 5)
                                                                     .WithCharacter(0)
                                                                     .WithOccurrence(0))
                                                                     .WithField(FieldBuilder.SignatureDate()
                                                                     .WithId("Date_Signed-" + i)
-                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(anchor)
+                                                                    .WithPositionAnchor(TextAnchorBuilder.NewTextAnchor(dateAnchor)
                                                                                             .AtPosition(TextAnchorPosition.BOTTOMLEFT)
                                                                                             .WithSize(75, 40)
                                                                                             .WithCharacter(4)
-                                                                                            .WithOffset(725, 0)
+                                                                                            .WithOffset(15, -10)
                                                                                             .WithOccurrence(0)))
                                             .Build();
                     document.WithSignature(sig1);
                 }
                 i++;
             }
-
+            //MAT Commented out below
             return sendToOneSpan(token, assessmentID, package, document, ossClient);
+            //return sendToOneSpan(token, assessmentID, package, document);
         }
 
         public string sendToOneSpan(string token, string assessmentID, PackageBuilder package, DocumentBuilder document, OssClient ossClient)
+        //public string sendToOneSpan(string token, string assessmentID, PackageBuilder package, DocumentBuilder document)
+
+            return sendToOneSpan(token, assessmentID, package, document, ossClient);
+    }
+
+    public string sendToOneSpan(string token, string assessmentID, PackageBuilder package, DocumentBuilder document, OssClient ossClient)
+    {
+        package.WithDocument(document);
+        DocumentPackage pack = package.Build();
+        PackageId packageId = ossClient.CreatePackage(pack);
+        ossClient.SendPackage(packageId);
+        string newPackageId = packageId.Id;
+        string signedStatus = "IN PROGRESS";
+
+        osdg.OneSpanInsertPackageId(token, assessmentID, newPackageId, signedStatus);
+
+        return "success";
+    }
+
+    public DocumentStatus[] oneSpanCheckDocumentStatus(string token, string assessmentId)
+    {
+        string documentStatusString = osdg.OneSpanCheckDocumentStatus(token, assessmentId);
+        DocumentStatus[] documentStatus = js.Deserialize<DocumentStatus[]>(documentStatusString);
+
+        return documentStatus;
+    }
+
+    public class DocumentStatus
+    {
+        public string packageId { get; set; }
+        public string signedStatus { get; set; }
+    }
+
+    public byte[] createImage(string date, string name)
+    {
+        string firstName = "E-SIGNED by " + name;
+        string lastName = "on " + date + " GMT";
+        int width = 2000;
+        int height = 400;
+        using (Bitmap image = new Bitmap(width, height))
         {
-            package.WithDocument(document);
-            DocumentPackage pack = package.Build();
-            PackageId packageId = ossClient.CreatePackage(pack);
-            ossClient.SendPackage(packageId);
-            string newPackageId = packageId.Id;
-            string signedStatus = "IN PROGRESS";
-
-            osdg.OneSpanInsertPackageId(token, assessmentID, newPackageId, signedStatus);
-
-            return "success";
-        }
-
-        public DocumentStatus[] oneSpanCheckDocumentStatus(string token, string assessmentId)
-        {
-            string documentStatusString = osdg.OneSpanCheckDocumentStatus(token, assessmentId);
-            DocumentStatus[] documentStatus = js.Deserialize<DocumentStatus[]>(documentStatusString);
-
-            return documentStatus;
-        }
-
-        public class DocumentStatus
-        {
-            public string packageId { get; set; }
-            public string signedStatus { get; set; }
-        }
-
-        public string oneSpanGetSignedDocuments(string token, string packageId, string assessmentID)
-        {
-            generateToken();
-            OssClient ossClient = new OssClient(tokenOS, apiUrl);
-            long assessmentId = long.Parse(assessmentID);
-            string input = osdg.OneSpanGetSignatures(token, assessmentId);
-            bool updateTeamMemberTable = false;
-
-            List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
-            List<string> signatureIds = new List<string>();
-            List<string> datesSigned = new List<string>();
-            List<string> signatureTypes = new List<string>();
-
-            foreach (var item in result)
+            using (Graphics g = Graphics.FromImage(image))
             {
-                signatureIds.Add(item["signatureId"]);
-                datesSigned.Add(item["dateSigned"]);
-                signatureTypes.Add(item["signatureType"]);
+                g.Clear(Color.White);
+
+                Font font = new Font("Arial", 85, FontStyle.Regular);
+                Brush brush = Brushes.Black;
+
+                int xFirstName = (width - (int)g.MeasureString(firstName, font).Width) / 2;
+                int xLastName = (width - (int)g.MeasureString(lastName, font).Width) / 2;
+                //int xDate = (width - (int)g.MeasureString(date, font).Width) / 2;
+                int y = (height - (int)g.MeasureString(firstName, font).Height * 3) / 2;
+
+                g.DrawString(firstName, font, brush, new PointF(xFirstName, y));
+                g.DrawString(lastName, font, brush, new PointF(xLastName, y + font.Height));
+                //g.DrawString(date, font, brush, new PointF(xDate, y + font.Height * 2));
             }
 
-            PackageId currentPackageId = new PackageId(packageId);
-            DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
-            DocumentPackageStatus packageStatus = sentPackage.Status;
-
-            // Sets the values from the documents radio buttons and assigns them to fieldIds using the fieldName as the value. This is all grouped by each signers signatureID so we can send each signers values to be updated in the DB
-            List<FieldSummary> fieldSummaries = ossClient.FieldSummaryService.GetFieldSummary(new PackageId(packageId));
-
-            var fieldIds = new List<string> {"csChangeMind", "csChangeMindSSAPeopleId", "csContact", "csContactProviderVendorId", "csContactInput", "csRightsReviewed", "csAgreeToPlan", "csFCOPExplained", "csDueProcess", "csResidentialOptions", "csSupportsHealthNeeds", "csTechnology", "dissentAreaDisagree", "dissentHowToAddress" };
-
-            int i = 0;
-            foreach (string sigId in signatureIds)
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                // If not a digital signer type or if signer has already signed, skip to next signer
-                if (signatureTypes[i] != "1")
-                {
-                    i++;
-                    continue;
-                }
-
-                SigningStatus individualSigningStatus = SigningStatus.SIGNING_PENDING;
-
-                try
-                {
-                    individualSigningStatus = ossClient.GetSigningStatus(currentPackageId, sigId, null);
-                } catch
-                {
-                    // Do nothing and continue with the rest of the function
-                }
-
-                // Checks if signer already has a completed signature in the DB, then checks if the signer has completed the one span signature
-                if (datesSigned[i] == "" && (individualSigningStatus.ToString().Equals("SIGNING_COMPLETE") || individualSigningStatus.ToString().Equals("COMPLETE")))
-                {
-                    string signerId = sigId;
-                    var filteredFieldSummaries = fieldSummaries.Where(f => f.SignerId == signerId);
-
-                    Dictionary<string, string> fieldDictionary = new Dictionary<string, string>();
-                    fieldDictionary.Add("signatureId", sigId);
-
-                    foreach (var fieldSummary in filteredFieldSummaries)
-                    {
-                        // Removes the "-" character and the following characters from the fieldId
-                        string fieldId = Regex.Replace(fieldSummary.FieldId, "-.*", "");
-                        if (fieldIds.Contains(fieldId))
-                        {
-                            if (fieldId == "dissentAreaDisagree" || fieldId == "dissentHowToAddress")
-                            {
-                                fieldDictionary.Add(fieldId, fieldSummary.FieldValue);
-                            }
-                            else
-                            {
-                                fieldDictionary.Add(fieldId, fieldSummary.FieldName);
-                            }
-
-                        }
-
-                        if (fieldId == "Date_Signed")
-                        {
-                            string dateString = fieldSummary.FieldValue;
-                            DateTime dateTime = DateTime.ParseExact(dateString, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
-                            string date_signed = dateTime.ToString("yyyy-MM-dd");
-                            fieldDictionary.Add(fieldId, date_signed);
-                        }
-                    }
-
-                    // Sets fields that are not present to empty strings which will be set to null when updating the db (important for signers that have no radio buttons)
-                    foreach (var fieldId in fieldIds)
-                    {
-                        if (!fieldDictionary.ContainsKey(fieldId))
-                        {
-                            fieldDictionary.Add(fieldId, "");
-                        }
-                    }
-                    osdg.UpdateOneSpanPlanConsentStatements(
-                        token,
-                        fieldDictionary["signatureId"],
-                        fieldDictionary["Date_Signed"],
-                        fieldDictionary["csChangeMind"],
-                        fieldDictionary["csContact"],
-                        fieldDictionary["csRightsReviewed"],
-                        fieldDictionary["csAgreeToPlan"],
-                        fieldDictionary["csFCOPExplained"],
-                        fieldDictionary["csDueProcess"],
-                        fieldDictionary["csResidentialOptions"],
-                        fieldDictionary["csSupportsHealthNeeds"],
-                        fieldDictionary["csTechnology"],
-                        fieldDictionary["dissentAreaDisagree"],
-                        fieldDictionary["dissentHowToAddress"]
-                    );
-                    i++;
-                    updateTeamMemberTable = true;
-                }
-                else
-                {
-                    i++;
-                    continue;
-                }
+                image.Save(memoryStream, ImageFormat.Png);
+                return memoryStream.ToArray();
             }
-            if (updateTeamMemberTable == true)
-            {
-                return "true";
-            }
-            else
-            {
-                return "false";
-            }
-        }
-
-        public bool tokenValidator(string token)
-        {
-            if (token.Contains(" "))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public class OneSpanSigner
-        {
-            public string FirstName { get; set; }
-
-            public string LastName { get; set; }
-            public string Email { get; set; }
-            public string DateSigned { get; set; }
-            public string MemberType { get; set; }
-            public string SignatureId { get; set; }
-            public string SignatureType { get; set; }
-        }
-        public class OneSpanSender
-        {
-            public string FirstName { get; set;}
-            public string LastName { get; set;}
-            public string Email { get; set;}
         }
     }
+
+    public string oneSpanGetSignedDocuments(string token, string packageId, string assessmentID)
+    {
+        generateToken();
+        OssClient ossClient = new OssClient(tokenOS, apiUrl);
+        long assessmentId = long.Parse(assessmentID);
+        string input = osdg.OneSpanGetSignatures(token, assessmentId);
+        bool updateTeamMemberTable = false;
+        string signatureImageString = "";
+
+        List<Dictionary<string, string>> result = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(input);
+        List<string> signatureIds = new List<string>();
+        List<string> datesSigned = new List<string>();
+        List<string> signatureTypes = new List<string>();
+        List<string> names = new List<string>();
+
+        foreach (var item in result)
+        {
+            signatureIds.Add(item["signatureId"]);
+            datesSigned.Add(item["dateSigned"]);
+            signatureTypes.Add(item["signatureType"]);
+            names.Add(item["name"]);
+        }
+
+        PackageId currentPackageId = new PackageId(packageId);
+        // generateToken();
+
+        // var apiTokenConfig = new ApiTokenConfig
+        // {
+        //     BaseUrl = "https://sandbox.esignlive.com",
+        //     ClientAppId = "189e5a980c50a5a712d58cf1561",
+        //     ClientAppSecret = "6879647261f9f203eea3c876287aed5c7dc4991e6358a9bc71ff04590eb7333ce2ead6dd82",
+        //     TokenType = ApiTokenType.OWNER,
+        // };
+        // IDictionary<string, string> headers = new Dictionary<string, string>();
+        // OssClient ossClient = new OssClient(apiTokenConfig, apiUrl, false, null, headers);
+        //get api key
+        string apiKeyString = osdg.OneSpanGetAPIKey(token);
+        APIKey[] apiKeyObj = js.Deserialize<APIKey[]>(apiKeyString);
+        string apiKey = apiKeyObj[0].apiKey.ToString();
+        //get url
+        string urlString = osdg.OneSpanGetURL(token);
+        URL[] urlObj = js.Deserialize<URL[]>(urlString);
+        string url = urlObj[0].url.ToString();
+        OssClient ossClient = new OssClient(apiKey, url);
+
+        DocumentPackage sentPackage = ossClient.GetPackage(currentPackageId);
+        DocumentPackageStatus packageStatus = sentPackage.Status;
+
+        // Sets the values from the documents radio buttons and assigns them to fieldIds using the fieldName as the value. This is all grouped by each signers signatureID so we can send each signers values to be updated in the DB
+        List<FieldSummary> fieldSummaries = ossClient.FieldSummaryService.GetFieldSummary(new PackageId(packageId));
+
+        var fieldIds = new List<string> { "csChangeMind", "csChangeMindSSAPeopleId", "csContact", "csContactProviderVendorId", "csContactInput", "csRightsReviewed", "csAgreeToPlan", "csFCOPExplained", "csDueProcess", "csResidentialOptions", "csSupportsHealthNeeds", "csTechnology", "dissentAreaDisagree", "dissentHowToAddress" };
+
+        int i = 0;
+        foreach (string sigId in signatureIds)
+        {
+            // If not a digital signer type or if signer has already signed, skip to next signer
+            if (signatureTypes[i] != "1")
+            {
+                i++;
+                continue;
+            }
+
+            SigningStatus individualSigningStatus = SigningStatus.SIGNING_PENDING;
+
+            try
+            {
+                individualSigningStatus = ossClient.GetSigningStatus(currentPackageId, sigId, null);
+            }
+            catch
+            {
+                // Do nothing and continue with the rest of the function
+            }
+
+            // Checks if signer already has a completed signature in the DB, then checks if the signer has completed the one span signature
+            if (datesSigned[i] == "" && (individualSigningStatus.ToString().Equals("SIGNING_COMPLETE") || individualSigningStatus.ToString().Equals("COMPLETE")))
+            {
+                string signerId = sigId;
+                var filteredFieldSummaries = fieldSummaries.Where(f => f.SignerId == signerId);
+
+                Dictionary<string, string> fieldDictionary = new Dictionary<string, string>();
+                fieldDictionary.Add("signatureId", sigId);
+
+                foreach (var fieldSummary in filteredFieldSummaries)
+                {
+                    // Removes the "-" character and the following characters from the fieldId
+                    string fieldId = Regex.Replace(fieldSummary.FieldId, "-.*", "");
+                    if (fieldIds.Contains(fieldId))
+                    {
+                        if (fieldId == "dissentAreaDisagree" || fieldId == "dissentHowToAddress")
+                        {
+                            fieldDictionary.Add(fieldId, fieldSummary.FieldValue);
+                        }
+                        else
+                        {
+                            fieldDictionary.Add(fieldId, fieldSummary.FieldName);
+                        }
+
+                    }
+
+                    if (fieldId == "Date_Signed")
+                    {
+                        string dateString = fieldSummary.FieldValue;
+                        DateTime dateTime = DateTime.ParseExact(dateString, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+                        string date_signed = dateTime.ToString("yyyy-MM-dd");
+
+                        // sets the format of time needed for signature image
+                        string dateSignedImage = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                        fieldDictionary.Add(fieldId, date_signed);
+
+                        byte[] signatureImage = createImage(dateSignedImage, names[i]);
+                        signatureImageString = Convert.ToBase64String(signatureImage);
+                    }
+                }
+
+                // Sets fields that are not present to empty strings which will be set to null when updating the db (important for signers that have no radio buttons)
+                foreach (var fieldId in fieldIds)
+                {
+                    if (!fieldDictionary.ContainsKey(fieldId))
+                    {
+                        fieldDictionary.Add(fieldId, "");
+                    }
+                }
+                osdg.UpdateOneSpanPlanConsentStatements(
+                    token,
+                    fieldDictionary["signatureId"],
+                    fieldDictionary["Date_Signed"],
+                    fieldDictionary["csChangeMind"],
+                    fieldDictionary["csContact"],
+                    fieldDictionary["csRightsReviewed"],
+                    fieldDictionary["csAgreeToPlan"],
+                    fieldDictionary["csFCOPExplained"],
+                    fieldDictionary["csDueProcess"],
+                    fieldDictionary["csResidentialOptions"],
+                    fieldDictionary["csSupportsHealthNeeds"],
+                    fieldDictionary["csTechnology"],
+                    fieldDictionary["dissentAreaDisagree"],
+                    fieldDictionary["dissentHowToAddress"],
+                    signatureImageString
+                );
+                i++;
+                updateTeamMemberTable = true;
+            }
+            else
+            {
+                i++;
+                continue;
+            }
+        }
+        if (updateTeamMemberTable == true)
+        {
+            return "true";
+        }
+        else
+        {
+            return "false";
+        }
+    }
+
+    public bool tokenValidator(string token)
+    {
+        if (token.Contains(" "))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public class OneSpanSigner
+    {
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string DateSigned { get; set; }
+        public string MemberType { get; set; }
+        public string SignatureId { get; set; }
+        public string SignatureType { get; set; }
+    }
+    public class OneSpanSender
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+    }
+}
 }

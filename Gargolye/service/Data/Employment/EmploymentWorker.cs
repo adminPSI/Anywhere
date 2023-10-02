@@ -90,7 +90,11 @@ namespace Anywhere.service.Data.Employment
             public string positionID { get; set; }
 
             [DataMember(Order = 14)]
-            public string existingEndDate { get; set; }           
+            public string existingEndDate { get; set; }
+            [DataMember(Order = 15)]
+            public string existingStartDate { get; set; }
+            [DataMember(Order = 16)]
+            public string existingPathID { get; set; }           
         }
 
 
@@ -210,6 +214,8 @@ namespace Anywhere.service.Data.Employment
             public int lastTaskNumber { get; set; }
             [DataMember(Order = 9)]
             public string initialPerformanceID { get; set; }
+            [DataMember(Order = 10)]
+            public int taskNumberToBeDeleted { get; set; }
         }
 
 
@@ -342,7 +348,7 @@ namespace Anywhere.service.Data.Employment
             }
         }
 
-        public EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID)
+        public EmploymentPath insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID, string existingPathID)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -357,7 +363,7 @@ namespace Anywhere.service.Data.Employment
                         endDate = null;
                     else
                         endDate = newEndDate;
-                    PathID = Odg.insertEmploymentPath(token, employmentPath, newStartDate, endDate, currentEndDate, peopleID, userID, transaction);
+                    PathID = Odg.insertEmploymentPath(token, employmentPath, newStartDate, endDate, currentEndDate, peopleID, userID, transaction, existingPathID);
 
                     employeePath.pathId = PathID;
                     return employeePath;
@@ -733,6 +739,85 @@ namespace Anywhere.service.Data.Employment
                 {
                     transaction.Rollback();
                     throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public PositionTaskEntries[] getLastTaskNumber(string token, string positionID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    PositionTaskEntries[] entries = js.Deserialize<PositionTaskEntries[]>(Odg.getLastTaskNumber(token, positionID, transaction));
+                    return entries;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+
+        }
+
+        public string deleteWagesBenefits(string token, string wagesID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+
+                try
+                {
+                    Odg.deleteWagesBenefits(token, wagesID, transaction);
+                    return "sucess";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return "failed";
+                }
+            }
+        }
+
+        public string deleteWorkSchedule(string token, string WorkScheduleID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    Odg.deleteWorkSchedule(token, WorkScheduleID, transaction);
+                    return "sucess";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return "failed";
+                }
+            }
+        }
+
+        public string deletePostionTask(string token, string jobTaskID, string PositionID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+
+                try
+                {
+                    PositionTaskEntries[] updateEntriesList = js.Deserialize<PositionTaskEntries[]>(Odg.deletePostionTask(token, jobTaskID, PositionID, transaction));
+                    int taskNumberToBeUpdated = updateEntriesList[0].taskNumberToBeDeleted;
+
+                    foreach (PositionTaskEntries updateTaskNumber in updateEntriesList)
+                    {
+                        Odg.updatePositionTaskNumber(token, updateTaskNumber.jobTaskId, taskNumberToBeUpdated, transaction);
+                        taskNumberToBeUpdated++;
+                    }
+                    return "sucess";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return "failed";
                 }
             }
         }

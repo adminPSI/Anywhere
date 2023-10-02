@@ -1,6 +1,7 @@
 ﻿using PSIOISP;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data.PlanSignature
@@ -12,6 +13,7 @@ namespace Anywhere.service.Data.PlanSignature
         PlanSignatureDataGetter psdg = new PlanSignatureDataGetter();
         OISPWorker oispW = new OISPWorker();
         PlanDataGetter pdg = new PlanDataGetter();
+        static HttpClient client = new HttpClient();
 
         public PlanSignatures[] getSignatures(string token, long assessmentId)
         {
@@ -44,6 +46,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string teamMember { get; set; }
             public string name { get; set; }
             public string lastName { get; set; }
+            public string middleName { get; set; }
+            public string generation { get; set; }
             public string relationship { get; set; }
             public string participated { get; set; }
             public string signature { get; set; }
@@ -97,6 +101,7 @@ namespace Anywhere.service.Data.PlanSignature
 
         public string GetSalesForceId(long consumerId, long peopleId)
         {
+            //client.BaseAddress
 
             try
             {
@@ -201,8 +206,8 @@ namespace Anywhere.service.Data.PlanSignature
 
                     return sigObjPeop;
                 }
-                if (salesforceId == "")
-                {
+                //if (salesforceId == "")
+                //{
                     newSalesForceId = GetSalesForceId(long.Parse(consumerId), long.Parse(peopleId));
 
                     if (newSalesForceId != null)
@@ -213,7 +218,7 @@ namespace Anywhere.service.Data.PlanSignature
                     {
                         salesforceId = "";
                     }
-                }
+                //}
                 if (createRelationship == "T")
                 {
 
@@ -358,7 +363,7 @@ namespace Anywhere.service.Data.PlanSignature
                 {
                     valid = false;
                 }
-                else if (cSFID.ToUpper().IndexOf("NO SALES") == -1)
+                else if (cSFID.ToUpper().IndexOf("NO SALES") != -1)
                 {
                     valid = false;
                 }
@@ -494,10 +499,14 @@ namespace Anywhere.service.Data.PlanSignature
                 var idTest = signatureObj[i].peopleId;
                 if (idTest != null && idTest != "")
                 {
-                    psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", signatureObj[i].csChangeMind, signatureObj[i].csChangeMindSSAPeopleId,
-                                            signatureObj[i].csContact, signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, signatureObj[i].csRightsReviewed, signatureObj[i].csAgreeToPlan, signatureObj[i].csFCOPExplained,
-                                            signatureObj[i].csDueProcess, signatureObj[i].csResidentialOptions, signatureObj[i].csSupportsHealthNeeds, signatureObj[i].csTechnology, signatureObj[i].buildingNumber,
+                    psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", "", signatureObj[i].csChangeMindSSAPeopleId,
+                                            "", signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, "", "", "",
+                                            "", "", "", "", signatureObj[i].buildingNumber,
                                             signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, signatureObj[i].vendorId, signatureObj[i].relationship);
+                    //psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", signatureObj[i].csChangeMind, signatureObj[i].csChangeMindSSAPeopleId,
+                    //                        signatureObj[i].csContact, signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, signatureObj[i].csRightsReviewed, signatureObj[i].csAgreeToPlan, signatureObj[i].csFCOPExplained,
+                    //                        signatureObj[i].csDueProcess, signatureObj[i].csResidentialOptions, signatureObj[i].csSupportsHealthNeeds, signatureObj[i].csTechnology, signatureObj[i].buildingNumber,
+                    //                        signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, signatureObj[i].vendorId, signatureObj[i].relationship);
                 }
 
             }

@@ -75,15 +75,20 @@ const WorkSchedule = (() => {
     function buildworkScheduleEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
+            tableId: 'employmentCommonTable',  
             columnHeadings: ['Day Of Week', 'Start Time', 'End Time'],
+            endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
         let tableData = ScheduleEntries.getWorkScheduleEntriesResult.map((entry) => ({
-            values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : 'Saturday', entry.startTime, entry.endTime],
+            values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : 'Saturday', UTIL.convertFromMilitary(entry.startTime), UTIL.convertFromMilitary(entry.endTime)],
             attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)
+            },
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',
+            endIconCallback: (e) => {
+                deleteWorkSchedulePOPUP(entry.WorkScheduleId);
             },
         }));
         const oTable = table.build(tableOptions);
@@ -96,6 +101,58 @@ const WorkSchedule = (() => {
         addWorkSchedulePopupBtn(WorkScheduleId)
     }
 
+    function deleteWorkSchedulePOPUP(WorkScheduleId) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                deleteWorkSchedule(WorkScheduleId, confirmPopup);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you would like to remove this Work Schedule record?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    function deleteWorkSchedule(WorkScheduleId, confirmPopup) {
+        EmploymentAjax.deleteWorkSchedule(
+            {
+                WorkScheduleID: WorkScheduleId
+            },
+            function (results) {
+                if (results = 'sucess') {
+                    POPUP.hide(confirmPopup);
+                    NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 3);
+                }
+            },
+        );
+    }
+
     function addWorkSchedulePopupBtn(WorkScheduleId) {
         if (WorkScheduleId == 0 || WorkScheduleId == undefined) {
             dayOfWeek = '';
@@ -105,8 +162,8 @@ const WorkSchedule = (() => {
         else {
             let workScheduleValue = ScheduleEntries.getWorkScheduleEntriesResult.find(x => x.WorkScheduleId == WorkScheduleId);
             dayOfWeek = workScheduleValue.dayOfWeek;
-            startTime = workScheduleValue.startTime; 
-            endTime = workScheduleValue.endTime;   
+            startTime = workScheduleValue.startTime;
+            endTime = workScheduleValue.endTime;
         }
         addWorkSchedulePopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
@@ -137,7 +194,7 @@ const WorkSchedule = (() => {
         NewStartTime = input.build({
             id: 'NewStartTime',
             type: 'time',
-            label: 'Strat Time',
+            label: 'Start Time',
             style: 'secondary',
             value: startTime,
         });
@@ -171,10 +228,14 @@ const WorkSchedule = (() => {
         NewStartTime.style.marginLeft = '1%';
         NewStartTime.style.width = '48%';
         timebtnWrap.appendChild(NewStartTime);
-        NewEndTime.style.marginLeft = '2%';  
+        NewEndTime.style.marginLeft = '2%';
         NewEndTime.style.width = '48%';
         timebtnWrap.appendChild(NewEndTime);
         addWorkSchedulePopup.appendChild(timebtnWrap);
+
+        var confirmMessage = document.createElement('div');
+        confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
+        addWorkSchedulePopup.appendChild(confirmMessage);
 
         var popupbtnWrap = document.createElement('div');
         popupbtnWrap.classList.add('btnWrap');
@@ -224,7 +285,7 @@ const WorkSchedule = (() => {
             dayOfWeekDropdown.classList.remove('errorPopup');
         }
 
-        if (timeEnd.value === '') {
+        if (timeEnd.value === '' || timeStart.value > timeEnd.value) {
             NewEndTime.classList.add('errorPopup');
         } else {
             NewEndTime.classList.remove('errorPopup');
@@ -258,7 +319,7 @@ const WorkSchedule = (() => {
             { id: 4, value: 4, text: 'Wednesday' },
             { id: 5, value: 5, text: 'Thursday' },
             { id: 6, value: 6, text: 'Friday' },
-            { id: 7, value: 7, text: 'Saturday' }, 
+            { id: 7, value: 7, text: 'Saturday' },
 
         ]);
         dayOfWeekDropdownData.unshift({ id: null, value: '', text: '' });
@@ -269,10 +330,17 @@ const WorkSchedule = (() => {
     async function saveNewWagesPopup() {
         const result = await EmploymentAjax.insertWorkScheduleAsync(dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
         const { insertWorkScheduleResult } = result;
-        if (insertWorkScheduleResult.WorkScheduleId != null) {
-            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 3);
+
+        var messagetext = document.getElementById('confirmMessage');
+        messagetext.innerHTML = ``;
+        if (insertWorkScheduleResult.WorkScheduleId == '-1') {
+            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot be saved.';
+            messagetext.classList.add('password-error');
         }
-        POPUP.hide(addWorkSchedulePopup);
+        else {
+            NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 3);
+            POPUP.hide(addWorkSchedulePopup);
+        }
     }
 
 

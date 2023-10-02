@@ -52,6 +52,10 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string reconciled { get; set; }
             [DataMember(Order = 16)]
             public string lastUpdateBy { get; set; }
+            [DataMember(Order = 17)]
+            public string deposit { get; set; }
+            [DataMember(Order = 18)]
+            public string expance { get; set; }
 
         }
 
@@ -138,6 +142,8 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string attachmentID { get; set; }
             [DataMember(Order = 1)]
             public string description { get; set; }
+            [DataMember(Order = 2)]
+            public string registerID { get; set; }
 
         }
 
@@ -188,7 +194,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public Payees[] getPayees(string token, string UserId)
+        public Payees[] getPayees(string token, string consumerId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -196,7 +202,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    Payees[] payees = js.Deserialize<Payees[]>(Odg.getPayees(transaction, UserId));
+                    Payees[] payees = js.Deserialize<Payees[]>(Odg.getPayees(transaction, consumerId));
                     return payees;
                 }
                 catch (Exception ex)
@@ -283,7 +289,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId)
+        public ActivePayee insertPayee(string token, string payeeName, string address1, string address2, string city, string state, string zipcode, string userId, string consumerId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -296,10 +302,11 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (city == null) throw new Exception("city is required");
                     if (state == null) throw new Exception("state is required");
                     if (zipcode == null) throw new Exception("zipcode is required");
+                    if (consumerId == null) throw new Exception("consumerId is required");
                     if (userId == null) throw new Exception("userId is required");
 
                     // insert document
-                    String RegionID = Odg.insertPayee(payeeName, address1, address2, city, state, zipcode, userId, transaction);
+                    String RegionID = Odg.insertPayee(payeeName, address1, address2, city, state, zipcode, userId, consumerId, transaction);
 
                     ActivePayee payee = new ActivePayee();
                     payee.RegionID = RegionID;
@@ -359,20 +366,9 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (userId == null) throw new Exception("userId is required");
 
 
-                    ConsumerFinancesEntry[] PastRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getPastAccountRunningBalance(date, account, transaction));
 
                     string runningBalance = amount;
-                    if (PastRunningBal.Length > 0)
-                    {
-                        if (amountType == "E")
-                        {
-                            runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) - Convert.ToDecimal(runningBalance)).ToString();
-                        }
-                        else
-                        {
-                            runningBalance = (Convert.ToDecimal(PastRunningBal[0].balance) + Convert.ToDecimal(runningBalance)).ToString();
-                        }
-                    }
+
 
                     String RegisterID;
 
@@ -385,22 +381,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                         RegisterID = Odg.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, receipt, userId, transaction, runningBalance);
                     }
 
-                    ConsumerFinancesEntry[] nextRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getNextAccountRunningBalance(date, account, transaction));
-
-                    foreach (ConsumerFinancesEntry updateAmount in nextRunningBal)
-                    {
-                        string balance;
-                        if (amountType == "E")
-                        {
-                            balance = (Convert.ToDecimal(updateAmount.balance) - Convert.ToDecimal(runningBalance)).ToString();
-                        }
-                        else
-                        {
-                            balance = (Convert.ToDecimal(updateAmount.balance) + Convert.ToDecimal(runningBalance)).ToString();
-                        }
-
-                        Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
-                    }
+                    runningBalance = updateAccountBalance(date, account, transaction, runningBalance);
 
                     if (attachmentId != null)
                     {
@@ -420,6 +401,36 @@ namespace Anywhere.service.Data.ConsumerFinances
                     throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
                 }
             }
+        }
+
+        private string updateAccountBalance(string date, string account, DistributedTransaction transaction, string runningBalance)
+        {
+            ConsumerFinancesEntry[] nextRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getNextAccountRunningBalance(date, account, transaction));
+            int counterbal = 0;
+            foreach (ConsumerFinancesEntry updateAmount in nextRunningBal)
+            {
+                string balance;
+
+                if (updateAmount.deposit == "0" || updateAmount.deposit == "0.00")
+                {
+                    if (counterbal == 0)
+                                balance = (Convert.ToDecimal("0") - Convert.ToDecimal(updateAmount.expance)).ToString();
+                    else
+                                balance = (Convert.ToDecimal(runningBalance) - Convert.ToDecimal(updateAmount.expance)).ToString();
+                }
+                else
+                {
+                    if (counterbal == 0)
+                                balance = (Convert.ToDecimal("0") + Convert.ToDecimal(updateAmount.deposit)).ToString();
+                    else
+                                balance = (Convert.ToDecimal(runningBalance) + Convert.ToDecimal(updateAmount.deposit)).ToString();
+                }
+                runningBalance = balance;
+                Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
+                counterbal++;
+            }
+
+            return runningBalance;
         }
 
         public ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId)
@@ -447,8 +458,9 @@ namespace Anywhere.service.Data.ConsumerFinances
             {
                 try
                 {
-                    return Odg.deleteConsumerFinanceAccount(token, registerId, transaction);
-
+                    ConsumerFinancesEntry[] categorySubCategory = js.Deserialize<ConsumerFinancesEntry[]>(Odg.deleteConsumerFinanceAccount(token, registerId, transaction));
+                    updateAccountBalance(categorySubCategory[0].activityDate, categorySubCategory[0].accountID, transaction, categorySubCategory[0].balance); 
+                    return categorySubCategory[0].accountID; 
                 }
                 catch (Exception ex)
                 {

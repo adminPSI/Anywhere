@@ -89,6 +89,10 @@ body.planActive {
   max-height: 340px;
   overflow: scroll;
 }
+#previousPlanTableMoreMenu {
+  max-height: 340px;
+  overflow-y: auto;
+}
 
 .workflowListPopup {
   .closePopupBtn {
@@ -123,6 +127,32 @@ body.planActive {
   }
 }
 
+.wfFormsPopup {
+  .workflowFormHeader {
+    border-bottom: 1px solid $black;
+  }
+  .workflowFormListItem {
+    //border-bottom: 1px solid $black;
+    cursor: pointer;
+    padding: 8px 4px;
+    overflow: hidden;
+
+    &.selected {
+      background: $green;
+    }
+
+    h4,
+    p {
+      pointer-events: none;
+    }
+
+    p {
+      white-space: nowrap;
+    }
+  }
+}
+
+
 .dateErrorMessage {
   color: $input-error;
   margin: 0 1% 10px;
@@ -134,11 +164,10 @@ body.planActive {
 }
 
 // OVERVIEW PAGE
-#planOverviewTable,
-#previousPlanTable {
+#planOverviewTable {
   .table__row {
     cursor: pointer;
-    justify-content: space-between;
+    //justify-content: space-between;
 
     &[data-plan-active='true'] {
       font-weight: $bold;
@@ -152,6 +181,7 @@ body.planActive {
     }
     > div {
       margin: 0 5px 0 0;
+      flex-grow: 1;
     }
     > div:last-child {
       margin: 0;
@@ -159,38 +189,97 @@ body.planActive {
     > div:nth-child(1) {
       // PLAN TYPE
       min-width: 64px;
-      max-width: 80px;
+      max-width: 90px;
     }
     > div:nth-child(2) {
       // REVISION #
       min-width: 50px;
-      max-width: 70px;
+      max-width: 80px;
+    }
+    div:nth-child(3) {
+      // Downloaded Date
+      display: none;
+      min-width: 94px;
+      max-width: 120px;
+    }
+    > div:nth-child(4),
+    > div:nth-child(5) {
+      // START DATES
+      min-width: 94px;
+      max-width: 120px;
+    }
+    div:nth-child(6) {
+      // REVIEW DATE
+      display: none;
+      min-width: 94px;
+      max-width: 120px;
+    }
+    div:nth-child(7) {
+      // SENT TO DODD DATE
+      display: none;
+      min-width: 94px;
+      max-width: 300px;
+    }
+
+    @media screen and (min-width: 500px) {
+      div:nth-child(3) {
+        display: block;
+      }
+    }
+    @media screen and (min-width: 500px) {
+      div:nth-child(6) {
+        display: block;
+      }
+    }
+    @media screen and (min-width: 600px) {
+      div:nth-child(7) {
+        display: block;
+      }
+    }
+  }
+}
+
+#previousPlanTable,
+#previousPlanTableMoreMenu {
+  .table__row {
+    cursor: pointer;
+
+    &[data-plan-active='true'] {
+      font-weight: $bold;
+      color: $font-dark;
+      background: $secondary;
+    }
+    &.selected {
+      font-weight: $bold;
+      color: $font-dark;
+      background: $secondary;
+    }
+    > div {
+      margin: 0 5px 0 0;
+      flex-grow: 1;
+    }
+    > div:last-child {
+      margin: 0;
+    }
+    > div:nth-child(1) {
+      // PLAN TYPE
+      min-width: 64px;
+      max-width: 90px;
+    }
+    > div:nth-child(2) {
+      // REVISION #
+      min-width: 50px;
+      max-width: 80px;
     }
     > div:nth-child(3),
     > div:nth-child(4) {
       // START DATES
       min-width: 94px;
+      max-width: 120px;
     }
     div:nth-child(5) {
       // REVIEW DATE
       display: none;
-      min-width: 94px;
-    }
-    div:nth-child(6) {
-      // SENT TO DODD DATE
-      display: none;
-      min-width: 94px;
-    }
-
-    @media screen and (min-width: 500px) {
-      div:nth-child(5) {
-        display: block;
-      }
-    }
-    @media screen and (min-width: 600px) {
-      div:nth-child(6) {
-        display: block;
-      }
     }
   }
 }

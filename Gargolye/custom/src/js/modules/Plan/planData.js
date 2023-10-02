@@ -79,6 +79,7 @@ const planData = (() => {
     relationships.forEach(el => {
       if (!flag[el.peopleId]) {
         flag[el.peopleId] = true;
+        el.lastName = el.lastName.split('|')[0];
         unique.push(el);
       }
     });
@@ -128,6 +129,11 @@ const planData = (() => {
           value: '2',
           text: 'Adult Day Support - Facility',
           showWith: ['1', '2', '3', '6', '7', '8'],
+        },
+        {
+          value: '51',
+          text: 'Adult Day Support - Virtual',
+          showWith: ['1', '2', '3', '6', '7'],
         },
         {
           value: '3',
@@ -241,13 +247,18 @@ const planData = (() => {
         },
         { value: '45', text: 'Waiver Facility Licensee Only', showWith: ['8'] },
         { value: '46', text: 'Waiver Nursing Delegation (WND)', showWith: ['1', '2', '3', '8'] },
-        { value: '47', text: 'Other (please specify)', showWith: ['5'] },
+        { value: '47', text: 'Other (please specify)', showWith: ['5', '6'] },
         { value: '48', text: 'Self Directed Transportation', showWith: ['1', '2', '3'] },
         { value: '49', text: 'Adult Day Support - Both', showWith: ['1', '2', '3', '6', '7', '8'] },
         {
           value: '50',
           text: 'Vocational Habilitation - Both',
           showWith: ['1', '2', '3', '6', '8'],
+        },
+        {
+          value: '52',
+          text: 'Vocational Habilitation - Virtual',
+          showWith: ['1', '2', '3', '6'],
         },
       ],
       newOrExisting: [
@@ -356,6 +367,10 @@ const planData = (() => {
       dropdowns.relationships = removeDupRelationships(dropdowns.relationships);
     } catch (error) {
       console.log(error);
+
+      dropdowns = {
+        ...defaultDropdowns,
+      };
     }
   }
   function getDropdownData() {

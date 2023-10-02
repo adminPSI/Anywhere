@@ -397,7 +397,13 @@ const planIntroduction = (() => {
       consumerIdForPhoto = selectedConsumer.consumerId
         ? selectedConsumer.consumerId
         : selectedConsumer.id;
-    }
+      }
+
+      if ($.session.applicationName === 'Gatekeeper') {
+          consumerIdForPhoto = selectedConsumer.consumerId
+              ? selectedConsumer.consumerId
+              : selectedConsumer.id;
+      }
 
     const planIntroductionData = await planIntroductionAjax.getPlanIntroduction({
       token: $.session.Token,

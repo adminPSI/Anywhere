@@ -5,7 +5,6 @@ const assessmentCard = (function () {
   let assessmentNav;
   let tocMarkup;
   let tableOfContentsBtn;
-  let saveBtn;
   let unansweredQuestionToggleBtn;
   // DATA
   let sectionData;
@@ -23,7 +22,6 @@ const assessmentCard = (function () {
     assessmentNav = undefined;
     tocMarkup = undefined;
     tableOfContentsBtn = undefined;
-    saveBtn = undefined;
     unansweredQuestionToggleBtn = undefined;
 
     sectionData = undefined;
@@ -59,6 +57,9 @@ const assessmentCard = (function () {
 
     mainAssessment.markUnansweredQuestions();
     tableOfContents.showUnansweredQuestionCount();
+
+    let assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+    planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
   }
 
   // Navigation Bar
@@ -67,18 +68,6 @@ const assessmentCard = (function () {
     switch (e.target) {
       case tableOfContentsBtn: {
         tableOfContents.toggleVisibility();
-        break;
-      }
-      case saveBtn: {
-        const answersArray = mainAssessment.getAnswers();
-        const success = await assessment.updateAnswers(answersArray);
-
-        if (success !== undefined && success !== null && success !== 'error') {
-          successfulSave.show();
-          setTimeout(function () {
-            successfulSave.hide();
-          }, 1000);
-        }
         break;
       }
       case unansweredQuestionToggleBtn: {
@@ -99,13 +88,6 @@ const assessmentCard = (function () {
     }
   }
   function buildTopNavBar() {
-    saveBtn = button.build({
-      text: 'Save',
-      style: 'secondary',
-      type: 'contained',
-      classNames: ['assessmentSaveBtn', 'assessmentNavBtn'],
-      callback: handleNavbarEvents,
-    });
     tableOfContentsBtn = button.build({
       text: 'T.O.C.',
       style: 'secondary',
@@ -128,6 +110,12 @@ const assessmentCard = (function () {
     tocAlertDiv.innerHTML = `${icons.error}`;
 
     // creates and shows a tip when hovering over the visible alert div
+    planValidation.createTooltip(
+      'At least one section of the Assessment must be selected',
+      tocAlertDiv,
+    );
+
+    // creates and shows a tip when hovering over the visible alert div
     // planValidation.createTooltip(
     //   'At least one section of the Assessment must be selected',
     //   tocAlertDiv,
@@ -140,7 +128,6 @@ const assessmentCard = (function () {
     const navBar = document.createElement('div');
     navBar.classList.add('assessmentNavigation');
 
-    navBar.appendChild(saveBtn);
     navBar.appendChild(tableOfContentsBtn);
     navBar.appendChild(unansweredQuestionToggleBtn);
 

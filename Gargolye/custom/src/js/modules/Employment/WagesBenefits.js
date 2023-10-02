@@ -52,8 +52,8 @@ const WagesBenefits = (() => {
         otherInputText = '';
 
         vacationSickChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].vacationSick;
-        retirementChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].medical;
-        medicialChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].retirement;
+        retirementChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].retirement;
+        medicialChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].medical;
         DiscountChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].empDiscount;
         otherChk = CheckBoxEntries.getWagesCheckboxEntriesResult[0].other;
         otherValue = CheckBoxEntries.getWagesCheckboxEntriesResult[0].otherText;
@@ -170,8 +170,10 @@ const WagesBenefits = (() => {
 
     function eventListeners() {
         otherInput.addEventListener('focusout', event => {
-            otherInputText = event.target.value;
-            saveWagesChecked('other', true, otherInputText);
+            if (!otherInput.classList.contains('disabled')) {
+                otherInputText = event.target.value;
+                saveWagesChecked('other', true, otherInputText);
+            }
         });
     }
 
@@ -182,6 +184,11 @@ const WagesBenefits = (() => {
             retirementchkBox.classList.remove('disabled');
             empDiscountchkBox.classList.remove('disabled');
             otherchkBox.classList.remove('disabled');
+            if (otherChk == 'Y') {
+                otherInput.classList.remove('disabled');
+            } else {
+                otherInput.classList.add('disabled');
+            }
         }
         else {
             vacationSickchkBox.classList.add('disabled');
@@ -189,24 +196,28 @@ const WagesBenefits = (() => {
             retirementchkBox.classList.add('disabled');
             empDiscountchkBox.classList.add('disabled');
             otherchkBox.classList.add('disabled');
-
+            otherInput.classList.add('disabled');
         }
-        otherInput.classList.add('disabled');
     }
 
     function buildWagesEntriesTable() {
 
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
-            columnHeadings: ['Hours/Week', 'Hourly Wages', 'Start Date', 'End Date'],
+            tableId: 'employmentCommonTable',
+            columnHeadings: ['Hours/ Week', 'Hourly Wages', 'Start Date', 'End Date'],
+            endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
         let tableData = EmploymentsEntries.getWagesEntriesResult.map((entry) => ({
-            values: [entry.hoursPerWeek, entry.wagesPerHour, moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY')],
+            values: [entry.hoursPerWeek, '$' + parseFloat(entry.wagesPerHour).toFixed(2), moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY')],
             attributes: [{ key: 'wagesId', value: entry.wagesId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.wagesId.value)
+            },
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',
+            endIconCallback: (e) => {
+                deleteWagesBenefitsPOPUP(entry.wagesId);
             },
         }));
         const oTable = table.build(tableOptions);
@@ -219,6 +230,58 @@ const WagesBenefits = (() => {
         addWagesPopupBtn(wagesId)
     }
 
+    function deleteWagesBenefitsPOPUP(wagesId) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                deleteWagesBenefits(wagesId, confirmPopup);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you would like to remove this Wage & Benefit record?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    function deleteWagesBenefits(wagesId, confirmPopup) {
+        EmploymentAjax.deleteWagesBenefits(
+            {
+                wagesID: wagesId
+            },
+            function (results) {
+                if (results = 'sucess') {
+                    POPUP.hide(confirmPopup);
+                    NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 1);
+                }
+            },
+        );
+    }
+
     function addWagesPopupBtn(wagesId) {
         if (wagesId == 0 || wagesId == undefined) {
             hoursWeek = '';
@@ -229,7 +292,7 @@ const WagesBenefits = (() => {
         else {
             let empValue = EmploymentsEntries.getWagesEntriesResult.find(x => x.wagesId == wagesId);
             hoursWeek = empValue.hoursPerWeek;
-            hoursWages = empValue.wagesPerHour;
+            hoursWages = parseFloat(empValue.wagesPerHour).toFixed(2);
             startDate = moment(empValue.startDate).format('YYYY-MM-DD');
             endDate = empValue.endDate == '' ? '' : moment(empValue.endDate).format('YYYY-MM-DD');
         }
@@ -273,7 +336,7 @@ const WagesBenefits = (() => {
         newStartDate = input.build({
             id: 'newStartDate',
             type: 'date',
-            label: '`Start Date',
+            label: 'Start Date',
             style: 'secondary',
             value: startDate,
         });
@@ -330,12 +393,20 @@ const WagesBenefits = (() => {
                 document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
                 return;
             }
+            if (hoursWeek.includes('-')) {
+                document.getElementById('weekHours').value = hoursWeek.substring(0, hoursWeek.length - 1);
+                return;
+            }
             checkRequiredFieldsOfPopup();
         });
 
         wagesHours.addEventListener('input', event => {
             hoursWages = event.target.value;
             if (hoursWages.includes('.') && (hoursWages.match(/\./g).length > 1 || hoursWages.toString().split('.')[1].length > 2)) {
+                document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
+                return;
+            }
+            if (hoursWages.includes('-')) {
                 document.getElementById('wagesHours').value = hoursWages.substring(0, hoursWages.length - 1);
                 return;
             }
@@ -347,6 +418,7 @@ const WagesBenefits = (() => {
         });
         newEndDate.addEventListener('input', event => {
             endDate = event.target.value;
+            checkRequiredFieldsOfPopup();
         });
 
         APPLY_BTN.addEventListener('click', () => {
@@ -362,6 +434,7 @@ const WagesBenefits = (() => {
         var weekPerHour = weekHours.querySelector('#weekHours');
         var wagesPerHour = wagesHours.querySelector('#wagesHours');
         var startDate = newStartDate.querySelector('#newStartDate');
+        var endDate = newEndDate.querySelector('#newEndDate');
 
         if (weekPerHour.value === '') {
             weekHours.classList.add('errorPopup');
@@ -375,7 +448,7 @@ const WagesBenefits = (() => {
             wagesHours.classList.remove('errorPopup');
         }
 
-        if (startDate.value === '') {
+        if (startDate.value === '' || (endDate.value != '' && startDate.value > endDate.value)) {
             newStartDate.classList.add('errorPopup');
         } else {
             newStartDate.classList.remove('errorPopup');
@@ -395,14 +468,17 @@ const WagesBenefits = (() => {
     }
 
     function otherChecked(event) {
-        if (event == true) {
-            otherInput.classList.remove('disabled');
-        } else {
-            otherInput.classList.add('disabled');
-            otherValue = '';
-            otherInput.querySelector('#otherInput').value = '';
-            saveWagesChecked('other', false, '');
+        if ($.session.EmploymentUpdate) {
+            if (event == true) {
+                otherInput.classList.remove('disabled');
+                saveWagesChecked('other', true, '');
+            } else {
+                otherInput.classList.add('disabled');
+                otherValue = '';
+                otherInput.querySelector('#otherInput').value = '';
+                saveWagesChecked('other', false, '');
 
+            }
         }
     }
 
@@ -412,7 +488,7 @@ const WagesBenefits = (() => {
         var messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertWagesResult.wagesId == '-1') {
-            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot saved.';
+            messagetext.innerHTML = 'This record overlaps with an existing record. Changes cannot be saved.';
             messagetext.classList.add('password-error');
         }
         else {
@@ -423,10 +499,11 @@ const WagesBenefits = (() => {
     }
 
     async function saveWagesChecked(chkboxName, event, textboxValue) {
-        let IsChacked = event == true ? 'Y' : 'N';
-        const result = await EmploymentAjax.saveCheckboxWagesAsync(chkboxName, IsChacked, PositionId, textboxValue, $.session.UserId);
-        const { saveCheckboxWagesResult } = result;
-
+        if ($.session.EmploymentUpdate) {
+            let IsChacked = event == true ? 'Y' : 'N';
+            const result = await EmploymentAjax.saveCheckboxWagesAsync(chkboxName, IsChacked, PositionId, textboxValue, $.session.UserId);
+            const { saveCheckboxWagesResult } = result;
+        }
     }
 
     return {

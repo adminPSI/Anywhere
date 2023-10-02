@@ -228,97 +228,6 @@ const assessment = (function () {
 
     return { sectionData, subsectionData, questionSetData };
   }
-  function showSaveWarning(continueCallback) {
-    const isActive = plan.getPlanActiveStatus();
-    const status = plan.getPlanStatus();
-
-    if (!$.session.planUpdate || !isActive || status === 'C') {
-      continueCallback();
-      return;
-    }
-
-    const savePopup = POPUP.build({
-      classNames: 'saveWarningPopup',
-      hideX: true,
-    });
-
-    const header = document.createElement('h3');
-    header.innerHTML = 'Click Save to save changes before leaving the Assessment.';
-
-    const btnWrap = document.createElement('div');
-    btnWrap.classList.add('btnWrap');
-
-    const saveBtn = button.build({
-      text: 'Save',
-      style: 'secondary',
-      type: 'contained',
-      callback: async e => {
-        const saveBar = PROGRESS.SPINNER.get('Saving Assessment...');
-        savePopup.insertBefore(saveBar, btnWrap);
-
-        const answersArray = mainAssessment.getAnswers();
-        const success = await updateAnswers(answersArray);
-
-        if (success !== undefined && success !== null && success !== 'error') {
-          const successDiv = successfulSave.get('Assessment Saved', true);
-          savePopup.removeChild(saveBar);
-          savePopup.insertBefore(successDiv, btnWrap);
-          POPUP.hide(savePopup);
-          continueCallback();
-        }
-      },
-    });
-
-    const continueBtn = button.build({
-      text: 'Continue Without Saving',
-      style: 'secondary',
-      type: 'contained',
-      callback: e => {
-        POPUP.hide(savePopup);
-        continueCallback();
-      },
-    });
-
-    btnWrap.appendChild(saveBtn);
-    btnWrap.appendChild(continueBtn);
-
-    savePopup.appendChild(header);
-    savePopup.appendChild(btnWrap);
-
-    POPUP.show(savePopup);
-  }
-  // BELOW IS NOW AUTOSAVE
-  async function autoSaveAssessment(continueCallback) {
-    const isActive = plan.getPlanActiveStatus();
-    const status = plan.getPlanStatus();
-
-    if (!$.session.planUpdate || !isActive || status === 'C') {
-      continueCallback();
-      return;
-    }
-
-    const savePopup = POPUP.build({
-      classNames: 'saveWarningPopup',
-      hideX: true,
-    });
-    const saveBar = PROGRESS.SPINNER.get('Saving Assessment...');
-    savePopup.appendChild(saveBar);
-    POPUP.show(savePopup);
-
-    const answersArray = mainAssessment.getAnswers();
-    const success = await updateAnswers(answersArray);
-    savePopup.removeChild(saveBar);
-
-    if (success !== undefined && success !== null && success !== 'error') {
-      const successDiv = successfulSave.get('Assessment Saved', true);
-      savePopup.appendChild(successDiv);
-
-      setTimeout(() => {
-        POPUP.hide(savePopup);
-        continueCallback();
-      }, 1500);
-    }
-  }
 
   // Data
   //------------------------------------
@@ -462,7 +371,7 @@ const assessment = (function () {
     sigAttachmentIds,
     DODDFlag,
     signatureOnly,
-    include
+    include,
   ) {
     try {
       const successMessage = await assessmentAjax.transeferPlanReportToONET({
@@ -481,7 +390,7 @@ const assessment = (function () {
         signatureOnly,
         include,
       });
-  
+
       return successMessage;
     } catch (error) {
       console.log(error.statusText);
@@ -522,19 +431,19 @@ const assessment = (function () {
       console.log(error.statusText);
     }
   }
-  async function updateAnswers(answerArray) {
-    try {
-      const success = (
-        await assessmentAjax.updateConsumerAssessmentAnswers({
-          token: $.session.Token,
-          answers: answerArray,
-        })
-      ).updateAssessmentAnswersResult;
-      return success;
-    } catch (error) {
-      console.log(error.statusText);
-    }
-  }
+  // async function updateAnswers(answerArray) {
+  //   try {
+  //     const success = (
+  //       await assessmentAjax.updateConsumerAssessmentAnswers({
+  //         token: $.session.Token,
+  //         answers: answerArray,
+  //       })
+  //     ).updateAssessmentAnswersResult;
+  //     return success;
+  //   } catch (error) {
+  //     console.log(error.statusText);
+  //   }
+  // }
   async function deleteGridRows(planId, questionSetId, rowsToDelete) {
     try {
       const success = (
@@ -561,11 +470,9 @@ const assessment = (function () {
     generateReport,
     generateReportWithAttachments,
     insertAssessmentGridRowAnswers,
-    updateAnswers,
+    // updateAnswers,
     deleteGridRows,
     transeferPlanReportToONET,
-    showSaveWarning,
-    autoSaveAssessment,
     // applicable stuff
     showApplicableWarningMessage,
     toggleIsSectionApplicable,

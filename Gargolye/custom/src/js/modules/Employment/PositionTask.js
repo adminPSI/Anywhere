@@ -4,11 +4,12 @@ const PositionTask = (() => {
     let PositionId;
     let jobTaskID;
     let PositionEntries;
-    let lastTaskNumber;
+    let LastTaskNumber;
     let consumersID;
     let name;
     let positionName;
     let selectedConsumersName;
+    let actualTaskNumber;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -18,6 +19,7 @@ const PositionTask = (() => {
         selectedConsumersName = SelectedConsumersName;
         if (PositionId != undefined) {
             PositionEntries = await EmploymentAjax.getPositionTaskEntriesAsync(PositionId);
+            LastTaskNumber = await EmploymentAjax.getLastTaskNumberAsync(PositionId);
         }
     }
 
@@ -74,15 +76,20 @@ const PositionTask = (() => {
     function buildPositionEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',  
-            columnHeadings: ['Task #', 'Description', 'Start Date', 'End Date', 'Initial Performance', 'Initial Performance Notes', 'Employer Standerd'],
+            tableId: 'employmentPositionTable',
+            columnHeadings: ['Task #', 'Description', 'Start Date', 'End Date', 'Initial Performance', 'Initial Performance Notes', 'Employer Standard'],
+            endIcon: $.session.EmploymentDelete == true ? true :false,
         };
 
         let tableData = PositionEntries.getPositionTaskEntriesResult.map((entry) => ({
-            values: [entry.task, entry.description, entry.startDate == '' ? '' : moment(entry.startDate).format('MM-DD-YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM-DD-YYYY'), entry.initialPerformance, entry.initialPerformanceNotes, entry.employeeStandard],
+            values: [entry.task, entry.description, entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YY'), entry.initialPerformance, entry.initialPerformanceNotes, entry.employeeStandard],
             attributes: [{ key: 'jobTaskId', value: entry.jobTaskId }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.jobTaskId.value)
+            },
+            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',  
+            endIconCallback: (e) => {
+                deletePositionTaskPOPUP(entry.jobTaskId);
             },
         }));
         const oTable = table.build(tableOptions);
@@ -95,9 +102,63 @@ const PositionTask = (() => {
         addPositionPopupBtn(jobTaskId)
     }
 
+    function deletePositionTaskPOPUP(jobTaskId) {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                deletePositionTask(jobTaskId, confirmPopup);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you would like to delete this Position Task?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    function deletePositionTask(jobTaskId, confirmPopup) {
+        EmploymentAjax.deletePostionTask(
+            {
+                jobTaskID: jobTaskId,
+                PositionID: PositionId,
+            },
+            function (results) {
+                if (results = 'sucess') {
+                    POPUP.hide(confirmPopup);
+                    NewEmployment.refreshEmployment(PositionId, name, positionName, selectedConsumersName, consumersID, tabPositionIndex = 2);
+                }
+            },
+        );
+    }
+
     function addPositionPopupBtn(jobTaskId) {
         if (jobTaskId == 0 || jobTaskId == undefined) {
-            task = PositionEntries.getPositionTaskEntriesResult[0].lastTaskNumber;
+            actualTaskNumber = LastTaskNumber.getLastTaskNumberResult[0] == undefined ? 1 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber;
+            task = LastTaskNumber.getLastTaskNumberResult[0] == undefined ? 1 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber > 7 ? LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber - 7 : LastTaskNumber.getLastTaskNumberResult[0].lastTaskNumber;
             description = '';
             startDate = '';
             endDate = '';
@@ -108,6 +169,7 @@ const PositionTask = (() => {
         }
         else {
             let positionValue = PositionEntries.getPositionTaskEntriesResult.find(x => x.jobTaskId == jobTaskId);
+            actualTaskNumber = positionValue.task;
             task = positionValue.task;
             description = positionValue.description;
             startDate = moment(positionValue.startDate).format('YYYY-MM-DD');
@@ -148,7 +210,7 @@ const PositionTask = (() => {
         descriptionInput = input.build({
             id: 'descriptionInput',
             type: 'text',
-            label: 'description',
+            label: 'Description',
             style: 'secondary',
             value: description,
         });
@@ -156,7 +218,7 @@ const PositionTask = (() => {
         newStartDate = input.build({
             id: 'newStartDate',
             type: 'date',
-            label: 'Strat Date',
+            label: 'Start Date',
             style: 'secondary',
             value: startDate,
         });
@@ -261,7 +323,8 @@ const PositionTask = (() => {
         });
 
         APPLY_BTN.addEventListener('click', () => {
-            saveNewWagesPopup();
+            APPLY_BTN.classList.add('disabled');
+            saveNewPositionPopup();
         });
 
         CANCEL_BTN.addEventListener('click', () => {
@@ -305,8 +368,8 @@ const PositionTask = (() => {
         dropdown.populate("initialPerformanceDropdown", initialPerformanceData, initialPerformance);
     }
 
-    async function saveNewWagesPopup() {
-        const result = await EmploymentAjax.insertPositionTaskAsync(task, description, startDate, endDate, initialPerformanceID, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, $.session.UserId);
+    async function saveNewPositionPopup() {
+        const result = await EmploymentAjax.insertPositionTaskAsync(actualTaskNumber, description, startDate, endDate, initialPerformanceID, initialPerformanceNotes, employeeStandard, PositionId, jobTaskID, $.session.UserId);
         const { insertPositionTaskResult } = result;
 
         if (insertPositionTaskResult.jobTaskId != null) {

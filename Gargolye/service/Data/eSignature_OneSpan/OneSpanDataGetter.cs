@@ -18,6 +18,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
 
         public string getSS(string token)
         {
+            if (tokenValidator(token) == false) return null;
             logger.debug("getSS ");
             List<string> list = new List<string>();
             list.Add(token);
@@ -36,6 +37,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
 
         public string getSenderInfo(string token)
         {
+            if (tokenValidator(token) == false) return null;
             logger.debug("getSenderInfo ");
             List<string> list = new List<string>();
             list.Add(token);
@@ -54,7 +56,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
 
         public string OneSpanGetSignatures(string token, long assessmentId)
         {
-
+            if (tokenValidator(token) == false) return null;
             logger.debug("OneSpanGetSignatures ");
             List<string> list = new List<string>();
             list.Add(token);
@@ -72,8 +74,46 @@ namespace Anywhere.service.Data.eSignature_OneSpan
             }
         }
 
-        public string UpdateOneSpanPlanConsentStatements(string token, string signatureId, string dateSigned, string csChangeMind, string csContact, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string dissentAreaDisagree, string dissentHowToAdress)
+        public string OneSpanGetAPIKey(string token)
         {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("OneSpanGetSignatures ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_OneSpan_GetAPIKey(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("501-cov", ex.Message + "ANYW_OneSpan_GetAPIKey(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "501-cov: error ANYW_OneSpan_GetAPIKey";
+            }
+        }
+
+        public string OneSpanGetURL(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("OneSpanGetSignatures ");
+            List<string> list = new List<string>();
+            list.Add(token);
+
+            string text = "CALL DBA.ANYW_OneSpan_GetURL(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("501-cov", ex.Message + "ANYW_OneSpan_GetURL(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "501-cov: error ANYW_OneSpan_GetURL";
+            }
+        }
+        public string UpdateOneSpanPlanConsentStatements(string token, string signatureId, string dateSigned, string csChangeMind, string csContact, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess, string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string dissentAreaDisagree, string dissentHowToAdress, string signatureImage)
+        {
+            if (tokenValidator(token) == false) return null;
             if (validateToken(token) == false) return null;
             logger.debug("UpdateConsentStatements ");
             List<string> list = new List<string>();
@@ -91,6 +131,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
             list.Add(csTechnology);
             list.Add(dissentAreaDisagree);
             list.Add(dissentHowToAdress);
+            list.Add(signatureImage);
 
             string text = "CALL DBA.ANYW_ISP_UpdateOneSpanPlanConsentStatements(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
@@ -106,6 +147,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
 
         public string OneSpanInsertPackageId(string token, string assessmentId, string packageId, string signedStatus)
         {
+            if (tokenValidator(token) == false) return null;
             if (validateToken(token) == false) return null;
             List<string> list = new List<string>();
 
@@ -128,6 +170,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
 
         public string OneSpanCheckDocumentStatus(string token, string assessmentId)
         {
+            if (tokenValidator(token) == false) return null;
             if (validateToken(token) == false) return null;
             List<string> list = new List<string>();
 
@@ -148,6 +191,7 @@ namespace Anywhere.service.Data.eSignature_OneSpan
 
         public string OneSpanUpdateDocumentSignedStatus(string token, string assessmentId, string signedStatus)
         {
+            if (tokenValidator(token) == false) return null;
             if (validateToken(token) == false) return null;
             List<string> list = new List<string>();
 
@@ -249,6 +293,18 @@ namespace Anywhere.service.Data.eSignature_OneSpan
             }
 
             return result + String.Join(",", arr) + "]";
+        }
+
+        public bool tokenValidator(string token)
+        {
+            if (token.Contains(" "))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         public Boolean validateToken(string token)

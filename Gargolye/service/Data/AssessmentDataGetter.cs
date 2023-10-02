@@ -15,6 +15,24 @@ namespace Anywhere.service.Data
         private static Loger logger = new Loger();
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
+        public string authorizationGetPageData(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("authorizationGetPageData");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Authorization_GetPageData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("539.4", ex.Message + "ANYW_Authorization_GetPageData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "539.4: error ANYW_Authorization_GetPageData";
+            }
+        }
+
         public string getConsumerPlans(string token, string consumerId)
         {
             if (tokenValidator(token) == false) return null;
@@ -101,14 +119,20 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string revisionNumber, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate, string prevPlanId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("insertConsumerPlan ");
             List<string> list = new List<string>();
             list.Add(consumerPlanId);
             list.Add(planType);
-
+            list.Add(revisionNumber);
+            list.Add(planYearStart);
+            list.Add(planYearEnd);
+            list.Add(effectiveStartDate);
+            list.Add(effectiveEndDate);
+            list.Add(reviewDate);
+            list.Add(prevPlanId);
             string text = "CALL DBA.ANYW_ISP_SwitchPlanType(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -308,6 +332,24 @@ namespace Anywhere.service.Data
             }
         }
 
+        public string getMatchSources(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getMatchSources ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_Authorization_GetMatchSources(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("8ADG", ex.Message + "ANYW_Authorization_GetMatchSources(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "8ADG: error ANYW_Authorization_GetMatchSources";
+            }
+        }
+
         public string getAllActiveVendors(string token)
         {
             if (tokenValidator(token) == false) return null;
@@ -323,6 +365,25 @@ namespace Anywhere.service.Data
             {
                 logger.error("8ADG", ex.Message + "ANYW_ISP_getAllActiveVendors(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "8ADG: error ANYW_ISP_getAllActiveVendors";
+            }
+        }
+
+        public string updateAfterSuccessfullPlanDownload(string token, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateAfterSuccessfullPlanDownload ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_Plan_UpdateAfterSuccessfullPlanDownload(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("8ADG", ex.Message + "ANYW_Plan_UpdateAfterSuccessfullPlanDownload(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "8ADG: error ANYW_Plan_UpdateAfterSuccessfullPlanDownload";
             }
         }
 

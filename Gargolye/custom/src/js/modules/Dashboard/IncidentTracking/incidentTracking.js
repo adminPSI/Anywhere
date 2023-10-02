@@ -26,45 +26,60 @@ var incidentTrackingWidget = (function () {
         incidents[r.incidentId].viewedBy += `, ${r.viewedBy}`;
       }
     });
-    
+
     var keys = Object.keys(incidents);
 
-    var data = keys.map(r => {
-      var obj = incidents[r];
-      
-      var name = obj.consumerName.split(',');
-      name = `${name[1]}, ${name[0]}`;
-      var date = UTIL.abbreviateDateYear(obj.incidentDate.split(' ')[0]);
-      var viewedOn = r.viewedOn ? true : false;
-      var orginUser =
-        obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
-      var userHasViewed = (obj.viewedBy).includes($.session.UserId) ? true : false;
-      var showBold;
+    var data = keys
+      .filter(k => {
+        var obj = incidents[k];
 
-      if (!orginUser && !userHasViewed) {
-        showBold = true;
-      }
+        if ($.session.incidentTrackingViewPerm.length !== 0) {
+          if (
+            obj.description !== '' &&
+            !$.session.incidentTrackingViewPerm.includes(obj.description.toLowerCase())
+          ) {
+            return false;
+          }
+        }
 
-      return {
-        values: [name, date, obj.incidentCategory],
-        attributes: [{ key: 'data-viewed', value: showBold }],
-        id: obj.incidentId,
-        onClick: async () => {
-          await incidentTrackingAjax.updateIncidentViewByUser({
-            token: $.session.Token,
-            incidentId: obj.incidentId,
-            userId: $.session.UserId,
-          });
+        return true;
+      })
+      .map(r => {
+        var obj = incidents[r];
 
-          incidentTracking.getDropdownData(() => {
-            setActiveModuleSectionAttribute('incidentTracking-overview');
-            UTIL.toggleMenuItemHighlight('incidenttracking');
-            actioncenter.dataset.activeModule = 'incidenttracking';
-            reviewIncident.init(obj.incidentId);
-          });
-        },
-      };
-    });
+        var name = obj.consumerName.split(',');
+        name = `${name[1]}, ${name[0]}`;
+        var date = UTIL.abbreviateDateYear(obj.incidentDate.split(' ')[0]);
+        var viewedOn = r.viewedOn ? true : false;
+        var orginUser =
+          obj.originallyEnteredBy.toLowerCase() === $.session.UserId.toLowerCase() ? true : false;
+        var userHasViewed = obj.viewedBy.includes($.session.UserId) ? true : false;
+        var showBold;
+
+        if (!orginUser && !userHasViewed) {
+          showBold = true;
+        }
+
+        return {
+          values: [name, date, obj.incidentCategory],
+          attributes: [{ key: 'data-viewed', value: showBold }],
+          id: obj.incidentId,
+          onClick: async () => {
+            await incidentTrackingAjax.updateIncidentViewByUser({
+              token: $.session.Token,
+              incidentId: obj.incidentId,
+              userId: $.session.UserId,
+            });
+
+            incidentTracking.getDropdownData(() => {
+              setActiveModuleSectionAttribute('incidentTracking-overview');
+              UTIL.toggleMenuItemHighlight('incidenttracking');
+              actioncenter.dataset.activeModule = 'incidenttracking';
+              reviewIncident.init(obj.incidentId);
+            });
+          },
+        };
+      });
     table.populate(itTable, data);
   }
 

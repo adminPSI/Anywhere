@@ -9,7 +9,6 @@
   let questionSectionSets;
   let questionSubSectionSets;
   let sectionQuestionCount;
-  let answerObj; // for saving
   let assessmentId;
   let subSectionsWithAttachments;
   let additionalSummaryData;
@@ -63,40 +62,21 @@
 
   // Utils
   //------------------------------------
-  function addAnswer(id, answer, answerRow) {
-    if (!answerObj[id]) {
-      answerObj[id] = {
-        answerId: id,
-        answerText: answer ? answer : '',
-        answerRow: answerRow ? answerRow : '',
-        skipped: 'N',
-      };
-    } else {
-      answerObj[id].answerText = answer ? answer : '';
-    }
-  }
-  function toggleAnswerSkipped(id, skipped) {
-    if (!answerObj[id]) {
-      answerObj[id] = {
-        answerId: id,
-        answerText: '',
-        answerRow: '',
-        skipped: skipped ? 'Y' : 'N',
-      };
-    } else {
-      answerObj[id].skipped = skipped ? 'Y' : 'N';
-    }
+  function addAnswer(id, answer, answerRow, skipped) {
+    assessmentAjax.updateConsumerAssessmentAnswer({
+      answerId: id,
+      answerText: answer ? answer : '',
+      answerRow: answerRow ? answerRow : '',
+      skipped: skipped ? skipped : 'N',
+    });
   }
   function clearData() {
     sections = {};
     subSections = {};
     questionSectionSets = {};
     questionSubSectionSets = {};
-    sectionQuestionCount = 0;
+    sectionQuestionCount = {};
     subSectionsWithAttachments = [];
-  }
-  function getAnswers() {
-    return Object.values(answerObj);
   }
   function getSectionQuestionCount() {
     return sectionQuestionCount;
@@ -347,18 +327,18 @@
       return;
     }
     if (e.target.id.includes('intentionallyBlankCheckbox')) {
+      const isChecked = e.target.checked;
+      const skipped = isChecked ? 'Y' : 'N';
       const isForRow = e.target.dataset.isforrow;
       // ids for associated textarea question/anwser
       let answerId = e.target.dataset.answerid;
       let setId = e.target.dataset.setid;
 
       if (isForRow === 'false') {
-        toggleAnswerSkipped(answerId, e.target.checked);
+        addAnswer(answerId, '', '', skipped);
 
         const textAreaInput = document.getElementById(answerId);
-
-        if (e.target.checked) {
-          addAnswer(answerId, '');
+        if (isChecked) {
           textAreaInput.value = '';
           input.disableInputField(textAreaInput);
         } else {
@@ -374,9 +354,10 @@
           const rowCells = row.querySelectorAll('.grid__cell');
           rowCells.forEach(cell => {
             const cellInput = cell.querySelector('.input-field__input');
-            toggleAnswerSkipped(cellInput.id, e.target.checked);
-            if (e.target.checked) {
-              addAnswer(cellInput.id, '');
+
+            addAnswer(cellInput.id, '', '', skipped);
+
+            if (isChecked) {
               cellInput.value = '';
               input.disableInputField(cellInput);
             } else {
@@ -817,7 +798,6 @@
 
     //* TEMP -REMOVE THIS ONCE HANDELED IN BACKEND
     updateRowOrderAfterDelete(grid, questionSetId);
-
     //* END TEMP
   }
   function buildGridHeaderRow() {
@@ -955,6 +935,7 @@
     let addRowBtn, deleteRowsBtn, cancelDeleteRowsBtn;
     let hasStaticText = false;
     let areAllGridAnswersEmpty = true;
+    let questionIds = [];
 
     const COL_NAME_MAP = {};
     sectionQuestionCount[sectionId][questionSetId] = {};
@@ -1081,6 +1062,7 @@
           answerStyle,
           prompt,
         } = questions[rok][qok];
+
         const questionRowId = `${questionId}${rok}`;
 
         if (answerStyle !== 'STATICTEXT') {
@@ -1097,6 +1079,8 @@
         }
 
         if (rowIndex === 0) {
+          questionIds.push(questionId);
+
           COL_NAME_MAP[questionIndex] = text;
 
           const gridHeaderCell = buildGridHeaderCell(text, prompt);
@@ -1172,9 +1156,13 @@
       grid.appendChild(gridActionRow);
 
       grid.addEventListener('click', async e => {
+        const gridRows = [...grid.querySelectorAll('.grid__body .grid__row')];
+
         const target = e.target;
 
         if (deleteRowsActive && target.classList.contains('grid__row')) {
+          if (gridRows.length === 1) return;
+
           const isSeleted = target.classList.contains('selected');
           const rowId = target.id.replace('roworder', '');
 
@@ -1198,7 +1186,7 @@
           const newRowData = await assessment.insertAssessmentGridRowAnswers(planId, questionSetId);
           const gridRow = document.createElement('div');
           gridRow.classList.add('grid__row');
-          gridRow.id = `roworder${rowOrderKeys.length}`;
+          gridRow.id = `roworder${rowOrderKeys.length + 1}`;
 
           if (isSortable) {
             var cell = document.createElement('div');
@@ -1209,19 +1197,24 @@
           }
 
           newRowData.forEach((nrd, index) => {
-            let { answerId, answerRow, answerText, answerStyle, hideOnAssessment } = nrd;
+            let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment } =
+              nrd;
             const isAnswered = answerText && answerText !== '' ? true : false;
+            const questionRowId = `${questionId}${rowOrderKeys.length + 1}`;
             if (hideOnAssessment === '1') return;
 
-            // TODO: might need to set this below
-            // sectionQuestionCount[sectionId][questionSetId][questionId].answered = false;
+            sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
+              answered: false,
+              rowOrder: rowOrderKeys.length + 1,
+            };
 
             const colName = COL_NAME_MAP[index];
 
-            if (index === 0) gridRow.id = `roworder${answerRow}`;
+            //if (index === 0) gridRow.id = `roworder${answerRow}`;
 
             const gridCell = document.createElement('div');
             gridCell.classList.add('grid__cell');
+            gridCell.id = `question${questionRowId}`;
 
             let textAreaCharLimit = 10000;
 
@@ -1339,6 +1332,24 @@
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
             deleteSelectedRows(grid, gridBody, questionSetId);
+
+            questionIds.forEach(qId => {
+              const key = `${qId}${selectedRow.id}`;
+              delete sectionQuestionCount[sectionId][questionSetId][key];
+            });
+
+            let isGridEmptyNow = true;
+
+            Object.values(sectionQuestionCount[sectionId][questionSetId]).forEach(q => {
+              if (q.answered) {
+                isGridEmptyNow = false;
+              }
+            });
+
+            if (isGridEmptyNow) {
+              grid.classList.add('unanswered');
+              toggleIntentionallyBlankCheckbox('', questionSetId, false);
+            }
           }
 
           deleteRowsActive = !deleteRowsActive;
@@ -1933,7 +1944,6 @@
     questionSectionSets = {};
     questionSubSectionSets = {};
     sectionQuestionCount = {};
-    answerObj = {};
     subSectionsWithAttachments = [];
     charLimits = planData.getAllISPcharacterLimts();
     readonly = readOnly;
@@ -1981,7 +1991,7 @@
     addQuestionSet,
     build,
     clearData,
-    getAnswers,
+    //getAnswers,
     getSectionQuestionCount,
     markUnansweredQuestions,
     toggleUnansweredQuestionFilter,

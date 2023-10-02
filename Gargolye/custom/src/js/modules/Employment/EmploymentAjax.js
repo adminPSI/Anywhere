@@ -146,7 +146,7 @@ var EmploymentAjax = (function () {
     }
 
     async function insertEmploymentPathAsync(
-        employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID
+        employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID, existingPathID
     ) {
         try {
             const result = await $.ajax({
@@ -167,7 +167,8 @@ var EmploymentAjax = (function () {
                     newEndDate: newEndDate,
                     currentEndDate: currentEndDate,
                     peopleID: peopleID,
-                    userID: userID
+                    userID: userID,
+                    existingPathID: existingPathID,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -680,6 +681,96 @@ var EmploymentAjax = (function () {
         }
     }
 
+    async function getLastTaskNumberAsync(positionID) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getLastTaskNumber/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "positionID":"' +
+                    positionID +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    function deleteWagesBenefits(dataObj, callback) {
+        $.ajax({
+            type: 'POST',
+            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/deleteWagesBenefits/',
+            data:
+                '{"token":"' +
+                $.session.Token +
+                '","wagesID":"' +
+                dataObj.wagesID +               
+                '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response) {
+                var res = response.deleteWagesBenefitsResult;
+                callback(res);
+            },
+            error: function (xhr, status, error) { },
+        });
+    }
+
+    function deleteWorkSchedule(dataObj, callback) {
+        $.ajax({
+            type: 'POST',
+            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/deleteWorkSchedule/',
+            data:
+                '{"token":"' +
+                $.session.Token +
+                '","WorkScheduleID":"' +
+                dataObj.WorkScheduleID +
+                '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response) {
+                var res = response.deleteWorkScheduleResult;
+                callback(res); 
+            },
+            error: function (xhr, status, error) { },
+        });
+    }
+
+    function deletePostionTask(dataObj, callback) {
+        $.ajax({
+            type: 'POST',
+            url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/deletePostionTask/',
+            data:
+                '{"token":"' +
+                $.session.Token +
+                '","jobTaskID":"' +
+                dataObj.jobTaskID +
+                '","PositionID":"' +
+                dataObj.PositionID +
+                '"}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (response) {
+                var res = response.deletePostionTaskResult;
+                callback(res);
+            },
+            error: function (xhr, status, error) { },
+        });
+    }
+
     return {
         getEmploymentEntriesAsync,
         getEmployersAsync,
@@ -704,5 +795,9 @@ var EmploymentAjax = (function () {
         isNewPositionEnableAsync,
         getEmployeementPathAsync,
         insertWorkScheduleAsync,
+        getLastTaskNumberAsync,
+        deleteWagesBenefits,
+        deleteWorkSchedule,
+        deletePostionTask,
     };
 })();

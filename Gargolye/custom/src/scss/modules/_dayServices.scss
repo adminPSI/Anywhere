@@ -95,6 +95,10 @@
     }
     >div:nth-child(4) {//Group
       width: 60px;
+       > svg {
+        max-width: 25px;
+        color: $red;
+      }
     }
     >div:nth-child(5) {//CI
       width: 30px;
@@ -266,6 +270,6 @@
 }
 }
 
-.btnWrap {
+.filterSelectReportBtnWrap {
   flex-flow: nowrap;
 }

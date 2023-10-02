@@ -81,7 +81,7 @@ const planOutcomes = (() => {
       if (!oc.reviews[o.outcomeReviewId]) {
         oc.reviews[o.outcomeReviewId] = {
           whatWillHappen: o.whatWillHappen,
-          whenToCheckIn: o.whenToCheckIn,
+          //whenToCheckIn: o.whenToCheckIn,
           whoReview: o.who,
           reviewIds: o.outcomeReviewId,
           whoResponsible: o.whoResponsible,
@@ -564,10 +564,10 @@ const planOutcomes = (() => {
           true,
         );
 
-        // validationCheck = await planValidation.ISPValidation(planId);
-        // assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
-        // planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
-        // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+        validationCheck = await planValidation.ISPValidation(planId);
+        assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+        planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck);
+        planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
         const ISPAlertDiv = document.getElementById('navAlertISP');
 
@@ -922,17 +922,17 @@ const planOutcomes = (() => {
 
     expTableWrap.removeChild(expTable);
 
-    // // grabs the review alert for this specific outcome
-    // const alertDiv = document.getElementById(`experienceAlert${outcomeId}`);
+    // grabs the review alert for this specific outcome
+    const alertDiv = document.getElementById(`experienceAlert${outcomeId}`);
 
-    // // retrieves new data from database
-    // validationCheck = await planValidation.ISPValidation(planId);
+    // retrieves new data from database
+    validationCheck = await planValidation.ISPValidation(planId);
 
-    // // displays or removes alert for button depending on validationCheck
-    // planValidation.experiencesValidationCheck(validationCheck, outcomeId, alertDiv);
+    // displays or removes alert for button depending on validationCheck
+    planValidation.experiencesValidationCheck(validationCheck, outcomeId, alertDiv);
 
-    // // displays or removes alerts for tabs in the navs depending on validationCheck
-    // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+    // displays or removes alerts for tabs in the navs depending on validationCheck
+    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Helpers --------
   function getColTextForWhenHowOften(freq, value, text) {
@@ -1362,21 +1362,21 @@ const planOutcomes = (() => {
         doneBtn.classList.remove('disabled');
         POPUP.hide(experiencesPopup);
 
-        // // grabs the experience alert for this specific outcome
-        // const alertDiv = document.getElementById(`experienceAlert${saveUpdateData.outcomeId}`);
+        // grabs the experience alert for this specific outcome
+        const alertDiv = document.getElementById(`experienceAlert${saveUpdateData.outcomeId}`);
 
-        // // checks for missing data
-        // validationCheck = await planValidation.ISPValidation(planId);
+        // checks for missing data
+        validationCheck = await planValidation.ISPValidation(planId);
 
-        // // displays or removes button alert depending on validationCheck
-        // planValidation.experiencesValidationCheck(
-        //   validationCheck,
-        //   saveUpdateData.outcomeId,
-        //   alertDiv,
-        // );
+        // displays or removes button alert depending on validationCheck
+        planValidation.experiencesValidationCheck(
+          validationCheck,
+          saveUpdateData.outcomeId,
+          alertDiv,
+        );
 
-        // // displays or removes alerts for tabs in the navs depending on validationCheck
-        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // displays or removes alerts for tabs in the navs depending on validationCheck
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -1574,7 +1574,9 @@ const planOutcomes = (() => {
               ),
           };
 
-          validationCheck.selectedProviders.push(respObj[0].responsibleProvider);
+          if (respObj[0].responsibleProvider) {
+            validationCheck.selectedProviders.push(respObj[0].responsibleProvider);
+          }
 
           const experiencesTable = table.build(tableOptions);
           experiencesTable.classList.add('experiencesTable');
@@ -1617,20 +1619,23 @@ const planOutcomes = (() => {
     experienceAlertDiv.classList.add(`experiencesAlert`);
 
     // creates and shows a tip when hovering over the visible alert div
-    // planValidation.createTooltip(
-    //   'At least one experience must be entered for each outcome',
-    //   experienceAlertDiv,
-    // );
+    planValidation.createTooltip(
+      'At least one experience must be entered for each outcome',
+      experienceAlertDiv,
+    );
 
     experienceBtnAlertDiv.appendChild(addExpTableBtn);
     experienceBtnAlertDiv.appendChild(experienceAlertDiv);
     experiencesDiv.appendChild(experienceBtnAlertDiv);
 
-    // // checks if alert should be visible
-    // planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv);
+    // checks if alert should be visible
+    planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv);
 
-    // // checks if providers are in paid supports providers
-    // planValidation.checkExperienceProviders(validationCheck);
+    // checks if alert should be visible
+    planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv);
+
+    // checks if providers are in paid supports providers
+    planValidation.checkExperienceProviders(validationCheck);
 
     return experiencesDiv;
   }
@@ -1641,7 +1646,7 @@ const planOutcomes = (() => {
   async function insertOutcomeReview(saveData) {
     const outcomeId = saveData.outcomeId;
     const whatWillHappen = saveData.whatWillHappen;
-    const whenToCheckIn = saveData.whenToCheckIn;
+    //const whenToCheckIn = saveData.whenToCheckIn;
     const whoReview = saveData.whoReview;
     const reviewOrder = `${saveData.reviewOrder}`;
     const contactId = parseInt(saveData.contactId);
@@ -1650,7 +1655,7 @@ const planOutcomes = (() => {
       token: $.session.Token,
       outcomeId: outcomeId,
       whatWillHappen: [whatWillHappen],
-      whenToCheckIn: [whenToCheckIn],
+      whenToCheckIn: [''],
       whoReview: [whoReview],
       reviewOrder: [reviewOrder],
       contactId: [contactId],
@@ -1664,12 +1669,12 @@ const planOutcomes = (() => {
       [
         {
           id: rowId,
-          values: [whatWillHappen, whoReview, whenToCheckIn],
+          values: [whatWillHappen, whoReview],
           onClick: () => {
             showReviewsPopup(
               {
                 whatWillHappen,
-                whenToCheckIn,
+                //whenToCheckIn,
                 whoReview,
                 reviewOrder,
                 reviewIds: reviewId,
@@ -1688,7 +1693,7 @@ const planOutcomes = (() => {
     const outcomeId = updateData.outcomeId;
     const reviewIds = updateData.reviewIds;
     const whatWillHappen = updateData.whatWillHappen;
-    const whenToCheckIn = updateData.whenToCheckIn;
+    //const whenToCheckIn = updateData.whenToCheckIn;
     const whoReview = updateData.whoReview;
     //const reviewOrder = updateData.reviewOrder;
     const contactId = updateData.contactId;
@@ -1698,7 +1703,7 @@ const planOutcomes = (() => {
       outcomeId,
       reviewIds: [reviewIds],
       whatWillHappen: [whatWillHappen],
-      whenToCheckIn: [whenToCheckIn],
+      whenToCheckIn: [''],
       whoReview: [whoReview],
       contactId: [contactId],
       // reviewOrder: [reviewOrder],
@@ -1711,14 +1716,14 @@ const planOutcomes = (() => {
       [
         {
           id: rowId,
-          values: [whatWillHappen, whoReview, whenToCheckIn],
+          values: [whatWillHappen, whoReview],
           onClick: () => {
             showReviewsPopup(
               {
                 outcomeId,
                 reviewIds,
                 whatWillHappen,
-                whenToCheckIn,
+                //whenToCheckIn,
                 whoReview,
                 contactId,
                 //reviewOrder,
@@ -1768,7 +1773,7 @@ const planOutcomes = (() => {
     const saveUpdateData = {
       outcomeId: popupData.outcomeId,
       whatWillHappen: popupData.whatWillHappen ? popupData.whatWillHappen : '',
-      whenToCheckIn: popupData.whenToCheckIn ? popupData.whenToCheckIn : '',
+      //whenToCheckIn: popupData.whenToCheckIn ? popupData.whenToCheckIn : '',
       whoReview: popupData.whoReview ? popupData.whoReview : '',
       reviewOrder: popupData.reviewOrder ? popupData.reviewOrder : '',
       contactId: popupData.contactId ? popupData.contactId : '',
@@ -1816,14 +1821,14 @@ const planOutcomes = (() => {
         saveUpdateData.whoReview = selectedOption.text;
 
         const isCaseManager = getWhoTypeById(saveUpdateData.contactId);
-        const whenToCheckInInputField = whenToCheckInInput.querySelector('.input-field__input');
-        if (isCaseManager) {
-          whenToCheckInInputField.value = 'Monthly';
-          saveUpdateData.whenToCheckIn = 'Monthly';
-        } else {
-          whenToCheckInInputField.value = '';
-          saveUpdateData.whenToCheckIn = '';
-        }
+        //const whenToCheckInInputField = whenToCheckInInput.querySelector('.input-field__input');
+        // if (isCaseManager) {
+        //   whenToCheckInInputField.value = 'Monthly';
+        //   saveUpdateData.whenToCheckIn = 'Monthly';
+        // } else {
+        //   whenToCheckInInputField.value = '';
+        //   saveUpdateData.whenToCheckIn = '';
+        // }
 
         if (saveUpdateData.whoReview === '' || saveUpdateData.whoReview === '%') {
           whoReviewDropdown.classList.add('error');
@@ -1835,16 +1840,16 @@ const planOutcomes = (() => {
       },
     });
     // When To Check In
-    const whenToCheckInInput = input.build({
-      label: 'When To Check In?',
-      type: 'text',
-      style: 'secondary',
-      value: saveUpdateData.whenToCheckIn,
-      charLimit: charLimits.whenToCheckIn,
-      forceCharLimit: true,
-      attributes: [{ key: 'tabindex', value: '-1' }],
-    });
-    whenToCheckInInput.classList.add('disabled');
+    // const whenToCheckInInput = input.build({
+    //   label: 'When To Check In?',
+    //   type: 'text',
+    //   style: 'secondary',
+    //   value: saveUpdateData.whenToCheckIn,
+    //   charLimit: charLimits.whenToCheckIn,
+    //   forceCharLimit: true,
+    //   attributes: [{ key: 'tabindex', value: '-1' }],
+    // });
+    // whenToCheckInInput.classList.add('disabled');
 
     const doneBtn = button.build({
       text: isNew ? 'Save' : 'Update',
@@ -1865,17 +1870,17 @@ const planOutcomes = (() => {
         doneBtn.classList.remove('disabled');
         POPUP.hide(reviewsPopup);
 
-        // // grabs the review alert for this specific outcome
-        // const alertDiv = document.getElementById(`reviewsAlert${saveUpdateData.outcomeId}`);
+        // grabs the review alert for this specific outcome
+        const alertDiv = document.getElementById(`reviewsAlert${saveUpdateData.outcomeId}`);
 
-        // // checks for missing data
-        // validationCheck = await planValidation.ISPValidation(planId);
+        // checks for missing data
+        validationCheck = await planValidation.ISPValidation(planId);
 
-        // // displays or removes button alert depending on validationCheck
-        // planValidation.reviewsValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
+        // displays or removes button alert depending on validationCheck
+        planValidation.reviewsValidationCheck(validationCheck, saveUpdateData.outcomeId, alertDiv);
 
-        // // displays or removes alerts for tabs in the navs depending on validationCheck
-        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        // displays or removes alerts for tabs in the navs depending on validationCheck
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     const cancelBtn = button.build({
@@ -1920,14 +1925,14 @@ const planOutcomes = (() => {
     if (isReadOnly) {
       whatWillHappenInput.classList.add('disabled');
       whoReviewDropdown.classList.add('disabled');
-      whenToCheckInInput.classList.add('disabled');
+      //whenToCheckInInput.classList.add('disabled');
       doneBtn.classList.add('disabled');
       deleteBtn.classList.add('disabled');
     }
 
     reviewsPopup.appendChild(whatWillHappenInput);
     reviewsPopup.appendChild(whoReviewDropdown);
-    reviewsPopup.appendChild(whenToCheckInInput);
+    //reviewsPopup.appendChild(whenToCheckInInput);
     reviewsPopup.appendChild(btnWrap);
 
     //populateReviewsWhoDropdown(whoReviewDropdown, saveUpdateData.contactId);
@@ -1948,7 +1953,7 @@ const planOutcomes = (() => {
       columnHeadings: [
         `What will progress look like? How will we know it's happening?`,
         'Who?',
-        'When to check in?',
+        //'When to check in?',
       ],
       sortable: isSortable,
       onSortCallback: async sortData => {
@@ -1984,17 +1989,17 @@ const planOutcomes = (() => {
         .map(td => {
           const whatWillHappen = td.whatWillHappen;
           const whoReview = td.whoReview;
-          const whenToCheckIn = td.whenToCheckIn;
+          //const whenToCheckIn = td.whenToCheckIn;
           const rowId = `reviews${td.reviewIds}`;
 
           return {
             id: rowId,
-            values: [whatWillHappen, whoReview, whenToCheckIn],
+            values: [whatWillHappen, whoReview],
             onClick: () =>
               showReviewsPopup(
                 {
                   whatWillHappen: whatWillHappen,
-                  whenToCheckIn: whenToCheckIn,
+                  //whenToCheckIn: whenToCheckIn,
                   whoReview: whoReview,
                   reviewOrder: td.reviewOrder + 1,
                   reviewIds: td.reviewIds,
@@ -2019,17 +2024,17 @@ const planOutcomes = (() => {
     reviewAlertDiv.id = `reviewsAlert${outcomeId}`;
     reviewAlertDiv.classList.add('reviewsAlert');
 
-    // // creates and shows a tip when hovering over the visible alert div
-    // planValidation.createTooltip(
-    //   'At least one review must be entered for each outcome',
-    //   reviewAlertDiv,
-    // );
+    // creates and shows a tip when hovering over the visible alert div
+    planValidation.createTooltip(
+      'At least one review must be entered for each outcome',
+      reviewAlertDiv,
+    );
 
     reviewsBtnAlertDiv.appendChild(addRowBtn);
     reviewsBtnAlertDiv.appendChild(reviewAlertDiv);
     reviewsDiv.appendChild(reviewsBtnAlertDiv);
 
-    // planValidation.reviewsValidationCheck(validationCheck, outcomeId, reviewAlertDiv);
+    planValidation.reviewsValidationCheck(validationCheck, outcomeId, reviewAlertDiv);
 
     return reviewsDiv;
   }
@@ -2105,8 +2110,12 @@ const planOutcomes = (() => {
             POPUP.hide(deleteWarningPopup);
             checkIfSummaryRequired();
 
-            // validationCheck = await planValidation.ISPValidation(planId);
-            // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+            validationCheck = await planValidation.ISPValidation(planId);
+            planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+
+            assessmentPlanValidation = await planValidation.getAssessmentValidation(planId);
+            planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+            planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
           },
         });
         const noBtn = button.build({
@@ -2144,9 +2153,9 @@ const planOutcomes = (() => {
       // dropdownId: 'assessmentAreaDropdown',
       label: 'Assessment Area',
       style: 'secondary',
-      callback: (e, selectedOption) => {
+      callback: async (e, selectedOption) => {
         outcomesUpdateData.sectionId = selectedOption.value;
-        updateOutcome({
+        await updateOutcome({
           status: outcomesUpdateData.status,
           carryOverReason: outcomesUpdateData.carryOverReason,
           outcome: outcomesUpdateData.outcome,
@@ -2156,6 +2165,10 @@ const planOutcomes = (() => {
           outcomeId: outcomesUpdateData.outcomeId,
           sectionId: outcomesUpdateData.sectionId,
         });
+
+        assessmentPlanValidation = await planValidation.getAssessmentValidation(planId);
+        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
     // Status
@@ -2455,7 +2468,9 @@ const planOutcomes = (() => {
       isSortable = isReadOnly ? false : true;
     }
 
-    // validationCheck = await planValidation.ISPValidation(planId);
+    validationCheck = await planValidation.ISPValidation(planId);
+
+    const planOutcomesData = validationCheck.outcomesData;
 
     //const planOutcomesData = validationCheck.outcomesData;
 

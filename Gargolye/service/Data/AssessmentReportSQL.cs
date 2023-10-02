@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Anywhere.service.Data
 {
@@ -12,14 +13,22 @@ namespace Anywhere.service.Data
         StringBuilder sb = new StringBuilder();
         Data.Sybase di = new Data.Sybase();
 
-        public DataSet AssesmentHeader(long AssesmentID)
+        public DataSet AssesmentHeader(long AssesmentID, Boolean Advisor = false)
         {
             sb.Clear();
             sb.Append("SELECT   DBA.anyw_isp_consumer_plans.plan_type, DBA.anyw_isp_consumer_plans.plan_year_start, ");
             sb.Append("DBA.anyw_isp_consumer_plans.plan_year_end, DBA.anyw_isp_consumer_plans.active, ");
             sb.Append("DBA.anyw_isp_consumer_plans.revision_number, DBA.anyw_isp_consumer_plans.plan_status, ");
             sb.Append("DBA.People.Last_Name, DBA.People.First_Name, DBA.anyw_isp_consumer_plans.effective_start, ");
-            sb.Append("DBA.People.Middle_Name, DBA.People.generation ");
+            sb.Append("DBA.People.Middle_Name, ");
+            if (Advisor == true)
+            {
+                sb.Append("'' AS generation ");
+            }
+            else
+            {
+                sb.Append("DBA.People.generation ");
+            }
             sb.Append("FROM     DBA.anyw_isp_consumer_plans ");
             sb.Append("LEFT OUTER JOIN DBA.People ON DBA.anyw_isp_consumer_plans.consumer_id = DBA.People.ID ");
             sb.AppendFormat("WHERE DBA.anyw_isp_consumer_plans.isp_consumer_plan_id = {0} ", AssesmentID);
@@ -30,7 +39,7 @@ namespace Anywhere.service.Data
         public DataSet AssesmentAnswers(long AssesmentID, bool Assessment)
         {
             sb.Clear();
-            sb.Append("SELECT  DBA.anyw_isp_consumer_assessment_answers.answer, DBA.anyw_isp_assessment_sections.section_title, ");
+            sb.Append("SELECT  LTRIM(RTRIM(DBA.anyw_isp_consumer_assessment_answers.answer)) AS answer, DBA.anyw_isp_assessment_sections.section_title, ");
             sb.Append("DBA.anyw_isp_assessment_sections.section_order, DBA.anyw_isp_assessment_subsections.subsection_title, ");
             sb.Append("DBA.anyw_isp_assessment_subsections.subsection_order, DBA.anyw_isp_assessment_questions.isp_assessment_question_id, ");
             sb.Append("DBA.anyw_isp_assessment_questions.question_text, DBA.anyw_isp_assessment_questions.question_order, ");
@@ -94,13 +103,23 @@ namespace Anywhere.service.Data
                 {
                     if (row["answer"].ToString() != string.Empty)
                     {
-                        sb.Clear();
-                        sb.Append("SELECT  DBA.People.Last_Name, DBA.People.First_Name ");
-                        sb.Append("FROM  DBA.People ");
-                        sb.AppendFormat("WHERE DBA.People.id = {0} ", row["answer"]);
-                        DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
-                        string Name = string.Format("{0}, {1}", row2["Last_Name"], row2["First_Name"]);
-                        row["answer"] = Name;
+                        if (row["answer"].ToString() != "0")
+                        {
+                            sb.Clear();
+                            sb.Append("SELECT  DBA.People.Last_Name, DBA.People.First_Name ");
+                            sb.Append("FROM  DBA.People ");
+                            sb.AppendFormat("WHERE DBA.People.id = {0} ", row["answer"]);
+                            DataSet dsName = di.SelectRowsDS(sb.ToString());
+                            if (dsName.Tables.Count > 0)
+                            {
+                                if (dsName.Tables[0].Rows.Count > 0)
+                                {
+                                    DataRow row2 = dsName.Tables[0].Rows[0];
+                                    string Name = string.Format("{0}, {1}", row2["Last_Name"], row2["First_Name"]);
+                                    row["answer"] = Name;
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -235,26 +254,28 @@ namespace Anywhere.service.Data
                 {
                     if (row["answer"].ToString() != string.Empty)
                     {
-                        if (row["answer"].ToString().ToUpper().Contains("V"))
+                        if (row["answer"].ToString() != "0")
                         {
-                            sb.Clear();
-                            sb.AppendFormat("SELECT  DBA.{0}.Name ", Vendor);
-                            sb.AppendFormat("FROM  DBA.{0} ", Vendor);
-                            sb.AppendFormat("WHERE DBA.{0}.Vendor_ID = {1} ", Vendor, row["answer"].ToString().ToUpper().Replace("V", ""));
-                            DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
-                            name = string.Format("{0}", row2["Name"].ToString());
-                        }
+                            if (row["answer"].ToString().ToUpper().Contains("V"))
+                            {
+                                sb.Clear();
+                                sb.AppendFormat("SELECT  DBA.{0}.Name ", Vendor);
+                                sb.AppendFormat("FROM  DBA.{0} ", Vendor);
+                                sb.AppendFormat("WHERE DBA.{0}.Vendor_ID = {1} ", Vendor, row["answer"].ToString().ToUpper().Replace("V", ""));
+                                DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
+                                name = string.Format("{0}", row2["Name"].ToString());
+                            }
 
-                        else
-                        {
-                            sb.Clear();
-                            sb.Append("SELECT  DBA.People.Last_Name, DBA.People.First_Name ");
-                            sb.Append("FROM  DBA.People ");
-                            sb.AppendFormat("WHERE DBA.People.id = {0} ", row["answer"]);
-                            DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
-                            name = string.Format("{0}, {1}", row2["Last_Name"], row2["First_Name"]);
+                            else
+                            {
+                                sb.Clear();
+                                sb.Append("SELECT  DBA.People.Last_Name, DBA.People.First_Name ");
+                                sb.Append("FROM  DBA.People ");
+                                sb.AppendFormat("WHERE DBA.People.id = {0} ", row["answer"]);
+                                DataRow row2 = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0];
+                                name = string.Format("{0}, {1}", row2["Last_Name"], row2["First_Name"]);
+                            }
                         }
-
                         row["answer"] = name;
                     }
                 }
@@ -459,50 +480,64 @@ namespace Anywhere.service.Data
 
         }
 
-        public DataSet ISPSignatures(long AssesmentID)
+        public DataSet ISPSignatures(long AssesmentID, Boolean Advisor = false)
         {
             sb.Clear();
             sb.Append("SELECT ISP_Consumer_Signature_ID, ISP_Consumer_Plan_ID, Team_Member, Name, Relationship, Participated, ");
             sb.Append("Signature, Date_Signed, Dissent_Area_Disagree, Dissent_How_To_Address, Dissent_Date, dba.ANYW_ISP_Signatures.User_ID, ");
             sb.Append("dba.ANYW_ISP_Signatures.Last_Update, Signature_Order, ");
-            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type ");
+            sb.Append("DBA.People.First_Name + ' ' + DBA.People.Last_Name AS Name2, dba.ANYW_ISP_Signatures.ISP_Signature_Type, ");
+            if (Advisor == false)
+            {
+                sb.Append("DBA.People.Generation, ");
+            }
+            if (Advisor == true)
+            {
+                sb.Append("'' AS Generation, ");
+            }
+            sb.Append("DBA.People.First_Name, DBA.People.Last_Name, DBA.People.Middle_Name, DBA.People.Last_Name ");
             sb.Append("FROM dba.ANYW_ISP_Signatures ");
             sb.Append("LEFT OUTER JOIN dba.People ON dba.ANYW_ISP_Signatures.ID = dba.People.ID ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Signatures.ISP_Consumer_Plan_ID = {0} ", AssesmentID); //08/17/2021
-            DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
-            //int x = 0;
-            foreach (DataRow row in dt.Rows)
+            DataSet ds = di.SelectRowsDS(sb.ToString());
+
+            if (ds.Tables.Count > 0)
             {
-                if (row["Signature"].ToString() != string.Empty)
+                DataTable dt = ds.Tables[0];
+                foreach (DataRow row in dt.Rows)
                 {
-                    var ms = new MemoryStream();
-                    byte[] ba = (byte[])row["Signature"];
-                    ms.Write(ba, 0, ba.Length);
-                    ms.Position = 0L;
+                    if (row["Signature"].ToString() != string.Empty)
+                    {
+                        var ms = new MemoryStream();
+                        byte[] ba = (byte[])row["Signature"];
+                        ms.Write(ba, 0, ba.Length);
+                        ms.Position = 0L;
 
-                    System.Drawing.Image i = System.Drawing.Image.FromStream(ms);
-                    var bm = new System.Drawing.Bitmap(i.Size.Width, i.Size.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-                    var g = System.Drawing.Graphics.FromImage(bm);
-                    g.Clear(System.Drawing.Color.White);
-                    g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
-                    g.DrawImage(i, 0, 0);
-                    var ms2 = new MemoryStream();
-                    bm.Save(ms2, System.Drawing.Imaging.ImageFormat.Bmp);
-                    ms2.Position = 0L;
-                    ba = null;
-                    ba = ms2.ToArray();
-                    row["Signature"] = ba;
+                        System.Drawing.Image i = System.Drawing.Image.FromStream(ms);
+                        var bm = new System.Drawing.Bitmap(i.Size.Width, i.Size.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                        var g = System.Drawing.Graphics.FromImage(bm);
+                        g.Clear(System.Drawing.Color.White);
+                        g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
+                        g.DrawImage(i, 0, 0);
+                        var ms2 = new MemoryStream();
+                        bm.Save(ms2, System.Drawing.Imaging.ImageFormat.Bmp);
+                        ms2.Position = 0L;
+                        ba = null;
+                        ba = ms2.ToArray();
+                        row["Signature"] = ba;
 
-                    //iImage = i;
+                        //iImage = i;
 
-                    ms.Close();
-                    ms.Dispose();
-                    ms2.Close();
-                    ms2.Dispose();
+                        ms.Close();
+                        ms.Dispose();
+                        ms2.Close();
+                        ms2.Dispose();
+                    }
                 }
             }
+            return ds;
             //MessageBox.Show("ISPSignatures");
-            return dt.DataSet;
+
         }
 
         public DataSet Dissenting(long AssesmentID, Boolean OneSpan)
@@ -722,7 +757,8 @@ namespace Anywhere.service.Data
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.ISP_Consumer_Contact_Id, DBA.ANYW_ISP_Consumer_Contact_Important_People.Type, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Name, DBA.ANYW_ISP_Consumer_Contact_Important_People.Relationship, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Address, DBA.ANYW_ISP_Consumer_Contact_Important_People.Phone, ");
-            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Row_Order, DBA.ANYW_ISP_Consumer_Contact_Important_People.Email ");
+            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Row_Order, DBA.ANYW_ISP_Consumer_Contact_Important_People.Email, ");
+            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.People_Type_Other  ");
             sb.Append("FROM     DBA.ANYW_ISP_Consumer_Contact_Important_People ");
             sb.Append("LEFT OUTER JOIN DBA.ANYW_ISP_Consumer_Contact ON DBA.ANYW_ISP_Consumer_Contact_Important_People.ISP_Consumer_Contact_Id = DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Contact_Id ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
@@ -755,7 +791,8 @@ namespace Anywhere.service.Data
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.ISP_Consumer_Contact_Id, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Type, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.Name, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Address, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.Phone, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Schedule, ");
-            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.Acuity, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Row_Order ");
+            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_Places.Acuity, DBA.ANYW_ISP_Consumer_Contact_Important_Places.Row_Order, ");
+            sb.Append("ANYW_ISP_Consumer_Contact_Important_Places.Places_Type_Other ");
             sb.Append("FROM DBA.ANYW_ISP_Consumer_Contact ");
             sb.Append("RIGHT OUTER JOIN DBA.ANYW_ISP_Consumer_Contact_Important_Places ON DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Contact_Id = DBA.ANYW_ISP_Consumer_Contact_Important_Places.ISP_Consumer_Contact_Id ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
@@ -788,8 +825,11 @@ namespace Anywhere.service.Data
             sb.Append("LEFT OUTER JOIN DBA.People ON DBA.anyw_isp_consumer_plans.consumer_id = DBA.People.ID ");
             sb.AppendFormat("WHERE DBA.anyw_isp_consumer_plans.isp_consumer_plan_id = {0} ", AssesmentID);
             DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+
+            // 0= Demographics 1=Custom Photo Photo 2=No Photo
             if (dt.Rows.Count > 0)
             {
+                string fPath = string.Empty;
                 DataRow row = dt.Rows[0];
                 if (row["Use_Consumer_Plan_Image"].ToString() == "1") //Custom
                 {
@@ -799,13 +839,37 @@ namespace Anywhere.service.Data
                         ba = null;
                     }
                 }
-                else if (row["Use_Consumer_Plan_Image"].ToString() == "2") //No Picture
+                else if (row["Use_Consumer_Plan_Image"].ToString() == string.Empty || row["Use_Consumer_Plan_Image"].ToString() == "2") //null Value
                 {
                     ba = null;
+
+                    sb.Clear();
+                    sb.Append("SELECT   setting ");
+                    sb.Append("FROM sysoption ");
+                    sb.AppendFormat("WHERE {0}  = 'Anywhere_Portrait_Path' ", @"""option""");
+                    if (di.SelectRowsDS(sb.ToString()).Tables[0].Rows.Count > 0)
+                    {
+                        fPath = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0]["setting"].ToString();
+                        if (fPath.Contains("portraits\\"))
+                        {
+                            fPath = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0]["setting"].ToString().Replace("portraits\\", "new-icons\\default.jpg");
+                        }
+                        if (fPath.Contains("portraits"))
+                        {
+                            fPath = di.SelectRowsDS(sb.ToString()).Tables[0].Rows[0]["setting"].ToString().Replace("portraits", "new-icons\\default.jpg");
+                        }
+                        row["PlanPicture"] = 0;
+                    }
+
+                    if (File.Exists(fPath))
+                    {
+                        ba = File.ReadAllBytes(fPath);
+                    }
                 }
-                else
+
+                else if (row["Use_Consumer_Plan_Image"].ToString() == "0")
                 {
-                    string fPath = string.Empty;
+
                     sb.Clear();
                     sb.Append("SELECT   setting ");
                     sb.Append("FROM sysoption ");
@@ -835,7 +899,6 @@ namespace Anywhere.service.Data
                     };
                 }
 
-
                 if (ba != null)
 
                 {
@@ -862,6 +925,10 @@ namespace Anywhere.service.Data
                     ms.Dispose();
                     ms2.Close();
                     ms2.Dispose();
+                }
+                else
+                {
+                    row["PlanPicture"] = null;
                 }
             }
             //MessageBox.Show("ISPIntroduction");
@@ -891,6 +958,7 @@ namespace Anywhere.service.Data
             else
                 return 1;
         }
+
 
 
 

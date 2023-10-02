@@ -49,7 +49,7 @@ const Employment = (() => {
         selectedConsumersId = selectedConsumers[0].id;
         $.session.consumerId = selectedConsumersId;
         const name = (
-            await ConsumerFinancesAjax.getConsumerNameByID({
+            await ConsumerFinancesAjax.getConsumerNameByID({ 
                 token: $.session.Token,
                 consumerId: selectedConsumersId,
             })
@@ -90,7 +90,7 @@ const Employment = (() => {
             tableId: 'singleEntryAdminReviewTable',
             headline: 'Consumer: ' + selectedConsumersName,
             columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing'],
-            endIcon: $.session.OODView == true ? true : false,
+            endIcon: false, //ToDo   //$.session.OODView == true ? true : false, 
         };
 
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
@@ -109,12 +109,12 @@ const Employment = (() => {
         additionalInformation.style = 'margin-top: -10px; width: 200px;';
 
         let tableData = EmploymentsEntries.getEmploymentEntriesResult.map((entry) => ({
-            values: [entry.employer, entry.position, entry.positionStartDate == '' ? '' : moment(entry.positionStartDate).format('MM-DD-YYYY'), entry.positionEndDate == '' ? '' : moment(entry.positionEndDate).format('MM-DD-YYYY'), entry.jobStanding],
+            values: [entry.employer, entry.position, entry.positionStartDate == '' ? '' : moment(entry.positionStartDate).format('M/D/YYYY'), entry.positionEndDate == '' ? '' : moment(entry.positionEndDate).format('M/D/YYYY'), entry.jobStanding],
             attributes: [{ key: 'positionId', value: entry.positionId }, { key: 'PeopleName', value: entry.PeopleName }],
             onClick: (e) => {
                 handleAccountTableEvents(e)
             },
-            endIcon: $.session.OODView == true ? additionalInformation.outerHTML : '',
+            endIcon: $.session.OODView == true ? '' : '', //ToDo  //additionalInformation.outerHTML : '', 
             endIconCallback: e => {
                 // TODO
                 //buildChangePasswordPopup(userID, FirstName, LastName); 
@@ -139,7 +139,7 @@ const Employment = (() => {
             style: 'secondary',
             type: 'contained',
         });
-    }
+    } 
 
     // build display of Account and button
     function buildHeaderButton(consumer) {
@@ -201,7 +201,7 @@ const Employment = (() => {
             token: $.session.Token,
             employer: '%',
             position: '%',
-            positionStartDate: UTIL.formatDateFromDateObj(dates.subDays(new Date(), 365)),
+            positionStartDate: '1900-01-01', // UTIL.formatDateFromDateObj(dates.subDays(new Date('1/1/1990'))),  
             positionEndDate: null,// UTIL.getTodaysDate(),           
             jobStanding: '%',
         }
@@ -225,8 +225,8 @@ const Employment = (() => {
         }
 
         filteredBy.style.maxWidth = '100%';
-        const startDate = moment(filterValues.positionStartDate, 'YYYY-MM-DD').format('M/D/YYYY');
-        const endDate = filterValues.positionEndDate == null ? 'none' : moment(filterValues.positionEndDate, 'YYYY-MM-DD').format('M/D/YYYY');
+        const startDate = moment(filterValues.positionStartDate, 'YYYY-MM-DD').format('MM/DD/YYYY');
+        const endDate = filterValues.positionEndDate == null ? 'none' : moment(filterValues.positionEndDate, 'YYYY-MM-DD').format('MM/DD/YYYY');
 
         filteredBy.innerHTML = `<div class="filteredByData">
 			<p>                         

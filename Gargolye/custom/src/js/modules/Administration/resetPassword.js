@@ -23,10 +23,10 @@ const resetPassword = (function () {
         DOM.clearActionCenter();
         const topNav = buildRosterTopNav();
         userTable = buildTable();
-
-        DOM.ACTIONCENTER.appendChild(topNav);
+        
+        DOM.ACTIONCENTER.appendChild(topNav);          
         DOM.ACTIONCENTER.appendChild(userTable);
-
+       
         SEARCH_BTN.addEventListener('click', event => {
             SEARCH_WRAP.classList.toggle('searchOpen');
             SEARCH_INPUT.value = '';
@@ -38,10 +38,12 @@ const resetPassword = (function () {
         });
         isChecked = $.session.isActiveUsers;
         loadReviewPage(isChecked);
+        document.getElementById('searchBtn').click();  
     }
 
     function buildSearchBtn() {
         return button.build({
+            id: 'searchBtn',
             text: 'Search',
             icon: 'search',
             style: 'secondary',
@@ -145,7 +147,7 @@ const resetPassword = (function () {
 
         var confirmMessage = document.createElement('div');
         confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
-
+      
         changePasswordPopup.appendChild(header);
         changePasswordPopup.appendChild(headerSpace);
         changePasswordPopup.appendChild(newPasswordInput);
@@ -155,7 +157,8 @@ const resetPassword = (function () {
         changePasswordPopup.appendChild(btnWrap);
         setupChangePasswordEvents();
         POPUP.show(changePasswordPopup);
-
+        document.getElementById('newPasswordInput').focus();      
+     
         strongPassword = $.session.strongPassword;
         if (strongPassword === 'Y') {
             //is password strong?            
@@ -386,7 +389,15 @@ const resetPassword = (function () {
 
             additionalInformation.style = 'margin-top: -10px; width: 200px;';
             const activeCheckbox = buildActiveChkBox(Active);
-            activeCheckbox.style = "padding-top: 2px; margin-left: 10px;";   
+            activeCheckbox.style = "padding-top: 2px; margin-left: 10px;";    
+            if ($.session.ResetPasswordUpdate) {  
+                activeCheckbox.classList.remove('disabled'); 
+                additionalInformation.classList.remove('disabled');
+            } else {
+                activeCheckbox.classList.add('disabled');
+                additionalInformation.classList.add('disabled');
+            }
+
             return {
                 id: userID,
                 endIcon: additionalInformation.outerHTML,
@@ -400,10 +411,14 @@ const resetPassword = (function () {
                     { key: 'data-consumer-id', value: userID },
                 ],
                 endIconCallback: e => {
-                    buildChangePasswordPopup(userID, FirstName, LastName);
+                    if ($.session.ResetPasswordUpdate) {
+                        buildChangePasswordPopup(userID, FirstName, LastName);
+                    }
                 },
                 secondendIconCallback: e => {
-                    setCheckUpdateUserStatus(Active, userID);
+                    if ($.session.ResetPasswordUpdate) {
+                        setCheckUpdateUserStatus(Active, userID); 
+                    } 
                 },
             };
         });
@@ -417,7 +432,7 @@ const resetPassword = (function () {
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('roster-top-nav');
 
-        SEARCH_BTN = buildSearchBtn();
+        SEARCH_BTN = buildSearchBtn(); 
         INACTIVE_CHKBOX = buildInactiveChkBox();
 
         // custom search stuff
@@ -428,7 +443,7 @@ const resetPassword = (function () {
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
 
-        INACTIVE_CHKBOX.style = 'margin-right: 400px;padding-bottom: 16px';
+        INACTIVE_CHKBOX.classList.add('chkBoxStyle');  
         var wrap1 = document.createElement('div');
         wrap1.classList.add('btnWrap');
         wrap1.appendChild(INACTIVE_CHKBOX);

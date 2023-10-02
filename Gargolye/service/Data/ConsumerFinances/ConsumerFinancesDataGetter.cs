@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.service.Data.ConsumerFinances
 {
@@ -60,13 +61,13 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public string getPayees(DistributedTransaction transaction, string UserId)
+        public string getPayees(DistributedTransaction transaction, string consumerId)
         {
             try
             {
                 logger.debug("getPayees");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
-                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, UserId);
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@ConsumerID", DbType.String, consumerId);
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getPayees(?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
@@ -145,24 +146,24 @@ namespace Anywhere.service.Data.ConsumerFinances
                 logger.error("WFDG", ex.Message + "ANYW_getCategoriesSubCategoriesByPayee()");
                 throw ex;
             }
-
         }
 
-        public string insertPayee(string payeeName, string address1, string address2, string city, string state, string zipcode, string userId, DistributedTransaction transaction)
+        public string insertPayee(string payeeName, string address1, string address2, string city, string state, string zipcode, string userId, string consumerId, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("insertPayee");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[7];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[8];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@payeeName", DbType.String, payeeName);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@address1", DbType.String, address1);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@address2", DbType.String, address2);
-                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@city", DbType.String, city);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@city", DbType.String, city); 
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@state", DbType.String, state);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@zipcode", DbType.String, zipcode);
                 args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@ConsumerID", DbType.String, consumerId);
 
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertPayee(?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertPayee(?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {

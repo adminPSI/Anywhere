@@ -1,20 +1,12 @@
 const consumerFinanceAttachment = (() => {
-    let attachments;
-    let registerID;
-    let IsDisabledBtn;
-    let attachmentArray = [];
-    /** Class for attachments in Plan Module */
+    let attachments = [];
     class ConsumerFinanceAttachment {
-        /**
-         * Create a new attachment instance
-         * @param {[string]} header Header for Attachment Popup
-         * @param {string} regId question ID the attachment button is assoicated with
-         * @param {string} assessmentId Assessment ID
-         */
-        constructor(header, regId, IsDisabled) {
+
+        constructor(header, regId, IsDisabled, attachID) {
             this.attachmentsForQuestion = header;
             this.regId = regId;
             this.IsDisabledBtn = IsDisabled;
+            this.attachID = attachID;
         }
 
         buildAttachmentButton() {
@@ -41,17 +33,9 @@ const consumerFinanceAttachment = (() => {
             const attachmentsToDelete = [];
             const attachmentsAdded = [];
 
-            // PERMISSIONS
-            let ro;
-            const planStatus = plan.getPlanStatus();
-            const planActiveStatus = plan.getPlanActiveStatus();
-
-            ro = false;
-            // =========================
-            // UTIL FUNCTIONS
-            // =============================
             // Adds attachments to the existing attachments section in popup
             function populateExistingAttachments() {
+
                 const header = document.createElement('h5');
                 header.innerText = 'Existing Attachments:';
                 reviewAttachmentList.appendChild(header);
@@ -69,7 +53,7 @@ const consumerFinanceAttachment = (() => {
                     });
                     const file = document.createElement('p');
                     file.innerText = attachment.description;
-                    if (!ro) fileContainer.appendChild(removeAttachmentBtn);
+                    fileContainer.appendChild(removeAttachmentBtn);
                     fileContainer.appendChild(file);
                     file.addEventListener('click', event => {
                         const attachmentId = event.target.parentElement.id;
@@ -159,12 +143,15 @@ const consumerFinanceAttachment = (() => {
                     });
 
                     const attSaveRes = await Promise.all(attachmentSaveArray);
+                    let count = 0;
                     attSaveRes.forEach(att => {
                         attachmentsAdded.push(att);
                     });
-
-                    POPUP.hide(popup);
-                    NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded)
+                    attachmentArray.forEach(att => {
+                        att.attachmentID = attSaveRes[count];
+                        attachments.push(att);
+                        count++;
+                    });
 
                 }
                 // DELETE ATTACHMENTS
@@ -180,7 +167,7 @@ const consumerFinanceAttachment = (() => {
                 }
 
                 let attachmentProms = [];
-
+                let attachmentArray = [];
                 attachmentInputs.forEach(inputElement => {
                     if (inputElement.value === '') {
                         return;
@@ -192,6 +179,8 @@ const consumerFinanceAttachment = (() => {
                         const attachmentType = attachmentFile.name.split('.').pop();
                         attachmentObj.description = attachmentName;
                         attachmentObj.type = attachmentType;
+                        attachmentObj.attachmentID = 0;
+                        attachmentObj.registerID = 0;
                         // new Response(file) was added for Safari compatibility
                         new Response(attachmentFile).arrayBuffer().then(res => {
                             attachmentObj.arrayBuffer = res;
@@ -207,7 +196,7 @@ const consumerFinanceAttachment = (() => {
                 await saveAttachmentsToDB();
 
                 POPUP.hide(popup);
-                NewEntryCF.buildNewEntryForm(regId, attachmentArray, attachmentsAdded)
+                //NewEntryCF.buildNewEntryForm(regId, attachmentsForQuestion, attachmentsAdded) 
             }
             //===========================================
             //===========================================
@@ -222,7 +211,11 @@ const consumerFinanceAttachment = (() => {
                 style: 'secondary',
                 type: 'text',
                 icon: 'add',
-                callback: () => addNewAttachment(),
+                callback: () => {
+                    if (!addAttachmentBtn.classList.contains('disabled')) {
+                        addNewAttachment();  
+                    }
+                },
             });
             addAttachmentBtn.type = 'button';
 
@@ -240,7 +233,10 @@ const consumerFinanceAttachment = (() => {
                 type: 'contained',
                 callback: async () => {
                     try {
-                        await saveAction();
+                        if (!saveBtn.classList.contains('disabled')) {
+                            await saveAction();
+                            await this.cleanAttachmentLists(attachmentsAdded, attachmentsToDelete);
+                        }  
                     } catch (error) {
                         pendingSave.reject('Error saving attachment changes');
                         setTimeout(() => {
@@ -253,7 +249,7 @@ const consumerFinanceAttachment = (() => {
             });
             const cancelBtn = button.build({
                 id: 'attachmentCancel',
-                text: ro ? 'close' : 'cancel',
+                text: 'cancel',
                 style: 'secondary',
                 type: 'outlined',
                 callback: () => {
@@ -297,12 +293,12 @@ const consumerFinanceAttachment = (() => {
             btnWrap.classList.add('btnWrap');
 
             popup.appendChild(reviewAttachmentList);
-            if (!ro) {
-                popup.appendChild(newAttachmentList);
-                popup.appendChild(attachmentList);
-                popup.appendChild(addAttachmentBtn);
-                btnWrap.appendChild(saveBtn);
-            }
+
+            popup.appendChild(newAttachmentList);
+            popup.appendChild(attachmentList);
+            popup.appendChild(addAttachmentBtn);
+            btnWrap.appendChild(saveBtn);
+
 
             btnWrap.appendChild(cancelBtn);
             popup.appendChild(btnWrap);
@@ -321,26 +317,30 @@ const consumerFinanceAttachment = (() => {
         }
 
         cleanAttachmentLists(attachmentsToAdd, attachmentsToRemove) {
-            attachmentsToRemove.forEach(attachmentId => {
-                let list = attachments.get(this.regId);
-                let newList = list.filter(a => a.attachmentId !== attachmentId);
-                attachments.set(this.regId, newList);
-            });
-            attachmentsToAdd.forEach(attachment => {
-                let list = [];
-                if (attachments.has(this.regId)) {
-                    list = attachments.get(this.regId);
-                }
-                list.push(attachment);
-                attachments.set(this.regId, list);
-            });
-            if (attachments.has(this.regId)) {
-                this.attachmentsForQuestion = attachments.get(this.regId);
-            } else {
-                this.attachmentsForQuestion = [];
+            if (attachmentsToRemove.length > 0) {
+                attachments = this.attachmentsForQuestion;
             }
+            attachmentsToRemove.forEach(attId => {
+                attachments.forEach(attach => {
+                    if (attach.attachmentID == attId) {
+                        const index = attachments.indexOf(attach);
+                        attachments.splice(index, 1)
+                        this.attachmentsForQuestion = attachments;
+                    }
+                });
+            });
 
-            const attachmentBtn = document.getElementById(`attach-${this.regId}`);
+            attachmentsToAdd.forEach(attId => {
+                attachments.forEach(attach => {
+                    let isAttacExist = this.attachmentsForQuestion.filter(a => a.attachmentID === attId);
+                    if (attach.attachmentID == attId && isAttacExist.length == 0) {
+                        this.attachmentsForQuestion.push(attach);
+                    }
+                });
+            });
+
+
+            const attachmentBtn = document.getElementById(`attachConsumer`);
             attachmentBtn.innerText = `ATTACHMENTS (${this.attachmentsForQuestion.length})`;
 
             if (this.attachmentsForQuestion.length > 0) {
@@ -348,22 +348,22 @@ const consumerFinanceAttachment = (() => {
             } else {
                 attachmentBtn.classList.remove('hasAttachments');
             }
+
+            NewEntryCF.buildNewEntryForm(this.regId, this.attachmentsForQuestion, attachmentsToAdd)
         }
     }
 
     async function getConsumerFinanceAttachments(regID) {
+        attachments = [];
         const retData = {
             token: $.session.Token,
             regId: regID,
         };
         const res = await ConsumerFinancesAjax.getCFAttachmentsList(retData);
-        let attArray = [];
-        if (res != undefined) {
-            res.forEach(attachment => {
-                attArray.push(attachment);
-            });
-        }
-        return attArray;
+        res.forEach(attachment => {
+            attachments.push(attachment);
+        });
+        return attachments;
     }
 
     return {

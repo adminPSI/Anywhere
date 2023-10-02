@@ -19,7 +19,7 @@
 
 .input-field__input:focus {
     background-color: #E8E8E8;
-}
+    }
 
 .input-field--primary {
   color: $input-blur--light;
@@ -62,8 +62,7 @@
     right: 10px;
     top: 10px;
     width: 22px !important;
-    margin: 0px;
-    background: $white !important;
+    margin: 0px; 
      transition: 0.2s; 
 
     svg {
@@ -72,11 +71,11 @@
 }
 
 .input-field--secondary {
-  color: $input-blur--dark;
+    color: $input-blur--dark;
 
-  &--focused {
-    color: $input-focus--dark;
-  }
+    &--focused {
+        color: $input-focus--dark;       
+    }
 }
 .input-field.error {
   color: $font-error !important;

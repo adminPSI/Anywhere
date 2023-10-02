@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Anywhere.service.Data.PlanSignature;
+using iAnywhere.Data.SQLAnywhere;
+using PSIOISP;
+using System;
+using System.Management.Automation.Language;
+using System.Net;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
 
@@ -8,6 +13,7 @@ namespace Anywhere.service.Data
     {
         AssessmentDataGetter adg = new AssessmentDataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
+        PlanSignatureWorker psw = new PlanSignatureWorker();
 
         public class ConsumerAssessment
         {
@@ -84,6 +90,21 @@ namespace Anywhere.service.Data
             public string cQFullName { get; set; }
         }
 
+        public class AuthorizationPageData
+        {
+            public string CompletionDate { get; set; }
+            public string plan_year_start { get; set; }
+            public string plan_year_end { get; set; }
+            public string sourceCaption { get; set; }
+            public string frequency { get; set; }
+            public string vendorName { get; set; }
+            public string BeginDate { get; set; }
+            public string EndDate { get; set; }
+            public string description { get; set; }
+            public string service_code { get; set; }
+            public string planType { get; set; }
+        }
+
         [DataContract]
         public class Answer
         {
@@ -95,6 +116,8 @@ namespace Anywhere.service.Data
 
             [DataMember]
             public string answerText { get; set; }
+            [DataMember]
+            public string skipped { get; set; }
         }
 
         public string updateAssessmentAnswers(string token, Answer[] answers)
@@ -120,6 +143,14 @@ namespace Anywhere.service.Data
             return "success";
         }
 
+        public AuthorizationPageData[] authorizationGetPageData(string token)
+        {
+            string authPageData = adg.authorizationGetPageData(token);
+            js.MaxJsonLength = Int32.MaxValue;
+            AuthorizationPageData[] authorizationPageData = js.Deserialize<AuthorizationPageData[]>(authPageData);
+            return authorizationPageData;
+        }
+
         public ConsumerPlans[] getConsumerPlans(string token, string consumerId)
         {
             string assessmentString = adg.getConsumerPlans(token, consumerId);
@@ -134,9 +165,9 @@ namespace Anywhere.service.Data
             return assessmentObj;
         }
 
-        public string switchPlanType(string token, string consumerPlanId, string planType)
+        public string switchPlanType(string token, string consumerPlanId, string planType, string revisionNumber, string planYearStart, string planYearEnd, string effectiveStartDate, string effectiveEndDate, string reviewDate, string prevPlanId)
         {
-            string resultString = adg.switchPlanType(token, consumerPlanId, planType);
+            string resultString = adg.switchPlanType( token,  consumerPlanId,  planType, revisionNumber, planYearStart, planYearEnd,  effectiveStartDate,  effectiveEndDate,  reviewDate, prevPlanId);
             return resultString;
         }
 
@@ -206,6 +237,7 @@ namespace Anywhere.service.Data
             // get relationships for dropdowns and in contact information section
             string relationshipString = adg.getConsumerRelationships(token, consumerId, effectiveStartDate, effectiveEndDate, areInSalesForce, planId);
             ConsumerRelationships[] relationshipObj = js.Deserialize<ConsumerRelationships[]>(relationshipString);
+            // Fix last names to include generatational tags
             ServiceAndsSupportData sASData = new ServiceAndsSupportData();
             sASData.assessmentAreas = assessmentAreasObj;
             sASData.serviceVendors = vendorObj;
@@ -213,6 +245,31 @@ namespace Anywhere.service.Data
             //sASData.fundingSource = fundingObj;
             sASData.relationships = relationshipObj;
             return sASData;
+        }
+
+        public string downloadPlanFromSalesforce(string token, string consumerId, string userId)
+        {
+            try
+            {
+                long consumerIdLong = long.Parse(consumerId);
+
+                ISPDTData psiOispDT = new ISPDTData();
+
+                object downloadPlanResult = psiOispDT.GetActiveISP(consumerIdLong, userId);
+
+                string downloadPlanResultString = downloadPlanResult.ToString();
+
+                if (downloadPlanResultString == "Download complete")
+                {
+                    adg.updateAfterSuccessfullPlanDownload(token, consumerId);
+                }
+
+                return downloadPlanResultString;
+            }
+            catch (Exception)
+            {
+                return "Download Plan Failed";
+            }
         }
 
         public ServiceVendors[] getPaidSupportsVendors(string fundingSourceName, string serviceName, string areInSalesForce)
@@ -291,6 +348,7 @@ namespace Anywhere.service.Data
             public string dateOfBirth { get; set; }
             public string signatureId { get; set; }
             public string teamMember { get; set; }
+            public string generation { get; set; }
         }
     }
 }

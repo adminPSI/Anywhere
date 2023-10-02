@@ -74,7 +74,7 @@ const planValidation = (function () {
       complete: false
     };
     const servicesAndSupportsQuestionIds = {
-      noSupportQuestionIds: ['509', '526', '84', '95', '162', '500'],
+      noSupportQuestionIds: ['509', '526', '84', '95', '162', '500', '575'],
       paidSupportQuestionIds: [
         '631',
         '612',
@@ -386,7 +386,10 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT SERVICES AND SUPPORTS
-    function servicesAndSupportsBtnCheck(assessmentValidationCheck, id) {
+    function servicesAndSupportsBtnCheck(assessmentValidationCheck) {
+      const idsToCheck = [34, 35, 36, 37, 38, 39, 40];
+
+      idsToCheck.forEach(id => {
         let paidSupportBtn = document.getElementById(`paidSupportBtn${id}`);
         let additionalSupportBtn = document.getElementById(`additionalSupportBtn${id}`);
         let profRefBtn = document.getElementById(`profRefBtn${id}`);
@@ -446,7 +449,8 @@ const planValidation = (function () {
           section.button.innerHTML = `${section.errorText} (${section.count})`;
         }
       });
-      
+
+    });
 
       // if any of the classes have an error then add the alert if it is not already there
       if (assessmentValidationCheck.servicesAndSupportsError === true) {
@@ -678,8 +682,25 @@ const planValidation = (function () {
     //ISP EXPERIENCES
     //checks if the outcome has an experience, if not, set the alert next to the add experience button
     function experiencesValidationCheck(validationCheck, outcomeId, alertDiv) {
-      const display = (validationCheck.missingExperiences.includes(outcomeId) || validationCheck.invalidProviders.length > 0) ? 'flex' : 'none';
+      // Checks each experience and compares repsonsible party Ids with the invalid providers array
+      function checkResponsibleProvider(outcomesData, outcomeID, presetArray) {
+        for (const planOutcomeExperience of outcomesData.planOutcomeExperiences) {
+            if (planOutcomeExperience.outcomeId === outcomeID) {
+                for (const experienceResponsibility of planOutcomeExperience.planExperienceResponsibilities) {
+                    if (presetArray.includes(experienceResponsibility.responsibleProvider)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    const invalidProvidersCheck = checkResponsibleProvider(validationCheck.outcomesData, outcomeId, validationCheck.invalidProviders);
+
+      const display = (validationCheck.missingExperiences.includes(outcomeId) || invalidProvidersCheck) ? 'flex' : 'none';
       alertDiv.style.display = display;
+      //validationCheck.invalidProviders.length > 0
     }
 
     // checks if the provider selected for the experience is also in the paid supports
@@ -692,6 +713,24 @@ const planValidation = (function () {
       
       validationCheck.invalidProviders = invalidProviders;
       return validationCheck;
+    }
+
+    function checkExperiencesAfterAddingNewPaidSupport(validationCheck) {
+      // Find all divs with classname 'experiencesAlert'
+      const divs = document.querySelectorAll('.experiencesAlert');
+
+      // Loop over the resulting array and run your function on each div
+      if (divs.length > 0) {
+        divs.forEach(div => {
+          // Extract the number from the id using a regular expression
+          const regex = /experienceAlert(\d{1,5})/;
+          const matches = div.id.match(regex);
+          const number = matches ? Number(matches[1]) : null;
+
+          // Check each div to see if the alert is needed or not
+          experiencesValidationCheck(validationCheck, number, div);
+        });
+      }
     }
   
     async function init(planId) {
@@ -718,6 +757,7 @@ const planValidation = (function () {
       updateOutcome,
       updateOutcomeDetails,
       checkExperienceProviders,
+      checkExperiencesAfterAddingNewPaidSupport,
       init,
     };
   })();

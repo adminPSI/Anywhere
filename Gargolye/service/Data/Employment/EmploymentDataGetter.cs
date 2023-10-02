@@ -18,6 +18,19 @@ namespace Anywhere.service.Data.Employment
         Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
 
+
+        public bool tokenValidator(string token)
+        {
+            if (token.Contains(" "))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         public string getEmploymentEntries(string token, string consumerIds, string employer, string position, string positionStartDate, string positionEndDate, string jobStanding, DistributedTransaction transaction)
         {
             try
@@ -104,19 +117,20 @@ namespace Anywhere.service.Data.Employment
             }
         }
 
-        public string insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID, DistributedTransaction transaction)
+        public string insertEmploymentPath(string token, string employmentPath, string newStartDate, string newEndDate, string currentEndDate, string peopleID, string userID, DistributedTransaction transaction, string existingPathID)
         {
             try
             {
                 logger.debug("insertEmploymentPath");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[6];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[7];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@employmentPath", DbType.String, employmentPath);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@newStartDate", DbType.String, newStartDate);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@newEndDate", DbType.String, newEndDate);
                 args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@currentEndDate", DbType.String, currentEndDate);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@peopleID", DbType.Double, peopleID);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
-                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertEmploymentPath(?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@existingPathID", DbType.String, existingPathID);
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertEmploymentPath(?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
             }
             catch (Exception ex)
             {
@@ -444,6 +458,104 @@ namespace Anywhere.service.Data.Employment
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_insertUpdateWages(" + hoursWeek + "," + startDate + "," + endDate + ")");
+                throw ex;
+            }
+
+        }
+
+        public string getLastTaskNumber(string token, string positionID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getLastTaskNumber");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@positionID", DbType.String, positionID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getLastTaskNumber(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getLastTaskNumber(" + positionID + ")");
+                throw ex;
+            }
+        }
+
+        public string deleteWagesBenefits(string token, string wagesID, DistributedTransaction transaction)
+        {           
+            try
+            {
+                if (tokenValidator(token) == false) return null;
+                logger.debug("deleteWagesBenefits");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wagesID", DbType.String, wagesID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deleteWagesBenefits(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_deleteWagesBenefits(" + wagesID + ")");
+                throw ex;
+            }
+
+        }
+
+        public string deleteWorkSchedule(string token, string WorkScheduleID, DistributedTransaction transaction)
+        {
+            try
+            {
+                if (tokenValidator(token) == false) return null;
+                logger.debug("deleteWorkSchedule");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@WorkScheduleID", DbType.String, WorkScheduleID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deleteWorkSchedule(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_deleteWorkSchedule(" + WorkScheduleID + ")");
+                throw ex;
+            }
+        }
+
+        public string deletePostionTask(string token, string jobTaskID,string PositionID, DistributedTransaction transaction)
+        {
+            try
+            {
+                if (tokenValidator(token) == false) return null;
+                logger.debug("deletePostionTask");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@jobTaskID", DbType.String, jobTaskID);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@PositionID", DbType.String, PositionID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deletePostionTask(?,?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_deletePostionTask(" + jobTaskID + ")");
+                throw ex;
+            }
+        }
+
+        public string updatePositionTaskNumber(string token, string jobTaskID,int taskNumberToBeUpdated, DistributedTransaction transaction)
+        {
+            try
+            {
+                if (tokenValidator(token) == false) return null;
+                logger.debug("updatePositionTaskNumber");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@jobTaskID", DbType.String, jobTaskID);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@taskNumber", DbType.String, taskNumberToBeUpdated);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_updatePositionTaskNumber(?,?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_updatePositionTaskNumber(" + jobTaskID + "," + taskNumberToBeUpdated + ")");
                 throw ex;
             }
 

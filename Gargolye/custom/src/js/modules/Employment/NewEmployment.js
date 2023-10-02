@@ -43,8 +43,12 @@ const NewEmployment = (function () {
         tabPositionIndex = TabPosition;
 
         DOM.clearActionCenter();
+
+        var headingWrap = document.createElement('div');
+        headingWrap.classList.add('employmentBtnWrap');  
         const heading = document.createElement('div');
         const headingName = document.createElement('div');
+        const head = document.createElement('div');
 
         const ispWrap = document.createElement('div');
 
@@ -52,15 +56,26 @@ const NewEmployment = (function () {
 
         ispWrap.innerHTML = '';
 
+        BACK_BTN = button.build({
+            text: 'BACK',
+            style: 'secondary',
+            type: 'outlined',
+            callback: async () => { Employment.loadEmploymentLanding() }, 
+        });
+
         const newIspMarkup = await getMarkup();
 
         heading.innerHTML = `<h4>${selectedConsumersName}</h4>`;
         headingName.innerHTML = `<h4>${Name} - ${PositionName}</h4>`;
         ispWrap.appendChild(newIspMarkup);
 
-        DOM.ACTIONCENTER.appendChild(heading);
+        head.appendChild(heading);
         if (PositionId != undefined)
-            DOM.ACTIONCENTER.appendChild(headingName);
+            head.appendChild(headingName);
+        headingWrap.appendChild(head);
+        headingWrap.appendChild(BACK_BTN);
+
+        DOM.ACTIONCENTER.appendChild(headingWrap);
         DOM.ACTIONCENTER.appendChild(ispWrap);
         DOM.autosizeTextarea();
     }
@@ -81,6 +96,13 @@ const NewEmployment = (function () {
             activeSection.classList.remove('active');
         }
 
+        if (sectionId > 0) {
+            BACK_BTN.classList.remove('disabled');
+        } else if (sectionId == 0 && SAVE_BTN.classList.contains('disabled')) {
+            BACK_BTN.classList.remove('disabled');
+        } else {
+            BACK_BTN.classList.add('disabled'); 
+        }        
         targetSection.classList.add('active');
     }
 

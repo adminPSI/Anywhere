@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
@@ -97,6 +98,10 @@ namespace Anywhere.service.Data
             public string docOrder { get; set; }
             public string description { get; set; }
             public string attachmentId { get; set; }
+            public string wfName { get; set; }
+            public string workflowId { get; set; }
+            public string WFTemplateId { get; set; }
+
         }
 
         public class ActionInfo
@@ -639,7 +644,7 @@ namespace Anywhere.service.Data
                 }
             }
         }
-        public string insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId)
+        public string insertAutomatedWorkflows(string token, string processId, string peopleId, string referenceId, string priorConsumerPlanId)
         {
 
             try
@@ -670,7 +675,9 @@ namespace Anywhere.service.Data
 
                         try
                         {
+                            //string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", "", priorConsumerPlanId, transaction_insertWF);
                             string workflowId = insertWorkflowFromTemplate(token, template.templateId, peopleId, referenceId, "True", transaction_insertWF);
+
                             workflowIds.Add(workflowId);
                         }
                         catch (Exception ex)
@@ -710,7 +717,7 @@ namespace Anywhere.service.Data
 
         }
 
-        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId)
+        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -718,6 +725,7 @@ namespace Anywhere.service.Data
                 {
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
 
+                    //return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", "", "", transaction);
                     return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "True", transaction);
 
                 }
@@ -1038,7 +1046,7 @@ namespace Anywhere.service.Data
                             stepActions = getStepUpdateActions(wfActiontoProcess);
 
                             // For the current Step Event - execute one event/action pairing 
-                            string thisActionJSON = processWorkflowAction(thisEvent, stepActions, transaction2);
+                            string thisActionJSON = processWorkflowAction(token, thisEvent, stepActions, transaction2);
                             listActions.Add(thisActionJSON);
                         }
                         // return a list of executed Actions w/ the data
@@ -1058,7 +1066,7 @@ namespace Anywhere.service.Data
                             List<ActionInfo> wfActionstoProcess = new List<ActionInfo>();
                             wfActionstoProcess.Add(thiswfAction);
                             // For the current Workflow Event - execute one event/action pairing 
-                            string thisActionDateJSON = processWorkflowAction(thisEvent, wfActionstoProcess, transaction2);
+                            string thisActionDateJSON = processWorkflowAction(token, thisEvent, wfActionstoProcess, transaction2);
                             listActionDates.Add(thisActionDateJSON);
 
                         }
@@ -1321,6 +1329,7 @@ namespace Anywhere.service.Data
                 case "[Step Name]":
                     dictPlaceHolderValuesforStep.Add(param, thisStep.StepName);
                     break;
+                  
             }
 
             return dictPlaceHolderValuesforStep;
@@ -1388,7 +1397,7 @@ namespace Anywhere.service.Data
                 case "[Service Providers]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.serviceProviders);
                     break;
-                case "[Case Manager(Last, First)]":
+                case "[Case Manager(Last First)]":
                     dictPlaceHolderValuesforPlan.Add(param, thisPlan.CaseManagerNameLastFirst);
                     break;
                 case "[Case Manager(First Last)]":
@@ -1401,7 +1410,7 @@ namespace Anywhere.service.Data
             return dictPlaceHolderValuesforPlan;
         }
 
-        public string processWorkflowAction(WorkflowEditedStepStatus thisEvent, List<ActionInfo> theseActions, DistributedTransaction transaction)
+        public string processWorkflowAction(string token, WorkflowEditedStepStatus thisEvent, List<ActionInfo> theseActions, DistributedTransaction transaction)
         {
             // For no actions, Actions = "[]" -- which is length = 2
             if (theseActions.Count == 0) return "No actions to process.";
@@ -1489,6 +1498,72 @@ namespace Anywhere.service.Data
                                 var returnStartDate = new { ActionId = thisAction.WF_Action_ID, StepId = thisAction.WF_Step_ID, ActionDate = startDate };
                                 returnActionJSON = Newtonsoft.Json.JsonConvert.SerializeObject(returnStartDate);
                                 // }
+
+                                break;
+                            case 7:
+                                // 'set next steps start date'
+                                string nextStepStartDateSetStatus = "";
+                                string setStartDateNextStepId = wfdg.getNextWorkflowStepId(thisAction.WF_Step_ID, transaction);
+                                if (setStartDateNextStepId == null)
+                                {
+                                    break;
+                                }
+                                if (thisEvent.modified == null)
+                                {
+                                    nextStepStartDateSetStatus = wfdg.setWorkflowStepStartDate(setStartDateNextStepId, null, transaction);
+                                    break;
+                                }
+                                string nextStepStartDate = "";
+                                Dictionary<string, string> nextStepStartDateActionParameters = new Dictionary<string, string>();
+                                nextStepStartDateActionParameters = getDateActionParameters(thisAction);
+                                double startDateChangeAmount = double.Parse(nextStepStartDateActionParameters["Days"]);
+                                DateTime thisStartDate = DateTime.ParseExact(thisEvent.modified, "M/d/yyyy", CultureInfo.InvariantCulture);
+                                DateTime newStartDate = thisStartDate.AddDays(startDateChangeAmount);
+                                nextStepStartDate = newStartDate.ToString("M/d/yy");
+                                nextStepStartDateSetStatus = wfdg.setWorkflowStepStartDate(setStartDateNextStepId, nextStepStartDate, transaction);
+
+                                WorkflowEditedStepStatus nextStepStart = new WorkflowEditedStepStatus();
+                                nextStepStart.isChanged = null;
+                                nextStepStart.original = null;
+                                nextStepStart.modified = nextStepStartDate;
+                                nextStepStart.eventId = "4";
+                                nextStepStart.eventType = "step";
+                                nextStepStart.eventTypeId = setStartDateNextStepId;
+                                nextStepStart.stepId = null;
+                                processWorkflowStepEvent(token, nextStepStart);
+
+                                break;
+                            case 8:
+                                // 'set next steps due date'
+                                string nextStepDueDateSetStatus = "";
+                                string setDueDateNextStepId = wfdg.getNextWorkflowStepId(thisAction.WF_Step_ID, transaction);
+                                if (setDueDateNextStepId == null)
+                                {
+                                    break;
+                                }
+                                if (thisEvent.modified == null)
+                                {
+                                    nextStepDueDateSetStatus = wfdg.setWorkflowStepDueDate(setDueDateNextStepId, null, transaction);
+                                    break;
+                                }
+                                string nextStepDueDate = "";
+                                Dictionary<string, string> nextStepDueDateActionParameters = new Dictionary<string, string>();
+                                nextStepDueDateActionParameters = getDateActionParameters(thisAction);
+                                double dueDateChangeAmount = double.Parse(nextStepDueDateActionParameters["Days"]);
+                                DateTime thisDueDate = DateTime.ParseExact(thisEvent.modified, "M/d/yyyy", CultureInfo.InvariantCulture);
+                                DateTime newDueDate = thisDueDate.AddDays(dueDateChangeAmount);
+                                nextStepDueDate = newDueDate.ToString("M/d/yy");
+                                nextStepDueDateSetStatus = wfdg.setWorkflowStepDueDate(setDueDateNextStepId, nextStepDueDate, transaction);
+
+                                WorkflowEditedStepStatus nextStepDue = new WorkflowEditedStepStatus();
+                                nextStepDue.isChanged = null;
+                                nextStepDue.original = null;
+                                nextStepDue.modified = nextStepDueDate;
+                                nextStepDue.eventId = "4";
+                                nextStepDue.eventType = "step";
+                                nextStepDue.eventTypeId = setDueDateNextStepId;
+                                nextStepDue.stepId = null;
+                                processWorkflowStepEvent(token, nextStepDue);
 
                                 break;
                         }
@@ -1823,12 +1898,14 @@ namespace Anywhere.service.Data
         }
 
 
+        //public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions, string priorConsumerPlanId)
         public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
+                    //return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormDescriptions, priorConsumerPlanId, transaction);
                     return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", transaction);
                 }
                 catch (Exception ex)
@@ -1850,6 +1927,7 @@ namespace Anywhere.service.Data
 
 
 
+        //string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, string wantedFormDescriptions, string priorConsumerPlanId, DistributedTransaction transaction_insertWFDetails)
         string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, DistributedTransaction transaction_insertWFDetails)
         {
 
@@ -1914,6 +1992,7 @@ namespace Anywhere.service.Data
                 List<WorkflowTemplateStep> steps = js.Deserialize<List<WorkflowTemplateStep>>(wfdg.getWorkflowTemplateSteps(null, transaction_insertWFDetails));
                 List<WorkflowTemplateStepEvent> events = js.Deserialize<List<WorkflowTemplateStepEvent>>(wfdg.getWorkflowTemplateStepEvents(null, transaction_insertWFDetails));
                 List<WorkflowTemplateStepEventAction> actions = js.Deserialize<List<WorkflowTemplateStepEventAction>>(wfdg.getWorkflowTemplateStepEventActions(null, transaction_insertWFDetails));
+                //List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, wantedFormDescriptions, priorConsumerPlanId, transaction_insertWFDetails));
                 List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, transaction_insertWFDetails));
 
                 // Get relationships data used for getting responsible party relationships
@@ -2066,6 +2145,13 @@ namespace Anywhere.service.Data
             string wfList = wfdg.getManualWorkflowList(token, processId, planId);
             ManualWorkflowList[] wfListObj = js.Deserialize<ManualWorkflowList[]>(wfList);
             return wfListObj;
+        }
+
+        public WorkflowTemplateStepDocument[] getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId)
+        {
+            string wfFormList = wfdg.getWorkFlowFormsfromPreviousPlan(token, selectedWFTemplateIds, previousPlanId);
+            WorkflowTemplateStepDocument[] wfFormListObj = js.Deserialize<WorkflowTemplateStepDocument[]>(wfFormList);
+            return wfFormListObj;
         }
 
         public class ManualWorkflowList

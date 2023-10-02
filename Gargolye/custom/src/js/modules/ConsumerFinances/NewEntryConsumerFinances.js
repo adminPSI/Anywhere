@@ -14,6 +14,7 @@ const NewEntryCF = (() => {
     let NEW_CANCEL_BTN;
 
     let attachmentArray = [];
+    let prevAttachmentArray = [];
     let attachmentId = [];
     let attachmentDesc = [];
     let categoryID;
@@ -25,31 +26,16 @@ const NewEntryCF = (() => {
     let IsReconciled = 'N';
     let IsAddNewPayDisable = true;
     let IsSaveDisable = true;
-    let IsDeleteDisable = true; 
-    let inputElement;
+    let IsDeleteDisable = true;
 
     async function init() {
-        buildNewEntryForm();
+        buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined);
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
-        if (attachment) {
-            attachmentArray = attachment;
-            attachmentId = attachmentID;
-
-            attachment.forEach(att => {
-                attachmentDesc.push(att.description);
-            });
-        }
-        else {
-            attachmentArray = [];
-            attachmentId = [];
-            attachmentDesc = [];
-        }
-
+        prevAttachmentArray = [];
         if (registerId) {
-            attachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
-
+            prevAttachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
             BtnName = 'UPDATE'
             regId = registerId;
             const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
@@ -90,14 +76,45 @@ const NewEntryCF = (() => {
             IsReconciled = 'N';
             IsDisabledBtn = false;
         }
+
+        tempdate = '';
+        tempamount = '';
+        tempaccount = '';
+        tempaccountType = '';
+        temppayee = '';
+        tempcategory = '';
+        tempsubCategory = '';
+        tempcheckNo = '';
+        tempdescription = '';
+        tempattachment = '';
+        tempreceipt = '';
+
+        if (attachment) {
+            attachmentArray = attachment;
+            attachmentId = attachmentID;
+            attachment.forEach(att => {
+                if (att.registerID == 0) {
+                    attachmentDesc.push(att.description);
+                    tempattachment = attachmentID;
+                }
+            });
+
+        }
+        else {
+            attachmentArray = [];
+            attachmentId = [];
+            attachmentDesc = [];
+            prevAttachmentArray.forEach(att => {
+                attachmentArray.push(att);
+            });
+        }
+
         DOM.clearActionCenter();
 
         const column1 = document.createElement('div')
         const column2 = document.createElement('div')
         column1.classList.add('col-1')
         column2.classList.add('col-2')
-
-
 
         newDateInput = input.build({
             id: 'newDateInput',
@@ -112,7 +129,7 @@ const NewEntryCF = (() => {
             type: 'number',
             label: 'Amount',
             style: 'secondary',
-            value:  (amount) ? amount : '',            
+            value: (amount) ? amount : '',
         });
 
         newAccountDropdown = dropdown.build({
@@ -184,7 +201,7 @@ const NewEntryCF = (() => {
         });
 
         NEW_DELETE_BTN = button.build({
-            text: 'Delete',
+            text: 'DELETE ENTRY',
             style: 'secondary',
             type: 'outlined',
         });
@@ -204,7 +221,7 @@ const NewEntryCF = (() => {
         });
 
         const radioDiv = document.createElement("div");
-        radioDiv.classList.add("addRouteRadioDiv");
+        radioDiv.classList.add("addCFRadioDiv");
         radioDiv.appendChild(expenseRadio);
         radioDiv.appendChild(depositRadio);
         /////////////////
@@ -273,7 +290,7 @@ const NewEntryCF = (() => {
         addRightCard.appendChild(addRightBody);
 
         addRightBody.appendChild(newDescriptionInput);
-        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId, IsDisabledBtn);
+        const questionAttachment = new consumerFinanceAttachment.ConsumerFinanceAttachment(attachmentArray, regId, IsDisabledBtn, attachmentId);
         addRightBody.appendChild(questionAttachment.attachmentButton);
 
         addRightBody.appendChild(newReceiptInput);
@@ -297,7 +314,6 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
-        disabledUpdateBtn();
     }
 
     function enableDisabledInputs() {
@@ -379,11 +395,6 @@ const NewEntryCF = (() => {
         IsDisabledBtn = false;
     }
 
-    function disabledUpdateBtn() {
-        //Disable the UPDATE button until the user makes a change to the record. 
-        NEW_SAVE_BTN.classList.add('disabled');
-    }
-
     function checkRequiredFieldsOfNewEntry() {
         var date = newDateInput.querySelector('#newDateInput');
         var amount = newAmountInput.querySelector('#newAmountInput');
@@ -397,8 +408,8 @@ const NewEntryCF = (() => {
         } else {
             newDateInput.classList.remove('error');
         }
-          
-        if (amount.value === '') {   
+
+        if (amount.value === '') {
             newAmountInput.classList.add('error');
         } else {
             newAmountInput.classList.remove('error');
@@ -433,29 +444,37 @@ const NewEntryCF = (() => {
             NEW_SAVE_BTN.classList.add('disabled');
             return;
         } else {
-            NEW_SAVE_BTN.classList.remove('disabled');
+            if (tempdate != '' || tempamount != '' || tempaccount != '' || tempaccountType != '' || temppayee != '' || tempcategory != '' || tempsubCategory != '' || tempcheckNo != '' || tempdescription != '' || tempattachment != '' || tempreceipt != '') {
+                NEW_SAVE_BTN.classList.remove('disabled');
+            }
+            else {
+                NEW_SAVE_BTN.classList.add('disabled');
+            }
+
         }
     }
 
     function eventListeners() {
-        ADD_NEW_PAYEE_BTN.addEventListener('keypress', event => { 
-            if (event.keyCode === 13 && ADD_NEW_PAYEE_BTN.classList.contains('disabled')) { 
+        ADD_NEW_PAYEE_BTN.addEventListener('keypress', event => {
+            if (event.keyCode === 13 && ADD_NEW_PAYEE_BTN.classList.contains('disabled')) {
                 IsAddNewPayDisable = false;
             }
         });
         ADD_NEW_PAYEE_BTN.addEventListener('click', event => {
             if (IsAddNewPayDisable) {
-                buildNewPayeePopUp();  
+                buildNewPayeePopUp();
             }
-            IsAddNewPayDisable = true; 
+            IsAddNewPayDisable = true;
         });
         NEW_SAVE_BTN.addEventListener('keypress', event => {
             if (event.keyCode === 13 && NEW_SAVE_BTN.classList.contains('disabled')) {
+                NEW_SAVE_BTN.classList.add('disabled');
                 IsSaveDisable = false;
             }
         });
         NEW_SAVE_BTN.addEventListener('click', event => {
             if (IsSaveDisable) {
+                NEW_SAVE_BTN.classList.add('disabled');
                 saveNewAccount();
             }
             IsSaveDisable = true;
@@ -465,65 +484,100 @@ const NewEntryCF = (() => {
                 IsDeleteDisable = false;
             }
         });
-        NEW_DELETE_BTN.addEventListener('click', event => { 
+        NEW_DELETE_BTN.addEventListener('click', event => {
             if (IsDeleteDisable) {
                 deleteAccount();
             }
             IsDeleteDisable = true;
         });
+
         newDateInput.addEventListener('input', event => {
-            date = event.target.value;
-            checkRequiredFieldsOfNewEntry();
+            if (!newDateInput.classList.contains('disabled')) {
+                date = event.target.value;
+                tempdate = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newAmountInput.addEventListener('input', event => {
-            amount = event.target.value;
-            if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
-                document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
-                return;
-            }  
-            checkRequiredFieldsOfNewEntry();
+            if (!newAmountInput.classList.contains('disabled')) {
+                amount = event.target.value;
+                if (amount.includes('.') && (amount.match(/\./g).length > 1 || amount.toString().split('.')[1].length > 2)) {
+                    document.getElementById('newAmountInput').value = amount.substring(0, amount.length - 1);
+                    return;
+                }
+                tempamount = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newPayeeDropdown.addEventListener('change', event => {
-            categoryID = event.target.options[event.target.selectedIndex].id;
-            getCategorySubCategorybyPayee(categoryID);
-            payee = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            if (!newPayeeDropdown.classList.contains('disabled')) {
+                categoryID = event.target.options[event.target.selectedIndex].id;
+                getCategorySubCategorybyPayee(categoryID);
+                payee = event.target.options[event.target.selectedIndex].text;
+                temppayee = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newAccountDropdown.addEventListener('change', event => {
-            accountID = event.target.options[event.target.selectedIndex].id;
-            account = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            if (!newAccountDropdown.classList.contains('disabled')) {
+                accountID = event.target.options[event.target.selectedIndex].id;
+                account = event.target.options[event.target.selectedIndex].text;
+                tempaccount = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newCategoryDropdown.addEventListener('change', event => {
-            categoryID = event.target.options[event.target.selectedIndex].id;
-            category = event.target.options[event.target.selectedIndex].text;      
-            populateSubCategoryDropdown(category);
-            checkRequiredFieldsOfNewEntry();
+            if (!newCategoryDropdown.classList.contains('disabled')) {
+                categoryID = event.target.options[event.target.selectedIndex].id;
+                category = event.target.options[event.target.selectedIndex].text;
+                tempcategory = 'ChangedValue';
+                subCategory = '';
+                populateSubCategoryDropdown(category);
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newSubCategoryDropdown.addEventListener('change', event => {
-            categoryID = event.target.options[event.target.selectedIndex].id;
-            subCategory = event.target.options[event.target.selectedIndex].text;
-            checkRequiredFieldsOfNewEntry();
+            if (!newSubCategoryDropdown.classList.contains('disabled')) {
+                categoryID = event.target.options[event.target.selectedIndex].id;
+                subCategory = event.target.options[event.target.selectedIndex].text;
+                tempsubCategory = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newCheckNoInput.addEventListener('input', event => {
-            checkNo = event.target.value;
-            checkRequiredFieldsOfNewEntry();
+            if (!newCheckNoInput.classList.contains('disabled')) {
+                checkNo = event.target.value;
+                tempcheckNo = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newDescriptionInput.addEventListener('input', event => {
-            description = event.target.value;
-            checkRequiredFieldsOfNewEntry();
+            if (!newDescriptionInput.classList.contains('disabled')) {
+                description = event.target.value;
+                tempdescription = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         newReceiptInput.addEventListener('input', event => {
-            receipt = event.target.value;
-            checkRequiredFieldsOfNewEntry();
+            if (!newReceiptInput.classList.contains('disabled')) {
+                receipt = event.target.value;
+                tempreceipt = 'ChangedValue';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         expenseRadio.addEventListener('change', event => {
-            accountType = 'E';
-            checkRequiredFieldsOfNewEntry();
+            if (!expenseRadio.classList.contains('disabled')) {
+                accountType = 'E';
+                tempaccountType = 'E';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
         depositRadio.addEventListener('change', event => {
-            accountType = 'D';
-            checkRequiredFieldsOfNewEntry();
+            if (!depositRadio.classList.contains('disabled')) {
+                accountType = 'D';
+                tempaccountType = 'D';
+                checkRequiredFieldsOfNewEntry();
+            }
         });
     }
 
@@ -561,7 +615,7 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
-        //disabledUpdateBtn(); 
+
     }
 
     // Populate the Account DDL 
@@ -577,15 +631,13 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+
     }
 
     async function populatePayeeDropdown() {
         const {
             getPayeesResult: Payees,
-        } = await ConsumerFinancesAjax.getPayeesAsync();
+        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);
         let data = Payees.map((payees) => ({
             id: payees.CategoryID,
             value: payees.Description,
@@ -594,9 +646,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newPayeeDropdown", data, payee);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+
     }
 
     async function populateCategoryDropdown(categoryID) {
@@ -611,9 +661,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
         checkRequiredFieldsOfNewEntry();
-        if (regId > 0) {
-            disabledUpdateBtn();
-        }
+
     }
 
     async function populateSubCategoryDropdown(category) {
@@ -628,9 +676,7 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newSubCategoryDropdown", data, subCategory);
         checkRequiredFieldsOfNewEntry();
-        //if (regId > 0) { 
-        //    disabledUpdateBtn(); 
-        //}
+
     }
 
 
@@ -692,7 +738,7 @@ const NewEntryCF = (() => {
             classNames: ['zip'],
             attributes: [{ key: 'maxlength', value: '10' }],
             value: (payeezipcode) ? payeezipcode : '',
-        }); 
+        });
 
         saveBtn = button.build({
             id: "addpayeeSaveBtn",
@@ -722,6 +768,11 @@ const NewEntryCF = (() => {
         addPayeePopup.appendChild(cityInput);
         addPayeePopup.appendChild(stateInput);
         addPayeePopup.appendChild(zipcodeInput);
+
+        var confirmMessage = document.createElement('div');
+        confirmMessage.innerHTML = `<h3 id="confirmMessage" class="confirmMessage password-warning"></h3>`;
+        addPayeePopup.appendChild(confirmMessage);
+
         addPayeePopup.appendChild(btnWrap);
 
         popUpEventHandlers();
@@ -832,10 +883,22 @@ const NewEntryCF = (() => {
     async function addPayeePopupDoneBtn() {
         const result = await ConsumerFinancesAjax.insertPayeeAsync(payeeName, payeeaddress1, payeeaddress2, payeecity, payeestate, payeezipcode);
         const { insertPayeeResult } = result;
-        let regionID = insertPayeeResult.RegionID;
-        POPUP.hide(addPayeePopup);
-        payee = payeeName;  
-        populatePayeeDropdown();
+
+        var messagetext = document.getElementById('confirmMessage');
+        messagetext.innerHTML = ``;
+        if (insertPayeeResult.RegionID == '-1') {
+            messagetext.innerHTML = 'Payee name is already exists.'; 
+            messagetext.classList.add('password-error'); 
+        }
+        else {
+            POPUP.hide(addPayeePopup);
+            payee = payeeName;
+            document.getElementById('newCategoryDropdown').value = '';
+            document.getElementById('newSubCategoryDropdown').value = '';  
+            temppayee = 'ChangedValue';
+            populatePayeeDropdown();         
+        }
+
     }
 
     return {
@@ -844,5 +907,5 @@ const NewEntryCF = (() => {
         populatePayeeDropdown,
         populateCategoryDropdown,
         populateAccountDropdown,
-    };  
+    };
 })(); 

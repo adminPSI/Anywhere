@@ -185,6 +185,15 @@
                     <span class="menu__text">Scheduling</span>
                 </button>
             </div>
+            <!-- Authorizations -->
+            <div id="authorizationsdiv" class="menu__item">
+                <button id="authorizationsButton" class="menu__button" data-load-module="authorizations">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                        <path class="fill-path" d="M160-80v-240q0-33 23.5-56.5T240-400h480q33 0 56.5 23.5T800-320v240H160Zm80-160h480v-80H240v80Zm240-160L280-680q0-83 58.5-141.5T480-880q83 0 141.5 58.5T680-680L480-400Zm0-112 120-168q0-50-35-85t-85-35q-50 0-85 35t-35 85l120 168Zm0-144Z"/>
+                    </svg>
+                    <span class="menu__text">Authorizations</span>
+                </button>
+            </div>
             <!-- Plan -->
             <div id="plansettingsdiv" class="menu__item">
                 <button id="planButton" class="menu__button" data-load-module="plan">
@@ -291,7 +300,7 @@
                         <path fill="none" d="M0 0h24v24H0V0z" />
                         <path class="fill-path" d="M14,11H13V7h2a1,1,0,0,1,1,1,1,1,0,0,0,2,0,3,3,0,0,0-3-3H13V3a1,1,0,0,0-2,0V5H10a4,4,0,0,0,0,8h1v4H9a1,1,0,0,1-1-1,1,1,0,0,0-2,0,3,3,0,0,0,3,3h2v2a1,1,0,0,0,2,0V19h1a4,4,0,0,0,0-8Zm-3,0H10a2,2,0,0,1,0-4h1Zm3,6H13V13h1a2,2,0,0,1,0,4Z" fill="#f5eded" class="color000 svgShape" />
                     </svg>
-                    <span class="menu__text">Consumer Finances</span>
+                    <span class="menu__text">Money Management</span>
                 </button>
             </div>
             <!-- Reset Password -->
@@ -316,23 +325,6 @@
             </div>
 
         </div>
-
-        <!-- Util Menu Btn -->
-        <!-- <div class="menuBttomNav">
-          <div class="menu__item">
-            <button class="desktopUtilMenuBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path fill="none" d="M0 0h24v24H0V0z"></path>
-                <path
-                  class="fill-path"
-                  d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                ></path>
-              </svg>
-              <span class="menu__text">Settings</span>
-            </button>
-          </div>
-        </div> -->
-        <!-- </div> -->
 
         <div class="menu__toggle" data-toggle="open">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -439,11 +431,6 @@
         checkInfalConnectionAjax();
 
         window.addEventListener('DOMContentLoaded', function (event) {
-            //  if ($.session.applicationName === 'Advisor') {
-            //    var menu = document.querySelector('.module-menu .menu__inner');
-            //    var planBtn = document.querySelector('#plansettingsdiv');
-            //   // menu.removeChild(planBtn);
-            //  }
             strongPasswordValue();
             checkForMobileDevice();
             isIE = UTIL.detectBrowser();
@@ -591,6 +578,10 @@
                     tmpReports.init();
                     break;
                 }
+                case 'authorizations': {
+                    authorizations.init();
+                    break;
+                }
                 case 'plan': {
                     plan.init();
                     break;
@@ -690,6 +681,10 @@
                     break;
                 }
                 case 'reportForms': {
+                    break;
+                }
+                case 'authorizations': {
+                    authorizations.clearAllData();
                     break;
                 }
                 case 'plan': {

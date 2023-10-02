@@ -51,7 +51,26 @@ namespace Anywhere.service.Data
         public IncidentTrackingReviewTableData[] GetITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
             string itReviewTableDataString = dg.getITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            js.MaxJsonLength = Int32.MaxValue;
             IncidentTrackingReviewTableData[] itReviewTableData = js.Deserialize<IncidentTrackingReviewTableData[]>(itReviewTableDataString);
+
+            if (consumerId != "" && consumerId != "%" && consumerId != null)
+            {
+                // Get all incidentIds for the provided consumerId
+                var incidentIdsForConsumer = itReviewTableData
+                    .Where(item => item.consumerId == consumerId)
+                    .Select(item => item.incidentId)
+                    .Distinct()
+                    .ToList();
+
+                // Filter the array based on incidentIds
+                var filteredData = itReviewTableData
+                    .Where(item => incidentIdsForConsumer.Contains(item.incidentId))
+                    .ToArray();
+
+                return filteredData;
+            }
+
             return itReviewTableData;
         }
 
@@ -663,6 +682,7 @@ namespace Anywhere.service.Data
             public string viewedOn { get; set; }
             public string originallyEnteredBy { get; set; }
             public string viewedBy { get; set; }
+            public string description { get; set; }
         }
 
         public class IncidentTrackingReviewTableData
@@ -681,6 +701,7 @@ namespace Anywhere.service.Data
             public string viewedOn { get; set; }
             public string originallyEnteredBy { get; set; }
             public string viewedBy { get; set; }
+            public string description { get; set; }
         }
 
         public class IncidentTrackingReviewLocations

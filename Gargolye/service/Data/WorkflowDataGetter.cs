@@ -235,13 +235,18 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
+        //public string getWorkflowTemplateStepDocuments(string stepId, string wantedFormDescriptions, string priorConsumerPlanId, DistributedTransaction transaction)
         public string getWorkflowTemplateStepDocuments(string stepId, DistributedTransaction transaction)
         {
+            //wantedFormIds = "eac0d253-1586-41c4-a7f0-09e2848337ae,8A027884-33A4-4E5E-9455-61DFD45624D8";
+           // string wantedFormDescriptions = "Workflow 1,Workflow 2";
             try
             {
                 logger.debug("getWorkflowTemplateStepDocuments ");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
+                //args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorConsumerPlanId", DbType.String, priorConsumerPlanId);
+                //args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wantedFormDescriptions", DbType.String, wantedFormDescriptions);
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetWorkflowTemplateStepDocuments(?)", args, ref transaction);
                 return convertToJSON(returnMsg);
             }
@@ -1049,6 +1054,23 @@ namespace Anywhere.service.Data
                 throw ex;
             }
         }
+
+        public string getNextWorkflowStepId(string stepId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getNextWorkflowStepId ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
+                // returns the number of rows updated
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetNextWorkflowStepId(?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_WF_setWorkflowStepOrder(" + stepId + "," + ")");
+                throw ex;
+            }
+        }
         public string updateWorkflowStep(string @stepId, string @groupId, string @stepOrder, string @description, string @responsiblePartyId, string @isChecklist, string @dueDate, string @startDate, string @doneDate, string @comments, string @isApplicable, DistributedTransaction transaction)
         {
             try
@@ -1193,6 +1215,27 @@ namespace Anywhere.service.Data
             }
         }
         #endregion
+
+        public string getWorkFlowFormsfromPreviousPlan(string token, string selectedWFTemplateIds, string previousPlanId)
+        {
+            logger.debug("getWorkFlowFormsfromPreviousPlan ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(selectedWFTemplateIds);
+            list.Add(previousPlanId);
+
+            string text = "CALL DBA.ANYW_WF_getWorkFlowFormsfromPreviousPlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("501", ex.Message + "DBA.ANYW_WF_getWorkFlowFormsfromPreviousPlan(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "501: error ANYW_WF_getWorkFlowFormsfromPreviousPlan";
+            }
+        }
+
 
         #region WORKFLOW DASHBOARD WIDGETS        
         public string getDashboardPlanWorkflowWidget(string responsiblePartyId, DistributedTransaction transaction)

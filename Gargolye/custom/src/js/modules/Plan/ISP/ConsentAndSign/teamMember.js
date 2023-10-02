@@ -103,7 +103,7 @@ const csTeamMember = (() => {
     selectedMemberData.dateOfBirth = relData.dateOfBirth;
     selectedMemberData.buildingNumber = relData.buildingNumber;
     selectedMemberData.name = relData.firstName;
-    selectedMemberData.lastName = relData.lastName;
+    selectedMemberData.lastName = relData.lastName.split('|')[0];
     selectedMemberData.relationship = relData.relationship;
 
     // update inputs with selected data
@@ -1181,14 +1181,13 @@ const csTeamMember = (() => {
       participatedNoRadio.classList.add('disabled');
       // radioDiv.classList.remove('error');
       signatureTypeDropdown.classList.add('disabled');
-      saveTeamMemberBtn.classList.add('disabled'); //
+      saveTeamMemberBtn.classList.add('disabled');
     }
 
     if ($.session.planUpdate) {
       participatedYesRadio.classList.remove('disabled');
       participatedNoRadio.classList.remove('disabled');
       signatureTypeDropdown.classList.remove('disabled');
-      saveTeamMemberBtn.classList.remove('disabled');
     }
 
     //* Required Fields

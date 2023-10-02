@@ -6,6 +6,7 @@ const plan = (function () {
   let overviewTable;
   let newPlanBtn;
   let assignCaseLoadBtn;
+  let downloadPlanBtn;
   // new plan setup
   let planSetupPage;
   let setupWrap;
@@ -45,21 +46,27 @@ const plan = (function () {
   let planActiveStatus;
   let revisionNumber;
   let sentToOnet;
+  let downloadedFromSalesforce;
   // prior plan data
   let hasPreviousPlans;
   let priorConsumerPlanId;
+  let thisPreviousPlanId = 0;
   // more popup
   let selectedWorkflows;
+  //let selectedPreviousWfForms;
   let addWorkflowDoneBtn;
   let planAttBody;
   let workflowAttBody;
   let signatureAttBody;
+  let portalPlanAttBody;
+  let portalWorkflowAttBody;
+  let portalSignatureAttBody;
   let DODDplanAttBody;
   let DODDsignAttBody;
   let DODDworkflowAttBody;
   // runReports screen
   let include = 'N';
-  let includeCheckbox;
+  let includeCheckbox; //
   // plan validation
   let ISPValidationCheck;
   let assessmentValidationCheck;
@@ -215,6 +222,12 @@ const plan = (function () {
       // contactInformation.planStatusChange();
     }
   }
+  function setRevisionNumber(revNum) {
+    revisionNumber = revNum;
+  }
+  function setPlanActiveStatus(newActiveStatus) {
+    planActiveStatus = newActiveStatus;
+  }
   //-- clear
   function clearAllData() {
     selectedConsumer = undefined;
@@ -226,6 +239,7 @@ const plan = (function () {
     planStatus = undefined;
     planActiveStatus = undefined;
     revisionNumber = undefined;
+    downloadedFromSalesforce = undefined;
 
     hasPreviousPlans = undefined;
     priorConsumerPlanId = undefined;
@@ -815,15 +829,15 @@ const plan = (function () {
     attachHeading.innerText = `Please select the attachment(s) that should be included with the report.`;
     attachmentsWrap.appendChild(attachHeading);
 
-    const planAttWrap = document.createElement('div');
-    planAttWrap.classList.add('planAttWrap');
-    const workflowAttWrap = document.createElement('div');
-    workflowAttWrap.classList.add('workflowAttWrap');
-    const signatureAttWrap = document.createElement('div');
-    signatureAttWrap.classList.add('signatureAttWrap');
-    attachmentsWrap.appendChild(planAttWrap);
-    attachmentsWrap.appendChild(workflowAttWrap);
-    attachmentsWrap.appendChild(signatureAttWrap);
+    const portalPlanAttWrap = document.createElement('div');
+    portalPlanAttWrap.classList.add('planAttWrap');
+    const portalWorkflowAttWrap = document.createElement('div');
+    portalWorkflowAttWrap.classList.add('workflowAttWrap');
+    const portalSignatureAttWrap = document.createElement('div');
+    portalSignatureAttWrap.classList.add('signatureAttWrap');
+    attachmentsWrap.appendChild(portalPlanAttWrap);
+    attachmentsWrap.appendChild(portalWorkflowAttWrap);
+    attachmentsWrap.appendChild(portalSignatureAttWrap);
 
     const planHeading = document.createElement('h2');
     const workflowHeading = document.createElement('h2');
@@ -831,16 +845,16 @@ const plan = (function () {
     planHeading.innerText = 'Plan Attachments';
     workflowHeading.innerText = 'Workflow Attachments';
     signHeading.innerText = 'Signature Attachments';
-    planAttWrap.appendChild(planHeading);
-    workflowAttWrap.appendChild(workflowHeading);
-    signatureAttWrap.appendChild(signHeading);
+    portalPlanAttWrap.appendChild(planHeading);
+    portalWorkflowAttWrap.appendChild(workflowHeading);
+    portalSignatureAttWrap.appendChild(signHeading);
 
-    planAttBody = document.createElement('div');
-    signatureAttBody = document.createElement('div');
-    workflowAttBody = document.createElement('div');
-    planAttWrap.appendChild(planAttBody);
-    signatureAttWrap.appendChild(signatureAttBody);
-    workflowAttWrap.appendChild(workflowAttBody);
+    portalPlanAttBody = document.createElement('div');
+    portalSignatureAttBody = document.createElement('div');
+    portalWorkflowAttBody = document.createElement('div');
+    portalPlanAttWrap.appendChild(portalPlanAttBody);
+    portalSignatureAttWrap.appendChild(portalSignatureAttBody);
+    portalWorkflowAttWrap.appendChild(portalWorkflowAttBody);
 
     screen.appendChild(attachmentsWrap);
 
@@ -858,7 +872,13 @@ const plan = (function () {
     return screen;
   }
   function buildChangePlanTypeScreen() {
+    let origDateCache;
+    let origType;
     let newType;
+    let previousPlansTable;
+    let datesBoxDiv;
+    // data from prev plan
+    let newPlan, newPlanData;
 
     const screen = document.createElement('div');
     screen.id = 'changePlanTypeScreen';
@@ -892,6 +912,37 @@ const plan = (function () {
         updateBtn.classList.add('disabled');
       } else {
         updateBtn.classList.remove('disabled');
+
+        if (newType === 'r') {
+          // prev plans table
+          previousPlansTable = buildPreviousPlansTable(true, (selectedPlan, planData) => {
+            newPlan = selectedPlan;
+            newPlanData = planData;
+
+            origType = planType;
+            origDateCache = planDates.setRevisionPlanDates(newPlanData);
+            planType = newType;
+
+            const previouslySeletedRow = previousPlansTable.querySelector('.selected');
+            if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
+            selectedPlan.classList.add('selected');
+
+            if (screen.contains(datesBoxDiv)) screen.removeChild(datesBoxDiv);
+            datesBoxDiv = planDates.buildDatesBox(isValid => {
+              if (isValid) {
+                updateBtn.classList.remove('disabled');
+              } else {
+                updateBtn.classList.add('disabled');
+              }
+            }, true);
+            screen.insertBefore(datesBoxDiv, btnWrap);
+          });
+          screen.insertBefore(previousPlansTable, btnWrap);
+        } else {
+          if (previousPlansTable) screen.removeChild(previousPlansTable);
+          if (datesBoxDiv) screen.removeChild(datesBoxDiv);
+          if (origDateCache) planDates.resetPlanDatesFromChangeTypeMenu(origDateCache);
+        }
       }
     });
 
@@ -904,11 +955,27 @@ const plan = (function () {
         const success = await planAjax.updatePlanType({
           token: $.session.Token,
           consumerPlanId: planId,
+          prevPlanId: newType === 'a' ? planId : newPlanData.consumerPlanId,
           planType: newType.toUpperCase(),
+          revisionNumber: newType === 'r' ? parseInt(newPlanData.revisionNumber) + 1 : '',
+          planYearStart: UTIL.formatDateToIso(
+            dates.formatISO(planDates.getPlanYearStartDate()).split('T')[0],
+          ),
+          planYearEnd: UTIL.formatDateToIso(
+            dates.formatISO(planDates.getPlanYearEndDate()).split('T')[0],
+          ),
+          effectiveStartDate: UTIL.formatDateToIso(
+            dates.formatISO(planDates.getEffectiveStartDate()).split('T')[0],
+          ),
+          effectiveEndDate: UTIL.formatDateToIso(
+            dates.formatISO(planDates.getEffectiveEndDate()),
+          ).split('T')[0],
+          reviewDate: UTIL.formatDateToIso(dates.formatISO(planDates.getPlanReviewDate())).split(
+            'T',
+          )[0],
         });
 
         if (success === 'Success') {
-          planType = newType;
           currentType.innerHTML = `<p>Current Type:</p> ${
             planType === 'a' ? '<p>Annual</p>' : '<p>Revision</p>'
           }`;
@@ -943,6 +1010,17 @@ const plan = (function () {
               isActive: planActiveStatus,
             });
             ISP.refreshISP(planId);
+          } else {
+            if (previousPlansTable) screen.removeChild(previousPlansTable);
+            if (datesBoxDiv) screen.removeChild(datesBoxDiv);
+
+            // reset type dropdown value
+            const typeSelect = typeDropdown.querySelector('select');
+            typeSelect.value = planType;
+            // reset dates
+            if (origDateCache) planDates.resetPlanDatesFromChangeTypeMenu(origDateCache);
+            // reset type
+            plantype = origType;
           }
         }, 1000);
       },
@@ -953,6 +1031,17 @@ const plan = (function () {
       style: 'secondary',
       type: 'outlined',
       callback: () => {
+        if (previousPlansTable) screen.removeChild(previousPlansTable);
+        if (datesBoxDiv) screen.removeChild(datesBoxDiv);
+
+        // reset type dropdown value
+        const typeSelect = typeDropdown.querySelector('select');
+        typeSelect.value = planType;
+        // reset dates
+        if (origDateCache) planDates.resetPlanDatesFromChangeTypeMenu(origDateCache);
+        // reset type
+        plantype = origType;
+
         screen.classList.remove('visible');
         morePopupMenu.classList.add('visible');
       },
@@ -1142,9 +1231,9 @@ const plan = (function () {
     const selectedAttachmentsSignature = {};
 
     // clear out body before each run to prevent dups
-    planAttBody.innerHTML = '';
-    workflowAttBody.innerHTML = '';
-    signatureAttBody.innerHTML = '';
+    portalPlanAttBody.innerHTML = '';
+    portalWorkflowAttBody.innerHTML = '';
+    portalSignatureAttBody.innerHTML = '';
 
     // Show Attachements
     const attachments = await planAjax.getPlanAndWorkFlowAttachments({
@@ -1187,11 +1276,11 @@ const plan = (function () {
         });
 
         if (a.sigAttachmentId) {
-          signatureAttBody.appendChild(attachment);
+          portalSignatureAttBody.appendChild(attachment);
         } else if (a.whereFrom === 'Plan') {
-          planAttBody.appendChild(attachment);
+          portalPlanAttBody.appendChild(attachment);
         } else {
-          workflowAttBody.appendChild(attachment);
+          portalWorkflowAttBody.appendChild(attachment);
         }
 
         index++;
@@ -1553,25 +1642,29 @@ const plan = (function () {
       text: 'Delete Plan',
       style: 'secondary',
       type: 'contained',
-      classNames:
-        planStatus === 'D' && planActiveStatus && $.session.planUpdate && $.session.planDelete
+      classNames: downloadedFromSalesforce
+        ? $.session.planDelete
           ? ['deleteBtn']
-          : ['deleteBtn', 'disabled'],
+          : ['deleteBtn', 'disabled']
+        : planStatus === 'D' && planActiveStatus && $.session.planUpdate && $.session.planDelete
+        ? ['deleteBtn']
+        : ['deleteBtn', 'disabled'],
     });
     const reactivateBtn = button.build({
       text: 'Reactivate Plan',
       style: 'secondary',
       type: 'contained',
-      classNames:
-        !planActiveStatus && $.session.planUpdate
-          ? ['reactivateBtn']
-          : ['reactivateBtn', 'disabled'],
+      classNames: downloadedFromSalesforce
+        ? ['reactivateBtn', 'disabled']
+        : !planActiveStatus && $.session.planUpdate
+        ? ['reactivateBtn']
+        : ['reactivateBtn', 'disabled'],
     });
     const changeTypeBtn = button.build({
       text: 'Change Plan Type',
       style: 'secondary',
       type: 'contained',
-      classNames: ['planTypeBtn'],
+      classNames: downloadedFromSalesforce ? ['planTypeBtn', 'disabled'] : ['planTypeBtn'],
     });
 
     //morepopupmenu.appendChild(addWorkflowBtn);
@@ -1693,9 +1786,9 @@ const plan = (function () {
     //  assessmentId: planId,
     //});
     //sentToOnet = sentToOnet[0].sentDate;
-    //morePopup = POPUP.build({
-    //  classNames: 'moreMenuPopup',
-    //});
+    morePopup = POPUP.build({
+      classNames: 'moreMenuPopup',
+    });
 
     menuInnerWrap = document.createElement('div');
     menuInnerWrap.classList.add('moreMenuPopup__innerWrap');
@@ -1817,13 +1910,7 @@ const plan = (function () {
       type: 'outlined',
       callback: () => {
         clearAllDataKeepConsumer();
-
-        if ($.loadedAppPage === 'planAssessment') {
-          $.loadedAppPage = '';
-          assessment.autoSaveAssessment(loadLandingPage);
-        } else {
-          loadLandingPage();
-        }
+        loadLandingPage();
       },
     });
 
@@ -1908,42 +1995,22 @@ const plan = (function () {
             TABS.toggleNavStatus(tabs, 'enable');
           } else if (targetTabIndex === '1') {
             TABS.toggleNavStatus(tabs, 'disable');
-            if ($.loadedAppPage === 'planAssessment') {
-              assessment.autoSaveAssessment(async () => {
-                $.loadedAppPage = 'planISP';
-                await ISP.refreshISP(planId);
-                TABS.toggleNavStatus(tabs, 'enable');
-                DOM.autosizeTextarea();
-              });
-            } else {
-              $.loadedAppPage = 'planISP';
-              await ISP.refreshISP(planId);
-              TABS.toggleNavStatus(tabs, 'enable');
-              DOM.autosizeTextarea();
-            }
+
+            $.loadedAppPage = 'planISP';
+            await ISP.refreshISP(planId);
+            TABS.toggleNavStatus(tabs, 'enable');
+            DOM.autosizeTextarea();
           } else if (targetTabIndex === '2') {
             TABS.toggleNavStatus(tabs, 'disable');
-            if ($.loadedAppPage === 'planAssessment') {
-              assessment.autoSaveAssessment(async () => {
-                $.loadedAppPage = 'planWorkflow';
-                const workflowLoadingBar = PROGRESS.SPINNER.get('Loading ISP...');
-                workflowWrap.innerHTML = '';
-                workflowWrap.appendChild(workflowLoadingBar);
-                const newWorkflowMarkup = await getWorkflowMarkup();
-                workflowWrap.innerHTML = '';
-                workflowWrap.appendChild(newWorkflowMarkup);
-                TABS.toggleNavStatus(tabs, 'enable');
-              });
-            } else {
-              $.loadedAppPage = 'planWorkflow';
-              const workflowLoadingBar = PROGRESS.SPINNER.get('Loading Workflow...');
-              workflowWrap.innerHTML = '';
-              workflowWrap.appendChild(workflowLoadingBar);
-              const newWorkflowMarkup = await getWorkflowMarkup();
-              workflowWrap.innerHTML = '';
-              workflowWrap.appendChild(newWorkflowMarkup);
-              TABS.toggleNavStatus(tabs, 'enable');
-            }
+
+            $.loadedAppPage = 'planWorkflow';
+            const workflowLoadingBar = PROGRESS.SPINNER.get('Loading Workflow...');
+            workflowWrap.innerHTML = '';
+            workflowWrap.appendChild(workflowLoadingBar);
+            const newWorkflowMarkup = await getWorkflowMarkup();
+            workflowWrap.innerHTML = '';
+            workflowWrap.appendChild(newWorkflowMarkup);
+            TABS.toggleNavStatus(tabs, 'enable');
           }
           DOM.autosizeTextarea();
         },
@@ -2082,8 +2149,79 @@ const plan = (function () {
       return;
     }
 
-    const workflowCallback = selectedWorkflows => {
+    //const foo = async (selectedWorkflows) => {
+    //  const workflowCallback = selectedWorkflows  => {
+    const workflowCallback = async selectedWorkflows => {
       PROGRESS__BTN.SPINNER.show('workflowContinueBtn', '', false);
+      // TODO 100969 -- display list of User Forms for the selected Workflows
+
+      //    let selectedwfForms = [];
+
+      //    const wfvPopup = document.querySelector('.workflowListPopup');
+      //    if (wfvPopup) {
+      //      POPUP.hide(wfvPopup);
+      //    }
+
+      //    // *********FAKE DATA for Step Docs in a Workflow*****Albert Annual 6/23******Annual -- 279, Antnio -- 934*******************
+      //   //  const wfFormsData2 = [{ docId : 6052 , description : 'Expert 15 test.pdf', WFId: 934, wfName: 'Antinono 3' },
+      //   // { docId : 6053 , description : 'FORMS -- General.pdf', WFId: 934, wfName: 'Antinono 3' },
+      //   // { docId : 1836 , description : 'Medication -- Med Assessment.pdf', WFId: 279, wfName: 'Annual - Waver'},
+      //  ///  { docId : 3201 , description : 'Signed_Plan.pdf', WFId: 279, wfName: 'Annual - Waver'} ];
+
+      //    let thisannual_plan;
+      //    // inserting a new plan based on a selected prior plan
+      //    if (priorConsumerPlanId && priorConsumerPlanId !== '') {
+      //      thisPreviousPlanId = priorConsumerPlanId;
+      //    } else {
+      //      // // inserting a new plan based on the most recent existing plan
+      //      thisannual_plan = previousPlansData.filter(wf => wf.active === 'True');
+      //      if (thisannual_plan && thisannual_plan.length > 0) {
+      //        thisPreviousPlanId = thisannual_plan[0].consumerPlanId;
+      //      }
+      //    }
+
+      //    const wfFormsData = await WorkflowViewerAjax.getWorkFlowFormsfromPreviousPlan({
+      //      token: $.session.Token,
+      //      selectedWFTemplateIds: selectedWorkflows.join(', '),
+      //      previousPlanId: thisPreviousPlanId,
+      //    });
+
+      //    const wfFormsPopup = POPUP.build({
+      //      classNames: ['wfFormsPopup'],
+      //    });
+
+      //    const title = document.createElement('h2');
+      //    title.innerHTML = 'Select forms to attach.</br>';
+      //    const linebr = document.createElement('div')
+      //    linebr.innerHTML = '</br>'
+      //    wfFormsPopup.appendChild(title);
+      //    wfFormsPopup.appendChild(linebr);
+
+      //    const doneBtn = button.build({
+      //      id: 'wfFormsContinueBtn',
+      //      text: 'Continue',
+      //      type: 'contained',
+      //      style: 'secondary',
+      //      // classNames: ['copySelectedBtn', 'disabled'],
+      //      classNames: 'copySelectedBtn',
+      //      callback: () => {
+      //        var selectedPreviousWfForms = planWorkflow.getselectedWorkFlowForms();
+      //        var wf_template_selected = selectedWorkflows;
+
+      //        POPUP.hide(wfFormsPopup);
+      //        createNewPlan(selectedConsumer, processId, selectedWorkflows, selectedPreviousWfForms);
+      //      },
+      //    });
+
+      //    if (wfFormsData && wfFormsData.length > 0) {
+      //      const list = planWorkflow.buildWorkflowFormList(wfFormsData);
+      //      wfFormsPopup.appendChild(list);
+      //      wfFormsPopup.appendChild(doneBtn);
+      //      POPUP.show(wfFormsPopup);
+      //    } else {
+      //      createNewPlan(selectedConsumer, processId, selectedWorkflows);
+      //    }
+
       createNewPlan(selectedConsumer, processId, selectedWorkflows);
     };
     planWorkflow.showWorkflowListPopup(wfvData, workflowCallback);
@@ -2093,7 +2231,12 @@ const plan = (function () {
     const first = selectedConsumer.card.querySelector('.name_first');
     return `${first.innerText} ${last.innerText}`;
   }
-  async function createNewPlan(selectedConsumer, processId, selectedWorkflows) {
+  async function createNewPlan(
+    selectedConsumer,
+    processId,
+    selectedWorkflows,
+    selectedPreviousWfForms,
+  ) {
     const EffectiveEndDate = planDates.getEffectiveEndDate();
     let edDate = UTIL.formatDateFromDateObj(EffectiveEndDate);
 
@@ -2101,6 +2244,7 @@ const plan = (function () {
     let workflowId;
     let insertedSSA;
     const workflowIds = [];
+    const wfDocIds = [];
 
     //var selectedConsumer = plan.getSelectedConsumer();
     var salesForceCaseManagerId = await consentAndSignAjax.getStateCaseManagerforConsumer({
@@ -2141,15 +2285,37 @@ const plan = (function () {
       currentPlanId = returnString[0];
       insertedSSA = returnString[1];
     }
-
+    // handle selected workflows
     if (selectedWorkflows && selectedWorkflows.length > 0) {
       for (i = 0; i < selectedWorkflows.length; i++) {
         let wftemplateId = selectedWorkflows[i];
+        // does this have any attached WF Forms, if so then wantedFormIds: selectedPreviousWfForms, otherwise wantedFormDescriptions: ""
+        let thiswfForms;
+
+        // handle selected forms
+        if (selectedPreviousWfForms && selectedPreviousWfForms.length > 0) {
+          let thiswfFormslist = [];
+          for (j = 0; j < selectedPreviousWfForms.length; j++) {
+            if (wftemplateId === selectedPreviousWfForms[j].WFtemplateId) {
+              thiswfFormslist.push(selectedPreviousWfForms[j].description);
+            }
+          }
+          if (thiswfFormslist && thiswfFormslist.length > 0) {
+            thiswfForms = thiswfFormslist.join(',');
+          } else {
+            thiswfForms = '';
+          }
+        } else {
+          thiswfForms = '';
+        }
+
         workflowId = await WorkflowViewerAjax.copyWorkflowtemplateToRecord({
           token: $.session.Token,
           templateId: wftemplateId,
           referenceId: currentPlanId,
           peopleId: selectedConsumer.id,
+          //wantedFormDescriptions: thiswfForms,
+          //priorConsumerPlanId: thisPreviousPlanId,
         });
         workflowIds.push(workflowId);
       }
@@ -2161,6 +2327,7 @@ const plan = (function () {
       processId,
       peopleId: selectedConsumer.id,
       referenceId: currentPlanId,
+      priorConsumerPlanId: thisPreviousPlanId,
     });
     var autoWFIds = autoworkflowIds.split(',');
     workflowIds.push(...autoWFIds);
@@ -2216,48 +2383,52 @@ const plan = (function () {
     }
   }
 
-  function buildPreviousPlansTable() {
+  function buildPreviousPlansTable(forChangeType, callbackForChangeType) {
     const tableOptions = {
       plain: true,
       columnHeadings: ['Type', 'Rev #', 'PY Start', 'Eff Start', 'Review'],
-      tableId: 'previousPlanTable',
+      tableId: forChangeType ? 'previousPlanTableMoreMenu' : 'previousPlanTable',
       headline: 'Select a plan below for revision',
     };
 
     const tableData = previousPlansData
-      .filter(plan => {
-        return plan.active === 'True';
+      .filter(prevPlan => {
+        return prevPlan.active === 'True';
       })
-      .map(plan => {
-        const type = plan.planType === 'A' ? 'Ann' : 'Rev';
-        const revisionNum = plan.revisionNumber !== '0' ? plan.revisionNumber : '';
-        const start = plan.planYearStart.split(' ')[0];
-        const effectiveStart = plan.effectiveStart.split(' ')[0];
-        const reviewDate = plan.reviewDate ? plan.reviewDate.split(' ')[0] : 'n/a';
+      .map(prevPlan => {
+        const type = prevPlan.planType === 'A' ? 'Ann' : 'Rev';
+        const revisionNum = prevPlan.revisionNumber !== '0' ? prevPlan.revisionNumber : '';
+        const start = prevPlan.planYearStart.split(' ')[0];
+        const effectiveStart = prevPlan.effectiveStart.split(' ')[0];
+        const reviewDate = prevPlan.reviewDate ? prevPlan.reviewDate.split(' ')[0] : 'n/a';
 
         return {
           values: [type, revisionNum, start, effectiveStart, reviewDate],
-          attributes: [{ key: 'data-plan-id', value: plan.consumerPlanId }],
+          attributes: [{ key: 'data-plan-id', value: prevPlan.consumerPlanId }],
           onClick: e => {
-            const row = e.target;
-            const previouslySeletedRow = prevPlanTable.querySelector('.selected');
-            if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
+            if (!forChangeType) {
+              const row = e.target;
+              const previouslySeletedRow = prevPlanTable.querySelector('.selected');
+              if (previouslySeletedRow) previouslySeletedRow.classList.remove('selected');
 
-            row.classList.add('selected');
+              row.classList.add('selected');
 
-            priorConsumerPlanId = plan.consumerPlanId;
+              planDates.setRevisionPlanDates(prevPlan);
 
-            planDates.setRevisionPlanDates(plan);
+              priorConsumerPlanId = prevPlan.consumerPlanId;
 
-            if (setupWrap.contains(datesBoxDiv)) setupWrap.removeChild(datesBoxDiv);
-            datesBoxDiv = planDates.buildDatesBox(isValid => {
-              if (isValid) {
-                doneBtn.classList.remove('disabled');
-              } else {
-                doneBtn.classList.add('disabled');
-              }
-            });
-            setupWrap.insertBefore(datesBoxDiv, prevPlanTable);
+              if (setupWrap.contains(datesBoxDiv)) setupWrap.removeChild(datesBoxDiv);
+              datesBoxDiv = planDates.buildDatesBox(isValid => {
+                if (isValid) {
+                  doneBtn.classList.remove('disabled');
+                } else {
+                  doneBtn.classList.add('disabled');
+                }
+              });
+              setupWrap.insertBefore(datesBoxDiv, prevPlanTable);
+            } else {
+              callbackForChangeType(e.target, prevPlan);
+            }
           },
         };
       });
@@ -2458,6 +2629,54 @@ const plan = (function () {
     });
   }
 
+  function buildDownloadPlanBtn() {
+    return button.build({
+      text: 'DOWNLOAD PLAN',
+      style: 'secondary',
+      type: 'contained',
+      classNames: ['downloadPlanBtn'],
+      callback: downloadPlanFromSalesforceProgress,
+    });
+  }
+
+  async function downloadPlanFromSalesforceProgress() {
+    pendingSave.show('Downloading Plan...');
+
+    const sentStatus = await planAjax.downloadPlanFromSalesforce({
+      token: $.session.Token,
+      consumerId: selectedConsumer.id,
+      userId: $.session.UserId,
+    });
+
+    if (sentStatus === 'Download complete') {
+      success = true;
+    } else {
+      success = false;
+    }
+
+    const pendingSavePopup = document.querySelector('.pendingSavePopup');
+    pendingSavePopup.style.display = 'none';
+
+    // Handles popup actions based on whether the One Span delivery was successsful
+    if (success) {
+      pendingSave.fulfill('Download Successful!');
+      setTimeout(() => {
+        const savePopup = document.querySelector('.successfulSavePopup');
+        DOM.ACTIONCENTER.removeChild(savePopup);
+        overlay.hide();
+
+        loadLandingPage();
+      }, 700);
+    } else {
+      pendingSave.reject('Failed to download plan, please try again.');
+      setTimeout(() => {
+        const failPopup = document.querySelector('.failSavePopup');
+        DOM.ACTIONCENTER.removeChild(failPopup);
+        overlay.hide();
+      }, 2000);
+    }
+  }
+
   function buildConsumerCard() {
     selectedConsumer.card.classList.remove('highlighted');
 
@@ -2471,24 +2690,44 @@ const plan = (function () {
   function buildOverviewTable() {
     const tableOptions = {
       plain: false,
-      columnHeadings: ['Type', 'Rev #', 'PY Start', 'Eff Start', 'Review', 'Sent To DODD'],
+      columnHeadings: [
+        'Type',
+        'Rev #',
+        'Downloaded',
+        'PY Start',
+        'Eff Start',
+        'Review',
+        'Sent To DODD',
+      ],
       tableId: 'planOverviewTable',
     };
 
     const tableData = previousPlansData.map(pd => {
       const type = pd.planType === 'A' ? 'Annual' : 'Revision';
       const revisionNum = pd.revisionNumber !== '0' ? pd.revisionNumber : '';
+      const downloadedDate = pd.downloadDate ? pd.downloadDate.split(' ')[0] : '';
       const startDate = pd.planYearStart.split(' ')[0];
       const endDate = pd.planYearEnd.split(' ')[0];
       const effectiveStart = pd.effectiveStart.split(' ')[0];
       const effectiveEnd = pd.effectiveEnd.split(' ')[0];
-      const isActive = pd.active === 'True' ? true : false;
+      let isActive = pd.active === 'True' ? true : false;
       const reviewDate = pd.reviewDate ? pd.reviewDate.split(' ')[0] : 'n/a';
-      let sentToDODD = pd.dateSentDODD ? pd.dateSentDODD.split(' ')[0] : '';
+      let sentToDODD = pd.dateSentDODD ? pd.dateSentDODD : '';
       sentToDODD = `${pd.userSentDODD} - ${sentToDODD}`;
+      if (downloadedDate !== '') {
+        downloadPlanBtn.classList.add('disabled');
+      }
 
       return {
-        values: [type, revisionNum, startDate, effectiveStart, reviewDate, sentToDODD],
+        values: [
+          type,
+          revisionNum,
+          downloadedDate,
+          startDate,
+          effectiveStart,
+          reviewDate,
+          sentToDODD,
+        ],
         attributes: [
           { key: 'data-plan-active', value: isActive },
           { key: 'data-plan-id', value: pd.consumerPlanId },
@@ -2499,6 +2738,7 @@ const plan = (function () {
           planStatus = pd.planStatus ? pd.planStatus : 'D';
           planActiveStatus = isActive;
           revisionNumber = pd.revisionNumber;
+          downloadedFromSalesforce = downloadedDate ? true : false;
 
           planDates.setReviewPlanDates({
             startDate: new Date(startDate),
@@ -2527,6 +2767,7 @@ const plan = (function () {
     const consumerCard = buildConsumerCard();
     newPlanBtn = buildNewPlanBtn();
     assignCaseLoadBtn = buildAssignCaseloadBtn();
+    downloadPlanBtn = buildDownloadPlanBtn();
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('topOutcomeWrap');
@@ -2534,20 +2775,23 @@ const plan = (function () {
     btnWrap.appendChild(newPlanBtn);
     if ($.session.planAssignCaseload) btnWrap.appendChild(assignCaseLoadBtn);
 
+    if ($.session.downloadPlans && $.session.areInSalesForce) {
+      // validate salesforce
+      isValidSalesforce = await consentAndSignAjax.validateConsumerForSalesForceId({
+        consumerId: selectedConsumer.id,
+      });
+
+      if (isValidSalesforce) {
+        btnWrap.appendChild(downloadPlanBtn);
+      }
+    }
+
     landingPage.appendChild(consumerCard);
     landingPage.appendChild(btnWrap);
     DOM.ACTIONCENTER.appendChild(landingPage);
 
     const spinner = PROGRESS.SPINNER.get('Gathering Plans...');
     landingPage.appendChild(spinner);
-
-    // selectedConsumer = roster2.getActiveConsumers()[0];
-    // if ($.session.applicationName === 'Advisor') {
-    //   planAjax.getConsumerPeopleId(selectedConsumer.id, function (results) {
-    //     $.session.planPeopleId = results[0].id;
-    //     selectedConsumer.id = $.session.planPeopleId;
-    //   });
-    // }
 
     previousPlansData = await planAjax.getConsumerPlans({
       token: $.session.Token,
@@ -2588,14 +2832,17 @@ const plan = (function () {
     getWorkflowMarkup,
     getHasPreviousPlans,
     setSelectedConsumer,
+    setRevisionNumber,
     getISPValidation,
     getAssessmentValidation,
     setPlanType,
     setPlanId,
     setPlanStatus,
+    setPlanActiveStatus,
     toggleNewPlanDoneBtn,
     handleActionNavEvent,
     buildPlanPage,
+    buildPreviousPlansTable,
     loadLanding: loadLandingPage,
     init,
   };

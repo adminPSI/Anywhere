@@ -130,10 +130,10 @@
     tocSectionAlertDiv.innerHTML = `${icons.error}`;
     sectionHeading.appendChild(tocSectionAlertDiv);
 
-    // planValidation.createTooltip(
-    //   'This section is missing an Outcome, Support, or Referral',
-    //   tocSectionAlertDiv,
-    // );
+    planValidation.createTooltip(
+      'This section is missing an Outcome, Support, or Referral',
+      tocSectionAlertDiv,
+    );
 
     tocSectionAlertDiv.style.display = 'none';
 
