@@ -168,10 +168,10 @@ const ISP = (function () {
         outcomesAlertDiv.style.display = 'none';
 
         // creates and shows a tip when hovering over the visible alert div
-        planValidation.createTooltip(
-          'There is data missing on this tab that is required by DODD',
-          outcomesAlertDiv,
-        );
+        // planValidation.createTooltip(
+        //   'There is data missing on this tab that is required by DODD',
+        //   outcomesAlertDiv,
+        // );
 
         // If a plan returns an error on the validation check, show the alert div
         if (validationCheck.complete === false) {
@@ -245,6 +245,9 @@ const ISP = (function () {
     } else {
       readOnly = false;
     }
+
+    validationCheck = plan.getISPValidation();
+    planValidation.getAssessmentValidation(planId);
 
     ispNav = buildNavigation();
     ispDiv.appendChild(ispNav);

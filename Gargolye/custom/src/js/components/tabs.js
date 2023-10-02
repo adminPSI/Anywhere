@@ -37,9 +37,7 @@ var tabs = (function () {
 
       var activeTab = tabNav.querySelector('.active');
       var activeSection = tabBody.querySelector('.active');
-      var targetSection = `.${event.target.innerHTML
-        .toLowerCase()
-        .replace(/ /g, '')}-section`;
+      var targetSection = `.${event.target.innerHTML.toLowerCase().replace(/ /g, '')}-section`;
       targetSection = tabBody.querySelector(targetSection);
 
       activeTab.classList.remove('active');
@@ -85,7 +83,7 @@ const TABS = (function () {
     navItem.classList.add('tabsNav__item');
     navItem.id = `tabNav${index}`;
     navItem.innerHTML = `<p>${navText}</p>`;
-    
+
     // create alert div
     const navAlertDiv = document.createElement('div');
     navAlertDiv.classList.add('tocAlertDiv');
@@ -93,21 +91,24 @@ const TABS = (function () {
     navAlertDiv.innerHTML = `${icons.error}`;
     navItem.appendChild(navAlertDiv);
 
-    planValidation.createTooltip("There is data missing on this tab that is required by DODD", navAlertDiv);
+    //planValidation.createTooltip(
+    //   'There is data missing on this tab that is required by DODD',
+    //   navAlertDiv,
+    // );
 
     navAlertDiv.style.display = 'none';
-   
+
     if (isActive) navItem.classList.add('active');
 
     // DIsplay Assessment Nav Validation if their are validation errors
-    if (navText === 'Assessment' && assessmentValidtaionCheck.complete === false) {
-        navAlertDiv.style.display = 'flex';
-    }
+    //if (navText === 'Assessment' && assessmentValidtaionCheck.complete === false) {
+    //  navAlertDiv.style.display = 'flex';
+    //}
 
-    // DIsplay ISP Nav Validation if their are validation errors
-    if (navText === 'ISP' && ISPValidationCheck.complete === false) {
-        navAlertDiv.style.display = 'flex';
-    }
+    //// DIsplay ISP Nav Validation if their are validation errors
+    //if (navText === 'ISP' && ISPValidationCheck.complete === false) {
+    //  navAlertDiv.style.display = 'flex';
+    //}
 
     return navItem;
   };
@@ -149,10 +150,7 @@ const TABS = (function () {
     });
 
     tabsNav.addEventListener('click', e => {
-      if (
-        !e.target.classList.contains('tabsNav__item') ||
-        tabsNav.classList.contains('disabled')
-      ) {
+      if (!e.target.classList.contains('tabsNav__item') || tabsNav.classList.contains('disabled')) {
         return;
       }
 

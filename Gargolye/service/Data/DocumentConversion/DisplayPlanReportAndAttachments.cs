@@ -1663,13 +1663,13 @@ namespace Anywhere.service.Data.DocumentConversion
             return planReport;
         }
 
-        public SentToONETDate[] getSentToONETDate(string token, string assesmentId)
-        {
-            string sentDate = adg.getSentToONETDate(token, assesmentId);
-            SentToONETDate[] sentDateObj = js.Deserialize<SentToONETDate[]>(sentDate);
+        //public SentToONETDate[] getSentToONETDate(string token, string assesmentId)
+        //{
+        //    string sentDate = adg.getSentToONETDate(token, assesmentId);
+        //    SentToONETDate[] sentDateObj = js.Deserialize<SentToONETDate[]>(sentDate);
 
-            return sentDateObj;
-        }
+        //    return sentDateObj;
+        //}
 
         public ReportSectionOrder[] getReportSectionOrder()
         {

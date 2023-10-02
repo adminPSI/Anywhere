@@ -291,7 +291,7 @@ $.session.CFDelete = false;
 $.session.CFInsert = false;
 $.session.CFUpdate = false;
 $.session.CFView = false;
-$.session.CFADDPayee = false;
+$.session.CFADDPayee = false;//
 $.session.CFEditAccountEntries = false; //
 
 // Reset Password

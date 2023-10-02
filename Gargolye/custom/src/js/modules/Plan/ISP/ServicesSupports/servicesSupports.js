@@ -2328,6 +2328,13 @@ const servicesSupports = (() => {
             saveUpdateData.rowOrder = rowOrder + 1;
           }
           insertAdditionalSupport(saveUpdateData, fromAssessment);
+
+          let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
+          planValidation.servicesAndSupportsBtnCheck(
+            assessmentPlanValidation,
+            saveUpdateData.assessmentAreaId,
+          );
+          planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
         } else {
           updateAdditionalSupport(saveUpdateData);
         }
@@ -2725,7 +2732,7 @@ const servicesSupports = (() => {
         let assessmentPlanValidation = await planValidation.getAssessmentValidation(planID);
         planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
         planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
-        
+
         doneBtn.classList.remove('disabled');
         POPUP.hide(professionalReferralPopup);
       },
