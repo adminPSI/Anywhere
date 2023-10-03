@@ -1,5 +1,3 @@
-'use-strict';
-
 //TODO: 1. logic for updating char count value
 
 (function (global, factory) {
@@ -101,8 +99,6 @@
     if (node instanceof Node) {
       node.appendChild(this.inputWrap);
     }
-
-    document.body.appendChild(this.inputWrap);
 
     return this;
   };

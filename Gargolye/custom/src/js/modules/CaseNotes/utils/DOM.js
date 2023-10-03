@@ -1,5 +1,3 @@
-'use-strict';
-
 (function (global, factory) {
   global = global || self;
   global._DOM = factory();

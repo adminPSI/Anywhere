@@ -1,5 +1,3 @@
-'use-strict';
-
 (function (global, factory) {
   global = global || self;
   global.SELECT = factory();
@@ -50,6 +48,31 @@
   }
 
   SELECT.prototype.build = function () {
+    this.inputWrap = _DOM.createElement('div', {
+      class: `input ${this.options.attributes.type}`,
+    });
+
+    this.input = _DOM.createElement('select', { ...this.options.attributes });
+    this.label = _DOM.createElement('label', {
+      text: this.options.label,
+      for: this.options.attributes.id,
+    });
+
+    if (this.options.note) {
+      const inputNote = _DOM.createElement('div', { class: 'note', text: this.options.note });
+      this.inputWrap.appendChild(inputNote);
+    }
+
+    this.inputWrap.appendChild(this.input);
+    this.inputWrap.appendChild(this.label);
+    return this;
+  };
+
+  SELECT.prototype.render = function (node) {
+    if (node instanceof Node) {
+      node.appendChild(this.inputWrap);
+    }
+
     return this;
   };
 

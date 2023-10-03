@@ -1,5 +1,3 @@
-'use-strict';
-
 //? Thoughts
 //? inputs, submit callback, required fields, permissions,
 
@@ -34,8 +32,10 @@
     this.options.elements.forEach(ele => {
       let input, inputInstance;
 
-      if (ele.type === 'radio') {
+      if (ele.type.toLowerCase() === 'radio') {
         inputInstance = new RADIO({ ...ele }).build();
+      } else if (ele.type.toLowerCase() === 'select') {
+        inputInstance = new SELECT({ ...ele }).build();
       } else {
         inputInstance = new INPUT({ ...ele }).build();
       }
@@ -60,8 +60,8 @@
 
   FORM.prototype.render = function (node) {
     if (node instanceof Node) {
+      node.appendChild(this.form);
     }
-    document.body.appendChild(this.form);
 
     return this;
   };

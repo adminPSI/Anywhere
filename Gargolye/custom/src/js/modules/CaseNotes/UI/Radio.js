@@ -1,5 +1,3 @@
-'use-strict';
-
 (function (global, factory) {
   global = global || self;
   global.RADIO = factory();
@@ -50,8 +48,6 @@
     if (node instanceof Node) {
       node.appendChild(this.inputGroup);
     }
-
-    document.body.appendChild(this.inputGroup);
 
     return this;
   };
