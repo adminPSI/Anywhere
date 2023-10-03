@@ -1,38 +1,37 @@
 //test df
-var caseNotes = (function () {  
+var caseNotes = (function () {
   function loadCaseNotesLanding() {
     let newBtn = button.build({
       text: 'New Note',
       style: 'secondary',
       type: 'contained',
-      callback: function() {
+      callback: function () {
         note.init('new');
-      }
+      },
     });
     let newSSABtn = button.build({
       text: 'New SSA Note',
       style: 'secondary',
       type: 'contained',
-      callback: function() {
+      callback: function () {
         noteSSA.init('new');
-      }
+      },
     });
 
     let overviewBtn = button.build({
       text: 'Review Notes',
       style: 'secondary',
       type: 'contained',
-      callback: notesOverview.init
+      callback: notesOverview.init,
     });
     let editPhrasesBtn = button.build({
       text: 'Edit My Phrases',
       style: 'secondary',
       type: 'contained',
-      callback: cnEditPhrases.init
-      });//
-      //
+      callback: cnEditPhrases.init,
+    });
 
-    var btnWrap = document.createElement('div');//
+    var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
     if ($.session.CaseNotesUpdate && $.session.CaseNotesSSANotes) btnWrap.appendChild(newSSABtn);
     if ($.session.CaseNotesUpdate) btnWrap.appendChild(newBtn);
@@ -45,7 +44,7 @@ var caseNotes = (function () {
     DOM.clearActionCenter();
     //PERMISSION// caseNotesUpdate === false means they have view only permisison
     //Can't create new notes or update/delete notes. -- Skip the landing, and just load the overview page
-    if(!$.session.CaseNotesUpdate) {
+    if (!$.session.CaseNotesUpdate) {
       notesOverview.init();
       return;
     }
@@ -53,6 +52,6 @@ var caseNotes = (function () {
   }
 
   return {
-    load: init
-  }
+    load: init,
+  };
 })();
