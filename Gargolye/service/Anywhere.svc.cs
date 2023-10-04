@@ -3467,7 +3467,19 @@ namespace Anywhere
         {
             return emp.deletePostionTask(token, jobTaskID, PositionID);
         }
+        public AuthorizationWorker.AssessmentEntries[] getAssessmentEntries(string token, string consumerIds, string methodology, string score, string startDateFrom, string startDateTo, string endDateFrom, string endDateTo, string priorAuthApplFrom, string priorAuthApplTo, string priorAuthRecFrom, string priorAuthRecTo, string priorAuthAmtFrom, string priorAuthAmtTo)
+        {
+            return authWorker.getAssessmentEntries(token, consumerIds, methodology, score, startDateFrom, startDateTo, endDateFrom, endDateTo, priorAuthApplFrom, priorAuthApplTo, priorAuthRecFrom, priorAuthRecTo, priorAuthAmtFrom, priorAuthAmtTo);
+        }
 
+        public AuthorizationWorker.Score[] getScore(string token, string methodologyID)
+        {
+            return authWorker.getScore(token, methodologyID);
+        }
+        public string verifyDefaultEmailClient()
+        {
+            return cdw.verifyDefaultEmailClient();
+        }
 
     }
 }

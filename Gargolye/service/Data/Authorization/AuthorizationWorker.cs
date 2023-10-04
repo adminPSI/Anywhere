@@ -16,6 +16,9 @@ using System.Management.Automation.Language;
 using CrystalDecisions.Shared;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 using System.Security.Cryptography;
+using static Anywhere.service.Data.Employment.EmploymentWorker;
+using System.ServiceModel.Web;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 
 namespace Anywhere.service.Data.Authorization
 {
@@ -53,10 +56,10 @@ namespace Anywhere.service.Data.Authorization
             public string service_code { get; set; }
             public string MaxUnits { get; set; }
             public string authCostFY1 { get; set; }
-            public string authCostFY2 { get; set; }    
-                
-            
-            
+            public string authCostFY2 { get; set; }
+
+
+
         }
 
         public class PageData
@@ -64,13 +67,35 @@ namespace Anywhere.service.Data.Authorization
             public PDParent[] pageDataParent { get; set; }
             public PDChild[] pageDataChild { get; set; }
         }
+
+        public class AssessmentEntries
+        {
+            public string ID { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string methodology { get; set; }
+            public string score { get; set; }
+            public string behaviorMod { get; set; }
+            public string medicalMod { get; set; }
+            public string DCMod { get; set; }
+            public string CCMod { get; set; }
+            public string priorAuthApplied { get; set; }
+            public string priorAuthReceived { get; set; }
+            public string priorAuthAmount { get; set; }
+        }
+
+        public class Score
+        {
+            public string scoreID { get; set; }
+            public string scoreDescription { get; set; }
+        }
         public PageData getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
             PageData pageData = new PageData();
             js.MaxJsonLength = Int32.MaxValue;
-            string parentString = getAuthorizationPageDataParent( code,  matchSource,  vendorId,  planType,  planYearStartStart,  planYearStartEnd,
-                                 planYearEndStart,  planYearEndEnd,  completedDateStart,  completedDateEnd,  selectedConsumerId);
+            string parentString = getAuthorizationPageDataParent(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
+                                 planYearEndStart, planYearEndEnd, completedDateStart, completedDateEnd, selectedConsumerId);
             PDParent[] parentObj = js.Deserialize<PDParent[]>(parentString);
 
             string childString = getAuthorizationPageDataChildren(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
@@ -84,7 +109,7 @@ namespace Anywhere.service.Data.Authorization
         }
 
 
-            //Parent
+        //Parent
         public string getAuthorizationPageDataParent(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
@@ -101,8 +126,8 @@ namespace Anywhere.service.Data.Authorization
                 string jsonResult = "";
                 string fieldId = "Match Source";
                 sb.Clear();
-  
-                sb.Append("select p.CompletionDate,p.plan_year_start,p.plan_year_end,p.plantype,p.match_source + ' ' + ct.caption as sourceAndCaption, p.ID, p.PL_Vendor_ID as plVendorId, v.name, p.pas_id, p.RevisionNum as revisionNum "); 
+
+                sb.Append("select p.CompletionDate,p.plan_year_start,p.plan_year_end,p.plantype,p.match_source + ' ' + ct.caption as sourceAndCaption, p.ID, p.PL_Vendor_ID as plVendorId, v.name, p.pas_id, p.RevisionNum as revisionNum ");
                 sb.Append("from dba.pas as p ");
                 sb.Append("left outer join dba.code_table as ct on ct.code = p.Match_Source ");
                 sb.Append("left outer join dba.vendor as v on v.Vendor_ID = p.PL_Vendor_ID ");
@@ -112,7 +137,7 @@ namespace Anywhere.service.Data.Authorization
                 sb.AppendFormat("and (p.Match_Source like '{0}' or p.Match_Source is null) ", matchSource);
                 sb.AppendFormat("and p.planType like '{0}' ", planType);
                 sb.AppendFormat("and p.plan_year_start between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
-                if(planYearEndStart != "" && planYearEndEnd != "")
+                if (planYearEndStart != "" && planYearEndEnd != "")
                 {
                     sb.AppendFormat("and p.plan_year_end between '{0}' and '{1}' ", planYearEndStart, planYearEndEnd);
                 }
@@ -134,7 +159,7 @@ namespace Anywhere.service.Data.Authorization
                 {
                     sb.AppendFormat("and p.PL_Vendor_ID like '{0}' ", vendorId);
                 }
-                
+
                 sb.Append("order by p.CompletionDate desc ");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
@@ -147,7 +172,7 @@ namespace Anywhere.service.Data.Authorization
             catch (Exception ex)
             {
 
-                
+
             }
             return String.Empty;
         }
@@ -216,7 +241,7 @@ namespace Anywhere.service.Data.Authorization
         }
 
 
-            public string DataTableToJSONWithJSONNet(DataTable table)
+        public string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
@@ -269,7 +294,7 @@ namespace Anywhere.service.Data.Authorization
                 sb.Append("from dba.pas as p ");
                 sb.Append("left outer join dba.vendor as v on v.Vendor_ID = p.PL_Vendor_ID where active = 'Y' ");
                 sb.Append("order by vendorName");
-                
+
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
                 //FilterResults[] filterResultssObj = js.Deserialize<FilterResults[]>(jsonResult.ToString());
@@ -294,7 +319,7 @@ namespace Anywhere.service.Data.Authorization
             public MatchSources[] matchSources { get; set; }
         }
 
-        
+
         public class PlanVendors
         {
             public string vendorId { get; set; }
@@ -307,6 +332,44 @@ namespace Anywhere.service.Data.Authorization
             public string caption { get; set; }
         }
 
-        
+        public AssessmentEntries[] getAssessmentEntries(string token, string consumerIds, string methodology, string score, string startDateFrom, string startDateTo, string endDateFrom, string endDateTo, string priorAuthApplFrom, string priorAuthApplTo, string priorAuthRecFrom, string priorAuthRecTo, string priorAuthAmtFrom, string priorAuthAmtTo)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    AssessmentEntries[] entries = js.Deserialize<AssessmentEntries[]>(adg.getAssessmentEntries(token, consumerIds, methodology, score, startDateFrom, startDateTo, endDateFrom, endDateTo, priorAuthApplFrom, priorAuthApplTo, priorAuthRecFrom, priorAuthRecTo, priorAuthAmtFrom, priorAuthAmtTo, transaction));
+
+                    return entries;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+
+        }
+
+        public Score[] getScore(string token, string methodologyID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    Score[] score = js.Deserialize<Score[]>(adg.getScore(transaction, methodologyID));
+                    return score;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+
+
     }
 }

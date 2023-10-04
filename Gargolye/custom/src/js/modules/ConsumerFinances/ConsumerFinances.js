@@ -101,7 +101,7 @@ const ConsumerFinances = (() => {
             filterValues.minamount,
             filterValues.maxamount,
             filterValues.checkNo,
-            filterValues.Balance, 
+            filterValues.Balance,
             filterValues.enteredBy,
             filterValues.isattachment,
         );
@@ -110,16 +110,16 @@ const ConsumerFinances = (() => {
             let newDate = new Date(entry.activityDate);
             let theMonth = newDate.getMonth() + 1;
             let formatActivityDate = UTIL.leadingZero(theMonth) + '/' + UTIL.leadingZero(newDate.getDate()) + '/' + newDate.getFullYear();
-            entry.activityDate = formatActivityDate; 
+            entry.activityDate = formatActivityDate;
         });
-       
+
         let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
             values: [entry.activityDate, entry.account, entry.payee, entry.category, '$' + entry.amount, entry.checkno, '$' + entry.balance, entry.enteredby],
-            attributes: [{ key: 'registerId', value: entry.ID }],
+            attributes: [{ key: 'registerId', value: entry.ID }, { key: 'data-plan-active', value: entry.isExpance }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.registerId.value)
             },
-            endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`, 
+            endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`,
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
@@ -233,7 +233,7 @@ const ConsumerFinances = (() => {
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
-            text: account.accountName
+            text: account.accountName + ' - $' + account.totalBalance
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
         dropdown.populate("accountDropdown", data, filterValues.accountName);
@@ -352,13 +352,6 @@ const ConsumerFinances = (() => {
             type: 'outlined',
             callback: () => filterPopupCancelBtn()
         });
-        fromDateInput.style.width = '170px';
-        toDateInput.style.width = '170px';
-        minAmountInput.style.width = '170px';
-        maxAmountInput.style.width = '170px';
-        toDateInput.style.marginLeft = '12px';
-        maxAmountInput.style.marginLeft = '12px';
-
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
@@ -366,12 +359,12 @@ const ConsumerFinances = (() => {
         btnWrap.appendChild(CANCEL_BTN);
 
         var dateWrap = document.createElement('div');
-        dateWrap.classList.add('dropdownWrap');
+        dateWrap.classList.add('dateWrap');
         dateWrap.appendChild(fromDateInput);
         dateWrap.appendChild(toDateInput);
 
         var amountWrap = document.createElement('div');
-        amountWrap.classList.add('dropdownWrap');
+        amountWrap.classList.add('dateWrap');
         amountWrap.appendChild(minAmountInput);
         amountWrap.appendChild(maxAmountInput);
 
@@ -444,7 +437,7 @@ const ConsumerFinances = (() => {
         accountFilterDropdown.addEventListener('change', event => {
             tmpaccountName = event.target.value;
         });
-        lastUpdateDropdown.addEventListener('change', event => { 
+        lastUpdateDropdown.addEventListener('change', event => {
             tmpenteredBy = event.target.options[event.target.selectedIndex].innerHTML == 'ALL' ? '%' : event.target.options[event.target.selectedIndex].id; //event.target.options[event.target.selectedIndex].innerHTML;
             filterValues.userName = event.target.options[event.target.selectedIndex].innerHTML;
         });
@@ -459,7 +452,7 @@ const ConsumerFinances = (() => {
         });
 
         APPLY_BTN.addEventListener('click', () => {
-            if (!APPLY_BTN.classList.contains('disabled')) { 
+            if (!APPLY_BTN.classList.contains('disabled')) {
                 updateFilterData({
                     tmpactivityStartDate,
                     tmpactivityEndDate,
@@ -478,7 +471,7 @@ const ConsumerFinances = (() => {
 
     }
 
-    function updateFilterData(data) { 
+    function updateFilterData(data) {
         if (data.tmpactivityStartDate) filterValues.activityStartDate = data.tmpactivityStartDate;
         if (data.tmpactivityEndDate) filterValues.activityEndDate = data.tmpactivityEndDate;
         if (data.tmpminAmount) filterValues.minamount = data.tmpminAmount;
@@ -494,7 +487,7 @@ const ConsumerFinances = (() => {
         var fromDate = fromDateInput.querySelector('#fromDateInput');
         var toDate = toDateInput.querySelector('#toDateInput');
 
-        if (fromDate.value > toDate.value ) {
+        if (fromDate.value > toDate.value) {
             toDateInput.classList.add('errorPopup');
         } else {
             toDateInput.classList.remove('errorPopup');
@@ -526,7 +519,7 @@ const ConsumerFinances = (() => {
 
         const {
             getPayeesResult: Payees,
-        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);  
+        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);
         let payeeData = Payees.map((payees) => ({
             id: payees.CategoryID,
             value: payees.Description,
@@ -551,7 +544,7 @@ const ConsumerFinances = (() => {
         } = await ConsumerFinancesAjax.getActiveEmployeesAsync();
         let data = employees.map((employee) => ({
             id: employee.userId,
-            value: employee.userId, 
+            value: employee.userId,
             text: employee.userName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });

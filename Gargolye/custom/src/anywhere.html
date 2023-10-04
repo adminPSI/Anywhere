@@ -579,7 +579,7 @@
                     break;
                 }
                 case 'authorizations': {
-                    authorizations.init();
+                    authorizationLanding.load();
                     break;
                 }
                 case 'plan': {
@@ -748,6 +748,34 @@
             }
             else {
                 resetBtn.style.display = "none";
+            }
+        }
+
+        async function emailOnClick(emailLink) {
+            const success = await rosterAjax.verifyDefaultEmailClient();
+            if (success) {
+                window.location.href = emailLink;
+            } else {
+                const defaultEmailConfPOPUP = POPUP.build({
+                    hideX: true,
+                });
+                const okBtn = button.build({
+                    text: 'OK',
+                    style: 'secondary',
+                    type: 'contained',
+                    callback: () => {
+                        POPUP.hide(defaultEmailConfPOPUP);
+                    },
+                });
+                okBtn.style.width = '100%';
+                const message = document.createElement('p');
+                message.innerText = 'There is no default mail client setup on this device. Please setup a default mail client on this device in order to create an email.';
+                message.style.textAlign = 'center';
+                message.style.marginBottom = '15px';
+                defaultEmailConfPOPUP.appendChild(message);
+                defaultEmailConfPOPUP.appendChild(okBtn);
+                okBtn.focus();
+                POPUP.show(defaultEmailConfPOPUP);
             }
         }
 

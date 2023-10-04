@@ -267,6 +267,8 @@ const TRANS_vehicleInspection = (function () {
       }
       questionContainer.appendChild(questionTitle)
       questionContainer.appendChild(radioDiv);
+      var lineBR = document.createElement('br');
+      questionContainer.appendChild(lineBR); 
 
       inspectionQuestionBody.appendChild(questionContainer);
 
