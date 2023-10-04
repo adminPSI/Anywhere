@@ -95,11 +95,12 @@ $input_border: 2px solid $lightgray;
     }
 
     label {
+      margin: 0;
       position: relative;
       top: -4px;
     }
 
-    .note {
+    .inputNote {
       font-size: 12px;
       position: absolute;
       left: 0px;

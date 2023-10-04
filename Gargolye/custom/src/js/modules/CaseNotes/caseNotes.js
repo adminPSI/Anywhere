@@ -22,38 +22,22 @@
 //   }
 // }
 
+//TODO: Build date navigation
+//TODO: Build new roster picker (new mini roster)
+//TODO: Build Overview Table
+
 // MAIN
 const CaseNotes = (() => {
   function init() {
     DOM.clearActionCenter();
+    const wrapForNewUI = _DOM.createElement('div', { id: 'UI' });
+    const cnForm = CaseNotesForm.init();
+    cnForm.build().render(wrapForNewUI);
 
-    const CaseNoteForm = new FORM({
-      elements: [
-        {
-          type: 'select',
-          label: 'Service Code',
-          id: 'serviceCode',
-          name: 'serviceCode',
-          note: '*Required',
-        },
-        {
-          type: 'number',
-          label: 'Mileage',
-          id: 'mileage',
-          name: 'mileage',
-          note: '*Required',
-        },
-        {
-          type: 'text',
-          label: 'Name',
-          id: 'name',
-          name: 'name',
-          note: '*Enter full name here',
-        },
-      ],
-    });
+    DOM.ACTIONCENTER.appendChild(wrapForNewUI);
 
-    CaseNoteForm.build().render(DOM.ACTIONCENTER);
+    // Init other files for testing
+    DateNavigation.init();
   }
 
   return {

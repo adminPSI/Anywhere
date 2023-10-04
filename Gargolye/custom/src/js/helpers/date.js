@@ -1,6 +1,18 @@
 const dates = (function () {
   // PRIVATE
   //------------------------------------
+  function toDate(argument) {
+    const argStr = Object.prototype.toString.call(argument);
+
+    // Clone the date
+    if (argument instanceof Date || (typeof argument === 'object' && argStr === '[object Date]')) {
+      return new argument.constructor(argument.getTime());
+    } else if (typeof argument === 'number' || argStr === '[object Number]') {
+      return new Date(argument);
+    } else {
+      return new Date(NaN);
+    }
+  }
   function toInteger(dirtyNumber) {
     if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
       return NaN;
@@ -51,6 +63,10 @@ const dates = (function () {
     date.setDate(date.getDate() + amount);
     return date;
   }
+  function addWeeks(date, amount) {
+    const days = amount * 7;
+    return addDays(date, days);
+  }
   function addMonths(dirtyDate, dirtyAmount) {
     var date = cloneDate(dirtyDate);
     var amount = toInteger(dirtyAmount);
@@ -72,6 +88,9 @@ const dates = (function () {
   function subDays(dirtyDate, dirtyAmount) {
     var amount = toInteger(dirtyAmount);
     return addDays(dirtyDate, -amount);
+  }
+  function subWeeks(date, amount) {
+    return addWeeks(date, -amount);
   }
   function subYears(dirtyDate, dirtyAmount) {
     var amount = toInteger(dirtyAmount);
@@ -244,6 +263,35 @@ const dates = (function () {
     return result;
   }
 
+  function eachDayOfInterval(interval, options) {
+    const startDate = toDate(interval.start);
+    const endDate = toDate(interval.end);
+
+    const endTime = endDate.getTime();
+
+    // Throw an exception if start date is after end date or if any date is `Invalid Date`
+    if (!(startDate.getTime() <= endTime)) {
+      throw new RangeError('Invalid interval');
+    }
+
+    const dates = [];
+
+    const currentDate = startDate;
+    currentDate.setHours(0, 0, 0, 0);
+
+    const step = options?.step ?? 1;
+    if (step < 1 || isNaN(step))
+      throw new RangeError('`options.step` must be a number greater than 1');
+
+    while (currentDate.getTime() <= endTime) {
+      dates.push(toDate(currentDate));
+      currentDate.setDate(currentDate.getDate() + step);
+      currentDate.setHours(0, 0, 0, 0);
+    }
+
+    return dates;
+  }
+
   function removeTimestamp(date) {
     const splitDate = date.split(' ');
     return `${splitDate[0]}`;
@@ -252,9 +300,11 @@ const dates = (function () {
   return {
     getDaysInMonth,
     addDays,
+    addWeeks,
     addMonths,
     addYears,
     subDays,
+    subWeeks,
     subYears,
     endOfWeek,
     startDayOfWeek,
@@ -262,6 +312,7 @@ const dates = (function () {
     isBefore,
     isEqual,
     formatISO,
+    eachDayOfInterval,
     removeTimestamp,
   };
 })();

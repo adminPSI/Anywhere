@@ -59,8 +59,9 @@
     });
 
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'note', text: this.options.note });
+      const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
       this.inputWrap.appendChild(inputNote);
+      this.inputWrap.classList.add('withNote');
     }
 
     this.inputWrap.appendChild(this.input);

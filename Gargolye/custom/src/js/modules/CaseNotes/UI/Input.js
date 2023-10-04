@@ -76,8 +76,9 @@
     });
 
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'note', text: this.options.note });
+      const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
       this.inputWrap.appendChild(inputNote);
+      this.inputWrap.classList.add('withNote');
     }
 
     if (this.options.showcount) {
@@ -86,7 +87,6 @@
         : { text: '0' };
       const inputCount = _DOM.createElement('div', { class: 'charCount', ...countMarkup });
       this.inputWrap.appendChild(inputCount);
-      this.inputWrap.classList.add('withNote');
     }
 
     this.inputWrap.appendChild(this.input);
