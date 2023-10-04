@@ -14,6 +14,7 @@ namespace Anywhere.service.Data
     {
         private static Loger logger = new Loger();
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+        Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
 
         public string authorizationGetPageData(string token)
         {
@@ -615,6 +616,56 @@ namespace Anywhere.service.Data
             }
             logger.debug("Attachment done");
             return memorystream;
+        }
+
+        public string getAssessmentEntries(string token, string consumerIds, string methodology, string score, string startDateFrom, string startDateTo, string endDateFrom, string endDateTo, string priorAuthApplFrom, string priorAuthApplTo, string priorAuthRecFrom, string priorAuthRecTo, string priorAuthAmtFrom, string priorAuthAmtTo, DistributedTransaction transaction)
+        {
+            try
+            {
+                priorAuthAmtTo = priorAuthAmtTo.Length > 7 ? priorAuthAmtTo.Remove(7) : priorAuthAmtTo;
+                priorAuthAmtFrom = priorAuthAmtFrom.Length > 7 ? priorAuthAmtFrom.Remove(7) : priorAuthAmtFrom;
+                logger.debug("getAssessmentEntries");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[13];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerIds", DbType.String, consumerIds);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@methodology", DbType.String, methodology);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@score", DbType.String, score);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDateFrom", DbType.String, startDateFrom);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDateTo", DbType.String, startDateTo);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDateFrom", DbType.String, endDateFrom);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDateTo", DbType.String, endDateTo);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthApplFrom", DbType.String, priorAuthApplFrom);
+                args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthApplTo", DbType.String, priorAuthApplTo);
+                args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthRecFrom", DbType.String, priorAuthRecFrom);
+                args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthRecTo", DbType.String, priorAuthRecTo);
+                args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthAmtFrom", DbType.String, priorAuthAmtFrom);
+                args[12] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthAmtTo", DbType.String, priorAuthAmtTo);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_GetAssessmentEntries(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_GetAssessmentEntries(" + consumerIds + ")");
+                throw ex;
+            }
+        }
+
+        public string getScore(DistributedTransaction transaction, string methodologyID)
+        {
+            List<string> list = new List<string>();
+            list.Add(methodologyID);
+            try
+            {
+                logger.debug("getScore");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getScore(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getScore()");
+                throw ex;
+            }
+
         }
 
     }

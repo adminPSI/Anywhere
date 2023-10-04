@@ -573,10 +573,27 @@
         }
     }
 
+    .dateWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        margin: 0;
+
+        > div {
+            flex-grow: 1;
+            margin: 0 5px 20px;
+            width: 45%;
+        }
+    }
 
     #singleEntryAdminReviewTable {
 
         .table__row {
+
+            &[data-plan-active='true'] {
+                color: red;
+            }
+
             > div {
                 margin-top: 10px;
             }
@@ -627,7 +644,7 @@
                 }
 
                 > div:nth-child(4) {
-                    width: 13%; 
+                    width: 13%;
                 }
 
                 > div:nth-child(7) {
@@ -745,7 +762,7 @@
         .width20Per, .width30Per, .width32Per {
             margin-left: 1.5%;
             width: 97%;
-        } 
+        }
 
 
         @media screen and (min-width: 560px) {
@@ -859,7 +876,7 @@
 
             > div:nth-child(7) {
                 display: none;
-                width: 17%; 
+                width: 17%;
             }
 
             > div:nth-child(8) {

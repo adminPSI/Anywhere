@@ -887,16 +887,17 @@ const NewEntryCF = (() => {
         var messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertPayeeResult.RegionID == '-1') {
-            messagetext.innerHTML = 'Payee name is already exists.'; 
-            messagetext.classList.add('password-error'); 
+            messagetext.innerHTML = 'Payee name already exists.';
+            messagetext.classList.add('password-error');
+            saveBtn.classList.add('disabled');
         }
         else {
             POPUP.hide(addPayeePopup);
             payee = payeeName;
             document.getElementById('newCategoryDropdown').value = '';
-            document.getElementById('newSubCategoryDropdown').value = '';  
+            document.getElementById('newSubCategoryDropdown').value = '';
             temppayee = 'ChangedValue';
-            populatePayeeDropdown();         
+            populatePayeeDropdown();
         }
 
     }

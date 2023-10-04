@@ -56,6 +56,8 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string deposit { get; set; }
             [DataMember(Order = 18)]
             public string expance { get; set; }
+            [DataMember(Order = 19)]
+            public string isExpance { get; set; }
 
         }
 
@@ -66,7 +68,8 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string accountId { get; set; }
             [DataMember(Order = 1)]
             public string accountName { get; set; }
-
+            [DataMember(Order = 2)]
+            public string totalBalance { get; set; }
         }
 
         [DataContract]
@@ -414,16 +417,16 @@ namespace Anywhere.service.Data.ConsumerFinances
                 if (updateAmount.deposit == "0" || updateAmount.deposit == "0.00")
                 {
                     if (counterbal == 0)
-                                balance = (Convert.ToDecimal("0") - Convert.ToDecimal(updateAmount.expance)).ToString();
+                        balance = (Convert.ToDecimal("0") - Convert.ToDecimal(updateAmount.expance)).ToString();
                     else
-                                balance = (Convert.ToDecimal(runningBalance) - Convert.ToDecimal(updateAmount.expance)).ToString();
+                        balance = (Convert.ToDecimal(runningBalance) - Convert.ToDecimal(updateAmount.expance)).ToString();
                 }
                 else
                 {
                     if (counterbal == 0)
-                                balance = (Convert.ToDecimal("0") + Convert.ToDecimal(updateAmount.deposit)).ToString();
+                        balance = (Convert.ToDecimal("0") + Convert.ToDecimal(updateAmount.deposit)).ToString();
                     else
-                                balance = (Convert.ToDecimal(runningBalance) + Convert.ToDecimal(updateAmount.deposit)).ToString();
+                        balance = (Convert.ToDecimal(runningBalance) + Convert.ToDecimal(updateAmount.deposit)).ToString();
                 }
                 runningBalance = balance;
                 Odg.updateRunningBalance(balance, transaction, updateAmount.ID);
@@ -459,8 +462,8 @@ namespace Anywhere.service.Data.ConsumerFinances
                 try
                 {
                     ConsumerFinancesEntry[] categorySubCategory = js.Deserialize<ConsumerFinancesEntry[]>(Odg.deleteConsumerFinanceAccount(token, registerId, transaction));
-                    updateAccountBalance(categorySubCategory[0].activityDate, categorySubCategory[0].accountID, transaction, categorySubCategory[0].balance); 
-                    return categorySubCategory[0].accountID; 
+                    updateAccountBalance(categorySubCategory[0].activityDate, categorySubCategory[0].accountID, transaction, categorySubCategory[0].balance);
+                    return categorySubCategory[0].accountID;
                 }
                 catch (Exception ex)
                 {
