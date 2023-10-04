@@ -394,8 +394,8 @@ const planOutcomes = (() => {
       });
     }
 
-    // validationCheck = await planValidation.ISPValidation(planId);
-    // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+    validationCheck = await planValidation.ISPValidation(planId);
+    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Markup ---------
   function toggleAddNewOutcomePopupDoneBtn() {
@@ -1577,7 +1577,7 @@ const planOutcomes = (() => {
           if (respObj[0].responsibleProvider) {
             validationCheck.selectedProviders.push(respObj[0].responsibleProvider);
           }
-
+          
           const experiencesTable = table.build(tableOptions);
           experiencesTable.classList.add('experiencesTable');
           experiencesTable.classList.add('sortableTable');
@@ -1627,9 +1627,6 @@ const planOutcomes = (() => {
     experienceBtnAlertDiv.appendChild(addExpTableBtn);
     experienceBtnAlertDiv.appendChild(experienceAlertDiv);
     experiencesDiv.appendChild(experienceBtnAlertDiv);
-
-    // checks if alert should be visible
-    planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv);
 
     // checks if alert should be visible
     planValidation.experiencesValidationCheck(validationCheck, outcomeId, experienceAlertDiv);
@@ -1745,17 +1742,17 @@ const planOutcomes = (() => {
 
     table.deleteRow(`reviews${reviewId}`);
 
-    // // grabs the review alert for this specific outcome
-    // const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
+    // grabs the review alert for this specific outcome
+    const alertDiv = document.getElementById(`reviewsAlert${outcomeId}`);
 
-    // // checks for missing data
-    // validationCheck = await planValidation.ISPValidation(planId);
+    // checks for missing data
+    validationCheck = await planValidation.ISPValidation(planId);
 
-    // // displays or removes button alert depending on validationCheck
-    // planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
+    // displays or removes button alert depending on validationCheck
+    planValidation.reviewsValidationCheck(validationCheck, outcomeId, alertDiv);
 
-    // // displays or removes alerts for tabs in the navs depending on validationCheck
-    // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+    // displays or removes alerts for tabs in the navs depending on validationCheck
+    planValidation.updatedIspOutcomesSetAlerts(validationCheck);
   }
   //-- Markup ---------
   function toggleReviewsPopupDoneBtn() {
@@ -2166,9 +2163,9 @@ const planOutcomes = (() => {
           sectionId: outcomesUpdateData.sectionId,
         });
 
-        assessmentPlanValidation = await planValidation.getAssessmentValidation(planId);
-        planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
-        planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
+            assessmentPlanValidation = await planValidation.getAssessmentValidation(planId);
+            planValidation.servicesAndSupportsBtnCheck(assessmentPlanValidation);
+            planValidation.updatedAssessmenteValidation(assessmentPlanValidation);
       },
     });
     // Status
@@ -2249,12 +2246,12 @@ const planOutcomes = (() => {
       outcomesUpdateData.outcome = e.target.value;
       if (outcomesUpdateData.outcome === '') {
         outcomeInput.classList.add('error');
-        // planValidation.updateOutcome(outcomeId, validationCheck, true);
-        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        planValidation.updateOutcome(outcomeId, validationCheck, true);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       } else {
         outcomeInput.classList.remove('error');
-        // planValidation.updateOutcome(outcomeId, validationCheck, false);
-        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        planValidation.updateOutcome(outcomeId, validationCheck, false);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       }
     });
     // Details
@@ -2281,12 +2278,12 @@ const planOutcomes = (() => {
       outcomesUpdateData.details = e.target.value;
       if (outcomesUpdateData.details === '') {
         detailsInput.classList.add('error');
-        // planValidation.updateOutcomeDetails(outcomeId, validationCheck, true);
-        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        planValidation.updateOutcomeDetails(outcomeId, validationCheck, true);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       } else {
         detailsInput.classList.remove('error');
-        // planValidation.updateOutcomeDetails(outcomeId, validationCheck, false);
-        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        planValidation.updateOutcomeDetails(outcomeId, validationCheck, false);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       }
     });
     // History
@@ -2401,7 +2398,7 @@ const planOutcomes = (() => {
         } else {
           validationCheck.planProgressSummary = true;
         }
-        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
       },
     });
     outcomesProgressSummary.classList.add('summaryOutcomesTextInput');
@@ -2428,8 +2425,8 @@ const planOutcomes = (() => {
           outcomeOrder: 0, //need this to  keep from first one defaulting to 2
         });
 
-        // validationCheck = await planValidation.ISPValidation(planId);
-        // planValidation.updatedIspOutcomesSetAlerts(validationCheck);
+        validationCheck = await planValidation.ISPValidation(planId);
+        planValidation.updatedIspOutcomesSetAlerts(validationCheck);
 
         const outcome = buildOutcome({ outcomeId, outcomeOrder, status: '0' });
         outcomesWrap.insertBefore(outcome, addOutcomeBtn);
@@ -2472,30 +2469,28 @@ const planOutcomes = (() => {
 
     const planOutcomesData = validationCheck.outcomesData;
 
-    //const planOutcomesData = validationCheck.outcomesData;
+    if (
+      !planOutcomesData.planProgressSummary ||
+      planOutcomesData.planProgressSummary.length === 0
+    ) {
+      let summaryId = await planOutcomesAjax.insertPlanOutcomeProgressSummary({
+        token: $.session.Token,
+        planId: parseInt(planId),
+        progressSummary: '',
+      });
+      summaryId = summaryId.split(':');
+      summaryId = summaryId[1];
+      summaryId = summaryId.replace('}]', '').replace('"', '');
 
-    //if (
-    //  !planOutcomesData.planProgressSummary ||
-    //  planOutcomesData.planProgressSummary.length === 0
-    //) {
-    //  let summaryId = await planOutcomesAjax.insertPlanOutcomeProgressSummary({
-    //    token: $.session.Token,
-    //    planId: parseInt(planId),
-    //    progressSummary: '',
-    //  });
-    //  summaryId = summaryId.split(':');
-    //  summaryId = summaryId[1];
-    //  summaryId = summaryId.replace('}]', '').replace('"', '');
-
-    //  progressSummary = '';
-    //  progressSummaryId = summaryId;
-    //} else {
-    //  progressSummary = planOutcomesData.planProgressSummary[0].progressSummary;
-    //  progressSummaryId = planOutcomesData.planProgressSummary[0].progressSummaryId;
-    //}
+      progressSummary = '';
+      progressSummaryId = summaryId;
+    } else {
+      progressSummary = planOutcomesData.planProgressSummary[0].progressSummary;
+      progressSummaryId = planOutcomesData.planProgressSummary[0].progressSummaryId;
+    }
 
     dropdownData = planData.getDropdownData();
-    //outcomesData = mapOutcomesDetails(planOutcomesData);
+    outcomesData = mapOutcomesDetails(planOutcomesData);
     hasPreviousPlan = plan.getHasPreviousPlans();
 
     const ddData = dropdownData.serviceVendors.map(dd => {
