@@ -851,6 +851,83 @@ var OODAjax = (function () {
   });
   }
 
+   // Form 10 -- Transportation
+   function getForm10TransportationData(caseNoteId, callback) {
+    $.ajax({
+      type: 'POST',
+      url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm10TransportationData/',
+      data: '{"token":"' + $.session.Token + '", "caseNoteId":"' + caseNoteId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response, status, xhr) {
+        var res = response.getForm10TransportationDataResult;
+        callback(res);
+      },
+      error: function(xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+  
+  // Form 10 -- Transportation
+  function updateForm10TransportationData(data, callback) {
+      data = {
+        token: $.session.Token, 
+        consumerId: data.consumerId, 
+        caseNoteId: data.caseNoteId,
+        serviceDate: data.serviceDate,
+        startTime: data.startTime,
+        endTime: data.endTime,  
+        contactType: data.contactType,
+        startLocationNotes: data.startLocationNotes,
+        endLocationNotes: data.endLocationNotes,
+        InVehicleNotes: data.InVehicleNotes,
+        userId: data.userId,        
+         }
+    return $.ajax({
+    type: 'POST',
+    url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/updateForm10TransportationData/',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    success: function(response, status, xhr) {
+    callback(response.updateForm10TransportationDataResult);
+    },
+    });
+  }
+  
+  // Form 10 -- Transportation
+  function insertForm10TransportationData(data, callback) {
+    data = {
+      token: $.session.Token, 
+      consumerId: data.consumerId, 
+      caseNoteId: data.caseNoteId,
+      serviceDate: data.serviceDate,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      contactType: data.contactType,
+      startLocationNotes: data.startLocationNotes,
+      endLocationNotes: data.endLocationNotes,
+      InVehicleNotes: data.InVehicleNotes,
+      caseManagerId: data.caseManagerId,
+      userId: data.userId,
+      serviceId: data.serviceId,
+      referenceNumber: data.referenceNumber,
+  
+       }
+  return $.ajax({
+  type: 'POST',
+  url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/insertForm10TransportationData/',
+  data: JSON.stringify(data),
+  contentType: 'application/json; charset=utf-8',
+  dataType: 'json',
+  success: function(response, status, xhr) {
+  callback(response.insertForm10TransportationDataResult);
+  },
+  });
+  }
+
+
   return {       
    
       getOODEntriesAsync,
@@ -883,6 +960,9 @@ var OODAjax = (function () {
       getForm8MonthlySummary,
       updateForm8MonthlySummary,
       insertForm8MonthlySummary,
+      getForm10TransportationData,
+      insertForm10TransportationData,
+      updateForm10TransportationData,
       
 
   };
