@@ -69,6 +69,7 @@
     this.inputWrap = _DOM.createElement('div', {
       class: `input ${this.options.attributes.type}`,
     });
+
     this.input = _DOM.createElement('input', { ...this.options.attributes });
     this.label = _DOM.createElement('label', {
       text: this.options.label,

@@ -1,0 +1,42 @@
+.dateNavigation {
+  display: flex;
+  flex-flow: row nowrap;
+
+  .navButtons {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    cursor: pointer;
+
+    * {
+      pointer-events: none;
+    }
+  }
+
+  .week {
+    display: flex;
+    flex-flow: row nowrap;
+    flex-grow: 1;
+
+    .day {
+      cursor: pointer;
+      flex-basis: 14%;
+      flex-grow: 1;
+      padding: 8px 0;
+      text-align: center;
+
+      * {
+        pointer-events: none;
+      }
+
+      .weekday {
+        font-weight: $_bold;
+        text-transform: uppercase;
+      }
+
+      .date {
+        font-size: $px14;
+      }
+    }
+  }
+}

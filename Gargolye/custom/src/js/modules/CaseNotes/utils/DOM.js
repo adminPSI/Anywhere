@@ -14,14 +14,27 @@
       let attributeName;
       for (attributeName in attributes) {
         if (!attributes[attributeName]) continue;
-        if (attributeName === 'html') {
-          element.innerHTML = attributes[attributeName];
-        } else if (attributeName === 'text') {
-          element.innerText = attributes[attributeName];
-        } else if (attributeName === 'node') {
-          element.appendChild(attributes[attributeName]);
-        } else {
-          element.setAttribute(attributeName, attributes[attributeName]);
+        switch (attributeName) {
+          case 'html':
+            element.innerHTML = attributes[attributeName];
+            break;
+          case 'text':
+            element.innerText = attributes[attributeName];
+            break;
+          case 'node':
+            element.appendChild(attributes[attributeName]);
+            break;
+          case 'class':
+            if (Array.isArray(attributes[attributeName])) {
+              attributes[attributeName].forEach(att => {
+                element.classList.add(att);
+              });
+            } else {
+              element.classList.add(attributes[attributeName]);
+            }
+            break;
+          default:
+            element.setAttribute(attributeName, attributes[attributeName]);
         }
       }
     }

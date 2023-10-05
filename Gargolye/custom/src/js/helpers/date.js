@@ -47,6 +47,11 @@ const dates = (function () {
 
   // PUBLIC
   //------------------------------------
+  function getTodaysDateObj() {
+    const todaysDate = new Date();
+    todaysDate.setHours(0, 0, 0, 0);
+    return todaysDate;
+  }
   function getDaysInMonth(dirtyDate) {
     var date = cloneDate(dirtyDate);
     var year = date.getFullYear();
@@ -298,6 +303,7 @@ const dates = (function () {
   }
 
   return {
+    getTodaysDateObj,
     getDaysInMonth,
     addDays,
     addWeeks,

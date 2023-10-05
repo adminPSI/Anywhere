@@ -1,3 +1,8 @@
+// const nextWeek = dates.eachDayOfInterval({
+//   start: dates.addWeeks(currentWeekStart, 1),
+//   end: dates.addWeeks(currentWeekEnd, 1),
+// });
+
 (function (global, factory) {
   global.DateNavigation = factory();
 })(this, function () {
@@ -11,48 +16,128 @@
     6: 'sat',
   };
 
-  let selectedDate;
-
   //=========================
   // MAIN LIB
   //-------------------------
-  function DateNavigation() {
-    // GET TODAYS DATE AND SET HOURS TO MIDNIGHT
-    const todaysDate = new Date();
-    todaysDate.setHours(0, 0, 0, 0);
-
-    // GET BEGIN OF CURRENT WEEK
-    const currentWeekStart = dates.startDayOfWeek(todaysDate);
-    // GET END OF CURRENT WEEK
-    const currentWeekEnd = dates.endOfWeek(todaysDate);
-
-    const currentWeekData = dates.eachDayOfInterval({
-      start: currentWeekStart,
-      end: currentWeekEnd,
+  function DateNavigation(options) {
+    // Data Init
+    //? by default selectedDate, weekStart, weekEnd and eachDayoFWeek will be the most current week of calandar year
+    this.selectedDate = dates.getTodaysDateObj();
+    this.weekStart = dates.startDayOfWeek(this.selectedDate);
+    this.weekEnd = dates.endOfWeek(this.selectedDate);
+    this.eachDayOfWeek = dates.eachDayOfInterval({
+      start: this.weekStart,
+      end: this.weekEnd,
     });
-    console.table(currentWeekData);
 
-    // BUILD OUT DATE NAV
-    const navWrapEle = document.createElement('div');
+    // Callbacks
+    this.onDateChange = options.onDateChange;
 
-    currentWeekData.forEach(date => {
+    // DOM
+    this.navigationEle = null;
+    this.weekWrapEle = null;
+    this.prevWeekNavBtn = null;
+    this.nextWeekNavBtn = null;
+  }
+
+  DateNavigation.prototype.build = function () {
+    this.navigationEle = _DOM.createElement('div', { class: 'dateNavigation' });
+    this.weekWrapEle = _DOM.createElement('div', { class: 'week' });
+    this.prevWeekNavBtn = _DOM.createElement('div', {
+      class: 'navButtons',
+      'data-target': 'prevWeek',
+      node: Icon.getIcon('arrowLeft'),
+    });
+    this.nextWeekNavBtn = _DOM.createElement('div', {
+      class: 'navButtons',
+      'data-target': 'nextWeek',
+      node: Icon.getIcon('arrowRight'),
+    });
+
+    this.navigationEle.appendChild(this.prevWeekNavBtn);
+    this.navigationEle.appendChild(this.weekWrapEle);
+    this.navigationEle.appendChild(this.nextWeekNavBtn);
+
+    this.populate();
+
+    this.navigationEle.addEventListener('click', e => {
+      if (e.target.dataset.target === 'prevWeek') {
+        this.weekStart = dates.subWeeks(this.weekStart, 1);
+        this.weekEnd = dates.subWeeks(this.weekEnd, 1);
+        this.eachDayOfWeek = dates.eachDayOfInterval({
+          start: this.weekStart,
+          end: this.weekEnd,
+        });
+
+        //? default selected date to monday on week change
+        this.selectedDate = this.eachDayOfWeek[1];
+
+        this.populate();
+        return;
+      }
+
+      if (e.target.dataset.target === 'nextWeek') {
+        this.weekStart = dates.addWeeks(this.weekStart, 1);
+        this.weekEnd = dates.addWeeks(this.weekEnd, 1);
+        this.eachDayOfWeek = dates.eachDayOfInterval({
+          start: this.weekStart,
+          end: this.weekEnd,
+        });
+
+        //? default selected date to monday on week change
+        this.selectedDate = this.eachDayOfWeek[1];
+
+        this.populate();
+        return;
+      }
+
+      if (e.target.dataset.target === 'date') {
+        const currentSelectedDate = this.weekWrapEle.querySelector('.selected');
+        if (currentSelectedDate) {
+          currentSelectedDate.classList.remove('selected');
+        }
+        this.selectedDate = date;
+        dateWrapEle.classList.add('selected');
+        return;
+      }
+    });
+
+    return this;
+  };
+
+  DateNavigation.prototype.populate = function () {
+    this.weekWrapEle.innerHTML = '';
+
+    console.table(this.eachDayOfWeek);
+    this.eachDayOfWeek.forEach(date => {
+      let isDateCurrentlySelected = date.getTime() === this.selectedDate.getTime() ? true : false;
+
       const dayOfWeek = date.getDay();
       const month = date.getMonth();
       const day = date.getDate();
 
-      const dateWrapEle = document.createElement('div');
-      const dayOfWeekEle = document.createElement('p');
-      const dateEle = document.createElement('p');
-
-      dayOfWeekEle.innerText = DAYS[dayOfWeek];
-      dateEle.innerText = `${month}/${day}`;
+      const dateWrapEle = _DOM.createElement('div', {
+        class: isDateCurrentlySelected ? ['day', 'selected'] : 'day',
+        'data-date': date.toDateString(),
+        'data-target': 'date',
+      });
+      const dayOfWeekEle = _DOM.createElement('p', { text: DAYS[dayOfWeek], class: 'weekday' });
+      const dateEle = _DOM.createElement('p', { text: `${month}/${day}`, class: 'date' });
 
       dateWrapEle.appendChild(dateEle);
       dateWrapEle.appendChild(dayOfWeekEle);
 
-      navWrapEle.appendChild(dateWrapEle);
+      this.weekWrapEle.appendChild(dateWrapEle);
     });
-  }
+  };
+
+  DateNavigation.prototype.renderTo = function (node) {
+    if (node instanceof Node) {
+      node.appendChild(this.navigationEle);
+    }
+
+    return this;
+  };
 
   return DateNavigation;
 });

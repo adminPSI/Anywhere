@@ -3,11 +3,11 @@
 
 (function (global, factory) {
   global = global || self;
-  global.FORM = factory();
+  global.Form = factory();
 })(this, function () {
   /**
    * Default configuration
-   * @typ {Object}
+   * @type {Object}
    */
   const DEFAULT_OPTIONS = {
     style: 'default',
@@ -18,31 +18,34 @@
   //-------------------------
 
   /**
-   * @class FORM
+   * @class Form
    * @param {Object} options
    */
-  function FORM(options) {
+  function Form(options) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
     this.inputs = {};
   }
 
-  FORM.prototype.build = function () {
+  Form.prototype.build = function () {
     this.form = _DOM.createElement('form');
 
     this.options.elements.forEach(ele => {
-      let input, inputInstance;
+      let inputInstance;
 
-      if (ele.type.toLowerCase() === 'radio') {
-        inputInstance = new RADIO({ ...ele }).build();
-      } else if (ele.type.toLowerCase() === 'select') {
-        inputInstance = new SELECT({ ...ele }).build();
-      } else {
-        inputInstance = new INPUT({ ...ele }).build();
+      switch (ele.type.toLowerCase()) {
+        case 'radio': {
+          inputInstance = new RADIO({ ...ele }).build();
+        }
+        case 'select': {
+          inputInstance = new SELECT({ ...ele }).build();
+        }
+        default: {
+          inputInstance = new INPUT({ ...ele }).build();
+        }
       }
 
-      input = inputInstance.inputWrap;
-      this.form.appendChild(input);
-      this.inputs[ele.id] = input;
+      this.form.appendChild(inputInstance.inputWrap);
+      this.inputs[ele.id] = inputInstance;
     });
 
     this.form.addEventListener('submit', e => {
@@ -58,7 +61,7 @@
     return this;
   };
 
-  FORM.prototype.render = function (node) {
+  Form.prototype.render = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.form);
     }
@@ -66,5 +69,5 @@
     return this;
   };
 
-  return FORM;
+  return Form;
 });

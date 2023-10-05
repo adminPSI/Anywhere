@@ -2,6 +2,12 @@
   global = global || self;
   global._UTIL = factory();
 })(this, function () {
+  /**
+   * Ajax call using native Fetch API
+   * @param {String} service
+   * @param {Object} retrieveData
+   * @returns {Object}
+   */
   async function fetchData(service, retrieveData) {
     const URL_BASE = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}`;
     const URL = `${URL_BASE}/${service}/`;
@@ -29,7 +35,7 @@
    * inside the baseObject.
    * @param {Object}  baseObject
    * @param {Object}  mergeObject
-   * @return {Object}              Merged options object
+   * @return {Object} Merged options object
    */
   const mergeObjects = (baseObject, mergeObject) => {
     return Object.assign({}, baseObject, mergeObject);
@@ -38,7 +44,7 @@
   /**
    * Separate props and methods from obj
    * @param {Object}  options
-   * @return {Object}          Separated options object
+   * @return {Object} Separated options object
    */
   const splitObjectByPropNames = (options, props) => {
     const [a, b] = Object.entries(options).reduce(
