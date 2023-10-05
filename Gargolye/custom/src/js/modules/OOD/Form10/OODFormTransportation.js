@@ -4,7 +4,6 @@ const OODFormTransportation = (() => {
   let serviceDateInput;
   let startTimeInput;
   let endTimeInput;
-  let narrativeOutcomeInput;
 
   // buttons
 let saveNoteBtn;
@@ -19,18 +18,11 @@ let caseNoteId;
 let serviceDate;
 let startTime;
 let endTime;
-let SAMLevel;
 let employer;
 let contactType;
-let jobSeekerPresent;
-let outcome;
-let TSCNotified;
-let bilingualSupplement;
 let startLocationNotes;
 let endLocationNotes;
 let InVehicleNotes; 
-let application;
-let interview;
 
 //Case Note Data
 let caseManagerId;
@@ -57,32 +49,26 @@ let currentEntryUserId;
       serviceDate = caseNoteData[0].serviceDate;
       startTime = caseNoteData[0].startTime;
       endTime = caseNoteData[0].endTime;
-      SAMLevel = caseNoteData[0].SAMLevel;
-      employer = caseNoteData[0].employer;
       contactType = caseNoteData[0].contactType;
-      bilingualSupplement = caseNoteData[0].bilingualSupplement;
-      notes = caseNoteData[0].notes;
-      application = caseNoteData[0].application;
-      interview = caseNoteData[0].interview;
- 
+      startLocationNotes = caseNoteData[0].startLocationNotes;
+      endLocationNotes = caseNoteData[0].endLocationNotes;
+      InVehicleNotes = caseNoteData[0].InVehicleNotes;
+      
      } else {
 
       caseManagerId = $.session.PeopleId;
       userId = $.session.UserId;
       serviceId = selectedConsumerServiceId;
-      referenceNumber = selectedConsumerReferenceNumber;
       caseNoteId = '0';
       serviceDate = selectedServiceDate;
       //serviceDate = UTIL.getTodaysDate();
       startTime = '';
       endTime = '';
-      SAMLevel = '';
-      employer = '';
       contactType = '';
-      bilingualSupplement = '';
-      notes = '';
-      application = '';
-      interview = '';
+      startLocationNotes = '';
+      endLocationNotes = '';
+      InVehicleNotes = '';
+      
 
      }
 
@@ -230,20 +216,8 @@ let currentEntryUserId;
     inputContainer0.appendChild(endTimeInput);  
     inputContainer0.appendChild(numberInVehicleInput);
 
-    // const inputContainer1 = document.createElement('div');
-    // inputContainer1.classList.add('ood_form4monthlyplacement_inputContainer1');
-    // inputContainer1.appendChild(startLocationInput);
-    
-
-    // const inputContainer2 = document.createElement('div');
-    // inputContainer2.classList.add('ood_form4monthlyplacement_inputContainer2');
-    // inputContainer2.appendChild(endLocationInput);
-    
-
     container.appendChild(inputContainer0);
-   // container.appendChild(inputContainer1);
-    //container.appendChild(inputContainer2);
-
+  
       container.appendChild(startLocationInput);
       container.appendChild(endLocationInput);
     
@@ -535,18 +509,14 @@ function validateStartEndTimes(validateTime) {
         serviceDate: UTIL.formatDateToIso(serviceDate.split(' ')[0]),
         startTime,
         endTime,
-        SAMLevel,
-        employer,
         contactType,
         startLocationNotes,
         endLocationNotes,
         InVehicleNotes,
         userId,
-        application, 
-        interview,
       };
 
-      OODAjax.updateForm4MonthlyPlacementEditData(data, function(results) {
+      OODAjax.updateForm10TransportationData(data, function(results) {
         successfulSave.show();
           setTimeout(function() {
             successfulSave.hide();
@@ -564,22 +534,16 @@ function validateStartEndTimes(validateTime) {
         serviceDate: UTIL.formatDateToIso(serviceDate.split(' ')[0]),
         startTime,
         endTime,
-        SAMLevel,
-        employer,
         contactType,
-        bilingualSupplement,
         startLocationNotes,
         endLocationNotes,
         InVehicleNotes,
-        caseManagerId,
         userId,
         serviceId,
         referenceNumber,
-        application, 
-        interview,
       };
 
-      OODAjax.insertForm4MonthlyPlacementEditData(data, function(results) {
+      OODAjax.insertForm10TransportationData(data, function(results) {
         successfulSave.show();
         if (saveType == 'saveandNew') {
           setTimeout(function() {
