@@ -1,6 +1,6 @@
 const CaseNotesForm = (() => {
   function init() {
-    return new FORM({
+    return new Form({
       elements: [
         {
           type: 'select',
