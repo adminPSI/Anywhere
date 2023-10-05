@@ -27,6 +27,7 @@
     }
     return element;
   };
+
   /**
    * Test if node is reference-free
    * @param {HTMLElement}  node  HTML element
@@ -35,6 +36,7 @@
   const isReferenceFree = node => {
     return (document.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINED_BY) === 0;
   };
+
   return {
     createElement,
     isReferenceFree,

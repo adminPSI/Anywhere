@@ -45,12 +45,6 @@ const CaseNotesForm = (() => {
           name: 'contact',
         },
         {
-          type: 'date',
-          label: 'Service Date',
-          id: 'serviceDate',
-          name: 'serviceDate',
-        },
-        {
           type: 'time',
           label: 'Start Time',
           id: 'startTime',

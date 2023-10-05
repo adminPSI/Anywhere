@@ -2,6 +2,28 @@
   global = global || self;
   global._UTIL = factory();
 })(this, function () {
+  async function fetchData(service, retrieveData) {
+    const URL_BASE = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}`;
+    const URL = `${URL_BASE}/${service}/`;
+
+    try {
+      let response = await fetch(URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: $.session.Token, ...retrieveData }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Issue with network, response was not OK');
+      }
+
+      let data = response.json();
+      return data;
+    } catch (error) {
+      console.log(`There was a problem with ${service}`, error.message);
+    }
+  }
+
   /**
    * Merge two objects together, baseObject and mergeObject share same prop names they will be overridden
    * inside the baseObject.
@@ -33,5 +55,6 @@
   return {
     mergeObjects,
     splitObjectByPropNames,
+    fetchData,
   };
 });

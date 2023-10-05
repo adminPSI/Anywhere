@@ -1,4 +1,6 @@
-const DateNavigation = (() => {
+(function (global, factory) {
+  global.DateNavigation = factory();
+})(this, function () {
   const DAYS = {
     0: 'sun',
     1: 'mon',
@@ -8,11 +10,13 @@ const DateNavigation = (() => {
     5: 'fri',
     6: 'sat',
   };
-  // getDate returns day of month
-  // getDay returns day of week
-  // getMonth returns month
 
-  function init() {
+  let selectedDate;
+
+  //=========================
+  // MAIN LIB
+  //-------------------------
+  function DateNavigation() {
     // GET TODAYS DATE AND SET HOURS TO MIDNIGHT
     const todaysDate = new Date();
     todaysDate.setHours(0, 0, 0, 0);
@@ -26,23 +30,29 @@ const DateNavigation = (() => {
       start: currentWeekStart,
       end: currentWeekEnd,
     });
+    console.table(currentWeekData);
 
-    const currentWeek = currentWeekData.map(date => {
+    // BUILD OUT DATE NAV
+    const navWrapEle = document.createElement('div');
+
+    currentWeekData.forEach(date => {
       const dayOfWeek = date.getDay();
       const month = date.getMonth();
       const day = date.getDate();
 
-      return {
-        dayOfWeek: DAYS[dayOfWeek],
-        date: `${month}/${day}`,
-      };
-    });
+      const dateWrapEle = document.createElement('div');
+      const dayOfWeekEle = document.createElement('p');
+      const dateEle = document.createElement('p');
 
-    console.table(currentWeekData);
-    console.table(currentWeek);
+      dayOfWeekEle.innerText = DAYS[dayOfWeek];
+      dateEle.innerText = `${month}/${day}`;
+
+      dateWrapEle.appendChild(dateEle);
+      dateWrapEle.appendChild(dayOfWeekEle);
+
+      navWrapEle.appendChild(dateWrapEle);
+    });
   }
 
-  return {
-    init,
-  };
-})();
+  return DateNavigation;
+});
