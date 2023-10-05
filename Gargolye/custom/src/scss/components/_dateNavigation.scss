@@ -25,6 +25,10 @@
       padding: 8px 0;
       text-align: center;
 
+      &.selected {
+        background: pink;
+      }
+
       * {
         pointer-events: none;
       }

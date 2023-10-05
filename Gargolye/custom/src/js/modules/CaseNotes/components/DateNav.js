@@ -1,8 +1,3 @@
-// const nextWeek = dates.eachDayOfInterval({
-//   start: dates.addWeeks(currentWeekStart, 1),
-//   end: dates.addWeeks(currentWeekEnd, 1),
-// });
-
 (function (global, factory) {
   global.DateNavigation = factory();
 })(this, function () {
@@ -19,6 +14,12 @@
   //=========================
   // MAIN LIB
   //-------------------------
+
+  /**
+   * @class
+   * @param {Object} options
+   * @param {Function} options.onDateChange
+   */
   function DateNavigation(options) {
     // Data Init
     //? by default selectedDate, weekStart, weekEnd and eachDayoFWeek will be the most current week of calandar year
@@ -39,7 +40,10 @@
     this.prevWeekNavBtn = null;
     this.nextWeekNavBtn = null;
   }
-
+  /**
+   * Constructs the navigation elements and sets up event listener
+   * @returns {DateNavigation} Returns the current instances for chaining
+   */
   DateNavigation.prototype.build = function () {
     this.navigationEle = _DOM.createElement('div', { class: 'dateNavigation' });
     this.weekWrapEle = _DOM.createElement('div', { class: 'week' });
@@ -73,6 +77,8 @@
         this.selectedDate = this.eachDayOfWeek[1];
 
         this.populate();
+        this.onDateChange(this.selectedDate);
+
         return;
       }
 
@@ -88,6 +94,8 @@
         this.selectedDate = this.eachDayOfWeek[1];
 
         this.populate();
+        this.onDateChange(this.selectedDate);
+
         return;
       }
 
@@ -96,8 +104,12 @@
         if (currentSelectedDate) {
           currentSelectedDate.classList.remove('selected');
         }
+
         this.selectedDate = date;
-        dateWrapEle.classList.add('selected');
+        e.target.classList.add('selected');
+
+        this.onDateChange(this.selectedDate);
+
         return;
       }
     });
@@ -105,10 +117,12 @@
     return this;
   };
 
+  /**
+   * Populates the navigation with the dates for the selected week range
+   */
   DateNavigation.prototype.populate = function () {
     this.weekWrapEle.innerHTML = '';
 
-    console.table(this.eachDayOfWeek);
     this.eachDayOfWeek.forEach(date => {
       let isDateCurrentlySelected = date.getTime() === this.selectedDate.getTime() ? true : false;
 
@@ -131,6 +145,11 @@
     });
   };
 
+  /**
+   *
+   * @param {Node} node DOM node to render the navigation to
+   * @returns {DateNavigation} Returns the current instances for chaining
+   */
   DateNavigation.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.navigationEle);
