@@ -2930,6 +2930,21 @@ namespace Anywhere
             return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
         }
 
+        public OODWorker.Form10TransportationData[] getForm10TransportationData(string token, string caseNoteId)
+        {
+            return Ow.getForm10TransportationData(token, caseNoteId);
+        }
+
+        public string updateForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string contactType, string startLocationNotes, string endLocationNotes, string InVehicleNotes, string userId, string serviceId, string referenceNumber)
+        {
+            return Odg.updateForm10TransportationData(token, consumerId, caseNoteId, serviceDate, startTime, endTime, contactType, startLocationNotes, endLocationNotes, InVehicleNotes, userId, serviceId, referenceNumber);
+        }
+
+        public string insertForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string contactType, string startLocationNotes, string endLocationNotes, string InVehicleNotes, string userId, string serviceId, string referenceNumber)
+        {
+            return Odg.insertForm10TransportationData(token, consumerId, caseNoteId, serviceDate, startTime, endTime, contactType, startLocationNotes, endLocationNotes, InVehicleNotes, userId, serviceId, referenceNumber);
+        }
+
 
         //Case note reporting
         public CaseNoteReportBuilderWorker.ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,

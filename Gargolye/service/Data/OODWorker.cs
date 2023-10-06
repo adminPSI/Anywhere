@@ -262,6 +262,34 @@ namespace Anywhere.service.Data
         }
 
 
+        [DataContract]
+        public class Form10TransportationData
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string caseNoteId { get; set; }
+            [DataMember(Order = 2)]
+            public string serviceDate { get; set; }
+            [DataMember(Order = 3)]
+            public string startTime { get; set; }
+            [DataMember(Order = 4)]
+            public string endTime { get; set; }
+            [DataMember(Order = 5)]
+            public string contactType { get; set; }
+            [DataMember(Order = 6)]
+            public string startLocationNotes { get; set; }
+            [DataMember(Order = 7)]
+            public string endLocationNotes { get; set; }
+            [DataMember(Order = 8)]
+            public string InVehicleNotes { get; set; }
+            [DataMember(Order = 9)]
+            public string userId { get; set; }
+            [DataMember(Order = 10)]
+            public string serviceId { get; set; }
+        }
+
+
         public OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
@@ -674,6 +702,13 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
+        // Form 10 Transportation
+        public Form10TransportationData[] getForm10TransportationData(string token, string caseNoteId)
+        {
+            string editDataString = Odg.getForm10TransportationData(token, caseNoteId);
+            Form10TransportationData[] editDataObj = js.Deserialize<Form10TransportationData[]>(editDataString);
+            return editDataObj;
+        }
 
     }
 }
