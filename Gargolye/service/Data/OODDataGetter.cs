@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Web.Security;
 
 namespace Anywhere.service.Data
 {
@@ -750,7 +751,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string updateForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string employer, string contactType, string jobSeekerPresent, string outcome, string TSCNotified, string bilingualSupplement, string notes, string userId, string application, string interview)
+        public string updateForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string contactType, string startLocationNotes, string endLocationNotes, string InVehicleNotes, string userId, string serviceId, string referenceNumber)
         {
             if (tokenValidator(token) == false) return null;
             //if (stringInjectionValidator(caseNote) == false) return null;
@@ -762,33 +763,28 @@ namespace Anywhere.service.Data
             list.Add(caseNoteId);
             list.Add(serviceDate);
             list.Add(startTime);
-            list.Add(endTime);
-            list.Add(SAMLevel);
-            list.Add(employer);
-            list.Add(contactType);
-            list.Add(jobSeekerPresent);
-            list.Add(outcome);
-            list.Add(TSCNotified);
-            list.Add(bilingualSupplement);
-            list.Add(notes);
+            list.Add(endTime);          
+            list.Add(contactType);            
+            list.Add(startLocationNotes);
+            list.Add(endLocationNotes);
+            list.Add(InVehicleNotes);
             list.Add(userId);
-            list.Add(application);
-            list.Add(interview);
+            list.Add(serviceId);
+            list.Add(referenceNumber);
             string text = "CALL DBA.ANYW_OOD_updateForm10TransportationData(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
 
             try
             {
-                //return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_updateForm10TransportationData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + userId +  "');", "results", "results");
                 return dg.executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("536", ex.Message + " ANYW_OOD_updateForm10TransportationData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + userId + "')");
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm10TransportationData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + contactType + "', '" + startLocationNotes + "', '" + endLocationNotes + "', '" + InVehicleNotes + "', '" + userId + "', '" + serviceId + "', '" + referenceNumber + "')");
                 return "536: Error saving case note";
             }
         }
 
-        public string insertForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string SAMLevel, string employer, string contactType, string jobSeekerPresent, string outcome, string TSCNotified, string bilingualSupplement, string notes, string caseManagerId, string userId, string serviceId, string referenceNumber, string application, string interview)
+        public string insertForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string contactType, string startLocationNotes, string endLocationNotes, string InVehicleNotes, string userId, string serviceId, string referenceNumber)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -801,20 +797,13 @@ namespace Anywhere.service.Data
             list.Add(serviceDate);
             list.Add(startTime);
             list.Add(endTime);
-            list.Add(SAMLevel);
-            list.Add(employer);
             list.Add(contactType);
-            list.Add(jobSeekerPresent);
-            list.Add(outcome);
-            list.Add(TSCNotified);
-            list.Add(bilingualSupplement);
-            list.Add(notes);
-            list.Add(caseManagerId);
+            list.Add(startLocationNotes);
+            list.Add(endLocationNotes);
+            list.Add(InVehicleNotes);
             list.Add(userId);
             list.Add(serviceId);
             list.Add(referenceNumber);
-            list.Add(application);
-            list.Add(interview);
 
             string text = "CALL DBA.ANYW_OOD_insertForm10TransportationData(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
 
@@ -825,7 +814,7 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("536", ex.Message + " ANYW_OOD_insertForm10TransportationData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + caseManagerId + "', '" + userId + "', '" + serviceId + "')");
+                logger.error("536", ex.Message + " ANYW_OOD_insertForm10TransportationData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + contactType + "', '" + startLocationNotes + "', '" + endLocationNotes + "', '" + InVehicleNotes + "', '" + userId + "', '" + serviceId + "', '" + referenceNumber + "')");
                 return "536: Error saving case note";
             }
         }
