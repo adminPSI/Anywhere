@@ -1,6 +1,6 @@
 (function (global, factory) {
   global = global || self;
-  global.SELECT = factory();
+  global.Select = factory();
 })(this, function () {
   /**
    * Default configuration
@@ -40,16 +40,16 @@
   //-------------------------
 
   /**
-   * @class SELECT
+   * @class Select
    * @param {Object} options
    */
-  function SELECT(options) {
+  function Select(options) {
     this.options = separateHTMLAttribrutes(mergOptionsWithDefaults(options));
   }
 
-  SELECT.prototype.build = function () {
+  Select.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
-      class: `input ${this.options.attributes.type}`,
+      class: ['input', `${this.options.attributes.type}`],
     });
 
     this.input = _DOM.createElement('select', { ...this.options.attributes });
@@ -69,7 +69,7 @@
     return this;
   };
 
-  SELECT.prototype.render = function (node) {
+  Select.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.inputWrap);
     }
@@ -77,5 +77,5 @@
     return this;
   };
 
-  return SELECT;
+  return Select;
 });

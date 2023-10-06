@@ -2,7 +2,7 @@
 
 (function (global, factory) {
   global = global || self;
-  global.INPUT = factory();
+  global.Input = factory();
 })(this, function () {
   /**
    * Default configuration
@@ -61,17 +61,19 @@
    * @param {String} [options.label]  Text for label input
    * @param {String} [options.note]   Text for input note/message, displayed underneath input field
    */
-  function INPUT(options) {
+  function Input(options) {
     this.options = separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+
+    this.inputWrap = null;
   }
 
-  INPUT.prototype.build = function () {
+  Input.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
-      class: `input ${this.options.attributes.type}`,
+      class: ['input', `${this.options.attributes.type}`],
     });
 
-    this.input = _DOM.createElement('input', { ...this.options.attributes });
-    this.label = _DOM.createElement('label', {
+    const inputEle = _DOM.createElement('input', { ...this.options.attributes });
+    const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
@@ -90,13 +92,13 @@
       this.inputWrap.appendChild(inputCount);
     }
 
-    this.inputWrap.appendChild(this.input);
-    this.inputWrap.appendChild(this.label);
+    this.inputWrap.appendChild(inputEle);
+    this.inputWrap.appendChild(labelEle);
 
     return this;
   };
 
-  INPUT.prototype.render = function (node) {
+  Input.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.inputWrap);
     }
@@ -104,5 +106,5 @@
     return this;
   };
 
-  return INPUT;
+  return Input;
 });

@@ -1,27 +1,72 @@
 (function (global, factory) {
   global.RosterPicker = factory();
 })(this, function () {
+  //TODO: keep track of selected consumers (option to allow multiple consumers to be selected)
+
+  /**
+   * Merge default options with user options
+   * @param {Object}  userOptions  User defined options object
+   * @return {Object}              Merged options object
+   */
+  const mergOptionsWithDefaults = userOptions => {
+    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
+  };
+
   /**
    * @class
+   * @param {Object} options
+   * @param {Function} options.onConsumerSelect
    */
-  function RosterPicker() {
+  function RosterPicker(options) {
     this.consumers = [];
 
     this.rosterPickerEle = null;
+    this.rosterWrapEle = null;
+    this.rosterSearchEle = null;
+    this.rosterCaseLoadInput = null;
   }
 
   RosterPicker.prototype.build = function () {
-    this.rosterPickerEle = _DOM.createElement('div');
+    this.rosterPickerEle = _DOM.createElement('div', { class: 'rosterPicker' });
+    this.rosterWrapEle = _DOM.createElement('div', { class: 'rosterCardWrap' });
 
+    this.rosterSearchInput = new Input({
+      type: 'search',
+      id: 'rosterSearch',
+      name: 'rosterSearch',
+      placeholder: 'Search...',
+    });
+
+    this.rosterCaseLoadInput = new Input({
+      type: 'checkbox',
+      label: 'Only show caseload',
+      id: 'caseloadtoggle',
+      name: 'caseload',
+    });
+
+    this.rosterSearchInput.build().renderTo(this.rosterPickerEle);
+    this.rosterCaseLoadInput.build().renderTo(this.rosterPickerEle);
+    this.rosterPickerEle.appendChild(this.rosterWrapEle);
+
+    this.populate();
+
+    return this;
+  };
+
+  /**
+   * Populate consumer roster cards
+   */
+  RosterPicker.prototype.populate = function () {
     this.consumers.forEach(c => {
-      const consumerCard = _DOM.createElement('div');
+      const rosterCard = _DOM.createElement('div', { class: 'rosterCard' });
 
       // PORTRAIT
-      const portrait = _DOM.createElement('img', {
+      const image = _DOM.createElement('img', {
         src: `./images/portraits/${c.id}.png?${new Date().setHours(0, 0, 0, 0)}`,
         onerror: `this.src='./images/new-icons/default.jpg'`,
         loading: 'lazy',
       });
+      const portrait = _DOM.createElement('div', { class: 'portrait', node: image });
 
       // DETAILS
       const fragment = new DocumentFragment();
@@ -31,19 +76,28 @@
       const lastName = _DOM.createElement('p', { text: `${c.LN.trim()},` });
       fragment.append(lastName, firstName);
 
-      const details = _DOM.createElement('div', { node: fragment });
+      const details = _DOM.createElement('div', { class: 'details', node: fragment });
 
-      consumerCard.appendChild(portrait);
-      consumerCard.appendChild(details);
+      rosterCard.appendChild(portrait);
+      rosterCard.appendChild(details);
 
-      this.rosterPickerEle.appendChild(consumerCard);
+      this.rosterWrapEle.appendChild(rosterCard);
     });
-
-    return this;
   };
 
   /**
+   * Setsup events for navigation
+   */
+  RosterPicker.prototype.setupEvents = function () {};
+
+  /**
+   * Hides/Shows Roster Cards
+   */
+  RosterPicker.prototype.onSearchFilter = function () {};
+
+  /**
    * Fetches consumers data by date, group and location
+   * @param {Object} retrieveData
    */
   RosterPicker.prototype.fetchConsumers = async function (retrieveData) {
     try {

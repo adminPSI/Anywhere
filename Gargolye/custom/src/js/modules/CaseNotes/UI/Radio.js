@@ -1,6 +1,6 @@
 (function (global, factory) {
   global = global || self;
-  global.RADIO = factory();
+  global.Radio = factory();
 })(this, function () {
   /**
    * Default configuration
@@ -8,22 +8,31 @@
    */
   const DEFAULT_OPTIONS = {};
 
+  /**
+   * Merge default options with user options
+   * @param {Object}  userOptions  User defined options object
+   * @return {Object}              Merged options object
+   */
+  const mergOptionsWithDefaults = userOptions => {
+    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
+  };
+
   //=========================
   // MAIN LIB
   //-------------------------
 
   /**
-   * @class RADIO
+   * @class Radio
    * @param {Object} options
    * @param {String} [options.groupLabel]   Radio group label text
    * @param {Array}  [options.radios]       Radio inputs
    */
-  function RADIO(options) {
-    this.options = { ...DEFAULT_OPTIONS, ...options };
+  function Radio(options) {
+    this.options = mergOptionsWithDefaults(options);
     this.inputs = {};
   }
 
-  RADIO.prototype.build = function () {
+  Radio.prototype.build = function () {
     this.inputGroup = _DOM.createElement('div', { class: 'inputGroup' });
 
     const groupLabel = _DOM.createElement('div', {
@@ -34,7 +43,7 @@
     this.inputGroup.appendChild(groupLabel);
 
     this.options.radios.forEach(radio => {
-      const newInput = new INPUT({ ...radio }).build();
+      const newInput = new Input({ ...radio }).build();
       const input = newInput.inputWrap;
       this.inputGroup.appendChild(input);
 
@@ -44,7 +53,7 @@
     return this;
   };
 
-  RADIO.prototype.render = function (node) {
+  Radio.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.inputGroup);
     }
@@ -52,13 +61,5 @@
     return this;
   };
 
-  return RADIO;
-});
-
-const newInput2 = new RADIO({
-  groupLabel: 'Radio inputs',
-  radios: [
-    { id: 'r1', label: 'No', type: 'radio', name: 'radioSet' },
-    { id: 'r2', label: 'Yes', type: 'radio', name: 'radioSet' },
-  ],
+  return Radio;
 });

@@ -11,10 +11,16 @@ $orange: #ee8434; // rgb(238,132,52)
 $black: rgb(39, 39, 39); // #272727
 $white: rgb(255, 255, 255); // #FFFFFF
 $white2: rgb(250, 250, 250); // #FAFAFA
+$whitesmoke: rgb(245, 245, 245);
 $gray: rgb(211, 211, 211);
+$lightgray: rgb(211, 211, 211);
 
 $primary: $blue2;
 $secondary: $green;
+
+$error: $red;
+$warning: $yellow;
+
 // backgrounds
 $bg-dark: $primary;
 $bg-dark2: $secondary;
@@ -53,6 +59,10 @@ $_light: 300;
 $_normal: 400;
 $_bold: 500;
 $_heavy: 700;
+
+$px16: 1rem;
+$px15: 0.9375rem;
+$px14: 0.875rem;
 
 //=============================
 // Borders
@@ -93,21 +103,6 @@ $planTabsInnerHeightMobile: calc(100vh - 195px);
 //========================================================
 // NEW UI ASH
 //--------------------------------------------------------
-//=============================
-// Colors
-//-----------------------------
-$lightgray: rgb(211, 211, 211);
-$whitesmoke: rgb(245, 245, 245);
-$error: $red;
-$warning: $yellow;
-
-//=============================
-// Font Size PX to REM
-//-----------------------------
-$px16: 1rem;
-$px15: 0.9375rem;
-$px14: 0.875rem;
-
 $input_border: 2px solid $lightgray;
 
 $tableFontSize: $px14;

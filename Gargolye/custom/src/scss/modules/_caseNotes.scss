@@ -1,3 +1,27 @@
+.caseNotesModule {
+  display: grid;
+  grid-template-columns: auto 320px;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  row-gap: 20px;
+
+  .dateNavigation {
+    grid-column-start: span 2;
+    order: 1;
+  }
+
+  .rosterPicker {
+    justify-self: center;
+    order: 3;
+  }
+
+  form {
+    order: 2;
+  }
+}
+
+// NEW UI STUFF NEEDS MOVED
+//-------------------------------------------------
 #UI {
   //===========================================
   // FORM

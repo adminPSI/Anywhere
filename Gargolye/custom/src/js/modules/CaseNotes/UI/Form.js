@@ -13,6 +13,15 @@
     style: 'default',
   };
 
+  /**
+   * Merge default options with user options
+   * @param {Object}  userOptions  User defined options object
+   * @return {Object}              Merged options object
+   */
+  const mergOptionsWithDefaults = userOptions => {
+    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
+  };
+
   //=========================
   // MAIN LIB
   //-------------------------
@@ -22,7 +31,7 @@
    * @param {Object} options
    */
   function Form(options) {
-    this.options = { ...DEFAULT_OPTIONS, ...options };
+    this.options = mergOptionsWithDefaults(options);
     this.inputs = {};
   }
 
@@ -34,13 +43,13 @@
 
       switch (ele.type.toLowerCase()) {
         case 'radio': {
-          inputInstance = new RADIO({ ...ele }).build();
+          inputInstance = new Radio({ ...ele }).build();
         }
         case 'select': {
-          inputInstance = new SELECT({ ...ele }).build();
+          inputInstance = new Select({ ...ele }).build();
         }
         default: {
-          inputInstance = new INPUT({ ...ele }).build();
+          inputInstance = new Input({ ...ele }).build();
         }
       }
 
@@ -61,7 +70,7 @@
     return this;
   };
 
-  Form.prototype.render = function (node) {
+  Form.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.form);
     }
