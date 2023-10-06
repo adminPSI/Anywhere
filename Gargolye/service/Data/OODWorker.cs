@@ -674,6 +674,13 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
+        // Form 10 Transportation
+        public Form4MonthlyPlacementEditData[] getForm10TransportationData(string token, string caseNoteId)
+        {
+            string editDataString = Odg.getForm10TransportationData(token, caseNoteId);
+            Form4MonthlyPlacementEditData[] editDataObj = js.Deserialize<Form4MonthlyPlacementEditData[]>(editDataString);
+            return editDataObj;
+        }
 
     }
 }
