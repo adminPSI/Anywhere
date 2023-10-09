@@ -200,6 +200,16 @@ const demographics = (function () {
         }
     }
 
+    function checkAlphabets(input) {
+        for (const char of input) {
+            if ((char >= "a" && char <= "z") ||
+                (char >= "A" && char <= "Z")) { 
+                return true;
+            }
+        }
+        return false; 
+    } 
+
     function formatDataForDisplay(data) {
         const pathToEmployment = data.pathToEmployment;
 
@@ -209,16 +219,16 @@ const demographics = (function () {
         const city = data.mailcity;
         const state = data.mailstate;
         const zip = data.mailzipcode ? formatZipCode(data.mailzipcode) : '';
-
-        // Contact Info
-        const formattedPrimaryPhone = data.primaryphone == '' ? '' : formatPhoneNumber(data.primaryphone);
-        primaryPhone = formattedPrimaryPhone == '' ? '' : `${formattedPrimaryPhone} <a class="demoPhones" href=tel:+1${data.primaryphone}>${icons.phone}</a>`;
+  
+        // Contact Info 
+        const formattedPrimaryPhone = data.primaryphone == '' ? '' : formatPhoneNumber(data.primaryphone);       
+        primaryPhone = formattedPrimaryPhone == '' || checkAlphabets(formattedPrimaryPhone) == true ? '' : `${formattedPrimaryPhone} <a class="demoPhones" href=tel:+1${data.primaryphone}>${icons.phone}</a>`;
 
         const formattedSecondaryPhone = data.secondaryphone == '' ? '' : formatPhoneNumber(data.secondaryphone);
-        secondaryPhone = formattedSecondaryPhone == '' ? '' : `${formattedSecondaryPhone} <a class="demoPhones" href=tel:+1${data.secondaryphone}>${icons.phone}</a>`;
+        secondaryPhone = formattedSecondaryPhone == '' || checkAlphabets(formattedSecondaryPhone) == true ? '' : `${formattedSecondaryPhone} <a class="demoPhones" href=tel:+1${data.secondaryphone}>${icons.phone}</a>`;
 
         cellPhone = data.cellphone == '' ? '' : formatPhoneNumber(data.cellphone);
-        cellPhone = (cellPhone === '%' || cellPhone === '') ? '' : `${cellPhone} <a class="demoPhones" href=tel:+1${data.cellphone}>${icons.phone}</a>`;
+        cellPhone = (cellPhone === '%' || cellPhone === '' || checkAlphabets(cellPhone) == true) ? '' : `${cellPhone} <a class="demoPhones" href=tel:+1${data.cellphone}>${icons.phone}</a>`;
 
         const email = data.email == '' ? '' : `${data.email} <a class="demoPhones" href = "#" onclick = "emailOnClick('mailto:${data.email}');">${icons.Email}</a>`;
 
@@ -241,7 +251,7 @@ const demographics = (function () {
             data.orgZipCode,
         );
         const formattedOrganizationPhone = data.orgPrimaryPhone == '' ? '' : formatPhoneNumber(data.orgPrimaryPhone);
-        organizationPhone = formattedOrganizationPhone == '' ? '' : `${formattedOrganizationPhone} <a class="demoPhones" href=tel:+1-${data.orgPrimaryPhone}>${icons.phone}</a>`;
+        organizationPhone = formattedOrganizationPhone == '' || checkAlphabets(formattedOrganizationPhone) == true ? '' : `${formattedOrganizationPhone} <a class="demoPhones" href=tel:+1-${data.orgPrimaryPhone}>${icons.phone}</a>`;
 
         // Demographic Info
         const name = formatName(data.firstname, data.middlename, data.lastname);

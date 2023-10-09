@@ -753,9 +753,11 @@
 
         async function emailOnClick(emailLink) {
             const success = await rosterAjax.verifyDefaultEmailClient();
-            if (success) {
+            const { verifyDefaultEmailClientResult } = success;
+            if (verifyDefaultEmailClientResult == 'True') {
                 window.location.href = emailLink;
             } else {
+                consumerInfo.closeCard(); 
                 const defaultEmailConfPOPUP = POPUP.build({
                     hideX: true,
                 });

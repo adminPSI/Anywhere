@@ -627,11 +627,13 @@ const NewEntryCF = (() => {
             id: account.accountId,
             value: account.accountName,
             text: account.accountName
-        }));
+        })); 
+        if (data.length == 1) {           
+            account = data[0].value;
+        } 
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
         checkRequiredFieldsOfNewEntry();
-
     }
 
     async function populatePayeeDropdown() {

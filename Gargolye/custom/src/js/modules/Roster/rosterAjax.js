@@ -340,9 +340,8 @@ const rosterAjax = (function () {
     }
 
     async function verifyDefaultEmailClient() {
-        //type, value, consumerId
         try {
-            const data = await $.ajax({
+            const data = await $.ajax({ 
                 type: 'POST',
                 url:
                     $.webServer.protocol +
@@ -352,15 +351,12 @@ const rosterAjax = (function () {
                     $.webServer.port +
                     '/' +
                     $.webServer.serviceName +
-                    '/verifyDefaultEmailClient/',
+                    '/verifyDefaultEmailClient/', 
                 data: JSON.stringify(),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
-
-            return {
-                ...data.verifyDefaultEmailClientResult,
-            };
+            return data;
         } catch (error) {
             console.log(error);
         }
