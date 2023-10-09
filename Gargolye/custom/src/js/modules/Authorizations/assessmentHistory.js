@@ -98,7 +98,7 @@ const assessmentHistory = (() => {
         let tableData = assessmentEntries.getAssessmentEntriesResult.map((entry) => ({
             values: [entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY'),
             entry.methodology, entry.score, entry.behaviorMod, entry.medicalMod, entry.DCMod, entry.CCMod, entry.priorAuthApplied == '' ? '' : moment(entry.priorAuthApplied).format('MM/DD/YYYY'),
-            entry.priorAuthReceived == '' ? '' : moment(entry.priorAuthReceived).format('MM/DD/YYYY'), entry.priorAuthAmount == '' ? '' : '$' + entry.priorAuthAmount],
+                entry.priorAuthReceived == '' ? '' : moment(entry.priorAuthReceived).format('MM/DD/YYYY'), entry.priorAuthAmount == '' ? '' : '$' + numberWithCommas(entry.priorAuthAmount)], 
             attributes: [{ key: 'Id', value: entry.ID }],
             onClick: (e) => {
             },
@@ -108,6 +108,10 @@ const assessmentHistory = (() => {
         table.populate(oTable, tableData);
 
         return oTable;
+    }
+
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     function buildHeaderButton(consumer) {
@@ -423,6 +427,7 @@ const assessmentHistory = (() => {
 
         priorAuthAmtFrom.addEventListener('input', event => {
             minAmount = event.target.value;
+            tmpPriorAuthAmtFrom = minAmount.replace('$', '');
             var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(minAmount)) {
                 document.getElementById('priorAuthAmtFrom').value = minAmount.substring(0, minAmount.length - 1);
@@ -431,14 +436,13 @@ const assessmentHistory = (() => {
             else if (minAmount.includes('.') && (minAmount.match(/\./g).length > 1 || minAmount.toString().split('.')[1].length > 2)) {
                 document.getElementById('priorAuthAmtFrom').value = minAmount.substring(0, minAmount.length - 1);
                 return;
-            }
-            tmpPriorAuthAmtFrom = minAmount.replace('$', '');
+            }            
             checkRequiredFieldsOfFilter();
         });
 
         priorAuthAmtTo.addEventListener('input', event => {
             maxAmount = event.target.value;
-            debugger;
+            tmpPriorAuthAmtTo = maxAmount.replace('$', '');
             var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(maxAmount)) {
                 document.getElementById('priorAuthAmtTo').value = maxAmount.substring(0, maxAmount.length - 1);
@@ -447,8 +451,7 @@ const assessmentHistory = (() => {
             else if (maxAmount.includes('.') && (maxAmount.match(/\./g).length > 1 || maxAmount.toString().split('.')[1].length > 2)) {
                 document.getElementById('priorAuthAmtTo').value = maxAmount.substring(0, maxAmount.length - 1);
                 return;
-            }
-            tmpPriorAuthAmtTo = maxAmount.replace('$', '');
+            }           
             checkRequiredFieldsOfFilter();
         });
 
@@ -530,7 +533,7 @@ const assessmentHistory = (() => {
         }
     }
 
-    function updateFilterData(data) {
+    function updateFilterData(data) { 
         if (data.tmpMethodology) filterValues.methodology = data.tmpMethodology;
         if (data.tmpScore) filterValues.score = data.tmpScore;
         if (data.tmpStartDateFrom != undefined) filterValues.startDateFrom = data.tmpStartDateFrom;
@@ -551,8 +554,7 @@ const assessmentHistory = (() => {
         if (data.tmpPriorAuthApplFrom == '') filterValues.priorAuthApplFrom = '%';
         if (data.tmpPriorAuthApplTo == '') filterValues.priorAuthApplTo = '%';
         if (data.tmpPriorAuthRecFrom == '') filterValues.priorAuthRecFrom = '%';
-        if (data.tmpPriorAuthRecTo == '') filterValues.priorAuthRecTo = '%';
-
+        if (data.tmpPriorAuthRecTo == '') filterValues.priorAuthRecTo = '%';   
     }
 
     function populateFilterDropdown() {

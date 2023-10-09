@@ -589,9 +589,10 @@
     #singleEntryAdminReviewTable {
 
         .table__row {
-
             &[data-plan-active='true'] {
-                color: red;
+                > div:nth-child(5) {
+                    color: red;
+                }
             }
 
             > div {

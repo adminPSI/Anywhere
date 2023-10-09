@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System;
 
 namespace Anywhere.service.Data.ConsumerDemographics
 {
@@ -11,16 +12,45 @@ namespace Anywhere.service.Data.ConsumerDemographics
         }
 
         public string verifyDefaultEmailClient()
-        {
-            object mailClient = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Clients\Mail", "", "none");
-            if (mailClient != null)
+        {         
+            bool emailClient = IsEmailClientConfigured();
+            if (emailClient)
             {
-                return mailClient.ToString();
+                return "True";
             }
             else
             {
-                return "";
+                return "False";
+            }
+
+        }
+
+        public static bool IsEmailClientConfigured()
+        {
+            try
+            {
+                using (RegistryKey mailKey = Registry.ClassesRoot.OpenSubKey("mailto"))
+                {
+                    if (mailKey != null)
+                    {
+                        object urlProtocol = mailKey.GetValue("URL Protocol");
+                        if (urlProtocol != null && urlProtocol.ToString() == "")
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                using (RegistryKey clientKey = Registry.CurrentUser.OpenSubKey(@"Software\Clients\Mail"))
+                {
+                    return clientKey != null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
     }
+
 }
