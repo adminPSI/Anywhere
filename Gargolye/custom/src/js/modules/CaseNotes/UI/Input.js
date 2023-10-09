@@ -23,6 +23,7 @@
 
   /**
    * Separate HTML attributes from options obj
+   * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
    * @param {Object}  options  Options object
    * @return {Object}          Separated options object
    */

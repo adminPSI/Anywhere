@@ -57,10 +57,15 @@
       this.inputs[ele.id] = inputInstance;
     });
 
+    //temp
+    const btn = _DOM.createElement('button', { type: 'submit', text: 'Save' });
+    this.form.appendChild(btn);
+    //end temp
+
     this.form.addEventListener('submit', e => {
       e.preventDefault();
-
       console.log(e.target.elements);
+      debugger;
 
       const formData = new FormData(this.form);
       const entries = formData.entries();

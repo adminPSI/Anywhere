@@ -18,6 +18,7 @@
 
   /**
    * Separate HTML attributes from options obj
+   * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#attributes
    * @param {Object}  options  Options object
    * @return {Object}          Separated options object
    */
@@ -44,12 +45,13 @@
    * @param {Object} options
    */
   function Select(options) {
+    delete options.type;
     this.options = separateHTMLAttribrutes(mergOptionsWithDefaults(options));
   }
 
   Select.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
-      class: ['input', `${this.options.attributes.type}`],
+      class: ['input', 'select'],
     });
 
     this.input = _DOM.createElement('select', { ...this.options.attributes });
