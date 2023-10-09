@@ -3,12 +3,14 @@
   global._DOM = factory();
 })(this, function () {
   /**
-   * Create DOM element node
+   * Create DOM element node and set given attributes,
+   *
+   * @function
    * @param  {String}  tag         HTML element name
    * @param  {Object}  attributes  Attributes to be applied to element
    * @returns {HTMLElement}
    */
-  const createElement = (tag, attributes) => {
+  function createElement(tag, attributes) {
     const element = document.createElement(tag);
     if (attributes && typeof attributes === 'object') {
       let attributeName;
@@ -34,21 +36,27 @@
             }
             break;
           default:
-            element.setAttribute(attributeName, attributes[attributeName]);
+            if (typeof attributes[attributeName] === 'boolean') {
+              element.setAttribute(attributeName, '');
+            } else {
+              element.setAttribute(attributeName, attributes[attributeName]);
+            }
         }
       }
     }
     return element;
-  };
+  }
 
   /**
    * Test if node is reference-free
+   *
+   * @function
    * @param {HTMLElement}  node  HTML element
    * @returns {Boolean}
    */
-  const isReferenceFree = node => {
+  function isReferenceFree(node) {
     return (document.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINED_BY) === 0;
-  };
+  }
 
   return {
     createElement,

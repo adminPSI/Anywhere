@@ -10,6 +10,7 @@
    */
   const DEFAULT_OPTIONS = {
     showcount: false,
+    note: null,
   };
 
   /**
@@ -38,6 +39,8 @@
       [{}, {}],
     );
 
+    b.name = b.id;
+
     return { ...a, attributes: { ...b } };
   };
 
@@ -54,26 +57,37 @@
    * events, change, keyup, focus in/out
    */
   /**
-   * @class INPUT
+   * @constructor
    * @param {Object} options
-   * @param {String} [options.id]     Id for input, use to link it with label
-   * @param {String} [options.type]   HTML Input type
-   * @param {String} [options.name]   Name of form control, submitted with form as name/value pair
-   * @param {String} [options.label]  Text for label input
-   * @param {String} [options.note]   Text for input note/message, displayed underneath input field
+   * @param {String} options.id - Id for input, use to link it with label. Also used for name attribute.
+   * @param {String} options.type - HTML Input type
+   * @param {String} options.label - Text for label input
+   * @param {Boolean} [options.required] - Whether input is required for submission
+   * @param {String} [options.note] - Text for input note/message, displayed underneath input field
+   * @param {Boolean} [options.showCount] - Whether to show char count or not
+   * @param {String} [options.minlength] - min char count
+   * @param {String} [options.maxlength] - max char count
+   * @returns {Input}
    */
   function Input(options) {
     this.options = separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.inputWrap = null;
+    this.input = null;
   }
 
+  /**
+   * Builds the Input element structure
+   *
+   * @function
+   * @returns {Input} Returns the current instances for chaining
+   */
   Input.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
       class: ['input', `${this.options.attributes.type}`],
     });
 
-    const inputEle = _DOM.createElement('input', { ...this.options.attributes });
+    this.input = _DOM.createElement('input', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
@@ -93,12 +107,19 @@
       this.inputWrap.appendChild(inputCount);
     }
 
-    this.inputWrap.appendChild(inputEle);
+    this.inputWrap.appendChild(this.input);
     this.inputWrap.appendChild(labelEle);
 
     return this;
   };
 
+  /**
+   * Renders the built Input element to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node DOM node to render the input to
+   * @returns {Input} Returns the current instances for chaining
+   */
   Input.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.inputWrap);

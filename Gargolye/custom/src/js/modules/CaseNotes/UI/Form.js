@@ -27,14 +27,24 @@
   //-------------------------
 
   /**
-   * @class Form
+   * @class
    * @param {Object} options
    */
   function Form(options) {
+    // Data Init
     this.options = mergOptionsWithDefaults(options);
     this.inputs = {};
+
+    // Callbacks
+    this.onSubmit = options.onSubmit;
   }
 
+  /**
+   * Builds the Form element structure
+   *
+   * @function
+   * @returns {Form} Returns the current instances for chaining
+   */
   Form.prototype.build = function () {
     this.form = _DOM.createElement('form');
 
@@ -47,6 +57,7 @@
           break;
         }
         case 'select': {
+          delete ele.type; // only needed for Form
           inputInstance = new Select({ ...ele }).build();
           break;
         }
@@ -64,19 +75,33 @@
     this.form.appendChild(btn);
     //end temp
 
+    return this;
+  };
+
+  /**
+   * Setsup events for form
+   *
+   * @function
+   */
+  Form.prototype.setupEvents = function () {
     this.form.addEventListener('submit', e => {
       e.preventDefault();
-      console.log(e.target.elements);
-      debugger;
 
       const formData = new FormData(this.form);
       const entries = formData.entries();
       const data = Object.fromEntries(entries);
-    });
 
-    return this;
+      this.onSubmit(data);
+    });
   };
 
+  /**
+   * Renders the built Form element to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node DOM node to render the form to
+   * @returns {Form} Returns the current instances for chaining
+   */
   Form.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.form);

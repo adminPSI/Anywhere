@@ -3,9 +3,36 @@
   global._UTIL = factory();
 })(this, function () {
   /**
+   * Debounces a function, ensuring that it's not called until after the specified
+   * amount of time has passed since the lat time it was invoked.
+   *
+   * @function
+   * @param {Function} func - The function to debounce.
+   * @param {Number} wait - The number of milliseconds to delay the function
+   * @returns {Function} - Returns the debounced version of the provided function
+   */
+  function debounce(func, wait) {
+    let timeout;
+
+    return function executedFunction() {
+      const context = this;
+
+      const later = function () {
+        timeout = null;
+        func.apply(context, aps);
+      };
+
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  /**
    * Ajax call using native Fetch API
+   *
+   * @function
    * @param {String} service
-   * @param {Object} retrieveData
+   * @param {Object} [retrieveData]
    * @returns {Object}
    */
   async function fetchData(service, retrieveData) {
@@ -33,21 +60,25 @@
   /**
    * Merge two objects together, baseObject and mergeObject share same prop names they will be overridden
    * inside the baseObject.
+   *
+   * @function
    * @param {Object}  baseObject
    * @param {Object}  mergeObject
    * @return {Object} Merged options object
    */
-  const mergeObjects = (baseObject, mergeObject) => {
+  function mergeObjects(baseObject, mergeObject) {
     return Object.assign({}, baseObject, mergeObject);
-  };
+  }
 
   /**
    * Separate props and methods from obj
-   * @param {Object}  options
+   * @function
+   * @param {Object}  dirtyObj Object to split
+   * @param {Array}   props Object props to isolate
    * @return {Object} Separated options object
    */
-  const splitObjectByPropNames = (options, props) => {
-    const [a, b] = Object.entries(options).reduce(
+  function splitObjectByPropNames(dirtyObj, props) {
+    const [a, b] = Object.entries(dirtyObj).reduce(
       ([matching, leftover], [key, value]) =>
         props.includes(key)
           ? [Object.assign(matching, { [key]: value }), leftover]
@@ -56,11 +87,12 @@
     );
 
     return [{ ...a }, { ...b }];
-  };
+  }
 
   return {
+    debounce,
+    fetchData,
     mergeObjects,
     splitObjectByPropNames,
-    fetchData,
   };
 });

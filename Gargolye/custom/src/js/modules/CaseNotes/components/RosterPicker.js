@@ -18,14 +18,26 @@
    * @param {Function} options.onConsumerSelect
    */
   function RosterPicker(options) {
+    // Data Init
     this.consumers = [];
+    this.selectedConsumers = {};
 
+    // Callbacks
+    this.onConsumerSelect = options.onConsumerSelect;
+
+    // DOM Ref
     this.rosterPickerEle = null;
     this.rosterWrapEle = null;
     this.rosterSearchEle = null;
     this.rosterCaseLoadInput = null;
   }
 
+  /**
+   * Builds the Input element structure
+   *
+   * @function
+   * @returns {RosterPicker} Returns the current instances for chaining
+   */
   RosterPicker.prototype.build = function () {
     this.rosterPickerEle = _DOM.createElement('div', { class: 'rosterPicker' });
     this.rosterWrapEle = _DOM.createElement('div', { class: 'rosterCardWrap' });
@@ -55,6 +67,8 @@
 
   /**
    * Populate consumer roster cards
+   *
+   * @function
    */
   RosterPicker.prototype.populate = function () {
     this.consumers.forEach(c => {
@@ -87,16 +101,24 @@
 
   /**
    * Setsup events for navigation
+   *
+   * @function
    */
-  RosterPicker.prototype.setupEvents = function () {};
+  RosterPicker.prototype.setupEvents = function () {
+    this.rosterWrapEle.addEventListener('click', () => {});
+  };
 
   /**
    * Hides/Shows Roster Cards
+   *
+   * @function
    */
   RosterPicker.prototype.onSearchFilter = function () {};
 
   /**
    * Fetches consumers data by date, group and location
+   *
+   * @function
    * @param {Object} retrieveData
    */
   RosterPicker.prototype.fetchConsumers = async function (retrieveData) {
@@ -111,9 +133,11 @@
   };
 
   /**
+   * Renders the built Input element to the specified DOM node.
    *
+   * @function
    * @param {Node} node DOM node to render the roster picker to
-   * @returns {DateNavigation} Returns the current instances for chaining
+   * @returns {RosterPicker} Returns the current instances for chaining
    */
   RosterPicker.prototype.renderTo = function (node) {
     if (node instanceof Node) {

@@ -48,7 +48,9 @@
     this.weekWrapEle = null;
   }
   /**
-   * Constructs the navigation elements and sets up event listener
+   * Builds the Navigation element structure
+   *
+   * @function
    * @returns {DateNavigation} Returns the current instances for chaining
    */
   DateNavigation.prototype.build = function () {
@@ -159,7 +161,9 @@
   };
 
   /**
+   * Renders the built Date Navigation element to the specified DOM node.
    *
+   * @function
    * @param {Node} node DOM node to render the navigation to
    * @returns {DateNavigation} Returns the current instances for chaining
    */

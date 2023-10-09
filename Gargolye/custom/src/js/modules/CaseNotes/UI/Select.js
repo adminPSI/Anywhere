@@ -6,7 +6,10 @@
    * Default configuration
    * @typ {Object}
    */
-  const DEFAULT_OPTIONS = {};
+  const DEFAULT_OPTIONS = {
+    note: null,
+  };
+
   /**
    * Merge default options with user options
    * @param {Object}  userOptions  User defined options object
@@ -41,21 +44,33 @@
   //-------------------------
 
   /**
-   * @class Select
+   * @constructor
    * @param {Object} options
+   * @param {String} options.id Id for input, use to link it with label. Also used for name attribute.
+   * @param {String} options.label Text for label input
+   * @param {Boolean} [options.required] Whether input is required for submission
+   * @param {String} [options.note] Text for input note/message, displayed underneath input field
    */
   function Select(options) {
-    delete options.type;
     this.options = separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+
+    this.inputWrap = null;
+    this.input = null;
   }
 
+  /**
+   * Builds the Select element structure
+   *
+   * @function
+   * @returns {Select} Returns the current instances for chaining
+   */
   Select.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
       class: ['input', 'select'],
     });
 
     this.input = _DOM.createElement('select', { ...this.options.attributes });
-    this.label = _DOM.createElement('label', {
+    const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
@@ -67,10 +82,17 @@
     }
 
     this.inputWrap.appendChild(this.input);
-    this.inputWrap.appendChild(this.label);
+    this.inputWrap.appendChild(labelEle);
     return this;
   };
 
+  /**
+   * Renders the built Select element to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node DOM node to render the select to
+   * @returns {Select} Returns the current instances for chaining
+   */
   Select.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.inputWrap);
