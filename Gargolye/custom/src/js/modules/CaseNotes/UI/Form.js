@@ -44,9 +44,11 @@
       switch (ele.type.toLowerCase()) {
         case 'radio': {
           inputInstance = new Radio({ ...ele }).build();
+          break;
         }
         case 'select': {
           inputInstance = new Select({ ...ele }).build();
+          break;
         }
         default: {
           inputInstance = new Input({ ...ele }).build();
