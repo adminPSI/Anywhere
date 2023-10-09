@@ -554,6 +554,7 @@ var OODAjax = (function () {
   }
   
   // Both Forms (Form 4 and Form 8) -- OOD Form Entry
+  // TODO JOE: LOOK into this for Form 10 
   async function deleteOODFormEntryAsync(caseNoteId) {
     try {
       const result = await $.ajax({
@@ -852,11 +853,11 @@ var OODAjax = (function () {
   }
 
    // Form 10 -- Transportation
-   function getForm10TransportationData(caseNoteId, callback) {
+   function getForm10TransportationData(OODTransportationId, callback) {
     $.ajax({
       type: 'POST',
       url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/getForm10TransportationData/',
-      data: '{"token":"' + $.session.Token + '", "caseNoteId":"' + caseNoteId + '"}',
+      data: '{"token":"' + $.session.Token + '", "OODTransportationId":"' + OODTransportationId + '"}',
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function(response, status, xhr) {
@@ -874,14 +875,14 @@ var OODAjax = (function () {
       data = {
         token: $.session.Token, 
         consumerId: data.consumerId, 
-        caseNoteId: data.caseNoteId,
+        OODTransportationId: data.OODTransportationId,
         serviceDate: data.serviceDate,
         startTime: data.startTime,
         endTime: data.endTime,  
         contactType: data.contactType,
-        startLocationNotes: data.startLocationNotes,
-        endLocationNotes: data.endLocationNotes,
-        InVehicleNotes: data.InVehicleNotes,
+        startLocation: data.startLocation,
+        endLocation: data.endLocation,
+        numberInVehicle: data.numberInVehicle,
         userId: data.userId,        
          }
     return $.ajax({
@@ -901,14 +902,14 @@ var OODAjax = (function () {
     data = {
       token: $.session.Token, 
       consumerId: data.consumerId, 
-      caseNoteId: data.caseNoteId,
+      OODTransportationId: data.OODTransportationId,
       serviceDate: data.serviceDate,
       startTime: data.startTime,
       endTime: data.endTime,
       contactType: data.contactType,
-      startLocationNotes: data.startLocationNotes,
-      endLocationNotes: data.endLocationNotes,
-      InVehicleNotes: data.InVehicleNotes,
+      startLocation: data.startLocation,
+      endLocation: data.endLocation,
+      numberInVehicle: data.numberInVehicle,
       caseManagerId: data.caseManagerId,
       userId: data.userId,
       serviceId: data.serviceId,

@@ -268,7 +268,7 @@ namespace Anywhere.service.Data
             [DataMember(Order = 0)]
             public string consumerId { get; set; }
             [DataMember(Order = 1)]
-            public string caseNoteId { get; set; }
+            public string OODTransportationId { get; set; }
             [DataMember(Order = 2)]
             public string serviceDate { get; set; }
             [DataMember(Order = 3)]
@@ -278,11 +278,11 @@ namespace Anywhere.service.Data
             [DataMember(Order = 5)]
             public string contactType { get; set; }
             [DataMember(Order = 6)]
-            public string startLocationNotes { get; set; }
+            public string startLocation { get; set; }
             [DataMember(Order = 7)]
-            public string endLocationNotes { get; set; }
+            public string endLocation { get; set; }
             [DataMember(Order = 8)]
-            public string InVehicleNotes { get; set; }
+            public string numberInVehicle { get; set; }
             [DataMember(Order = 9)]
             public string userId { get; set; }
             [DataMember(Order = 10)]
@@ -703,9 +703,9 @@ namespace Anywhere.service.Data
         }
 
         // Form 10 Transportation
-        public Form10TransportationData[] getForm10TransportationData(string token, string caseNoteId)
+        public Form10TransportationData[] getForm10TransportationData(string token, string OODTransportationId)
         {
-            string editDataString = Odg.getForm10TransportationData(token, caseNoteId);
+            string editDataString = Odg.getForm10TransportationData(token, OODTransportationId);
             Form10TransportationData[] editDataObj = js.Deserialize<Form10TransportationData[]>(editDataString);
             return editDataObj;
         }

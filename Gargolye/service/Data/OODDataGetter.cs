@@ -735,23 +735,23 @@ namespace Anywhere.service.Data
         }
 
         // Form 10 Transportation
-        public string getForm10TransportationData(string token, string caseNoteId)
+        public string getForm10TransportationData(string token, string OODTransportationId)
         {
             if (tokenValidator(token) == false) return null;
 
             logger.debug("getForm10TransportationData" + token);
             try
             {
-                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm10TransportationData('" + token + "', '" + caseNoteId + "');");
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm10TransportationData('" + token + "', '" + OODTransportationId + "');");
             }
             catch (Exception ex)
             {
-                logger.error("537", ex.Message + " ANYW_OOD_getForm10TransportationData('" + token + "', '" + caseNoteId + "')");
+                logger.error("537", ex.Message + " ANYW_OOD_getForm10TransportationData('" + token + "', '" + OODTransportationId + "')");
                 return "537: Error getting case note to edit";
             }
         }
 
-        public string updateForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string contactType, string startLocationNotes, string endLocationNotes, string InVehicleNotes, string userId, string serviceId, string referenceNumber)
+        public string updateForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string contactType, string startLocation, string endLocation, string numberInVehicle, string userId, string serviceId, string referenceNumber)
         {
             if (tokenValidator(token) == false) return null;
             //if (stringInjectionValidator(caseNote) == false) return null;
@@ -760,14 +760,14 @@ namespace Anywhere.service.Data
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(consumerId);
-            list.Add(caseNoteId);
+            list.Add(OODTransportationId);
             list.Add(serviceDate);
             list.Add(startTime);
             list.Add(endTime);          
             list.Add(contactType);            
-            list.Add(startLocationNotes);
-            list.Add(endLocationNotes);
-            list.Add(InVehicleNotes);
+            list.Add(startLocation);
+            list.Add(endLocation);
+            list.Add(numberInVehicle);
             list.Add(userId);
             list.Add(serviceId);
             list.Add(referenceNumber);
@@ -779,12 +779,12 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("536", ex.Message + " ANYW_OOD_updateForm10TransportationData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + contactType + "', '" + startLocationNotes + "', '" + endLocationNotes + "', '" + InVehicleNotes + "', '" + userId + "', '" + serviceId + "', '" + referenceNumber + "')");
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm10TransportationData('" + token + "', '" + consumerId + "', '" + OODTransportationId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + contactType + "', '" + startLocation + "', '" + endLocation + "', '" + numberInVehicle+ "', '" + userId + "', '" + serviceId + "', '" + referenceNumber + "')");
                 return "536: Error saving case note";
             }
         }
 
-        public string insertForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string contactType, string startLocationNotes, string endLocationNotes, string InVehicleNotes, string userId, string serviceId, string referenceNumber)
+        public string insertForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string contactType, string startLocation, string endLocation, string numberInVehicle, string userId, string serviceId, string referenceNumber)
         {
             if (tokenValidator(token) == false) return null;
             //  if (stringInjectionValidator(caseNote) == false) return null;
@@ -793,14 +793,14 @@ namespace Anywhere.service.Data
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(consumerId);
-            list.Add(caseNoteId);
+            list.Add(OODTransportationId);
             list.Add(serviceDate);
             list.Add(startTime);
             list.Add(endTime);
             list.Add(contactType);
-            list.Add(startLocationNotes);
-            list.Add(endLocationNotes);
-            list.Add(InVehicleNotes);
+            list.Add(startLocation);
+            list.Add(endLocation);
+            list.Add(numberInVehicle);
             list.Add(userId);
             list.Add(serviceId);
             list.Add(referenceNumber);
@@ -814,7 +814,7 @@ namespace Anywhere.service.Data
             }
             catch (Exception ex)
             {
-                logger.error("536", ex.Message + " ANYW_OOD_insertForm10TransportationData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + contactType + "', '" + startLocationNotes + "', '" + endLocationNotes + "', '" + InVehicleNotes + "', '" + userId + "', '" + serviceId + "', '" + referenceNumber + "')");
+                logger.error("536", ex.Message + " ANYW_OOD_insertForm10TransportationData('" + token + "', '" + consumerId + "', '" + OODTransportationId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + contactType + "', '" + startLocation + "', '" + endLocation + "', '" + numberInVehicle + "', '" + userId + "', '" + serviceId + "', '" + referenceNumber + "')");
                 return "536: Error saving case note";
             }
         }
