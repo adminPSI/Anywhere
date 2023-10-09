@@ -1,5 +1,4 @@
 (function (global, factory) {
-  global = global || self;
   global.Radio = factory();
 })(this, function () {
   /**
@@ -63,6 +62,13 @@
 
     return this;
   };
+
+  /**
+   * Handles radio change event
+   *
+   * @function
+   */
+  Radio.prototype.onChange = function () {};
 
   /**
    * Renders the built Radio element to the specified DOM node.

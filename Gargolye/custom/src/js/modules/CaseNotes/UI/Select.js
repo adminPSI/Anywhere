@@ -1,5 +1,4 @@
 (function (global, factory) {
-  global = global || self;
   global.Select = factory();
 })(this, function () {
   /**
@@ -89,6 +88,27 @@
     this.inputWrap.appendChild(labelEle);
     return this;
   };
+
+  /**
+   * Sets value of select
+   *
+   * @function
+   */
+  Select.prototype.setValue = function (value) {};
+
+  /**
+   * Clears select value, sets it to ''
+   *
+   * @function
+   */
+  Textarea.prototype.clear = function () {};
+
+  /**
+   * Handles select change event
+   *
+   * @function
+   */
+  Select.prototype.onChange = function () {};
 
   /**
    * Renders the built Select element to the specified DOM node.

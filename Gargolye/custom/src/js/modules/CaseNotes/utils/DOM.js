@@ -1,5 +1,4 @@
 (function (global, factory) {
-  global = global || self;
   global._DOM = factory();
 })(this, function () {
   /**

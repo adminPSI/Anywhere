@@ -1,5 +1,4 @@
 //TODO: Finsih UI Form Component
-//TODO: - required fields
 //TODO: - events for individual inputs for validation, etc..
 //TODO: - input default values
 //TODO: - clear form method

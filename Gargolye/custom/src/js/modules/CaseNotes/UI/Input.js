@@ -1,5 +1,4 @@
 (function (global, factory) {
-  global = global || self;
   global.Input = factory();
 })(this, function () {
   /**
@@ -114,6 +113,34 @@
 
     return this;
   };
+
+  /**
+   * Sets value of input
+   *
+   * @function
+   */
+  Input.prototype.setValue = function (value) {};
+
+  /**
+   * Clears input value, sets it to ''
+   *
+   * @function
+   */
+  Input.prototype.clear = function () {};
+
+  /**
+   * Handles input change event
+   *
+   * @function
+   */
+  Input.prototype.onChange = function () {};
+
+  /**
+   * Handles input keyup event
+   *
+   * @function
+   */
+  Input.prototype.onKeyup = function () {};
 
   /**
    * Renders the built Input element to the specified DOM node.

@@ -1,8 +1,4 @@
-//? Thoughts
-//? inputs, submit callback, required fields, permissions,
-
 (function (global, factory) {
-  global = global || self;
   global.Form = factory();
 })(this, function () {
   /**
@@ -100,6 +96,15 @@
 
       this.onSubmit(data);
     });
+  };
+
+  /**
+   * Clears value from all inputs within form
+   *
+   * @function
+   */
+  Form.prototype.clear = function () {
+    // clear all values from form inputs
   };
 
   /**

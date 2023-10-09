@@ -1,5 +1,4 @@
 (function (global, factory) {
-  global = global || self;
   global.Textarea = factory();
 })(this, function () {
   /**
@@ -113,6 +112,34 @@
 
     return this;
   };
+
+  /**
+   * Sets value of textarea
+   *
+   * @function
+   */
+  Textarea.prototype.setValue = function (value) {};
+
+  /**
+   * Clears textarea value, sets it to ''
+   *
+   * @function
+   */
+  Textarea.prototype.clear = function () {};
+
+  /**
+   * Handles textarea change event
+   *
+   * @function
+   */
+  Textarea.prototype.onChange = function () {};
+
+  /**
+   * Handles textarea keyup event
+   *
+   * @function
+   */
+  Textarea.prototype.onKeyup = function () {};
 
   /**
    * Renders the built Textarea element to the specified DOM node.
