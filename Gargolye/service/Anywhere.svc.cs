@@ -2930,19 +2930,19 @@ namespace Anywhere
             return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
         }
 
-        public OODWorker.Form10TransportationData[] getForm10TransportationData(string token, string caseNoteId)
+        public OODWorker.Form10TransportationData[] getForm10TransportationData(string token, string OODTransportationId)
         {
-            return Ow.getForm10TransportationData(token, caseNoteId);
+            return Ow.getForm10TransportationData(token, OODTransportationId);
         }
 
-        public string updateForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string contactType, string startLocationNotes, string endLocationNotes, string InVehicleNotes, string userId, string serviceId, string referenceNumber)
+        public string updateForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string contactType, string startLocation, string endLocation, string numberInVehicle, string userId, string serviceId, string referenceNumber)
         {
-            return Odg.updateForm10TransportationData(token, consumerId, caseNoteId, serviceDate, startTime, endTime, contactType, startLocationNotes, endLocationNotes, InVehicleNotes, userId, serviceId, referenceNumber);
+            return Odg.updateForm10TransportationData(token, consumerId, OODTransportationId, serviceDate, startTime, endTime, contactType, startLocation, endLocation, numberInVehicle, userId, serviceId, referenceNumber);
         }
 
-        public string insertForm10TransportationData(string token, string consumerId, string caseNoteId, string serviceDate, string startTime, string endTime, string contactType, string startLocationNotes, string endLocationNotes, string InVehicleNotes, string userId, string serviceId, string referenceNumber)
+        public string insertForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string contactType, string startLocation, string endLocation, string numberInVehicle, string userId, string serviceId, string referenceNumber)
         {
-            return Odg.insertForm10TransportationData(token, consumerId, caseNoteId, serviceDate, startTime, endTime, contactType, startLocationNotes, endLocationNotes, InVehicleNotes, userId, serviceId, referenceNumber);
+            return Odg.insertForm10TransportationData(token, consumerId, OODTransportationId, serviceDate, startTime, endTime, contactType, startLocation, endLocation, numberInVehicle, userId, serviceId, referenceNumber);
         }
 
 

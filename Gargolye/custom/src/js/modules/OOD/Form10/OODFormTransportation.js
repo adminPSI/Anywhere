@@ -14,15 +14,15 @@ let deleteNoteBtn;
 
 // Case Note Edit Data
 let consumerId;
-let caseNoteId;
+let OODTransportationId;
 let serviceDate;
 let startTime;
 let endTime;
 let employer;
 let contactType;
-let startLocationNotes;
-let endLocationNotes;
-let InVehicleNotes; 
+let startLocation;
+let endLocation;
+let numberInVehicle; 
 
 //Case Note Data
 let caseManagerId;
@@ -45,29 +45,29 @@ let currentEntryUserId;
     if (caseNoteData && Object.keys(caseNoteData).length !== 0) {
 
       userId = $.session.UserId;
-      caseNoteId = caseNoteData[0].caseNoteId;
+      OODTransportationId = caseNoteData[0].OODTransportationId;
       serviceDate = caseNoteData[0].serviceDate;
       startTime = caseNoteData[0].startTime;
       endTime = caseNoteData[0].endTime;
       contactType = caseNoteData[0].contactType;
-      startLocationNotes = caseNoteData[0].startLocationNotes;
-      endLocationNotes = caseNoteData[0].endLocationNotes;
-      InVehicleNotes = caseNoteData[0].InVehicleNotes;
+      startLocation = caseNoteData[0].startLocation;
+      endLocation = caseNoteData[0].endLocation;
+      numberInVehicle = caseNoteData[0].numberInVehicle;
       
      } else {
 
       caseManagerId = $.session.PeopleId;
       userId = $.session.UserId;
       serviceId = selectedConsumerServiceId;
-      caseNoteId = '0';
+      OODTransportationId = '0';
       serviceDate = selectedServiceDate;
       //serviceDate = UTIL.getTodaysDate();
       startTime = '';
       endTime = '';
       contactType = '';
-      startLocationNotes = '';
-      endLocationNotes = '';
-      InVehicleNotes = '';
+      startLocation = '';
+      endLocation = '';
+      numberInVehicle = '';
       
 
      }
@@ -116,13 +116,13 @@ let currentEntryUserId;
         label: '# in Vehicle Per Trip',
         type: 'number',
         style: 'secondary',
-        value: InVehicleNotes,
+        value: numberInVehicle,
         attributes: [{ key: 'min', value: '0' }],
       });
 
     startLocationInput = input.build({
       label: 'Start Location Street/City',
-      value: startLocationNotes,
+      value: startLocation,
       type: 'textarea',
       classNames: 'autosize',
       readonly: formReadOnly,
@@ -132,7 +132,7 @@ let currentEntryUserId;
 
     endLocationInput = input.build({
       label: 'End Location Street/City',
-      value: endLocationNotes,
+      value: endLocation,
       type: 'textarea',
       classNames: 'autosize',
       readonly: formReadOnly,
@@ -177,7 +177,8 @@ let currentEntryUserId;
       icon: 'delete',
      // classNames: 'disabled',
       callback: async () => {
-        deleteConfirmation(caseNoteId); 
+        //TODO JOE; Look at DElete
+        deleteConfirmation(OODTransportationId); 
       },
     });
     cancelNoteBtn = button.build({
@@ -232,8 +233,8 @@ let currentEntryUserId;
 
       let btnWrap = document.createElement("div");
       btnWrap.classList.add("btnWrap");
-      (caseNoteId == '0') ? btnWrap.appendChild(saveNoteBtn) :  btnWrap.appendChild(updateNoteBtn);
-      (caseNoteId == '0') ? btnWrap.appendChild(saveAndNewNoteBtn) : btnWrap.appendChild(deleteNoteBtn) ;
+      (OODTransportationId == '0') ? btnWrap.appendChild(saveNoteBtn) :  btnWrap.appendChild(updateNoteBtn);
+      (OODTransportationId == '0') ? btnWrap.appendChild(saveAndNewNoteBtn) : btnWrap.appendChild(deleteNoteBtn) ;
 
 
       let btnWrap2 = document.createElement("div");
@@ -453,18 +454,18 @@ function validateStartEndTimes(validateTime) {
     });
 
     numberInVehicleInput.addEventListener('input', event => {
-      InVehicleNotes = event.target.value;
+      numberInVehicle = event.target.value;
       checkRequiredFields();
     });
 
     
     startLocationInput.addEventListener('input', event => {
-      startLocationNotes = event.target.value;
+      startLocation = event.target.value;
       checkRequiredFields();
     });
 
     endLocationInput.addEventListener('input', event => {
-      startLocationNotes = event.target.value;
+      startLocation = event.target.value;
       checkRequiredFields();
     });
 
@@ -505,14 +506,14 @@ function validateStartEndTimes(validateTime) {
     function updateFormData() {
       var data = {
         consumerId,
-        caseNoteId,
+        OODTransportationId,
         serviceDate: UTIL.formatDateToIso(serviceDate.split(' ')[0]),
         startTime,
         endTime,
         contactType,
-        startLocationNotes,
-        endLocationNotes,
-        InVehicleNotes,
+        startLocation,
+        endLocation,
+        numberInVehicle,
         userId,
       };
 
@@ -530,14 +531,14 @@ function validateStartEndTimes(validateTime) {
     function insertFormData(saveType) {
       var data = {
         consumerId,
-        caseNoteId,
+        OODTransportationId,
         serviceDate: UTIL.formatDateToIso(serviceDate.split(' ')[0]),
         startTime,
         endTime,
         contactType,
-        startLocationNotes,
-        endLocationNotes,
-        InVehicleNotes,
+        startLocation,
+        endLocation,
+        numberInVehicle,
         userId,
         serviceId,
         referenceNumber,
@@ -561,7 +562,8 @@ function validateStartEndTimes(validateTime) {
 
     }
 
-    function deleteConfirmation(caseNoteId) {
+    //TODO JOE : Look into DElete for Transporation
+    function deleteConfirmation(OODTransportationId) {
       var deletepopup = POPUP.build({
         id: 'deleteWarningPopup',
         classNames: 'warning',
@@ -575,7 +577,7 @@ function validateStartEndTimes(validateTime) {
         icon: 'checkmark',
         callback: async function() {
                   POPUP.hide(deletepopup);
-                   let result = await OODAjax.deleteOODFormEntryAsync(caseNoteId);  
+                   let result = await OODAjax.deleteOODFormEntryAsync(OODTransportationId);  
                    if (result.deleteOODFormEntryResult === "1"){
                         OOD.loadOODLanding();                
                    }
