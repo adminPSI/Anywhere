@@ -751,10 +751,10 @@
             }
         }
 
-        async function emailOnClick(emailLink) {
+        async function emailOnClick(emailLink) {   
             const success = await rosterAjax.verifyDefaultEmailClient();
             const { verifyDefaultEmailClientResult } = success;
-            if (verifyDefaultEmailClientResult == 'True') {
+            if (verifyDefaultEmailClientResult) {
                 window.location.href = emailLink;
             } else {
                 consumerInfo.closeCard(); 
