@@ -1,6 +1,6 @@
 (function (global, factory) {
   global = global || self;
-  global.Input = factory();
+  global.Textarea = factory();
 })(this, function () {
   /**
    * Default configuration
@@ -61,17 +61,16 @@
   /**
    * @constructor
    * @param {Object} options
-   * @param {String} options.id - Id for input, use to link it with label. Also used for name attribute.
-   * @param {String} options.type - HTML Input type
-   * @param {String} options.label - Text for label input
-   * @param {Boolean} [options.required] - Whether input is required for submission
-   * @param {String} [options.note] - Text for input note/message, displayed underneath input field
+   * @param {String} options.id - Id for textarea, use to link it with label. Also used for name attribute.
+   * @param {String} options.label - Text for label
+   * @param {Boolean} [options.required] - Whether textarea is required for submission
+   * @param {String} [options.note] - Text for textarea note/message, displayed underneath textarea field
    * @param {Boolean} [options.showCount] - Whether to show char count or not
    * @param {String} [options.minlength] - min char count
    * @param {String} [options.maxlength] - max char count
-   * @returns {Input}
+   * @returns {Textarea}
    */
-  function Input(options) {
+  function Textarea(options) {
     this.options = separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.inputWrap = null;
@@ -79,17 +78,17 @@
   }
 
   /**
-   * Builds the Input element structure
+   * Builds the Textarea element structure
    *
    * @function
-   * @returns {Input} - Returns the current instances for chaining
+   * @returns {Textarea} - Returns the current instances for chaining
    */
-  Input.prototype.build = function () {
+  Textarea.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
       class: ['input', `${this.options.attributes.type}`],
     });
 
-    this.input = _DOM.createElement('input', { ...this.options.attributes });
+    this.input = _DOM.createElement('textarea', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
@@ -116,13 +115,13 @@
   };
 
   /**
-   * Renders the built Input element to the specified DOM node.
+   * Renders the built Textarea element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the input to
-   * @returns {Input} - Returns the current instances for chaining
+   * @param {Node} node - DOM node to render the textarea to
+   * @returns {Textarea} - Returns the current instances for chaining
    */
-  Input.prototype.renderTo = function (node) {
+  Textarea.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.inputWrap);
     }
@@ -130,5 +129,5 @@
     return this;
   };
 
-  return Input;
+  return Textarea;
 });

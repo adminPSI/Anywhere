@@ -63,6 +63,11 @@
           inputInstance = new Select({ ...ele }).build();
           break;
         }
+        case 'textarea': {
+          delete ele.type; // only needed for Form
+          inputInstance = new Textarea({ ...ele }).build();
+          break;
+        }
         default: {
           inputInstance = new Input({ ...ele }).build();
         }
