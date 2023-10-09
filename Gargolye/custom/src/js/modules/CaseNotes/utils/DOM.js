@@ -3,12 +3,12 @@
   global._DOM = factory();
 })(this, function () {
   /**
-   * Create DOM element node and set given attributes,
+   * Create DOM element node and set given attributes, html/text, or nodes to append
    *
    * @function
-   * @param  {String}  tag         HTML element name
-   * @param  {Object}  attributes  Attributes to be applied to element
-   * @returns {HTMLElement}
+   * @param  {String}  tag - HTML element name
+   * @param  {Object}  attributes - Attributes to be applied to element
+   * @returns {HTMLElement} - Returns created HTML element
    */
   function createElement(tag, attributes) {
     const element = document.createElement(tag);
@@ -51,8 +51,8 @@
    * Test if node is reference-free
    *
    * @function
-   * @param {HTMLElement}  node  HTML element
-   * @returns {Boolean}
+   * @param {HTMLElement}  node - HTML element
+   * @returns {Boolean} - Returns whether node is reference free or not
    */
   function isReferenceFree(node) {
     return (document.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINED_BY) === 0;

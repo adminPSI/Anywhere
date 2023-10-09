@@ -5,15 +5,17 @@
 
   /**
    * Merge default options with user options
-   * @param {Object}  userOptions  User defined options object
-   * @return {Object}              Merged options object
+   *
+   * @function
+   * @param {Object}  userOptions - User defined options object
+   * @return {Object} - Merged options object
    */
   const mergOptionsWithDefaults = userOptions => {
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
   /**
-   * @class
+   * @constructor
    * @param {Object} options
    * @param {Function} options.onConsumerSelect
    */
@@ -36,7 +38,7 @@
    * Builds the Input element structure
    *
    * @function
-   * @returns {RosterPicker} Returns the current instances for chaining
+   * @returns {RosterPicker} - Returns the current instances for chaining
    */
   RosterPicker.prototype.build = function () {
     this.rosterPickerEle = _DOM.createElement('div', { class: 'rosterPicker' });
@@ -136,8 +138,8 @@
    * Renders the built Input element to the specified DOM node.
    *
    * @function
-   * @param {Node} node DOM node to render the roster picker to
-   * @returns {RosterPicker} Returns the current instances for chaining
+   * @param {Node} node - DOM node to render the roster picker to
+   * @returns {RosterPicker} - Returns the current instances for chaining
    */
   RosterPicker.prototype.renderTo = function (node) {
     if (node instanceof Node) {

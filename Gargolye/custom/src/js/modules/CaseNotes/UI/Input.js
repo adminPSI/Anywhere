@@ -15,8 +15,10 @@
 
   /**
    * Merge default options with user options
-   * @param {Object}  userOptions  User defined options object
-   * @return {Object}              Merged options object
+   *
+   * @function
+   * @param {Object}  userOptions - User defined options object
+   * @return {Object} - Merged options object
    */
   const mergOptionsWithDefaults = userOptions => {
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
@@ -25,8 +27,10 @@
   /**
    * Separate HTML attributes from options obj
    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
-   * @param {Object}  options  Options object
-   * @return {Object}          Separated options object
+   *
+   * @function
+   * @param {Object}  options - Options object
+   * @return {Object} - Separated options object
    */
   const separateHTMLAttribrutes = options => {
     const props = ['label', 'note', 'showcount'];
@@ -80,7 +84,7 @@
    * Builds the Input element structure
    *
    * @function
-   * @returns {Input} Returns the current instances for chaining
+   * @returns {Input} - Returns the current instances for chaining
    */
   Input.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
@@ -117,8 +121,8 @@
    * Renders the built Input element to the specified DOM node.
    *
    * @function
-   * @param {Node} node DOM node to render the input to
-   * @returns {Input} Returns the current instances for chaining
+   * @param {Node} node - DOM node to render the input to
+   * @returns {Input} - Returns the current instances for chaining
    */
   Input.prototype.renderTo = function (node) {
     if (node instanceof Node) {

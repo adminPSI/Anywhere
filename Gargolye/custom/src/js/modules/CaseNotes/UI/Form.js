@@ -15,8 +15,10 @@
 
   /**
    * Merge default options with user options
-   * @param {Object}  userOptions  User defined options object
-   * @return {Object}              Merged options object
+   *
+   * @function
+   * @param {Object}  userOptions - User defined options object
+   * @return {Object} - Merged options object
    */
   const mergOptionsWithDefaults = userOptions => {
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
@@ -27,7 +29,7 @@
   //-------------------------
 
   /**
-   * @class
+   * @constructor
    * @param {Object} options
    */
   function Form(options) {
@@ -43,7 +45,7 @@
    * Builds the Form element structure
    *
    * @function
-   * @returns {Form} Returns the current instances for chaining
+   * @returns {Form} - Returns the current instances for chaining
    */
   Form.prototype.build = function () {
     this.form = _DOM.createElement('form');
@@ -99,8 +101,8 @@
    * Renders the built Form element to the specified DOM node.
    *
    * @function
-   * @param {Node} node DOM node to render the form to
-   * @returns {Form} Returns the current instances for chaining
+   * @param {Node} node - DOM node to render the form to
+   * @returns {Form} - Returns the current instances for chaining
    */
   Form.prototype.renderTo = function (node) {
     if (node instanceof Node) {

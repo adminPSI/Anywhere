@@ -13,8 +13,10 @@
 
   /**
    * Merge default options with user options
-   * @param {Object}  userOptions  User defined options object
-   * @return {Object}              Merged options object
+   *
+   * @function
+   * @param {Object}  userOptions - User defined options object
+   * @return {Object} - Merged options object
    */
   const mergOptionsWithDefaults = userOptions => {
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
@@ -25,7 +27,7 @@
   //-------------------------
 
   /**
-   * @class
+   * @constructor
    * @param {Object} options
    * @param {Function} options.onDateChange
    */
@@ -51,7 +53,7 @@
    * Builds the Navigation element structure
    *
    * @function
-   * @returns {DateNavigation} Returns the current instances for chaining
+   * @returns {DateNavigation} - Returns the current instances for chaining
    */
   DateNavigation.prototype.build = function () {
     this.navigationEle = _DOM.createElement('div', { class: 'dateNavigation' });
@@ -79,6 +81,8 @@
 
   /**
    * Populates the navigation with the dates for the selected week range
+   *
+   * @function
    */
   DateNavigation.prototype.populate = function () {
     this.weekWrapEle.innerHTML = '';
@@ -107,6 +111,8 @@
 
   /**
    * Setsup events for navigation
+   *
+   * @function
    */
   DateNavigation.prototype.setupEvents = function () {
     this.navigationEle.addEventListener('click', e => {
@@ -164,8 +170,8 @@
    * Renders the built Date Navigation element to the specified DOM node.
    *
    * @function
-   * @param {Node} node DOM node to render the navigation to
-   * @returns {DateNavigation} Returns the current instances for chaining
+   * @param {Node} node - DOM node to render the navigation to
+   * @returns {DateNavigation} - Returns the current instances for chaining
    */
   DateNavigation.prototype.renderTo = function (node) {
     if (node instanceof Node) {

@@ -64,7 +64,7 @@
    * @function
    * @param {Object}  baseObject
    * @param {Object}  mergeObject
-   * @return {Object} Merged options object
+   * @return {Object} - Merged options object
    */
   function mergeObjects(baseObject, mergeObject) {
     return Object.assign({}, baseObject, mergeObject);
@@ -73,9 +73,9 @@
   /**
    * Separate props and methods from obj
    * @function
-   * @param {Object}  dirtyObj Object to split
-   * @param {Array}   props Object props to isolate
-   * @return {Object} Separated options object
+   * @param {Object}  dirtyObj - Object to split
+   * @param {Array}   props - Object props to isolate
+   * @return {Object} - Separated options object
    */
   function splitObjectByPropNames(dirtyObj, props) {
     const [a, b] = Object.entries(dirtyObj).reduce(
