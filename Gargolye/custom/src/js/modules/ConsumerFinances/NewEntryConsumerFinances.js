@@ -630,6 +630,7 @@ const NewEntryCF = (() => {
         })); 
         if (data.length == 1) {           
             account = data[0].value;
+            accountID = data[0].id; 
         } 
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);

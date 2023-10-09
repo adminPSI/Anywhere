@@ -44,9 +44,11 @@
       switch (ele.type.toLowerCase()) {
         case 'radio': {
           inputInstance = new Radio({ ...ele }).build();
+          break;
         }
         case 'select': {
           inputInstance = new Select({ ...ele }).build();
+          break;
         }
         default: {
           inputInstance = new Input({ ...ele }).build();
@@ -57,10 +59,15 @@
       this.inputs[ele.id] = inputInstance;
     });
 
+    //temp
+    const btn = _DOM.createElement('button', { type: 'submit', text: 'Save' });
+    this.form.appendChild(btn);
+    //end temp
+
     this.form.addEventListener('submit', e => {
       e.preventDefault();
-
       console.log(e.target.elements);
+      debugger;
 
       const formData = new FormData(this.form);
       const entries = formData.entries();
