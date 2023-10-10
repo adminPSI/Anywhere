@@ -113,7 +113,7 @@
    */
   Input.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('change', e => {
-      cbFunc(this.input, e.target.value);
+      cbFunc(e);
     });
   };
 
@@ -125,7 +125,7 @@
    */
   Input.prototype.onKeyup = function (cbFunc) {
     this.input.addEventListener('keyup', e => {
-      cbFunc(this.input, e.target.value);
+      cbFunc(e);
     });
   };
 

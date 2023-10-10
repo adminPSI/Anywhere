@@ -111,7 +111,7 @@
    */
   Textarea.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('change', e => {
-      cbFunc(this.input, e.target.value);
+      cbFunc(e);
     });
   };
 
@@ -122,7 +122,7 @@
    */
   Textarea.prototype.onKeyup = function (cbFunc) {
     this.input.addEventListener('keyup', e => {
-      cbFunc(this.input, e.target.value);
+      cbFunc(e);
     });
   };
 

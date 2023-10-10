@@ -88,7 +88,7 @@
    */
   Select.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('change', e => {
-      cbFunc(this.input, e.target.value);
+      cbFunc(e);
     });
   };
 
