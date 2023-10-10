@@ -63,6 +63,7 @@
     this.rosterPickerEle.appendChild(this.rosterWrapEle);
 
     this.populate();
+    this.setupEvents();
 
     return this;
   };
@@ -108,6 +109,8 @@
    */
   RosterPicker.prototype.setupEvents = function () {
     this.rosterWrapEle.addEventListener('click', () => {});
+    this.rosterSearchInput.addEventListener('click', () => {});
+    this.rosterCaseLoadInput.addEventListener('click', () => {});
   };
 
   /**

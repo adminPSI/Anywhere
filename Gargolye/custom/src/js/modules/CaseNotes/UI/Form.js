@@ -32,9 +32,6 @@
     // Data Init
     this.options = mergOptionsWithDefaults(options);
     this.inputs = {};
-
-    // Callbacks
-    this.onSubmit = options.onSubmit;
   }
 
   /**
@@ -47,25 +44,30 @@
     this.form = _DOM.createElement('form');
 
     this.options.elements.forEach(ele => {
+      const eleOpts = {
+        onChange: this.onChange,
+        ...ele,
+      };
+
       let inputInstance;
 
       switch (ele.type.toLowerCase()) {
         case 'radio': {
-          inputInstance = new Radio({ ...ele }).build();
+          inputInstance = new Radio(eleOpts).build();
           break;
         }
         case 'select': {
-          delete ele.type; // only needed for Form
-          inputInstance = new Select({ ...ele }).build();
+          delete eleOpts.type; // only needed for Form
+          inputInstance = new Select(eleOpts).build();
           break;
         }
         case 'textarea': {
-          delete ele.type; // only needed for Form
-          inputInstance = new Textarea({ ...ele }).build();
+          delete eleOpts.type; // only needed for Form
+          inputInstance = new Textarea(eleOpts).build();
           break;
         }
         default: {
-          inputInstance = new Input({ ...ele }).build();
+          inputInstance = new Input(eleOpts).build();
         }
       }
 
@@ -77,6 +79,8 @@
     const btn = _DOM.createElement('button', { type: 'submit', text: 'Save' });
     this.form.appendChild(btn);
     //end temp
+
+    this.setupEvents();
 
     return this;
   };
@@ -94,7 +98,7 @@
       const entries = formData.entries();
       const data = Object.fromEntries(entries);
 
-      this.onSubmit(data);
+      this.options.onSubmit(data);
     });
   };
 

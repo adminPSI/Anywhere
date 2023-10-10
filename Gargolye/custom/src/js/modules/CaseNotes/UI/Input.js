@@ -111,7 +111,20 @@
     this.inputWrap.appendChild(this.input);
     this.inputWrap.appendChild(labelEle);
 
+    this.setupEvents();
+
     return this;
+  };
+
+  /**
+   * Setsup events for input
+   *
+   * @function
+   */
+  Input.prototype.setupEvents = function () {
+    this.input.addEventListener('change', e => {
+      this.options.onChange(this.input, e.value);
+    });
   };
 
   /**

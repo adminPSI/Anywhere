@@ -216,6 +216,9 @@ const CaseNotes = (() => {
       onSubmit(data) {
         console.log('onSubmit ', data);
       },
+      onChange(target, targetValue) {
+        console.log('onChange ', target, targetValue);
+      },
     });
     cnForm.build().renderTo(moduleWrap);
     console.log(cnForm);
