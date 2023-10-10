@@ -86,7 +86,11 @@
    *
    * @function
    */
-  Select.prototype.onChange = function () {};
+  Select.prototype.onChange = function (cbFunc) {
+    this.input.addEventListener('change', e => {
+      cbFunc(this.input, e.value);
+    });
+  };
 
   /**
    * Renders the built Select element to the specified DOM node.

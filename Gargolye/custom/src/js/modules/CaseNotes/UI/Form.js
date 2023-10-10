@@ -44,31 +44,36 @@
     this.form = _DOM.createElement('form');
 
     this.options.elements.forEach(ele => {
-      const eleOpts = {
-        onChange: this.options.onChange,
-        ...ele,
-      };
-
       let inputInstance;
 
       switch (ele.type.toLowerCase()) {
         case 'radio': {
-          inputInstance = new Radio(eleOpts).build();
+          inputInstance = new Radio({ ...ele }).build();
           break;
         }
         case 'select': {
-          delete eleOpts.type; // only needed for Form
-          inputInstance = new Select(eleOpts).build();
+          delete ele.type; // only needed for Form
+          inputInstance = new Select({ ...ele }).build();
           break;
         }
         case 'textarea': {
-          delete eleOpts.type; // only needed for Form
-          inputInstance = new Textarea(eleOpts).build();
+          delete ele.type; // only needed for Form
+          inputInstance = new Textarea({ ...ele }).build();
+          if (typeof this.options.onKeyup === 'function') {
+            inputInstance.onKeyup(this.options.onKeyup);
+          }
           break;
         }
         default: {
-          inputInstance = new Input(eleOpts).build();
+          inputInstance = new Input({ ...ele }).build();
+          if (typeof this.options.onKeyup === 'function') {
+            inputInstance.onKeyup(this.options.onKeyup);
+          }
         }
+      }
+
+      if (typeof this.options.onChange === 'function') {
+        inputInstance.onChange(this.options.onChange);
       }
 
       this.form.appendChild(inputInstance.inputWrap);

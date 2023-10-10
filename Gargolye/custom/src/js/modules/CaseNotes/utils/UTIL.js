@@ -102,7 +102,7 @@
      * @return {Object} - Separated options object
      */
     separateHTMLAttribrutes(options) {
-      const props = ['label', 'note', 'showcount', 'onChange', 'onKeyup'];
+      const props = ['label', 'note', 'showcount'];
 
       const [a, b] = Object.entries(options).reduce(
         ([matching, leftover], [key, value]) =>

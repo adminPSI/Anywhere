@@ -109,14 +109,22 @@
    *
    * @function
    */
-  Textarea.prototype.onChange = function () {};
+  Textarea.prototype.onChange = function (cbFunc) {
+    this.input.addEventListener('change', e => {
+      cbFunc(this.input, e.value);
+    });
+  };
 
   /**
    * Handles textarea keyup event
    *
    * @function
    */
-  Textarea.prototype.onKeyup = function () {};
+  Textarea.prototype.onKeyup = function (cbFunc) {
+    this.input.addEventListener('keyup', e => {
+      cbFunc(this.input, e.value);
+    });
+  };
 
   /**
    * Renders the built Textarea element to the specified DOM node.

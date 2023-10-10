@@ -88,20 +88,7 @@
     this.inputWrap.appendChild(this.input);
     this.inputWrap.appendChild(labelEle);
 
-    this.setupEvents();
-
     return this;
-  };
-
-  /**
-   * Setsup events for input
-   *
-   * @function
-   */
-  Input.prototype.setupEvents = function () {
-    this.input.addEventListener('change', e => {
-      this.options.onChange(this.input, e.value);
-    });
   };
 
   /**
@@ -119,18 +106,28 @@
   Input.prototype.clear = function () {};
 
   /**
-   * Handles input change event
+   * Handles input change event, used when Input is not apart of a form.
+   * If used within a form the form will pass events through options
    *
    * @function
    */
-  Input.prototype.onChange = function (cbFunc) {};
+  Input.prototype.onChange = function (cbFunc) {
+    this.input.addEventListener('change', e => {
+      cbFunc(this.input, e.value);
+    });
+  };
 
   /**
-   * Handles input keyup event
+   * Handles input keyup event, used when Input is not apart of a form.
+   * If used within a form the form will pass events through options
    *
    * @function
    */
-  Input.prototype.onKeyup = function (cbFunc) {};
+  Input.prototype.onKeyup = function (cbFunc) {
+    this.input.addEventListener('keyup', e => {
+      cbFunc(this.input, e.value);
+    });
+  };
 
   /**
    * Renders the built Input element to the specified DOM node.
