@@ -94,15 +94,20 @@
    * Sets value of textarea
    *
    * @function
+   * @param {*} value
    */
-  Textarea.prototype.setValue = function (value) {};
+  Textarea.prototype.setValue = function (value) {
+    this.input.value = value;
+  };
 
   /**
    * Clears textarea value, sets it to ''
    *
    * @function
    */
-  Textarea.prototype.clear = function () {};
+  Textarea.prototype.clear = function () {
+    this.input.value = '';
+  };
 
   /**
    * Handles textarea change event

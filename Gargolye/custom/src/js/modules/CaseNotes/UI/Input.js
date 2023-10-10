@@ -95,19 +95,23 @@
    * Sets value of input
    *
    * @function
+   * @param {*} value
    */
-  Input.prototype.setValue = function (value) {};
+  Input.prototype.setValue = function (value) {
+    this.input.value = value;
+  };
 
   /**
    * Clears input value, sets it to ''
    *
    * @function
    */
-  Input.prototype.clear = function () {};
+  Input.prototype.clear = function () {
+    this.input.value = '';
+  };
 
   /**
-   * Handles input change event, used when Input is not apart of a form.
-   * If used within a form the form will pass events through options
+   * Handles input change event
    *
    * @function
    */
@@ -118,8 +122,7 @@
   };
 
   /**
-   * Handles input keyup event, used when Input is not apart of a form.
-   * If used within a form the form will pass events through options
+   * Handles input keyup event
    *
    * @function
    */
