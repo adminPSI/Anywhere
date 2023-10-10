@@ -2935,14 +2935,14 @@ namespace Anywhere
             return Ow.getForm10TransportationData(token, OODTransportationId);
         }
 
-        public string updateForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string contactType, string startLocation, string endLocation, string numberInVehicle, string userId, string serviceId, string referenceNumber)
+        public string updateForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation, string userId)
         {
-            return Odg.updateForm10TransportationData(token, consumerId, OODTransportationId, serviceDate, startTime, endTime, contactType, startLocation, endLocation, numberInVehicle, userId, serviceId, referenceNumber);
+            return Odg.updateForm10TransportationData(token, consumerId, OODTransportationId, serviceDate, startTime, endTime, numberInVehicle, startLocation, endLocation, userId);
         }
 
-        public string insertForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string contactType, string startLocation, string endLocation, string numberInVehicle, string userId, string serviceId, string referenceNumber)
+        public string insertForm10TransportationData(string token, string consumerId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation, string userId, string referenceNumber)
         {
-            return Odg.insertForm10TransportationData(token, consumerId, OODTransportationId, serviceDate, startTime, endTime, contactType, startLocation, endLocation, numberInVehicle, userId, serviceId, referenceNumber);
+            return Odg.insertForm10TransportationData(token, consumerId, serviceDate, startTime, endTime, numberInVehicle, startLocation, endLocation, userId, referenceNumber);
         }
 
 
