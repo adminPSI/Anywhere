@@ -12,19 +12,18 @@ let cancelNoteBtn;
 let updateNoteBtn;
 let deleteNoteBtn;
 
-// Case Note Edit Data
+// OOD Transportation Edit Data
 let consumerId;
+//let personId;
 let OODTransportationId;
 let serviceDate;
 let startTime;
 let endTime;
-let employer;
-let contactType;
 let startLocation;
 let endLocation;
 let numberInVehicle; 
 
-//Case Note Data
+//OOD Transportation Data
 let caseManagerId;
 let userId;
 let serviceId;
@@ -34,7 +33,7 @@ let formReadOnly = false;
 
 let currentEntryUserId;
 
-  async function init(caseNoteData, currentConsumer, selectedConsumerServiceId, selectedConsumerReferenceNumber, currentRecordUserId, selectedServiceDate, clickSource = 'OODGrid') {
+  async function init(OODTransportationData, currentConsumer, selectedConsumerServiceId, selectedConsumerReferenceNumber, currentRecordUserId, selectedServiceDate, clickSource = 'OODGrid') {
 
     DOM.clearActionCenter();
     document.querySelectorAll('.consumerListBtn').forEach(e => e.remove());
@@ -42,33 +41,31 @@ let currentEntryUserId;
     consumerId = currentConsumer.id;
     currentEntryUserId = currentRecordUserId;
 
-    if (caseNoteData && Object.keys(caseNoteData).length !== 0) {
-
-      userId = $.session.UserId;
-      OODTransportationId = caseNoteData[0].OODTransportationId;
-      serviceDate = caseNoteData[0].serviceDate;
-      startTime = caseNoteData[0].startTime;
-      endTime = caseNoteData[0].endTime;
-      contactType = caseNoteData[0].contactType;
-      startLocation = caseNoteData[0].startLocation;
-      endLocation = caseNoteData[0].endLocation;
-      numberInVehicle = caseNoteData[0].numberInVehicle;
+    if (OODTransportationData && Object.keys(OODTransportationData).length !== 0) {
+    //  consumerId = OODTransportationData[0].consumerId;  // consumer_id from consumers table for the selected consumer
+    // personId = OODTransportationData[0].personId;  //the person_id from the persons table of the logged in user
+    OODTransportationId = OODTransportationData[0].OODTransportationId;
+    serviceDate = OODTransportationData[0].serviceDate;   // Service Date from page
+    startTime = OODTransportationData[0].startTime;  // Start Time from page
+    endTime = OODTransportationData[0].endTime; // end Time from page
+    numberInVehicle = OODTransportationData[0].numberInVehicle; // # In Vehicle Per Trip from page
+    startLocation = OODTransportationData[0].startLocation; // Start Location Street/City from page
+    endLocation = OODTransportationData[0].endLocation; // End Location Street/City from page
+    userId = $.session.UserId;  // user_id from users_groups of the user who made the last update to the entry
       
      } else {
-
-      caseManagerId = $.session.PeopleId;
-      userId = $.session.UserId;
-      serviceId = selectedConsumerServiceId;
+      //  consumerId = OODTransportationData[0].consumerId;  // consumer_id from consumers table for the selected consumer
+      // personId = OODTransportationData[0].personId;  //the person_id from the persons table of the logged in user
       OODTransportationId = '0';
       serviceDate = selectedServiceDate;
       //serviceDate = UTIL.getTodaysDate();
       startTime = '';
       endTime = '';
-      contactType = '';
+      numberInVehicle = '';
       startLocation = '';
       endLocation = '';
-      numberInVehicle = '';
-      
+      userId = $.session.UserId;
+      //referenceNumber =   // the value from consumer_services_master.reference_number for the service selected from NEW ENTRY form in previous page
 
      }
 
@@ -510,10 +507,9 @@ function validateStartEndTimes(validateTime) {
         serviceDate: UTIL.formatDateToIso(serviceDate.split(' ')[0]),
         startTime,
         endTime,
-        contactType,
+        numberInVehicle,
         startLocation,
         endLocation,
-        numberInVehicle,
         userId,
       };
 
@@ -531,16 +527,13 @@ function validateStartEndTimes(validateTime) {
     function insertFormData(saveType) {
       var data = {
         consumerId,
-        OODTransportationId,
         serviceDate: UTIL.formatDateToIso(serviceDate.split(' ')[0]),
         startTime,
         endTime,
-        contactType,
-        startLocation,
-        endLocation,
         numberInVehicle,
+        startLocation,
+        endLocation,  
         userId,
-        serviceId,
         referenceNumber,
       };
 

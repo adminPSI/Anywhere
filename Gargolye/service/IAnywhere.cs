@@ -4290,7 +4290,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/updateForm10TransportationData/")]
-        string updateForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string contactType, string startLocation, string endLocation, string numberInVehicle, string userId, string serviceId, string referenceNumber);
+        string updateForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation, string userId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4298,7 +4298,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertForm10TransportationData/")]
-        string insertForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string contactType, string startLocation, string endLocation, string numberInVehicle, string userId, string serviceId, string referenceNumber);
+        string insertForm10TransportationData(string token, string consumerId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation, string userId, string referenceNumber);
 
 
         [WebInvoke(Method = "POST",

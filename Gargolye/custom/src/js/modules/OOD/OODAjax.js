@@ -879,10 +879,9 @@ var OODAjax = (function () {
         serviceDate: data.serviceDate,
         startTime: data.startTime,
         endTime: data.endTime,  
-        contactType: data.contactType,
+        numberInVehicle: data.numberInVehicle,
         startLocation: data.startLocation,
         endLocation: data.endLocation,
-        numberInVehicle: data.numberInVehicle,
         userId: data.userId,        
          }
     return $.ajax({
@@ -902,17 +901,13 @@ var OODAjax = (function () {
     data = {
       token: $.session.Token, 
       consumerId: data.consumerId, 
-      OODTransportationId: data.OODTransportationId,
       serviceDate: data.serviceDate,
       startTime: data.startTime,
       endTime: data.endTime,
-      contactType: data.contactType,
+      numberInVehicle: data.numberInVehicle,
       startLocation: data.startLocation,
       endLocation: data.endLocation,
-      numberInVehicle: data.numberInVehicle,
-      caseManagerId: data.caseManagerId,
       userId: data.userId,
-      serviceId: data.serviceId,
       referenceNumber: data.referenceNumber,
   
        }
