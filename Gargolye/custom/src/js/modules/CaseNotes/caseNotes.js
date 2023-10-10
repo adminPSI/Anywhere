@@ -1,12 +1,21 @@
 //TODO: Finsih UI Form Component
-//TODO: - events for individual inputs for validation, etc..
 //TODO: - input default values
 //TODO: - clear form method
 //TODO: - ability to populate form after its been built/appended to DOM
-//TODO: Need a textarea input function (like select)
 
 // MAIN
 const CaseNotes = (() => {
+  // Data
+  let dropdownData;
+  let billerDropdownData;
+  let vendorDropdownData;
+  let serviceLocationDropdownData;
+  let caseManagerReview;
+  let consumersThatCanHaveMileage;
+  let attachmentList;
+
+  // DROPDOWNS
+  //--------------------------------------------------
   function dealWithDropdownDataHugeString(res) {
     function decipherXML(res) {
       const xmlDoc = UTIL.parseXml('<?xml version="1.0" encoding="UTF-8"?>' + res);
@@ -87,13 +96,13 @@ const CaseNotes = (() => {
     }
 
     const beautifulObject = decipherXML(res);
-    let dropdownData = {};
+    let dropdownDataObj = {};
 
     // create object for quick access
     beautifulObject.forEach(dd => {
       // create object for each billercode
-      if (!dropdownData[dd.serviceId]) {
-        dropdownData[dd.serviceId] = {
+      if (!dropdownDataObj[dd.serviceId]) {
+        dropdownDataObj[dd.serviceId] = {
           serviceId: dd.serviceId,
           serviceCode: dd.serviceCode,
           serviceFunding: dd.serviceFunding,
@@ -113,10 +122,22 @@ const CaseNotes = (() => {
       }
     });
 
-    //dropdownDataKeys = Object.keys(dropdownData);
-    return dropdownData;
+    //dropdownDataKeys = Object.keys(dropdownDataObj);
+    return dropdownDataObj;
+  }
+  function mapServiceBillCodeDropdownData() {
+    let dropdownData = [];
+
+    for (serviceId in dropdownData) {
+      dropdownData.push({
+        value: serviceId,
+        text: UTIL.removeQuotes(),
+      });
+    }
   }
 
+  // MAIN
+  //--------------------------------------------------
   async function loadPage() {
     const moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
 
@@ -128,7 +149,6 @@ const CaseNotes = (() => {
         console.log('onDateChange', selectedDate);
       },
     });
-
     dateNavigation.build().renderTo(moduleWrap);
 
     // ROSTER PICKER
@@ -138,7 +158,7 @@ const CaseNotes = (() => {
         console.log('Selected Consumer(s)', data);
       },
     });
-    //groupCode: 'CAS' for caseload only
+    // groupCode: 'CAS' for caseload only
     // move retrieve data for fetchConsumers inside RosterPIcker
     await rosterPicker.fetchConsumers({
       groupCode: 'ALL',
@@ -157,6 +177,8 @@ const CaseNotes = (() => {
           label: $.session.applicationName === 'Gatekeeper' ? 'Bill Code:' : 'Serv. Code:',
           id: 'serviceCode',
           required: true,
+          data: mapServiceBillCodeDropdownData(),
+          defaultValue: null,
         },
         {
           type: 'select',
@@ -217,19 +239,19 @@ const CaseNotes = (() => {
           id: 'confidential',
         },
       ],
-      onSubmit(data) {
-        console.log('onSubmit ', data);
-        console.log(cnForm);
-      },
-      onChange(event) {
-        const value = event.target.value;
-        const input = cnForm.inputs[event.target.name];
-
-        console.log('onChange', value, input);
-      },
     });
     cnForm.build().renderTo(moduleWrap);
+    cnForm.onSubmit(data => {
+      console.log('onSubmit ', data);
+      console.log(cnForm);
+    });
+    cnForm.onChange(event => {
+      const value = event.target.value;
+      const input = cnForm.inputs[event.target.name];
+      console.log('onChange from', 'form', value, input);
+    });
 
+    //---------------------------------------------------
     DOM.ACTIONCENTER.appendChild(moduleWrap);
   }
 
@@ -237,17 +259,17 @@ const CaseNotes = (() => {
     DOM.clearActionCenter();
 
     // { tons of shit }
-    let dropdownData = await _UTIL.fetchData('populateDropdownData');
+    dropdownData = await _UTIL.fetchData('populateDropdownData');
     dropdownData = dealWithDropdownDataHugeString(dropdownData.populateDropdownDataResult);
     console.log(dropdownData);
 
     // { billerId, billerName }
-    let billerDropdownData = await _UTIL.fetchData('getBillersListForDropDownJSON');
-    billerDropdownData = billerDropdownData.getBillersListForDropDownJSONResult;
-    console.log(billerDropdownData);
+    // billerDropdownData = await _UTIL.fetchData('getBillersListForDropDownJSON');
+    // billerDropdownData = billerDropdownData.getBillersListForDropDownJSONResult;
+    // console.log(billerDropdownData);
 
     // {}
-    // let vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+    // vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
     //   consumerId: null,
     //   serviceDate: null,
     // });
@@ -255,7 +277,7 @@ const CaseNotes = (() => {
     // console.log(vendorDropdownData);
 
     // {}
-    // let serviceLocationDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+    // serviceLocationDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
     //   consumerId: null,
     //   serviceDate: null,
     // });
@@ -263,23 +285,23 @@ const CaseNotes = (() => {
     // console.log(serviceLocationDropdownData);
 
     // { reviewrequired, servicecode, serviceid }
-    let caseManagerReview = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
-      caseManagerId: $.session.PeopleId,
-    });
-    caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
-    console.log(caseManagerReview);
+    // caseManagerReview = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
+    //   caseManagerId: $.session.PeopleId,
+    // });
+    // caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
+    // console.log(caseManagerReview);
 
     // ADVISOR ONLY
     if ($.session.applicationName === 'Advisor') {
-      let consumersThatCanHaveMileage = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
-      consumersThatCanHaveMileage = consumersThatCanHaveMileage.getConsumersThatCanHaveMileageJSONResult;
-      console.log(consumersThatCanHaveMileage);
+      // consumersThatCanHaveMileage = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
+      // consumersThatCanHaveMileage = consumersThatCanHaveMileage.getConsumersThatCanHaveMileageJSONResult;
+      // console.log(consumersThatCanHaveMileage);
     }
 
     // GK & REVIEW ONLY
     if ($.session.applicationName === 'Gatekeeper' && false) {
-      let attachmentList = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
-      attachmentList = attachmentList.getCaseNoteAttachmentsListResult;
+      // attachmentList = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
+      // attachmentList = attachmentList.getCaseNoteAttachmentsListResult;
     }
 
     loadPage();

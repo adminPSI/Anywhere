@@ -85,17 +85,15 @@
     this.form.appendChild(btn);
     //end temp
 
-    this.setupEvents();
-
     return this;
   };
 
   /**
-   * Setsup events for form
+   * Handles change event on form inputs
    *
    * @function
    */
-  Form.prototype.setupEvents = function () {
+  Form.prototype.onSubmit = function (cbFunc) {
     this.form.addEventListener('submit', e => {
       e.preventDefault();
 
@@ -103,7 +101,29 @@
       const entries = formData.entries();
       const data = Object.fromEntries(entries);
 
-      this.options.onSubmit(data);
+      cbFunc(data);
+    });
+  };
+
+  /**
+   * Handles change event on form inputs
+   *
+   * @function
+   */
+  Form.prototype.onChange = function (cbFunc) {
+    this.form.addEventListener('change', e => {
+      cbFunc(e);
+    });
+  };
+
+  /**
+   * Handles keyup event on form inputs
+   *
+   * @function
+   */
+  Form.prototype.onKeyup = function (cbFunc) {
+    this.form.addEventListener('keyup', e => {
+      cbFunc(e);
     });
   };
 

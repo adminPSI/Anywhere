@@ -35,8 +35,8 @@
   function Select(options) {
     this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
-    this.inputWrap = null;
-    this.input = null;
+    this.selectWrap = null;
+    this.select = null;
   }
 
   /**
@@ -46,11 +46,11 @@
    * @returns {Select} - Returns the current instances for chaining
    */
   Select.prototype.build = function () {
-    this.inputWrap = _DOM.createElement('div', {
+    this.selectWrap = _DOM.createElement('div', {
       class: ['input', 'select'],
     });
 
-    this.input = _DOM.createElement('select', { ...this.options.attributes });
+    this.select = _DOM.createElement('select', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
@@ -58,28 +58,45 @@
 
     if (this.options.note) {
       const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
-      this.inputWrap.appendChild(inputNote);
-      this.inputWrap.classList.add('withNote');
+      this.selectWrap.appendChild(inputNote);
+      this.selectWrap.classList.add('withNote');
     }
 
-    this.inputWrap.appendChild(this.input);
-    this.inputWrap.appendChild(labelEle);
+    this.selectWrap.appendChild(this.select);
+    this.selectWrap.appendChild(labelEle);
     return this;
+  };
+
+  /**
+   * Populates the select with <options>
+   *
+   * @function
+   */
+  Select.prototype.populate = function (data) {
+    data.forEach(d => {
+      const optionEle = _DOM.createElement('option', { value: d.value, text: d.text });
+      this.select.appendChild(optionEle);
+    });
   };
 
   /**
    * Sets value of select
    *
    * @function
+   * @param {*} value
    */
-  Select.prototype.setValue = function (value) {};
+  Select.prototype.setValue = function (value) {
+    this.select.value = value;
+  };
 
   /**
    * Clears select value, sets it to ''
    *
    * @function
    */
-  Select.prototype.clear = function () {};
+  Select.prototype.clear = function () {
+    this.select.value = '';
+  };
 
   /**
    * Handles select change event
@@ -87,7 +104,7 @@
    * @function
    */
   Select.prototype.onChange = function (cbFunc) {
-    this.input.addEventListener('change', e => {
+    this.select.addEventListener('change', e => {
       cbFunc(e);
     });
   };
@@ -101,7 +118,7 @@
    */
   Select.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.inputWrap);
+      node.appendChild(this.selectWrap);
     }
 
     return this;
