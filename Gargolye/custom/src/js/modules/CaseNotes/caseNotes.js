@@ -141,6 +141,9 @@ const CaseNotes = (() => {
       retrieveId: '0',
       serviceDate: '2023-10-05',
       daysBackDate: '2023-06-28',
+      onConsumerSelect(data) {
+        console.log('Selected Consumer(s)', data);
+      },
     });
     rosterPicker.build().renderTo(moduleWrap);
 

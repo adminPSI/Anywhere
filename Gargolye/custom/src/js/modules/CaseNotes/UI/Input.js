@@ -30,7 +30,7 @@
    * @return {Object} - Separated options object
    */
   const separateHTMLAttribrutes = options => {
-    const props = ['label', 'note', 'showcount'];
+    const props = ['label', 'note', 'showcount', 'onChange', 'onKeyup'];
 
     const [a, b] = Object.entries(options).reduce(
       ([matching, leftover], [key, value]) =>
@@ -146,14 +146,14 @@
    *
    * @function
    */
-  Input.prototype.onChange = function () {};
+  Input.prototype.onChange = function (cbFunc) {};
 
   /**
    * Handles input keyup event
    *
    * @function
    */
-  Input.prototype.onKeyup = function () {};
+  Input.prototype.onKeyup = function (cbFunc) {};
 
   /**
    * Renders the built Input element to the specified DOM node.

@@ -21,11 +21,9 @@
    */
   function RosterPicker(options) {
     // Data Init
+    this.options = options;
     this.consumers = [];
     this.selectedConsumers = {};
-
-    // Callbacks
-    this.onConsumerSelect = options.onConsumerSelect;
 
     // DOM Ref
     this.rosterPickerEle = null;
@@ -109,8 +107,6 @@
    */
   RosterPicker.prototype.setupEvents = function () {
     this.rosterWrapEle.addEventListener('click', () => {});
-    this.rosterSearchInput.addEventListener('click', () => {});
-    this.rosterCaseLoadInput.addEventListener('click', () => {});
   };
 
   /**
