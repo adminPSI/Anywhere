@@ -242,6 +242,25 @@ const OOD = (() => {
             );
           });
         }
+        if (
+          rowConsumer[0] &&
+          e.target.attributes.OODReportType.value === 'newEntry' &&
+          e.target.attributes.serviceType.value === 'T10'
+        ) {
+          OODAjax.getForm10TransportationData(
+            e.target.attributes.Id.value,
+            function (results) {
+              OODFormTransportation.init(
+                results,
+                rowConsumer[0],
+                undefined,
+                undefined,
+                e.target.attributes.userId.value,
+                undefined,
+              );
+            },
+          );
+        }
       },
     }));
 
@@ -629,6 +648,7 @@ const OOD = (() => {
         serviceDate,
         btnType,
       );
+      
     if (thisConsumer && btnType === 'monthlySummary' && thisselectedConsumerServiceType === 'T1')
       OODForm4MonthlySummary.init(
         {},
@@ -654,6 +674,16 @@ const OOD = (() => {
         thisConsumer[0],
         thisselectedConsumerServiceId,
         $.session.UserId,
+        btnType,
+      );
+      if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerServiceType === 'T10')
+      OODFormTransportation.init(
+        {},
+        thisConsumer[0],
+        thisselectedConsumerServiceId,
+        thisselectedConsumerReferenceNumber,
+        $.session.UserId,
+        serviceDate,
         btnType,
       );
     // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
@@ -876,7 +906,7 @@ const OOD = (() => {
 
     //TODO JOE: id: should use selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
     let data = services.map(service => ({
-      id: service.serviceType, // replace with selectedConsumerServiceType to get T1 and T2 info
+      id: (service.serviceType === '') ? 'T10' : service.serviceType, // replace with selectedConsumerServiceType to get T1 and T2 info
       value: service.serviceId,
       text: service.serviceName + ' - Ref # ' + service.referenceNumber,
     }));
