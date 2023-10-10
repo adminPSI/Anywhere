@@ -65,7 +65,7 @@ let currentEntryUserId;
       startLocation = '';
       endLocation = '';
       userId = $.session.UserId;
-      //referenceNumber =   // the value from consumer_services_master.reference_number for the service selected from NEW ENTRY form in previous page
+      referenceNumber = selectedConsumerReferenceNumber;  // the value from consumer_services_master.reference_number for the service selected from NEW ENTRY form in previous page
 
      }
 
@@ -462,7 +462,7 @@ function validateStartEndTimes(validateTime) {
     });
 
     endLocationInput.addEventListener('input', event => {
-      startLocation = event.target.value;
+      endLocation = event.target.value;
       checkRequiredFields();
     });
 
