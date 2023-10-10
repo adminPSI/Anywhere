@@ -32,9 +32,6 @@
     // Data Init
     this.options = mergOptionsWithDefaults(options);
     this.inputs = {};
-
-    // Callbacks
-    this.onSubmit = options.onSubmit;
   }
 
   /**
@@ -62,11 +59,21 @@
         case 'textarea': {
           delete ele.type; // only needed for Form
           inputInstance = new Textarea({ ...ele }).build();
+          if (typeof this.options.onKeyup === 'function') {
+            inputInstance.onKeyup(this.options.onKeyup);
+          }
           break;
         }
         default: {
           inputInstance = new Input({ ...ele }).build();
+          if (typeof this.options.onKeyup === 'function') {
+            inputInstance.onKeyup(this.options.onKeyup);
+          }
         }
+      }
+
+      if (typeof this.options.onChange === 'function') {
+        inputInstance.onChange(this.options.onChange);
       }
 
       this.form.appendChild(inputInstance.inputWrap);
@@ -77,6 +84,8 @@
     const btn = _DOM.createElement('button', { type: 'submit', text: 'Save' });
     this.form.appendChild(btn);
     //end temp
+
+    this.setupEvents();
 
     return this;
   };
@@ -94,7 +103,7 @@
       const entries = formData.entries();
       const data = Object.fromEntries(entries);
 
-      this.onSubmit(data);
+      this.options.onSubmit(data);
     });
   };
 

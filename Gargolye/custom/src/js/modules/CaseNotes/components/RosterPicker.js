@@ -21,11 +21,9 @@
    */
   function RosterPicker(options) {
     // Data Init
+    this.options = options;
     this.consumers = [];
     this.selectedConsumers = {};
-
-    // Callbacks
-    this.onConsumerSelect = options.onConsumerSelect;
 
     // DOM Ref
     this.rosterPickerEle = null;
@@ -63,6 +61,7 @@
     this.rosterPickerEle.appendChild(this.rosterWrapEle);
 
     this.populate();
+    this.setupEvents();
 
     return this;
   };

@@ -18,31 +18,8 @@
    * @return {Object} - Merged options object
    */
   const mergOptionsWithDefaults = userOptions => {
+    userOptions.name = userOptions.id;
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  /**
-   * Separate HTML attributes from options obj
-   * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
-   *
-   * @function
-   * @param {Object}  options - Options object
-   * @return {Object} - Separated options object
-   */
-  const separateHTMLAttribrutes = options => {
-    const props = ['label', 'note', 'showcount'];
-
-    const [a, b] = Object.entries(options).reduce(
-      ([matching, leftover], [key, value]) =>
-        props.includes(key)
-          ? [Object.assign(matching, { [key]: value }), leftover]
-          : [matching, Object.assign(leftover, { [key]: value })],
-      [{}, {}],
-    );
-
-    b.name = b.id;
-
-    return { ...a, attributes: { ...b } };
   };
 
   /**
@@ -70,7 +47,7 @@
    * @returns {Textarea}
    */
   function Textarea(options) {
-    this.options = separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.inputWrap = null;
     this.input = null;
@@ -132,14 +109,22 @@
    *
    * @function
    */
-  Textarea.prototype.onChange = function () {};
+  Textarea.prototype.onChange = function (cbFunc) {
+    this.input.addEventListener('change', e => {
+      cbFunc(e);
+    });
+  };
 
   /**
    * Handles textarea keyup event
    *
    * @function
    */
-  Textarea.prototype.onKeyup = function () {};
+  Textarea.prototype.onKeyup = function (cbFunc) {
+    this.input.addEventListener('keyup', e => {
+      cbFunc(e);
+    });
+  };
 
   /**
    * Renders the built Textarea element to the specified DOM node.

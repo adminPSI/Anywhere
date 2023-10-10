@@ -20,28 +20,6 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
-  /**
-   * Separate HTML attributes from options obj
-   * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#attributes
-   *
-   * @function
-   * @param {Object}  options - Options object
-   * @return {Object} - Separated options object
-   */
-  const separateHTMLAttribrutes = options => {
-    const props = ['label', 'note', 'showcount'];
-
-    const [a, b] = Object.entries(options).reduce(
-      ([matching, leftover], [key, value]) =>
-        props.includes(key)
-          ? [Object.assign(matching, { [key]: value }), leftover]
-          : [matching, Object.assign(leftover, { [key]: value })],
-      [{}, {}],
-    );
-
-    return { ...a, attributes: { ...b } };
-  };
-
   //=========================
   // MAIN LIB
   //-------------------------
@@ -55,7 +33,7 @@
    * @param {String} [options.note] - Text for input note/message, displayed underneath input field
    */
   function Select(options) {
-    this.options = separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.inputWrap = null;
     this.input = null;
@@ -101,14 +79,18 @@
    *
    * @function
    */
-  Textarea.prototype.clear = function () {};
+  Select.prototype.clear = function () {};
 
   /**
    * Handles select change event
    *
    * @function
    */
-  Select.prototype.onChange = function () {};
+  Select.prototype.onChange = function (cbFunc) {
+    this.input.addEventListener('change', e => {
+      cbFunc(e);
+    });
+  };
 
   /**
    * Renders the built Select element to the specified DOM node.

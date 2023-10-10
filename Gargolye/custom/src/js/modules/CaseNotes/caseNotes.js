@@ -133,7 +133,11 @@ const CaseNotes = (() => {
 
     // ROSTER PICKER
     //--------------------------------------------------
-    const rosterPicker = new RosterPicker();
+    const rosterPicker = new RosterPicker({
+      onConsumerSelect(data) {
+        console.log('Selected Consumer(s)', data);
+      },
+    });
     //groupCode: 'CAS' for caseload only
     // move retrieve data for fetchConsumers inside RosterPIcker
     await rosterPicker.fetchConsumers({
@@ -215,10 +219,16 @@ const CaseNotes = (() => {
       ],
       onSubmit(data) {
         console.log('onSubmit ', data);
+        console.log(cnForm);
+      },
+      onChange(event) {
+        const value = event.target.value;
+        const input = cnForm.inputs[event.target.name];
+
+        console.log('onChange', value, input);
       },
     });
     cnForm.build().renderTo(moduleWrap);
-    console.log(cnForm);
 
     DOM.ACTIONCENTER.appendChild(moduleWrap);
   }
