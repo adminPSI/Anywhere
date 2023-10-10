@@ -45,7 +45,7 @@
 
     this.options.elements.forEach(ele => {
       const eleOpts = {
-        onChange: this.onChange,
+        onChange: this.options.onChange,
         ...ele,
       };
 

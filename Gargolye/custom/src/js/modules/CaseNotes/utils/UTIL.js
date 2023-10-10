@@ -91,7 +91,7 @@
   //=====================================================================
   // FORM SPECIFIC UTILS
   //---------------------------------------------------------------------
-  const FORM = () => {
+  const FORM = {
     /**
      * Separates valid HTML attributes from options obj
      * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
@@ -101,7 +101,7 @@
      * @param {Object}  options - Options object
      * @return {Object} - Separated options object
      */
-    const separateHTMLAttribrutes = options => {
+    separateHTMLAttribrutes(options) {
       const props = ['label', 'note', 'showcount', 'onChange', 'onKeyup'];
 
       const [a, b] = Object.entries(options).reduce(
@@ -113,9 +113,7 @@
       );
 
       return { ...a, attributes: { ...b } };
-    };
-
-    return { separateHTMLAttribrutes };
+    },
   };
 
   return {
@@ -123,7 +121,9 @@
     fetchData,
     mergeObjects,
     splitObjectByPropNames,
-    //---------------------------------
+    //======================
+    // Sub Objs
+    //----------------------
     FORM,
   };
 });
