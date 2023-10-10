@@ -101,7 +101,7 @@
    *
    * @function
    */
-  Textarea.prototype.clear = function () {};
+  Select.prototype.clear = function () {};
 
   /**
    * Handles select change event
