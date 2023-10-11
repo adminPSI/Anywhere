@@ -70,6 +70,23 @@
   }
 
   /**
+   * Sorts an Array of Objects by given property, currently property must be a string
+   *
+   * @function
+   * @param {String}  sortProp
+   * @return {Function} - sort comparator function
+   */
+  function sortByProperty(sortProp) {
+    return function (a, b) {
+      const aValue = a[sortProp] || '';
+      const bValue = b[sortProp] || '';
+
+      // srings only
+      return aValue.localeCompare(bValue);
+    };
+  }
+
+  /**
    * Separate props and methods from obj
    * @function
    * @param {Object}  dirtyObj - Object to split
@@ -109,6 +126,7 @@
         'checked',
         'disabled',
         'form',
+        'id',
         'list',
         'max',
         'maxlength',
@@ -142,6 +160,7 @@
     debounce,
     fetchData,
     mergeObjects,
+    sortByProperty,
     splitObjectByPropNames,
     //======================
     // Sub Objs

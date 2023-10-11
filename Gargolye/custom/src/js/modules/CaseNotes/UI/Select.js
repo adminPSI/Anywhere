@@ -6,7 +6,10 @@
    * @typ {Object}
    */
   const DEFAULT_OPTIONS = {
+    data: [],
+    hidden: false,
     note: null,
+    requried: false,
   };
 
   /**
@@ -17,6 +20,7 @@
    * @return {Object} - Merged options object
    */
   const mergOptionsWithDefaults = userOptions => {
+    userOptions.name = userOptions.id;
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
@@ -28,9 +32,10 @@
    * @constructor
    * @param {Object} options
    * @param {String} options.id - Id for input, use to link it with label. Also used for name attribute.
-   * @param {String} options.label - Text for label input
-   * @param {Boolean} [options.required] - Whether input is required for submission
-   * @param {String} [options.note] - Text for input note/message, displayed underneath input field
+   * @param {String} options.label - Text for label select
+   * @param {Boolean} [options.required] - Whether select is required for submission
+   * @param {String} [options.note] - Text for select note/message, displayed underneath select field
+   * @param {Boolean} [options.hidden] - Whether to show or hide the select
    */
   function Select(options) {
     this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
@@ -64,6 +69,9 @@
 
     this.inputWrap.appendChild(this.select);
     this.inputWrap.appendChild(labelEle);
+
+    this.populate();
+
     return this;
   };
 
@@ -71,12 +79,20 @@
    * Populates the select with <options>
    *
    * @function
+   * @param {Array} [data] data to populate select with
    */
   Select.prototype.populate = function (data) {
-    data.forEach(d => {
-      const optionEle = _DOM.createElement('option', { value: d.value, text: d.text });
-      this.select.appendChild(optionEle);
-    });
+    if (data && Array.isArray(data)) this.options.data = data;
+
+    this.select.innerHTML = '';
+
+    if (this.options.data.length > 0) {
+      this.options.data.unshift({ value: '', text: '' });
+      this.options.data.sort(_UTIL.sortByProperty('text')).forEach(d => {
+        const optionEle = _DOM.createElement('option', { value: d.value, text: d.text });
+        this.select.appendChild(optionEle);
+      });
+    }
   };
 
   /**
@@ -96,6 +112,16 @@
    */
   Select.prototype.clear = function () {
     this.select.value = '';
+  };
+
+  /**
+   * Toggles select required state
+   *
+   * @function
+   * @param {Boolean} onOff
+   */
+  Select.prototype.toggleRequired = function (onOff) {
+    this.select.required = onOff;
   };
 
   /**

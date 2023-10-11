@@ -45,6 +45,7 @@
    * @param {Boolean} [options.showCount] - Whether to show char count or not
    * @param {String} [options.minlength] - min char count
    * @param {String} [options.maxlength] - max char count
+   * @param {Boolean} [options.hidden] - Whether to show or hide the input
    * @returns {Input}
    */
   function Input(options) {
@@ -108,6 +109,16 @@
    */
   Input.prototype.clear = function () {
     this.input.value = '';
+  };
+
+  /**
+   * Toggles inputs required state
+   *
+   * @function
+   * @param {Boolean} onOff
+   */
+  Input.prototype.toggleRequired = function (onOff) {
+    this.input.required = onOff;
   };
 
   /**

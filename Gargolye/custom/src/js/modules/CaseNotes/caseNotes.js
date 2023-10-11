@@ -1,10 +1,19 @@
 // MAIN
 const CaseNotes = (() => {
+  // Session Data
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
+  let allowGroupNotes;
   let reviewRequired;
-  // Data
+  let locationRequired;
+  let needRequired;
+  let contactRequired;
+  let serviceRequired;
+  let mileageRequired;
+  let docTimeRequired;
+  let travelTimeRequired;
+  // Data from fetch
   let dropdownData;
   let billerDropdownData;
   let vendorDropdownData;
@@ -12,6 +21,26 @@ const CaseNotes = (() => {
   let caseManagerReview;
   let consumersThatCanHaveMileage;
   let attachmentList;
+  // DOM
+  let moduleWrap;
+  // UI Instances
+  let dateNavigation;
+  let rosterPicker;
+  let cnForm;
+
+  // UTILS
+  //--------------------------------------------------
+  function isReadOnly(credit) {
+    // credit comes from review data
+    return credit === 'Y' || credit === '-1' ? true : false;
+  }
+  function validateTime(dirtyTime) {
+    const currentDate = new Date();
+    let selectedDate = new Date(selectedDate);
+    dirtyTime = dirtyTime.split(':');
+    selectedDate.setHours(dirtyTime[0], dirtyTime[1], 0, 0);
+    return dates.isAfter(selectedDate, currentDate);
+  }
 
   // DROPDOWNS
   //--------------------------------------------------
@@ -125,6 +154,7 @@ const CaseNotes = (() => {
     return dropdownDataObj;
   }
   function getServiceBillCodeDropdownData() {
+    //caseManagerReview.serviceid = DEFAULT VALUE
     let data = [];
 
     for (serviceId in dropdownData) {
@@ -169,6 +199,7 @@ const CaseNotes = (() => {
     });
   }
   function getVendorDropdownData() {
+    // consumer specific dropdown triggered when consumer is selected
     return vendorDropdownData.map(vendor => {
       return {
         value: vendor.vendorId,
@@ -185,30 +216,101 @@ const CaseNotes = (() => {
     });
   }
 
+  // FORM ON CHANGE CALLBACKS
+  //--------------------------------------------------
+  const onChangeCallbacks = {
+    serviceCode: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+      //TODO: set selectedServiceCode
+      selectedServiceCode = value;
+      //TODO: set required fields
+      locationRequired = dropdownData[selectedServiceCode].locationRequired;
+      needRequired = dropdownData[selectedServiceCode].needRequired;
+      contactRequired = dropdownData[selectedServiceCode].contactRequired;
+      serviceRequired = dropdownData[selectedServiceCode].serviceRequired;
+      if ($.session.applicationName === 'Gatekeeper') {
+        mileageRequired = dropdownData[selectedServiceCode].mileageRequired;
+        docTimeRequired = dropdownData[selectedServiceCode].docTimeRequired;
+        travelTimeRequired = dropdownData[selectedServiceCode].travelTimeRequired;
+        allowGroupNotes = dropdownData[selectedServiceCode].allowGroupNotes;
+      }
+      //TODO: toggle required attribute on inputs based on above, make sure to check if dropdowns have values if not remove required
+      //TODO: populate dropdowns tied to this one
+      cnForm.inputs['location'].populate(getLocationDropdownData());
+      cnForm.inputs['service'].populate(getServicesDropdownData());
+      cnForm.inputs['need'].populate(getNeedsDropdownData());
+      cnForm.inputs['contact'].populate(getContactsDropdownData());
+      //TODO: checkServiceFunding()
+      //TODO: ? checkRequiredFields()
+    },
+    location: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+    },
+    service: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+    },
+    serviceLocation: ({ value, name, input }) => {
+      // adv only
+      console.log('value:', value, 'name:', name);
+    },
+    need: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+    },
+    vendor: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+    },
+    contact: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+    },
+    startTime: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+      validateTime(value);
+    },
+    endTime: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+      validateTime(value);
+    },
+    mileage: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+    },
+    noteText: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+    },
+    confidential: ({ value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+    },
+  };
+
   // MAIN
   //--------------------------------------------------
   async function loadPage() {
-    const moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
+    moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
 
     // DATE NAVIGATION
     //--------------------------------------------------
-    const dateNavigation = new DateNavigation({
+    dateNavigation = new DateNavigation({
       selectedDate: selectedDate,
       onDateChange(newDate) {
-        console.log('onDateChange', newDate);
         selectedDate = newDate;
-        console.log('selectedDate', selectedDate);
-        // dates.formatISO(newDate, { representation: 'date' });
       },
     });
     dateNavigation.build().renderTo(moduleWrap);
 
     // ROSTER PICKER
     //--------------------------------------------------
-    const rosterPicker = new RosterPicker({
+    rosterPicker = new RosterPicker({
       allowMultiSelect: true,
-      onConsumerSelect(data) {
+      async onConsumerSelect(data) {
         selectedConsumers = data;
+
+        vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+          consumerId: selectedConsumers[0],
+          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+        });
+        vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
+        console.log(vendorDropdownData);
+        const ddData = getVendorDropdownData();
+        cnForm.inputs['vendor'].populate(ddData);
       },
     });
     await rosterPicker.fetchConsumers();
@@ -216,7 +318,7 @@ const CaseNotes = (() => {
 
     // FORM
     //--------------------------------------------------
-    const cnForm = new Form({
+    cnForm = new Form({
       elements: [
         {
           type: 'select',
@@ -225,6 +327,7 @@ const CaseNotes = (() => {
           required: true,
           data: getServiceBillCodeDropdownData(),
           defaultValue: null,
+          includeBlankOption: true,
         },
         {
           type: 'select',
@@ -235,11 +338,6 @@ const CaseNotes = (() => {
           type: 'select',
           label: 'Service',
           id: 'service',
-        },
-        {
-          type: 'select',
-          label: 'Service Location',
-          id: 'serviceLocation',
         },
         {
           type: 'select',
@@ -280,6 +378,12 @@ const CaseNotes = (() => {
           required: true,
         },
         {
+          type: 'select',
+          label: 'Service Location',
+          id: 'serviceLocation',
+          hidden: $.session.applicationName === 'Advisor',
+        },
+        {
           type: 'checkbox',
           label: 'Confidential',
           id: 'confidential',
@@ -293,8 +397,13 @@ const CaseNotes = (() => {
     });
     cnForm.onChange(event => {
       const value = event.target.value;
-      const input = cnForm.inputs[event.target.name];
-      console.log('onChange from', 'form', value, input);
+      const name = event.target.name;
+      const input = cnForm.inputs[name];
+      onChangeCallbacks[name]({
+        value,
+        name,
+        input,
+      });
     });
 
     //---------------------------------------------------
@@ -307,29 +416,17 @@ const CaseNotes = (() => {
     const today = dates.getTodaysDateObj();
     selectedDate = today;
 
-    // { tons of shit }
     dropdownData = await _UTIL.fetchData('populateDropdownData');
     dropdownData = dealWithDropdownDataHugeString(dropdownData.populateDropdownDataResult);
     console.log(dropdownData);
 
-    // { reviewrequired, servicecode, serviceid }
     caseManagerReview = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
       caseManagerId: $.session.PeopleId,
     });
     caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
-    selectedServiceCode = caseManagerReview.serviceid;
     reviewRequired = caseManagerReview.reviewrequired ? 'N' : 'Y';
     console.log(caseManagerReview);
 
-    // { vendorId, vendorName }
-    // vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
-    //   consumerId: null,
-    //   serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-    // });
-    // vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
-    // console.log(vendorDropdownData);
-
-    // { code, caption }
     // serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
     //   consumerId: null,
     //   serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
@@ -355,5 +452,6 @@ const CaseNotes = (() => {
 
   return {
     init,
+    onChangeCallbacks,
   };
 })();

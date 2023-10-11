@@ -44,6 +44,7 @@
    * @param {Boolean} [options.showCount] - Whether to show char count or not
    * @param {String} [options.minlength] - min char count
    * @param {String} [options.maxlength] - max char count
+   * @param {Boolean} [options.hidden] - Whether to show or hide the input
    * @returns {Textarea}
    */
   function Textarea(options) {
@@ -107,6 +108,16 @@
    */
   Textarea.prototype.clear = function () {
     this.input.value = '';
+  };
+
+  /**
+   * Toggles textarea required state
+   *
+   * @function
+   * @param {Boolean} onOff
+   */
+  Textarea.prototype.toggleRequired = function (onOff) {
+    this.input.required = onOff;
   };
 
   /**
