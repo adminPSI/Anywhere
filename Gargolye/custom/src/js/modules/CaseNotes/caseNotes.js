@@ -7,6 +7,7 @@
 const CaseNotes = (() => {
   let selectedServiceCode;
   let reviewRequired;
+  let ash;
   // Data
   let dropdownData;
   let billerDropdownData;
