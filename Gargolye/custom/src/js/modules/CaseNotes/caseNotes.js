@@ -1,13 +1,7 @@
-//TODO: Finsih UI Form Component
-//TODO: - input default values
-//TODO: - clear form method
-//TODO: - ability to populate form after its been built/appended to DOM
-
 // MAIN
 const CaseNotes = (() => {
   let selectedServiceCode;
   let reviewRequired;
-  let ash;
   // Data
   let dropdownData;
   let billerDropdownData;
@@ -141,10 +135,50 @@ const CaseNotes = (() => {
     return data;
   }
   function getLocationDropdownData() {
-    const data = dropdownData[selectedServiceCode].locations.map(location => {
+    return dropdownData[selectedServiceCode].locations.map(location => {
       return {
         value: location.locCode,
         text: location.locName,
+      };
+    });
+  }
+  function getServicesDropdownData() {
+    return dropdownData[selectedServiceCode].services.map(service => {
+      return {
+        value: service.serviceCode,
+        text: service.serviceName,
+      };
+    });
+  }
+  function getContactsDropdownData() {
+    return dropdownData[selectedServiceCode].contacts.map(contact => {
+      return {
+        value: contact.contactCode,
+        text: contact.contactName,
+      };
+    });
+  }
+  function getNeedsDropdownData() {
+    return dropdownData[selectedServiceCode].needs.map(need => {
+      return {
+        value: need.needCode,
+        text: need.needName,
+      };
+    });
+  }
+  function getVendorDropdownData() {
+    return vendorDropdownData.map(vendor => {
+      return {
+        value: vendor.vendorId,
+        text: vendor.vendorName,
+      };
+    });
+  }
+  function getServiceLocationDropdownData() {
+    return serviceLocationDropdownData.map(location => {
+      return {
+        value: location.code,
+        text: location.caption,
       };
     });
   }
@@ -167,17 +201,18 @@ const CaseNotes = (() => {
     // ROSTER PICKER
     //--------------------------------------------------
     const rosterPicker = new RosterPicker({
+      allowMultiSelect: true,
       onConsumerSelect(data) {
         console.log('Selected Consumer(s)', data);
       },
     });
-    // groupCode: 'CAS' for caseload only
-    // move retrieve data for fetchConsumers inside RosterPIcker
+    //TODO: move retrieve data for fetchConsumers inside RosterPIcker
     await rosterPicker.fetchConsumers({
+      // groupCode: 'CAS' for caseload only
       groupCode: 'ALL',
       retrieveId: '0',
-      serviceDate: '2023-10-05',
-      daysBackDate: '2023-06-28',
+      serviceDate: '2023-10-11',
+      daysBackDate: '2023-07-03',
     });
     rosterPicker.build().renderTo(moduleWrap);
 
@@ -285,12 +320,7 @@ const CaseNotes = (() => {
     reviewRequired = caseManagerReview.reviewrequired ? 'N' : 'Y';
     console.log(caseManagerReview);
 
-    // { billerId, billerName }
-    // billerDropdownData = await _UTIL.fetchData('getBillersListForDropDownJSON');
-    // billerDropdownData = billerDropdownData.getBillersListForDropDownJSONResult;
-    // console.log(billerDropdownData);
-
-    // {}
+    // { vendorId, vendorName }
     // vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
     //   consumerId: null,
     //   serviceDate: null,
@@ -298,12 +328,12 @@ const CaseNotes = (() => {
     // vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
     // console.log(vendorDropdownData);
 
-    // {}
-    // serviceLocationDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+    // { code, caption }
+    // serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
     //   consumerId: null,
     //   serviceDate: null,
     // });
-    // serviceLocationDropdownData = serviceLocationDropdownData.getConsumerSpecificVendorsJSONResult;
+    // serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
     // console.log(serviceLocationDropdownData);
 
     // ADVISOR ONLY

@@ -4,6 +4,14 @@
   //TODO: keep track of selected consumers (option to allow multiple consumers to be selected)
 
   /**
+   * Default configuration
+   * @type {Object}
+   */
+  const DEFAULT_OPTIONS = {
+    allowMultiSelect: false,
+  };
+
+  /**
    * Merge default options with user options
    *
    * @function
@@ -17,11 +25,12 @@
   /**
    * @constructor
    * @param {Object} options
+   * @param {Boolean} [options.allowMultiSelect]
    * @param {Function} options.onConsumerSelect
    */
   function RosterPicker(options) {
     // Data Init
-    this.options = options;
+    this.options = mergOptionsWithDefaults(options);
     this.consumers = [];
     this.selectedConsumers = {};
 
@@ -73,7 +82,11 @@
    */
   RosterPicker.prototype.populate = function () {
     this.consumers.forEach(c => {
-      const rosterCard = _DOM.createElement('div', { class: 'rosterCard' });
+      const rosterCard = _DOM.createElement('div', {
+        class: 'rosterCard',
+        'data-id': c.id,
+        'data-target': 'rosterCard',
+      });
 
       // PORTRAIT
       const image = _DOM.createElement('img', {
@@ -106,7 +119,34 @@
    * @function
    */
   RosterPicker.prototype.setupEvents = function () {
-    this.rosterWrapEle.addEventListener('click', () => {});
+    this.rosterWrapEle.addEventListener('click', () => {
+      if (e.target.dataset.target === 'rosterCard') {
+        if (this.options.allowMultiSelect) {
+          if (!e.target.classList.contains('selected')) {
+            e.target.classList.add('selected');
+            this.options.selectedConsumers[e.target.dataset.id] = e.target;
+          } else {
+            e.target.classList.remove('selected');
+            delete this.options.selectedConsumers[e.target.dataset.id];
+          }
+        } else {
+          if (e.target.classList.contains('selected')) {
+            e.target.classList.remove('selected');
+            delete this.options.selectedConsumers[e.target.dataset.id];
+          } else {
+            for (consumer in this.options.selectedConsumers) {
+              this.options.selectedConsumers[consumer].classList.remove('selected');
+              delete this.options.selectedConsumers[consumer];
+            }
+
+            e.target.classList.add('selected');
+            this.options.selectedConsumers[e.target.dataset.id] = e.target;
+          }
+        }
+
+        this.options.onConsumerSelect(Object.keys(this.options.selectedConsumers));
+      }
+    });
   };
 
   /**
