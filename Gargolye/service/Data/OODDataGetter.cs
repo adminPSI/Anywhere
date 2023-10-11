@@ -798,8 +798,8 @@ namespace Anywhere.service.Data
             list.Add(startLocation);
             list.Add(endLocation);
             list.Add(userId);
-            //list.Add(referenceNumber);
-            list.Add("1234");
+            list.Add(referenceNumber);
+            //list.Add("1234");
 
             string text = "CALL DBA.ANYW_OOD_insertForm10TransportationData(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
 
@@ -812,6 +812,24 @@ namespace Anywhere.service.Data
             {
                 logger.error("536", ex.Message + " ANYW_OOD_insertForm10TransportationData('" + token + "', '" + consumerId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + startLocation + "', '" + endLocation + "', '" + numberInVehicle + "', '" + userId + "', '" + referenceNumber + "')");
                 return "536: Error saving case note";
+            }
+        }
+
+        public string deleteOODForm10TransportationEntry(string OODTransportationId)
+        {
+            try
+            {
+                logger.debug("deleteOODForm10TransportationEntry ");
+
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@OODTransportationId", DbType.String, OODTransportationId);
+                // returns the number of rows deleted
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_deleteForm10TransportationData(?)", args).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("ODG", ex.Message + "deleteOODForm10TransportationEntry(" + OODTransportationId + ")");
+                throw ex;
             }
         }
 

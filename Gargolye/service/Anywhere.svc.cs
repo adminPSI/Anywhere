@@ -2945,6 +2945,10 @@ namespace Anywhere
             return Odg.insertForm10TransportationData(token, consumerId, serviceDate, startTime, endTime, numberInVehicle, startLocation, endLocation, userId, referenceNumber);
         }
 
+        public string deleteOODForm10TransportationEntry(string token, string OODTransportationId)
+        {
+            return Ow.deleteOODForm10TransportationEntry(token, OODTransportationId);
+        }
 
         //Case note reporting
         public CaseNoteReportBuilderWorker.ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,

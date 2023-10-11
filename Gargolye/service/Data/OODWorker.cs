@@ -710,5 +710,21 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
+        public string deleteOODForm10TransportationEntry(string token, string OODTransportationId)
+        {
+                 try
+                {
+                    if (OODTransportationId == null) throw new Exception("formId is required");
+                    String rowsDeleted = Odg.deleteOODForm10TransportationEntry(OODTransportationId);
+
+                    return rowsDeleted;
+                }
+                catch (Exception ex)
+                {
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            
+        }
+
     }
 }
