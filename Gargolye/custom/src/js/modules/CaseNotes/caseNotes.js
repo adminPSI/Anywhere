@@ -1,10 +1,9 @@
-//TODO: Finsih UI Form Component
-//TODO: - input default values
-//TODO: - clear form method
-//TODO: - ability to populate form after its been built/appended to DOM
-
 // MAIN
 const CaseNotes = (() => {
+  let selectedConsumers = [];
+  let selectedDate = null;
+  let selectedServiceCode;
+  let reviewRequired;
   // Data
   let dropdownData;
   let billerDropdownData;
@@ -125,15 +124,65 @@ const CaseNotes = (() => {
     //dropdownDataKeys = Object.keys(dropdownDataObj);
     return dropdownDataObj;
   }
-  function mapServiceBillCodeDropdownData() {
-    let dropdownData = [];
+  function getServiceBillCodeDropdownData() {
+    let data = [];
 
     for (serviceId in dropdownData) {
-      dropdownData.push({
+      data.push({
         value: serviceId,
-        text: UTIL.removeQuotes(),
+        text: UTIL.removeQuotes(dropdownData[serviceId].serviceCode),
       });
     }
+
+    return data;
+  }
+  function getLocationDropdownData() {
+    return dropdownData[selectedServiceCode].locations.map(location => {
+      return {
+        value: location.locCode,
+        text: location.locName,
+      };
+    });
+  }
+  function getServicesDropdownData() {
+    return dropdownData[selectedServiceCode].services.map(service => {
+      return {
+        value: service.serviceCode,
+        text: service.serviceName,
+      };
+    });
+  }
+  function getContactsDropdownData() {
+    return dropdownData[selectedServiceCode].contacts.map(contact => {
+      return {
+        value: contact.contactCode,
+        text: contact.contactName,
+      };
+    });
+  }
+  function getNeedsDropdownData() {
+    return dropdownData[selectedServiceCode].needs.map(need => {
+      return {
+        value: need.needCode,
+        text: need.needName,
+      };
+    });
+  }
+  function getVendorDropdownData() {
+    return vendorDropdownData.map(vendor => {
+      return {
+        value: vendor.vendorId,
+        text: vendor.vendorName,
+      };
+    });
+  }
+  function getServiceLocationDropdownData() {
+    return serviceLocationDropdownData.map(location => {
+      return {
+        value: location.code,
+        text: location.caption,
+      };
+    });
   }
 
   // MAIN
@@ -144,9 +193,12 @@ const CaseNotes = (() => {
     // DATE NAVIGATION
     //--------------------------------------------------
     const dateNavigation = new DateNavigation({
-      onDateChange(selectedDate) {
-        // do stuff with newly selected date
-        console.log('onDateChange', selectedDate);
+      selectedDate: selectedDate,
+      onDateChange(newDate) {
+        console.log('onDateChange', newDate);
+        selectedDate = newDate;
+        console.log('selectedDate', selectedDate);
+        // dates.formatISO(newDate, { representation: 'date' });
       },
     });
     dateNavigation.build().renderTo(moduleWrap);
@@ -154,18 +206,12 @@ const CaseNotes = (() => {
     // ROSTER PICKER
     //--------------------------------------------------
     const rosterPicker = new RosterPicker({
+      allowMultiSelect: true,
       onConsumerSelect(data) {
-        console.log('Selected Consumer(s)', data);
+        selectedConsumers = data;
       },
     });
-    // groupCode: 'CAS' for caseload only
-    // move retrieve data for fetchConsumers inside RosterPIcker
-    await rosterPicker.fetchConsumers({
-      groupCode: 'ALL',
-      retrieveId: '0',
-      serviceDate: '2023-10-05',
-      daysBackDate: '2023-06-28',
-    });
+    await rosterPicker.fetchConsumers();
     rosterPicker.build().renderTo(moduleWrap);
 
     // FORM
@@ -177,7 +223,7 @@ const CaseNotes = (() => {
           label: $.session.applicationName === 'Gatekeeper' ? 'Bill Code:' : 'Serv. Code:',
           id: 'serviceCode',
           required: true,
-          data: mapServiceBillCodeDropdownData(),
+          data: getServiceBillCodeDropdownData(),
           defaultValue: null,
         },
         {
@@ -258,38 +304,38 @@ const CaseNotes = (() => {
   async function init() {
     DOM.clearActionCenter();
 
+    const today = dates.getTodaysDateObj();
+    selectedDate = today;
+
     // { tons of shit }
     dropdownData = await _UTIL.fetchData('populateDropdownData');
     dropdownData = dealWithDropdownDataHugeString(dropdownData.populateDropdownDataResult);
     console.log(dropdownData);
 
-    // { billerId, billerName }
-    // billerDropdownData = await _UTIL.fetchData('getBillersListForDropDownJSON');
-    // billerDropdownData = billerDropdownData.getBillersListForDropDownJSONResult;
-    // console.log(billerDropdownData);
+    // { reviewrequired, servicecode, serviceid }
+    caseManagerReview = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
+      caseManagerId: $.session.PeopleId,
+    });
+    caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
+    selectedServiceCode = caseManagerReview.serviceid;
+    reviewRequired = caseManagerReview.reviewrequired ? 'N' : 'Y';
+    console.log(caseManagerReview);
 
-    // {}
+    // { vendorId, vendorName }
     // vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
     //   consumerId: null,
-    //   serviceDate: null,
+    //   serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
     // });
     // vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
     // console.log(vendorDropdownData);
 
-    // {}
-    // serviceLocationDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+    // { code, caption }
+    // serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
     //   consumerId: null,
-    //   serviceDate: null,
+    //   serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
     // });
-    // serviceLocationDropdownData = serviceLocationDropdownData.getConsumerSpecificVendorsJSONResult;
+    // serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
     // console.log(serviceLocationDropdownData);
-
-    // { reviewrequired, servicecode, serviceid }
-    // caseManagerReview = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
-    //   caseManagerId: $.session.PeopleId,
-    // });
-    // caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
-    // console.log(caseManagerReview);
 
     // ADVISOR ONLY
     if ($.session.applicationName === 'Advisor') {

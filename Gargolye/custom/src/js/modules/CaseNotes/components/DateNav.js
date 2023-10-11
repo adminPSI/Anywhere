@@ -12,6 +12,14 @@
   };
 
   /**
+   * Default configuration
+   * @type {Object}
+   */
+  const DEFAULT_OPTIONS = {
+    selectedDate: dates.getTodaysDateObj(),
+  };
+
+  /**
    * Merge default options with user options
    *
    * @function
@@ -33,8 +41,10 @@
    */
   function DateNavigation(options) {
     // Data Init
-    //? by default selectedDate, weekStart, weekEnd and eachDayoFWeek will be the most current week of calandar year
-    this.selectedDate = dates.getTodaysDateObj();
+    this.options = mergOptionsWithDefaults(options);
+    //? by default selectedDate, weekStart, weekEnd and eachDayoFWeek
+    //? will be the most current week of calandar year
+    this.selectedDate = this.options.selectedDate;
     this.weekStart = dates.startDayOfWeek(this.selectedDate);
     this.weekEnd = dates.endOfWeek(this.selectedDate);
     this.eachDayOfWeek = dates.eachDayOfInterval({
@@ -156,7 +166,7 @@
           currentSelectedDate.classList.remove('selected');
         }
 
-        this.selectedDate = date;
+        this.selectedDate = new Date(e.target.dataset.date);
         e.target.classList.add('selected');
 
         this.onDateChange(this.selectedDate);

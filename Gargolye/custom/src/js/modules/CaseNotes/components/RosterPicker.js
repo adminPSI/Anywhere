@@ -4,6 +4,14 @@
   //TODO: keep track of selected consumers (option to allow multiple consumers to be selected)
 
   /**
+   * Default configuration
+   * @type {Object}
+   */
+  const DEFAULT_OPTIONS = {
+    allowMultiSelect: false,
+  };
+
+  /**
    * Merge default options with user options
    *
    * @function
@@ -17,11 +25,12 @@
   /**
    * @constructor
    * @param {Object} options
+   * @param {Boolean} [options.allowMultiSelect]
    * @param {Function} options.onConsumerSelect
    */
   function RosterPicker(options) {
     // Data Init
-    this.options = options;
+    this.options = mergOptionsWithDefaults(options);
     this.consumers = [];
     this.selectedConsumers = {};
 
@@ -73,7 +82,11 @@
    */
   RosterPicker.prototype.populate = function () {
     this.consumers.forEach(c => {
-      const rosterCard = _DOM.createElement('div', { class: 'rosterCard' });
+      const rosterCard = _DOM.createElement('div', {
+        class: 'rosterCard',
+        'data-id': c.id,
+        'data-target': 'rosterCard',
+      });
 
       // PORTRAIT
       const image = _DOM.createElement('img', {
@@ -106,7 +119,34 @@
    * @function
    */
   RosterPicker.prototype.setupEvents = function () {
-    this.rosterWrapEle.addEventListener('click', () => {});
+    this.rosterWrapEle.addEventListener('click', e => {
+      if (e.target.dataset.target === 'rosterCard') {
+        if (this.options.allowMultiSelect) {
+          if (!e.target.classList.contains('selected')) {
+            e.target.classList.add('selected');
+            this.selectedConsumers[e.target.dataset.id] = e.target;
+          } else {
+            e.target.classList.remove('selected');
+            delete this.selectedConsumers[e.target.dataset.id];
+          }
+        } else {
+          if (e.target.classList.contains('selected')) {
+            e.target.classList.remove('selected');
+            delete this.selectedConsumers[e.target.dataset.id];
+          } else {
+            for (consumer in this.selectedConsumers) {
+              this.selectedConsumers[consumer].classList.remove('selected');
+              delete this.selectedConsumers[consumer];
+            }
+
+            e.target.classList.add('selected');
+            this.selectedConsumers[e.target.dataset.id] = e.target;
+          }
+        }
+
+        this.options.onConsumerSelect(Object.keys(this.selectedConsumers));
+      }
+    });
   };
 
   /**
@@ -122,9 +162,15 @@
    * @function
    * @param {Object} retrieveData
    */
-  RosterPicker.prototype.fetchConsumers = async function (retrieveData) {
+  RosterPicker.prototype.fetchConsumers = async function () {
     try {
-      const data = await _UTIL.fetchData('getConsumersByGroupJSON', retrieveData);
+      const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
+        // groupCode: 'CAS' for caseload only
+        groupCode: 'ALL',
+        retrieveId: '0',
+        serviceDate: '2023-10-11',
+        daysBackDate: '2023-07-03',
+      });
       this.consumers = data.getConsumersByGroupJSONResult;
     } catch (error) {
       console.log('uh oh something went horribly wrong :(', error.message);
