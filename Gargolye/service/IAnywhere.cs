@@ -4300,6 +4300,13 @@ namespace Anywhere
             UriTemplate = "/insertForm10TransportationData/")]
         string insertForm10TransportationData(string token, string consumerId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation, string userId, string referenceNumber);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/deleteOODForm10TransportationEntry/")]
+        String deleteOODForm10TransportationEntry(string token, string OODTransportationId);
 
         [WebInvoke(Method = "POST",
        BodyStyle = WebMessageBodyStyle.Wrapped,

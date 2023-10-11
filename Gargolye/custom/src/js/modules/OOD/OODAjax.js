@@ -922,7 +922,33 @@ var OODAjax = (function () {
   },
   });
   }
-
+  async function deleteOODForm10TransportationEntry(OODTransportationId) {
+    try {
+      const result = await $.ajax({
+        type: 'POST',
+        url:
+          $.webServer.protocol +
+          '://' +
+          $.webServer.address +
+          ':' +
+          $.webServer.port +
+          '/' +
+          $.webServer.serviceName +
+          '/deleteOODForm10TransportationEntry/',
+        data:
+          '{"token":"' +
+          $.session.Token +
+          '", "OODTransportationId":"' +
+          OODTransportationId +
+          '"}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+      });
+      return result;
+    } catch (error) {
+      throw new Error(error.responseText);
+    }
+  }
 
   return {       
    
@@ -959,6 +985,7 @@ var OODAjax = (function () {
       getForm10TransportationData,
       insertForm10TransportationData,
       updateForm10TransportationData,
+      deleteOODForm10TransportationEntry,
       
 
   };
