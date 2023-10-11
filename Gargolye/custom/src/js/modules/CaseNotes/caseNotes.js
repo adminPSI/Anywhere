@@ -5,6 +5,8 @@
 
 // MAIN
 const CaseNotes = (() => {
+  let selectedServiceCode;
+  let reviewRequired;
   // Data
   let dropdownData;
   let billerDropdownData;
@@ -125,15 +127,25 @@ const CaseNotes = (() => {
     //dropdownDataKeys = Object.keys(dropdownDataObj);
     return dropdownDataObj;
   }
-  function mapServiceBillCodeDropdownData() {
-    let dropdownData = [];
+  function getServiceBillCodeDropdownData() {
+    let data = [];
 
     for (serviceId in dropdownData) {
-      dropdownData.push({
+      data.push({
         value: serviceId,
         text: UTIL.removeQuotes(),
       });
     }
+
+    return data;
+  }
+  function getLocationDropdownData() {
+    const data = dropdownData[selectedServiceCode].locations.map(location => {
+      return {
+        value: location.locCode,
+        text: location.locName,
+      };
+    });
   }
 
   // MAIN
@@ -177,7 +189,7 @@ const CaseNotes = (() => {
           label: $.session.applicationName === 'Gatekeeper' ? 'Bill Code:' : 'Serv. Code:',
           id: 'serviceCode',
           required: true,
-          data: mapServiceBillCodeDropdownData(),
+          data: getServiceBillCodeDropdownData(),
           defaultValue: null,
         },
         {
@@ -263,6 +275,15 @@ const CaseNotes = (() => {
     dropdownData = dealWithDropdownDataHugeString(dropdownData.populateDropdownDataResult);
     console.log(dropdownData);
 
+    // { reviewrequired, servicecode, serviceid }
+    caseManagerReview = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
+      caseManagerId: $.session.PeopleId,
+    });
+    caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
+    selectedServiceCode = caseManagerReview.serviceid;
+    reviewRequired = caseManagerReview.reviewrequired ? 'N' : 'Y';
+    console.log(caseManagerReview);
+
     // { billerId, billerName }
     // billerDropdownData = await _UTIL.fetchData('getBillersListForDropDownJSON');
     // billerDropdownData = billerDropdownData.getBillersListForDropDownJSONResult;
@@ -283,13 +304,6 @@ const CaseNotes = (() => {
     // });
     // serviceLocationDropdownData = serviceLocationDropdownData.getConsumerSpecificVendorsJSONResult;
     // console.log(serviceLocationDropdownData);
-
-    // { reviewrequired, servicecode, serviceid }
-    // caseManagerReview = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
-    //   caseManagerId: $.session.PeopleId,
-    // });
-    // caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
-    // console.log(caseManagerReview);
 
     // ADVISOR ONLY
     if ($.session.applicationName === 'Advisor') {
