@@ -28,6 +28,7 @@ using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
 using Bytescout.PDF;
+using OODForms;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -102,6 +103,7 @@ namespace Anywhere
         AssessmentDataGetter assDG = new AssessmentDataGetter();
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
+        OODFormWorker OODfw = new OODFormWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -2778,6 +2780,21 @@ namespace Anywhere
         }
 
         //OOD Module
+
+        public string generateForm4(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
+        {
+            return OODfw.generateForm4(referenceNumber, 22, consumerIds, serviceStartDate, serviceEndDate, serviceCode);
+        }
+
+        public string generateForm8(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
+        {
+            return OODfw.generateForm8(referenceNumber, 22, consumerIds, serviceStartDate, serviceEndDate, serviceCode);
+        }
+
+        public string generateForm10(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber)
+        {
+           return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate);
+        }
 
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {

@@ -950,6 +950,60 @@ var OODAjax = (function () {
     }
   }
 
+   // Form 4 -- Generate Form
+   async function generateForm4(data, callback) {
+    const generateForm4 = await _UTIL.fetchData('generateForm4', {
+      token: $.session.Token, 
+      referenceNumber: data.referenceNumber,
+      vendorId: '',
+      peopleId: data.peopleId,
+      serviceCodeId: data.serviceCodeId,
+      startDate: data.startDate,
+      endDate: data.endDate,
+    });
+
+    return generateForm4;
+  }
+
+  // Form 8 -- Generate Form
+  async function generateForm8(data, callback) {
+    const generateForm8 = await _UTIL.fetchData('generateForm8', {
+      token: $.session.Token, 
+      referenceNumber: data.referenceNumber,
+      vendorId: '',
+      peopleId: data.peopleId,
+      serviceCodeId: data.serviceCodeId,
+      startDate: data.startDate,
+      endDate: data.endDate,
+    });
+
+    return generateForm8;
+  }
+
+  // Form 10 -- Generate Form
+  function generateForm10(data, callback) {
+    data = {
+      token: $.session.Token, 
+      referenceNumber: data.referenceNumber,
+      vendorId: '',
+      peopleId: data.peopleId,
+      serviceCodeId: data.serviceCodeId,
+      startDate: data.startDate,
+      endDate: data.endDate,
+    }
+    return $.ajax({
+    type: 'POST',
+    url: $.webServer.protocol + '://' + $.webServer.address + ':' + $.webServer.port + '/' + $.webServer.serviceName + '/generateForm10/',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    success: function(response, status, xhr) {
+      return response.generateForm10Result;
+    },
+    });
+  }
+
+
   return {       
    
       getOODEntriesAsync,
@@ -986,8 +1040,9 @@ var OODAjax = (function () {
       insertForm10TransportationData,
       updateForm10TransportationData,
       deleteOODForm10TransportationEntry,
-      
-
+      generateForm4,
+      generateForm8,
+      generateForm10
   };
   }) ();
   
