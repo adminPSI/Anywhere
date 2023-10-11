@@ -35,7 +35,7 @@
   function Select(options) {
     this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
-    this.selectWrap = null;
+    this.inputWrap = null;
     this.select = null;
   }
 
@@ -46,7 +46,7 @@
    * @returns {Select} - Returns the current instances for chaining
    */
   Select.prototype.build = function () {
-    this.selectWrap = _DOM.createElement('div', {
+    this.inputWrap = _DOM.createElement('div', {
       class: ['input', 'select'],
     });
 
@@ -58,12 +58,12 @@
 
     if (this.options.note) {
       const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
-      this.selectWrap.appendChild(inputNote);
-      this.selectWrap.classList.add('withNote');
+      this.inputWrap.appendChild(inputNote);
+      this.inputWrap.classList.add('withNote');
     }
 
-    this.selectWrap.appendChild(this.select);
-    this.selectWrap.appendChild(labelEle);
+    this.inputWrap.appendChild(this.select);
+    this.inputWrap.appendChild(labelEle);
     return this;
   };
 
@@ -118,7 +118,7 @@
    */
   Select.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.selectWrap);
+      node.appendChild(this.inputWrap);
     }
 
     return this;

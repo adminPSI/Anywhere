@@ -119,32 +119,32 @@
    * @function
    */
   RosterPicker.prototype.setupEvents = function () {
-    this.rosterWrapEle.addEventListener('click', () => {
+    this.rosterWrapEle.addEventListener('click', e => {
       if (e.target.dataset.target === 'rosterCard') {
         if (this.options.allowMultiSelect) {
           if (!e.target.classList.contains('selected')) {
             e.target.classList.add('selected');
-            this.options.selectedConsumers[e.target.dataset.id] = e.target;
+            this.selectedConsumers[e.target.dataset.id] = e.target;
           } else {
             e.target.classList.remove('selected');
-            delete this.options.selectedConsumers[e.target.dataset.id];
+            delete this.selectedConsumers[e.target.dataset.id];
           }
         } else {
           if (e.target.classList.contains('selected')) {
             e.target.classList.remove('selected');
-            delete this.options.selectedConsumers[e.target.dataset.id];
+            delete this.selectedConsumers[e.target.dataset.id];
           } else {
-            for (consumer in this.options.selectedConsumers) {
-              this.options.selectedConsumers[consumer].classList.remove('selected');
-              delete this.options.selectedConsumers[consumer];
+            for (consumer in this.selectedConsumers) {
+              this.selectedConsumers[consumer].classList.remove('selected');
+              delete this.selectedConsumers[consumer];
             }
 
             e.target.classList.add('selected');
-            this.options.selectedConsumers[e.target.dataset.id] = e.target;
+            this.selectedConsumers[e.target.dataset.id] = e.target;
           }
         }
 
-        this.options.onConsumerSelect(Object.keys(this.options.selectedConsumers));
+        this.options.onConsumerSelect(Object.keys(this.selectedConsumers));
       }
     });
   };
@@ -162,9 +162,15 @@
    * @function
    * @param {Object} retrieveData
    */
-  RosterPicker.prototype.fetchConsumers = async function (retrieveData) {
+  RosterPicker.prototype.fetchConsumers = async function () {
     try {
-      const data = await _UTIL.fetchData('getConsumersByGroupJSON', retrieveData);
+      const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
+        // groupCode: 'CAS' for caseload only
+        groupCode: 'ALL',
+        retrieveId: '0',
+        serviceDate: '2023-10-11',
+        daysBackDate: '2023-07-03',
+      });
       this.consumers = data.getConsumersByGroupJSONResult;
     } catch (error) {
       console.log('uh oh something went horribly wrong :(', error.message);

@@ -1,5 +1,7 @@
 // MAIN
 const CaseNotes = (() => {
+  let selectedConsumers = [];
+  let selectedDate = null;
   let selectedServiceCode;
   let reviewRequired;
   // Data
@@ -128,7 +130,7 @@ const CaseNotes = (() => {
     for (serviceId in dropdownData) {
       data.push({
         value: serviceId,
-        text: UTIL.removeQuotes(),
+        text: UTIL.removeQuotes(dropdownData[serviceId].serviceCode),
       });
     }
 
@@ -191,9 +193,12 @@ const CaseNotes = (() => {
     // DATE NAVIGATION
     //--------------------------------------------------
     const dateNavigation = new DateNavigation({
-      onDateChange(selectedDate) {
-        // do stuff with newly selected date
-        console.log('onDateChange', selectedDate);
+      selectedDate: selectedDate,
+      onDateChange(newDate) {
+        console.log('onDateChange', newDate);
+        selectedDate = newDate;
+        console.log('selectedDate', selectedDate);
+        // dates.formatISO(newDate, { representation: 'date' });
       },
     });
     dateNavigation.build().renderTo(moduleWrap);
@@ -203,17 +208,10 @@ const CaseNotes = (() => {
     const rosterPicker = new RosterPicker({
       allowMultiSelect: true,
       onConsumerSelect(data) {
-        console.log('Selected Consumer(s)', data);
+        selectedConsumers = data;
       },
     });
-    //TODO: move retrieve data for fetchConsumers inside RosterPIcker
-    await rosterPicker.fetchConsumers({
-      // groupCode: 'CAS' for caseload only
-      groupCode: 'ALL',
-      retrieveId: '0',
-      serviceDate: '2023-10-11',
-      daysBackDate: '2023-07-03',
-    });
+    await rosterPicker.fetchConsumers();
     rosterPicker.build().renderTo(moduleWrap);
 
     // FORM
@@ -306,6 +304,9 @@ const CaseNotes = (() => {
   async function init() {
     DOM.clearActionCenter();
 
+    const today = dates.getTodaysDateObj();
+    selectedDate = today;
+
     // { tons of shit }
     dropdownData = await _UTIL.fetchData('populateDropdownData');
     dropdownData = dealWithDropdownDataHugeString(dropdownData.populateDropdownDataResult);
@@ -323,7 +324,7 @@ const CaseNotes = (() => {
     // { vendorId, vendorName }
     // vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
     //   consumerId: null,
-    //   serviceDate: null,
+    //   serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
     // });
     // vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
     // console.log(vendorDropdownData);
@@ -331,7 +332,7 @@ const CaseNotes = (() => {
     // { code, caption }
     // serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
     //   consumerId: null,
-    //   serviceDate: null,
+    //   serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
     // });
     // serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
     // console.log(serviceLocationDropdownData);

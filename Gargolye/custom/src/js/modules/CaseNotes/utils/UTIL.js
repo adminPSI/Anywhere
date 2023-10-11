@@ -102,7 +102,29 @@
      * @return {Object} - Separated options object
      */
     separateHTMLAttribrutes(options) {
-      const props = ['label', 'note', 'showcount'];
+      const props = [
+        'accept',
+        'alt',
+        'autocomplete',
+        'checked',
+        'disabled',
+        'form',
+        'list',
+        'max',
+        'maxlength',
+        'min',
+        'minlength',
+        'multiple',
+        'name',
+        'pattern',
+        'placeholder',
+        'readonly',
+        'required',
+        'size',
+        'src',
+        'type',
+        'value',
+      ];
 
       const [a, b] = Object.entries(options).reduce(
         ([matching, leftover], [key, value]) =>
@@ -112,7 +134,7 @@
         [{}, {}],
       );
 
-      return { ...a, attributes: { ...b } };
+      return { ...b, attributes: { ...a } };
     },
   };
 

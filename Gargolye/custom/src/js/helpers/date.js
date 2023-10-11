@@ -27,16 +27,32 @@ const dates = (function () {
     return number < 0 ? Math.ceil(number) : Math.floor(number);
   }
   function cloneDate(argument) {
-    if (arguments.length < 1) {
-      throw new TypeError(`1 argument required, only ${arguments.length} present`);
-    }
+    // if (arguments.length < 1) {
+    //   throw new TypeError(`1 argument required, only ${arguments.length} present`);
+    // }
 
+    // const argStr = Object.prototype.toString.call(argument);
+
+    // if (argument instanceof Date || (typeof argument === 'object' && argStr === ['object Date'])) {
+    //   return new Date(argument.getTime());
+    // } else if (typeof argument === 'number' || argStr === ['object Number']) {
+    //   return new Date(argument);
+    // }
     const argStr = Object.prototype.toString.call(argument);
 
-    if (argument instanceof Date || (typeof argument === 'object' && argStr === ['object Date'])) {
-      return new Date(argument.getTime());
-    } else if (typeof argument === 'number' || argStr === ['object Number']) {
+    // Clone the date
+    if (argument instanceof Date || (typeof argument === 'object' && argStr === '[object Date]')) {
+      // Prevent the date to lose the milliseconds when passed to new Date() in IE10
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore: TODO find a way to make TypeScript happy about this code
+      return new argument.constructor(argument.getTime());
+      // return new Date(argument.getTime())
+    } else if (typeof argument === 'number' || argStr === '[object Number]') {
+      // TODO: Can we get rid of as?
       return new Date(argument);
+    } else {
+      // TODO: Can we get rid of as?
+      return new Date(NaN);
     }
   }
 
@@ -118,9 +134,7 @@ const dates = (function () {
     let options = dirtyOptions || {};
 
     const weekStartsOn =
-      options.weekStartsOn === null || options.weekStartsOn === undefined
-        ? 0
-        : UTIL.toInteger(options.weekStartsOn);
+      options.weekStartsOn === null || options.weekStartsOn === undefined ? 0 : UTIL.toInteger(options.weekStartsOn);
 
     if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
       throw new RangeError(`weekStartsOn must be between 0 and 6 inclusively`);
@@ -150,9 +164,7 @@ const dates = (function () {
     let options = dirtyOptions || {};
 
     const weekStartsOn =
-      options.weekStartsOn === null || options.weekStartsOn === undefined
-        ? 0
-        : util.toInteger(options.weekStartsOn);
+      options.weekStartsOn === null || options.weekStartsOn === undefined ? 0 : util.toInteger(options.weekStartsOn);
 
     if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
       throw new RangeError(`weekStartsOn must be between 0 and 6 inclusively`);
@@ -207,8 +219,7 @@ const dates = (function () {
 
     const options = dirtyOptions || {};
     const format = options.format == null ? 'extended' : String(options.format);
-    const representation =
-      options.representation == null ? 'complete' : String(options.representation);
+    const representation = options.representation == null ? 'complete' : String(options.representation);
 
     if (format !== 'extended' && format !== 'basic') {
       throw new RangeError("format must be 'extended' or 'basic'");
@@ -285,8 +296,7 @@ const dates = (function () {
     currentDate.setHours(0, 0, 0, 0);
 
     const step = options?.step ?? 1;
-    if (step < 1 || isNaN(step))
-      throw new RangeError('`options.step` must be a number greater than 1');
+    if (step < 1 || isNaN(step)) throw new RangeError('`options.step` must be a number greater than 1');
 
     while (currentDate.getTime() <= endTime) {
       dates.push(toDate(currentDate));
