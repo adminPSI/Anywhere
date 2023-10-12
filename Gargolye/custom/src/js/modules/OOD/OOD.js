@@ -246,7 +246,7 @@ const OOD = (() => {
         if (
           rowConsumer[0] &&
           e.target.attributes.OODReportType.value === 'newEntry' &&
-          e.target.attributes.serviceType.value === 'T10'
+          e.target.attributes.serviceType.value === ''
         ) {
           OODAjax.getForm10TransportationData(
             e.target.attributes.Id.value,
