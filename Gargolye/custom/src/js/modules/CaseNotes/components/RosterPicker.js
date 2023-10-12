@@ -33,6 +33,7 @@
     this.options = mergOptionsWithDefaults(options);
     this.consumers = [];
     this.selectedConsumers = {};
+    this.failedImageCache = new Set();
     this.groupCode = 'ALL';
 
     // DOM Ref
@@ -95,9 +96,12 @@
       });
 
       // PORTRAIT
+      const imgSource = `./images/portraits/${c.id}.png?${new Date().setHours(0, 0, 0, 0)}`;
+      const defaultImgSource = `this.src='./images/new-icons/default.jpg'`;
+
       const image = _DOM.createElement('img', {
-        src: `./images/portraits/${c.id}.png?${new Date().setHours(0, 0, 0, 0)}`,
-        onerror: `this.src='./images/new-icons/default.jpg'`,
+        src: this.failedImageCache.has(imgSource) ? defaultImgSource : imgSource,
+        onerror: defaultImgSource,
         loading: 'lazy',
       });
       const portrait = _DOM.createElement('div', { class: 'portrait', node: image });
@@ -157,6 +161,12 @@
       }
     });
 
+    this.rosterWrapEle.addEventListener('error', e => {
+      if (e.target.tagName === 'IMG') {
+        this.failedImageCache.add(e.target.src);
+      }
+    });
+
     this.rosterSearchInput.onKeyup(
       _UTIL.debounce(e => {
         this.consumers.forEach(consumer => {
@@ -182,6 +192,7 @@
         });
       }, 500),
     );
+
     this.rosterCaseLoadInput.onChange(async e => {
       this.groupCode = e.target.checked ? 'CAS' : 'ALL';
       await this.fetchConsumers();
