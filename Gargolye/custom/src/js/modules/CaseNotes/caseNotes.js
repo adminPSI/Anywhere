@@ -221,9 +221,10 @@ const CaseNotes = (() => {
   const onChangeCallbacks = {
     serviceCode: ({ value, name, input }) => {
       console.log('value:', value, 'name:', name);
-      //TODO: set selectedServiceCode
+      // set selectedServiceCode
       selectedServiceCode = value;
-      //TODO: set required fields
+
+      // get/set required fields
       locationRequired = dropdownData[selectedServiceCode].locationRequired;
       needRequired = dropdownData[selectedServiceCode].needRequired;
       contactRequired = dropdownData[selectedServiceCode].contactRequired;
@@ -234,14 +235,12 @@ const CaseNotes = (() => {
         travelTimeRequired = dropdownData[selectedServiceCode].travelTimeRequired;
         allowGroupNotes = dropdownData[selectedServiceCode].allowGroupNotes;
       }
-      //TODO: toggle required attribute on inputs based on above, make sure to check if dropdowns have values if not remove required
-      //TODO: populate dropdowns tied to this one
+
+      //populate dropdowns tied to this one
       cnForm.inputs['location'].populate(getLocationDropdownData());
       cnForm.inputs['service'].populate(getServicesDropdownData());
       cnForm.inputs['need'].populate(getNeedsDropdownData());
       cnForm.inputs['contact'].populate(getContactsDropdownData());
-      //TODO: checkServiceFunding()
-      //TODO: ? checkRequiredFields()
     },
     location: ({ value, name, input }) => {
       console.log('value:', value, 'name:', name);
@@ -346,13 +345,13 @@ const CaseNotes = (() => {
         },
         {
           type: 'select',
-          label: 'Vendor',
-          id: 'vendor',
+          label: 'Contact',
+          id: 'contact',
         },
         {
           type: 'select',
-          label: 'Contact',
-          id: 'contact',
+          label: 'Vendor',
+          id: 'vendor',
         },
         {
           type: 'time',
@@ -367,12 +366,7 @@ const CaseNotes = (() => {
           required: true,
         },
         {
-          type: 'number',
-          label: 'Mileage',
-          id: 'mileage',
-        },
-        {
-          type: 'text',
+          type: 'textarea',
           label: 'Note',
           id: 'noteText',
           required: true,
@@ -382,6 +376,11 @@ const CaseNotes = (() => {
           label: 'Service Location',
           id: 'serviceLocation',
           hidden: $.session.applicationName === 'Advisor',
+        },
+        {
+          type: 'number',
+          label: 'Mileage',
+          id: 'mileage',
         },
         {
           type: 'checkbox',

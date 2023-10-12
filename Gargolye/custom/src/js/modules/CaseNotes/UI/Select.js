@@ -52,7 +52,7 @@
    */
   Select.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
-      class: ['input', 'select'],
+      class: this.options.hidden ? ['input', 'select', 'hidden'] : ['input', 'select'],
     });
 
     this.select = _DOM.createElement('select', { ...this.options.attributes });
@@ -122,6 +122,20 @@
    */
   Select.prototype.toggleRequired = function (onOff) {
     this.select.required = onOff;
+  };
+
+  /**
+   * Toggles select visibility state
+   *
+   * @function
+   * @param {Boolean} isVisible
+   */
+  Select.prototype.toggleVisibility = function (isVisible) {
+    if (isVisible) {
+      this.select.class.add('hidden');
+    } else {
+      this.select.class.remove('hidden');
+    }
   };
 
   /**

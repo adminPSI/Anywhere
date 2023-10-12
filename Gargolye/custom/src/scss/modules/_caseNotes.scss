@@ -46,6 +46,10 @@
   .input {
     position: relative;
 
+    &.hidden {
+      display: none;
+    }
+
     input,
     select,
     textarea {

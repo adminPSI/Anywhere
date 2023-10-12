@@ -63,7 +63,9 @@
    */
   Input.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
-      class: ['input', `${this.options.attributes.type}`],
+      class: this.options.hidden
+        ? ['input', `${this.options.attributes.type}`, 'hidden']
+        : ['input', `${this.options.attributes.type}`],
     });
 
     this.input = _DOM.createElement('input', { ...this.options.attributes });
@@ -115,10 +117,24 @@
    * Toggles inputs required state
    *
    * @function
-   * @param {Boolean} onOff
+   * @param {Boolean} isRequired
    */
-  Input.prototype.toggleRequired = function (onOff) {
-    this.input.required = onOff;
+  Input.prototype.toggleRequired = function (isRequired) {
+    this.input.required = isRequired;
+  };
+
+  /**
+   * Toggles inputs visibility state
+   *
+   * @function
+   * @param {Boolean} isVisible
+   */
+  Input.prototype.toggleVisibility = function (isVisible) {
+    if (isVisible) {
+      this.input.class.add('hidden');
+    } else {
+      this.input.class.remove('hidden');
+    }
   };
 
   /**
