@@ -424,7 +424,7 @@ const CaseNotes = (() => {
       caseManagerId: $.session.PeopleId,
     });
     caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
-    reviewRequired = caseManagerReview.reviewrequired ? 'N' : 'Y';
+    reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
     console.log(caseManagerReview);
 
     // serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
