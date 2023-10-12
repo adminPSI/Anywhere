@@ -347,7 +347,7 @@ const UTIL = (function () {
   /**
    * Gets todays date
    * @param {boolean} [returnObj] - If True, function will return a Date() object rather than an ISO formated date
-   * @returns {string|object} Returns either a date object or ISO formated string depending on what is passed in returnObj
+   * @returns {string|object} Returns either a date object or ISO formated string
    */
   function getTodaysDate(returnObj) {
     // returns iso format date

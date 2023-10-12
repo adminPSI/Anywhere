@@ -62,9 +62,7 @@
    */
   Textarea.prototype.build = function () {
     this.inputWrap = _DOM.createElement('div', {
-      class: this.options.hidden
-        ? ['input', `${this.options.attributes.type}`, 'hidden']
-        : ['input', `${this.options.attributes.type}`],
+      class: this.options.hidden ? ['input', 'textarea', 'hidden'] : ['input', 'textarea'],
     });
 
     this.input = _DOM.createElement('textarea', { ...this.options.attributes });
@@ -113,27 +111,23 @@
   };
 
   /**
-   * Toggles textarea required state
+   * Toggles textarea required state, if true input is required
    *
    * @function
-   * @param {Boolean} onOff
+   * @param {Boolean} isRequired
    */
-  Textarea.prototype.toggleRequired = function (onOff) {
-    this.input.required = onOff;
+  Textarea.prototype.toggleRequired = function (isRequired) {
+    this.input.required = isRequired;
   };
 
   /**
-   * Toggles inputs visibility state
+   * Toggles inputs disabled state, if true input is disabled
    *
    * @function
-   * @param {Boolean} isVisible
+   * @param {Boolean} isDisbled
    */
-  Textarea.prototype.toggleVisibility = function (isVisible) {
-    if (isVisible) {
-      this.input.class.add('hidden');
-    } else {
-      this.input.class.remove('hidden');
-    }
+  Textarea.prototype.toggleDisabled = function (isDisbled) {
+    this.input.disabled = isDisbled;
   };
 
   /**

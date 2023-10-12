@@ -1,4 +1,4 @@
-.caseNotesModule {
+#UI.caseNotesModule {
   display: grid;
   grid-template-columns: auto 320px;
   grid-template-rows: auto auto;
@@ -16,12 +16,24 @@
   }
 
   form {
+    column-gap: 10px;
+    display: flex;
+    flex-flow: row wrap;
     order: 2;
+
+    .input.time {
+      width: calc(50% - 5px);
+    }
+    .input.checkbox {
+      margin: 0 0 14px;
+      width: 100%;
+    }
   }
 }
 
-// NEW UI STUFF NEEDS MOVED
-//-------------------------------------------------
+//============================================================
+// NEW UI STUFF NEEDS MOVED TO ITS OWN FOLDER
+//------------------------------------------------------------
 #UI {
   //===========================================
   // FORM
@@ -53,7 +65,7 @@
     input,
     select,
     textarea {
-      background: none;
+      background: $whitesmoke;
       border: $input_border;
       border-radius: 4px;
       color: $black;
@@ -73,6 +85,9 @@
     margin: 0 0 20px;
     width: 100%;
 
+    &.hidden {
+      display: none !important;
+    }
     &.withNote {
       margin: 0 0 36px;
     }
@@ -92,8 +107,8 @@
         border-color: $error;
       }
       &:disabled,
-      &:read-only {
-        background: $whitesmoke;
+      &[readonly] {
+        background: $gray;
       }
     }
 

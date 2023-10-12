@@ -33,12 +33,14 @@
     this.options = mergOptionsWithDefaults(options);
     this.consumers = [];
     this.selectedConsumers = {};
+    this.groupCode = 'ALL';
 
     // DOM Ref
     this.rosterPickerEle = null;
     this.rosterWrapEle = null;
     this.rosterSearchEle = null;
     this.rosterCaseLoadInput = null;
+    this.consumerCards = null;
   }
 
   /**
@@ -63,6 +65,7 @@
       label: 'Only show caseload',
       id: 'caseloadtoggle',
       name: 'caseload',
+      checked: false,
     });
 
     this.rosterSearchInput.build().renderTo(this.rosterPickerEle);
@@ -81,7 +84,10 @@
    * @function
    */
   RosterPicker.prototype.populate = function () {
+    this.rosterWrapEle.innerHTML = '';
+
     this.consumers.forEach(c => {
+      const gridAnimationWrapper = _DOM.createElement('div', { class: 'visibilityAnimationWrapper' });
       const rosterCard = _DOM.createElement('div', {
         class: 'rosterCard',
         'data-id': c.id,
@@ -108,8 +114,11 @@
 
       rosterCard.appendChild(portrait);
       rosterCard.appendChild(details);
+      gridAnimationWrapper.appendChild(rosterCard);
 
-      this.rosterWrapEle.appendChild(rosterCard);
+      this.rosterWrapEle.appendChild(gridAnimationWrapper);
+
+      c.cardEle = rosterCard;
     });
   };
 
@@ -122,16 +131,16 @@
     this.rosterWrapEle.addEventListener('click', e => {
       if (e.target.dataset.target === 'rosterCard') {
         if (this.options.allowMultiSelect) {
-          if (!e.target.classList.contains('selected')) {
-            e.target.classList.add('selected');
+          if (!e.target.parentNode.classList.contains('selected')) {
+            e.target.parentNode.classList.add('selected');
             this.selectedConsumers[e.target.dataset.id] = e.target;
           } else {
-            e.target.classList.remove('selected');
+            e.target.parentNode.classList.remove('selected');
             delete this.selectedConsumers[e.target.dataset.id];
           }
         } else {
-          if (e.target.classList.contains('selected')) {
-            e.target.classList.remove('selected');
+          if (e.target.parentNode.classList.contains('selected')) {
+            e.target.parentNode.classList.remove('selected');
             delete this.selectedConsumers[e.target.dataset.id];
           } else {
             for (consumer in this.selectedConsumers) {
@@ -139,13 +148,44 @@
               delete this.selectedConsumers[consumer];
             }
 
-            e.target.classList.add('selected');
+            e.target.parentNode.classList.add('selected');
             this.selectedConsumers[e.target.dataset.id] = e.target;
           }
         }
 
         this.options.onConsumerSelect(Object.keys(this.selectedConsumers));
       }
+    });
+
+    this.rosterSearchInput.onKeyup(
+      _UTIL.debounce(e => {
+        this.consumers.forEach(consumer => {
+          const firstName = consumer.FN.toLowerCase();
+          const middleName = consumer.MN.toLowerCase();
+          const lastName = consumer.LN.toLowerCase();
+
+          const nameCombinations = [
+            `${firstName} ${middleName} ${lastName}`,
+            `${lastName} ${firstName} ${middleName}`,
+            `${firstName} ${lastName}`,
+            `${lastName} ${firstName}`,
+            `${firstName} ${middleName}`,
+            `${middleName} ${lastName}`,
+          ];
+
+          const isMatch = nameCombinations.some(combo => combo.indexOf(e.target.value.toLowerCase()) !== -1);
+          if (isMatch) {
+            consumer.cardEle.parentNode.classList.remove('isClosed');
+          } else {
+            consumer.cardEle.parentNode.classList.add('isClosed');
+          }
+        });
+      }, 500),
+    );
+    this.rosterCaseLoadInput.onChange(async e => {
+      this.groupCode = e.target.checked ? 'CAS' : 'ALL';
+      await this.fetchConsumers();
+      this.populate();
     });
   };
 
@@ -164,12 +204,16 @@
    */
   RosterPicker.prototype.fetchConsumers = async function () {
     try {
+      const todaysDate = dates.getTodaysDateObj();
+      todaysDate.setHours(0, 0, 0, 0);
+
+      let daysBackDate = dates.subDays(todaysDate, $.session.defaultProgressNoteReviewDays);
+
       const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
-        // groupCode: 'CAS' for caseload only
-        groupCode: 'ALL',
+        groupCode: this.groupCode,
         retrieveId: '0',
-        serviceDate: '2023-10-11',
-        daysBackDate: '2023-07-03',
+        serviceDate: dates.formatISO(todaysDate, { representation: 'date' }),
+        daysBackDate: daysBackDate,
       });
       this.consumers = data.getConsumersByGroupJSONResult;
     } catch (error) {

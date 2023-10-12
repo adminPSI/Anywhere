@@ -114,7 +114,7 @@
   };
 
   /**
-   * Toggles inputs required state
+   * Toggles inputs required state, if true input is required
    *
    * @function
    * @param {Boolean} isRequired
@@ -124,17 +124,13 @@
   };
 
   /**
-   * Toggles inputs visibility state
+   * Toggles inputs disabled state, if true input is disabled
    *
    * @function
-   * @param {Boolean} isVisible
+   * @param {Boolean} isDisbled
    */
-  Input.prototype.toggleVisibility = function (isVisible) {
-    if (isVisible) {
-      this.input.class.add('hidden');
-    } else {
-      this.input.class.remove('hidden');
-    }
+  Input.prototype.toggleDisabled = function (isDisbled) {
+    this.input.disabled = isDisbled;
   };
 
   /**

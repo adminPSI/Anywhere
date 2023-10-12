@@ -1,18 +1,13 @@
+//! QUESTIONS FOR JOSH
+//1. do we want to update the roster list of consumers on date change?
+//2. how exactly do the '___ required' values we get from dropdown data effect the inputs
+
 // MAIN
 const CaseNotes = (() => {
   // Session Data
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
-  let allowGroupNotes;
-  let reviewRequired;
-  let locationRequired;
-  let needRequired;
-  let contactRequired;
-  let serviceRequired;
-  let mileageRequired;
-  let docTimeRequired;
-  let travelTimeRequired;
   // Data from fetch
   let dropdownData;
   let billerDropdownData;
@@ -30,6 +25,7 @@ const CaseNotes = (() => {
 
   // UTILS
   //--------------------------------------------------
+  // isReadyonly does same thing as checkIfCredit
   function isReadOnly(credit) {
     // credit comes from review data
     return credit === 'Y' || credit === '-1' ? true : false;
@@ -154,7 +150,7 @@ const CaseNotes = (() => {
     return dropdownDataObj;
   }
   function getServiceBillCodeDropdownData() {
-    //caseManagerReview.serviceid = DEFAULT VALUE
+    //TODO: caseManagerReview.serviceid = DEFAULT VALUE
     let data = [];
 
     for (serviceId in dropdownData) {
@@ -219,63 +215,89 @@ const CaseNotes = (() => {
   // FORM ON CHANGE CALLBACKS
   //--------------------------------------------------
   const onChangeCallbacks = {
-    serviceCode: ({ value, name, input }) => {
-      console.log('value:', value, 'name:', name);
+    serviceCode: ({ event, value, name, input }) => {
       // set selectedServiceCode
       selectedServiceCode = value;
 
-      // get/set required fields
-      locationRequired = dropdownData[selectedServiceCode].locationRequired;
-      needRequired = dropdownData[selectedServiceCode].needRequired;
-      contactRequired = dropdownData[selectedServiceCode].contactRequired;
-      serviceRequired = dropdownData[selectedServiceCode].serviceRequired;
+      // get required fields
+      const locationRequired = dropdownData[selectedServiceCode].locationRequired;
+      const needRequired = dropdownData[selectedServiceCode].needRequired;
+      const contactRequired = dropdownData[selectedServiceCode].contactRequired;
+      const serviceRequired = dropdownData[selectedServiceCode].serviceRequired;
+
+      let mileageRequired, docTimeRequired, travelTimeRequired, allowGroupNotes;
+
       if ($.session.applicationName === 'Gatekeeper') {
         mileageRequired = dropdownData[selectedServiceCode].mileageRequired;
         docTimeRequired = dropdownData[selectedServiceCode].docTimeRequired;
         travelTimeRequired = dropdownData[selectedServiceCode].travelTimeRequired;
         allowGroupNotes = dropdownData[selectedServiceCode].allowGroupNotes;
+
+        cnForm.inputs['mileage'].toggleDisabled(mileageRequired !== 'Y');
       }
 
       //populate dropdowns tied to this one
-      cnForm.inputs['location'].populate(getLocationDropdownData());
-      cnForm.inputs['service'].populate(getServicesDropdownData());
-      cnForm.inputs['need'].populate(getNeedsDropdownData());
-      cnForm.inputs['contact'].populate(getContactsDropdownData());
+      if (selectedServiceCode !== '') {
+        cnForm.inputs['location'].populate(getLocationDropdownData());
+        cnForm.inputs['service'].populate(getServicesDropdownData());
+        cnForm.inputs['need'].populate(getNeedsDropdownData());
+        cnForm.inputs['contact'].populate(getContactsDropdownData());
+      } else {
+        cnForm.inputs['location'].populate([]);
+        cnForm.inputs['service'].populate([]);
+        cnForm.inputs['need'].populate([]);
+        cnForm.inputs['contact'].populate([]);
+      }
+
+      // enable dropdowns
+      cnForm.inputs['location'].toggleDisabled(selectedServiceCode === '');
+      cnForm.inputs['service'].toggleDisabled(selectedServiceCode === '');
+      cnForm.inputs['need'].toggleDisabled(selectedServiceCode === '');
+      cnForm.inputs['contact'].toggleDisabled(selectedServiceCode === '');
+
+      // set required fields
+      cnForm.inputs['location'].toggleRequired(locationRequired === 'Y');
+      cnForm.inputs['service'].toggleRequired(serviceRequired === 'Y');
+      cnForm.inputs['need'].toggleRequired(needRequired === 'Y');
+      cnForm.inputs['contact'].toggleRequired(contactRequired === 'Y');
     },
-    location: ({ value, name, input }) => {
+    location: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
     },
-    service: ({ value, name, input }) => {
+    service: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
     },
-    serviceLocation: ({ value, name, input }) => {
+    serviceLocation: ({ event, value, name, input }) => {
       // adv only
       console.log('value:', value, 'name:', name);
     },
-    need: ({ value, name, input }) => {
+    need: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
     },
-    vendor: ({ value, name, input }) => {
+    vendor: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
     },
-    contact: ({ value, name, input }) => {
+    contact: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
     },
-    startTime: ({ value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-      validateTime(value);
-    },
-    endTime: ({ value, name, input }) => {
+    startTime: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
       validateTime(value);
     },
-    mileage: ({ value, name, input }) => {
+    endTime: ({ event, value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+      validateTime(value);
+    },
+    mileage: ({ event, value, name, input }) => {
+      console.log('value:', value, 'name:', name);
+      return;
+
+      const hasDecimal = event.key === '.' && value.indexOf('.') === 1 ? true : false;
+    },
+    noteText: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
     },
-    noteText: ({ value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-    },
-    confidential: ({ value, name, input }) => {
+    confidential: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
     },
   };
@@ -308,8 +330,19 @@ const CaseNotes = (() => {
         });
         vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
         console.log(vendorDropdownData);
-        const ddData = getVendorDropdownData();
-        cnForm.inputs['vendor'].populate(ddData);
+        const vendorData = getVendorDropdownData();
+        cnForm.inputs['vendor'].populate(vendorData);
+
+        if ($.session.applicationName === 'Advisor') {
+          serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
+            consumerId: selectedConsumers[0],
+            serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+          });
+          serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
+          console.log(serviceLocationDropdownData);
+          const servLocData = getServiceLocationDropdownData();
+          cnForm.inputs['serviceLocation'].populate(servLocData);
+        }
       },
     });
     await rosterPicker.fetchConsumers();
@@ -320,38 +353,9 @@ const CaseNotes = (() => {
     cnForm = new Form({
       elements: [
         {
-          type: 'select',
-          label: $.session.applicationName === 'Gatekeeper' ? 'Bill Code:' : 'Serv. Code:',
-          id: 'serviceCode',
-          required: true,
-          data: getServiceBillCodeDropdownData(),
-          defaultValue: null,
-          includeBlankOption: true,
-        },
-        {
-          type: 'select',
-          label: 'Location',
-          id: 'location',
-        },
-        {
-          type: 'select',
-          label: 'Service',
-          id: 'service',
-        },
-        {
-          type: 'select',
-          label: 'Need',
-          id: 'need',
-        },
-        {
-          type: 'select',
-          label: 'Contact',
-          id: 'contact',
-        },
-        {
-          type: 'select',
-          label: 'Vendor',
-          id: 'vendor',
+          type: 'checkbox',
+          label: 'Confidential',
+          id: 'confidential',
         },
         {
           type: 'time',
@@ -366,26 +370,60 @@ const CaseNotes = (() => {
           required: true,
         },
         {
+          type: 'select',
+          label: $.session.applicationName === 'Gatekeeper' ? 'Bill Code:' : 'Serv. Code:',
+          id: 'serviceCode',
+          required: true,
+          data: getServiceBillCodeDropdownData(),
+          defaultValue: null,
+          includeBlankOption: true,
+        },
+        {
+          type: 'select',
+          label: 'Location',
+          id: 'location',
+          disabled: true,
+        },
+        {
+          type: 'select',
+          label: 'Service',
+          id: 'service',
+          disabled: true,
+        },
+        {
+          type: 'select',
+          label: 'Need',
+          id: 'need',
+          disabled: true,
+        },
+        {
+          type: 'select',
+          label: 'Contact',
+          id: 'contact',
+          disabled: true,
+        },
+        {
+          type: 'select',
+          label: 'Vendor',
+          id: 'vendor',
+        },
+        {
+          type: 'select',
+          label: 'Service Location',
+          id: 'serviceLocation',
+          hidden: $.session.applicationName === 'Gatekeeper',
+        },
+        {
           type: 'textarea',
           label: 'Note',
           id: 'noteText',
           required: true,
         },
         {
-          type: 'select',
-          label: 'Service Location',
-          id: 'serviceLocation',
-          hidden: $.session.applicationName === 'Advisor',
-        },
-        {
           type: 'number',
           label: 'Mileage',
           id: 'mileage',
-        },
-        {
-          type: 'checkbox',
-          label: 'Confidential',
-          id: 'confidential',
+          disabled: true,
         },
       ],
     });
@@ -399,6 +437,7 @@ const CaseNotes = (() => {
       const name = event.target.name;
       const input = cnForm.inputs[name];
       onChangeCallbacks[name]({
+        event,
         value,
         name,
         input,
@@ -413,6 +452,7 @@ const CaseNotes = (() => {
     DOM.clearActionCenter();
 
     const today = dates.getTodaysDateObj();
+    today.setHours(0, 0, 0, 0);
     selectedDate = today;
 
     dropdownData = await _UTIL.fetchData('populateDropdownData');
@@ -426,27 +466,26 @@ const CaseNotes = (() => {
     reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
     console.log(caseManagerReview);
 
-    // serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
-    //   consumerId: null,
-    //   serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-    // });
-    // serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
-    // console.log(serviceLocationDropdownData);
+    loadPage();
+
+    return;
 
     // ADVISOR ONLY
     if ($.session.applicationName === 'Advisor') {
-      // consumersThatCanHaveMileage = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
-      // consumersThatCanHaveMileage = consumersThatCanHaveMileage.getConsumersThatCanHaveMileageJSONResult;
-      // console.log(consumersThatCanHaveMileage);
+      //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
+      //? For now going to leave this init, if init gets slow this can be moved to
+      //? rosterPicker event and setup to only run once.
+      consumersThatCanHaveMileage = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
+      consumersThatCanHaveMileage = consumersThatCanHaveMileage.getConsumersThatCanHaveMileageJSONResult;
+      consumersThatCanHaveMileage = consumersThatCanHaveMileage.map(({ consumerid }) => consumerid);
+      console.log(consumersThatCanHaveMileage);
     }
 
     // GK & REVIEW ONLY
     if ($.session.applicationName === 'Gatekeeper' && false) {
-      // attachmentList = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
-      // attachmentList = attachmentList.getCaseNoteAttachmentsListResult;
+      attachmentList = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
+      attachmentList = attachmentList.getCaseNoteAttachmentsListResult;
     }
-
-    loadPage();
   }
 
   return {

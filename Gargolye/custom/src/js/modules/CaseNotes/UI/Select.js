@@ -115,7 +115,7 @@
   };
 
   /**
-   * Toggles select required state
+   * Toggles select required state, if true input is required
    *
    * @function
    * @param {Boolean} onOff
@@ -125,17 +125,13 @@
   };
 
   /**
-   * Toggles select visibility state
+   * Toggles select disabled state, if true input is disabled
    *
    * @function
-   * @param {Boolean} isVisible
+   * @param {Boolean} isDisbled
    */
-  Select.prototype.toggleVisibility = function (isVisible) {
-    if (isVisible) {
-      this.select.class.add('hidden');
-    } else {
-      this.select.class.remove('hidden');
-    }
+  Select.prototype.toggleDisabled = function (isDisbled) {
+    this.select.disabled = isDisbled;
   };
 
   /**

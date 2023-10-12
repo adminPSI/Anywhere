@@ -13,7 +13,6 @@ $white: rgb(255, 255, 255); // #FFFFFF
 $white2: rgb(250, 250, 250); // #FAFAFA
 $whitesmoke: rgb(245, 245, 245);
 $gray: rgb(211, 211, 211);
-$lightgray: rgb(211, 211, 211);
 
 $primary: $blue2;
 $secondary: $green;
@@ -103,7 +102,7 @@ $planTabsInnerHeightMobile: calc(100vh - 195px);
 //========================================================
 // NEW UI ASH
 //--------------------------------------------------------
-$input_border: 2px solid $lightgray;
+$input_border: 2px solid #606060;
 
 $tableFontSize: $px14;
 $tableBorder: 4px;

@@ -18,19 +18,31 @@
   display: flex;
   flex-flow: column nowrap;
   overflow-y: scroll;
+
+  .visibilityAnimationWrapper {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.2s ease-in;
+    order: 1;
+    margin: 0 0 6px;
+
+    &.isClosed:not(.selected) {
+      grid-template-rows: 0fr;
+      margin: 0;
+    }
+
+    &.selected {
+      background: pink;
+      order: 0;
+    }
+  }
 }
 
 .rosterCard {
   display: flex;
   cursor: pointer;
   flex-flow: row nowrap;
-  margin: 0 0 6px;
-  order: 1;
-
-  &.selected {
-    background: pink;
-    order: 0;
-  }
+  overflow: hidden;
 
   * {
     pointer-events: none;
