@@ -6,6 +6,7 @@ const OOD = (() => {
 
   let newFilterBtn;
   let editEmployersBtn;
+  let createFormsBtn;
   let filterRow;
   let newEntryBtn;
   let newSummaryBtn;
@@ -346,6 +347,7 @@ const OOD = (() => {
         ),
     });
     editEmployersBtn = buildEditEmployersBtn();
+    createFormsBtn = buildCreateFormsBtn();
     newFilterBtn = buildNewFilterBtn();
 
     const oodBtnsWrap = document.createElement('div');
@@ -353,6 +355,7 @@ const OOD = (() => {
     oodBtnsWrap.appendChild(entryBtn);
     oodBtnsWrap.appendChild(summaryBtn);
     oodBtnsWrap.appendChild(editEmployersBtn);
+    oodBtnsWrap.appendChild(createFormsBtn);
 
     buttonBar.appendChild(newFilterBtn);
     buttonBar.appendChild(oodBtnsWrap);
@@ -704,6 +707,64 @@ const OOD = (() => {
     // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
   }
 
+  async function generateAndTrackFormProgress(formNumber) {
+    // Hide createOODFormPopup and show the "Generating Form..." message
+    //createOODFormPopup.style.display = 'none';
+    pendingSave.show('Generating Form...');
+  
+    // Prepare data for form generation
+    let data = {
+      referenceNumber: filterValues.referenceNumber,
+      peopleId: selectedConsumerIds[0],
+      serviceCodeId: filterValues.serviceId,
+      startDate: filterValues.serviceDateStart,
+      endDate: filterValues.serviceDateEnd,
+      userId: filterValues.userId
+    };
+  
+    // Generate the form based on the formNumber
+    let sentStatus = '';
+    let success = false;
+  
+    switch (formNumber) {
+      case 4:
+        sentStatus = await OODAjax.generateForm4(data);
+        success = sentStatus.generateForm4Result === 'Success' ? true : false;
+        break;
+  
+      case 8:
+        sentStatus = await OODAjax.generateForm8(data);
+        success = sentStatus.generateForm8Result === 'Success' ? true : false;
+        break;
+  
+      case 10:
+        sentStatus = await OODAjax.generateForm10(data);
+        success = sentStatus.generateForm10Result === 'Success' ? true : false;
+        break;
+    }
+  
+    // Hide the pendingSavePopup
+    const pendingSavePopup = document.querySelector('.pendingSavePopup');
+    pendingSavePopup.style.display = 'none';
+  
+    // Handle popup actions based on success
+    if (success) {
+      pendingSave.fulfill('All Done!');
+      setTimeout(() => {
+        const savePopup = document.querySelector('.successfulSavePopup');
+        DOM.ACTIONCENTER.removeChild(savePopup);
+        //POPUP.hide(createOODFormPopup);
+      }, 700);
+    } else {
+      pendingSave.reject('Failed to Generate, please try again.');
+      setTimeout(() => {
+        const failPopup = document.querySelector('.failSavePopup');
+        DOM.ACTIONCENTER.removeChild(failPopup);
+        //createOODFormPopup.style.removeProperty('display');
+      }, 2000);
+    }
+  }
+
   // build Filter button, which filters the data displayed on the OOD Entries Table
   function buildNewFilterBtn() {
     if (!filterValues)
@@ -744,6 +805,66 @@ const OOD = (() => {
         OODEmployers.init();
       },
     });
+  }
+
+  // build Each Form Button button,
+  function buildIndividualFormBtn(formText, formNumber) {
+    return button.build({
+      text: formText,
+      style: 'secondary',
+      type: 'contained',
+      id: `OODForm${formNumber}Btn`,
+      classNames: `OODForm${formNumber}Btn`,
+      callback: async () => {
+        generateAndTrackFormProgress(formNumber);
+      },
+    });
+  }
+
+  // build Create Forms button,
+  function buildCreateFormsBtn() {
+    return button.build({
+      text: 'Create OOD Forms',
+      style: 'secondary',
+      type: 'contained',
+      id: createFormsBtn,
+      classNames: 'createFormsBtn',
+      callback: () => {
+        showCreateFormsPopup();
+      },
+    });
+  }
+
+  function showCreateFormsPopup() {
+    // Popup
+    const popup = POPUP.build({
+      id: `createOODFormsPopup`,
+      hideX: true,
+      classNames: [
+        'popup',
+        'visible',
+        'popup--filter',
+        'createOODFormsPopup']
+    });
+
+    popup.setAttribute('data-popup', 'true');
+
+    // Header
+    // const header = document.createElement('h5');
+    // header.innerHTML = 'Select A Form To Generate';
+
+    const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
+    const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);
+    const form10Btn = buildIndividualFormBtn('Form 10 - Transportation', 10);
+
+    popup.appendChild(form4Btn);
+    popup.appendChild(form8Btn);
+    popup.appendChild(form10Btn);
+
+    // Append to DOM
+    bodyScrollLock.disableBodyScroll(popup);
+    overlay.show();
+    actioncenter.appendChild(popup);
   }
 
   // build the display of the current Filter Settings (next to the Filter button)
