@@ -104,6 +104,7 @@ const ConsumerFinances = (() => {
             filterValues.Balance,
             filterValues.enteredBy,
             filterValues.isattachment,
+            filterValues.transectionType,
         );
 
         ConsumerFinancesEntries.getAccountTransectionEntriesResult.forEach(function (entry) {
@@ -215,6 +216,7 @@ const ConsumerFinances = (() => {
             Balance: '',
             enteredBy: '%',
             isattachment: '%',
+            transectionType: '%',
         }
 
         return button.build({
@@ -258,11 +260,12 @@ const ConsumerFinances = (() => {
 			    <span>To date:</span> ${endDate}&nbsp;&nbsp;
                 <span>Min Amount:</span>$ ${filterValues.minamount}&nbsp;&nbsp;
                 <span>Max Amount:</span>$ ${filterValues.maxamount}&nbsp;&nbsp;
+                <span>Transection Type:</span>${(filterValues.transectionType == '%') ? 'ALL' : filterValues.transectionType}&nbsp;&nbsp;
                 <span>Account:</span> ${(filterValues.accountName == '%') ? 'ALL' : filterValues.accountName}&nbsp;&nbsp;
 			    <span>Payee:</span> ${(filterValues.payee == '%') ? 'ALL' : filterValues.payee}&nbsp;&nbsp;
 			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category} &nbsp;&nbsp;
                 <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;
-                <span>Has Attachment:</span>${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment} 
+                <span>Has Attachment:</span>${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment}                
             </p>
 		  </div>`;
 
@@ -277,6 +280,7 @@ const ConsumerFinances = (() => {
             hideX: true,
         });
 
+        // dropdowns & inputs
         fromDateInput = input.build({
             id: 'fromDateInput',
             type: 'date',
@@ -310,7 +314,11 @@ const ConsumerFinances = (() => {
             value: '$' + ((filterValues.maxamount) ? filterValues.maxamount : ''),
         });
 
-        // dropdowns & inputs
+        transectionTypeFilterDropdown = dropdown.build({
+            label: "Transection Type",
+            dropdownId: "transectionTypeFilterDropdown",
+        });
+
         accountFilterDropdown = dropdown.build({
             label: "Account",
             dropdownId: "accountFilterDropdown",
@@ -371,6 +379,7 @@ const ConsumerFinances = (() => {
         // build popup
         filterPopup.appendChild(dateWrap);
         filterPopup.appendChild(amountWrap);
+        filterPopup.appendChild(transectionTypeFilterDropdown);
         filterPopup.appendChild(accountFilterDropdown);
 
         filterPopup.appendChild(payeeDropdown);
@@ -396,6 +405,7 @@ const ConsumerFinances = (() => {
         var tmppayee;
         var tmpcategory;
         var tmpisattachment;
+        var tmptransectionType;
 
         fromDateInput.addEventListener('change', event => {
             tmpactivityStartDate = event.target.value;
@@ -434,6 +444,9 @@ const ConsumerFinances = (() => {
             tmpmaxAmount = maxAmount.replace('$', '');
         });
 
+        transectionTypeFilterDropdown.addEventListener('change', event => {
+            tmptransectionType = event.target.value;
+        });
         accountFilterDropdown.addEventListener('change', event => {
             tmpaccountName = event.target.value;
         });
@@ -462,7 +475,8 @@ const ConsumerFinances = (() => {
                     tmpenteredBy,
                     tmppayee,
                     tmpcategory,
-                    tmpisattachment
+                    tmpisattachment,
+                    tmptransectionType
                 });
                 POPUP.hide(filterPopup);
                 loadConsumerFinanceLanding();
@@ -480,7 +494,8 @@ const ConsumerFinances = (() => {
         if (data.tmpenteredBy) filterValues.enteredBy = data.tmpenteredBy;
         if (data.tmppayee) filterValues.payee = data.tmppayee;
         if (data.tmpcategory) filterValues.category = data.tmpcategory;
-        if (data.tmpisattachment) filterValues.isattachment = data.tmpisattachment;
+        if (data.tmpisattachment) filterValues.isattachment = data.tmpisattachment; 
+        if (data.tmptransectionType) filterValues.transectionType = data.tmptransectionType;
     }
 
     function checkValidationOfFilter() {
@@ -556,6 +571,13 @@ const ConsumerFinances = (() => {
         ]);
         condfidentialDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("isAttachedDropdown", condfidentialDropdownData, filterValues.isattachment);
+
+        const TransectionTypeDropdownData = ([
+            { text: 'Deposit', value: 'false' },
+            { text: 'Expense', value: 'true' },
+        ]);
+        TransectionTypeDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
+        dropdown.populate("transectionTypeFilterDropdown", TransectionTypeDropdownData, filterValues.transectionType);
     }
 
     function filterPopupCancelBtn() {
