@@ -77,36 +77,28 @@ const CaseNotes = (() => {
     selectedDateClone.setHours(dirtyTime[0], dirtyTime[1], 0, 0);
     return dates.isAfter(selectedDateClone, currentDate);
   }
-  function isStartTimeBeforeEndTime() {}
-  //TODO: refactor below
-  function parseSessionTimes(dirtyTime) {
-    const isAMorPM = dirtyTime.includes('A') ? 'am' : 'pm';
-    let time;
+  function isStartTimeBeforeEndTime(startTime, endTime) {
+    if (!startTime || !endTime) return true;
 
-    if (isAMorPM === 'am') {
-      time = `${dirtyTime.split('A')[0]} AM`;
-    } else {
-      time = `${dirtyTime.split('P')[0]} PM`;
-    }
-
+    return startTime < endTime ? true : false;
+  }
+  function parseSessionTime(dirtyTime) {
+    let time = `${dirtyTime.slice(0, -2)} ${dirtyTime.slice(-2)}`;
     time = UTIL.convertToMilitary(time);
     return time.slice(0, -3);
   }
-  function areTimesWithinWorkHours() {
-    // '6:00AM'
-    const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
-    const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
+  function areTimesWithinWorkHours(startTime, endTime) {
+    const valuesToCheck = [undefined, null, '', '00:00', 'Null'];
+    const isWarningStartTimeValid = valuesToCheck.includes($.session.caseNotesWarningStartTime) ? false : true;
+    const isWarningEndTimeValid = valuesToCheck.includes($.session.caseNotesWarningStartTime) ? false : true;
 
-    if (
-      $.session.caseNotesWarningStartTime === '00:00' ||
-      $.session.caseNotesWarningEndTime === '00:00' ||
-      !$.session.caseNotesWarningStartTime ||
-      !$.session.caseNotesWarningEndTime ||
-      $.session.caseNotesWarningStartTime === 'Null' ||
-      $.session.caseNotesWarningEndTime === 'Null'
-    ) {
+    if (!isWarningStartTimeValid || !isWarningEndTimeValid) {
+      // session warning times don't matter
       return true;
     }
+
+    const warnStart = parseSessionTime($.session.caseNotesWarningStartTime);
+    const warnEnd = parseSessionTime($.session.caseNotesWarningEndTime);
 
     if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
       return false;
@@ -360,8 +352,13 @@ const CaseNotes = (() => {
     startTime: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
       const endTimeVal = cnForm.inputs['endTime'].getValue();
+
       let isStartTimeValid;
-      if (isStartTimeBeforeEndTime(value, endTimeVal) && isTimeValid(value)) {
+      if (
+        isStartTimeBeforeEndTime(value, endTimeVal) &&
+        isTimeValid(value) &&
+        areTimesWithinWorkHours(value, endTimeVal)
+      ) {
         isStartTimeValid = true;
       } else {
         isStartTimeValid = false;
@@ -370,8 +367,13 @@ const CaseNotes = (() => {
     endTime: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
       const startTimeVal = cnForm.inputs['startTime'].getValue();
+
       let isEndTimeValid;
-      if (isStartTimeBeforeEndTime(startTimeVal, value) && isTimeValid(value)) {
+      if (
+        isStartTimeBeforeEndTime(startTimeVal, value) &&
+        isTimeValid(value) &&
+        areTimesWithinWorkHours(startTimeVal, value)
+      ) {
         isEndTimeValid = true;
       } else {
         isEndTimeValid = false;

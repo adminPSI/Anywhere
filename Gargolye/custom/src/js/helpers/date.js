@@ -315,6 +315,8 @@ const dates = (function () {
     return dates;
   }
 
+  // TIME
+  //----------------------------------------------------------------
   function removeTimestamp(date) {
     const splitDate = date.split(' ');
     return `${splitDate[0]}`;
