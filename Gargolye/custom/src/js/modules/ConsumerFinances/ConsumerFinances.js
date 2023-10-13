@@ -260,12 +260,12 @@ const ConsumerFinances = (() => {
 			    <span>To date:</span> ${endDate}&nbsp;&nbsp;
                 <span>Min Amount:</span>$ ${filterValues.minamount}&nbsp;&nbsp;
                 <span>Max Amount:</span>$ ${filterValues.maxamount}&nbsp;&nbsp;
-                <span>Transection Type:</span>${(filterValues.transectionType == '%') ? 'ALL' : filterValues.transectionType}&nbsp;&nbsp;
+                <span>Transaction Type:</span> ${(filterValues.transectionType == '%') ? 'ALL' : filterValues.transectionType == 'true' ? 'Expense' : 'Deposit'}&nbsp;&nbsp;   
                 <span>Account:</span> ${(filterValues.accountName == '%') ? 'ALL' : filterValues.accountName}&nbsp;&nbsp;
 			    <span>Payee:</span> ${(filterValues.payee == '%') ? 'ALL' : filterValues.payee}&nbsp;&nbsp;
 			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category} &nbsp;&nbsp;
                 <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;
-                <span>Has Attachment:</span>${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment}                
+                <span>Has Attachment:</span> ${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment}                
             </p>
 		  </div>`;
 
@@ -315,7 +315,7 @@ const ConsumerFinances = (() => {
         });
 
         transectionTypeFilterDropdown = dropdown.build({
-            label: "Transection Type",
+            label: "Transaction Type",
             dropdownId: "transectionTypeFilterDropdown",
         });
 
@@ -494,7 +494,7 @@ const ConsumerFinances = (() => {
         if (data.tmpenteredBy) filterValues.enteredBy = data.tmpenteredBy;
         if (data.tmppayee) filterValues.payee = data.tmppayee;
         if (data.tmpcategory) filterValues.category = data.tmpcategory;
-        if (data.tmpisattachment) filterValues.isattachment = data.tmpisattachment; 
+        if (data.tmpisattachment) filterValues.isattachment = data.tmpisattachment;
         if (data.tmptransectionType) filterValues.transectionType = data.tmptransectionType;
     }
 
