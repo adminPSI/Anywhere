@@ -4789,6 +4789,86 @@ namespace Anywhere
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/verifyDefaultEmailClient/")]
         string verifyDefaultEmailClient();
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getVendorInfo/")]
+        AuthorizationWorker.VendorInfo[] getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+       BodyStyle = WebMessageBodyStyle.Wrapped,
+       ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/getVendor/")]
+        AuthorizationWorker.DropdownValue[] getVendor(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+       BodyStyle = WebMessageBodyStyle.Wrapped,
+       ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/getFundingSource/")]
+        AuthorizationWorker.DropdownValue[] getFundingSource(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+       BodyStyle = WebMessageBodyStyle.Wrapped,
+       ResponseFormat = WebMessageFormat.Json,
+       RequestFormat = WebMessageFormat.Json,
+       UriTemplate = "/getServiceCode/")]
+        AuthorizationWorker.DropdownValue[] getServiceCode(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getVendorEntriesById/")]
+        AuthorizationWorker.VendorGeneralEntry[] getVendorEntriesById(string token, string vendorID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/getVenderServicesEntries/")]
+        AuthorizationWorker.vendorService[] getVenderServicesEntries(string token, string vendorID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getVenderUCREntries/")]
+        AuthorizationWorker.vendorUCR[] getVenderUCREntries(string token, string vendorID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getProviderTypeEntries/")]
+        AuthorizationWorker.vendorProviderType[] getProviderTypeEntries(string token, string vendorID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getVenderCertificationEntries/")]
+        AuthorizationWorker.vendorCertifiction[] getVenderCertificationEntries(string token, string vendorID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getVenderLocationReviewEntries/")]
+        AuthorizationWorker.vendorLocationReviews[] getVenderLocationReviewEntries(string token, string vendorID);
     }
 
 

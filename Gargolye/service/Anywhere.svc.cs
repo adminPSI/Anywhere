@@ -3538,6 +3538,51 @@ namespace Anywhere
         {
             return cdw.verifyDefaultEmailClient();
         }
+        public AuthorizationWorker.VendorInfo[] getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode)
+        {
+            return authWorker.getVendorInfo(token, vendor, DDNumber, localNumber, goodStanding, homeServices, takingNewReferrals, fundingSource, serviceCode);
+        }
+        public AuthorizationWorker.DropdownValue[] getVendor(string token)
+        {
+            return authWorker.getVendor(token);
+        }
+        public AuthorizationWorker.DropdownValue[] getFundingSource(string token)
+        {
+            return authWorker.getFundingSource(token);
+        }
+        public AuthorizationWorker.DropdownValue[] getServiceCode(string token)
+        {
+            return authWorker.getServiceCode(token);
+        }
+        public AuthorizationWorker.VendorGeneralEntry[] getVendorEntriesById(string token, string vendorID)
+        {
+            return authWorker.getVendorEntriesById(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorService[] getVenderServicesEntries(string token, string vendorID)
+        {
+            return authWorker.getVenderServicesEntries(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorUCR[] getVenderUCREntries(string token, string vendorID)
+        {
+            return authWorker.getVenderUCREntries(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorProviderType[] getProviderTypeEntries(string token, string vendorID)
+        {
+            return authWorker.getProviderTypeEntries(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorCertifiction[] getVenderCertificationEntries(string token, string vendorID)
+        {
+            return authWorker.getVenderCertificationEntries(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorLocationReviews[] getVenderLocationReviewEntries(string token, string vendorID)
+        {
+            return authWorker.getVenderLocationReviewEntries(token, vendorID);
+        }
 
     }
 }

@@ -17,6 +17,7 @@ var authorizationLanding = (function () {
             text: 'VENDOR INFO',
             style: 'secondary',
             type: 'contained',
+            callback: vendorInfo.init  
         });
 
 

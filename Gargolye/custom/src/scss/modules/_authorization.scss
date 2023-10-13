@@ -358,4 +358,84 @@
             }
         }
     }
+
+    .vendorBtnWrap {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .vendorDTWrap {
+        display: flow;
+
+        .width25Per, .width27Per, .width35Per, .width40Per, .width50Per, .width30Per, .width19Per {
+            width: 97%;
+        }
+
+        .width20Per, .width23Per, .width32Per, .width10Per, .width18Per {
+            margin-left: 1.5%;
+            width: 97%;
+        }
+
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .checkbox-mtd > span:after {
+                top: 24px !important;
+            }
+
+            .width10Per {
+                width: 10%;
+            }
+
+            .width20Per {
+                width: 20%;
+            }
+
+            .width25Per {
+                width: 25%;
+            }
+
+            .width27Per {
+                width: 27%;
+            }
+
+            .width30Per {
+                width: 30%;
+            }
+
+            .width32Per {
+                width: 32%;
+            }
+
+            .width35Per {
+                width: 35%;
+            }
+
+            .width40Per {
+                width: 40%;
+            }
+
+            .width50Per {
+                width: 49.5%;
+            }
+
+            .width23Per {
+                width: 23%;
+            }
+
+            .width18Per {
+                width: 18%;
+            }
+
+            .width19Per {
+                width: 19%;
+            }
+        }
+    }
+
+    .marginTop2Per {
+        margin-top: 2%;
+    }
 }

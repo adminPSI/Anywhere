@@ -19,6 +19,10 @@ using System.Security.Cryptography;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
 using System.ServiceModel.Web;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using static Anywhere.service.Data.ResetPassword.ResetPasswordWorker;
+using OneSpanSign.Sdk;
+using System.Reflection.Emit;
+using System.IO;
 
 namespace Anywhere.service.Data.Authorization
 {
@@ -89,6 +93,104 @@ namespace Anywhere.service.Data.Authorization
             public string scoreID { get; set; }
             public string scoreDescription { get; set; }
         }
+
+        public class VendorInfo
+        {
+            public string vendorID { get; set; }
+            public string name { get; set; }
+            public string DDNumber { get; set; }
+            public string localNumber { get; set; }
+            public string contact { get; set; }
+            public string phone { get; set; }
+            public string goodStanding { get; set; }        
+        }
+
+        public class VendorGeneralEntry
+        {
+            public string vendorID { get; set; }
+            public string name { get; set; }      
+            public string contactName { get; set; }
+            public string contactPhone { get; set; }
+            public string contactEmail { get; set; }
+            public string address1 { get; set; }
+            public string address2 { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zipCode { get; set; }
+            public string primaryPhone { get; set; }
+            public string providerFirstName { get; set; }
+            public string providerLastName { get; set; }
+            public string providerBirthDate { get; set; }
+            public string providerBuildingNumber { get; set; }
+            public string salesforceId { get; set; }
+            public string DDStateNumber { get; set; }
+            public string ein { get; set; }
+            public string submitterId { get; set; }
+            public string LocalNumber { get; set; }
+            public string ssn { get; set; }
+            public string sender { get; set; }
+            public string MHStateNumber { get; set; }
+            public string TDDStateNumber { get; set; }
+            public string NPI { get; set; }
+            public string MHNPI { get; set; }
+            public string goodStanding { get; set; }
+            public string takingNewReferrals { get; set; }
+            public string FSSVendor { get; set; }
+            public string sanctionsAdministered { get; set; }
+            public string homeServices { get; set; }
+        }
+
+        public class DropdownValue
+        {
+            public string ID { get; set; } 
+            public string Code { get; set; }
+            public string Description { get; set; }
+
+        }
+
+        public class vendorService
+        {
+            public string fundingSource { get; set; } 
+            public string serviceCode { get; set; }
+            public string serviceDescription { get; set; }
+        }
+
+        public class vendorUCR
+        {
+            public string service { get; set; }
+            public string groupSize { get; set; }
+            public string serviceLocation { get; set; }
+            public string CDBCategory { get; set; }
+            public string assessmentAcuityScore { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string UCR { get; set; }           
+        }
+
+        public class vendorProviderType
+        {
+            public string ProviderType { get; set; }       
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string Notes { get; set; }
+        }
+
+        public class vendorCertifiction
+        { 
+            public string Certifiction { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+        }
+
+        public class vendorLocationReviews
+        {
+            public string location { get; set; }
+            public string reviewType { get; set; }
+            public string dueDate { get; set; }
+            public string completedDate { get; set; }
+            public string responsibleStaff { get; set; }
+        }
+
         public PageData getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
@@ -151,7 +253,7 @@ namespace Anywhere.service.Data.Authorization
                 }
                 sb.AppendFormat("and p.CompletionDate between '{0}' and '{1}' ", completedDateStart, completedDateEnd);
                 sb.AppendFormat("and p.Id = '{0}' and p.permanent = 'Y' ", selectedConsumerId);
-                if(vendorId.Equals("%"))
+                if (vendorId.Equals("%"))
                 {
                     sb.AppendFormat("and (p.PL_Vendor_ID like '{0}' or p.PL_Vendor_ID is null) ", vendorId);
                 }
@@ -369,7 +471,175 @@ namespace Anywhere.service.Data.Authorization
             }
         }
 
+        public VendorInfo[] getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    VendorInfo[] vendorInfo = js.Deserialize<VendorInfo[]>(adg.getVendorInfo(token, vendor, DDNumber, localNumber, goodStanding, homeServices, takingNewReferrals, fundingSource, serviceCode, transaction));
+                    return vendorInfo;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
 
+        public DropdownValue[] getVendor(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    DropdownValue[] Info = js.Deserialize<DropdownValue[]>(adg.getVendor(transaction, token));
+                    return Info;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+        public DropdownValue[] getFundingSource(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    DropdownValue[] Info = js.Deserialize<DropdownValue[]>(adg.getFundingSource(transaction, token));
+                    return Info;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public DropdownValue[] getServiceCode(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    DropdownValue[] Info = js.Deserialize<DropdownValue[]>(adg.getServiceCode(transaction, token));
+                    return Info;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public VendorGeneralEntry[] getVendorEntriesById(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    VendorGeneralEntry[] generalEntry = js.Deserialize<VendorGeneralEntry[]>(adg.getVendorEntriesById(token, vendorID, transaction));
+                    return generalEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+
+        }
+
+        public vendorService[] getVenderServicesEntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorService[] servicesEntry = js.Deserialize<vendorService[]>(adg.getVenderServicesEntries(token, vendorID, transaction));
+                    return servicesEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public vendorUCR[] getVenderUCREntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorUCR[] vendorUCR = js.Deserialize<vendorUCR[]>(adg.getVenderUCREntries(token, vendorID, transaction));
+                    return vendorUCR;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public vendorProviderType[] getProviderTypeEntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorProviderType[] vendorProviderTypeEntry = js.Deserialize<vendorProviderType[]>(adg.getProviderTypeEntries(token, vendorID, transaction));
+                    return vendorProviderTypeEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public vendorCertifiction[] getVenderCertificationEntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorCertifiction[] vendorCertifictionEntry = js.Deserialize<vendorCertifiction[]>(adg.getVenderCertificationEntries(token, vendorID, transaction));
+                    return vendorCertifictionEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public vendorLocationReviews[] getVenderLocationReviewEntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorLocationReviews[] vendorLocationReviewsEntry = js.Deserialize<vendorLocationReviews[]>(adg.getVenderLocationReviewEntries(token, vendorID, transaction));
+                    return vendorLocationReviewsEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
 
     }
 }
