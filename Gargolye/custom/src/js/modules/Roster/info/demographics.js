@@ -18,6 +18,10 @@ const demographics = (function () {
     ];
     let gkOnly = ['cellPhone', 'generation'];
 
+    let sectionLoad;
+    let dataLoad;
+    let consumerIDLoad;
+
     function stringAdd(string, start, newSubStr) {
         return string.slice(0, start) + newSubStr + string.slice(start);
     }
@@ -498,10 +502,17 @@ const demographics = (function () {
                     applicationName: $.session.applicationName,
                 });
                 // show save icon
-                if (success) {
+                if (success) { 
                     saveIcon.innerHTML = icons['checkmark'];
                     saveIcon.classList.add('success');
                     viewElement.innerHTML = formatViewInnerHTML(name, e.target.value);
+
+                    // below code Implement of Phone or email Icon does not immediately show when adding a phone or email #
+                    dataLoad.cellphone = name == 'cellPhone' ? saveValue : dataLoad.cellphone;  
+                    dataLoad.secondaryphone = name == 'secondaryPhone' ? saveValue : dataLoad.secondaryphone;
+                    dataLoad.primaryphone = name == 'primaryPhone' ? saveValue : dataLoad.primaryphone;
+                    dataLoad.email = name == 'email' ? saveValue : dataLoad.email;  
+                    populateDemographicsSection(sectionLoad, dataLoad, consumerIDLoad);                         
                 } else {
                     saveIcon.innerHTML = icons['error'];
                     saveIcon.classList.add('error');
@@ -663,7 +674,11 @@ const demographics = (function () {
         return groupWrap;
     }
 
-    function populateDemographicsSection(section, data, consumerID) {
+    function populateDemographicsSection(section, data, consumerID) {  
+        sectionLoad = section; 
+        dataLoad = data;
+        consumerIDLoad = consumerID;
+
         consumerId = consumerID;
         demoData = formatDataForDisplay(data);
         isGK = $.session.applicationName === 'Gatekeeper';
