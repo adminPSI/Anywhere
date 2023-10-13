@@ -8,6 +8,7 @@
   const DEFAULT_OPTIONS = {
     showcount: false,
     note: null,
+    fullscreen: false,
   };
 
   /**
@@ -52,6 +53,7 @@
 
     this.inputWrap = null;
     this.input = null;
+    this.fullScreenToggleBtn = null;
   }
 
   /**
@@ -65,24 +67,38 @@
       class: this.options.hidden ? ['input', 'textarea', 'hidden'] : ['input', 'textarea'],
     });
 
+    // INPUT & LABEL
     this.input = _DOM.createElement('textarea', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
 
+    // INPUT NOTE
     if (this.options.note) {
       const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
       this.inputWrap.appendChild(inputNote);
       this.inputWrap.classList.add('withNote');
     }
 
+    // CHAR COUNTER
     if (this.options.showcount) {
       const countMarkup = this.options.attributes.maxlength
         ? { html: `${0}<span>/</span>${this.options.attributes.maxlength}` }
         : { text: '0' };
       const inputCount = _DOM.createElement('div', { class: 'charCount', ...countMarkup });
       this.inputWrap.appendChild(inputCount);
+    }
+
+    // FULLSCREEN MODE
+    if (this.options.fullscreen) {
+      //TODO: add fullscreen icon, setup its events
+      this.fullScreenToggleBtn = _DOM.createElement('div', {
+        class: 'fullscreenToggleBtn',
+        'data-target': 'fullscreen',
+        node: Icon.getIcon('openFullScreen'),
+      });
+      this.inputWrap.appendChild(this.fullScreenToggleBtn);
     }
 
     this.inputWrap.appendChild(this.input);
@@ -151,6 +167,13 @@
       cbFunc(e);
     });
   };
+
+  /**
+   *
+   *
+   * @function
+   */
+  Textarea.prototype.toggleFullscreenMode = function () {};
 
   /**
    * Renders the built Textarea element to the specified DOM node.

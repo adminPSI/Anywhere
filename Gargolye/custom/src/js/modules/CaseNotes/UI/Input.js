@@ -22,11 +22,6 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
-  /**
-   * @class Radio API
-   * @param {Object} options
-   */
-
   //=========================
   // MAIN LIB
   //-------------------------
@@ -68,18 +63,21 @@
         : ['input', `${this.options.attributes.type}`],
     });
 
+    // INPUT & LABEL
     this.input = _DOM.createElement('input', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
 
+    // INPUT NOTE
     if (this.options.note) {
       const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
       this.inputWrap.appendChild(inputNote);
       this.inputWrap.classList.add('withNote');
     }
 
+    // CHAR COUNTER
     if (this.options.showcount) {
       const countMarkup = this.options.attributes.maxlength
         ? { html: `${0}<span>/</span>${this.options.attributes.maxlength}` }
@@ -102,6 +100,16 @@
    */
   Input.prototype.setValue = function (value) {
     this.input.value = value;
+  };
+
+  /**
+   * Returns value of input
+   *
+   * @function
+   * @returns {*} - value of input
+   */
+  Input.prototype.getValue = function () {
+    return this.input.value;
   };
 
   /**

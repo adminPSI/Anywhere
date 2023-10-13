@@ -137,6 +137,12 @@
     }
   }
 
+  //*-- Textarea ---------
+  .input.textarea .fullscreenToggleBtn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
   //*-- Input Group ---------
   .inputGroup {
     margin: 0 0 20px;

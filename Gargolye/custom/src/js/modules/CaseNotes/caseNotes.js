@@ -25,17 +25,94 @@ const CaseNotes = (() => {
 
   // UTILS
   //--------------------------------------------------
-  // isReadyonly does same thing as checkIfCredit
   function isReadOnly(credit) {
+    // isReadyonly does same thing as checkIfCredit
     // credit comes from review data
     return credit === 'Y' || credit === '-1' ? true : false;
   }
-  function validateTime(dirtyTime) {
+  function isNoteConfidential() {
+    // old function = checkConfidential
+  }
+  function setPermissions() {
+    const viewOnly = $.session.CaseNotesUpdate ? false : true;
+
+    //TODO: check if case note is batched | *ONLY FOR REVIEW*
+    // batched notes are readonly, if batched status === '' it is NOT BATCHED
+
+    //! GK ONLY
+    //? If note is batched then we shouldn't hit this if bc note is read only
+    if ($.session.applicationName === 'Gatekeeper') {
+      if ($.session.CaseNotesUpdate) {
+        if (
+          !$.session.CaseNotesUpdateEntered ||
+          ($.session.CaseNotesUpdateEntered && caseManagerId === $.session.PeopleId)
+        ) {
+          isReadOnly = false; //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
+        } else {
+          isReadOnly = true; //can not edit (with UpdateEntered permission, can't edit other people's case notes)
+        }
+      } else {
+        isReadOnly = true; //can not edit (no overall update permission)
+      }
+    }
+  }
+  function checkServiceFunding() {
+    //! ADV ONLY
+    // based off selected servBillCode
+    // check its service funding value
+    // if funding value is "N" - disable service location dropdown
+    // else - enable dropdown, make required
+  }
+  function isTimeValid(dirtyTime) {
     const currentDate = new Date();
-    let selectedDate = new Date(selectedDate);
+    const selectedDateClone = new Date(selectedDate);
+
+    //If selectedDate is not today then time dosen't matter
+    if (currentDate.setHours(0, 0, 0, 0) === selectedDateClone.setHours(0, 0, 0, 0)) {
+      return true;
+    }
+
+    // CHECKS IF TIME IS IN FURUTRE
     dirtyTime = dirtyTime.split(':');
-    selectedDate.setHours(dirtyTime[0], dirtyTime[1], 0, 0);
-    return dates.isAfter(selectedDate, currentDate);
+    selectedDateClone.setHours(dirtyTime[0], dirtyTime[1], 0, 0);
+    return dates.isAfter(selectedDateClone, currentDate);
+  }
+  function isStartTimeBeforeEndTime() {}
+  //TODO: refactor below
+  function parseSessionTimes(dirtyTime) {
+    const isAMorPM = dirtyTime.includes('A') ? 'am' : 'pm';
+    let time;
+
+    if (isAMorPM === 'am') {
+      time = `${dirtyTime.split('A')[0]} AM`;
+    } else {
+      time = `${dirtyTime.split('P')[0]} PM`;
+    }
+
+    time = UTIL.convertToMilitary(time);
+    return time.slice(0, -3);
+  }
+  function areTimesWithinWorkHours() {
+    // '6:00AM'
+    const warnStart = parseSessionTimes($.session.caseNotesWarningStartTime);
+    const warnEnd = parseSessionTimes($.session.caseNotesWarningEndTime);
+
+    if (
+      $.session.caseNotesWarningStartTime === '00:00' ||
+      $.session.caseNotesWarningEndTime === '00:00' ||
+      !$.session.caseNotesWarningStartTime ||
+      !$.session.caseNotesWarningEndTime ||
+      $.session.caseNotesWarningStartTime === 'Null' ||
+      $.session.caseNotesWarningEndTime === 'Null'
+    ) {
+      return true;
+    }
+
+    if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
+      return false;
+    }
+
+    return true;
   }
 
   // DROPDOWNS
@@ -282,11 +359,23 @@ const CaseNotes = (() => {
     },
     startTime: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
-      validateTime(value);
+      const endTimeVal = cnForm.inputs['endTime'].getValue();
+      let isStartTimeValid;
+      if (isStartTimeBeforeEndTime(value, endTimeVal) && isTimeValid(value)) {
+        isStartTimeValid = true;
+      } else {
+        isStartTimeValid = false;
+      }
     },
     endTime: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
-      validateTime(value);
+      const startTimeVal = cnForm.inputs['startTime'].getValue();
+      let isEndTimeValid;
+      if (isStartTimeBeforeEndTime(startTimeVal, value) && isTimeValid(value)) {
+        isEndTimeValid = true;
+      } else {
+        isEndTimeValid = false;
+      }
     },
     mileage: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
@@ -313,6 +402,7 @@ const CaseNotes = (() => {
       selectedDate: selectedDate,
       onDateChange(newDate) {
         selectedDate = newDate;
+        //TODO: re validate times based off new date
       },
     });
     dateNavigation.build().renderTo(moduleWrap);
@@ -418,6 +508,7 @@ const CaseNotes = (() => {
           label: 'Note',
           id: 'noteText',
           required: true,
+          fullscreen: true,
         },
         {
           type: 'number',

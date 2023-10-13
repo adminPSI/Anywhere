@@ -88,6 +88,7 @@
     this.rosterWrapEle.innerHTML = '';
 
     this.consumers.forEach(c => {
+      // ROSTER CARD
       const gridAnimationWrapper = _DOM.createElement('div', { class: 'visibilityAnimationWrapper' });
       const rosterCard = _DOM.createElement('div', {
         class: 'rosterCard',
@@ -98,7 +99,6 @@
       // PORTRAIT
       const imgSource = `./images/portraits/${c.id}.png?${new Date().setHours(0, 0, 0, 0)}`;
       const defaultImgSource = `this.src='./images/new-icons/default.jpg'`;
-
       const image = _DOM.createElement('img', {
         src: this.failedImageCache.has(imgSource) ? defaultImgSource : imgSource,
         onerror: defaultImgSource,
@@ -113,15 +113,16 @@
       });
       const lastName = _DOM.createElement('p', { text: `${c.LN.trim()},` });
       fragment.append(lastName, firstName);
-
       const details = _DOM.createElement('div', { class: 'details', node: fragment });
 
+      // BUILD
       rosterCard.appendChild(portrait);
       rosterCard.appendChild(details);
       gridAnimationWrapper.appendChild(rosterCard);
 
       this.rosterWrapEle.appendChild(gridAnimationWrapper);
 
+      // SET REFERENCE TO DOM NODE ON DATA OBJ
       c.cardEle = rosterCard;
     });
   };
