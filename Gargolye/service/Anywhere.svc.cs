@@ -29,6 +29,7 @@ using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
 using Bytescout.PDF;
 using OODForms;
+using PDFGenerator;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +41,7 @@ using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
+using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 
@@ -2786,14 +2788,34 @@ namespace Anywhere
             return OODfw.generateForm4(referenceNumber, 22, consumerIds, serviceStartDate, serviceEndDate, serviceCode);
         }
 
-        public string generateForm8(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
+        public string generateForm8(string token, string consumerids, string servicestartdate, string serviceenddate, string userid, string servicecode, string referencenumber)
         {
-            return OODfw.generateForm8(referenceNumber, 22, consumerIds, serviceStartDate, serviceEndDate, serviceCode);
+            return OODfw.generateForm8(referencenumber, 22, consumerids, servicestartdate, serviceenddate, servicecode);
         }
 
-        public string generateForm10(string token, string peopleId, string startDate, string endDate, string userId, string serviceCodeId, string referenceNumber)
+        public string generateForm10(System.IO.Stream testInput)
         {
-           return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate);
+
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+
+            return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate, userId);
+
         }
 
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)

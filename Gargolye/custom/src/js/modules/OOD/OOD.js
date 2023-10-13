@@ -729,17 +729,18 @@ const OOD = (() => {
     switch (formNumber) {
       case 4:
         sentStatus = await OODAjax.generateForm4(data);
-        success = sentStatus.generateForm4Result === 'Success' ? true : false;
+        //success = sentStatus.generateForm4Result === 'Success' ? true : false;
         break;
   
       case 8:
         sentStatus = await OODAjax.generateForm8(data);
-        success = sentStatus.generateForm8Result === 'Success' ? true : false;
+        //success = sentStatus.generateForm8Result === 'Success' ? true : false;
         break;
   
       case 10:
         sentStatus = await OODAjax.generateForm10(data);
-        success = sentStatus.generateForm10Result === 'Success' ? true : false;
+        //success = sentStatus.generateForm10Result === 'Success' ? true : false;
+        success = true;
         break;
     }
   

@@ -428,7 +428,7 @@ namespace OODForms
 
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
-        public string getForm10PDFData(string token, string referenceNumber, string startDate, string endDate, string consumerId)
+        public string getForm10PDFData(string token, string referenceNumber, string startDate, string endDate, string consumerId, string userId)
         {
             if (tokenValidator(token) == false) return null;
             logger.debug("getSS ");
@@ -438,6 +438,7 @@ namespace OODForms
             list.Add(startDate);
             list.Add(endDate);
             list.Add(consumerId);
+            list.Add(userId);
             string text = "CALL DBA.ANYW_OOD_getForm10PDFData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
