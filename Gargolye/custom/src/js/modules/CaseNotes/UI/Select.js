@@ -24,10 +24,9 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
-  //=========================
+  //=======================================
   // MAIN LIB
-  //-------------------------
-
+  //---------------------------------------
   /**
    * @constructor
    * @param {Object} options
@@ -38,7 +37,7 @@
    * @param {Boolean} [options.hidden] - Whether to show or hide the select
    */
   function Select(options) {
-    this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.inputWrap = null;
     this.select = null;
@@ -112,6 +111,16 @@
    */
   Select.prototype.clear = function () {
     this.select.value = '';
+  };
+
+  /**
+   * Sets Custom Validity on select
+   *
+   * @function
+   * @param {String} message - empty string will unset invalid status
+   */
+  Select.prototype.setValidtyError = function (message) {
+    this.select.setCustomValidity(message);
   };
 
   /**

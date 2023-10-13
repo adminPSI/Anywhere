@@ -105,56 +105,29 @@
     return [{ ...a }, { ...b }];
   }
 
-  //=====================================================================
-  // FORM SPECIFIC UTILS
-  //---------------------------------------------------------------------
-  const FORM = {
-    /**
-     * Separates valid HTML attributes from options obj
-     * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
-     * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#attributes
-     *
-     * @function
-     * @param {Object}  options - Options object
-     * @return {Object} - Separated options object
-     */
-    separateHTMLAttribrutes(options) {
-      const props = [
-        'accept',
-        'alt',
-        'autocomplete',
-        'checked',
-        'disabled',
-        'form',
-        'id',
-        'list',
-        'max',
-        'maxlength',
-        'min',
-        'minlength',
-        'multiple',
-        'name',
-        'pattern',
-        'placeholder',
-        'readonly',
-        'required',
-        'size',
-        'src',
-        'type',
-        'value',
-      ];
+  //=================================================================
+  // TIME SPECIFIC METHODS
+  //-----------------------------------------------------------------
+  function getMilitaryTimeDifference(startTime, endTime) {
+    const startDate = new Date(`1970-01-01T${startTime}`);
+    const endDate = new Date(`1970-01-01T${endTime}`);
 
-      const [a, b] = Object.entries(options).reduce(
-        ([matching, leftover], [key, value]) =>
-          props.includes(key)
-            ? [Object.assign(matching, { [key]: value }), leftover]
-            : [matching, Object.assign(leftover, { [key]: value })],
-        [{}, {}],
-      );
+    const timeDifference = endDate - startDate;
 
-      return { ...b, attributes: { ...a } };
-    },
-  };
+    const hours = Math.floor(timeDifference / 3600000);
+    const minutes = Math.floor((timeDifference % 3600000) / 60000);
+
+    const formattedTime = [];
+
+    if (hours > 0) {
+      formattedTime.push(`${hours}hr`);
+    }
+    if (minutes > 0) {
+      formattedTime.push(`${minutes}min`);
+    }
+
+    return formattedTime.join(' ');
+  }
 
   return {
     debounce,
@@ -162,9 +135,7 @@
     mergeObjects,
     sortByProperty,
     splitObjectByPropNames,
-    //======================
-    // Sub Objs
-    //----------------------
-    FORM,
+    // TIME METHODS
+    getMilitaryTimeDifference,
   };
 });

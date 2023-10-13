@@ -235,9 +235,7 @@ var notesOverview = (function () {
       currentFilterDisplay.innerHTML = `
       <p><span>Biller: </span> ${billerName} </P>
       <p><span>Consumer: </span> ${displayConsumerName} </P>
-      <p><span>${
-        $.session.applicationName === 'Gatekeeper' ? 'Billing Code: ' : 'Service Code: '
-      }</span> All </P>
+      <p><span>${$.session.applicationName === 'Gatekeeper' ? 'Billing Code: ' : 'Service Code: '}</span> All </P>
       <p><span>Review Status: </span> All </P>
       <p><span>Service Dates:</span> ${dispalyServiceDateStart} - ${dispalyServiceDateEnd} </p>
       <p><span>Created Dates:</span> ${displayDateEnteredStart} - ${dispalyDatesEnteredEnd} </p>
@@ -302,9 +300,7 @@ var notesOverview = (function () {
       },
     });
 
-    cnADVReportBtn = generateReports.createMainReportButton([
-      { text: 'Detailed Case Notes By Biller', filterValues },
-    ]);
+    cnADVReportBtn = generateReports.createMainReportButton([{ text: 'Detailed Case Notes By Biller', filterValues }]);
 
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('cnbtnWrap');
@@ -462,7 +458,6 @@ var notesOverview = (function () {
           { key: 'data-consumer-id', value: consumerId },
           { key: 'data-isssanote', value: isSSANote },
         ],
-        // endIcon : (!attachcount || attachcount === '  ' || attachcount === '0') ? `<p style="display:none;">XXX</p>` : `${icons['attachment']}`,
         endIcon: thisendIcon,
         endIconCallback: e => {
           e.stopPropagation();
@@ -477,14 +472,6 @@ var notesOverview = (function () {
 
             //cnAttachment.init([], results, '', caseNoteId);
           });
-          //alert('Attach!');
-          // try {
-          //   let tableRow = document.getElementById(employer.employerId)
-          //   deleteConfirmation(employer.employerId, tableRow);
-          //   return;
-          // } catch(err) {
-          //   console.error("error: ", err);
-          // }
         },
         onClick: handleTableEvents,
       };
@@ -505,15 +492,7 @@ var notesOverview = (function () {
       'Group',
       'Attach',
     ];
-    var ADVcolumnheadings = [
-      'Service Date',
-      'Start Time',
-      'End Time',
-      'Name',
-      'Date Created',
-      'User Updated',
-      'Group',
-    ];
+    var ADVcolumnheadings = ['Service Date', 'Start Time', 'End Time', 'Name', 'Date Created', 'User Updated', 'Group'];
     $.session.applicationName === 'Gatekeeper'
       ? (thiscolumnheadings = GKcolumnheadings)
       : (thiscolumnheadings = ADVcolumnheadings);
@@ -591,8 +570,7 @@ var notesOverview = (function () {
       for (let tDi = 0; tDi < tableData.length; tDi++) {
         for (let cIdx = 0; cIdx < caseLoadRestriction.length; cIdx++) {
           if (
-            caseLoadRestriction[cIdx].id.toUpperCase() ===
-              tableData[tDi].consumerid.split('.')[0].toUpperCase() ||
+            caseLoadRestriction[cIdx].id.toUpperCase() === tableData[tDi].consumerid.split('.')[0].toUpperCase() ||
             tableData[tDi].enteredby.toUpperCase() === $.session.UserId.toUpperCase()
           ) {
             newTable.push(tableData[tDi]);
@@ -885,5 +863,6 @@ var notesOverview = (function () {
     init,
     dashHandeler,
     setFilterValFromPopup,
+    permissions_Table,
   };
 })();

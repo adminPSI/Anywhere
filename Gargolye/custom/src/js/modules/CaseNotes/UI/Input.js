@@ -22,13 +22,9 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
-  //=========================
+  //=======================================
   // MAIN LIB
-  //-------------------------
-  /**
-   * required, disabled
-   * events, change, keyup, focus in/out
-   */
+  //---------------------------------------
   /**
    * @constructor
    * @param {Object} options
@@ -44,7 +40,7 @@
    * @returns {Input}
    */
   function Input(options) {
-    this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.inputWrap = null;
     this.input = null;
@@ -119,6 +115,16 @@
    */
   Input.prototype.clear = function () {
     this.input.value = '';
+  };
+
+  /**
+   * Sets Custom Validity on input
+   *
+   * @function
+   * @param {String} message - empty string will unset invalid status
+   */
+  Input.prototype.setValidtyError = function (message) {
+    this.input.setCustomValidity(message);
   };
 
   /**

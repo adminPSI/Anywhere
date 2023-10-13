@@ -30,7 +30,7 @@
    * @returns {Dialog}
    */
   function Dialog(options) {
-    this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.dialog = null;
   }

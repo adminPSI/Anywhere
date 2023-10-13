@@ -23,9 +23,9 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
-  //=========================
+  //=======================================
   // FULLSCREEN MODE
-  //-------------------------
+  //---------------------------------------
   /**
    * Gives textarea fullscreen mode funtionality
    *
@@ -87,9 +87,9 @@
     });
   };
 
-  //=========================
+  //=======================================
   // MAIN LIB
-  //-------------------------
+  //---------------------------------------
   /**
    * @constructor
    * @param {Object} options
@@ -104,7 +104,7 @@
    * @returns {Textarea}
    */
   function Textarea(options) {
-    this.options = _UTIL.FORM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.inputWrap = null;
     this.input = null;
@@ -183,6 +183,16 @@
    */
   Textarea.prototype.clear = function () {
     this.input.value = '';
+  };
+
+  /**
+   * Sets Custom Validity on textarea
+   *
+   * @function
+   * @param {String} message - empty string will unset invalid status
+   */
+  Textarea.prototype.setValidtyError = function (message) {
+    this.input.setCustomValidity(message);
   };
 
   /**

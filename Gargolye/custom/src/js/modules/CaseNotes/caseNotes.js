@@ -4,6 +4,9 @@
 
 // MAIN
 const CaseNotes = (() => {
+  //==================
+  // FORM & FRIENDS
+  //------------------
   // Session Data
   let selectedConsumers = [];
   let selectedDate = null;
@@ -22,6 +25,117 @@ const CaseNotes = (() => {
   let dateNavigation;
   let rosterPicker;
   let cnForm;
+
+  //*==================================================
+  //* OVERVIEW
+  //*--------------------------------------------------
+  // Session Data
+  let caseLoadOnly;
+  let viewEntered;
+  let reviewGroups = {};
+  let reviewConsumers = [];
+  // Data from fetch
+  let caseLoadRestrictions;
+  let caseLoadReviewData;
+
+  // UTILS
+  //--------------------------------------------------
+  function setGroupsAndTableConsumers(data) {
+    // GROUPING
+    if (data.numberInGroup !== 1) {
+      const groupNoteId = data.groupnoteid.split('.')[0];
+      const consumerId = data.consumerid.split('.')[0];
+      const name = `${data.lastname}, ${data.firstname}`;
+
+      groups[groupNoteId] = groups[groupNoteId] ?? {};
+      groups[groupNoteId][consumerId] = name;
+    }
+
+    // TABLE CONSUMERS
+    tableConsumers.push({
+      id: data.casenoteid.split('.')[0],
+      FirstName: data.firstname,
+      LastName: data.lastname,
+    });
+  }
+
+  // MAIN
+  //--------------------------------------------------
+  function loadOverviewPage() {
+    caseLoadReviewData.forEach(rd => {
+      const starttime = UTIL.convertFromMilitary(rd.starttime);
+      const endtime = UTIL.convertFromMilitary(rd.endtime);
+      const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
+      const name = `${rd.lastname}, ${rd.firstname}`;
+      const lastUpdateBy = rd.lastupdatedby;
+
+      //* GK ONLY
+      const attachmentCount = rd.attachcount; // if > 0 then will show gree attachment icon
+    });
+  }
+
+  // INIT (data & defaults)
+  //--------------------------------------------------
+  async function initOverview() {
+    caseLoadOnly = $.session.CaseNotesCaseloadRestrictions;
+    viewEntered = $.session.CaseNotesViewEntered;
+
+    if (caseLoadOnly) {
+      caseLoadRestrictions = _UTIL.fetchData('getCaseLoadRestriction');
+      caseLoadRestrictions = caseLoadRestrictions.getCaseLoadRestrictionResult;
+    }
+
+    caseLoadReviewData = _UTIL.fetchData('caseNotesFilteredSearchJSON', {
+      applicationName: $.session.applicationName,
+      attachments: '%',
+      billerId: $.session.PeopleId,
+      billingCode: '%',
+      billed: '%',
+      consumerId: '%',
+      contact: '%',
+      confidential: '%',
+      corrected: '%',
+      dateEnteredStart: dates.formatISO(selectedDate, { representation: 'date' }),
+      dateEnteredEnd: dates.formatISO(selectedDate, { representation: 'date' }),
+      location: '%',
+      need: '%',
+      noteText: '%%%',
+      overlaps: 'N',
+      reviewStatus: '%',
+      service: '%',
+      serviceStartDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      serviceEndDate: dates.formatISO(selectedDate, { representation: 'date' }),
+    });
+    caseLoadReviewData = caseLoadReviewData.caseNotesFilteredSearchJSONResult;
+    caseLoadReviewData = caseLoadReviewData.filter(data => {
+      setGroupsAndTableConsumers(data, groups, tableConsumers);
+
+      // For VIEW ENTERED & CASELOAD ONLY
+      if (viewEntered && caseloadOnly) {
+        const enteredByUser = data.enteredby.toUpperCase() === $.session.UserId.toUpperCase();
+        const onCaseload = caseLoadRestriction.some(
+          cl => cl.id.toUpperCase() === data.consumerid.split('.')[0].toUpperCase(),
+        );
+        return enteredByUser || onCaseload;
+      }
+
+      // For VIEW ENTERED only
+      if (viewEntered) {
+        return data.enteredby.toUpperCase() === $.session.UserId.toUpperCase();
+      }
+
+      // For CASELOAD ONLY
+      if (caseloadOnly) {
+        return caseLoadRestriction.some(cl => cl.id === data.consumerid.split('.')[0]);
+      }
+
+      return true; // If no conditions met, return the data as is
+    });
+
+    loadOverviewPage();
+  }
+
+  //*==================================================
 
   // UTILS
   //--------------------------------------------------
@@ -353,30 +467,32 @@ const CaseNotes = (() => {
       console.log('value:', value, 'name:', name);
       const endTimeVal = cnForm.inputs['endTime'].getValue();
 
-      let isStartTimeValid;
       if (
         isStartTimeBeforeEndTime(value, endTimeVal) &&
         isTimeValid(value) &&
         areTimesWithinWorkHours(value, endTimeVal)
       ) {
         isStartTimeValid = true;
+        input.setValidtyError('Start Time is invalid');
       } else {
         isStartTimeValid = false;
+        input.setValidtyError('');
       }
     },
     endTime: ({ event, value, name, input }) => {
       console.log('value:', value, 'name:', name);
       const startTimeVal = cnForm.inputs['startTime'].getValue();
 
-      let isEndTimeValid;
       if (
         isStartTimeBeforeEndTime(startTimeVal, value) &&
         isTimeValid(value) &&
         areTimesWithinWorkHours(startTimeVal, value)
       ) {
         isEndTimeValid = true;
+        input.setValidtyError('End Time is invalid');
       } else {
         isEndTimeValid = false;
+        input.setValidtyError('');
       }
     },
     mileage: ({ event, value, name, input }) => {
@@ -416,6 +532,7 @@ const CaseNotes = (() => {
       async onConsumerSelect(data) {
         selectedConsumers = data;
 
+        // Get Vendors By Consumer
         vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
           consumerId: selectedConsumers[0],
           serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
@@ -426,6 +543,13 @@ const CaseNotes = (() => {
         cnForm.inputs['vendor'].populate(vendorData);
 
         if ($.session.applicationName === 'Advisor') {
+          // Check Selected Consumer For Mileage
+          const canConsumerHaveMileage = consumersThatCanHaveMileage.includes(selectedConsumers[0]);
+          if (canConsumerHaveMileage) {
+            cnForm.inputs['mileage'].toggleDisabled(false);
+          }
+
+          // Get Serv Locations By Consumer
           serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
             consumerId: selectedConsumers[0],
             serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
@@ -541,6 +665,8 @@ const CaseNotes = (() => {
     DOM.ACTIONCENTER.appendChild(moduleWrap);
   }
 
+  // INIT (data & defaults)
+  //--------------------------------------------------
   async function init() {
     DOM.clearActionCenter();
 
@@ -559,10 +685,6 @@ const CaseNotes = (() => {
     reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
     console.log(caseManagerReview);
 
-    loadPage();
-
-    return;
-
     // ADVISOR ONLY
     if ($.session.applicationName === 'Advisor') {
       //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
@@ -571,9 +693,15 @@ const CaseNotes = (() => {
       consumersThatCanHaveMileage = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
       consumersThatCanHaveMileage = consumersThatCanHaveMileage.getConsumersThatCanHaveMileageJSONResult;
       consumersThatCanHaveMileage = consumersThatCanHaveMileage.map(({ consumerid }) => consumerid);
+
       console.log(consumersThatCanHaveMileage);
     }
 
+    loadPage();
+
+    initOverview();
+
+    return;
     // GK & REVIEW ONLY
     if ($.session.applicationName === 'Gatekeeper' && false) {
       attachmentList = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });

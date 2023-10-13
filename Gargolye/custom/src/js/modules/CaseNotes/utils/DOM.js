@@ -57,8 +57,55 @@
     return (document.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINED_BY) === 0;
   }
 
+  /**
+   * Separates valid HTML attributes from options obj
+   * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
+   * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#attributes
+   *
+   * @function
+   * @param {Object}  options - Options object
+   * @return {Object} - Separated options object
+   */
+  function separateHTMLAttribrutes(options) {
+    const props = [
+      'accept',
+      'alt',
+      'autocomplete',
+      'checked',
+      'disabled',
+      'form',
+      'id',
+      'list',
+      'max',
+      'maxlength',
+      'min',
+      'minlength',
+      'multiple',
+      'name',
+      'pattern',
+      'placeholder',
+      'readonly',
+      'required',
+      'size',
+      'src',
+      'type',
+      'value',
+    ];
+
+    const [a, b] = Object.entries(options).reduce(
+      ([matching, leftover], [key, value]) =>
+        props.includes(key)
+          ? [Object.assign(matching, { [key]: value }), leftover]
+          : [matching, Object.assign(leftover, { [key]: value })],
+      [{}, {}],
+    );
+
+    return { ...b, attributes: { ...a } };
+  }
+
   return {
     createElement,
     isReferenceFree,
+    separateHTMLAttribrutes,
   };
 });
