@@ -26,6 +26,7 @@
   /**
    * @constructor
    * @param {Object} options
+   * @param {String} [class]
    * @returns {Dialog}
    */
   function Dialog(options) {
@@ -42,7 +43,7 @@
    */
   Dialog.prototype.build = function () {
     this.dialog = _DOM.createElement('dialog', {
-      class: this.options.isModal ? ['dialog', 'modal'] : ['dialog'],
+      class: this.options.isModal ? ['dialog', 'modal', this.options.class] : ['dialog', this.options.class],
     });
 
     return this;

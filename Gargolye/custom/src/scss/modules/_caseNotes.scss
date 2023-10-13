@@ -136,17 +136,18 @@
       }
     }
   }
+  .input.textarea {
+    .fullscreenToggleBtn {
+      position: absolute;
+      top: -10px;
+      right: 0px;
 
-  //*-- Textarea ---------
-  .input.textarea .fullscreenToggleBtn {
-    position: absolute;
-    top: -10px;
-    right: 0px;
-
-    * {
-      pointer-events: none;
+      * {
+        pointer-events: none;
+      }
     }
   }
+
   //*-- Input Group ---------
   .inputGroup {
     margin: 0 0 20px;
@@ -404,6 +405,38 @@
 
       svg {
         width: 24px;
+      }
+    }
+  }
+
+  //===========================================
+  // DIALOG & DIALOG MODAL
+  //-------------------------------------------
+  dialog {
+    border: 2px solid $black;
+    border-radius: 4px;
+    box-shadow: $shadow-m2;
+    height: 300px;
+    width: 200px;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  dialog.withFullscreenTextarea {
+    resize: both;
+    max-width: 100%;
+    max-height: 100%;
+
+    .input.textarea {
+      border: none;
+      resize: none;
+
+      textarea {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        resize: none;
       }
     }
   }

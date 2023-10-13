@@ -37,18 +37,30 @@
   }
 
   FullscreenTextarea.prototype.build = function () {
-    this.fullScreenDialog = new Dialog();
+    // get new Dialog
+    this.fullScreenDialog = new Dialog({ class: 'withFullscreenTextarea' });
 
+    // build and append dialog to input wrap
     this.fullScreenDialog.build();
     this.fullScreenDialog.renderTo(this.textareaInstance.inputWrap);
 
+    // build and append dialog close button to dialog
     this.fullScreenCloseBtn = _DOM.createElement('div', {
-      class: 'fullscreenToggleBtn',
+      class: ['fullscreenToggleBtn', 'close'],
       node: Icon.getIcon('exitFullScreen'),
     });
     this.fullScreenDialog.dialog.appendChild(this.fullScreenCloseBtn);
 
+    // clone textarea for dialog
     this.textareaClone = this.textareaInstance.inputWrap.cloneNode(true);
+
+    // remove dialog and showBtn from textareaClone
+    const dupShowModalBtn = this.textareaClone.querySelector('.fullscreenToggleBtn.show');
+    const dupDialogModal = this.textareaClone.querySelector('.dialog');
+    this.textareaClone.removeChild(dupShowModalBtn);
+    this.textareaClone.removeChild(dupDialogModal);
+
+    // append textareaClone to dialog
     this.fullScreenDialog.dialog.appendChild(this.textareaClone);
 
     this.setupEvents();
@@ -136,7 +148,7 @@
     if (this.options.fullscreen) {
       // add open fullscreen to orign textarea
       this.fullScreenShowBtn = _DOM.createElement('div', {
-        class: 'fullscreenToggleBtn',
+        class: ['fullscreenToggleBtn', 'show'],
         node: Icon.getIcon('openFullScreen'),
       });
       this.inputWrap.appendChild(this.fullScreenShowBtn);
