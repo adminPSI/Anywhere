@@ -17,7 +17,6 @@
    * @return {Object} - Merged options object
    */
   const mergOptionsWithDefaults = userOptions => {
-    userOptions.name = userOptions.id;
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
@@ -42,9 +41,33 @@
    * @returns {Dialog} - Returns the current instances for chaining
    */
   Dialog.prototype.build = function () {
-    this.dialog = _DOM.createElement('dialog');
+    this.dialog = _DOM.createElement('dialog', {
+      class: this.options.isModal ? ['dialog', 'modal'] : ['dialog'],
+    });
 
     return this;
+  };
+
+  /**
+   * Shows dialog element
+   *
+   * @function
+   */
+  Dialog.prototype.show = function () {
+    if (this.options.isModal) {
+      this.dialog.showModal();
+    } else {
+      this.dialog.show();
+    }
+  };
+
+  /**
+   * Closes dialog element
+   *
+   * @function
+   */
+  Dialog.prototype.close = function () {
+    this.dialog.close();
   };
 
   /**
@@ -56,7 +79,7 @@
    */
   Dialog.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild();
+      node.appendChild(this.dialog);
     }
 
     return this;

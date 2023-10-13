@@ -23,18 +23,57 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
+  //=========================
+  // FULLSCREEN MODE
+  //-------------------------
   /**
-   * @class Radio API
-   * @param {Object} options
+   * @constructor
    */
+  function FullscreenTextarea(textareaInstance) {
+    this.textareaInstance = textareaInstance;
+
+    this.fullScreenDialog = null;
+    this.textareaClone = null;
+  }
+
+  FullscreenTextarea.prototype.build = function () {
+    this.fullScreenDialog = new Dialog();
+
+    this.fullScreenDialog.build();
+    this.fullScreenDialog.renderTo(this.textareaInstance.inputWrap);
+
+    this.fullScreenCloseBtn = _DOM.createElement('div', {
+      class: 'fullscreenToggleBtn',
+      node: Icon.getIcon('exitFullScreen'),
+    });
+    this.fullScreenDialog.dialog.appendChild(this.fullScreenCloseBtn);
+
+    this.textareaClone = this.textareaInstance.inputWrap.cloneNode(true);
+    this.fullScreenDialog.dialog.appendChild(this.textareaClone);
+
+    this.setupEvents();
+  };
+
+  FullscreenTextarea.prototype.updateCloneValue = function (value) {
+    const inputClone = this.textareaClone.querySelector('textarea');
+    inputClone.value = value;
+  };
+
+  FullscreenTextarea.prototype.setupEvents = function () {
+    this.textareaInstance.fullScreenShowBtn.addEventListener('click', e => {
+      this.fullScreenDialog.show();
+    });
+    this.fullScreenCloseBtn.addEventListener('click', e => {
+      this.fullScreenDialog.close();
+    });
+    this.textareaClone.addEventListener('change', e => {
+      this.textareaInstance.setValue(e.target.value);
+    });
+  };
 
   //=========================
   // MAIN LIB
   //-------------------------
-  /**
-   * required, disabled
-   * events, change, keyup, focus in/out
-   */
   /**
    * @constructor
    * @param {Object} options
@@ -53,7 +92,8 @@
 
     this.inputWrap = null;
     this.input = null;
-    this.fullScreenToggleBtn = null;
+    this.fullscreen = null;
+    this.fullScreenShowBtn = null;
   }
 
   /**
@@ -73,6 +113,8 @@
       text: this.options.label,
       for: this.options.attributes.id,
     });
+    this.inputWrap.appendChild(this.input);
+    this.inputWrap.appendChild(labelEle);
 
     // INPUT NOTE
     if (this.options.note) {
@@ -92,17 +134,17 @@
 
     // FULLSCREEN MODE
     if (this.options.fullscreen) {
-      //TODO: add fullscreen icon, setup its events
-      this.fullScreenToggleBtn = _DOM.createElement('div', {
+      // add open fullscreen to orign textarea
+      this.fullScreenShowBtn = _DOM.createElement('div', {
         class: 'fullscreenToggleBtn',
-        'data-target': 'fullscreen',
         node: Icon.getIcon('openFullScreen'),
       });
-      this.inputWrap.appendChild(this.fullScreenToggleBtn);
-    }
+      this.inputWrap.appendChild(this.fullScreenShowBtn);
 
-    this.inputWrap.appendChild(this.input);
-    this.inputWrap.appendChild(labelEle);
+      // init fullscreenmode
+      this.fullscreen = new FullscreenTextarea(this);
+      this.fullscreen.build();
+    }
 
     return this;
   };
@@ -154,6 +196,10 @@
   Textarea.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('change', e => {
       cbFunc(e);
+
+      if (this.options.fullscreen) {
+        this.fullscreen.updateCloneValue(e.target.value);
+      }
     });
   };
 
@@ -169,7 +215,7 @@
   };
 
   /**
-   *
+   * Handles showing/hiding the textarea fullscreen mode
    *
    * @function
    */

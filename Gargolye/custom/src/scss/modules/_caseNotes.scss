@@ -140,8 +140,12 @@
   //*-- Textarea ---------
   .input.textarea .fullscreenToggleBtn {
     position: absolute;
-    top: 0px;
+    top: -10px;
     right: 0px;
+
+    * {
+      pointer-events: none;
+    }
   }
   //*-- Input Group ---------
   .inputGroup {

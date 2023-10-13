@@ -128,7 +128,7 @@
   };
 
   /**
-   * Setsup events for navigation
+   * Sets up events for navigation
    *
    * @function
    */
