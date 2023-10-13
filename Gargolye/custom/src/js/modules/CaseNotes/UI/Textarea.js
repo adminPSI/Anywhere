@@ -27,7 +27,11 @@
   // FULLSCREEN MODE
   //-------------------------
   /**
+   * Gives textarea fullscreen mode funtionality
+   *
    * @constructor
+   * @param {Textarea} textareaInstance
+   * @returns {FullscreenTextarea}
    */
   function FullscreenTextarea(textareaInstance) {
     this.textareaInstance = textareaInstance;
