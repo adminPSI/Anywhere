@@ -114,6 +114,7 @@ let currentEntryUserId;
         type: 'number',
         style: 'secondary',
         value: numberInVehicle,
+        readonly: formReadOnly,
         attributes: [{ key: 'min', value: '0' }],
       });
 
@@ -259,7 +260,7 @@ let currentEntryUserId;
 
     var numInVehicleInput = numberInVehicleInput.querySelector('input');
 
-    if (numInVehicleInput.value === '' || numInVehicleInput.value === 0) {
+    if (numInVehicleInput.value === '' || numInVehicleInput.value === 0 || numInVehicleInput.value <= 0) {
       numberInVehicleInput.classList.add('error');
     } else {
       numberInVehicleInput.classList.remove('error');
