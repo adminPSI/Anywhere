@@ -46,7 +46,7 @@ let reviewStartDate;
 let reviewEndDate;
 
 let formReadOnly = false;
-const SERVICETYPE = 'T1'; // Form 4
+const SERVICETYPE = '4'; // Form 4
 
 let OODMonthlySummariesTable; // To be added in future release
 
