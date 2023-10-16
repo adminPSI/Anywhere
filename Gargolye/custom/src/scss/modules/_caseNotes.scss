@@ -32,6 +32,29 @@
       height: 200px;
     }
   }
+
+  .caseNotesOverview {
+    .input.search {
+    }
+
+    .overviewCardsWrap {
+    }
+
+    .overviewCard {
+      display: flex;
+      flex-flow: row nowrap;
+
+      &__Left {
+        flex-grow: 0;
+      }
+      &__Center {
+        flex-grow: 2;
+      }
+      &__Right {
+        flex-grow: 0;
+      }
+    }
+  }
 }
 
 //============================================================

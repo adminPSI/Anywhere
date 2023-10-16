@@ -2,6 +2,10 @@
 //1. do we want to update the roster list of consumers on date change?
 //2. how exactly do the '___ required' values we get from dropdown data effect the inputs
 
+//? Thoughts
+//1. checkbox to toggle between seing only yours vs everyones notes in overview
+//2. list vs card view for overview on mobile?
+
 // MAIN
 const CaseNotes = (() => {
   //==================
@@ -13,9 +17,9 @@ const CaseNotes = (() => {
   let selectedServiceCode;
   // Data from fetch
   let dropdownData;
-  let billerDropdownData;
-  let vendorDropdownData;
-  let serviceLocationDropdownData;
+  let billerDropdownData = [];
+  let vendorDropdownData = [];
+  let serviceLocationDropdownData = [];
   let caseManagerReview;
   let consumersThatCanHaveMileage;
   let attachmentList;
@@ -36,7 +40,7 @@ const CaseNotes = (() => {
   let reviewConsumers = [];
   // Data from fetch
   let caseLoadRestrictions;
-  let caseLoadReviewData;
+  let caseLoadReviewData = [];
 
   // UTILS
   //--------------------------------------------------
@@ -62,16 +66,61 @@ const CaseNotes = (() => {
   // MAIN
   //--------------------------------------------------
   function loadOverviewPage() {
+    const overviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview', node: [overviewSearch] });
+
+    const overviewSearch = new Input({
+      type: 'search',
+      id: 'overviewSearch',
+      name: 'overviewSearch',
+      placeholder: 'Search...',
+    });
+
+    const overviewCardsWrap = _DOM.createElement('div', { class: 'overviewCardsWrap' });
+
     caseLoadReviewData.forEach(rd => {
+      // DATA
+      //---------------
       const starttime = UTIL.convertFromMilitary(rd.starttime);
       const endtime = UTIL.convertFromMilitary(rd.endtime);
+      const timeSpan = `${starttime} - ${endtime}`;
       const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
       const name = `${rd.lastname}, ${rd.firstname}`;
-      const lastUpdateBy = rd.lastupdatedby;
+      const enteredBy = `${rd.enteredby} (lastname, firstname)`; // this is user name as of now
+      const mostRecentUpdate = rd.mostrecentupdate; // need to format this badboy
 
       //* GK ONLY
       const attachmentCount = rd.attachcount; // if > 0 then will show gree attachment icon
+
+      // DOM
+      //---------------
+      // card items
+      const timeSpanEle = _DOM.createElement('p', { class: '', text: timeSpan });
+      const totalTimeEle = _DOM.createElement('p', { class: '', text: timeDifference });
+      const consumerNameEle = _DOM.createElement('p', { class: '', text: name });
+      const editButton = new Button({
+        text: 'edit',
+      });
+      const deleteButton = new Button({
+        text: 'delete',
+      });
+
+      // card layout
+      const cardLeft = _DOM.createElement('div', {
+        class: 'overviewCard__Left',
+        node: [timeSpanEle, totalTimeEle, editButton, deleteButton],
+      });
+      const cardCenter = _DOM.createElement('div', { class: 'overviewCard__Center', node: [consumerNameEle] });
+      const cardRight = _DOM.createElement('div', { class: 'overviewCard__Right' });
+
+      const overviewCard = _DOM.createElement('div', {
+        class: 'overviewCard',
+        node: [cardLeft, cardCenter, cardRight],
+      });
+
+      overviewCardsWrap.appendChild(overviewCard);
     });
+
+    moduleWrap.appendChild(overviewWrap);
   }
 
   // INIT (data & defaults)
@@ -81,11 +130,11 @@ const CaseNotes = (() => {
     viewEntered = $.session.CaseNotesViewEntered;
 
     if (caseLoadOnly) {
-      caseLoadRestrictions = _UTIL.fetchData('getCaseLoadRestriction');
+      caseLoadRestrictions = await _UTIL.fetchData('getCaseLoadRestriction');
       caseLoadRestrictions = caseLoadRestrictions.getCaseLoadRestrictionResult;
     }
 
-    caseLoadReviewData = _UTIL.fetchData('caseNotesFilteredSearchJSON', {
+    caseLoadReviewData = await _UTIL.fetchData('caseNotesFilteredSearchJSON', {
       applicationName: $.session.applicationName,
       attachments: '%',
       billerId: $.session.PeopleId,
@@ -512,8 +561,6 @@ const CaseNotes = (() => {
   // MAIN
   //--------------------------------------------------
   async function loadPage() {
-    moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
-
     // DATE NAVIGATION
     //--------------------------------------------------
     dateNavigation = new DateNavigation({
@@ -653,6 +700,7 @@ const CaseNotes = (() => {
       const value = event.target.value;
       const name = event.target.name;
       const input = cnForm.inputs[name];
+
       onChangeCallbacks[name]({
         event,
         value,
@@ -660,15 +708,14 @@ const CaseNotes = (() => {
         input,
       });
     });
-
-    //---------------------------------------------------
-    DOM.ACTIONCENTER.appendChild(moduleWrap);
   }
 
   // INIT (data & defaults)
   //--------------------------------------------------
   async function init() {
+    moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
     DOM.clearActionCenter();
+    DOM.ACTIONCENTER.appendChild(moduleWrap);
 
     const today = dates.getTodaysDateObj();
     today.setHours(0, 0, 0, 0);
@@ -697,7 +744,7 @@ const CaseNotes = (() => {
       console.log(consumersThatCanHaveMileage);
     }
 
-    loadPage();
+    await loadPage();
 
     initOverview();
 

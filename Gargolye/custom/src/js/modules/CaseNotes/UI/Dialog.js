@@ -26,7 +26,6 @@
   /**
    * @constructor
    * @param {Object} options
-   * @param {String} [class]
    * @returns {Dialog}
    */
   function Dialog(options) {

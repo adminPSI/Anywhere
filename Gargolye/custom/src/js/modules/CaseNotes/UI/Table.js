@@ -71,13 +71,6 @@
     return new Intl.DateTimeFormat('en-US').format(date);
   };
 
-  //-------------------------
-  // Table Controls
-  //-------------------------
-  function Controller() {
-    this.stuff = 'stuff';
-  }
-
   //=========================
   // MAIN LIB
   //-------------------------
