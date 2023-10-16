@@ -4,6 +4,14 @@
   /**
    * Create DOM element node and set given attributes, html/text, or nodes to append
    *
+   * Examples:
+   *
+   * {css: 'classname'} - can be string value or an array of srings
+   * {text: 'string of text' || 123456}
+   * {html: '<p>innerHTML</p>'}
+   * {node: elementNode} - can be a single node or an array of nodes
+   * {[attribute]: nativeAttribute} - native HTML attributes
+   *
    * @function
    * @param  {String}  tag - HTML element name
    * @param  {Object}  attributes - Attributes to be applied to element
@@ -11,6 +19,7 @@
    */
   function createElement(tag, attributes) {
     const element = document.createElement(tag);
+
     if (attributes && typeof attributes === 'object') {
       let attributeName;
       for (attributeName in attributes) {
@@ -23,7 +32,13 @@
             element.innerText = attributes[attributeName];
             break;
           case 'node':
-            element.appendChild(attributes[attributeName]);
+            if (Array.isArray(attributes[attributeName])) {
+              attributes[attributeName].forEach(att => {
+                element.appendChild(att);
+              });
+            } else {
+              element.appendChild(attributes[attributeName]);
+            }
             break;
           case 'class':
             if (Array.isArray(attributes[attributeName])) {
@@ -43,6 +58,7 @@
         }
       }
     }
+
     return element;
   }
 
