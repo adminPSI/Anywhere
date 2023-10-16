@@ -101,7 +101,7 @@ const vendorInfo = (function () {
             var phone = td.phone;
 
             return {
-                id: vendorID,
+                vendorID: vendorID,
                 name: name,
                 DDNumber: DDNumber,
                 localNumber: localNumber,
@@ -139,7 +139,7 @@ const vendorInfo = (function () {
         SEARCH_WRAP = document.createElement('div');
         SEARCH_WRAP.classList.add('rosterSearch');
         SEARCH_INPUT = document.createElement('input');
-        SEARCH_INPUT.setAttribute('placeholder', 'search users');
+        SEARCH_INPUT.setAttribute('placeholder', 'search vendors');
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
 
@@ -163,7 +163,7 @@ const vendorInfo = (function () {
 
             if (matchesName !== -1) {
                 consumerObj = {
-                    vendorID: consumer.vendorID,
+                    vendorID: consumer.vendorID, 
                     name: consumer.name,
                     DDNumber: consumer.DDNumber,
                     localNumber: consumer.localNumber,
