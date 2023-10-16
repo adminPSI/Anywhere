@@ -103,6 +103,10 @@ namespace Anywhere.service.Data.Authorization
             public string contact { get; set; }
             public string phone { get; set; }
             public string goodStanding { get; set; }        
+            public string takingNewReferrals { get; set; }
+            public string homeServices { get; set; }           
+            public string fundingSource { get; set; }
+            public string serviceCode { get; set; }
         }
 
         public class VendorGeneralEntry

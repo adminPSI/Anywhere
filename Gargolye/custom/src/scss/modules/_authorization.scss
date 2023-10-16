@@ -359,6 +359,135 @@
         }
     }
 
+    #vendorInfoTable {
+        .table__row {
+            &.selected {
+                background: $secondary;
+            }
+
+            > div {
+                flex-grow: 1;
+            }
+
+            > div:nth-child(1) {
+                width: 30%;
+            }
+
+            > div:nth-child(2) {
+                width: 15%;
+            }
+
+            > div:nth-child(3) {
+                width: 15%;
+            }
+
+            > div:nth-child(4) {
+                width: 20%;
+                display: none;
+            }
+
+            > div:nth-child(5) {
+                width: 20%;
+                display: none;
+            }
+
+            @media screen and (min-width: 800px) {
+
+                > div:nth-child(1) {
+                    width: 40%;
+                }
+
+                > div:nth-child(2) {
+                    width: 30%;
+                }
+
+                > div:nth-child(3) {
+                    width: 30%;
+                }
+
+                > div:nth-child(4) {
+                    display: block;
+                }
+
+                > div:nth-child(5) {
+                    display: block;
+                }
+            }
+        }
+    }
+
+    #vendorInfoUCRTable {
+        .table__row {
+            &.selected {
+                background: $secondary;
+            }
+
+            > div {
+                flex-grow: 1;
+            }
+
+            > div:nth-child(1) {
+                width: 12%;
+            }
+
+            > div:nth-child(2) {
+                width: 10%;
+                display: none;
+            }
+
+            > div:nth-child(3) {
+                width: 13%;
+                display: none;
+            }
+
+            > div:nth-child(4) {
+                width: 13%;
+                display: none;
+            }
+
+            > div:nth-child(5) {
+                width: 13%;
+                display: none;
+            }
+
+            > div:nth-child(6) {
+                width: 12%;
+            }
+
+            > div:nth-child(7) {
+                width: 12%;
+                display: none;
+            }
+
+            > div:nth-child(8) {
+                width: 12%;
+            }
+
+            @media screen and (min-width: 800px) {
+
+                > div:nth-child(2) {
+                    display: block;
+                }
+
+                > div:nth-child(3) {
+                    display: block;
+                }
+
+                > div:nth-child(4) {
+                    display: block;
+                }
+
+                > div:nth-child(5) {
+                    display: block;
+                }
+
+                > div:nth-child(7) {
+                    display: block;
+                }
+            }
+        }
+    }
+
     .vendorBtnWrap {
         display: flex;
         justify-content: space-between;
@@ -367,23 +496,13 @@
     .vendorDTWrap {
         display: flow;
 
-        .width25Per, .width27Per, .width35Per, .width40Per, .width50Per, .width30Per, .width19Per {
+        .width25Per, .width35Per, .width40Per, .width50Per, .width30Per, .width19Per, .width20Per, .width23Per, .width32Per, .width10Per, .width18Per {
             width: 97%;
         }
-
-        .width20Per, .width23Per, .width32Per, .width10Per, .width18Per {
-            margin-left: 1.5%;
-            width: 97%;
-        }
-
 
         @media screen and (min-width: 560px) {
             display: flex;
             justify-content: space-between;
-
-            .checkbox-mtd > span:after {
-                top: 24px !important;
-            }
 
             .width10Per {
                 width: 10%;
@@ -395,10 +514,6 @@
 
             .width25Per {
                 width: 25%;
-            }
-
-            .width27Per {
-                width: 27%;
             }
 
             .width30Per {
@@ -418,14 +533,14 @@
             }
 
             .width50Per {
-                width: 49.5%;
+                width: 48.5%; 
             }
 
             .width23Per {
                 width: 23%;
             }
 
-            .width18Per {
+            .width18Per {                
                 width: 18%;
             }
 
@@ -437,5 +552,13 @@
 
     .marginTop2Per {
         margin-top: 2%;
+    }
+
+    .marginBottomFilter {
+        margin-bottom: 6%;
+
+        @media screen and (min-width: 560px) {
+            margin-bottom: 3%;
+        }
     }
 }

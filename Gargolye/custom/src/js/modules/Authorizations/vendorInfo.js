@@ -11,7 +11,8 @@ const vendorInfo = (function () {
     //filter
     let filterValues;
     function init() {
-        vendorInfoLoad();
+        filterValues = undefined;
+        vendorInfoLoad();      
     }
 
 
@@ -24,7 +25,8 @@ const vendorInfo = (function () {
 
         const filteredBy = buildFilteredBy();
         filterRow.appendChild(filteredBy);
-        topNav.style.marginBottom = '3%';
+        topNav.classList.add('marginBottomFilter');  
+        
         DOM.ACTIONCENTER.appendChild(topNav);
         DOM.ACTIONCENTER.appendChild(filterRow);
         DOM.ACTIONCENTER.appendChild(userTable);
@@ -79,7 +81,7 @@ const vendorInfo = (function () {
         var tableOptions = {
             plain: false,
             headline: 'Vendor Info',
-            tableId: 'singleEntryAdminReviewTable',
+            tableId: 'vendorInfoTable',
             columnHeadings: ['Name', 'DD Number', 'Local Number', 'Contact', 'Phone'],
             callback: handleVendorInfoTableEvents,
             endIcon: false,
@@ -99,7 +101,7 @@ const vendorInfo = (function () {
             var phone = td.phone;
 
             return {
-                id: vendorID,
+                vendorID: vendorID,
                 name: name,
                 DDNumber: DDNumber,
                 localNumber: localNumber,
@@ -118,11 +120,12 @@ const vendorInfo = (function () {
     }
 
     function handleVendorInfoTableEvents(event) {
+        var name = event.target.childNodes[0].innerText;
         var DDNum = event.target.childNodes[1].innerText;
         var localNum = event.target.childNodes[2].innerText;
         var phone = event.target.childNodes[4].innerText;
         var vendorId = event.target.attributes.vendorId.value;
-        newVendorInfo.refreshVendor(vendorId, DDNum, localNum, phone);
+        newVendorInfo.refreshVendor(vendorId, DDNum, localNum, phone, name);
     }
 
     function buildRosterTopNav() {
@@ -136,7 +139,7 @@ const vendorInfo = (function () {
         SEARCH_WRAP = document.createElement('div');
         SEARCH_WRAP.classList.add('rosterSearch');
         SEARCH_INPUT = document.createElement('input');
-        SEARCH_INPUT.setAttribute('placeholder', 'search users');
+        SEARCH_INPUT.setAttribute('placeholder', 'search vendors');
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
 
@@ -160,7 +163,7 @@ const vendorInfo = (function () {
 
             if (matchesName !== -1) {
                 consumerObj = {
-                    vendorID: consumer.vendorID,
+                    vendorID: consumer.vendorID, 
                     name: consumer.name,
                     DDNumber: consumer.DDNumber,
                     localNumber: consumer.localNumber,
@@ -187,9 +190,9 @@ const vendorInfo = (function () {
                 <span>Vendor:</span> ${(filterValues.vendor == '%') ? 'ALL' : filterValues.vendor}&nbsp;&nbsp;
 			    <span>DD Number:</span> ${(filterValues.DDNumber == '') ? 'ALL' : filterValues.DDNumber}&nbsp;&nbsp;
                 <span>Local Number:</span> ${(filterValues.localNumber == '') ? 'ALL' : filterValues.localNumber}&nbsp;&nbsp;
-                <span>Good Standing:</span> ${(filterValues.goodStanding == '%') ? 'ALL' : filterValues.goodStanding} &nbsp;&nbsp;
-                <span>Home Services:</span> ${(filterValues.homeServices == '%') ? 'ALL' : filterValues.homeServices} &nbsp;&nbsp;
-                <span>Taking New Referrals:</span> ${(filterValues.takingNewReferrals == '%') ? 'ALL' : filterValues.takingNewReferrals} &nbsp;&nbsp;
+                <span>Good Standing:</span> ${(filterValues.goodStanding == '%') ? 'ALL' : filterValues.goodStanding == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp; 
+                <span>Home Services:</span> ${(filterValues.homeServices == '%') ? 'ALL' : filterValues.homeServices == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp;
+                <span>Taking New Referrals:</span> ${(filterValues.takingNewReferrals == '%') ? 'ALL' : filterValues.takingNewReferrals == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp;
                 <span>Funding Source:</span> ${(filterValues.fundingSource == '%') ? 'ALL' : filterValues.fundingSource} &nbsp;&nbsp;
                 <span>Service Code:</span> ${(filterValues.serviceCode == '%') ? 'ALL' : filterValues.serviceCode} 
             </p>
@@ -387,7 +390,7 @@ const vendorInfo = (function () {
         } = await authorizationsAjax.getServiceCodeAsync();
         let serviceCodeData = ServiceCode.map((serviceCode) => ({
             id: serviceCode.ID,
-            value: serviceCode.Code,
+            value: serviceCode.Description,
             text: serviceCode.Description
         }));
         serviceCodeData.unshift({ id: null, value: '%', text: 'ALL' });

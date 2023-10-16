@@ -7,6 +7,7 @@ const newVendorInfo = (function () {
     let DDNumber;
     let LocalNumber;
     let Phone;
+    let Name;
 
     const sections = [
         {
@@ -42,12 +43,12 @@ const newVendorInfo = (function () {
 
     ];
 
-    async function refreshVendor(vendorId, DDNum, localNum, phone) {
+    async function refreshVendor(vendorId, DDNum, localNum, phone, name) {
         vendorID = vendorId;
         DDNumber = DDNum;
         LocalNumber = localNum;
         Phone = phone;
-
+        Name = name;
         DOM.clearActionCenter();
 
         var headingWrap = document.createElement('div');
@@ -72,9 +73,9 @@ const newVendorInfo = (function () {
 
         const newIspMarkup = await getMarkup();
 
-        heading.innerHTML = `<h4> Barrier Free Environments: ${Phone}</h4>`;
-        headingName.innerHTML = `<h4> DD Number:${DDNumber} </h4>`;
-        localNumberheading.innerHTML = `<h4> Local Number:${LocalNumber}</h4>`;
+        heading.innerHTML = `<h4>${Name}: ${Phone}</h4>`;
+        headingName.innerHTML = `<h4>DD Number: ${DDNumber} </h4>`;
+        localNumberheading.innerHTML = `<h4>Local Number: ${LocalNumber}</h4>`;
         ispWrap.appendChild(newIspMarkup);
 
         head.appendChild(heading);

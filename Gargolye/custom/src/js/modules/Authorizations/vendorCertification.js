@@ -33,7 +33,7 @@ const vendorCertification = (() => {
         addNewCard.innerHTML = `<div class="card__header">Certification</div>`;
         addNewCard.appendChild(addNewCardBody)
         column1.appendChild(addNewCard)
-      
+
         addNewCardBody.appendChild(certificationEntriesTable);
         vendorCertificationDiv.appendChild(column1);
         return vendorCertificationDiv;
@@ -42,20 +42,20 @@ const vendorCertification = (() => {
     function buildCertificationEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
-            columnHeadings: ['Certifiction', 'Start Date', 'End Date'],
+            tableId: 'vendorInfoTable', 
+            columnHeadings: ['Certification', 'Start Date', 'End Date'],
             endIcon: false,
         };
 
         let tableData = certificationEntries.getVenderCertificationEntriesResult.map((entry) => ({
-            values: [entry.Certifiction, entry.startDate, entry.endDate],
+            values: [entry.Certifiction, entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY')],
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
 
         return oTable;
     }
-    
+
     return {
         init,
         buildNewCertificationForm,
