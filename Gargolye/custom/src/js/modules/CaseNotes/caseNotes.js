@@ -17,9 +17,9 @@ const CaseNotes = (() => {
   let selectedServiceCode;
   // Data from fetch
   let dropdownData;
-  let billerDropdownData;
-  let vendorDropdownData;
-  let serviceLocationDropdownData;
+  let billerDropdownData = [];
+  let vendorDropdownData = [];
+  let serviceLocationDropdownData = [];
   let caseManagerReview;
   let consumersThatCanHaveMileage;
   let attachmentList;
@@ -40,7 +40,7 @@ const CaseNotes = (() => {
   let reviewConsumers = [];
   // Data from fetch
   let caseLoadRestrictions;
-  let caseLoadReviewData;
+  let caseLoadReviewData = [];
 
   // UTILS
   //--------------------------------------------------
@@ -130,11 +130,11 @@ const CaseNotes = (() => {
     viewEntered = $.session.CaseNotesViewEntered;
 
     if (caseLoadOnly) {
-      caseLoadRestrictions = _UTIL.fetchData('getCaseLoadRestriction');
+      caseLoadRestrictions = await _UTIL.fetchData('getCaseLoadRestriction');
       caseLoadRestrictions = caseLoadRestrictions.getCaseLoadRestrictionResult;
     }
 
-    caseLoadReviewData = _UTIL.fetchData('caseNotesFilteredSearchJSON', {
+    caseLoadReviewData = await _UTIL.fetchData('caseNotesFilteredSearchJSON', {
       applicationName: $.session.applicationName,
       attachments: '%',
       billerId: $.session.PeopleId,
@@ -700,6 +700,7 @@ const CaseNotes = (() => {
       const value = event.target.value;
       const name = event.target.name;
       const input = cnForm.inputs[name];
+
       onChangeCallbacks[name]({
         event,
         value,

@@ -101,6 +101,7 @@
    * @param {String} [options.minlength] - min char count
    * @param {String} [options.maxlength] - max char count
    * @param {Boolean} [options.hidden] - Whether to show or hide the input
+   * @param {Boolean} [options.fullscreen] - Whether to show or hide the input
    * @returns {Textarea}
    */
   function Textarea(options) {
