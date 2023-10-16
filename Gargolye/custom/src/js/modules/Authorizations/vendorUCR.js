@@ -45,13 +45,13 @@ const vendorUCR = (() => {
     function buildUCREntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'vendorInfoUCRTable', 
+            tableId: 'vendorInfoUCRTable',
             columnHeadings: ['Service ', 'Group Size', 'Service Location', 'CDB Category', 'Assessment/ Acuity Score', 'Start Date', 'End Date', 'UCR'],
             endIcon: false,
         };
 
         let tableData = UCREntries.getVenderUCREntriesResult.map((entry) => ({
-            values: [entry.service, entry.groupSize, entry.serviceLocation, entry.CDBCategory, entry.assessmentAcuityScore, entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY'), entry.UCR], 
+            values: [entry.service, entry.groupSize, entry.serviceLocation, entry.CDBCategory, entry.assessmentAcuityScore, entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY'), entry.UCR == '' ? entry.UCR : '$' + entry.UCR],
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
