@@ -198,6 +198,11 @@ namespace Anywhere.service.Data
             public string enteredby { get; set; }
             public string isSSANote { get; set; }
             public string attachcount { get; set; }
+            public string serviceCode { get; set; }
+            public string caseNote { get; set; }
+            public string serviceName { get; set; }
+            public string locationName { get; set; }
+            public string originalUserFullName { get; set; }
 
             public List<string> overlaps { get; set; }
         }
