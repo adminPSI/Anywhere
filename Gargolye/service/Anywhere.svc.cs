@@ -2785,12 +2785,12 @@ namespace Anywhere
 
         public string generateForm4(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
-            return OODfw.generateForm4(referenceNumber, 22, consumerIds, serviceStartDate, serviceEndDate, serviceCode);
+            return OODfw.generateForm4(token, referenceNumber, 22, consumerIds, serviceStartDate, serviceEndDate, serviceCode);
         }
 
         public string generateForm8(string token, string consumerids, string servicestartdate, string serviceenddate, string userid, string servicecode, string referencenumber)
         {
-            return OODfw.generateForm8(referencenumber, 22, consumerids, servicestartdate, serviceenddate, servicecode);
+            return OODfw.generateForm8(token,  referencenumber, 22, consumerids, servicestartdate, serviceenddate, servicecode);
         }
 
         public string generateForm10(System.IO.Stream testInput)

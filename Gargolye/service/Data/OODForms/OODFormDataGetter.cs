@@ -24,6 +24,7 @@ namespace OODForms
         private StringBuilder sb = new StringBuilder();
         private PSIData di = new PSIData();
         private static Loger logger = new Loger();
+        private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
         //private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
         OODFormWorker obj = new OODFormWorker();
@@ -426,7 +427,7 @@ namespace OODForms
             }
         }
 
-        private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+        //private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
 
         public string getForm10PDFData(string token, string referenceNumber, string startDate, string endDate, string consumerId, string userId)
         {
@@ -448,6 +449,42 @@ namespace OODForms
             {
                 logger.error("1OSG", ex.Message + "ANYW_OOD_getForm10PDFData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "1OSG: error ANYW_OOD_getForm10PDFData";
+            }
+        }
+
+        public string getSpreadsheetNameAndKey(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSS ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_OOD_getSpreadsheetNameAndKey(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1OSG", ex.Message + "ANYW_OOD_getSpreadsheetNameAndKey(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1OSG: error ANYW_OOD_getSpreadsheetNameAndKey";
+            }
+        }
+
+        public string getFormTemplatePath(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSS ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_OOD_getFormTemplatePath(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1OSG", ex.Message + "ANYW_OOD_getFormTemplatePath(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1OSG: error ANYW_OOD_getFormTemplatePath";
             }
         }
 
@@ -527,82 +564,85 @@ namespace OODForms
             }
         }
 
-    }
-
-
-    class PSIData
-    {
-        public DataSet SelectRowsDS(string queryString)
+        class PSIData
         {
-            Common.gConnString = "DSN=ADVUnit;UID=dba;Password=money4u";
-            using (var connection = new OdbcConnection(Common.gConnString))
+            private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+            public DataSet SelectRowsDS(string queryString)
             {
-                OdbcCommand cmd = new OdbcCommand(queryString, connection);
-                cmd.CommandTimeout = 0;
-                var DS = new DataSet();
-                var DA = new OdbcDataAdapter(cmd);
+                //Common.gConnString = "DSN=ADVUnit;UID=dba;Password=money4u";
+                using (var connection = new OdbcConnection(connectString))
+                {
+                    OdbcCommand cmd = new OdbcCommand(queryString, connection);
+                    cmd.CommandTimeout = 0;
+                    var DS = new DataSet();
+                    var DA = new OdbcDataAdapter(cmd);
+                    try
+                    {
+                        DA.Fill(DS);
+                        DS.Tables[0].PrimaryKey = new DataColumn[] { DS.Tables[0].Columns[0] };
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+
+                    if (cmd.Connection.State == ConnectionState.Open)
+                        cmd.Connection.Close();
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
+                    return DS;
+                }
+            }
+
+            public decimal QueryScalar(string QueryString)
+            {
+                decimal SAQueryScalarRet = 0.0m;
+                // Returns the first column of the first row in the results set (Used for Single value returns or counts)
+
                 try
                 {
-                    DA.Fill(DS);
-                    DS.Tables[0].PrimaryKey = new DataColumn[] { DS.Tables[0].Columns[0] };
+                    using (var connection = new OdbcConnection(connectString))
+                    {
+                        OdbcCommand cmd = new OdbcCommand(QueryString, connection);
+                        cmd.CommandTimeout = 0;
+                        connection.Open();
+                        if (!object.ReferenceEquals(cmd.ExecuteScalar(), DBNull.Value))
+                            SAQueryScalarRet = (decimal)(int)cmd.ExecuteScalar();
+                        if (connection.State == ConnectionState.Open)
+                            connection.Close();
+                        return SAQueryScalarRet;
+                    }
                 }
                 catch (Exception ex)
                 {
                 }
 
-                if (cmd.Connection.State == ConnectionState.Open)
-                    cmd.Connection.Close();
-                if (connection.State == ConnectionState.Open)
-                    connection.Close();
-                return DS;
+                return SAQueryScalarRet;
             }
-        }
 
-        public decimal QueryScalar(string QueryString)
-        {
-            decimal SAQueryScalarRet = 0.0m;
-            // Returns the first column of the first row in the results set (Used for Single value returns or counts)
 
-            try
+            public static class Common
             {
-                using (var connection = new OdbcConnection(Common.gConnString))
+                public static string gConnString;
+            }
+
+            internal static class Program
+            {
+                /// <summary>
+                /// The main entry point for the application.
+                /// </summary>
+                [STAThread]
+                static void Main()
                 {
-                    OdbcCommand cmd = new OdbcCommand(QueryString, connection);
-                    cmd.CommandTimeout = 0;
-                    connection.Open();
-                    if (!object.ReferenceEquals(cmd.ExecuteScalar(), DBNull.Value))
-                        SAQueryScalarRet = (decimal)(int)cmd.ExecuteScalar();
-                    if (connection.State == ConnectionState.Open)
-                        connection.Close();
-                    return SAQueryScalarRet;
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new Form1());
                 }
-            }
-            catch (Exception ex)
-            {
-            }
-
-            return SAQueryScalarRet;
-        }
-
-
-        public static class Common
-        {
-            public static string gConnString;
-        }
-
-        internal static class Program
-        {
-            /// <summary>
-            /// The main entry point for the application.
-            /// </summary>
-            [STAThread]
-            static void Main()
-            {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new Form1());
             }
         }
     }
+
 }
+
+
+
 

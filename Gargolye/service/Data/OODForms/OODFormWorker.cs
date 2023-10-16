@@ -5,13 +5,16 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using Anywhere.service.Data;
 using Bytescout.Spreadsheet;
 using CrystalDecisions.CrystalReports.Engine;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Tsp;
 using PDFGenerator;
 using pdftron.PDF;
 using pdftron.SDF;
@@ -24,13 +27,11 @@ namespace OODForms
     {
         private StringBuilder sb = new StringBuilder();
 
-        public String Form8(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath)
+        public String Form8(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath, string registrationName, string registrationKey)
         {
             Spreadsheet SS = new Spreadsheet();
-            SS.RegistrationName = "1_DEV_BYTESCOUT_SPREADSHEET_SDK_OEM_DEVELOPER_LICENSE_ACTIVATION_1_SRV_VCPU16_UNLIM_PAGES_DEV_UNTIL_JUNE_15_2024_BRIAN.MARSHALL@PRIMARYSOLUTIONS.NET";
-            SS.RegistrationKey = "76EE-CB9E-0F36-F625-5F26-0D00-F44";
-
-            string currentDirectory = Directory.GetCurrentDirectory();
+            SS.RegistrationName = registrationName;
+            SS.RegistrationKey = registrationKey;
 
             SS.LoadFromFile(ReportPath);
 
@@ -244,11 +245,11 @@ namespace OODForms
 
         }
 
-        public String Form4(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath)
+        public String Form4(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath, string registrationName, string registrationKey)
         {
             Spreadsheet SS = new Spreadsheet();
-            SS.RegistrationName = "1_DEV_BYTESCOUT_SPREADSHEET_SDK_OEM_DEVELOPER_LICENSE_ACTIVATION_1_SRV_VCPU16_UNLIM_PAGES_DEV_UNTIL_JUNE_15_2024_BRIAN.MARSHALL@PRIMARYSOLUTIONS.NET";
-            SS.RegistrationKey = "76EE-CB9E-0F36-F625-5F26-0D00-F44";
+            SS.RegistrationName = registrationName;
+            SS.RegistrationKey = registrationKey;
 
             SS.LoadFromFile(ReportPath);
 
@@ -529,15 +530,27 @@ namespace OODForms
             return string.Empty;
         }
 
-        public string generateForm4(string AuthorizationNumber, long VendorID, string peopleIDString, String StartDate, String EndDate, string serviceCode)
+        public string generateForm4(string token, string AuthorizationNumber, long VendorID, string peopleIDString, String StartDate, String EndDate, string serviceCode)
         {
             try
             {
-                String reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\4+-+Monthly+Job+&+Site+Development.xlsx";
-                String savePath = @"C:\Users\erick.bey\Downloads\Form 4.xlsx";
-
-                Common.gConnString = "DSN=ADVUnit;UID=dba;Password=money4u";
                 OODFormWorker obj = new OODFormWorker();
+                OODFormDataGetter oodfdg = new OODFormDataGetter();
+
+                string SSinfo = oodfdg.getSpreadsheetNameAndKey(token);
+                SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
+                string registrationName = SSInfoObj[0].registrationName;
+                string registrationKey = SSInfoObj[0].registrationKey;
+
+                string crPath = oodfdg.getFormTemplatePath(token);
+                var startPath = crPath.IndexOf("<path>");
+                var endPath = crPath.IndexOf("</path>");
+                crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
+                string crName = "4+-+Monthly+Job+&+Site+Development.xlsx";
+                String reportPath = string.Format(crPath, crName);
+
+                //String reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\4+-+Monthly+Job+&+Site+Development.xlsx";
+                String savePath = @"C:\Users\erick.bey\Downloads\Form 4.xlsx";
 
                 long PeopleID = long.Parse(peopleIDString);
                 long ServiceCodeID = long.Parse(serviceCode);
@@ -545,7 +558,7 @@ namespace OODForms
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form4(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, savePath);
+                obj.Form4(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, savePath, registrationName, registrationKey);
 
                 //obj.Form4(AuthorizationNumber, invoiceNumber, VendorID, PeopleID, StartDate, EndDate, ServiceCodeID, ReportPath, SavePath);C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reports
 
@@ -557,16 +570,28 @@ namespace OODForms
             }
         }
 
-        public string generateForm8(string AuthorizationNumber, long VendorID, string peopleIDString, String StartDate, String EndDate, string serviceCode)
+        public string generateForm8(string token, string AuthorizationNumber, long VendorID, string peopleIDString, String StartDate, String EndDate, string serviceCode)
         {
             try
             {
-                //Common.gConnString = "DSN=ADVUnit;UID=dba;Password=money4u";
                 OODFormWorker obj = new OODFormWorker();
+                OODFormDataGetter oodfdg = new OODFormDataGetter();
+
+                string SSinfo = oodfdg.getSpreadsheetNameAndKey(token);
+                SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
+                string registrationName = SSInfoObj[0].registrationName;
+                string registrationKey = SSInfoObj[0].registrationKey;
+
+                string crPath = oodfdg.getFormTemplatePath(token);
+                var startPath = crPath.IndexOf("<path>");
+                var endPath = crPath.IndexOf("</path>");
+                crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
+                string crName = "8+-+Work+Activities+&+Assessment.xlsx";
+                String reportPath = string.Format(crPath, crName);
 
                 //String reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\8+-+Work+Activities+&+Assessment.xlsx";
                 //string reportPath = @"\Gargolye\webroot\reportfiles\8+-+Work+Activities+&+Assessment.xlsx";
-                string reportPath = @"Anywhere\Gargolye\webroot\reportfiles\8+-+Work+Activities+&+Assessment.xlsx";
+                //string reportPath = @"Anywhere\Gargolye\webroot\reportfiles\8+-+Work+Activities+&+Assessment.xlsx";
 
 
                 String savePath = @"C:\Users\erick.bey\Downloads\Form 8.xlsx";
@@ -577,7 +602,7 @@ namespace OODForms
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form8(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, savePath);
+                obj.Form8(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, savePath, registrationName, registrationKey);
 
                 //obj.Form4(AuthorizationNumber, invoiceNumber, VendorID, PeopleID, StartDate, EndDate, ServiceCodeID, ReportPath, SavePath);C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reports
 
@@ -595,8 +620,20 @@ namespace OODForms
             {
                 OODFormDataGetter oodfdg = new OODFormDataGetter();
                 pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
-                PDFDoc form10Template = new PDFDoc(@"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\10+-+Transportation.pdf");
-                
+                //PDFDoc form10Template = new PDFDoc(@"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\10+-+Transportation.pdf");
+
+                string crpath = oodfdg.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+
+                // extract the "path" value
+                string path = pathdatalist[0].path;
+
+                //string test = "\\\\ENDOR\\wwwroot\\ADVUnit\\Anywhere\\webroot\\reportfiles\\{0}";
+                string crname = "OOD_transportation_10.pdf";
+                string reportpath = string.Format(crpath, crname);
+
+                PDFDoc form10Template = new PDFDoc(reportpath);
+
                 // Gather Data for the Person Completing the Report
                 string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
                 personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
@@ -776,6 +813,16 @@ namespace OODForms
         public MemoryStream data { get; set; }
     }
 
+    public class SSInfo
+    {
+        public string registrationName { get; set; }
+        public string registrationKey { get; set; }
+    }
+
+    public class PathItem
+    {
+        public string path { get; set; }
+    }
 
     public static class Common
     {
