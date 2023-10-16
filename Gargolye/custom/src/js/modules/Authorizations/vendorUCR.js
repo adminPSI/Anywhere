@@ -2,7 +2,7 @@ const vendorUCR = (() => {
 
     let vendorID;
     let UCREntries;
-  
+
 
     async function init(vendorId) {
         vendorID = vendorId;
@@ -36,7 +36,7 @@ const vendorUCR = (() => {
         addNewCard.innerHTML = `<div class="card__header">UCR</div>`;
         addNewCard.appendChild(addNewCardBody)
         column1.appendChild(addNewCard)
-      
+
         addNewCardBody.appendChild(UCREntriesTable);
         vendorUCRDiv.appendChild(column1);
         return vendorUCRDiv;
@@ -45,20 +45,20 @@ const vendorUCR = (() => {
     function buildUCREntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
-            columnHeadings: ['Service ', 'Group Size', 'Service Location', 'CDB Category', 'Assessment/Acuity Score', 'Start Date', 'End Date', 'UCR'],
+            tableId: 'vendorInfoUCRTable', 
+            columnHeadings: ['Service ', 'Group Size', 'Service Location', 'CDB Category', 'Assessment/ Acuity Score', 'Start Date', 'End Date', 'UCR'],
             endIcon: false,
         };
 
         let tableData = UCREntries.getVenderUCREntriesResult.map((entry) => ({
-            values: [entry.service, entry.groupSize, entry.serviceLocation, entry.CDBCategory, entry.assessmentAcuityScore, entry.startDate, entry.endDate, entry.UCR],
+            values: [entry.service, entry.groupSize, entry.serviceLocation, entry.CDBCategory, entry.assessmentAcuityScore, entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY'), entry.UCR], 
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
 
         return oTable;
     }
-    
+
 
     return {
         init,

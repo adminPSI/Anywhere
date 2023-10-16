@@ -41,13 +41,13 @@ const vendorProviderType = (() => {
     function buildProviderTypeEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
+            tableId: 'vendorInfoTable',
             columnHeadings: ['Provider Type', 'Start Date', 'End Date', 'Notes'],
             endIcon: false,
         };
 
         let tableData = providerTypeEntries.getProviderTypeEntriesResult.map((entry) => ({
-            values: [entry.ProviderType, entry.startDate, entry.endDate, entry.Notes],
+            values: [entry.ProviderType, entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY'), entry.Notes],
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);

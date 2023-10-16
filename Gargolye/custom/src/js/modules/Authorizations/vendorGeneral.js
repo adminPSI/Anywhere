@@ -124,7 +124,7 @@ const vendorGeneral = (() => {
             label: 'Birth Date',
             style: 'secondary',
             readonly: true,
-            value: vendorEntriesById.getVendorEntriesByIdResult[0].providerBirthDate,
+            value: vendorEntriesById.getVendorEntriesByIdResult[0].providerBirthDate == '' ? '' : moment(vendorEntriesById.getVendorEntriesByIdResult[0].providerBirthDate).format('MM/DD/YYYY'),
         });
         buildingNumberInput = input.build({
             id: 'buildingNumberInput',
@@ -280,11 +280,11 @@ const vendorGeneral = (() => {
 
         var dropWrap = document.createElement('div');
         dropWrap.classList.add('vendorDTWrap');
-        contactNameInput.classList.add('width40Per');
+        contactNameInput.classList.add('width35Per');
         dropWrap.appendChild(contactNameInput);
-        contactPhoneInput.classList.add('width32Per');
+        contactPhoneInput.classList.add('width30Per');
         dropWrap.appendChild(contactPhoneInput);
-        contactEmailInput.classList.add('width32Per');
+        contactEmailInput.classList.add('width30Per'); 
         dropWrap.appendChild(contactEmailInput);
         addNewCardBody.appendChild(dropWrap);
 

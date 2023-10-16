@@ -41,13 +41,13 @@ const vendorLocationReview = (() => {
     function buildLocationReviewEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
+            tableId: 'vendorInfoTable', 
             columnHeadings: ['Location ', 'Review Type', 'Due Date', 'Completed Date', 'Responsible Staff'],
             endIcon: false,
         };
 
         let tableData = locationReviewEntries.getVenderLocationReviewEntriesResult.map((entry) => ({
-            values: [entry.location, entry.reviewType, entry.dueDate, entry.completedDate, entry.responsibleStaff],
+            values: [entry.location, entry.reviewType, entry.dueDate == '' ? '' : moment(entry.dueDate).format('MM/DD/YYYY'), entry.completedDate == '' ? '' : moment(entry.completedDate).format('MM/DD/YYYY'), entry.responsibleStaff],
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);

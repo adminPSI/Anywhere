@@ -41,7 +41,7 @@ const vendorServices = (() => {
     function buildServicesEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'singleEntryAdminReviewTable',
+            tableId: 'vendorInfoTable',
             columnHeadings: ['Funding Source', 'Service Code', 'Service Description'],
             endIcon: false,
         };
