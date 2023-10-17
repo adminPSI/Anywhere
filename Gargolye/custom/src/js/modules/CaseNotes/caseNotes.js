@@ -7,20 +7,17 @@
 //2. list vs card view for overview on mobile?
 
 //TODO: short name of weekday for last edit in overview card (ex: tuesday => tues)
-//TODO: re validate times when date change
-//TODO: re populate overview section when date change
 //TODO:
 
 // MAIN
 const CaseNotes = (() => {
-  //==================
-  // FORM & FRIENDS
-  //------------------
-  // Session Data
+  // SESSION DATA
+  //--------------------------
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
-  // Data from fetch
+  // FETCH DATA
+  //--------------------------
   let dropdownData;
   let billerDropdownData = [];
   let vendorDropdownData = [];
@@ -29,11 +26,14 @@ const CaseNotes = (() => {
   let consumersThatCanHaveMileage;
   let attachmentList;
   // DOM
+  //--------------------------
   let moduleWrap;
-  // UI Instances
+  // UI INSTANCES
+  //--------------------------
   let dateNavigation;
   let rosterPicker;
   let cnForm;
+  let cnOverview;
 
   // DATA
   //--------------------------------------------------
@@ -55,6 +55,28 @@ const CaseNotes = (() => {
   async function getAttachmentsGK() {
     const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
     return data.getCaseNoteAttachmentsListResult;
+  }
+  // main data calls
+  async function getDataForForm() {
+    selectedDate = setDefaultSelectedDate();
+
+    dropdownData = await getDropdownData();
+
+    caseManagerReview = await getCaseManagerReviewData();
+    reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
+
+    if ($.session.applicationName === 'Advisor') {
+      //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
+      //? For now going to leave this init, if init gets slow this can be moved to
+      //? rosterPicker event and setup to only run once.
+      consumersThatCanHaveMileage = await getconsumersThatCanHaveMileage();
+    }
+
+    return;
+
+    if ($.session.applicationName === 'Gatekeeper' && false) {
+      attachmentList = await getAttachmentsGK();
+    }
   }
 
   // UTILS
@@ -436,13 +458,29 @@ const CaseNotes = (() => {
 
   // MAIN
   //--------------------------------------------------
-  async function loadPage() {
+
+  // INIT/LOAD? (data & defaults)
+  //--------------------------------------------------
+  async function init() {
+    moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
+
+    DOM.clearActionCenter();
+    DOM.ACTIONCENTER.appendChild(moduleWrap);
+
+    await getDataForForm();
+
     // DATE NAVIGATION
     //--------------------------------------------------
     dateNavigation = new DateNavigation({
       selectedDate: selectedDate,
-      onDateChange(newDate) {
+      async onDateChange(newDate) {
         selectedDate = newDate;
+
+        //TODO: re validate times when date change
+
+        //re populate overview section when date change
+        await cnOverview.fetchData(selectedDate);
+        cnOverview.populate();
       },
     });
     dateNavigation.build().renderTo(moduleWrap);
@@ -583,38 +621,13 @@ const CaseNotes = (() => {
       });
     });
 
+    await getDataForOverview();
+
     // OVERVIEW
     //--------------------------------------------------
-  }
-
-  // INIT/LOAD? (data & defaults)
-  //--------------------------------------------------
-  async function init() {
-    moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
-    DOM.clearActionCenter();
-    DOM.ACTIONCENTER.appendChild(moduleWrap);
-
-    selectedDate = setDefaultSelectedDate();
-
-    dropdownData = await getDropdownData();
-
-    caseManagerReview = await getCaseManagerReviewData();
-    reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
-
-    if ($.session.applicationName === 'Advisor') {
-      //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
-      //? For now going to leave this init, if init gets slow this can be moved to
-      //? rosterPicker event and setup to only run once.
-      consumersThatCanHaveMileage = await getconsumersThatCanHaveMileage();
-    }
-
-    await loadPage();
-
-    return;
-
-    if ($.session.applicationName === 'Gatekeeper' && false) {
-      attachmentList = await getAttachmentsGK();
-    }
+    cnOverview = new CaseNotesOverview();
+    await cnOverview.fetchData();
+    cnOverview.build().renderTo(moduleWrap);
   }
 
   return {
