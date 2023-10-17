@@ -44,7 +44,8 @@ namespace Anywhere.service.Data
             sb.Clear();
             sb.Append("select cn.case_note_id as casenoteid,cn.Service_Date as servicedate,cn.Start_Time as starttime,cn.End_Time as endtime,cn.Case_Manager_ID as casemanagerid,cn.ID,cn.Original_Update as originalupdate, ");
             sb.Append("cn.last_update  as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,p.first_name as firstname, ");
-            sb.Append("p.last_name as lastname,p.consumer_id as consumerid,cn.confidential as confidential,cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby ");
+            sb.Append("p.last_name as lastname,p.consumer_id as consumerid,cn.confidential as confidential,cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby,cn.service as serviceCode, cn.notes as caseNote, ");
+            sb.Append("ANYW_CaseNotes_GetService(cn.service) as serviceName,ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
             sb.Append("from dba.case_notes as cn join dba.people as p on cn.id = p.Consumer_ID join dba.consumers as c on c.consumer_id = p.consumer_id ");
             sb.AppendFormat("where service_date between '{0}' and '{1}' ", serviceStartDate, serviceEndDate);
             sb.AppendFormat("and cast(original_update as date) between '{0}' and '{1}' ", dateEnteredStart, dateEnteredEnd);
@@ -146,9 +147,9 @@ namespace Anywhere.service.Data
                 sb.AppendFormat("and (cn.notes like '{0}') ", noteText);
             }
 
-            // sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
-            //  sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.Ratio_Consumers, ");
-            //  sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID ");
+            sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
+            sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.Ratio_Consumers, ");
+            sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID,cn.service,cn.notes,cn.Location,ug.First_Name,ug.Last_Name ");
 
             sb.Append("order by cn.service_date desc,cn.Start_Time desc,p.Last_Name asc ");
             string sbToPass = sb.ToString();
@@ -162,7 +163,8 @@ namespace Anywhere.service.Data
             sb.Clear();
             sb.Append("select distinct cn.case_note_id as casenoteid,cn.Service_Date as servicedate,cn.Start_Time as starttime,cn.End_Time as endtime,cn.Case_Manager_ID as casemanagerid,cn.ID,cn.Original_Update as originalupdate, ");
             sb.Append("cn.last_update as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,p.first_name as firstname, ");
-            sb.Append("p.last_name as lastname,p.id as consumerid,cn.confidential as confidential, cn.corrected as corrected, cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby, ncr.Any_SSA_Note as isSSANote, Count(cna.Case_Note_ID) as attachcount ");
+            sb.Append("p.last_name as lastname,p.id as consumerid,cn.confidential as confidential, cn.corrected as corrected, cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby, ncr.Any_SSA_Note as isSSANote, Count(cna.Case_Note_ID) as attachcount,cn.service as serviceCode, cn.notes as caseNote, ");
+            sb.Append("ANYW_CaseNotes_GetService(cn.service) as serviceName,ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
             sb.Append("from dba.case_notes as cn join dba.people as p on cn.id = p.id ");
             sb.Append("LEFT OUTER join dba.Note_Codes_Required as ncr on ncr.Service_ID = cn.Service_ID  ");
             sb.Append("LEFT OUTER join dba.Case_Notes_Attachments as cna on cna.Case_Note_ID = cn.Case_Note_ID  ");
@@ -288,7 +290,7 @@ namespace Anywhere.service.Data
 
             sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
             sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.corrected,cn.Ratio_Consumers, ");
-            sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID ");
+            sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID,cn.service,cn.notes,cn.Location,ug.First_Name,ug.Last_Name ");
 
 
             sb.Append("order by cn.service_date desc,cn.Start_Time desc,p.Last_Name asc ");
