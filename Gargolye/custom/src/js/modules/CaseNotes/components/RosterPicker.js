@@ -23,6 +23,9 @@
   };
 
   /**
+   * Displays a list of consumers, contains logic for selecting consumer(s).
+   * Use onConsumerSelect passed in {options} to get array of selected consumer IDs.
+   *
    * @constructor
    * @param {Object} options
    * @param {Boolean} [options.allowMultiSelect]
@@ -56,8 +59,8 @@
 
     this.rosterSearchInput = new Input({
       type: 'search',
-      id: 'rosterSearch',
-      name: 'rosterSearch',
+      id: 'rosterPickerSearch',
+      name: 'rosterPickerSearch',
       placeholder: 'Search...',
     });
 

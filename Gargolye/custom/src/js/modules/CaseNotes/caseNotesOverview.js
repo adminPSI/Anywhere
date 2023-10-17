@@ -54,7 +54,7 @@ CaseNotesOverview.prototype.populate = function () {
     const endtime = UTIL.convertFromMilitary(rd.endtime);
     const timeSpan = `${starttime} - ${endtime}`;
     const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
-    const enteredBy = `${rd.enteredby} (lastname, firstname)`; // this is user name as of now
+    const enteredBy = `${rd.enteredby} (${rd.originalUserFullName})`;
     const isConfidential = rd.confidential === 'Y' ? true : false;
     let mostRecentUpdate = new Intl.DateTimeFormat('en-US', {
       day: 'numeric',
@@ -68,7 +68,7 @@ CaseNotesOverview.prototype.populate = function () {
       // timeStyle: 'short',
     }).format(new Date(rd.mostrecentupdate));
     mostRecentUpdate = mostRecentUpdate.split(', ');
-    mostRecentUpdate = `${mostRecentUpdate[0]}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
+    mostRecentUpdate = `${mostRecentUpdate[0].substring(0, 3)}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
 
     //* GK ONLY
     const attachmentCount = rd.attachcount; // if > 0 then will show gree attachment icon
@@ -81,7 +81,7 @@ CaseNotesOverview.prototype.populate = function () {
       class: 'serviceInfoEle',
       html: `${service} | ${location}`,
     });
-    const noteTextEle = _DOM.createElement('p', { class: 'timeSpan', text: note });
+    const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
     const timeSpanEle = _DOM.createElement('p', { class: 'timeSpan', text: timeSpan });
     const totalTimeEle = _DOM.createElement('p', { class: 'timeDifference', text: timeDifference });
     const lastEditEle = _DOM.createElement('p', {

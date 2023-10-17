@@ -32,3 +32,7 @@
 // // both single1 and single2
 // const single1 = Singleton.load();
 // const single2 = Singleton.load();
+
+// 1. convertToGroupNotes === true | only if !isGroupNote && allowGroupNotes
+// 2. allowGroupNotes | this gets set on from service code dropdown event
+// 3. isGroupNote | set when singleNotToGroupNote is called

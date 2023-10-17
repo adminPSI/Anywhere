@@ -53,10 +53,9 @@
    * @returns {Input} - Returns the current instances for chaining
    */
   Input.prototype.build = function () {
+    const classArray = ['input', `${this.options.attributes.type}`, `${this.options.attributes.id}`];
     this.inputWrap = _DOM.createElement('div', {
-      class: this.options.hidden
-        ? ['input', `${this.options.attributes.type}`, 'hidden']
-        : ['input', `${this.options.attributes.type}`],
+      class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
     });
 
     // INPUT & LABEL

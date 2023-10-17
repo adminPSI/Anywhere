@@ -188,36 +188,36 @@
 // Consumer Info Card
 //------------------------
 .consumerInfoCloseBtn {
-    // back to roster btn
-    margin: 0 0 12px 0;
+  // back to roster btn
+  margin: 0 0 12px 0;
 }
 
 .consumerInfoForwardBtn {
-    font-size: 12.5px !important; 
-    text-align: right;
+  font-size: 12.5px !important;
+  text-align: right;
 
-    svg {
-        width: 24px;
-        vertical-align: middle;
-    }
+  svg {
+    width: 24px;
+    vertical-align: middle;
+  }
 
-    @media screen and (min-width: 450px) {
-        font-size: 14.5px !important;
-    }
+  @media screen and (min-width: 450px) {
+    font-size: 14.5px !important;
+  }
 }
 
 .consumerInfoBackwardBtn {
-    font-size: 12.5px !important;
-    text-align: left;
+  font-size: 12.5px !important;
+  text-align: left;
 
-    svg {
-        width: 24px;
-        vertical-align: middle;
-    }
+  svg {
+    width: 24px;
+    vertical-align: middle;
+  }
 
-    @media screen and (min-width: 450px) {
-        font-size: 14.5px !important;
-    }
+  @media screen and (min-width: 450px) {
+    font-size: 14.5px !important;
+  }
 }
 
 .sectionBackBtn {
@@ -422,151 +422,151 @@
   }
 }
 .demographicsSection {
-    .inputGroupWrap {
-        margin: 0 0 15px 0;
+  .inputGroupWrap {
+    margin: 0 0 15px 0;
 
-        h3 {
-            width: 100%;
-            margin: 0 0 8px;
-            font-weight: 600;
+    h3 {
+      width: 100%;
+      margin: 0 0 8px;
+      font-weight: 600;
+    }
+
+    .inputGroup {
+      cursor: pointer;
+      margin: 0 0 10px 0;
+
+      &.unEditabled {
+        pointer-events: none;
+        cursor: default;
+      }
+      .demoPhones {
+        pointer-events: all;
+      }
+
+      svg {
+        width: 24px;
+        margin-bottom: -3px;
+      }
+
+      .view {
+        &.hidden {
+          visibility: hidden;
+
+          span {
+            visibility: visible;
+          }
         }
+      }
 
-        .inputGroup {
-            cursor: pointer;
-            margin: 0 0 10px 0;
+      &.editMode {
+        .edit {
+          display: flex;
+          flex-flow: row wrap;
 
-            &.unEditabled {
-                pointer-events: none;
-                cursor: default;
-            }
-            .demoPhones{
-                pointer-events: all;
-            }
-
-            svg {
-                width: 24px;
-                margin-bottom: -3px;
-            }
-
-            .view {
-                &.hidden {
-                    visibility: hidden;
-
-                    span {
-                        visibility: visible;
-                    }
-                }
-            }
-
-            &.editMode {
-                .edit {
-                    display: flex;
-                    flex-flow: row wrap;
-
-                    &.invalid {
-                        color: $red;
-                        input {
-                            border-color: $red;
-                        }
-                    }
-                }
-                .view {
-                    display: none;
-                }
-            }
-
-            p {
-                pointer-events: none;
-                span {
-                    font-weight: 500;
-                }
-            }
-            label {
-                width: 100%;
-            }
+          &.invalid {
+            color: $red;
             input {
-                border: 1px solid black;
-                border-radius: 4px;
-                padding: 5px 3px;
-                margin: 0 2px 0 0;
-                width: calc(100% - 26px);
+              border-color: $red;
             }
-            .saveIcon {
-                width: 24px;
-                display: inline-flex;
+          }
+        }
+        .view {
+          display: none;
+        }
+      }
 
-                &.success {
-                    color: $secondary;
-                }
-                &.error {
-                    color: $red;
-                }
+      p {
+        pointer-events: none;
+        span {
+          font-weight: 500;
+        }
+      }
+      label {
+        width: 100%;
+      }
+      input {
+        border: 1px solid black;
+        border-radius: 4px;
+        padding: 5px 3px;
+        margin: 0 2px 0 0;
+        width: calc(100% - 26px);
+      }
+      .saveIcon {
+        width: 24px;
+        display: inline-flex;
 
-                .spinner__small {
-                    display: flex;
-                    align-items: center;
-                }
-                .spinner__bar {
-                    height: 24px;
-                    width: 24px;
-                    border-width: 5px;
-                }
-
-                &.hidden {
-                    visibility: hidden;
-                    pointer-events: none;
-                }
-            }
-
-            .edit {
-                display: none;
-            }
+        &.success {
+          color: $secondary;
+        }
+        &.error {
+          color: $red;
         }
 
-        &.address {
+        .spinner__small {
+          display: flex;
+          align-items: center;
+        }
+        .spinner__bar {
+          height: 24px;
+          width: 24px;
+          border-width: 5px;
+        }
+
+        &.hidden {
+          visibility: hidden;
+          pointer-events: none;
+        }
+      }
+
+      .edit {
+        display: none;
+      }
+    }
+
+    &.address {
+      display: flex;
+      flex-flow: row wrap;
+
+      &.editMode {
+        .inputGroup {
+          .edit {
             display: flex;
             flex-flow: row wrap;
-
-            &.editMode {
-                .inputGroup {
-                    .edit {
-                        display: flex;
-                        flex-flow: row wrap;
-                    }
-                    .view {
-                        display: none;
-                    }
-                    &.city,
-                    &.state,
-                    &.zip {
-                        margin: 0 5px 10px 0;
-                        max-width: 31%;
-                        flex-grow: 1;
-                    }
-                    &.state {
-                        max-width: 76px;
-                    }
-                    &.zip {
-                        max-width: 120px;
-                    }
-                }
-            }
-
-            .inputGroup {
-                margin: 0;
-
-                &.address {
-                    width: 100%;
-                    margin: 0 0 10px 0;
-                }
-                &.city,
-                &.state,
-                &.zip {
-                    margin: 0 5px 0 0;
-                }
-            }
+          }
+          .view {
+            display: none;
+          }
+          &.city,
+          &.state,
+          &.zip {
+            margin: 0 5px 10px 0;
+            max-width: 31%;
+            flex-grow: 1;
+          }
+          &.state {
+            max-width: 76px;
+          }
+          &.zip {
+            max-width: 120px;
+          }
         }
+      }
+
+      .inputGroup {
+        margin: 0;
+
+        &.address {
+          width: 100%;
+          margin: 0 0 10px 0;
+        }
+        &.city,
+        &.state,
+        &.zip {
+          margin: 0 5px 0 0;
+        }
+      }
     }
+  }
 }
 .relationshipsSection {
   .sectionInner {

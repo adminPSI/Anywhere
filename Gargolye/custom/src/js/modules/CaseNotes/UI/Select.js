@@ -50,8 +50,9 @@
    * @returns {Select} - Returns the current instances for chaining
    */
   Select.prototype.build = function () {
+    const classArray = ['input', 'select', `${this.options.attributes.id}`];
     this.inputWrap = _DOM.createElement('div', {
-      class: this.options.hidden ? ['input', 'select', 'hidden'] : ['input', 'select'],
+      class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
     });
 
     this.select = _DOM.createElement('select', { ...this.options.attributes });

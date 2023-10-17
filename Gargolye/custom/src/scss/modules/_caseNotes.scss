@@ -10,11 +10,17 @@
 #UI.caseNotesModule {
   display: grid;
   grid-template-columns: auto 320px;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto 600px 400px;
+  grid-template-areas:
+    'nav nav'
+    'form roster'
+    'cards cards'
+    '. .';
   row-gap: 20px;
 
   .dateNavigation {
-    grid-column-start: span 2;
+    //grid-column-start: span 2;
+    grid-area: nav;
     order: 1;
     padding: 0px 4px;
     position: sticky;
@@ -24,11 +30,13 @@
 
   .rosterPicker {
     height: 1000px;
+    grid-area: roster;
     margin: 0 20px 0 10px;
     order: 3;
   }
 
   form {
+    align-content: flex-start;
     border-radius: 6px;
     box-shadow: $shadow-m2;
     padding: 10px;
@@ -36,6 +44,7 @@
     display: flex;
     height: 1000px;
     flex-flow: row wrap;
+    grid-area: form;
     margin: 0 10px 0 20px;
     order: 2;
 
@@ -49,12 +58,20 @@
     .input.textarea {
       height: 200px;
     }
+    .input.location,
+    .input.service,
+    .input.need,
+    .input.contact {
+      min-width: 300px;
+      width: calc(50% - 5px);
+    }
   }
 
   .caseNotesOverview {
     border-radius: 6px;
     box-shadow: $shadow-m2;
     grid-column-start: span 2;
+    grid-area: cards;
     margin: 0 20px;
     padding: 20px;
     order: 3;
@@ -71,6 +88,7 @@
       border-radius: 6px;
       column-gap: 50px;
       flex-flow: row nowrap;
+      justify-content: space-between;
       padding: 14px 20px;
       margin: 0 0 8px;
 
@@ -90,7 +108,7 @@
         }
       }
       &__Center {
-        flex-grow: 2;
+        max-width: 500px;
       }
       &__Right {
         display: flex;
@@ -112,6 +130,11 @@
       .consumerName {
         font-size: $px20;
         font-weight: $_bold;
+      }
+      .serviceInfoEle {
+        margin: 0 0 10px;
+      }
+      .noteText {
       }
       .lastEdit,
       .enteredBy {

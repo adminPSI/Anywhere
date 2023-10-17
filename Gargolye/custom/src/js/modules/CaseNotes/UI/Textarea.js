@@ -120,8 +120,9 @@
    * @returns {Textarea} - Returns the current instances for chaining
    */
   Textarea.prototype.build = function () {
+    const classArray = ['input', 'textarea', `${this.options.attributes.id}`];
     this.inputWrap = _DOM.createElement('div', {
-      class: this.options.hidden ? ['input', 'textarea', 'hidden'] : ['input', 'textarea'],
+      class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
     });
 
     // INPUT & LABEL
