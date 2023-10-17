@@ -46,7 +46,7 @@ let reviewStartDate;
 let reviewEndDate;
 
 let formReadOnly = false;
-const SERVICETYPE = '4'; // Form 4
+const FORMNUMBER = '4'; // Form 4
 
 let OODMonthlySummariesTable; // To be added in future release
 
@@ -426,7 +426,7 @@ let OODMonthlySummariesTable; // To be added in future release
 
           const {
             getConsumerReferenceNumbersResult: referencenumbers,
-          } = await OODAjax.getConsumerReferenceNumbersAsync(consumerId, reviewStartDate, reviewEndDate, SERVICETYPE);
+          } = await OODAjax.getConsumerReferenceNumbersAsync(consumerId, reviewStartDate, reviewEndDate, FORMNUMBER);
         // const templates = WorkflowViewerComponent.getTemplates();
         let data = referencenumbers.map((referencenumber) => ({
           id: referencenumber.referenceNumber, 
