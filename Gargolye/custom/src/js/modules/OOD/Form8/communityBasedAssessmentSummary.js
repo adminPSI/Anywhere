@@ -39,7 +39,7 @@ const communityBasedAssessmentSummaryForm = (() => {
   let reviewEndDate;
 
   let formReadOnly = false;
-  const SERVICETYPE = '8'; // Form 8
+  const FORMNUMBER = '8'; // Form 8
 
   let OODMonthlySummariesTable; // To be added in future release
 
@@ -396,7 +396,7 @@ const communityBasedAssessmentSummaryForm = (() => {
         consumerId,
         reviewStartDate,
         reviewEndDate,
-        SERVICETYPE,
+        FORMNUMBER,
       );
     // const templates = WorkflowViewerComponent.getTemplates();
     let data = referencenumbers.map(referencenumber => ({
