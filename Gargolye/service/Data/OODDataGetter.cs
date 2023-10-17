@@ -197,7 +197,7 @@ namespace Anywhere.service.Data
         }
 
         // Reference Numbers for the selected Consumers data for OOD Entries Listing Filter
-        public string getConsumerReferenceNumbers(string consumerIds, string startDate, string endDate, string serviceType, DistributedTransaction transaction)
+        public string getConsumerReferenceNumbers(string consumerIds, string startDate, string endDate, string formNumber, DistributedTransaction transaction)
         {
 
             try
@@ -208,7 +208,7 @@ namespace Anywhere.service.Data
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerIds", DbType.String, consumerIds);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDate", DbType.String, startDate);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDate", DbType.String, endDate);
-                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@serviceType", DbType.String, serviceType);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@formNumber", DbType.String, formNumber);
                 //args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hasAssignedFormTypes", DbType.String, hasAssignedFormTypes);
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getConsumerReferenceNumbers(?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);

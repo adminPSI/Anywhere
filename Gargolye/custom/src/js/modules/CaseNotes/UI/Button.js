@@ -9,6 +9,8 @@
     text: null,
     type: 'button', // submit or button (don't use reset)
     icon: null,
+    style: 'primary', // primary(blue), danger(red), warning(yellow)
+    styleType: 'contained', // contained(filled), outlined(border, no fill), text(no fill/border)
   };
 
   /**
@@ -45,7 +47,11 @@
    * @returns {Button} - Returns the current instances for chaining
    */
   Button.prototype.build = function () {
-    this.button = _DOM.createElement('button', { class: 'button', text: this.options.text });
+    this.button = _DOM.createElement('button', {
+      class: ['button', this.options.style, this.options.styleType],
+      text: this.options.text,
+      type: this.options.type,
+    });
 
     return this;
   };

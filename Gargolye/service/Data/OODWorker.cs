@@ -34,6 +34,8 @@ namespace Anywhere.service.Data
             public string employerName { get; set; }
             [DataMember(Order = 8)]
             public string serviceType { get; set; }
+            [DataMember(Order = 9)]
+            public string formNumber { get; set; }
 
         }
 
@@ -83,6 +85,8 @@ namespace Anywhere.service.Data
             public string referenceNumber { get; set; }
             [DataMember(Order = 4)]
             public string serviceType { get; set; }
+            [DataMember(Order = 5)]
+            public string formNumber { get; set; }
         }
 
         [DataContract]
@@ -485,7 +489,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string serviceType)
+        public ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string formNumber)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -493,7 +497,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    ReferenceNumber[] referenceNumbers = js.Deserialize<ReferenceNumber[]>(Odg.getConsumerReferenceNumbers(consumerIds, startDate, endDate, serviceType, transaction));
+                    ReferenceNumber[] referenceNumbers = js.Deserialize<ReferenceNumber[]>(Odg.getConsumerReferenceNumbers(consumerIds, startDate, endDate, formNumber, transaction));
                     return referenceNumbers;
                 }
                 catch (Exception ex)

@@ -52,7 +52,7 @@ const ConsumerFinances = (() => {
         landingPage = document.createElement('div');
         var LineBr = document.createElement('br');
 
-        selectedConsumersId = selectedConsumers[0].id;
+        selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
         $.session.consumerId = selectedConsumersId;
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
