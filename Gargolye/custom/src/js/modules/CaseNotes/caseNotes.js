@@ -46,17 +46,17 @@ const CaseNotes = (() => {
   //--------------------------------------------------
   function setGroupsAndTableConsumers(data) {
     // GROUPING
-    if (data.numberInGroup !== 1) {
+    if (data.numberInGroup !== '1') {
       const groupNoteId = data.groupnoteid.split('.')[0];
       const consumerId = data.consumerid.split('.')[0];
       const name = `${data.lastname}, ${data.firstname}`;
 
-      groups[groupNoteId] = groups[groupNoteId] ?? {};
-      groups[groupNoteId][consumerId] = name;
+      reviewGroups[groupNoteId] = reviewGroups[groupNoteId] ?? {};
+      reviewGroups[groupNoteId][consumerId] = name;
     }
 
     // TABLE CONSUMERS
-    tableConsumers.push({
+    reviewConsumers.push({
       id: data.casenoteid.split('.')[0],
       FirstName: data.firstname,
       LastName: data.lastname,
@@ -66,16 +66,20 @@ const CaseNotes = (() => {
   // MAIN
   //--------------------------------------------------
   function loadOverviewPage() {
-    const overviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview', node: [overviewSearch] });
-
     const overviewSearch = new Input({
       type: 'search',
       id: 'overviewSearch',
       name: 'overviewSearch',
       placeholder: 'Search...',
     });
+    overviewSearch.build();
 
     const overviewCardsWrap = _DOM.createElement('div', { class: 'overviewCardsWrap' });
+
+    const overviewWrap = _DOM.createElement('div', {
+      class: 'caseNotesOverview',
+      node: [overviewSearch.inputWrap, overviewCardsWrap],
+    });
 
     caseLoadReviewData.forEach(rd => {
       // DATA
@@ -86,7 +90,19 @@ const CaseNotes = (() => {
       const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
       const name = `${rd.lastname}, ${rd.firstname}`;
       const enteredBy = `${rd.enteredby} (lastname, firstname)`; // this is user name as of now
-      const mostRecentUpdate = rd.mostrecentupdate; // need to format this badboy
+      let mostRecentUpdate = new Intl.DateTimeFormat('en-US', {
+        day: 'numeric',
+        month: 'numeric',
+        year: '2-digit',
+        hour: 'numeric',
+        minute: 'numeric',
+        weekday: 'long',
+        // or just
+        // dateStyle: 'short',
+        // timeStyle: 'short',
+      }).format(new Date(rd.mostrecentupdate));
+      mostRecentUpdate = mostRecentUpdate.split(', ');
+      mostRecentUpdate = `${mostRecentUpdate[0]}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
 
       //* GK ONLY
       const attachmentCount = rd.attachcount; // if > 0 then will show gree attachment icon
@@ -94,23 +110,35 @@ const CaseNotes = (() => {
       // DOM
       //---------------
       // card items
-      const timeSpanEle = _DOM.createElement('p', { class: '', text: timeSpan });
-      const totalTimeEle = _DOM.createElement('p', { class: '', text: timeDifference });
-      const consumerNameEle = _DOM.createElement('p', { class: '', text: name });
+      const timeSpanEle = _DOM.createElement('p', { class: 'timeSpan', text: timeSpan });
+      const totalTimeEle = _DOM.createElement('p', { class: 'timeDifference', text: timeDifference });
+      const consumerNameEle = _DOM.createElement('p', { class: 'consumerName', text: name });
+      const lastEditEle = _DOM.createElement('p', {
+        class: 'lastEdit',
+        html: `<span>Last Edit:</span> ${mostRecentUpdate}`,
+      });
+      const enteredByEle = _DOM.createElement('p', {
+        class: 'enteredBy',
+        html: `<span>Entered By:</span> ${enteredBy}`,
+      });
       const editButton = new Button({
         text: 'edit',
+        style: 'primary',
+        styleType: 'contained',
       });
       const deleteButton = new Button({
         text: 'delete',
+        style: 'danger',
+        styleType: 'outlined',
       });
 
       // card layout
       const cardLeft = _DOM.createElement('div', {
         class: 'overviewCard__Left',
-        node: [timeSpanEle, totalTimeEle, editButton, deleteButton],
+        node: [timeSpanEle, totalTimeEle, editButton.button, deleteButton.button],
       });
       const cardCenter = _DOM.createElement('div', { class: 'overviewCard__Center', node: [consumerNameEle] });
-      const cardRight = _DOM.createElement('div', { class: 'overviewCard__Right' });
+      const cardRight = _DOM.createElement('div', { class: 'overviewCard__Right', node: [lastEditEle, enteredByEle] });
 
       const overviewCard = _DOM.createElement('div', {
         class: 'overviewCard',
@@ -157,10 +185,10 @@ const CaseNotes = (() => {
     });
     caseLoadReviewData = caseLoadReviewData.caseNotesFilteredSearchJSONResult;
     caseLoadReviewData = caseLoadReviewData.filter(data => {
-      setGroupsAndTableConsumers(data, groups, tableConsumers);
+      setGroupsAndTableConsumers(data);
 
       // For VIEW ENTERED & CASELOAD ONLY
-      if (viewEntered && caseloadOnly) {
+      if (viewEntered && caseLoadOnly) {
         const enteredByUser = data.enteredby.toUpperCase() === $.session.UserId.toUpperCase();
         const onCaseload = caseLoadRestriction.some(
           cl => cl.id.toUpperCase() === data.consumerid.split('.')[0].toUpperCase(),
@@ -174,7 +202,7 @@ const CaseNotes = (() => {
       }
 
       // For CASELOAD ONLY
-      if (caseloadOnly) {
+      if (caseLoadOnly) {
         return caseLoadRestriction.some(cl => cl.id === data.consumerid.split('.')[0]);
       }
 
