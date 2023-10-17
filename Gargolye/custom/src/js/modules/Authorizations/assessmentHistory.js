@@ -43,7 +43,7 @@ const assessmentHistory = (() => {
         landingPage = document.createElement('div');
         var LineBr = document.createElement('br');
 
-        selectedConsumersId = selectedConsumers[0].id;
+        selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
                 token: $.session.Token,
@@ -98,11 +98,8 @@ const assessmentHistory = (() => {
         let tableData = assessmentEntries.getAssessmentEntriesResult.map((entry) => ({
             values: [entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YYYY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YYYY'),
             entry.methodology, entry.score, entry.behaviorMod, entry.medicalMod, entry.DCMod, entry.CCMod, entry.priorAuthApplied == '' ? '' : moment(entry.priorAuthApplied).format('MM/DD/YYYY'),
-                entry.priorAuthReceived == '' ? '' : moment(entry.priorAuthReceived).format('MM/DD/YYYY'), entry.priorAuthAmount == '' ? '' : '$' + numberWithCommas(entry.priorAuthAmount)], 
+            entry.priorAuthReceived == '' ? '' : moment(entry.priorAuthReceived).format('MM/DD/YYYY'), entry.priorAuthAmount == '' ? '' : '$' + numberWithCommas(entry.priorAuthAmount)],
             attributes: [{ key: 'Id', value: entry.ID }],
-            onClick: (e) => {
-            },
-
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
@@ -197,8 +194,8 @@ const assessmentHistory = (() => {
                 <span>End Date:</span> ${(endDateFrom == 'ALL' && endDateTo == 'ALL') ? 'ALL' : endDateFrom + '-' + endDateTo} &nbsp;&nbsp;
                 <span>Prior Auth Applied:</span> ${(priorAuthApplFrom == 'ALL' && priorAuthApplTo == 'ALL') ? 'ALL' : priorAuthApplFrom + '-' + priorAuthApplTo} &nbsp;&nbsp;
                 <span>Prior Auth Received:</span> ${(priorAuthRecFrom == 'ALL' && priorAuthRecTo == 'ALL') ? 'ALL' : priorAuthRecFrom + '-' + priorAuthRecTo} &nbsp;&nbsp;
-                <span>Prior Auth Amount From:</span> ${(filterValues.priorAuthAmtFrom == '') ? 'ALL' : filterValues.priorAuthAmtFrom} &nbsp;&nbsp;
-                <span>Prior Auth Amount To:</span> ${(filterValues.priorAuthAmtTo == '') ? 'ALL' : filterValues.priorAuthAmtTo} &nbsp;&nbsp;
+                <span>Prior Auth Amount From:</span> ${(filterValues.priorAuthAmtFrom == '') ? 'ALL' : '$' + numberWithCommas(filterValues.priorAuthAmtFrom)} &nbsp;&nbsp;
+                <span>Prior Auth Amount To:</span> ${(filterValues.priorAuthAmtTo == '') ? 'ALL' : '$' + numberWithCommas(filterValues.priorAuthAmtTo)} &nbsp;&nbsp;  
             </p>
 		  </div>`;
 
@@ -293,7 +290,7 @@ const assessmentHistory = (() => {
         priorAuthAmtFrom = input.build({
             id: 'priorAuthAmtFrom',
             type: 'text',
-            label: 'Prior Auth Amt from',
+            label: 'Prior Auth Amt From',
             style: 'secondary',
             value: '$' + ((filterValues.priorAuthAmtFrom) ? filterValues.priorAuthAmtFrom : ''),
         });
@@ -436,7 +433,7 @@ const assessmentHistory = (() => {
             else if (minAmount.includes('.') && (minAmount.match(/\./g).length > 1 || minAmount.toString().split('.')[1].length > 2)) {
                 document.getElementById('priorAuthAmtFrom').value = minAmount.substring(0, minAmount.length - 1);
                 return;
-            }            
+            }
             checkRequiredFieldsOfFilter();
         });
 
@@ -451,7 +448,7 @@ const assessmentHistory = (() => {
             else if (maxAmount.includes('.') && (maxAmount.match(/\./g).length > 1 || maxAmount.toString().split('.')[1].length > 2)) {
                 document.getElementById('priorAuthAmtTo').value = maxAmount.substring(0, maxAmount.length - 1);
                 return;
-            }           
+            }
             checkRequiredFieldsOfFilter();
         });
 
@@ -533,7 +530,7 @@ const assessmentHistory = (() => {
         }
     }
 
-    function updateFilterData(data) { 
+    function updateFilterData(data) {
         if (data.tmpMethodology) filterValues.methodology = data.tmpMethodology;
         if (data.tmpScore) filterValues.score = data.tmpScore;
         if (data.tmpStartDateFrom != undefined) filterValues.startDateFrom = data.tmpStartDateFrom;
@@ -554,7 +551,7 @@ const assessmentHistory = (() => {
         if (data.tmpPriorAuthApplFrom == '') filterValues.priorAuthApplFrom = '%';
         if (data.tmpPriorAuthApplTo == '') filterValues.priorAuthApplTo = '%';
         if (data.tmpPriorAuthRecFrom == '') filterValues.priorAuthRecFrom = '%';
-        if (data.tmpPriorAuthRecTo == '') filterValues.priorAuthRecTo = '%';   
+        if (data.tmpPriorAuthRecTo == '') filterValues.priorAuthRecTo = '%';
     }
 
     function populateFilterDropdown() {
