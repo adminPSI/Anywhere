@@ -1,24 +1,42 @@
+.grid-container {
+  background: $white;
+}
+.actioncenter[data-active-module='casenotes'] {
+  background: $white;
+  padding: 0 0 20px;
+  width: 100%;
+}
+
 #UI.caseNotesModule {
   display: grid;
   grid-template-columns: auto 320px;
   grid-template-rows: auto auto;
-  column-gap: 10px;
   row-gap: 20px;
 
   .dateNavigation {
     grid-column-start: span 2;
     order: 1;
+    padding: 0px 4px;
+    position: sticky;
+    top: 0px;
+    z-index: 999;
   }
 
   .rosterPicker {
-    justify-self: center;
+    height: 1000px;
+    margin: 0 20px 0 10px;
     order: 3;
   }
 
   form {
+    border-radius: 6px;
+    box-shadow: $shadow-m2;
+    padding: 10px;
     column-gap: 10px;
     display: flex;
+    height: 1000px;
     flex-flow: row wrap;
+    margin: 0 10px 0 20px;
     order: 2;
 
     .input.time {
@@ -34,6 +52,13 @@
   }
 
   .caseNotesOverview {
+    border-radius: 6px;
+    box-shadow: $shadow-m2;
+    grid-column-start: span 2;
+    margin: 0 20px;
+    padding: 20px;
+    order: 3;
+
     .input.search {
     }
 
@@ -42,16 +67,57 @@
 
     .overviewCard {
       display: flex;
+      box-shadow: $shadow-m2;
+      border-radius: 6px;
+      column-gap: 50px;
       flex-flow: row nowrap;
+      padding: 14px 20px;
+      margin: 0 0 8px;
 
       &__Left {
-        flex-grow: 0;
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-template-rows: auto auto auto;
+        column-gap: 6px;
+
+        p {
+          grid-column: span 2;
+        }
+
+        button.button {
+          align-self: center;
+          justify-self: center;
+        }
       }
       &__Center {
         flex-grow: 2;
       }
       &__Right {
-        flex-grow: 0;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: flex-end;
+      }
+
+      .timeSpan {
+        align-self: end;
+        font-weight: $_bold;
+        text-align: center;
+        margin: 0 0 4px;
+      }
+      .timeDifference {
+        align-self: start;
+        text-align: center;
+        margin: 0 0 24px;
+      }
+      .consumerName {
+        font-size: $px20;
+        font-weight: $_bold;
+      }
+      .lastEdit,
+      .enteredBy {
+        span {
+          font-weight: $_bold;
+        }
       }
     }
   }
@@ -66,16 +132,19 @@
   //-------------------------------------------
   form {
     // outline: 2px dotted black;
+    column-gap: 10px;
+    display: flex;
+    flex-flow: row wrap;
 
-    .cols {
-      display: flex;
-      flex-flow: row nowrap;
-      column-gap: 10px;
+    // .cols {
+    //   display: flex;
+    //   flex-flow: row nowrap;
+    //   column-gap: 10px;
 
-      > * {
-        flex-grow: 1;
-      }
-    }
+    //   > * {
+    //     flex-grow: 1;
+    //   }
+    // }
   }
 
   //===========================================
@@ -269,18 +338,66 @@
   // BUTTON
   //-------------------------------------------
   .button {
-    background: $secondary;
     border-radius: 4px;
     display: block;
+    font-weight: $_bold;
     min-height: 48px;
     min-width: 48px;
     padding: 0 10px;
+    text-transform: uppercase;
+
+    //states
+    &.disabled {
+      background: $whitesmoke;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    // styles
+    &.contained {
+      color: $white;
+
+      &.primary {
+        background: $primary;
+      }
+      &.danger {
+        background: $error;
+      }
+      &.warning {
+        color: $black;
+        background: $warning;
+      }
+    }
+    &.outlined {
+      background: none;
+      border-width: 2px;
+      border-style: solid;
+      color: $black;
+
+      &.primary {
+        border-color: $primary;
+      }
+      &.danger {
+        border-color: $error;
+      }
+      &.warning {
+        border-color: $warning;
+      }
+    }
+    &.text {
+      background: none;
+      border: none;
+      color: $black;
+    }
   }
 
   //===========================================
   // ICONS
   //-------------------------------------------
   .svgIcon {
+    svg {
+      fill: currentColor;
+    }
+
     svg,
     path {
       pointer-events: none;

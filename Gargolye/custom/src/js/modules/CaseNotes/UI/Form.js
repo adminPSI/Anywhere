@@ -80,8 +80,9 @@
       this.inputs[ele.id] = inputInstance;
     });
 
-    const btn = _DOM.createElement('button', { type: 'submit', text: 'Save', class: 'button' });
-    this.form.appendChild(btn);
+    //const btn = _DOM.createElement('button', { type: 'submit', text: 'Save', class: 'button' });
+    const btn = new Button({ type: 'submit', text: 'Save' }).renderTo(this.form);
+    //this.form.appendChild(btn);
 
     return this;
   };
