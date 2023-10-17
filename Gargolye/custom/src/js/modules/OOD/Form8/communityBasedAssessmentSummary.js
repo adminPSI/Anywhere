@@ -39,7 +39,7 @@ const communityBasedAssessmentSummaryForm = (() => {
   let reviewEndDate;
 
   let formReadOnly = false;
-  const SERVICETYPE = 'T2'; // Form 8
+  const SERVICETYPE = '8'; // Form 8
 
   let OODMonthlySummariesTable; // To be added in future release
 

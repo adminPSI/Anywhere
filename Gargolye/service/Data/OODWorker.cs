@@ -34,6 +34,8 @@ namespace Anywhere.service.Data
             public string employerName { get; set; }
             [DataMember(Order = 8)]
             public string serviceType { get; set; }
+            [DataMember(Order = 9)]
+            public string formNumber { get; set; }
 
         }
 
@@ -83,6 +85,8 @@ namespace Anywhere.service.Data
             public string referenceNumber { get; set; }
             [DataMember(Order = 4)]
             public string serviceType { get; set; }
+            [DataMember(Order = 5)]
+            public string formNumber { get; set; }
         }
 
         [DataContract]

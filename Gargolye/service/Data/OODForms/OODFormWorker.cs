@@ -236,6 +236,21 @@ namespace OODForms
             Array SSArray;
 
             SS.SaveToStream(ms);
+
+
+            //New
+            var current = System.Web.HttpContext.Current;
+            var response = current.Response;
+            response.Buffer = true;
+            byte[] bytes = StreamExtensions.ToByteArray(ms);
+            //response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ".pdf" + ";");
+            response.ContentType = "application/vnd.ms-excel";
+            response.AddHeader("Transfer-Encoding", "identity");
+            response.BinaryWrite(bytes);
+            //end new
+
+
+
             SSArray = ms.ToArray();
 
             SS.Close();

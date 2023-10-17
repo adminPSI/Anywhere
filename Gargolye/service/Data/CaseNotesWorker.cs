@@ -15,6 +15,7 @@ namespace Anywhere.service.Data
         {
             return dg.addCaseNoteAttachment(token, caseNoteId, description, attachmentType, attachment);
         }
+        // message
 
         public ConsumersThatCanHaveMileage[] getConsumersThatCanHaveMileageJSON(string token)
         {
