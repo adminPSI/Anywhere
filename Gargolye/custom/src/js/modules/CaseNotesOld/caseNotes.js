@@ -30,6 +30,12 @@ var caseNotes = (function () {
       type: 'contained',
       callback: cnEditPhrases.init,
     });
+    let tryNewCaseNotes = button.build({
+      text: 'Try Case Notes 2.0',
+      style: 'secondary',
+      type: 'contained',
+      callback: CaseNotes.init,
+    });
 
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
@@ -37,6 +43,7 @@ var caseNotes = (function () {
     if ($.session.CaseNotesUpdate) btnWrap.appendChild(newBtn);
     btnWrap.appendChild(overviewBtn);
     btnWrap.appendChild(editPhrasesBtn);
+    btnWrap.appendChild(tryNewCaseNotes);
     DOM.ACTIONCENTER.appendChild(btnWrap);
   }
 
