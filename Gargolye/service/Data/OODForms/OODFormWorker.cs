@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Management.Automation.Language;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web.Script.Serialization;
-using System.Web.UI.WebControls;
 using Anywhere.service.Data;
 using Bytescout.Spreadsheet;
-using CrystalDecisions.CrystalReports.Engine;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Tsp;
-using PDFGenerator;
 using pdftron.PDF;
 using pdftron.SDF;
 using Convert = System.Convert;
 using Font = System.Drawing.Font;
+
 
 namespace OODForms
 {
@@ -27,7 +21,7 @@ namespace OODForms
     {
         private StringBuilder sb = new StringBuilder();
 
-        public String Form8(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath, string registrationName, string registrationKey)
+        public void Form8(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath, string registrationName, string registrationKey)
         {
             Spreadsheet SS = new Spreadsheet();
             SS.RegistrationName = registrationName;
@@ -47,14 +41,14 @@ namespace OODForms
             string ProviderName = string.Format("{0}", row["ProviderName"].ToString().Trim());
             WS.Cell("m1").Value = ProviderName.ToString();
 
-            WS.Cell("m2").Value = AuthorizationNumber.ToString();
-
-            dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
-            row = dt.Rows[0];
+            WS.Cell("m2").Value = AuthorizationNumber.ToString();           
 
             WS.Cell("m3").Value = invoiceNumber.ToString();
 
             //WS.Cell("m3").Value = DateTime.Now.ToString("MM/dd/yy");
+
+            dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
+            row = dt.Rows[0];
 
             string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
             WS.Cell("m4").Value = ConsumerName;
@@ -222,45 +216,20 @@ namespace OODForms
 
             WS.Cell("a21").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
 
-            //string fPath = String.Format("{0}\\ODDReport", System.Reflection.Assembly.GetEntryAssembly().Location);
-            //if (Directory.Exists(fPath))
-            //{
-            //    Directory.CreateDirectory(fPath);
-            //}
-
-            // Save as file
-            SS.SaveAs(SavePath);
-
-            // Create Memorystream and to Array(Change function to return)
             MemoryStream ms = new MemoryStream();
-            Array SSArray;
 
-            SS.SaveToStream(ms);
+            SS.SaveToStreamXLSX(ms);
 
+            Attachment attachment = new Attachment
+            {
+                filename = "Form8",
+                data = ms
+            };
 
-            //New
-            var current = System.Web.HttpContext.Current;
-            var response = current.Response;
-            response.Buffer = true;
-            byte[] bytes = StreamExtensions.ToByteArray(ms);
-            //response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ".pdf" + ";");
-            response.ContentType = "application/vnd.ms-excel";
-            response.AddHeader("Transfer-Encoding", "identity");
-            response.BinaryWrite(bytes);
-            //end new
-
-
-
-            SSArray = ms.ToArray();
-
-            SS.Close();
-            Process.Start(SavePath);
-
-            return string.Empty;
-
+            DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
-        public String Form4(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath, string registrationName, string registrationKey)
+        public void Form4(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath, string registrationName, string registrationKey)
         {
             Spreadsheet SS = new Spreadsheet();
             SS.RegistrationName = registrationName;
@@ -523,26 +492,17 @@ namespace OODForms
 
             }
 
-            //string fPath = String.Format("{0}\\ODDReport", System.Reflection.Assembly.GetEntryAssembly().Location);
-            //if (Directory.Exists(fPath))
-            //{
-            //    Directory.CreateDirectory(fPath);
-            //}
-
-            // Save as file
-            SS.SaveAs(SavePath);
-
-            // Create Memorystream and to Array(Change function to return)
             MemoryStream ms = new MemoryStream();
-            Array SSArray;
 
-            SS.SaveToStream(ms);
-            SSArray = ms.ToArray();
+            SS.SaveToStreamXLSX(ms);
 
-            SS.Close();
-            Process.Start(SavePath);
+            Attachment attachment = new Attachment
+            {
+                filename = "Form4",
+                data = ms
+            };
 
-            return string.Empty;
+            DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
         public string generateForm4(string token, string AuthorizationNumber, long VendorID, string peopleIDString, String StartDate, String EndDate, string serviceCode)
@@ -557,15 +517,14 @@ namespace OODForms
                 string registrationName = SSInfoObj[0].registrationName;
                 string registrationKey = SSInfoObj[0].registrationKey;
 
-                string crPath = oodfdg.getFormTemplatePath(token);
-                var startPath = crPath.IndexOf("<path>");
-                var endPath = crPath.IndexOf("</path>");
-                crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
-                string crName = "4+-+Monthly+Job+&+Site+Development.xlsx";
-                String reportPath = string.Format(crPath, crName);
+                string crpath = oodfdg.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string crname = "4+-+Monthly+Job+&+Site+Development.xlsx";
+                string reportPath = string.Format(path, crname);
 
-                //String reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\4+-+Monthly+Job+&+Site+Development.xlsx";
-                String savePath = @"C:\Users\erick.bey\Downloads\Form 4.xlsx";
+                string tempFileName = "temporary_ood_form_4.xlsx";
+                string savePath = string.Format(path, tempFileName);
 
                 long PeopleID = long.Parse(peopleIDString);
                 long ServiceCodeID = long.Parse(serviceCode);
@@ -574,8 +533,6 @@ namespace OODForms
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
                 obj.Form4(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, savePath, registrationName, registrationKey);
-
-                //obj.Form4(AuthorizationNumber, invoiceNumber, VendorID, PeopleID, StartDate, EndDate, ServiceCodeID, ReportPath, SavePath);C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reports
 
                 return "Success";
             }
@@ -597,19 +554,15 @@ namespace OODForms
                 string registrationName = SSInfoObj[0].registrationName;
                 string registrationKey = SSInfoObj[0].registrationKey;
 
-                string crPath = oodfdg.getFormTemplatePath(token);
-                var startPath = crPath.IndexOf("<path>");
-                var endPath = crPath.IndexOf("</path>");
-                crPath = crPath.Substring(startPath + 6, endPath - (startPath + 6));
-                string crName = "8+-+Work+Activities+&+Assessment.xlsx";
-                String reportPath = string.Format(crPath, crName);
+                string crpath = oodfdg.getFormTemplatePath(token);
+                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+                string path = pathdatalist[0].path;
+                string templateFileName = "8+-+Work+Activities+&+Assessment.xlsx";
+                string reportPath = string.Format(path, templateFileName);
+                //String reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\Form8WorkActivitiesAndAssessment.xlsx";
 
-                //String reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\8+-+Work+Activities+&+Assessment.xlsx";
-                //string reportPath = @"\Gargolye\webroot\reportfiles\8+-+Work+Activities+&+Assessment.xlsx";
-                //string reportPath = @"Anywhere\Gargolye\webroot\reportfiles\8+-+Work+Activities+&+Assessment.xlsx";
-
-
-                String savePath = @"C:\Users\erick.bey\Downloads\Form 8.xlsx";
+                string tempFileName = "temporary_ood_form_8.xlsx";
+                string savePath = string.Format(path, tempFileName);
 
                 long PeopleID = long.Parse(peopleIDString);
                 long ServiceCodeID = long.Parse(serviceCode);
@@ -619,69 +572,63 @@ namespace OODForms
 
                 obj.Form8(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, savePath, registrationName, registrationKey);
 
-                //obj.Form4(AuthorizationNumber, invoiceNumber, VendorID, PeopleID, StartDate, EndDate, ServiceCodeID, ReportPath, SavePath);C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reports
-
                 return "Success";
             }
             catch (Exception ex)
             {
-                return "Failed";
+                string message = ex.ToString();
+                return message;
             }
         }
 
         public string generateForm10(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId)
         {
-            try
+            //try
+            //{
+            OODFormDataGetter oodfdg = new OODFormDataGetter();
+            pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+
+            string crpath = oodfdg.getFormTemplatePath(token);
+            PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+            string path = pathdatalist[0].path;
+            string crname = "OOD_transportation_10.pdf";
+            string reportpath = string.Format(path, crname);
+
+            PDFDoc form10Template = new PDFDoc(reportpath);
+
+            // Gather Data for the Person Completing the Report
+            string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
+            personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+            string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+            // Creates a unique string of numbers for the Invoice # field
+            DateTime currentDate = DateTime.Now;
+            string currentDateStr = currentDate.ToString("yyyy-MM-dd");
+            string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
+            string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
+
+            long consumerId = long.Parse(consumerIdString);
+            //long serviceCodeId = long.Parse(serviceCode);
+
+            if (referenceNumber == "%25")
             {
-                OODFormDataGetter oodfdg = new OODFormDataGetter();
-                pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
-                //PDFDoc form10Template = new PDFDoc(@"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\10+-+Transportation.pdf");
+                referenceNumber = "%";
+            }
 
-                string crpath = oodfdg.getFormTemplatePath(token);
-                PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
+            // Gathers all the data for the table in the pdf (startTime, endTime, startLocation, endLocation, units, # in vehicle per trip, staff initials)
+            string returnedData = oodfdg.getForm10PDFData(token, referenceNumber, startDate, endDate, consumerIdString, userId);
+            List<form10Data> form10DataList = JsonConvert.DeserializeObject<List<form10Data>>(returnedData);
 
-                // extract the "path" value
-                string path = pathdatalist[0].path;
+            string authorizationNumber = referenceNumber;
+            if (referenceNumber == "%")
+            {
+                authorizationNumber = form10DataList[0].authorizationNumber;
+            };
 
-                //string test = "\\\\ENDOR\\wwwroot\\ADVUnit\\Anywhere\\webroot\\reportfiles\\{0}";
-                string crname = "OOD_transportation_10.pdf";
-                string reportpath = string.Format(crpath, crname);
+            // Takes all the staff Initials from the table and uses unique values to store the direct service staff initials
+            string directServiceStaffNames = string.Join(" ", form10DataList.Select(data => data.staffInitials).Distinct());
 
-                PDFDoc form10Template = new PDFDoc(reportpath);
-
-                // Gather Data for the Person Completing the Report
-                string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
-                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
-                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
-
-                // Creates a unique string of numbers for the Invoice # field
-                DateTime currentDate = DateTime.Now;
-                string currentDateStr = currentDate.ToString("yyyy-MM-dd");
-                string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
-                string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
-
-                long consumerId = long.Parse(consumerIdString);
-                //long serviceCodeId = long.Parse(serviceCode);
-
-                if (referenceNumber == "%25")
-                {
-                    referenceNumber = "%";
-                }
-
-                // Gathers all the data for the table in the pdf (startTime, endTime, startLocation, endLocation, units, # in vehicle per trip, staff initials)
-                string returnedData = oodfdg.getForm10PDFData(token, referenceNumber, startDate, endDate, consumerIdString, userId);
-                List<form10Data> form10DataList = JsonConvert.DeserializeObject<List<form10Data>>(returnedData);
-
-                string authorizationNumber = referenceNumber;
-                if (referenceNumber == "%")
-                {
-                    authorizationNumber = form10DataList[0].authorizationNumber;
-                };
-
-                // Takes all the staff Initials from the table and uses unique values to store the direct service staff initials
-                string directServiceStaffNames = string.Join(" ", form10DataList.Select(data => data.staffInitials).Distinct());
-
-                var fieldData = new List<(string fieldName, string value)>
+            var fieldData = new List<(string fieldName, string value)>
                 {
                     ("Authorization", authorizationNumber),
                     ("Provider_Invoice", invoiceNumber),
@@ -693,26 +640,26 @@ namespace OODForms
                     ("Individuals Name", form10DataList[0].individualsName),
                     ("Direct Service Staff Name and Initials", directServiceStaffNames),
                     ("Provider Name", form10DataList[0].vendorName),
-                    //("VR CounselorCoordinator", form10DataList[0].counselor)
+                    ("VR CounselorCoordinator", form10DataList[0].VR_CounselorContractor)
                 };
 
-                // Iterate through the field data and set values
-                foreach (var (fieldName, value) in fieldData)
-                {
-                    Field field = form10Template.GetField(fieldName);
-                    field.SetValue(value);
-                    
-                    // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
-                    field.RefreshAppearance();
-                }
+            // Iterate through the field data and set values
+            foreach (var (fieldName, value) in fieldData)
+            {
+                Field field = form10Template.GetField(fieldName);
+                field.SetValue(value);
 
-                for (int i = 1; i <= form10DataList.Count; i++)
-                {
-                    // gets correct format for date
-                    DateTime dateTime = DateTime.Parse(form10DataList[i - 1].date);
-                    string datePart = dateTime.ToString("yyyy-MM-dd");
+                // resets a value on the pdf so all fields show (otherwise the fields may not show correctly on finished pdf)
+                field.RefreshAppearance();
+            }
 
-                    var tableData = new List<(string fieldName, string value)>
+            for (int i = 1; i <= form10DataList.Count; i++)
+            {
+                // gets correct format for date
+                DateTime dateTime = DateTime.Parse(form10DataList[i - 1].date);
+                string datePart = dateTime.ToString("yyyy-MM-dd");
+
+                var tableData = new List<(string fieldName, string value)>
                     {
                         ("Date3_af_date.0." + (i -1), datePart),
                         ("START_TIMERow" + i, form10DataList[i-1].startTime),
@@ -724,57 +671,59 @@ namespace OODForms
                         ("STAFF INITIALSRow" + i, form10DataList[i-1].staffInitials),
                     };
 
-                    // Iterate through the table data and set values for each row
-                    foreach (var (fieldName, value) in tableData)
-                    {
-                        Field field = form10Template.GetField(fieldName);
-                        field.SetValue(value);
-                        field.RefreshAppearance();
-                    }
-                }
-
-
-                List<string> fieldNames = new List<string>();
-                FieldIterator itr;
-
-                for (itr = form10Template.GetFieldIterator(); itr.HasNext(); itr.Next())
+                // Iterate through the table data and set values for each row
+                foreach (var (fieldName, value) in tableData)
                 {
-                    Field field = itr.Current();
-                    string fieldName = field.GetName();
-                    fieldNames.Add(fieldName);
-                    Console.WriteLine("Field name: {0}", fieldName);
+                    Field field = form10Template.GetField(fieldName);
+                    field.SetValue(value);
+                    field.RefreshAppearance();
                 }
-
-                // Save the PDF to a memory stream
-                MemoryStream pdfStream = new MemoryStream();
-                form10Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
-
-                // Pass the PDF data to the displayAttachment method
-                Attachment attachment = new Attachment
-                {
-                    filename = "Form10", // Provide a filename for the attachment
-                    data = pdfStream
-                };
-
-                displayAttachment(attachment);
-
-                //form10Template.Save(@"C:\Users\erick.bey\Downloads\test form 10.pdf", SDFDoc.SaveOptions.e_linearized);
-                return "Success";
             }
-            catch (Exception ex)
+
+
+            List<string> fieldNames = new List<string>();
+            FieldIterator itr;
+
+            for (itr = form10Template.GetFieldIterator(); itr.HasNext(); itr.Next())
             {
-                return "Failed";
+                Field field = itr.Current();
+                string fieldName = field.GetName();
+                fieldNames.Add(fieldName);
+                Console.WriteLine("Field name: {0}", fieldName);
             }
+
+            // Save the PDF to a memory stream
+            MemoryStream pdfStream = new MemoryStream();
+            form10Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
+
+            // Pass the PDF data to the displayAttachment method
+            Attachment attachment = new Attachment
+            {
+                filename = "Form10", // Provide a filename for the attachment
+                data = pdfStream
+            };
+
+            DisplayAttachment(attachment, ".pdf", "application/pdf");
+
+            //form10Template.Save(@"C:\Users\erick.bey\Downloads\test form 10.pdf", SDFDoc.SaveOptions.e_linearized);
+            return "Success";
+            // }
+            //catch (Exception ex)
+            //{
+            //return "Failed";
+            //}
         }
 
-        public void displayAttachment(Attachment attachment)
+        public void DisplayAttachment(Attachment attachment, string fileExtension, string contentType)
         {
             var current = System.Web.HttpContext.Current;
             var response = current.Response;
             response.Buffer = true;
+
             try
             {
                 response.Clear();
+
                 if (attachment.filename == "")
                 {
                     response.StatusCode = 404;
@@ -783,8 +732,8 @@ namespace OODForms
                 else
                 {
                     byte[] bytes = StreamExtensions.ToByteArray(attachment.data);
-                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + ".pdf" + ";");
-                    response.ContentType = "application/pdf";
+                    response.AddHeader("content-disposition", "attachment;filename=" + attachment.filename + fileExtension + ";");
+                    response.ContentType = contentType;
                     response.AddHeader("Transfer-Encoding", "identity");
                     response.BinaryWrite(bytes);
                 }
@@ -795,10 +744,9 @@ namespace OODForms
             }
             finally
             {
-                //logger2.debug("Done?");
+                // logger2.debug("Done?");
             }
         }
-
     }
 
     public class form10Data
@@ -814,6 +762,7 @@ namespace OODForms
         public string individualsName { get; set; }
         public string authorizationNumber { get; set; }
         public string vendorName { get; set; }
+        public string VR_CounselorContractor { get; set; }
     }
 
     public class personCompletingReport
