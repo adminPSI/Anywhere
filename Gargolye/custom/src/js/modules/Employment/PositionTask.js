@@ -85,7 +85,9 @@ const PositionTask = (() => {
             values: [entry.task, entry.description, entry.startDate == '' ? '' : moment(entry.startDate).format('MM/DD/YY'), entry.endDate == '' ? '' : moment(entry.endDate).format('MM/DD/YY'), entry.initialPerformance, entry.initialPerformanceNotes, entry.employeeStandard],
             attributes: [{ key: 'jobTaskId', value: entry.jobTaskId }],
             onClick: (e) => {
-                handleAccountTableEvents(e.target.attributes.jobTaskId.value)
+                if ($.session.EmploymentUpdate) {
+                    handleAccountTableEvents(e.target.attributes.jobTaskId.value)
+                }                   
             },
             endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',
             endIconCallback: (e) => {
