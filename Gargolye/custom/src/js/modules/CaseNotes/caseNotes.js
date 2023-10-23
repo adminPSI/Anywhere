@@ -6,7 +6,6 @@
 //1. checkbox to toggle between seing only yours vs everyones notes in overview
 //2. list vs card view for overview on mobile?
 
-//TODO: short name of weekday for last edit in overview card (ex: tuesday => tues)
 //TODO: NO GROUP NOTES IF DOC TIME IS ALLOWED
 
 // MAIN
