@@ -1,6 +1,8 @@
 (function (global, factory) {
   global._DOM = factory();
 })(this, function () {
+  const ACTIONCENTER = document.getElementById('actioncenter');
+
   /**
    * Create DOM element node and set given attributes, html/text, or nodes to append
    *
@@ -119,7 +121,20 @@
     return { ...b, attributes: { ...a } };
   }
 
+  function setActiveModuleAttribute(appName) {
+    ACTIONCENTER.setAttribute('data-active-module', appName);
+  }
+
+  function setActiveModuleSectionAttribute(sectionName) {
+    ACTIONCENTER.setAttribute('data-active-section', sectionName);
+  }
+
   return {
+    // DOM ref
+    ACTIONCENTER,
+    setActiveModuleAttribute,
+    setActiveModuleSectionAttribute,
+    // methods
     createElement,
     isReferenceFree,
     separateHTMLAttribrutes,

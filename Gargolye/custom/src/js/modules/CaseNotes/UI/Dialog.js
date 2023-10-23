@@ -26,12 +26,15 @@
   /**
    * @constructor
    * @param {Object} options
+   * @param {Boolean} [options.isModal] - Whether to display as basic dialog or modal dialog
    * @returns {Dialog}
    */
   function Dialog(options) {
     this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
 
     this.dialog = null;
+
+    this.build();
   }
 
   /**
@@ -42,7 +45,7 @@
    */
   Dialog.prototype.build = function () {
     this.dialog = _DOM.createElement('dialog', {
-      class: this.options.isModal ? ['dialog', 'modal', this.options.class] : ['dialog', this.options.class],
+      class: this.options.isModal ? ['dialog', 'modal'] : ['dialog'],
     });
 
     return this;

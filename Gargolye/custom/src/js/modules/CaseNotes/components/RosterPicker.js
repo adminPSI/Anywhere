@@ -118,9 +118,14 @@
       fragment.append(lastName, firstName);
       const details = _DOM.createElement('div', { class: 'details', node: fragment });
 
+      // PIN ICON
+      const pinCardIcon = Icon.getIcon('pin');
+      pinCardIcon.setAttribute('data-target', 'pinCardIcon');
+
       // BUILD
       rosterCard.appendChild(portrait);
       rosterCard.appendChild(details);
+      rosterCard.appendChild(pinCardIcon);
       gridAnimationWrapper.appendChild(rosterCard);
 
       this.rosterWrapEle.appendChild(gridAnimationWrapper);
@@ -137,6 +142,16 @@
    */
   RosterPicker.prototype.setupEvents = function () {
     this.rosterWrapEle.addEventListener('click', e => {
+      if (e.target.dataset.target === 'pinCardIcon') {
+        if (!e.target.parentNode.parentNode.classList.contains('pinned')) {
+          e.target.parentNode.parentNode.classList.add('pinned');
+        } else {
+          e.target.parentNode.parentNode.classList.remove('pinned');
+        }
+
+        return;
+      }
+
       if (e.target.dataset.target === 'rosterCard') {
         if (this.options.allowMultiSelect) {
           if (!e.target.parentNode.classList.contains('selected')) {
@@ -162,6 +177,8 @@
         }
 
         this.options.onConsumerSelect(Object.keys(this.selectedConsumers));
+
+        return;
       }
     });
 
@@ -203,13 +220,6 @@
       this.populate();
     });
   };
-
-  /**
-   * Hides/Shows Roster Cards
-   *
-   * @function
-   */
-  RosterPicker.prototype.onSearchFilter = function () {};
 
   /**
    * Fetches consumers data by date, group and location
