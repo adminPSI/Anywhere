@@ -112,7 +112,7 @@
 
     const [a, b] = Object.entries(options).reduce(
       ([matching, leftover], [key, value]) =>
-        props.includes(key)
+        props.includes(key) || key.startsWith('data-')
           ? [Object.assign(matching, { [key]: value }), leftover]
           : [matching, Object.assign(leftover, { [key]: value })],
       [{}, {}],
