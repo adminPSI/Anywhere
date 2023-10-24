@@ -57,6 +57,70 @@
   }
 
   /**
+   * Provides methods to interact with the browser's localStorage.
+   * It allows you to get and set values while handling JSON serialization and deserialization automatically.
+   *
+   * @namespace localStorageHandler
+   */
+  const localStorageHandler = {
+    /**
+     * Retrieves a value from local storage
+     *
+     * @function
+     * @memberof localStorageHandler
+     * @param {String} key
+     * @returns {Any|Null}
+     */
+    get(key) {
+      try {
+        // storedValue = {storage_key1:storage_value,storage_key2:value}
+        const storedValue = localStorage.getItem(`anywstate_${$.session.UserId}`);
+        if (storedValue) {
+          try {
+            const state = JSON.parse(storedValue);
+            return state ? state[key] : null;
+          } catch (error) {
+            return storedValue;
+          }
+        }
+
+        return null;
+      } catch (error) {
+        console.log('An error occurred when getting the value from local storage', error);
+      }
+    },
+    /**
+     * Sets a value to local storage
+     *
+     * @function
+     * @memberof localStorageHandler
+     * @param {String} key
+     * @param {Any} value
+     */
+    set(key, value) {
+      try {
+        if (typeof value === 'object') {
+          value = JSON.parse(value);
+        }
+
+        // get current ls value
+        const storedValue = localStorage.getItem(`anywstate_${$.session.UserId}`);
+        if (!storedValue) {
+          storedValue = {};
+        }
+        // set new key/value pair
+        storedValue[key] = value;
+
+        // update with new value
+        const updatedValue = JSON.stringify(storedValue);
+        localStorage.setItem(`anywstate_${user}`, updatedValue);
+      } catch (error) {
+        console.log('An error occurred when setting the value to local storage', error);
+      }
+    },
+  };
+
+  /**
    * Merge two objects together, baseObject and mergeObject share same prop names they will be overridden
    * inside the baseObject.
    *
@@ -67,6 +131,36 @@
    */
   function mergeObjects(baseObject, mergeObject) {
     return Object.assign({}, baseObject, mergeObject);
+  }
+
+  /**
+   * Removes and replaces certain characters that can't be saved into the DB.
+   * @param {string} note Text that needs to be converted to a format that will save in the DB.
+   * @returns {string} Returns the note that can now be saved into the DB.
+   */
+  function removeUnsavableNoteText(note) {
+    if (note == null) return null;
+    if (note === '') return '';
+
+    // Remove backslashes
+    if (note.indexOf('\\') != -1) {
+      note = note.replace(/\\/g, '');
+    }
+
+    // Replace double quotes with the same double quotes (seems unnecessary but kept for intent)
+    if (note.indexOf('"') != -1) {
+      note = note.replace(/\"/g, '"');
+    }
+
+    // Escape single quotes
+    if (note.indexOf("'") != -1) {
+      note = note.replace(/'/g, "''");
+    }
+
+    // Remove special tab characters and actual tab characters
+    note = note.replace(/&#9|\t/g, '');
+
+    return note;
   }
 
   /**
@@ -132,7 +226,9 @@
   return {
     debounce,
     fetchData,
+    localStorageHandler,
     mergeObjects,
+    removeUnsavableNoteText,
     sortByProperty,
     splitObjectByPropNames,
     // TIME METHODS

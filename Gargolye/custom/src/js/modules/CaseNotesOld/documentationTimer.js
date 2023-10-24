@@ -63,17 +63,21 @@ var documentationTimer = (function () {
     } else {
       docTimerMutationObserver();
     }
+
     let start;
     timerRunning = true;
     startBtn = document.getElementById('cnTimerStart');
     startBtn.dataset.toggled = 'true';
+
     if (prevTime) {
       const prevTimeMS = parseInt(prevTime) * 1000; // convert to ms
       start = Date.now() - prevTimeMS;
     } else {
       start = Date.now();
     }
+
     inactivityTime();
+
     timer = setInterval(function () {
       const deltaMS = Date.now() - start; // milliseconds elapsed since startm
       const deltaS = Math.floor(deltaMS / 1000);
@@ -85,37 +89,11 @@ var documentationTimer = (function () {
         minArea.value = minutes;
       }
     }, 1000);
+
     window.onload = resetInactivityTimer;
     document.onmousemove = resetInactivityTimer;
     document.onkeypress = resetInactivityTimer;
   }
-
-  // function startTimer(prevTime) {
-  //   if (timerRunning) {
-  //     clearTimer();
-  //   } else {
-  //     docTimerMutationObserver()
-  //   }
-  //   timerRunning = true;
-  //   startBtn = document.getElementById("cnTimerStart");
-  //   startBtn.dataset.toggled = "true";
-  //   if (prevTime) runningTime = parseInt(prevTime);
-  //   inactivityTime();
-  //   timer = setInterval(setTime, 1000);
-  //   window.onload = resetInactivityTimer;
-  //   document.onmousemove = resetInactivityTimer;
-  //   document.onkeypress = resetInactivityTimer;
-  // }
-
-  // function setTime() {
-  //   ++runningTime;
-  //   var newMinutes = Math.round(Math.floor(runningTime/30) / 2)
-  //   if (newMinutes !== minutes) {
-  //     minutes = newMinutes;
-  //     var minArea = document.getElementById("docTimeMinutesDisplay");
-  //     minArea.value = minutes;
-  //   }
-  // }
 
   function stopTimer() {
     if (docTimerMutationObserver.disconnect) docTimerMutationObserver.disconnect();

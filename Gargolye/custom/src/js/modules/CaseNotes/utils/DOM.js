@@ -1,6 +1,8 @@
 (function (global, factory) {
   global._DOM = factory();
 })(this, function () {
+  const ACTIONCENTER = document.getElementById('actioncenter');
+
   /**
    * Create DOM element node and set given attributes, html/text, or nodes to append
    *
@@ -110,7 +112,7 @@
 
     const [a, b] = Object.entries(options).reduce(
       ([matching, leftover], [key, value]) =>
-        props.includes(key)
+        props.includes(key) || key.startsWith('data-')
           ? [Object.assign(matching, { [key]: value }), leftover]
           : [matching, Object.assign(leftover, { [key]: value })],
       [{}, {}],
@@ -119,7 +121,20 @@
     return { ...b, attributes: { ...a } };
   }
 
+  function setActiveModuleAttribute(appName) {
+    ACTIONCENTER.setAttribute('data-active-module', appName);
+  }
+
+  function setActiveModuleSectionAttribute(sectionName) {
+    ACTIONCENTER.setAttribute('data-active-section', sectionName);
+  }
+
   return {
+    // DOM ref
+    ACTIONCENTER,
+    setActiveModuleAttribute,
+    setActiveModuleSectionAttribute,
+    // methods
     createElement,
     isReferenceFree,
     separateHTMLAttribrutes,

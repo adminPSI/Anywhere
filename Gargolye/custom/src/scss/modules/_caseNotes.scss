@@ -1,22 +1,27 @@
 .grid-container {
   background: $white;
 }
-.actioncenter[data-active-module='casenotes'] {
+.actioncenter[data-active-module='casenotes2.0'] {
   background: $white;
   padding: 0 0 20px;
   width: 100%;
 }
 
-#UI.caseNotesModule {
+[data-active-module='casenotes2.0'] .caseNotesModule {
   display: grid;
   grid-template-columns: auto 320px;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto 600px 400px;
+  grid-template-areas:
+    'nav nav'
+    'form roster'
+    'cards cards'
+    '. .';
   row-gap: 20px;
 
   .dateNavigation {
-    grid-column-start: span 2;
+    //grid-column-start: span 2;
+    grid-area: nav;
     order: 1;
-    padding: 0px 4px;
     position: sticky;
     top: 0px;
     z-index: 999;
@@ -24,11 +29,13 @@
 
   .rosterPicker {
     height: 1000px;
+    grid-area: roster;
     margin: 0 20px 0 10px;
     order: 3;
   }
 
   form {
+    align-content: flex-start;
     border-radius: 6px;
     box-shadow: $shadow-m2;
     padding: 10px;
@@ -36,8 +43,13 @@
     display: flex;
     height: 1000px;
     flex-flow: row wrap;
+    grid-area: form;
     margin: 0 10px 0 20px;
     order: 2;
+
+    .input {
+      flex-grow: 1;
+    }
 
     .input.time {
       width: calc(50% - 5px);
@@ -49,12 +61,55 @@
     .input.textarea {
       height: 200px;
     }
+    .input.location,
+    .input.service,
+    .input.need,
+    .input.contact {
+      min-width: 300px;
+      width: calc(50% - 5px);
+    }
+  }
+
+  .caseNotesPhrases {
+    align-items: flex-end;
+    display: flex;
+    column-gap: 10px;
+    flex-flow: row wrap;
+    row-gap: 14px;
+
+    .input.checkbox {
+    }
+    .input.select {
+      flex-grow: 1;
+      width: auto;
+      margin: 0;
+    }
+    .button {
+    }
+  }
+
+  dialog[open] {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 14px;
+
+    &::backdrop {
+      background-color: rgb(54, 106, 152);
+      opacity: 0.6;
+    }
+  }
+
+  .withFullscreenTextarea {
+    .input.textarea {
+      height: auto;
+    }
   }
 
   .caseNotesOverview {
     border-radius: 6px;
     box-shadow: $shadow-m2;
     grid-column-start: span 2;
+    grid-area: cards;
     margin: 0 20px;
     padding: 20px;
     order: 3;
@@ -71,6 +126,7 @@
       border-radius: 6px;
       column-gap: 50px;
       flex-flow: row nowrap;
+      justify-content: space-between;
       padding: 14px 20px;
       margin: 0 0 8px;
 
@@ -90,7 +146,7 @@
         }
       }
       &__Center {
-        flex-grow: 2;
+        max-width: 500px;
       }
       &__Right {
         display: flex;
@@ -113,6 +169,11 @@
         font-size: $px20;
         font-weight: $_bold;
       }
+      .serviceInfoEle {
+        margin: 0 0 10px;
+      }
+      .noteText {
+      }
       .lastEdit,
       .enteredBy {
         span {
@@ -126,7 +187,7 @@
 //============================================================
 // NEW UI STUFF NEEDS MOVED TO ITS OWN FOLDER
 //------------------------------------------------------------
-#UI {
+[data-UI] {
   //===========================================
   // FORM
   //-------------------------------------------
@@ -263,7 +324,7 @@
   }
 
   //*-- Checkbox ---------
-  .input {
+  .input.notoggle {
     input[type='checkbox'],
     input[type='radio'] {
       opacity: 0;
@@ -302,6 +363,73 @@
           top: 0px;
         }
       }
+    }
+  }
+
+  //*-- Checkbox As Toggle ---------
+  .input.toggle {
+    input[type='checkbox'] {
+      opacity: 0;
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+    }
+
+    input[type='checkbox'] ~ label {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      position: relative;
+      font-size: 1rem;
+    }
+
+    input[type='checkbox'] ~ label::before {
+      content: '';
+      background-color: $red;
+      border-radius: 16px;
+      border: none;
+      height: 20px;
+      width: 40px;
+      margin-right: 0.25em;
+      opacity: 0.3;
+      transition: background-color 200ms ease-in-out;
+    }
+
+    input[type='checkbox'] ~ label::after {
+      content: '';
+      align-items: center;
+      background-color: $red;
+      border-radius: 16px;
+      color: $white;
+      display: flex;
+      height: 14px;
+      justify-content: center;
+      left: 4px;
+      position: absolute;
+      width: 14px;
+      transition: background-color 200ms ease-in-out, transform 200ms ease-in-out;
+    }
+
+    input[type='checkbox']:focus ~ label::before {
+      outline: none;
+    }
+    input[type='checkbox']:checked ~ label::before {
+      background-color: $secondary;
+      opacity: 0.3;
+    }
+    input[type='checkbox']:checked ~ label::after {
+      transform: translateX(130%);
+      background-color: $secondary;
+    }
+
+    input[type='checkbox']:disabled ~ label {
+      color: $gray;
+    }
+    input[type='checkbox']:disabled ~ label::before {
+      background-color: rgba(211, 211, 211, 0.8);
+    }
+    input[type='checkbox']:disabled ~ label::after {
+      background-color: $gray;
     }
   }
 
@@ -567,8 +695,8 @@
     border: 2px solid $black;
     border-radius: 4px;
     box-shadow: $shadow-m2;
-    height: 600px;
-    width: 400px;
+    height: 76%;
+    width: 50%;
     overflow: hidden;
     padding: 0;
   }
@@ -588,10 +716,6 @@
       padding: 16px 0 0 0;
       width: 100%;
       resize: none;
-
-      // label {
-      //   display: none;
-      // }
     }
   }
 }

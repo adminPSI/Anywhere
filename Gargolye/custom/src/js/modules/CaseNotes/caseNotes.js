@@ -6,16 +6,25 @@
 //1. checkbox to toggle between seing only yours vs everyones notes in overview
 //2. list vs card view for overview on mobile?
 
+//TODO: NO GROUP NOTES IF DOC TIME IS ALLOWED
+
 // MAIN
 const CaseNotes = (() => {
-  //==================
-  // FORM & FRIENDS
-  //------------------
-  // Session Data
+  // SESSION DATA
+  //--------------------------
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
-  // Data from fetch
+  let caseManagerId;
+  // group notes
+  let allowGroupNotes;
+  let isGroupNote;
+  // timers
+  let isDocTimeRequired;
+  let isTravelTimeRequired;
+
+  // FETCH DATA
+  //--------------------------
   let dropdownData;
   let billerDropdownData = [];
   let vendorDropdownData = [];
@@ -23,196 +32,18 @@ const CaseNotes = (() => {
   let caseManagerReview;
   let consumersThatCanHaveMileage;
   let attachmentList;
+
   // DOM
+  //--------------------------
   let moduleWrap;
-  // UI Instances
+
+  // UI INSTANCES
+  //--------------------------
   let dateNavigation;
   let rosterPicker;
   let cnForm;
-
-  //*==================================================
-  //* OVERVIEW
-  //*--------------------------------------------------
-  // Session Data
-  let caseLoadOnly;
-  let viewEntered;
-  let reviewGroups = {};
-  let reviewConsumers = [];
-  // Data from fetch
-  let caseLoadRestrictions;
-  let caseLoadReviewData = [];
-
-  // UTILS
-  //--------------------------------------------------
-  function setGroupsAndTableConsumers(data) {
-    // GROUPING
-    if (data.numberInGroup !== '1') {
-      const groupNoteId = data.groupnoteid.split('.')[0];
-      const consumerId = data.consumerid.split('.')[0];
-      const name = `${data.lastname}, ${data.firstname}`;
-
-      reviewGroups[groupNoteId] = reviewGroups[groupNoteId] ?? {};
-      reviewGroups[groupNoteId][consumerId] = name;
-    }
-
-    // TABLE CONSUMERS
-    reviewConsumers.push({
-      id: data.casenoteid.split('.')[0],
-      FirstName: data.firstname,
-      LastName: data.lastname,
-    });
-  }
-
-  // MAIN
-  //--------------------------------------------------
-  function loadOverviewPage() {
-    const overviewSearch = new Input({
-      type: 'search',
-      id: 'overviewSearch',
-      name: 'overviewSearch',
-      placeholder: 'Search...',
-    });
-    overviewSearch.build();
-
-    const overviewCardsWrap = _DOM.createElement('div', { class: 'overviewCardsWrap' });
-
-    const overviewWrap = _DOM.createElement('div', {
-      class: 'caseNotesOverview',
-      node: [overviewSearch.inputWrap, overviewCardsWrap],
-    });
-
-    caseLoadReviewData.forEach(rd => {
-      // DATA
-      //---------------
-      const starttime = UTIL.convertFromMilitary(rd.starttime);
-      const endtime = UTIL.convertFromMilitary(rd.endtime);
-      const timeSpan = `${starttime} - ${endtime}`;
-      const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
-      const name = `${rd.lastname}, ${rd.firstname}`;
-      const enteredBy = `${rd.enteredby} (lastname, firstname)`; // this is user name as of now
-      let mostRecentUpdate = new Intl.DateTimeFormat('en-US', {
-        day: 'numeric',
-        month: 'numeric',
-        year: '2-digit',
-        hour: 'numeric',
-        minute: 'numeric',
-        weekday: 'long',
-        // or just
-        // dateStyle: 'short',
-        // timeStyle: 'short',
-      }).format(new Date(rd.mostrecentupdate));
-      mostRecentUpdate = mostRecentUpdate.split(', ');
-      mostRecentUpdate = `${mostRecentUpdate[0]}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
-
-      //* GK ONLY
-      const attachmentCount = rd.attachcount; // if > 0 then will show gree attachment icon
-
-      // DOM
-      //---------------
-      // card items
-      const timeSpanEle = _DOM.createElement('p', { class: 'timeSpan', text: timeSpan });
-      const totalTimeEle = _DOM.createElement('p', { class: 'timeDifference', text: timeDifference });
-      const consumerNameEle = _DOM.createElement('p', { class: 'consumerName', text: name });
-      const lastEditEle = _DOM.createElement('p', {
-        class: 'lastEdit',
-        html: `<span>Last Edit:</span> ${mostRecentUpdate}`,
-      });
-      const enteredByEle = _DOM.createElement('p', {
-        class: 'enteredBy',
-        html: `<span>Entered By:</span> ${enteredBy}`,
-      });
-      const editButton = new Button({
-        text: 'edit',
-        style: 'primary',
-        styleType: 'contained',
-      });
-      const deleteButton = new Button({
-        text: 'delete',
-        style: 'danger',
-        styleType: 'outlined',
-      });
-
-      // card layout
-      const cardLeft = _DOM.createElement('div', {
-        class: 'overviewCard__Left',
-        node: [timeSpanEle, totalTimeEle, editButton.button, deleteButton.button],
-      });
-      const cardCenter = _DOM.createElement('div', { class: 'overviewCard__Center', node: [consumerNameEle] });
-      const cardRight = _DOM.createElement('div', { class: 'overviewCard__Right', node: [lastEditEle, enteredByEle] });
-
-      const overviewCard = _DOM.createElement('div', {
-        class: 'overviewCard',
-        node: [cardLeft, cardCenter, cardRight],
-      });
-
-      overviewCardsWrap.appendChild(overviewCard);
-    });
-
-    moduleWrap.appendChild(overviewWrap);
-  }
-
-  // INIT (data & defaults)
-  //--------------------------------------------------
-  async function initOverview() {
-    caseLoadOnly = $.session.CaseNotesCaseloadRestrictions;
-    viewEntered = $.session.CaseNotesViewEntered;
-
-    if (caseLoadOnly) {
-      caseLoadRestrictions = await _UTIL.fetchData('getCaseLoadRestriction');
-      caseLoadRestrictions = caseLoadRestrictions.getCaseLoadRestrictionResult;
-    }
-
-    caseLoadReviewData = await _UTIL.fetchData('caseNotesFilteredSearchJSON', {
-      applicationName: $.session.applicationName,
-      attachments: '%',
-      billerId: $.session.PeopleId,
-      billingCode: '%',
-      billed: '%',
-      consumerId: '%',
-      contact: '%',
-      confidential: '%',
-      corrected: '%',
-      dateEnteredStart: dates.formatISO(selectedDate, { representation: 'date' }),
-      dateEnteredEnd: dates.formatISO(selectedDate, { representation: 'date' }),
-      location: '%',
-      need: '%',
-      noteText: '%%%',
-      overlaps: 'N',
-      reviewStatus: '%',
-      service: '%',
-      serviceStartDate: dates.formatISO(selectedDate, { representation: 'date' }),
-      serviceEndDate: dates.formatISO(selectedDate, { representation: 'date' }),
-    });
-    caseLoadReviewData = caseLoadReviewData.caseNotesFilteredSearchJSONResult;
-    caseLoadReviewData = caseLoadReviewData.filter(data => {
-      setGroupsAndTableConsumers(data);
-
-      // For VIEW ENTERED & CASELOAD ONLY
-      if (viewEntered && caseLoadOnly) {
-        const enteredByUser = data.enteredby.toUpperCase() === $.session.UserId.toUpperCase();
-        const onCaseload = caseLoadRestriction.some(
-          cl => cl.id.toUpperCase() === data.consumerid.split('.')[0].toUpperCase(),
-        );
-        return enteredByUser || onCaseload;
-      }
-
-      // For VIEW ENTERED only
-      if (viewEntered) {
-        return data.enteredby.toUpperCase() === $.session.UserId.toUpperCase();
-      }
-
-      // For CASELOAD ONLY
-      if (caseLoadOnly) {
-        return caseLoadRestriction.some(cl => cl.id === data.consumerid.split('.')[0]);
-      }
-
-      return true; // If no conditions met, return the data as is
-    });
-
-    loadOverviewPage();
-  }
-
-  //*==================================================
+  let cnOverview;
+  let cnPhrases;
 
   // UTILS
   //--------------------------------------------------
@@ -247,12 +78,10 @@ const CaseNotes = (() => {
       }
     }
   }
-  function checkServiceFunding() {
-    //! ADV ONLY
-    // based off selected servBillCode
-    // check its service funding value
-    // if funding value is "N" - disable service location dropdown
-    // else - enable dropdown, make required
+  function setDefaultSelectedDate() {
+    const today = dates.getTodaysDateObj();
+    today.setHours(0, 0, 0, 0);
+    return today;
   }
   function isTimeValid(dirtyTime) {
     const currentDate = new Date();
@@ -296,6 +125,13 @@ const CaseNotes = (() => {
     }
 
     return true;
+  }
+  function checkServiceFundingADV() {
+    //! ADV ONLY
+    // based off selected servBillCode
+    // check its service funding value
+    // if funding value is "N" - disable service location dropdown
+    // else - enable dropdown, make required
   }
 
   // DROPDOWNS
@@ -472,7 +308,165 @@ const CaseNotes = (() => {
     });
   }
 
-  // FORM ON CHANGE CALLBACKS
+  // DATA
+  //--------------------------------------------------
+  function showWarningModal(messageText, continueFunc) {
+    const message = _DOM.createElement('p', { text: messageText });
+
+    const warningModal = new Dialog({ isModal: true, node: message });
+
+    const continueBtn = new Button({
+      text: 'Continue',
+      style: 'primary',
+      styleType: 'contained',
+    });
+    const cancelBtn = new Button({
+      text: 'Cancel',
+      style: 'primary',
+      styleType: 'outlined',
+    });
+
+    continueBtn.renderTo(warningModal);
+    cancelBtn.renderTo(warningModal);
+
+    continueBtn.onClick(() => {
+      warningModal.close();
+      continueFunc();
+    });
+    cancelBtn.onClick(() => {
+      warningModal.close();
+    });
+
+    warningModal.renderTo(moduleWrap);
+
+    warningModal.show();
+  }
+  function preSaveValidation(formData) {
+    if ($.session.applicationName === 'Gatekeeper') {
+      // check times are within work hours
+      const timesWithinWorkHours = areTimesWithinWorkHours(formData.startTime, formData.endTime);
+
+      if (!timesWithinWorkHours) {
+        showWarningModal(
+          `The times you have entered are outside the current normal working hours. Click OK to proceed or cacnel to return to the form.`,
+          () => {
+            saveNote(formData);
+          },
+        );
+      }
+    } else {
+      saveNote(formData);
+    }
+  }
+  // SAVE/UPDATE
+  async function saveNote(formData) {
+    if (selectedConsumers.length > 1) {
+      //TODO: get group note ID
+      //TODO: set group note ID to saveData
+      //TODO: -- SAVE GROUP --
+      //TODO: do overlap check
+      //TODO: if overlap show popup
+    } else {
+      // Overlap check
+      let overlap = await _UTIL.fetchData('caseNoteOverlapCheck', {
+        caseManagerId,
+        consumerId: selectedConsumers[0],
+        endTime: formData.endTime,
+        groupNoteId: 0,
+        noteId: 0,
+        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+        startTime: formData.startTime,
+      });
+      overlap = overlap.caseNoteOverlapCheckResult;
+
+      if (overlap) {
+        //TODO show warning popup
+        console.log('OVERLAP WARNING!!!!');
+      } else {
+        await _UTIL.fetchData('saveCaseNote', {
+          caseManagerId,
+          caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
+          casenotemileage: formData.casenotemileage,
+          casenotetraveltime: formData.casenotetraveltime,
+          confidential: formData.confidential,
+          contactCode: formData.contactCode,
+          corrected: 'N', //TODO: crete checkbox for this (review only)
+          consumerId: selectedConsumers[0],
+          documentationTime: '',
+          endTime: formData.endTime,
+          locationCode: formData.locationCode,
+          needCode: formData.needCode,
+          noteId: 0,
+          reviewRequired: '',
+          serviceCode: formData.serviceCode,
+          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+          serviceLocationCode: formData.serviceLocationCode,
+          servieOrBillingCodeId: formData.servieOrBillingCodeId,
+          startTime: formData.startTime,
+          vendorId: formData.vendorId,
+        });
+      }
+      //TODO: if GK save attachments after note save
+    }
+  }
+  async function updateNote() {
+    //TODO: clean start time and end time:
+    // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
+    // startTime = startTime.length === 8 ? startTime.substring(0, 5) : startTime;
+    //? Different props from saveData
+    // add -> groupNoteId, consumerId
+    // remove -> reviewRequired
+  }
+  // DELETE
+  async function deleteNote(noteId) {
+    await _UTIL.fetchData('deleteExistingCaseNote', {
+      noteId: noteId,
+    });
+  }
+  // GET
+  async function getDropdownData() {
+    const data = await _UTIL.fetchData('populateDropdownData');
+    return dealWithDropdownDataHugeString(data.populateDropdownDataResult);
+  }
+  async function getCaseManagerReviewData() {
+    const data = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
+      caseManagerId,
+    });
+    return data.getReviewRequiredForCaseManagerResult;
+  }
+  async function getconsumersThatCanHaveMileage() {
+    const data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
+    data = data.getConsumersThatCanHaveMileageJSONResult;
+    return data.map(({ consumerid }) => consumerid);
+  }
+  async function getAttachmentsGK() {
+    const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
+    return data.getCaseNoteAttachmentsListResult;
+  }
+  async function getInitialData() {
+    selectedDate = setDefaultSelectedDate();
+
+    dropdownData = await getDropdownData();
+
+    caseManagerId = $.session.PeopleId;
+    caseManagerReview = await getCaseManagerReviewData();
+    reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
+
+    if ($.session.applicationName === 'Advisor') {
+      //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
+      //? For now going to leave this init, if init gets slow this can be moved to
+      //? rosterPicker event and setup to only run once.
+      consumersThatCanHaveMileage = await getconsumersThatCanHaveMileage();
+    }
+
+    return;
+
+    if ($.session.applicationName === 'Gatekeeper' && false) {
+      attachmentList = await getAttachmentsGK();
+    }
+  }
+
+  // MAIN
   //--------------------------------------------------
   const onChangeCallbacks = {
     serviceCode: ({ event, value, name, input }) => {
@@ -485,15 +479,17 @@ const CaseNotes = (() => {
       const contactRequired = dropdownData[selectedServiceCode].contactRequired;
       const serviceRequired = dropdownData[selectedServiceCode].serviceRequired;
 
-      let mileageRequired, docTimeRequired, travelTimeRequired, allowGroupNotes;
+      let mileageRequired;
 
       if ($.session.applicationName === 'Gatekeeper') {
         mileageRequired = dropdownData[selectedServiceCode].mileageRequired;
-        docTimeRequired = dropdownData[selectedServiceCode].docTimeRequired;
-        travelTimeRequired = dropdownData[selectedServiceCode].travelTimeRequired;
-        allowGroupNotes = dropdownData[selectedServiceCode].allowGroupNotes;
+        isTravelTimeRequired = dropdownData[selectedServiceCode].travelTimeRequired;
+        isDocTimeRequired = dropdownData[selectedServiceCode].docTimeRequired;
+        allowGroupNotes = dropdownData[selectedServiceCode].allowGroupNotes === 'Y' ? true : false;
 
         cnForm.inputs['mileage'].toggleDisabled(mileageRequired !== 'Y');
+      } else {
+        allowGroupNotes = true;
       }
 
       //populate dropdowns tied to this one
@@ -544,11 +540,10 @@ const CaseNotes = (() => {
       console.log('value:', value, 'name:', name);
       const endTimeVal = cnForm.inputs['endTime'].getValue();
 
-      if (
-        isStartTimeBeforeEndTime(value, endTimeVal) &&
-        isTimeValid(value) &&
-        areTimesWithinWorkHours(value, endTimeVal)
-      ) {
+      const isStartBeforeEnd = isStartTimeBeforeEndTime(value, endTimeVal);
+      const isValid = isTimeValid(value);
+
+      if (!isStartBeforeEnd || !isValid) {
         isStartTimeValid = true;
         input.setValidtyError('Start Time is invalid');
       } else {
@@ -560,11 +555,10 @@ const CaseNotes = (() => {
       console.log('value:', value, 'name:', name);
       const startTimeVal = cnForm.inputs['startTime'].getValue();
 
-      if (
-        isStartTimeBeforeEndTime(startTimeVal, value) &&
-        isTimeValid(value) &&
-        areTimesWithinWorkHours(startTimeVal, value)
-      ) {
+      const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, value);
+      const isValid = isTimeValid(value);
+
+      if (!isStartBeforeEnd || !isValid) {
         isEndTimeValid = true;
         input.setValidtyError('End Time is invalid');
       } else {
@@ -586,16 +580,30 @@ const CaseNotes = (() => {
     },
   };
 
-  // MAIN
+  // INIT/LOAD? (data & defaults)
   //--------------------------------------------------
-  async function loadPage() {
+  async function init() {
+    moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
+
+    _DOM.ACTIONCENTER.innerHTML = '';
+    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
+    _DOM.setActiveModuleAttribute('casenotes2.0');
+    _DOM.ACTIONCENTER.appendChild(moduleWrap);
+
+    await getInitialData();
+
     // DATE NAVIGATION
     //--------------------------------------------------
     dateNavigation = new DateNavigation({
       selectedDate: selectedDate,
-      onDateChange(newDate) {
+      async onDateChange(newDate) {
         selectedDate = newDate;
-        //TODO: re validate times based off new date
+
+        //TODO: re validate times when date change
+
+        //re populate overview section when date change
+        await cnOverview.fetchData(selectedDate);
+        cnOverview.populate();
       },
     });
     dateNavigation.build().renderTo(moduleWrap);
@@ -613,7 +621,6 @@ const CaseNotes = (() => {
           serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
         });
         vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
-        console.log(vendorDropdownData);
         const vendorData = getVendorDropdownData();
         cnForm.inputs['vendor'].populate(vendorData);
 
@@ -720,14 +727,12 @@ const CaseNotes = (() => {
       ],
     });
     cnForm.build().renderTo(moduleWrap);
-    cnForm.onSubmit(data => {
-      console.log('onSubmit ', data);
-      console.log(cnForm);
-    });
     cnForm.onChange(event => {
       const value = event.target.value;
       const name = event.target.name;
       const input = cnForm.inputs[name];
+
+      if (!onChangeCallbacks[name]) return;
 
       onChangeCallbacks[name]({
         event,
@@ -736,56 +741,47 @@ const CaseNotes = (() => {
         input,
       });
     });
-  }
+    cnForm.onSubmit(data => {
+      console.log('onSubmit ', data);
 
-  // INIT (data & defaults)
-  //--------------------------------------------------
-  async function init() {
-    moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
-    DOM.clearActionCenter();
-    DOM.ACTIONCENTER.appendChild(moduleWrap);
-
-    const today = dates.getTodaysDateObj();
-    today.setHours(0, 0, 0, 0);
-    selectedDate = today;
-
-    dropdownData = await _UTIL.fetchData('populateDropdownData');
-    dropdownData = dealWithDropdownDataHugeString(dropdownData.populateDropdownDataResult);
-    console.log(dropdownData);
-
-    caseManagerReview = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
-      caseManagerId: $.session.PeopleId,
+      preSaveValidation({
+        caseNote: data.noteText ?? '',
+        casenotemileage: data.mileage ?? '0',
+        confidential: data.confidential === 'on' ? 'Y' : 'N',
+        contactCode: data.contact ?? '',
+        endTime: data.endTime ?? '',
+        locationCode: data.location ?? '',
+        needCode: data.need ?? '',
+        serviceCode: data.service ?? '',
+        serviceLocationCode: data.serviceLocation ?? '',
+        servieOrBillingCodeId: data.serviceCode ?? '',
+        startTime: data.startTime ?? '',
+        vendorId: data.vendor ?? '',
+      });
     });
-    caseManagerReview = caseManagerReview.getReviewRequiredForCaseManagerResult;
-    reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
-    console.log(caseManagerReview);
 
-    // ADVISOR ONLY
-    if ($.session.applicationName === 'Advisor') {
-      //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
-      //? For now going to leave this init, if init gets slow this can be moved to
-      //? rosterPicker event and setup to only run once.
-      consumersThatCanHaveMileage = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
-      consumersThatCanHaveMileage = consumersThatCanHaveMileage.getConsumersThatCanHaveMileageJSONResult;
-      consumersThatCanHaveMileage = consumersThatCanHaveMileage.map(({ consumerid }) => consumerid);
+    // PHRASES
+    //--------------------------------------------------
+    // const showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
+    // cnPhrases = new CaseNotesPhrases({
+    //   formNote: cnForm.inputs['noteText'],
+    //   showAllPhrases: showAllPhrases === 'Y' ? true : false,
+    // });
+    // cnPhrases.build().renderTo(cnForm.inputs['noteText'].fullscreen.fullScreenDialog.dialog);
+    // await cnPhrases.fetchData();
 
-      console.log(consumersThatCanHaveMileage);
-    }
+    // TIMERS
+    //--------------------------------------------------
 
-    await loadPage();
-
-    initOverview();
-
-    return;
-    // GK & REVIEW ONLY
-    if ($.session.applicationName === 'Gatekeeper' && false) {
-      attachmentList = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
-      attachmentList = attachmentList.getCaseNoteAttachmentsListResult;
-    }
+    // OVERVIEW
+    //--------------------------------------------------
+    cnOverview = new CaseNotesOverview();
+    cnOverview.build().renderTo(moduleWrap);
+    await cnOverview.fetchData(selectedDate);
+    cnOverview.populate();
   }
 
   return {
     init,
-    onChangeCallbacks,
   };
 })();

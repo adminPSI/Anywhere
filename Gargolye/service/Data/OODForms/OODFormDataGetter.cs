@@ -267,12 +267,13 @@ namespace OODForms
             sb.Append("DBA.EM_Review.Num_Contacts_Staff_Emp AS NumberEmployerContacts, DBA.EM_Review.Num_Contacts_Emp_Con AS NumberContactInd, ");
             sb.Append("DBA.EM_Review.EM_Review_Other_Impediments AS PotentialIssues, DBA.EM_Review.EM_Review_Summary_Next AS PlanGoalsNextMonth, ");
             sb.Append("DBA.Consumer_Services_Master.From_Date, DBA.Consumer_Services_Master.To_Date, DBA.EM_Review.EM_Review_Summary AS IndividualsInputOnSearch, ");
-            sb.Append("DBA.Services.CPT_Code ");
+            sb.Append("DBA.Services.CPT_Code, DBA.Vendors.Name AS VendorName ");
             sb.Append("FROM   DBA.Consumer_Services_Master LEFT OUTER JOIN ");
             sb.Append("DBA.Persons ON DBA.Consumer_Services_Master.Person_ID = DBA.Persons.Person_ID LEFT OUTER JOIN ");
             sb.Append("DBA.EM_Review ON DBA.Consumer_Services_Master.Reference_Number = DBA.EM_Review.Reference_Num  LEFT OUTER JOIN ");
             sb.Append("DBA.People ON DBA.Consumer_Services_Master.Consumer_ID = DBA.People.Consumer_ID  LEFT OUTER JOIN ");
-            sb.Append("DBA.Services ON DBA.Consumer_Services_Master.Service_ID = DBA.Services.Service_ID ");
+            sb.Append("DBA.Services ON DBA.Consumer_Services_Master.Service_ID = DBA.Services.Service_ID  LEFT OUTER JOIN ");
+            sb.Append("DBA.Vendors ON DBA.People.vendor_id = DBA.Vendors.vendor_id ");
             sb.AppendFormat("WHERE DBA.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
             return di.SelectRowsDS(sb.ToString());
 
@@ -392,12 +393,14 @@ namespace OODForms
             sb.Append("dba.EM_Contacts.Contact_Type AS ContactType, dba.Code_Table.Caption AS OutCome, dba.EM_Contacts.EM_Job_Seeker_Present AS JobSeekerPresent, ");
             sb.Append("dba.Consumer_Services_Master.Reference_Number, dba.Code_Table.Table_ID, dba.Case_Notes.Notes AS Note2, ");
             sb.Append("DBA.Persons.Last_Name, DBA.Persons.First_Name, DBA.Persons.Middle_Name, dba.Code_Table.Code, dba.EM_Contacts.Application, dba.EM_Contacts.Interview, dba.EM_Contacts.Bilingual_Supplement ");
-            sb.Append("FROM dba.Consumer_Services_Master ");
+            sb.Append("FROM dba.Consumer_Services_Master, dba.Vendors.name as VendorName ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Case_Notes.Case_Manager_ID = dba.Persons.Person_ID ");
             sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Contacts.Employer_ID = dba.Employer.Employer_ID ");
             sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
+            sb.Append("LEFT OUTER JOIN DBA.People ON DBA.Consumer_Services_Master.Consumer_ID = DBA.People.Consumer_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Vendors ON dba.People.vendor_id = dba.Vendors.vendor_id ");
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             //'sb.Append("AND (DBA.Code_Table.Field_ID = 'outcome') ") 'Removed per ticket 84964
             sb.AppendFormat("AND  dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);

@@ -486,7 +486,7 @@ const NewEntryCF = (() => {
         });
         NEW_DELETE_BTN.addEventListener('click', event => {
             if (IsDeleteDisable) {
-                deleteAccount();
+                deleteAccountPOPUP();
             }
             IsDeleteDisable = true;
         });
@@ -600,9 +600,48 @@ const NewEntryCF = (() => {
         }
     }
 
-    async function deleteAccount() {
+    function deleteAccountPOPUP() {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                deleteAccount(confirmPopup);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you would like to delete this record?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    async function deleteAccount(confirmPopup) {
         await ConsumerFinancesAjax.deleteConsumerFinanceAccountAsync(regId);
-        ConsumerFinances.loadConsumerFinanceLanding();
+        POPUP.hide(confirmPopup);
+        ConsumerFinances.loadConsumerFinanceLanding();  
     }
 
     async function getCategorySubCategorybyPayee(categoryID) {

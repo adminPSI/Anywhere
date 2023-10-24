@@ -94,9 +94,12 @@ namespace Anywhere.service.Data
             cr.DataDefinition.FormulaFields["StartDate"].Text = string.Format("'{0}'", Convert.ToDateTime(startDate).ToString("MM/dd/yyyy"));
             cr.DataDefinition.FormulaFields["EndDate"].Text = string.Format("'{0}'", Convert.ToDateTime(endDate).ToString("MM/dd/yyyy"));
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            //ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Removed on 10/18/2023
+            var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Added on 10/18/2023
+            ios.CopyTo(ms);
             cr.Close();
             cr.Dispose();
+            ios.Dispose();
             return ms;
 
         }
@@ -141,10 +144,12 @@ namespace Anywhere.service.Data
             cr.DataDefinition.FormulaFields["EndDate"].Text = string.Format("'{0}'", Convert.ToDateTime(endDate).ToString("MM/dd/yyyy"));
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            //ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Removed on 10/18/2023
+            var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Added on 10/18/2023
+            ios.CopyTo(ms);
             cr.Close();
             cr.Dispose();
-
+            ios.Dispose();
             return ms;
 
         }
