@@ -43,7 +43,7 @@
     // DOM Ref
     this.rosterPickerEle = null;
     this.rosterWrapEle = null;
-    this.rosterSearchEle = null;
+    this.rosterSearchInput = null;
     this.rosterCaseLoadInput = null;
     this.consumerCards = null;
   }
@@ -191,34 +191,48 @@
 
     this.rosterSearchInput.onKeyup(
       _UTIL.debounce(e => {
-        this.consumers.forEach(consumer => {
-          const firstName = consumer.FN.toLowerCase();
-          const middleName = consumer.MN.toLowerCase();
-          const lastName = consumer.LN.toLowerCase();
-
-          const nameCombinations = [
-            `${firstName} ${middleName} ${lastName}`,
-            `${lastName} ${firstName} ${middleName}`,
-            `${firstName} ${lastName}`,
-            `${lastName} ${firstName}`,
-            `${firstName} ${middleName}`,
-            `${middleName} ${lastName}`,
-          ];
-
-          const isMatch = nameCombinations.some(combo => combo.indexOf(e.target.value.toLowerCase()) !== -1);
-          if (isMatch) {
-            consumer.cardEle.parentNode.classList.remove('isClosed');
-          } else {
-            consumer.cardEle.parentNode.classList.add('isClosed');
-          }
-        });
+        this.filterConsumersOnSearch(e);
       }, 500),
     );
+
+    this.rosterSearchInput.onChange(e => {
+      this.filterConsumersOnSearch(e);
+    });
 
     this.rosterCaseLoadInput.onChange(async e => {
       this.groupCode = e.target.checked ? 'CAS' : 'ALL';
       await this.fetchConsumers();
       this.populate();
+    });
+  };
+
+  /**
+   * Filters roster picker on search
+   *
+   * @function
+   * @param {Event} e
+   */
+  RosterPicker.prototype.filterConsumersOnSearch = function (e) {
+    this.consumers.forEach(consumer => {
+      const firstName = consumer.FN.toLowerCase();
+      const middleName = consumer.MN.toLowerCase();
+      const lastName = consumer.LN.toLowerCase();
+
+      const nameCombinations = [
+        `${firstName} ${middleName} ${lastName}`,
+        `${lastName} ${firstName} ${middleName}`,
+        `${firstName} ${lastName}`,
+        `${lastName} ${firstName}`,
+        `${firstName} ${middleName}`,
+        `${middleName} ${lastName}`,
+      ];
+
+      const isMatch = nameCombinations.some(combo => combo.indexOf(e.target.value.toLowerCase()) !== -1);
+      if (isMatch) {
+        consumer.cardEle.parentNode.classList.remove('isClosed');
+      } else {
+        consumer.cardEle.parentNode.classList.add('isClosed');
+      }
     });
   };
 
@@ -247,6 +261,16 @@
     }
 
     return this;
+  };
+
+  /**
+   * Updates the allowMultiSelect option property with given value
+   *
+   * @function
+   * @param {Boolean} allowMultiSelect
+   */
+  RosterPicker.prototype.toggleMultiSelectOption = function (allowMultiSelect) {
+    this.options.allowMultiSelect = allowMultiSelect;
   };
 
   /**

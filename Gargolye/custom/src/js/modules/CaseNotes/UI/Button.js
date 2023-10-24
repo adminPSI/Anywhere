@@ -1,6 +1,8 @@
 (function (global, factory) {
   global.Button = factory();
 })(this, function () {
+  //TODO: add icons
+
   /**
    * Default configuration
    * @type {Object}

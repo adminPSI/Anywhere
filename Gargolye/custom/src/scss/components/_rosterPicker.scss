@@ -34,6 +34,7 @@
     &.isClosed:not(.selected) {
       grid-template-rows: 0fr;
       margin: 0;
+      padding: 0;
     }
 
     &.selected {
