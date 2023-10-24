@@ -1,8 +1,6 @@
 (function (global, factory) {
   global.RosterPicker = factory();
 })(this, function () {
-  //TODO: keep track of selected consumers (option to allow multiple consumers to be selected)
-
   /**
    * Default configuration
    * @type {Object}
@@ -22,6 +20,9 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
   /**
    * Displays a list of consumers, contains logic for selecting consumer(s).
    * Use onConsumerSelect passed in {options} to get array of selected consumer IDs.

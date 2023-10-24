@@ -182,6 +182,7 @@
 
   /**
    * Separate props and methods from obj
+   *
    * @function
    * @param {Object}  dirtyObj - Object to split
    * @param {Array}   props - Object props to isolate
@@ -197,6 +198,27 @@
     );
 
     return [{ ...a }, { ...b }];
+  }
+
+  /**
+   * Watchs for the value of given variable to change
+   *
+   * @namespace watchVariable
+   */
+  function watchVariable(initialValue, callback) {
+    let value = initialValue;
+
+    return {
+      getValue() {
+        return value;
+      },
+      setValue(newValue) {
+        if (value !== newValue) {
+          callback(value, newValue);
+        }
+        value = newValue;
+      },
+    };
   }
 
   //=================================================================
@@ -231,6 +253,7 @@
     removeUnsavableNoteText,
     sortByProperty,
     splitObjectByPropNames,
+    watchVariable,
     // TIME METHODS
     getMilitaryTimeDifference,
   };

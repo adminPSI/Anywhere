@@ -10,12 +10,12 @@
 [data-active-module='casenotes2.0'] .caseNotesModule {
   display: grid;
   grid-template-columns: auto 320px;
-  grid-template-rows: auto auto 600px 400px;
+  grid-template-rows: auto auto auto 600px;
   grid-template-areas:
+    'feedback feedback'
     'nav nav'
     'form roster'
-    'cards cards'
-    '. .';
+    'cards cards';
   row-gap: 20px;
 
   .dateNavigation {
@@ -24,13 +24,19 @@
     order: 1;
     position: sticky;
     top: 0px;
-    z-index: 999;
+    z-index: 99;
+  }
+
+  .caseNotesFeedback {
+    border-radius: 6px;
+    box-shadow: $shadow-m2;
+    grid-area: feedback;
   }
 
   .rosterPicker {
-    height: 1000px;
     grid-area: roster;
     margin: 0 20px 0 10px;
+    max-height: 1000px;
     order: 3;
   }
 
@@ -41,10 +47,10 @@
     padding: 10px;
     column-gap: 10px;
     display: flex;
-    height: 1000px;
     flex-flow: row wrap;
     grid-area: form;
     margin: 0 10px 0 20px;
+    max-height: 1000px;
     order: 2;
 
     .input {
@@ -68,6 +74,10 @@
       min-width: 300px;
       width: calc(50% - 5px);
     }
+
+    button {
+      margin-left: auto;
+    }
   }
 
   .caseNotesPhrases {
@@ -85,23 +95,6 @@
       margin: 0;
     }
     .button {
-    }
-  }
-
-  dialog[open] {
-    display: flex;
-    flex-flow: column nowrap;
-    row-gap: 14px;
-
-    &::backdrop {
-      background-color: rgb(54, 106, 152);
-      opacity: 0.6;
-    }
-  }
-
-  .withFullscreenTextarea {
-    .input.textarea {
-      height: auto;
     }
   }
 
@@ -180,6 +173,23 @@
           font-weight: $_bold;
         }
       }
+    }
+  }
+
+  dialog[open] {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 14px;
+
+    &::backdrop {
+      background-color: rgb(54, 106, 152);
+      opacity: 0.6;
+    }
+  }
+
+  .withFullscreenTextarea {
+    .input.textarea {
+      height: auto;
     }
   }
 }

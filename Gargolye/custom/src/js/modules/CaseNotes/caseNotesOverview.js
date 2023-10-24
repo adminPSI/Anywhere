@@ -2,6 +2,7 @@
  * @constructor
  */
 function CaseNotesOverview() {
+  // Data Init
   this.caseLoadOnly = $.session.CaseNotesCaseloadRestrictions;
   this.viewEntered = $.session.CaseNotesViewEntered;
   this.reviewGroups = {};
@@ -195,7 +196,7 @@ CaseNotesOverview.prototype.fetchData = async function (selectedDate) {
 };
 
 /**
- * Renders Case Notes Overview makrup to the specified DOM node.
+ * Renders Case Notes Overview markup to the specified DOM node.
  *
  * @function
  * @param {Node} node - DOM node to render case notes overview to
