@@ -1,4 +1,5 @@
-﻿using System;
+﻿using iTextSharp.text;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -1993,7 +1994,13 @@ namespace Anywhere.service.Data
                 List<WorkflowTemplateStep> steps = js.Deserialize<List<WorkflowTemplateStep>>(wfdg.getWorkflowTemplateSteps(null, transaction_insertWFDetails));
                 List<WorkflowTemplateStepEvent> events = js.Deserialize<List<WorkflowTemplateStepEvent>>(wfdg.getWorkflowTemplateStepEvents(null, transaction_insertWFDetails));
                 List<WorkflowTemplateStepEventAction> actions = js.Deserialize<List<WorkflowTemplateStepEventAction>>(wfdg.getWorkflowTemplateStepEventActions(null, transaction_insertWFDetails));
-                List<WorkflowTemplateStepDocument> selecteddocuments = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowStepDocuments(null, wantedFormDescriptions, priorConsumerPlanId, transaction_insertWFDetails));
+                // -- Get PreviousPlan StepId 
+                List<WorkflowTemplateStepDocument> selecteddocuments = new List<WorkflowTemplateStepDocument>();
+                if (!string.IsNullOrEmpty(wantedFormDescriptions)) {
+                    String previousPlanStepId = wfdg.getWorkflowStepIdfromPreviousPlan(priorConsumerPlanId, wantedFormDescriptions);
+                    selecteddocuments = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowStepDocuments(previousPlanStepId, wantedFormDescriptions, priorConsumerPlanId, transaction_insertWFDetails));
+                }
+               
                 List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, transaction_insertWFDetails));
 
                 // Get relationships data used for getting responsible party relationships
@@ -2100,6 +2107,7 @@ namespace Anywhere.service.Data
                         //}
 
                         //        List<WorkflowTemplateStepDocument> selecteddocuments = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowStepDocuments(null, wantedFormDescriptions, priorConsumerPlanId, transaction_insertWFDetails));
+                      
 
                         foreach (WorkflowTemplateStepDocument d in selecteddocuments.FindAll(p => p.stepId == s.stepId))
                         {
