@@ -9,10 +9,13 @@ using System.Text.RegularExpressions;
 using Anywhere.service.Data;
 using Bytescout.Spreadsheet;
 using Newtonsoft.Json;
+using DocumentFormat;
 using pdftron.PDF;
 using pdftron.SDF;
 using Convert = System.Convert;
 using Font = System.Drawing.Font;
+using Field = pdftron.PDF.Field;
+using pdftron.Filters;
 
 
 namespace OODForms
@@ -21,34 +24,64 @@ namespace OODForms
     {
         private StringBuilder sb = new StringBuilder();
 
-        public void Form8(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath, string registrationName, string registrationKey)
+        public void ConvertXLStoPDF(Attachment attachment)
         {
+            pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+            Attachment pdfAttachment = new Attachment();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (PDFDoc doc = new PDFDoc())
+                {
+                    attachment.filename = attachment.filename.Replace("xls", "pdf");
+                    byte[] nAttachment = StreamExtensions.ToByteArray(attachment.data);
+                    var filter = new MemoryFilter(nAttachment.Length, true);
+                    var filterWriter = new FilterWriter(filter);
+                    filterWriter.WriteBuffer(nAttachment);
+                    filterWriter.Flush();
+                    pdftron.PDF.Convert.OfficeToPDF(doc, filter, null);
+                    // filterWriter.Flush(); // No need for this line.
+
+                    string pdfversion = doc.GetSDFDoc().GetHeader();
+                    doc.Save(ms, SDFDoc.SaveOptions.e_linearized);
+
+                    pdfAttachment.filename = attachment.filename;
+                    pdfAttachment.data = ms;
+                }
+
+                DisplayAttachment(pdfAttachment, ".pdf", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            }
+        }
+
+        public void Form8(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
+        {
+
             Spreadsheet SS = new Spreadsheet();
             SS.RegistrationName = registrationName;
             SS.RegistrationKey = registrationKey;
 
             SS.LoadFromFile(ReportPath);
 
-            Worksheet WS = SS.Worksheet(0);
+            Bytescout.Spreadsheet.Worksheet WS = SS.Worksheet(0);
 
             DataTable dt;
             DataRow row;
             OODFormDataGetter obj = new OODFormDataGetter();
 
-            dt = obj.OODVendor(VendorID).Tables[0];
-            row = dt.Rows[0];
-
-            string ProviderName = string.Format("{0}", row["ProviderName"].ToString().Trim());
-            WS.Cell("m1").Value = ProviderName.ToString();
-
-            WS.Cell("m2").Value = AuthorizationNumber.ToString();           
-
-            WS.Cell("m3").Value = invoiceNumber.ToString();
-
-            //WS.Cell("m3").Value = DateTime.Now.ToString("MM/dd/yy");
+            //dt = obj.OODVendor(VendorID).Tables[0];
+            //row = dt.Rows[0];
 
             dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
             row = dt.Rows[0];
+
+            string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
+            WS.Cell("m1").Value = ProviderName.ToString();
+
+            WS.Cell("m2").Value = AuthorizationNumber.ToString();
+
+            WS.Cell("m3").Value = invoiceNumber.ToString();
+
+            
 
             string ConsumerName = string.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
             WS.Cell("m4").Value = ConsumerName;
@@ -188,7 +221,7 @@ namespace OODForms
                 WS.Cell(String.Format("l{0}", t)).Value = row2["Quantity_Indicators"].ToString().Trim();
                 WS.Cell(String.Format("m{0}", t)).Value = row2["Narrative"].ToString().Trim();
                 WS.Cell(String.Format("n{0}", t)).Value = row2["Interventions"].ToString().Trim();
-                WS.Cell(String.Format("n{0}", t)).FontColor = Color.Black;
+                WS.Cell(String.Format("n{0}", t)).FontColor = System.Drawing.Color.Black;
                 t += 1;
             }
 
@@ -217,7 +250,6 @@ namespace OODForms
             WS.Cell("a21").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
 
             MemoryStream ms = new MemoryStream();
-
             SS.SaveToStreamXLSX(ms);
 
             Attachment attachment = new Attachment
@@ -226,10 +258,10 @@ namespace OODForms
                 data = ms
             };
 
-            DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            ConvertXLStoPDF(attachment);
         }
 
-        public void Form4(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string SavePath, string registrationName, string registrationKey)
+        public void Form4(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
         {
             Spreadsheet SS = new Spreadsheet();
             SS.RegistrationName = registrationName;
@@ -237,28 +269,28 @@ namespace OODForms
 
             SS.LoadFromFile(ReportPath);
 
-            Worksheet WS = SS.Worksheet(0);
+            Bytescout.Spreadsheet.Worksheet WS = SS.Worksheet(0);
 
             DataTable dt;
             DataRow row;
             OODFormDataGetter obj = new OODFormDataGetter();
 
-            dt = obj.OODVendor(VendorID).Tables[0];
+            //dt = obj.OODVendor(VendorID).Tables[0];
+            //row = dt.Rows[0];
+
+            dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
             row = dt.Rows[0];
 
             StartDate = DateTime.Parse(StartDate).ToString("yyyy-MM-dd");
             EndDate = DateTime.Parse(EndDate).ToString("yyyy-MM-dd");
 
-            string ProviderName = string.Format("{0}", row["ProviderName"].ToString().Trim());
+            string ProviderName = string.Format("{0}", row["VendorName"].ToString().Trim());
 
-            WS.Cell("k1").Value = ProviderName;
-
-            dt = obj.OODDevelopment(AuthorizationNumber).Tables[0];
-            row = dt.Rows[0];
+            WS.Cell("k1").Value = ProviderName;            
 
             WS.Cell("k2").Value = string.Format("{0}", AuthorizationNumber);
 
-            WS.Cell("m3").Value = invoiceNumber.ToString();
+            WS.Cell("k3").Value = invoiceNumber.ToString();
 
             //WS.Cell("k3").Value = DateTime.Now.ToString("yyyy-MM-dd");
 
@@ -332,7 +364,9 @@ namespace OODForms
                 }
             }
 
-            WS.Cell("k7").Value = OODStaff.ToString().Trim().Substring(0, OODStaff.Length - 2);
+            //WS.Cell("k7").Value = OODStaff.ToString().Trim().Substring(0, OODStaff.Length - 2);
+            WS.Cell("k7").Value = OODStaff;
+
 
             WS.Cell("k8").Value = DateTime.Now.ToString("MM/dd/yy");
 
@@ -404,9 +438,16 @@ namespace OODForms
                             WS.Cell(String.Format("f{0}", i)).Value = "NA";
                             break;
                     }
+                    
+                    string MN = string.Empty;
+                    if (row2["Middle_Name"].ToString().Length > 0)
+                    {
+                        MN = row2["Middle_Name"].ToString().Substring(0, 1).ToUpper();
+                    }
 
-                    string Initals = String.Format("{0}{1}{2}", row2["First_Name"].ToString().Trim().Substring(0, 1), row2["Middle_Name"].ToString().Trim().Substring(0, 1), row2["Last_Name"].ToString().Trim().Substring(0, 1));
-                    WS.Cell(String.Format("g{0}", i)).Value = Initals.ToString().Trim(); //Staff initial
+                    string Initials = String.Format("{0}{1}{2}", row2["First_Name"].ToString().Substring(0, 1).ToUpper(), MN, row2["Last_Name"].ToString().Substring(0, 1).ToUpper());
+                    //string Initals = String.Format("{0}{1}{2}", row2["First_Name"].ToString().Trim().Substring(0, 1), row2["Middle_Name"].ToString().Trim().Substring(0, 1), row2["Last_Name"].ToString().Trim().Substring(0, 1));
+                    WS.Cell(String.Format("g{0}", i)).Value = Initials.ToString().Trim(); //Staff initial
 
                     string Service = string.Empty;
                     switch (row2["ContactType"].ToString().ToUpper())
@@ -493,7 +534,6 @@ namespace OODForms
             }
 
             MemoryStream ms = new MemoryStream();
-
             SS.SaveToStreamXLSX(ms);
 
             Attachment attachment = new Attachment
@@ -502,7 +542,7 @@ namespace OODForms
                 data = ms
             };
 
-            DisplayAttachment(attachment, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            ConvertXLStoPDF(attachment);
         }
 
         public string generateForm4(string token, string AuthorizationNumber, long VendorID, string peopleIDString, String StartDate, String EndDate, string serviceCode)
@@ -512,6 +552,8 @@ namespace OODForms
                 OODFormWorker obj = new OODFormWorker();
                 OODFormDataGetter oodfdg = new OODFormDataGetter();
 
+                long ServiceCodeID = 0;
+
                 string SSinfo = oodfdg.getSpreadsheetNameAndKey(token);
                 SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
                 string registrationName = SSInfoObj[0].registrationName;
@@ -520,19 +562,21 @@ namespace OODForms
                 string crpath = oodfdg.getFormTemplatePath(token);
                 PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
                 string path = pathdatalist[0].path;
-                string crname = "4+-+Monthly+Job+&+Site+Development.xlsx";
-                string reportPath = string.Format(path, crname);
-
-                string tempFileName = "temporary_ood_form_4.xlsx";
-                string savePath = string.Format(path, tempFileName);
+                string templateFileName = "Form4MonthlyJobAndSiteDevelopment.xlsx";
+                string reportPath = string.Format(path, templateFileName);
 
                 long PeopleID = long.Parse(peopleIDString);
-                long ServiceCodeID = long.Parse(serviceCode);
+
+                if (serviceCode != "All")
+                {
+                    ServiceCodeID = long.Parse(serviceCode);
+                }
+
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form4(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, savePath, registrationName, registrationKey);
+                obj.Form4(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, registrationName, registrationKey);
 
                 return "Success";
             }
@@ -549,6 +593,8 @@ namespace OODForms
                 OODFormWorker obj = new OODFormWorker();
                 OODFormDataGetter oodfdg = new OODFormDataGetter();
 
+                long ServiceCodeID = 0;
+
                 string SSinfo = oodfdg.getSpreadsheetNameAndKey(token);
                 SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
                 string registrationName = SSInfoObj[0].registrationName;
@@ -557,20 +603,21 @@ namespace OODForms
                 string crpath = oodfdg.getFormTemplatePath(token);
                 PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
                 string path = pathdatalist[0].path;
-                string templateFileName = "8+-+Work+Activities+&+Assessment.xlsx";
+                string templateFileName = "Form8WorkActivitiesAndAssessment.xlsx";
                 string reportPath = string.Format(path, templateFileName);
-                //String reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\Form8WorkActivitiesAndAssessment.xlsx";
-
-                string tempFileName = "temporary_ood_form_8.xlsx";
-                string savePath = string.Format(path, tempFileName);
+                //string reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\Form8WorkActivitiesAndAssessmentBinary.xlsx";
 
                 long PeopleID = long.Parse(peopleIDString);
-                long ServiceCodeID = long.Parse(serviceCode);
+
+                if (serviceCode != "All") {
+                    ServiceCodeID = long.Parse(serviceCode);
+                }
+                
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form8(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, savePath, registrationName, registrationKey);
+                obj.Form8(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, registrationName, registrationKey);
 
                 return "Success";
             }
@@ -583,8 +630,8 @@ namespace OODForms
 
         public string generateForm10(string token, string referenceNumber, long VendorID, string consumerIdString, String startDate, String endDate, string userId)
         {
-            //try
-            //{
+            try
+            {
             OODFormDataGetter oodfdg = new OODFormDataGetter();
             pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
 
@@ -692,26 +739,23 @@ namespace OODForms
                 Console.WriteLine("Field name: {0}", fieldName);
             }
 
-            // Save the PDF to a memory stream
             MemoryStream pdfStream = new MemoryStream();
             form10Template.Save(pdfStream, SDFDoc.SaveOptions.e_linearized);
 
-            // Pass the PDF data to the displayAttachment method
             Attachment attachment = new Attachment
             {
-                filename = "Form10", // Provide a filename for the attachment
+                filename = "Form10",
                 data = pdfStream
             };
 
             DisplayAttachment(attachment, ".pdf", "application/pdf");
 
-            //form10Template.Save(@"C:\Users\erick.bey\Downloads\test form 10.pdf", SDFDoc.SaveOptions.e_linearized);
             return "Success";
-            // }
-            //catch (Exception ex)
-            //{
-            //return "Failed";
-            //}
+            }
+            catch (Exception ex)
+            {
+                return "Failed";
+            }
         }
 
         public void DisplayAttachment(Attachment attachment, string fileExtension, string contentType)

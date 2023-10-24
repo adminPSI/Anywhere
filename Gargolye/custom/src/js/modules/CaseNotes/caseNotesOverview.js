@@ -10,6 +10,7 @@ function CaseNotesOverview() {
   this.caseLoadRestrictions;
   this.caseLoadReviewData = [];
 
+  // DOM Ref
   this.overviewWrap;
   this.overviewSearch;
   this.overviewCardsWrap;
@@ -25,7 +26,6 @@ CaseNotesOverview.prototype.build = function () {
   this.overviewSearch = new Input({
     type: 'search',
     id: 'overviewSearch',
-    name: 'overviewSearch',
     placeholder: 'Search...',
   });
 

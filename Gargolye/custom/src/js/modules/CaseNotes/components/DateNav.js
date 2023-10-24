@@ -30,10 +30,55 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
+  //=======================================
+  // CUSTOM DATE INPUT
+  //---------------------------------------
+
+  /**
+   * @constructor
+   */
+  function DatePicker() {
+    this.inputWrap = null;
+    this.input = null;
+
+    this.build();
+  }
+
+  DatePicker.prototype.build = function () {
+    // INPUT WRAP
+    this.inputWrap = _DOM.createElement('div', {
+      class: 'datePicker',
+    });
+
+    // INPUT & LABEL
+    this.input = _DOM.createElement('input', {
+      id: 'datePicker',
+      type: 'date',
+      name: 'datePicker',
+    });
+    const labelEle = _DOM.createElement('label', {
+      node: Icon.getIcon('calendar'),
+      for: 'datePicker',
+    });
+    labelEle.addEventListener('click', e => {
+      this.input.showPicker();
+    });
+
+    this.inputWrap.appendChild(this.input);
+    this.inputWrap.appendChild(labelEle);
+
+    return this;
+  };
+
+  DatePicker.prototype.onDateChange = function (cb) {
+    this.input.addEventListener('change', e => {
+      cb(e.target.value);
+    });
+  };
+
   //=========================
   // MAIN LIB
   //-------------------------
-
   /**
    * @constructor
    * @param {Object} options
@@ -59,6 +104,7 @@
     this.navigationEle = null;
     this.weekWrapEle = null;
   }
+
   /**
    * Builds the Navigation element structure
    *
@@ -68,6 +114,7 @@
   DateNavigation.prototype.build = function () {
     this.navigationEle = _DOM.createElement('div', { class: 'dateNavigation' });
     this.weekWrapEle = _DOM.createElement('div', { class: 'week' });
+
     const prevWeekNavBtn = _DOM.createElement('div', {
       class: 'navButtons',
       'data-target': 'prevWeek',
@@ -78,7 +125,9 @@
       'data-target': 'nextWeek',
       node: Icon.getIcon('arrowRight'),
     });
+    this.customDatePicker = new DatePicker();
 
+    this.navigationEle.appendChild(this.customDatePicker.inputWrap);
     this.navigationEle.appendChild(prevWeekNavBtn);
     this.navigationEle.appendChild(this.weekWrapEle);
     this.navigationEle.appendChild(nextWeekNavBtn);
@@ -174,6 +223,27 @@
         return;
       }
     });
+
+    this.customDatePicker.onDateChange(newDate => {
+      console.log(newDate);
+    });
+  };
+
+  /**
+   *
+   * @param {Date} newDate
+   */
+  DateNavigation.prototype.setSelectedDate = function (newDate) {
+    this.selectedDate = new Date(`${newDate}T00:00:00`);
+    this.weekStart = dates.startDayOfWeek(this.selectedDate);
+    this.weekEnd = dates.endOfWeek(this.selectedDate);
+    this.eachDayOfWeek = dates.eachDayOfInterval({
+      start: this.weekStart,
+      end: this.weekEnd,
+    });
+
+    this.populate();
+    this.onDateChange(this.selectedDate);
   };
 
   /**

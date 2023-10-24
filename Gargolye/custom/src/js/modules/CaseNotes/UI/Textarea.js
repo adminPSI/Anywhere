@@ -38,15 +38,17 @@
 
     this.fullScreenDialog = null;
     this.textareaClone = null;
+
+    this.build();
   }
 
   FullscreenTextarea.prototype.build = function () {
     // get new Dialog
-    this.fullScreenDialog = new Dialog({ class: 'withFullscreenTextarea' });
+    this.fullScreenDialog = new Dialog();
 
-    // build and append dialog to input wrap
-    this.fullScreenDialog.build();
-    this.fullScreenDialog.renderTo(this.textareaInstance.inputWrap);
+    // build and append dialog
+    this.fullScreenDialog.renderTo(_DOM.ACTIONCENTER);
+    this.fullScreenDialog.dialog.classList.add('withFullscreenTextarea');
 
     // clone textarea for dialog
     this.textareaClone = this.textareaInstance.inputWrap.cloneNode(true);
@@ -58,11 +60,9 @@
     });
     this.textareaClone.appendChild(this.fullScreenCloseBtn);
 
-    // remove dialog and showBtn from textareaClone
+    // remove showBtn from textareaClone
     const dupShowModalBtn = this.textareaClone.querySelector('.fullscreenToggleBtn.show');
-    const dupDialogModal = this.textareaClone.querySelector('.dialog');
     this.textareaClone.removeChild(dupShowModalBtn);
-    this.textareaClone.removeChild(dupDialogModal);
 
     // append textareaClone to dialog
     this.fullScreenDialog.dialog.appendChild(this.textareaClone);
@@ -160,9 +160,8 @@
       });
       this.inputWrap.appendChild(this.fullScreenShowBtn);
 
-      // init fullscreenmode
+      // build fullscreenmode
       this.fullscreen = new FullscreenTextarea(this);
-      this.fullscreen.build();
     }
 
     return this;
@@ -242,13 +241,6 @@
       cbFunc(e);
     });
   };
-
-  /**
-   * Handles showing/hiding the textarea fullscreen mode
-   *
-   * @function
-   */
-  Textarea.prototype.toggleFullscreenMode = function () {};
 
   /**
    * Renders the built Textarea element to the specified DOM node.

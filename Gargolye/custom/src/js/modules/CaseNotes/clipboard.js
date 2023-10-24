@@ -36,3 +36,17 @@
 // 1. convertToGroupNotes === true | only if !isGroupNote && allowGroupNotes
 // 2. allowGroupNotes | this gets set on from service code dropdown event
 // 3. isGroupNote | set when singleNotToGroupNote is called
+
+//TODO: preSave() stops timer and speech to text
+
+// if (!isGroupNote && allowGroupNotes) {
+//* SINGLE NOTE TO GROUP NOTE LOGIC
+//TODO: delete existing case note
+//TODO: isGroupNote = true
+//TODO: set noteId = 0?
+//TODO: if (travelTime === null) travelTime = 0;
+//TODO: if (documentationTime === null) documentationTime = 0;
+//TODO: endTime = endTime.substring(0, 5);
+//TODO: startTime = startTime.substring(0, 5);
+//TODO: set page load to new?
+// }

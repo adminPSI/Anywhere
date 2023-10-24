@@ -15,6 +15,7 @@ const CaseNotes = (() => {
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
+  let caseManagerId;
   // group notes
   let allowGroupNotes;
   let isGroupNote;
@@ -42,6 +43,7 @@ const CaseNotes = (() => {
   let rosterPicker;
   let cnForm;
   let cnOverview;
+  let cnPhrases;
 
   // UTILS
   //--------------------------------------------------
@@ -130,99 +132,6 @@ const CaseNotes = (() => {
     // check its service funding value
     // if funding value is "N" - disable service location dropdown
     // else - enable dropdown, make required
-  }
-
-  // DATA
-  //--------------------------------------------------
-  // SAVE/UPDATE
-  // var overlapData = {
-  //   consumerId,
-  //   startTime,
-  //   endTime,
-  //   serviceDate,
-  //   caseManagerId,
-  //   noteId: 0,
-  //   groupNoteId: 0,
-  // };
-  // var saveData = {
-  //   caseManagerId,
-  //   noteId,
-  //   // dropdowns
-  //   serviceOrBillingCodeId: serviceCode,
-  //   locationCode: locationId,
-  //   serviceCode: serviceId,
-  //   needCode: needId,
-  //   serviceDate,
-  //   startTime,
-  //   endTime,
-  //   vendorId: vendorInput.options[vendorInput.selectedIndex].value,
-  //   contactCode: contactId,
-  //   serviceLocationCode: serviceLocationId,
-  //   caseNote: noteText, // from note input
-  //   confidential, // from checkbox
-  //   corrected, // from checkbox
-  //   casenotemileage: String(mileage) === 'null' ? '0' : String(mileage),
-  //   casenotetraveltime: String(travelTime),
-  //   documentationTime: String(documentationTime),
-  //   reviewRequired,
-  // };
-  async function saveNote() {}
-  async function updateNote() {
-    //TODO: clean start time and end time:
-    // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
-    // startTime = startTime.length === 8 ? startTime.substring(0, 5) : startTime;
-    //? Different props from saveData
-    // add -> groupNoteId, consumerId
-    // remove -> reviewRequired
-  }
-  // DELETE
-  // GET
-  async function getDropdownData() {
-    const data = await _UTIL.fetchData('populateDropdownData');
-    return dealWithDropdownDataHugeString(data.populateDropdownDataResult);
-  }
-  async function getCaseManagerReviewData() {
-    const data = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
-      caseManagerId: $.session.PeopleId,
-    });
-    return data.getReviewRequiredForCaseManagerResult;
-  }
-  async function getconsumersThatCanHaveMileage() {
-    const data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
-    data = data.getConsumersThatCanHaveMileageJSONResult;
-    return data.map(({ consumerid }) => consumerid);
-  }
-  async function getAttachmentsGK() {
-    const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
-    return data.getCaseNoteAttachmentsListResult;
-  }
-  /**
-   * Sets default selected date and fetchs initial data for case
-   * notes form including dropdown data, case manager review permissions
-   * and consumers that can have mileage
-   *
-   * @function
-   */
-  async function getInitialDataForForm() {
-    selectedDate = setDefaultSelectedDate();
-
-    dropdownData = await getDropdownData();
-
-    caseManagerReview = await getCaseManagerReviewData();
-    reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
-
-    if ($.session.applicationName === 'Advisor') {
-      //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
-      //? For now going to leave this init, if init gets slow this can be moved to
-      //? rosterPicker event and setup to only run once.
-      consumersThatCanHaveMileage = await getconsumersThatCanHaveMileage();
-    }
-
-    return;
-
-    if ($.session.applicationName === 'Gatekeeper' && false) {
-      attachmentList = await getAttachmentsGK();
-    }
   }
 
   // DROPDOWNS
@@ -399,7 +308,165 @@ const CaseNotes = (() => {
     });
   }
 
-  // FORM ON CHANGE CALLBACKS
+  // DATA
+  //--------------------------------------------------
+  function showWarningModal(messageText, continueFunc) {
+    const message = _DOM.createElement('p', { text: messageText });
+
+    const warningModal = new Dialog({ isModal: true, node: message });
+
+    const continueBtn = new Button({
+      text: 'Continue',
+      style: 'primary',
+      styleType: 'contained',
+    });
+    const cancelBtn = new Button({
+      text: 'Cancel',
+      style: 'primary',
+      styleType: 'outlined',
+    });
+
+    continueBtn.renderTo(warningModal);
+    cancelBtn.renderTo(warningModal);
+
+    continueBtn.onClick(() => {
+      warningModal.close();
+      continueFunc();
+    });
+    cancelBtn.onClick(() => {
+      warningModal.close();
+    });
+
+    warningModal.renderTo(moduleWrap);
+
+    warningModal.show();
+  }
+  function preSaveValidation(formData) {
+    if ($.session.applicationName === 'Gatekeeper') {
+      // check times are within work hours
+      const timesWithinWorkHours = areTimesWithinWorkHours(formData.startTime, formData.endTime);
+
+      if (!timesWithinWorkHours) {
+        showWarningModal(
+          `The times you have entered are outside the current normal working hours. Click OK to proceed or cacnel to return to the form.`,
+          () => {
+            saveNote(formData);
+          },
+        );
+      }
+    } else {
+      saveNote(formData);
+    }
+  }
+  // SAVE/UPDATE
+  async function saveNote(formData) {
+    if (selectedConsumers.length > 1) {
+      //TODO: get group note ID
+      //TODO: set group note ID to saveData
+      //TODO: -- SAVE GROUP --
+      //TODO: do overlap check
+      //TODO: if overlap show popup
+    } else {
+      // Overlap check
+      let overlap = await _UTIL.fetchData('caseNoteOverlapCheck', {
+        caseManagerId,
+        consumerId: selectedConsumers[0],
+        endTime: formData.endTime,
+        groupNoteId: 0,
+        noteId: 0,
+        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+        startTime: formData.startTime,
+      });
+      overlap = overlap.caseNoteOverlapCheckResult;
+
+      if (overlap) {
+        //TODO show warning popup
+        console.log('OVERLAP WARNING!!!!');
+      } else {
+        await _UTIL.fetchData('saveCaseNote', {
+          caseManagerId,
+          caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
+          casenotemileage: formData.casenotemileage,
+          casenotetraveltime: formData.casenotetraveltime,
+          confidential: formData.confidential,
+          contactCode: formData.contactCode,
+          corrected: 'N', //TODO: crete checkbox for this (review only)
+          consumerId: selectedConsumers[0],
+          documentationTime: '',
+          endTime: formData.endTime,
+          locationCode: formData.locationCode,
+          needCode: formData.needCode,
+          noteId: 0,
+          reviewRequired: '',
+          serviceCode: formData.serviceCode,
+          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+          serviceLocationCode: formData.serviceLocationCode,
+          servieOrBillingCodeId: formData.servieOrBillingCodeId,
+          startTime: formData.startTime,
+          vendorId: formData.vendorId,
+        });
+      }
+      //TODO: if GK save attachments after note save
+    }
+  }
+  async function updateNote() {
+    //TODO: clean start time and end time:
+    // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
+    // startTime = startTime.length === 8 ? startTime.substring(0, 5) : startTime;
+    //? Different props from saveData
+    // add -> groupNoteId, consumerId
+    // remove -> reviewRequired
+  }
+  // DELETE
+  async function deleteNote(noteId) {
+    await _UTIL.fetchData('deleteExistingCaseNote', {
+      noteId: noteId,
+    });
+  }
+  // GET
+  async function getDropdownData() {
+    const data = await _UTIL.fetchData('populateDropdownData');
+    return dealWithDropdownDataHugeString(data.populateDropdownDataResult);
+  }
+  async function getCaseManagerReviewData() {
+    const data = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
+      caseManagerId,
+    });
+    return data.getReviewRequiredForCaseManagerResult;
+  }
+  async function getconsumersThatCanHaveMileage() {
+    const data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
+    data = data.getConsumersThatCanHaveMileageJSONResult;
+    return data.map(({ consumerid }) => consumerid);
+  }
+  async function getAttachmentsGK() {
+    const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
+    return data.getCaseNoteAttachmentsListResult;
+  }
+  async function getInitialData() {
+    selectedDate = setDefaultSelectedDate();
+
+    dropdownData = await getDropdownData();
+
+    caseManagerId = $.session.PeopleId;
+    caseManagerReview = await getCaseManagerReviewData();
+    reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
+
+    if ($.session.applicationName === 'Advisor') {
+      //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
+      //? For now going to leave this init, if init gets slow this can be moved to
+      //? rosterPicker event and setup to only run once.
+      consumersThatCanHaveMileage = await getconsumersThatCanHaveMileage();
+    }
+
+    return;
+
+    if ($.session.applicationName === 'Gatekeeper' && false) {
+      attachmentList = await getAttachmentsGK();
+    }
+  }
+
+  // MAIN
   //--------------------------------------------------
   const onChangeCallbacks = {
     serviceCode: ({ event, value, name, input }) => {
@@ -473,7 +540,10 @@ const CaseNotes = (() => {
       console.log('value:', value, 'name:', name);
       const endTimeVal = cnForm.inputs['endTime'].getValue();
 
-      if (isStartTimeBeforeEndTime(value, endTimeVal) && isTimeValid(value)) {
+      const isStartBeforeEnd = isStartTimeBeforeEndTime(value, endTimeVal);
+      const isValid = isTimeValid(value);
+
+      if (!isStartBeforeEnd || !isValid) {
         isStartTimeValid = true;
         input.setValidtyError('Start Time is invalid');
       } else {
@@ -485,7 +555,10 @@ const CaseNotes = (() => {
       console.log('value:', value, 'name:', name);
       const startTimeVal = cnForm.inputs['startTime'].getValue();
 
-      if (isStartTimeBeforeEndTime(startTimeVal, value) && isTimeValid(value)) {
+      const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, value);
+      const isValid = isTimeValid(value);
+
+      if (!isStartBeforeEnd || !isValid) {
         isEndTimeValid = true;
         input.setValidtyError('End Time is invalid');
       } else {
@@ -507,18 +580,17 @@ const CaseNotes = (() => {
     },
   };
 
-  // MAIN
-  //--------------------------------------------------
-
   // INIT/LOAD? (data & defaults)
   //--------------------------------------------------
   async function init() {
-    moduleWrap = _DOM.createElement('div', { id: 'UI', class: 'caseNotesModule' });
+    moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
 
-    DOM.clearActionCenter();
-    DOM.ACTIONCENTER.appendChild(moduleWrap);
+    _DOM.ACTIONCENTER.innerHTML = '';
+    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
+    _DOM.setActiveModuleAttribute('casenotes2.0');
+    _DOM.ACTIONCENTER.appendChild(moduleWrap);
 
-    await getInitialDataForForm();
+    await getInitialData();
 
     // DATE NAVIGATION
     //--------------------------------------------------
@@ -655,31 +727,12 @@ const CaseNotes = (() => {
       ],
     });
     cnForm.build().renderTo(moduleWrap);
-    cnForm.onSubmit(data => {
-      console.log('onSubmit ', data);
-      console.log(cnForm);
-
-      //TODO: preSave() stops timer and speech to text
-      //TODO: areTimesWithinWorkHours();
-      //TODO: UTIL.removeUnsavableNoteText
-
-      if (!isGroupNote && allowGroupNotes) {
-        //TODO: delete existing case note
-        //TODO: isGroupNote = true
-        //TODO: set noteId = 0?
-        //TODO: if (travelTime === null) travelTime = 0;
-        //TODO: if (documentationTime === null) documentationTime = 0;
-        //TODO: endTime = endTime.substring(0, 5);
-        //TODO: startTime = startTime.substring(0, 5);
-        //TODO: set page load to new?
-      }
-
-      //TODO: call saveNote or updateNote
-    });
     cnForm.onChange(event => {
       const value = event.target.value;
       const name = event.target.name;
       const input = cnForm.inputs[name];
+
+      if (!onChangeCallbacks[name]) return;
 
       onChangeCallbacks[name]({
         event,
@@ -688,6 +741,34 @@ const CaseNotes = (() => {
         input,
       });
     });
+    cnForm.onSubmit(data => {
+      console.log('onSubmit ', data);
+
+      preSaveValidation({
+        caseNote: data.noteText ?? '',
+        casenotemileage: data.mileage ?? '0',
+        confidential: data.confidential === 'on' ? 'Y' : 'N',
+        contactCode: data.contact ?? '',
+        endTime: data.endTime ?? '',
+        locationCode: data.location ?? '',
+        needCode: data.need ?? '',
+        serviceCode: data.service ?? '',
+        serviceLocationCode: data.serviceLocation ?? '',
+        servieOrBillingCodeId: data.serviceCode ?? '',
+        startTime: data.startTime ?? '',
+        vendorId: data.vendor ?? '',
+      });
+    });
+
+    // PHRASES
+    //--------------------------------------------------
+    // const showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
+    // cnPhrases = new CaseNotesPhrases({
+    //   formNote: cnForm.inputs['noteText'],
+    //   showAllPhrases: showAllPhrases === 'Y' ? true : false,
+    // });
+    // cnPhrases.build().renderTo(cnForm.inputs['noteText'].fullscreen.fullScreenDialog.dialog);
+    // await cnPhrases.fetchData();
 
     // TIMERS
     //--------------------------------------------------

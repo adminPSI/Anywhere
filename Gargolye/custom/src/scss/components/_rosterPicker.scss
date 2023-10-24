@@ -21,7 +21,8 @@
     display: grid;
     grid-template-rows: 1fr;
     transition: grid-template-rows 0.2s ease-in;
-    order: 1;
+    position: relative;
+    order: 2;
     margin: 0 0 6px;
 
     &.isClosed:not(.selected) {
@@ -32,6 +33,24 @@
     &.selected {
       background: pink;
       order: 0;
+    }
+
+    &.pinned {
+      order: 1;
+
+      .svgIcon {
+        color: $secondary;
+        rotate: 45deg;
+      }
+    }
+
+    .svgIcon {
+      pointer-events: all;
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      rotate: 0deg;
+      transition: rotate 0.3s ease-in;
     }
   }
 }
