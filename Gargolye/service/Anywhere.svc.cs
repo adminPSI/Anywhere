@@ -2804,7 +2804,7 @@ namespace Anywhere
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
 
-            return OODfw.generateForm4(token, referenceNumber, 0, peopleId, startDate, endDate, serviceCodeId);
+            return OODfw.generateForm4(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
         }
 
         public string generateForm8(System.IO.Stream testInput)
@@ -2827,7 +2827,7 @@ namespace Anywhere
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
 
-            return OODfw.generateForm8(token, referenceNumber, 22, peopleId, startDate, endDate, serviceCodeId);
+            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
         }
 
         public string generateForm10(System.IO.Stream testInput)

@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using Anywhere.service.Data;
 using Bytescout.Spreadsheet;
 using Newtonsoft.Json;
-using DocumentFormat;
 using pdftron.PDF;
 using pdftron.SDF;
 using Convert = System.Convert;
@@ -53,7 +52,7 @@ namespace OODForms
             }
         }
 
-        public void Form8(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
+        public void Form8(string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, long ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
         {
 
             Spreadsheet SS = new Spreadsheet();
@@ -261,7 +260,7 @@ namespace OODForms
             ConvertXLStoPDF(attachment);
         }
 
-        public void Form4(string AuthorizationNumber, string invoiceNumber, long VendorID, long PeopleID, String StartDate, String EndDate, long ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
+        public void Form4(string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, long ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
         {
             Spreadsheet SS = new Spreadsheet();
             SS.RegistrationName = registrationName;
@@ -545,7 +544,7 @@ namespace OODForms
             ConvertXLStoPDF(attachment);
         }
 
-        public string generateForm4(string token, string AuthorizationNumber, long VendorID, string peopleIDString, String StartDate, String EndDate, string serviceCode)
+        public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode)
         {
             try
             {
@@ -576,7 +575,7 @@ namespace OODForms
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form4(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, registrationName, registrationKey);
+                obj.Form4(AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, registrationName, registrationKey);
 
                 return "Success";
             }
@@ -586,7 +585,7 @@ namespace OODForms
             }
         }
 
-        public string generateForm8(string token, string AuthorizationNumber, long VendorID, string peopleIDString, String StartDate, String EndDate, string serviceCode)
+        public string generateForm8(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode)
         {
             try
             {
@@ -617,7 +616,7 @@ namespace OODForms
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form8(AuthorizationNumber, invoiceNumber, 22, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, registrationName, registrationKey);
+                obj.Form8(AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, registrationName, registrationKey);
 
                 return "Success";
             }
