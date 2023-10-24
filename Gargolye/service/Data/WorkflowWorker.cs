@@ -1996,9 +1996,16 @@ namespace Anywhere.service.Data
                 List<WorkflowTemplateStepEventAction> actions = js.Deserialize<List<WorkflowTemplateStepEventAction>>(wfdg.getWorkflowTemplateStepEventActions(null, transaction_insertWFDetails));
                 // -- Get PreviousPlan StepId 
                 List<WorkflowTemplateStepDocument> selecteddocuments = new List<WorkflowTemplateStepDocument>();
+                
                 if (!string.IsNullOrEmpty(wantedFormDescriptions)) {
-                    String previousPlanStepId = wfdg.getWorkflowStepIdfromPreviousPlan(priorConsumerPlanId, wantedFormDescriptions);
-                    selecteddocuments = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowStepDocuments(previousPlanStepId, wantedFormDescriptions, priorConsumerPlanId, transaction_insertWFDetails));
+                    string[] attachmentIds = wantedFormDescriptions.Split(',');
+                    foreach (string attachmentID in attachmentIds)
+                    {
+                        String previousPlanStepId = wfdg.getWorkflowStepIdfromPreviousPlan(priorConsumerPlanId, attachmentID);
+                        WorkflowTemplateStepDocument[] selecteddocument = js.Deserialize<WorkflowTemplateStepDocument[]>(wfdg.getWorkflowStepDocuments(previousPlanStepId, attachmentID, priorConsumerPlanId, transaction_insertWFDetails));
+                        selecteddocuments.Add(selecteddocument[0]);
+                    }
+                    
                 }
                
                 List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, transaction_insertWFDetails));
