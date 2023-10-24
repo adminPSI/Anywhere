@@ -1,12 +1,18 @@
 //! QUESTIONS FOR JOSH
 //1. do we want to update the roster list of consumers on date change?
-//2. how exactly do the '___ required' values we get from dropdown data effect the inputs
+//2. how do we want to handle ssa notes, toggle button?
+//3. with new way of doing phrases need a way to switch between seeing all phraes or just my phrases
+//4.
 
 //? Thoughts
 //1. checkbox to toggle between seing only yours vs everyones notes in overview
 //2. list vs card view for overview on mobile?
 
 //TODO: NO GROUP NOTES IF DOC TIME IS ALLOWED
+//TODO: if GK save attachments after note save
+//TODO: fix z index on settings menu
+//TODO: make sure im clearing out selected consumer
+//TODO: preSave() stops timer and speech to text
 
 // MAIN
 const CaseNotes = (() => {
@@ -16,9 +22,10 @@ const CaseNotes = (() => {
   let selectedDate = null;
   let selectedServiceCode;
   let caseManagerId;
+  let isNewNote = true;
   // group notes
-  let allowGroupNotes;
-  let isGroupNote;
+  let allowGroupNotes = false;
+  let isGroupNote = false;
   // timers
   let isDocTimeRequired;
   let isTravelTimeRequired;
@@ -358,17 +365,29 @@ const CaseNotes = (() => {
       saveNote(formData);
     }
   }
-  // SAVE/UPDATE
+  function updateSingleNoteToGroupNote() {
+    // 1. convertToGroupNotes === true | only if !isGroupNote && allowGroupNotes
+    // 2. allowGroupNotes | this gets set on from service code dropdown event
+    // 3. isGroupNote | set when singleNotToGroupNote is called
+
+    if (!isGroupNote && allowGroupNotes) {
+      //* SINGLE NOTE TO GROUP NOTE LOGIC
+      //TODO: delete existing case note
+      //TODO: isGroupNote = true
+      //TODO: set noteId = 0?
+      //TODO: if (travelTime === null) travelTime = 0;
+      //TODO: if (documentationTime === null) documentationTime = 0;
+      //TODO: endTime = endTime.substring(0, 5);
+      //TODO: startTime = startTime.substring(0, 5);
+      //TODO: set page load to new?
+    }
+  }
+  // SAVE
   async function saveNote(formData) {
-    if (selectedConsumers.length > 1) {
-      //TODO: get group note ID
-      //TODO: set group note ID to saveData
-      //TODO: -- SAVE GROUP --
-      //TODO: do overlap check
-      //TODO: if overlap show popup
-    } else {
+    if (isNewNote) {
+      //? NO GROUPS ON NEW NOTE
       // Overlap check
-      let overlap = await _UTIL.fetchData('caseNoteOverlapCheck', {
+      const overlap = getOverlapCheckData({
         caseManagerId,
         consumerId: selectedConsumers[0],
         endTime: formData.endTime,
@@ -377,10 +396,8 @@ const CaseNotes = (() => {
         serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
         startTime: formData.startTime,
       });
-      overlap = overlap.caseNoteOverlapCheckResult;
 
       if (overlap) {
-        //TODO show warning popup
         console.log('OVERLAP WARNING!!!!');
       } else {
         await _UTIL.fetchData('saveCaseNote', {
@@ -406,9 +423,9 @@ const CaseNotes = (() => {
           vendorId: formData.vendorId,
         });
       }
-      //TODO: if GK save attachments after note save
     }
   }
+  // UPDATE
   async function updateNote() {
     //TODO: clean start time and end time:
     // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
@@ -435,13 +452,21 @@ const CaseNotes = (() => {
     return data.getReviewRequiredForCaseManagerResult;
   }
   async function getconsumersThatCanHaveMileage() {
-    const data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
+    let data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
     data = data.getConsumersThatCanHaveMileageJSONResult;
     return data.map(({ consumerid }) => consumerid);
   }
   async function getAttachmentsGK() {
     const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
     return data.getCaseNoteAttachmentsListResult;
+  }
+  async function getOverlapCheckData(retrieveData) {
+    let data = await _UTIL.fetchData('caseNoteOverlapCheck', { ...retrieveData });
+    if (data.caseNoteOverlapCheckResult && data.caseNoteOverlapCheckResult.length > 0) {
+      return data.caseNoteOverlapCheckResult.map(d => d.consumername);
+    }
+
+    return '';
   }
   async function getInitialData() {
     selectedDate = setDefaultSelectedDate();
@@ -517,27 +542,15 @@ const CaseNotes = (() => {
       cnForm.inputs['need'].toggleRequired(needRequired === 'Y');
       cnForm.inputs['contact'].toggleRequired(contactRequired === 'Y');
     },
-    location: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-    },
-    service: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-    },
+    location: ({ event, value, name, input }) => {},
+    service: ({ event, value, name, input }) => {},
     serviceLocation: ({ event, value, name, input }) => {
       // adv only
-      console.log('value:', value, 'name:', name);
     },
-    need: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-    },
-    vendor: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-    },
-    contact: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-    },
+    need: ({ event, value, name, input }) => {},
+    vendor: ({ event, value, name, input }) => {},
+    contact: ({ event, value, name, input }) => {},
     startTime: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
       const endTimeVal = cnForm.inputs['endTime'].getValue();
 
       const isStartBeforeEnd = isStartTimeBeforeEndTime(value, endTimeVal);
@@ -552,7 +565,6 @@ const CaseNotes = (() => {
       }
     },
     endTime: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
       const startTimeVal = cnForm.inputs['startTime'].getValue();
 
       const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, value);
@@ -567,17 +579,12 @@ const CaseNotes = (() => {
       }
     },
     mileage: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
       return;
 
       const hasDecimal = event.key === '.' && value.indexOf('.') === 1 ? true : false;
     },
-    noteText: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-    },
-    confidential: ({ event, value, name, input }) => {
-      console.log('value:', value, 'name:', name);
-    },
+    noteText: ({ event, value, name, input }) => {},
+    confidential: ({ event, value, name, input }) => {},
   };
 
   // INIT/LOAD? (data & defaults)
@@ -608,10 +615,23 @@ const CaseNotes = (() => {
     });
     dateNavigation.build().renderTo(moduleWrap);
 
+    // FEEDBACK CENTER
+    //--------------------------------------------------
+    cnValidation = new ValidationCenter({});
+    cnValidation.build().renderTo(moduleWrap);
+    cnValidation.addWarning({
+      name: 'overlap',
+      message: 'Time Overlap',
+    });
+    cnValidation.addError({
+      name: 'consumer',
+      message: 'Consumer is required',
+    });
+
     // ROSTER PICKER
     //--------------------------------------------------
     rosterPicker = new RosterPicker({
-      allowMultiSelect: true,
+      allowMultiSelect: false,
       async onConsumerSelect(data) {
         selectedConsumers = data;
 
@@ -637,7 +657,6 @@ const CaseNotes = (() => {
             serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
           });
           serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
-          console.log(serviceLocationDropdownData);
           const servLocData = getServiceLocationDropdownData();
           cnForm.inputs['serviceLocation'].populate(servLocData);
         }
@@ -744,7 +763,7 @@ const CaseNotes = (() => {
     cnForm.onSubmit(data => {
       console.log('onSubmit ', data);
 
-      preSaveValidation({
+      saveNote({
         caseNote: data.noteText ?? '',
         casenotemileage: data.mileage ?? '0',
         confidential: data.confidential === 'on' ? 'Y' : 'N',

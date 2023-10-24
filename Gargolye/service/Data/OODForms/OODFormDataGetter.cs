@@ -280,16 +280,16 @@ namespace OODForms
 
         }
 
-        public DataSet Counslor(string AuthorizationNumber, long ServiceCodeID, long ConsumerID)
+        public DataSet Counslor(string AuthorizationNumber, string ServiceCodeID, long ConsumerID)
         {
             sb.Clear();
             sb.Append("SELECT DISTINCT dba.Persons.Last_Name AS LastName, dba.Persons.Middle_Name AS MiddleName, dba.Persons.First_Name AS FirstName ");
             sb.Append("FROM dba.Persons ");
             sb.Append("RIGHT OUTER JOIN dba.Consumer_Services_Master ON dba.Persons.Person_ID = dba.Consumer_Services_Master.Person_ID ");
             sb.Append("LEFT OUTER JOIN dba.Services ON dba.Consumer_Services_Master.Service_ID = dba.Services.Service_ID ");
-            sb.AppendFormat("WHERE dba.Services.Service_ID = {0} ", ServiceCodeID);
+            sb.AppendFormat("WHERE dba.Services.Service_ID LIKE {0} ", ServiceCodeID);
             sb.AppendFormat("AND dba.Consumer_Services_Master.Consumer_ID = {0} ", ConsumerID);
-            sb.AppendFormat("AND dba.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
+            sb.AppendFormat("AND dba.Consumer_Services_Master.Reference_Number LIKE '{0}' ", AuthorizationNumber);
             sb.Append("GROUP BY dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name ");
             return di.SelectRowsDS(sb.ToString());
 
@@ -338,7 +338,7 @@ namespace OODForms
             }
         }
 
-        public DataSet OODStaff(string AuthorizationNumber, long ServiceCodeID)
+        public DataSet OODStaff(string AuthorizationNumber, string ServiceCodeID)
         {
             sb.Clear();
             sb.Append("SELECT DISTINCT DBA.Persons.Last_Name AS StaffLastName, DBA.Persons.Middle_Name AS StaffMiddleName,  DBA.Persons.First_Name AS StaffFirstName ");
@@ -356,7 +356,7 @@ namespace OODForms
 
         }
 
-        public DataSet OODMinDate(string AuthorizationNumber, string StartDate, string EndDate, long ServiceCodeID)
+        public DataSet OODMinDate(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID)
         {
             sb.Clear();
             sb.AppendFormat("SELECT DISTINCT MIN(dba.EM_Contacts.Contact_Date) AS MaxDate ");
@@ -370,7 +370,7 @@ namespace OODForms
             return di.SelectRowsDS(sb.ToString());
         }
 
-        public DataSet OODMaxDate(string AuthorizationNumber, string StartDate, string EndDate, long ServiceCodeID)
+        public DataSet OODMaxDate(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID)
         {
             sb.Clear();
             sb.AppendFormat("SELECT DISTINCT MAX(dba.EM_Contacts.Contact_Date) AS MaxDate ");
@@ -384,7 +384,7 @@ namespace OODForms
             return di.SelectRowsDS(sb.ToString());
         }
 
-        public DataSet OODDevelopment2(string AuthorizationNumber, string StartDate, string EndDate, long ServiceCodeID)
+        public DataSet OODDevelopment2(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID)
         {
             sb.Clear();
             sb.Append("SELECT DISTINCT  DBA.Case_Notes.Case_Note_ID, dba.EM_Contacts.Contact_Date, dba.Case_Notes.Start_Time AS StartTime, ");
@@ -470,6 +470,24 @@ namespace OODForms
             {
                 logger.error("1OSG", ex.Message + "ANYW_OOD_getSpreadsheetNameAndKey(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "1OSG: error ANYW_OOD_getSpreadsheetNameAndKey";
+            }
+        }
+
+        public string getPDFTronKey(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getSS ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GetPDFTronKey(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1OSG", ex.Message + "ANYW_GetPDFTronKey(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1OSG: error ANYW_GetPDFTronKey";
             }
         }
 

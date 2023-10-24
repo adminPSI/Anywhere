@@ -12,14 +12,6 @@
   };
 
   /**
-   * Default configuration
-   * @type {Object}
-   */
-  const DEFAULT_OPTIONS = {
-    selectedDate: dates.getTodaysDateObj(),
-  };
-
-  /**
    * Merge default options with user options
    *
    * @function
@@ -31,9 +23,8 @@
   };
 
   //=======================================
-  // CUSTOM DATE INPUT
+  // CUSTOM DATE PICKER
   //---------------------------------------
-
   /**
    * @constructor
    */
@@ -76,9 +67,16 @@
     });
   };
 
-  //=========================
+  //=======================================
   // MAIN LIB
-  //-------------------------
+  //---------------------------------------
+  /**
+   * Default configuration
+   * @type {Object}
+   */
+  const DEFAULT_OPTIONS = {
+    selectedDate: dates.getTodaysDateObj(),
+  };
   /**
    * @constructor
    * @param {Object} options
@@ -225,25 +223,17 @@
     });
 
     this.customDatePicker.onDateChange(newDate => {
-      console.log(newDate);
-    });
-  };
+      this.selectedDate = new Date(`${newDate}T00:00:00`);
+      this.weekStart = dates.startDayOfWeek(this.selectedDate);
+      this.weekEnd = dates.endOfWeek(this.selectedDate);
+      this.eachDayOfWeek = dates.eachDayOfInterval({
+        start: this.weekStart,
+        end: this.weekEnd,
+      });
 
-  /**
-   *
-   * @param {Date} newDate
-   */
-  DateNavigation.prototype.setSelectedDate = function (newDate) {
-    this.selectedDate = new Date(`${newDate}T00:00:00`);
-    this.weekStart = dates.startDayOfWeek(this.selectedDate);
-    this.weekEnd = dates.endOfWeek(this.selectedDate);
-    this.eachDayOfWeek = dates.eachDayOfInterval({
-      start: this.weekStart,
-      end: this.weekEnd,
+      this.populate();
+      this.onDateChange(this.selectedDate);
     });
-
-    this.populate();
-    this.onDateChange(this.selectedDate);
   };
 
   /**

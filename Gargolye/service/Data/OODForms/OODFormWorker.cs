@@ -23,9 +23,12 @@ namespace OODForms
     {
         private StringBuilder sb = new StringBuilder();
 
-        public void ConvertXLStoPDF(Attachment attachment)
+        public void ConvertXLStoPDF(string token, Attachment attachment)
         {
-            pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+            OODFormDataGetter oodfdg = new OODFormDataGetter();
+            string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
+            LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
+            pdftron.PDFNet.Initialize(pdfTronKey[0].PDFTronKey);
             Attachment pdfAttachment = new Attachment();
 
             using (MemoryStream ms = new MemoryStream())
@@ -52,7 +55,7 @@ namespace OODForms
             }
         }
 
-        public void Form8(string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, long ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
+        public void Form8(string token, string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, string ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
         {
 
             Spreadsheet SS = new Spreadsheet();
@@ -257,10 +260,10 @@ namespace OODForms
                 data = ms
             };
 
-            ConvertXLStoPDF(attachment);
+            ConvertXLStoPDF(token, attachment);
         }
 
-        public void Form4(string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, long ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
+        public void Form4(string token, string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, string ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
         {
             Spreadsheet SS = new Spreadsheet();
             SS.RegistrationName = registrationName;
@@ -541,7 +544,7 @@ namespace OODForms
                 data = ms
             };
 
-            ConvertXLStoPDF(attachment);
+            ConvertXLStoPDF(token, attachment);
         }
 
         public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode)
@@ -550,8 +553,6 @@ namespace OODForms
             {
                 OODFormWorker obj = new OODFormWorker();
                 OODFormDataGetter oodfdg = new OODFormDataGetter();
-
-                long ServiceCodeID = 0;
 
                 string SSinfo = oodfdg.getSpreadsheetNameAndKey(token);
                 SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
@@ -566,16 +567,11 @@ namespace OODForms
 
                 long PeopleID = long.Parse(peopleIDString);
 
-                if (serviceCode != "All")
-                {
-                    ServiceCodeID = long.Parse(serviceCode);
-                }
-
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form4(AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, registrationName, registrationKey);
+                obj.Form4(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey);
 
                 return "Success";
             }
@@ -592,8 +588,6 @@ namespace OODForms
                 OODFormWorker obj = new OODFormWorker();
                 OODFormDataGetter oodfdg = new OODFormDataGetter();
 
-                long ServiceCodeID = 0;
-
                 string SSinfo = oodfdg.getSpreadsheetNameAndKey(token);
                 SSInfo[] SSInfoObj = JsonConvert.DeserializeObject<SSInfo[]>(SSinfo);
                 string registrationName = SSInfoObj[0].registrationName;
@@ -607,16 +601,12 @@ namespace OODForms
                 //string reportPath = @"C:\Users\erick.bey\Desktop\Anywhere\Gargolye\webroot\reportfiles\Form8WorkActivitiesAndAssessmentBinary.xlsx";
 
                 long PeopleID = long.Parse(peopleIDString);
-
-                if (serviceCode != "All") {
-                    ServiceCodeID = long.Parse(serviceCode);
-                }
                 
                 DateTime currentDate = DateTime.Now;
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form8(AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, ServiceCodeID, reportPath, registrationName, registrationKey);
+                obj.Form8(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey);
 
                 return "Success";
             }
@@ -632,7 +622,9 @@ namespace OODForms
             try
             {
             OODFormDataGetter oodfdg = new OODFormDataGetter();
-            pdftron.PDFNet.Initialize("Marshall Information Services, LLC (primarysolutions.net):OEM:Gatekeeper/Anywhere, Advisor/Anywhere::W+:AMS(20240512):89A5A05D0437C60A0320B13AC992737860613FAD9766CD3BD5343BC2C76C38C054C2BEF5C7");
+            string pdfTronKeyResult = oodfdg.getPDFTronKey(token);
+            LicenseResponse[] pdfTronKey = JsonConvert.DeserializeObject<LicenseResponse[]>(pdfTronKeyResult);
+            pdftron.PDFNet.Initialize(pdfTronKey[0].PDFTronKey);
 
             string crpath = oodfdg.getFormTemplatePath(token);
             PathItem[] pathdatalist = JsonConvert.DeserializeObject<PathItem[]>(crpath);
@@ -655,11 +647,6 @@ namespace OODForms
 
             long consumerId = long.Parse(consumerIdString);
             //long serviceCodeId = long.Parse(serviceCode);
-
-            if (referenceNumber == "%25")
-            {
-                referenceNumber = "%";
-            }
 
             // Gathers all the data for the table in the pdf (startTime, endTime, startLocation, endLocation, units, # in vehicle per trip, staff initials)
             string returnedData = oodfdg.getForm10PDFData(token, referenceNumber, startDate, endDate, consumerIdString, userId);
@@ -818,6 +805,11 @@ namespace OODForms
     {
         public string filename { get; set; }
         public MemoryStream data { get; set; }
+    }
+
+    public class LicenseResponse
+    {
+        public string PDFTronKey { get; set; }
     }
 
     public class SSInfo
