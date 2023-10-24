@@ -2804,6 +2804,16 @@ namespace Anywhere
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
 
+            if (serviceCodeId == "%25")
+            {
+                serviceCodeId = "%";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "%";
+            }
+
             return OODfw.generateForm4(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
         }
 
@@ -2826,6 +2836,16 @@ namespace Anywhere
             serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+
+            if ( serviceCodeId == "%25")
+            {
+                serviceCodeId = "All";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "All";
+            }
 
             return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
         }
