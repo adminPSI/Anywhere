@@ -81,7 +81,7 @@
     });
 
     //const btn = _DOM.createElement('button', { type: 'submit', text: 'Save', class: 'button' });
-    const btn = new Button({ type: 'submit', text: 'Save' }).renderTo(this.form);
+    const btn = new Button({ type: 'submit', text: 'Save', icon: 'save' }).renderTo(this.form);
     //this.form.appendChild(btn);
 
     return this;

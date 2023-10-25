@@ -27,7 +27,7 @@
    * @function
    */
   ValidationMessage.prototype.build = function () {
-    this.itemEle = _DOM.createElement('div', { class: ['feedbackItem'] });
+    this.itemEle = _DOM.createElement('div', { class: ['validationMessage'] });
 
     let iconWrap;
     if (this.type === 'error') {
@@ -41,8 +41,8 @@
 
     this.messageEle = _DOM.createElement('p', { text: this.message });
 
-    itemEle.appendChild(iconWrap);
-    itemEle.appendChild(this.messageEle);
+    this.itemEle.appendChild(iconWrap);
+    this.itemEle.appendChild(this.messageEle);
 
     return this;
   };
@@ -97,11 +97,11 @@
    * @returns {ValidationCenter} - Returns the current instances for chaining
    */
   ValidationCenter.prototype.build = function () {
-    this.validationWrap = _DOM.createElement('div', { class: 'caseNotesValidation' });
+    this.validationWrap = _DOM.createElement('div', { class: 'validations' });
 
-    this.errorsWrap = _DOM.createElement('div', { class: 'caseNotesValidation__errors' });
+    this.errorsWrap = _DOM.createElement('div', { class: 'validationErros' });
 
-    this.warningsWrap = _DOM.createElement('div', { class: 'caseNotesValidation__warnings' });
+    this.warningsWrap = _DOM.createElement('div', { class: 'validationWarnings' });
 
     this.validationWrap.appendChild(this.errorsWrap);
     this.validationWrap.appendChild(this.warningsWrap);
@@ -125,19 +125,15 @@
     this.items[name] = itemInstance;
   };
   /**
-   * Hides warning message
-   *
-   * @function
-   */
-  ValidationCenter.prototype.hideWarning = function (name) {
-    this.items[name].itemEle.class.add('hidden');
-  };
-  /**
    * Shows warning message
    *
    * @function
    */
-  ValidationCenter.prototype.showWarning = function (name) {
+  ValidationCenter.prototype.showWarning = function ({ name, ...rest }) {
+    if (!this.items[name]) {
+      this.addWarning({ name, ...rest });
+    }
+
     this.items[name].itemEle.class.remove('hidden');
   };
   /**
@@ -157,11 +153,31 @@
     this.items[name] = itemInstance;
   };
   /**
+   * Shows error message
+   *
+   * @function
+   */
+  ValidationCenter.prototype.showError = function ({ name, ...rest }) {
+    if (!this.items[name]) {
+      this.addError({ name, ...rest });
+    }
+
+    this.items[name].itemEle.class.remove('hidden');
+  };
+  /**
+   * Hides warning/error message
+   *
+   * @function
+   */
+  ValidationCenter.prototype.hide = function (name) {
+    this.items[name].itemEle.class.add('hidden');
+  };
+  /**
    * Sets the status of the error to valid/invalid
    *
    * @function
    */
-  ValidationCenter.prototype.toggleErrorStatus = function ({ name, isError }) {
+  ValidationCenter.prototype.toggleErrorStatus = function (name, isError) {
     if (isError) {
       this.items[name].itemEle.class.remove('valid');
     } else {

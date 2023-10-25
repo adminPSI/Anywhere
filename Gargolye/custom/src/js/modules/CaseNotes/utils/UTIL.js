@@ -10,7 +10,7 @@
    * @param {Number} wait - The number of milliseconds to delay the function
    * @returns {Function} - Returns the debounced version of the provided function
    */
-  function debounce(func, wait) {
+  function debounce2(func, wait) {
     let timeout;
 
     return function executedFunction(...args) {
@@ -23,6 +23,43 @@
 
       clearTimeout(timeout);
       timeout = setTimeout(later, wait);
+    };
+  }
+  /**
+   * Debounces a function, ensuring that it's not called until after the specified
+   * amount of time has passed since the last time it was invoked. Executes the
+   * function immediately upon the first call.
+   *
+   * @function
+   * @param {Function} func - The function to debounce.
+   * @param {Number} wait - The number of milliseconds to delay the function.
+   * @returns {Function} - Returns the debounced version of the provided function.
+   */
+  function debounce(func, wait) {
+    let timeout;
+    let immediate = true;
+
+    return function executedFunction(...args) {
+      const context = this;
+
+      const later = function () {
+        timeout = null;
+        if (!immediate) {
+          func.apply(context, args);
+        }
+        immediate = true;
+      };
+
+      const callNow = immediate && !timeout;
+
+      clearTimeout(timeout);
+
+      timeout = setTimeout(later, wait);
+
+      if (callNow) {
+        immediate = false;
+        func.apply(context, args);
+      }
     };
   }
 

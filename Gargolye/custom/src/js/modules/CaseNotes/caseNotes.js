@@ -1,8 +1,7 @@
 //! QUESTIONS FOR JOSH
-//1. do we want to update the roster list of consumers on date change?
-//2. how do we want to handle ssa notes, toggle button?
-//3. with new way of doing phrases need a way to switch between seeing all phraes or just my phrases
-//4.
+//1. do we want to update the roster list of consumers on date change? ***MAYBE
+//2. how do we want to handle ssa notes, toggle button? ***DON'T KNOW YET
+//3. with new validations do we want to upate error messages to success messages or just remove them?
 
 //? Thoughts
 //1. checkbox to toggle between seing only yours vs everyones notes in overview
@@ -90,7 +89,7 @@ const CaseNotes = (() => {
     today.setHours(0, 0, 0, 0);
     return today;
   }
-  function isTimeValid(dirtyTime) {
+  function isTimePastOrPresent(dirtyTime) {
     const currentDate = new Date();
     const selectedDateClone = new Date(selectedDate);
 
@@ -132,6 +131,26 @@ const CaseNotes = (() => {
     }
 
     return true;
+  }
+  async function doesTimeOverlap(startTime, endTime) {
+    const overlap = await getOverlapCheckData({
+      caseManagerId,
+      consumerId: selectedConsumers[0],
+      endTime: endTime,
+      groupNoteId: 0,
+      noteId: 0,
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      startTime: startTime,
+    });
+
+    if (overlap) {
+      cnValidation.showWarning({
+        name: 'overlap',
+        message: 'Overlap :(',
+      });
+    } else {
+      cnValidation.hide('overlap');
+    }
   }
   function checkServiceFundingADV() {
     //! ADV ONLY
@@ -315,6 +334,21 @@ const CaseNotes = (() => {
     });
   }
 
+  // VALIDATION / REQUIRED FIELDS
+  //--------------------------------------------------
+  function checkRequiredFields() {
+    if (selectedConsumers.length === 0) {
+      cnValidation.addError({
+        name: 'consumer',
+        message: 'Consumer is required',
+      });
+    } else {
+      cnValidation.hide('consumer');
+      // or
+      // cnValidation.toggleErrorStatus('consumer', false)
+    }
+  }
+
   // DATA
   //--------------------------------------------------
   function showWarningModal(messageText, continueFunc) {
@@ -382,64 +416,6 @@ const CaseNotes = (() => {
       //TODO: set page load to new?
     }
   }
-  // SAVE
-  async function saveNote(formData) {
-    if (isNewNote) {
-      //? NO GROUPS ON NEW NOTE
-      // Overlap check
-      const overlap = getOverlapCheckData({
-        caseManagerId,
-        consumerId: selectedConsumers[0],
-        endTime: formData.endTime,
-        groupNoteId: 0,
-        noteId: 0,
-        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-        startTime: formData.startTime,
-      });
-
-      if (overlap) {
-        console.log('OVERLAP WARNING!!!!');
-      } else {
-        await _UTIL.fetchData('saveCaseNote', {
-          caseManagerId,
-          caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
-          casenotemileage: formData.casenotemileage,
-          casenotetraveltime: formData.casenotetraveltime,
-          confidential: formData.confidential,
-          contactCode: formData.contactCode,
-          corrected: 'N', //TODO: crete checkbox for this (review only)
-          consumerId: selectedConsumers[0],
-          documentationTime: '',
-          endTime: formData.endTime,
-          locationCode: formData.locationCode,
-          needCode: formData.needCode,
-          noteId: 0,
-          reviewRequired: '',
-          serviceCode: formData.serviceCode,
-          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-          serviceLocationCode: formData.serviceLocationCode,
-          servieOrBillingCodeId: formData.servieOrBillingCodeId,
-          startTime: formData.startTime,
-          vendorId: formData.vendorId,
-        });
-      }
-    }
-  }
-  // UPDATE
-  async function updateNote() {
-    //TODO: clean start time and end time:
-    // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
-    // startTime = startTime.length === 8 ? startTime.substring(0, 5) : startTime;
-    //? Different props from saveData
-    // add -> groupNoteId, consumerId
-    // remove -> reviewRequired
-  }
-  // DELETE
-  async function deleteNote(noteId) {
-    await _UTIL.fetchData('deleteExistingCaseNote', {
-      noteId: noteId,
-    });
-  }
   // GET
   async function getDropdownData() {
     const data = await _UTIL.fetchData('populateDropdownData');
@@ -488,6 +464,48 @@ const CaseNotes = (() => {
 
     if ($.session.applicationName === 'Gatekeeper' && false) {
       attachmentList = await getAttachmentsGK();
+    }
+  }
+  // DELETE
+  async function deleteNote(noteId) {
+    await _UTIL.fetchData('deleteExistingCaseNote', {
+      noteId: noteId,
+    });
+  }
+  // UPDATE
+  async function updateNote() {
+    //TODO: clean start time and end time:
+    // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
+    // startTime = startTime.length === 8 ? startTime.substring(0, 5) : startTime;
+    //? Different props from saveData
+    // add -> groupNoteId, consumerId
+    // remove -> reviewRequired
+  }
+  // SAVE
+  async function saveNote(formData) {
+    if (isNewNote) {
+      await _UTIL.fetchData('saveCaseNote', {
+        caseManagerId,
+        caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
+        casenotemileage: formData.casenotemileage,
+        casenotetraveltime: formData.casenotetraveltime,
+        confidential: formData.confidential,
+        contactCode: formData.contactCode,
+        corrected: 'N', //TODO: crete checkbox for this (review only)
+        consumerId: selectedConsumers[0],
+        documentationTime: '',
+        endTime: formData.endTime,
+        locationCode: formData.locationCode,
+        needCode: formData.needCode,
+        noteId: 0,
+        reviewRequired: '',
+        serviceCode: formData.serviceCode,
+        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+        serviceLocationCode: formData.serviceLocationCode,
+        servieOrBillingCodeId: formData.servieOrBillingCodeId,
+        startTime: formData.startTime,
+        vendorId: formData.vendorId,
+      });
     }
   }
 
@@ -554,28 +572,36 @@ const CaseNotes = (() => {
       const endTimeVal = cnForm.inputs['endTime'].getValue();
 
       const isStartBeforeEnd = isStartTimeBeforeEndTime(value, endTimeVal);
-      const isValid = isTimeValid(value);
+      const isValid = isTimePastOrPresent(value);
 
       if (!isStartBeforeEnd || !isValid) {
-        isStartTimeValid = true;
         input.setValidtyError('Start Time is invalid');
       } else {
-        isStartTimeValid = false;
         input.setValidtyError('');
+      }
+
+      if (isStartBeforeEnd && isValid && endTimeVal) {
+        // _UTIL.debounce(doesTimeOverlap);
+      } else {
+        cnValidation.hide('overlap');
       }
     },
     endTime: ({ event, value, name, input }) => {
       const startTimeVal = cnForm.inputs['startTime'].getValue();
 
       const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, value);
-      const isValid = isTimeValid(value);
+      const isValid = isTimePastOrPresent(value);
 
       if (!isStartBeforeEnd || !isValid) {
-        isEndTimeValid = true;
         input.setValidtyError('End Time is invalid');
       } else {
-        isEndTimeValid = false;
         input.setValidtyError('');
+      }
+
+      if (isStartBeforeEnd && isValid && startTimeVal) {
+        // _UTIL.debounce(doesTimeOverlap);
+      } else {
+        cnValidation.hide('overlap');
       }
     },
     mileage: ({ event, value, name, input }) => {
@@ -583,22 +609,22 @@ const CaseNotes = (() => {
 
       const hasDecimal = event.key === '.' && value.indexOf('.') === 1 ? true : false;
     },
-    noteText: ({ event, value, name, input }) => {},
+    noteText: ({ event, value, name, input }) => {
+      //TODO: Phrases dialog, non modal with list of phrases and a toggle for all/my phrases
+      // PHRASES
+      //--------------------------------------------------
+      // const showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
+      // cnPhrases = new CaseNotesPhrases({
+      //   formNote: cnForm.inputs['noteText'],
+      //   showAllPhrases: showAllPhrases === 'Y' ? true : false,
+      // });
+      // cnPhrases.build().renderTo(cnForm.inputs['noteText'].fullscreen.fullScreenDialog.dialog);
+      // await cnPhrases.fetchData();
+    },
     confidential: ({ event, value, name, input }) => {},
   };
 
-  // INIT/LOAD? (data & defaults)
-  //--------------------------------------------------
-  async function init() {
-    moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
-
-    _DOM.ACTIONCENTER.innerHTML = '';
-    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
-    _DOM.setActiveModuleAttribute('casenotes2.0');
-    _DOM.ACTIONCENTER.appendChild(moduleWrap);
-
-    await getInitialData();
-
+  async function loadPage() {
     // DATE NAVIGATION
     //--------------------------------------------------
     dateNavigation = new DateNavigation({
@@ -619,14 +645,6 @@ const CaseNotes = (() => {
     //--------------------------------------------------
     cnValidation = new ValidationCenter({});
     cnValidation.build().renderTo(moduleWrap);
-    cnValidation.addWarning({
-      name: 'overlap',
-      message: 'Time Overlap',
-    });
-    cnValidation.addError({
-      name: 'consumer',
-      message: 'Consumer is required',
-    });
 
     // ROSTER PICKER
     //--------------------------------------------------
@@ -760,10 +778,11 @@ const CaseNotes = (() => {
         input,
       });
     });
-    cnForm.onSubmit(data => {
+    cnForm.onSubmit(async data => {
       console.log('onSubmit ', data);
 
-      saveNote({
+      //TODO: return succes or failure from SaveNote so I can display to user
+      await saveNote({
         caseNote: data.noteText ?? '',
         casenotemileage: data.mileage ?? '0',
         confidential: data.confidential === 'on' ? 'Y' : 'N',
@@ -777,17 +796,10 @@ const CaseNotes = (() => {
         startTime: data.startTime ?? '',
         vendorId: data.vendor ?? '',
       });
-    });
 
-    // PHRASES
-    //--------------------------------------------------
-    // const showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
-    // cnPhrases = new CaseNotesPhrases({
-    //   formNote: cnForm.inputs['noteText'],
-    //   showAllPhrases: showAllPhrases === 'Y' ? true : false,
-    // });
-    // cnPhrases.build().renderTo(cnForm.inputs['noteText'].fullscreen.fullScreenDialog.dialog);
-    // await cnPhrases.fetchData();
+      await cnOverview.fetchData(selectedDate);
+      cnOverview.populate();
+    });
 
     // TIMERS
     //--------------------------------------------------
@@ -798,6 +810,23 @@ const CaseNotes = (() => {
     cnOverview.build().renderTo(moduleWrap);
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
+  }
+
+  // INIT/LOAD? (data & defaults)
+  //--------------------------------------------------
+  async function init() {
+    moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
+
+    _DOM.ACTIONCENTER.innerHTML = '';
+    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
+    _DOM.setActiveModuleAttribute('casenotes2.0');
+    _DOM.ACTIONCENTER.appendChild(moduleWrap);
+
+    await getInitialData();
+
+    await loadPage();
+
+    checkRequiredFields();
   }
 
   return {

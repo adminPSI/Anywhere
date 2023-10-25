@@ -12,11 +12,11 @@
   grid-template-columns: auto 320px;
   grid-template-rows: auto auto auto 600px;
   grid-template-areas:
-    'feedback feedback'
     'nav nav'
+    'feedback feedback'
     'form roster'
     'cards cards';
-  row-gap: 20px;
+  row-gap: 10px;
 
   .dateNavigation {
     //grid-column-start: span 2;
@@ -27,10 +27,22 @@
     z-index: 99;
   }
 
-  .caseNotesFeedback {
-    border-radius: 6px;
-    box-shadow: $shadow-m2;
+  .validations {
+    display: flex;
+    column-gap: 4px;
+    flex-flow: row wrap;
     grid-area: feedback;
+    margin: 0 20px;
+    row-gap: 8px;
+
+    .validationMessage {
+      border-radius: 20px;
+      padding: 4px 14px 4px 10px;
+
+      p {
+        font-weight: $_bold;
+      }
+    }
   }
 
   .rosterPicker {
@@ -101,7 +113,6 @@
   .caseNotesOverview {
     border-radius: 6px;
     box-shadow: $shadow-m2;
-    grid-column-start: span 2;
     grid-area: cards;
     margin: 0 20px;
     padding: 20px;
@@ -532,7 +543,10 @@
   // ICONS
   //-------------------------------------------
   .svgIcon {
+    display: block;
+
     svg {
+      display: block;
       fill: currentColor;
     }
 
@@ -726,6 +740,42 @@
       padding: 16px 0 0 0;
       width: 100%;
       resize: none;
+    }
+  }
+
+  //===========================================
+  // VALIDATIONS
+  //-------------------------------------------
+  .validations {
+    border-radius: 6px;
+    box-shadow: $shadow-m2;
+    padding: 12px 10px;
+
+    .validationErros {
+      .validationMessage {
+        background-color: rgba(219, 22, 47, 0.4);
+
+        .svgIcon {
+          color: $error;
+        }
+      }
+    }
+
+    .validationWarnings {
+      .validationMessage {
+        background-color: rgba(255, 200, 87, 0.4);
+
+        .svgIcon {
+          color: $warning;
+        }
+      }
+    }
+
+    .validationMessage {
+      align-items: center;
+      column-gap: 4px;
+      display: flex;
+      flex-flow: row nowrap;
     }
   }
 }
