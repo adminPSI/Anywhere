@@ -93,7 +93,7 @@ namespace OODForms
             string StaffWithInitals = string.Empty;
             string OODStaff = string.Empty;
             string MiddleName = string.Empty;
-            DataSet ds = obj.OODForm8GetDirectStaff72022(AuthorizationNumber, StartDate, EndDate);
+            DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
 
             if (ds.Tables.Count > 0)
             {
@@ -196,7 +196,7 @@ namespace OODForms
                 }
             }
 
-            string TaskSummary = obj.OODForm8GetJobTasksSummary72022(AuthorizationNumber);
+            string TaskSummary = obj.OODForm8GetJobTasksSummary(AuthorizationNumber);
             if (TaskSummary.Length > 0) ;
             {
                 TaskSummary = TaskSummary.Trim();
@@ -204,9 +204,9 @@ namespace OODForms
 
             WS.Cell("m20").Value = TaskSummary;
 
-            WS.Cell("m21").Value = obj.OODForm8GetSupportAndTransistion72022(AuthorizationNumber, StartDate).ToString().Trim();
+            WS.Cell("m21").Value = obj.OODForm8GetSupportAndTransistion(AuthorizationNumber, StartDate).ToString().Trim();
 
-            ds = obj.OODForm8GetNotes72022(AuthorizationNumber, StartDate, EndDate);
+            ds = obj.OODForm8GetNotes(AuthorizationNumber, StartDate, EndDate);
 
             Int32 t = 23;
             foreach (DataRow row2 in ds.Tables[0].Rows)
@@ -293,8 +293,6 @@ namespace OODForms
             WS.Cell("k2").Value = string.Format("{0}", AuthorizationNumber);
 
             WS.Cell("k3").Value = invoiceNumber.ToString();
-
-            //WS.Cell("k3").Value = DateTime.Now.ToString("yyyy-MM-dd");
 
             string ConsumerName = String.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
             WS.Cell("k4").Value = ConsumerName;
