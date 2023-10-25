@@ -42,7 +42,7 @@ const planData = (() => {
         whenToCheckIn: 2500, // rev
       },
       servicesSupports: {
-        scopeOfService: 2500, // paid supp
+        scopeOfService: 10000, // paid supp
         fundingSourceOther: 2500, // paid supp
         howOftenHowMuch: 255, // paid supp
         howOftenOther: 2500, // paid supp

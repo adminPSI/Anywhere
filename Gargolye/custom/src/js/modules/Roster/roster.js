@@ -923,7 +923,7 @@ const roster2 = (function () {
 
     return miniRosterWrap;
   }
-  function showMiniRosterPopup(rosterMarkup) {
+    function showMiniRosterPopup(rosterMarkup) {
     if (MINI_ROSTER_BTN) MINI_ROSTER_BTN.classList.add('disabled');
 
     const activeSection = DOM.ACTIONCENTER.dataset.activeSection;
@@ -934,6 +934,7 @@ const roster2 = (function () {
       $.loadedApp === 'outcomes' ||
       $.loadedApp === 'plan' ||
       $.loadedApp === 'ConsumerFinances' ||
+      $.loadedApp === 'CFEditAccount' ||
       $.loadedApp === 'employment' ||
       $.loadedApp === 'covid' ||
       $.loadedApp === 'forms' ||
@@ -995,6 +996,7 @@ const roster2 = (function () {
       callback: async () => {
         if (
           $.loadedApp === 'ConsumerFinances' ||
+          $.loadedApp === 'CFEditAccount' ||
           $.loadedApp === 'employment' ||
           $.loadedApp === 'assessmentHistory'
         ) {
@@ -1199,6 +1201,7 @@ const roster2 = (function () {
         $.loadedApp === 'plan' ||
         $.loadedApp === 'authorizations' ||
         $.loadedApp === 'ConsumerFinances' ||
+        $.loadedApp === 'CFEditAccount' ||
         $.loadedApp === 'employment' ||
         $.loadedApp === 'covid' ||
         $.loadedApp === 'forms' ||

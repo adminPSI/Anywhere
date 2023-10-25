@@ -4871,6 +4871,39 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getVenderLocationReviewEntries/")]
         AuthorizationWorker.vendorLocationReviews[] getVenderLocationReviewEntries(string token, string vendorID);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/getEditAccountInfoById/")]
+        ConsumerFinancesWorker.EditAccountInfo[] getEditAccountInfoById(string token, string accountId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getAccountClass/")]
+        ConsumerFinancesWorker.AccountClass[] getAccountClass(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                 BodyStyle = WebMessageBodyStyle.Wrapped,
+                 ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/insertEditRegisterAccount/")]
+        ConsumerFinancesWorker.EditAccountInfo insertEditRegisterAccount(string token, string selectedConsumersId, string accountId, string name, string number, string type, string status, string classofAccount, string dateOpened, string dateClosed, string openingBalance, string description, string userId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/getEditAccount/")]
+        ConsumerFinancesWorker.ActiveAccount[] getEditAccount(string token, string consumerId);
+
     }
 
 

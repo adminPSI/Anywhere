@@ -603,6 +603,7 @@ const NewEntryCF = (() => {
     function deleteAccountPOPUP() {
         const confirmPopup = POPUP.build({
             hideX: true,
+            classNames: ['warning'],  
         });
 
         YES_BTN = button.build({
@@ -736,7 +737,7 @@ const NewEntryCF = (() => {
 
         let addPayeePopup = POPUP.build({
             header: "Add payee",
-            hideX: true,
+            hideX: true,           
             id: "addPayeePopup"
         });
 

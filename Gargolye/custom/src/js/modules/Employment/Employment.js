@@ -85,7 +85,7 @@ const Employment = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            headline: 'Consumer: ' + selectedConsumersName,
+            headline: selectedConsumersName, 
             columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing'],
             endIcon: false, //ToDo   //$.session.OODView == true ? true : false, 
         };

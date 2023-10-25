@@ -1,9 +1,12 @@
 ﻿using Anywhere.Log;
 using OneSpanSign.Sdk;
+using pdftron.PDF;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using System.Security.Principal;
 using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.service.Data.ConsumerFinances
@@ -158,7 +161,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@payeeName", DbType.String, payeeName);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@address1", DbType.String, address1);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@address2", DbType.String, address2);
-                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@city", DbType.String, city); 
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@city", DbType.String, city);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@state", DbType.String, state);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@zipcode", DbType.String, zipcode);
                 args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
@@ -265,6 +268,85 @@ namespace Anywhere.service.Data.ConsumerFinances
             catch (Exception ex)
             {
                 logger.error("WFDG", ex.Message + "ANYW_getConsumerFinancesEntryById(" + registerId + ")");
+                throw ex;
+            }
+        }
+
+        public string getEditAccountInfoById(string token, string accountId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getEditAccountInfoById");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@accountId", DbType.String, accountId);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getEditAccountInfoById(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getEditAccountInfoById(" + accountId + ")");
+                throw ex;
+            }
+        }
+
+        public string getAccountClass(string token, DistributedTransaction transaction)
+        {
+
+            try
+            {
+                logger.debug("getAccountClass");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getAccountClass", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getAccountClass()");
+                throw ex;
+            }
+        }
+
+        public string insertEditRegisterAccount(string token, string selectedConsumersId, string accountId, string name, string number, string type, string status, string classofAccount, string dateOpened, string dateClosed, string openingBalance, string description, string userId , DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("insertEditRegisterAccount");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[12];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@selectedConsumersId", DbType.String, selectedConsumersId);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@accountId", DbType.Double, accountId); 
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@name", DbType.String, name);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@number", DbType.String, number); 
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@type", DbType.String, type);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@status", DbType.String, status);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@classofAccount", DbType.String, classofAccount);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@dateOpened", DbType.String, dateOpened);
+                args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@openingBalance", DbType.String, openingBalance);
+                args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@description", DbType.String, description);
+                args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
+                args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@dateClosed", DbType.String, dateClosed);
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertEditRegisterAccount(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_insertEditRegisterAccount(" + selectedConsumersId + "," + userId + "," + accountId + ")");
+                throw ex;
+            }
+        }
+
+        public string getEditAccount(DistributedTransaction transaction, string consumerId)
+        {
+            try
+            {
+                logger.debug("getEditAccount");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getEditAccount(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getEditAccount()");
                 throw ex;
             }
         }
@@ -380,7 +462,7 @@ namespace Anywhere.service.Data.ConsumerFinances
         {
             try
             {
-                logger.debug("getNextAccountRunningBalance"); 
+                logger.debug("getNextAccountRunningBalance");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@date", DbType.String, date);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@account", DbType.Double, account);

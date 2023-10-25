@@ -45,7 +45,7 @@ namespace OODForms
             sb.AppendFormat("WHERE Vendor_ID = {0} ", VendorID);
             return di.SelectRowsDS(sb.ToString());
         }
-        public DataSet OODForm8GetDirectStaff72022(string AuthorizationNumber, string StartDate, string EndDate)
+        public DataSet OODForm8GetDirectStaff(string AuthorizationNumber, string StartDate, string EndDate)
         {
             sb.Clear();
             sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
@@ -106,7 +106,7 @@ namespace OODForms
             sb.Append("AND dba.EM_Employee_Position.End_Date IS NULL ");
             return di.SelectRowsDS(sb.ToString());
         }
-        public string OODForm8GetSupportAndTransistion72022(string AuthorizationNumber, string StartDate)
+        public string OODForm8GetSupportAndTransistion(string AuthorizationNumber, string StartDate)
         {
             string rv = String.Empty;
 
@@ -128,7 +128,7 @@ namespace OODForms
             return rv;
 
         }
-        public string OODForm8GetJobTasksSummary72022(string AuthorizationNumber)
+        public string OODForm8GetJobTasksSummary(string AuthorizationNumber)
         {
             string Tasks = string.Empty;
 
@@ -172,7 +172,7 @@ namespace OODForms
 
             return Tasks;
         }
-        public DataSet OODForm8GetNotes72022(string AuthorizationNumber, string StartDate, string EndDate)
+        public DataSet OODForm8GetNotes(string AuthorizationNumber, string StartDate, string EndDate)
         {
             sb.Clear();
             sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");

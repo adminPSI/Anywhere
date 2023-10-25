@@ -235,7 +235,7 @@ const ConsumerFinances = (() => {
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
-            text: account.accountName + ' - $' + account.totalBalance
+            text: account.accountName + ' - $' + (account.totalBalance == '' ? '0.00' : account.totalBalance)
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
         dropdown.populate("accountDropdown", data, filterValues.accountName);
