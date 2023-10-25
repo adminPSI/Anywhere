@@ -1,8 +1,6 @@
 (function (global, factory) {
   global.RosterPicker = factory();
 })(this, function () {
-  //TODO: keep track of selected consumers (option to allow multiple consumers to be selected)
-
   /**
    * Default configuration
    * @type {Object}
@@ -22,6 +20,9 @@
     return Object.assign({}, DEFAULT_OPTIONS, userOptions);
   };
 
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
   /**
    * Displays a list of consumers, contains logic for selecting consumer(s).
    * Use onConsumerSelect passed in {options} to get array of selected consumer IDs.
@@ -42,7 +43,7 @@
     // DOM Ref
     this.rosterPickerEle = null;
     this.rosterWrapEle = null;
-    this.rosterSearchEle = null;
+    this.rosterSearchInput = null;
     this.rosterCaseLoadInput = null;
     this.consumerCards = null;
   }
@@ -118,9 +119,14 @@
       fragment.append(lastName, firstName);
       const details = _DOM.createElement('div', { class: 'details', node: fragment });
 
+      // PIN ICON
+      const pinCardIcon = Icon.getIcon('pin');
+      pinCardIcon.setAttribute('data-target', 'pinCardIcon');
+
       // BUILD
       rosterCard.appendChild(portrait);
       rosterCard.appendChild(details);
+      rosterCard.appendChild(pinCardIcon);
       gridAnimationWrapper.appendChild(rosterCard);
 
       this.rosterWrapEle.appendChild(gridAnimationWrapper);
@@ -137,6 +143,16 @@
    */
   RosterPicker.prototype.setupEvents = function () {
     this.rosterWrapEle.addEventListener('click', e => {
+      if (e.target.dataset.target === 'pinCardIcon') {
+        if (!e.target.parentNode.parentNode.classList.contains('pinned')) {
+          e.target.parentNode.parentNode.classList.add('pinned');
+        } else {
+          e.target.parentNode.parentNode.classList.remove('pinned');
+        }
+
+        return;
+      }
+
       if (e.target.dataset.target === 'rosterCard') {
         if (this.options.allowMultiSelect) {
           if (!e.target.parentNode.classList.contains('selected')) {
@@ -162,6 +178,8 @@
         }
 
         this.options.onConsumerSelect(Object.keys(this.selectedConsumers));
+
+        return;
       }
     });
 
@@ -173,29 +191,13 @@
 
     this.rosterSearchInput.onKeyup(
       _UTIL.debounce(e => {
-        this.consumers.forEach(consumer => {
-          const firstName = consumer.FN.toLowerCase();
-          const middleName = consumer.MN.toLowerCase();
-          const lastName = consumer.LN.toLowerCase();
-
-          const nameCombinations = [
-            `${firstName} ${middleName} ${lastName}`,
-            `${lastName} ${firstName} ${middleName}`,
-            `${firstName} ${lastName}`,
-            `${lastName} ${firstName}`,
-            `${firstName} ${middleName}`,
-            `${middleName} ${lastName}`,
-          ];
-
-          const isMatch = nameCombinations.some(combo => combo.indexOf(e.target.value.toLowerCase()) !== -1);
-          if (isMatch) {
-            consumer.cardEle.parentNode.classList.remove('isClosed');
-          } else {
-            consumer.cardEle.parentNode.classList.add('isClosed');
-          }
-        });
+        this.filterConsumersOnSearch(e);
       }, 500),
     );
+
+    this.rosterSearchInput.onChange(e => {
+      this.filterConsumersOnSearch(e);
+    });
 
     this.rosterCaseLoadInput.onChange(async e => {
       this.groupCode = e.target.checked ? 'CAS' : 'ALL';
@@ -205,11 +207,34 @@
   };
 
   /**
-   * Hides/Shows Roster Cards
+   * Filters roster picker on search
    *
    * @function
+   * @param {Event} e
    */
-  RosterPicker.prototype.onSearchFilter = function () {};
+  RosterPicker.prototype.filterConsumersOnSearch = function (e) {
+    this.consumers.forEach(consumer => {
+      const firstName = consumer.FN.toLowerCase();
+      const middleName = consumer.MN.toLowerCase();
+      const lastName = consumer.LN.toLowerCase();
+
+      const nameCombinations = [
+        `${firstName} ${middleName} ${lastName}`,
+        `${lastName} ${firstName} ${middleName}`,
+        `${firstName} ${lastName}`,
+        `${lastName} ${firstName}`,
+        `${firstName} ${middleName}`,
+        `${middleName} ${lastName}`,
+      ];
+
+      const isMatch = nameCombinations.some(combo => combo.indexOf(e.target.value.toLowerCase()) !== -1);
+      if (isMatch) {
+        consumer.cardEle.parentNode.classList.remove('isClosed');
+      } else {
+        consumer.cardEle.parentNode.classList.add('isClosed');
+      }
+    });
+  };
 
   /**
    * Fetches consumers data by date, group and location
@@ -236,6 +261,16 @@
     }
 
     return this;
+  };
+
+  /**
+   * Updates the allowMultiSelect option property with given value
+   *
+   * @function
+   * @param {Boolean} allowMultiSelect
+   */
+  RosterPicker.prototype.toggleMultiSelectOption = function (allowMultiSelect) {
+    this.options.allowMultiSelect = allowMultiSelect;
   };
 
   /**

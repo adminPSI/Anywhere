@@ -1331,7 +1331,7 @@ namespace Anywhere
 
         public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
-            return null;// iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            return iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
         }
 
         public string updateIncidentTrackingDaysBack(string token, string updatedReviewDays)
@@ -2804,7 +2804,17 @@ namespace Anywhere
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
 
-            return OODfw.generateForm4(token, referenceNumber, 0, peopleId, startDate, endDate, serviceCodeId);
+            if (serviceCodeId == "%25")
+            {
+                serviceCodeId = "%";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "%";
+            }
+
+            return OODfw.generateForm4(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
         }
 
         public string generateForm8(System.IO.Stream testInput)
@@ -2827,7 +2837,17 @@ namespace Anywhere
             startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
             endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
 
-            return OODfw.generateForm8(token, referenceNumber, 22, peopleId, startDate, endDate, serviceCodeId);
+            if ( serviceCodeId == "%25")
+            {
+                serviceCodeId = "All";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "All";
+            }
+
+            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
         }
 
         public string generateForm10(System.IO.Stream testInput)

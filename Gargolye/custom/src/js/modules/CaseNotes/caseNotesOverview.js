@@ -2,6 +2,7 @@
  * @constructor
  */
 function CaseNotesOverview() {
+  // Data Init
   this.caseLoadOnly = $.session.CaseNotesCaseloadRestrictions;
   this.viewEntered = $.session.CaseNotesViewEntered;
   this.reviewGroups = {};
@@ -10,6 +11,7 @@ function CaseNotesOverview() {
   this.caseLoadRestrictions;
   this.caseLoadReviewData = [];
 
+  // DOM Ref
   this.overviewWrap;
   this.overviewSearch;
   this.overviewCardsWrap;
@@ -25,7 +27,6 @@ CaseNotesOverview.prototype.build = function () {
   this.overviewSearch = new Input({
     type: 'search',
     id: 'overviewSearch',
-    name: 'overviewSearch',
     placeholder: 'Search...',
   });
 
@@ -195,7 +196,7 @@ CaseNotesOverview.prototype.fetchData = async function (selectedDate) {
 };
 
 /**
- * Renders Case Notes Overview makrup to the specified DOM node.
+ * Renders Case Notes Overview markup to the specified DOM node.
  *
  * @function
  * @param {Node} node - DOM node to render case notes overview to

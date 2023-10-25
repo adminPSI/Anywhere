@@ -2297,7 +2297,8 @@ const plan = (function () {
           let thiswfFormslist = [];
           for (j = 0; j < selectedPreviousWfForms.length; j++) {
             if (wftemplateId === selectedPreviousWfForms[j].WFtemplateId) {
-              thiswfFormslist.push(selectedPreviousWfForms[j].description);
+              //thiswfFormslist.push(selectedPreviousWfForms[j].description);
+              thiswfFormslist.push(selectedPreviousWfForms[j].attachmentId);
             }
           }
           if (thiswfFormslist && thiswfFormslist.length > 0) {

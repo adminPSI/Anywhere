@@ -1,4 +1,5 @@
-﻿using System;
+﻿using iTextSharp.text;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAttachmentWorker;
 
 namespace Anywhere.service.Data
 {
@@ -1992,8 +1994,21 @@ namespace Anywhere.service.Data
                 List<WorkflowTemplateStep> steps = js.Deserialize<List<WorkflowTemplateStep>>(wfdg.getWorkflowTemplateSteps(null, transaction_insertWFDetails));
                 List<WorkflowTemplateStepEvent> events = js.Deserialize<List<WorkflowTemplateStepEvent>>(wfdg.getWorkflowTemplateStepEvents(null, transaction_insertWFDetails));
                 List<WorkflowTemplateStepEventAction> actions = js.Deserialize<List<WorkflowTemplateStepEventAction>>(wfdg.getWorkflowTemplateStepEventActions(null, transaction_insertWFDetails));
-                List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, wantedFormDescriptions, priorConsumerPlanId, transaction_insertWFDetails));
-                //List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, transaction_insertWFDetails));
+                // -- Get PreviousPlan StepId 
+                List<WorkflowTemplateStepDocument> selecteddocuments = new List<WorkflowTemplateStepDocument>();
+                
+                if (!string.IsNullOrEmpty(wantedFormDescriptions)) {
+                    string[] attachmentIds = wantedFormDescriptions.Split(',');
+                    foreach (string attachmentID in attachmentIds)
+                    {
+                        String previousPlanStepId = wfdg.getWorkflowStepIdfromPreviousPlan(priorConsumerPlanId, attachmentID);
+                        WorkflowTemplateStepDocument[] selecteddocument = js.Deserialize<WorkflowTemplateStepDocument[]>(wfdg.getWorkflowStepDocuments(previousPlanStepId, attachmentID, priorConsumerPlanId, transaction_insertWFDetails));
+                        selecteddocuments.Add(selecteddocument[0]);
+                    }
+                    
+                }
+               
+                List<WorkflowTemplateStepDocument> documents = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowTemplateStepDocuments(null, transaction_insertWFDetails));
 
                 // Get relationships data used for getting responsible party relationships
                 List<PeopleRelationship> relationships = js.Deserialize<List<PeopleRelationship>>(wfdg.getPeopleRelationships(peopleId, transaction_insertWFDetails));
@@ -2089,9 +2104,22 @@ namespace Anywhere.service.Data
 
                         foreach (WorkflowTemplateStepDocument d in documents.FindAll(p => p.stepId == s.stepId))
                         {
-                            // insert step documents
-                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            // insert template step documents
+                            // what if a selected doc is one of the template docs (edited) -- you don't want both versions just the edited version
+                            bool isSelected = selecteddocuments.Any(sel => sel.description == d.description);
+                            if (!isSelected)
+                            {
+                                String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            }
                         }
+
+                        foreach (WorkflowTemplateStepDocument d in selecteddocuments.FindAll(p => p.stepId == s.stepId))
+                        {
+                            // insert selected step documents
+                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                          
+                        }
+
                     }
                 }
                 //MAT Commented out below because the transaction was failing due to being Commited here

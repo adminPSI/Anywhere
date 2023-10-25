@@ -37,6 +37,7 @@
    * @param {String} [options.minlength] - min char count
    * @param {String} [options.maxlength] - max char count
    * @param {Boolean} [options.hidden] - Whether to show or hide the input
+   * @param {Boolean} [options.toggle] - *Checkbox only (instead of checkbox you will get a toggle button)
    * @returns {Input}
    */
   function Input(options) {
@@ -53,6 +54,7 @@
    * @returns {Input} - Returns the current instances for chaining
    */
   Input.prototype.build = function () {
+    // INPUT WRAP
     const classArray = ['input', `${this.options.attributes.type}`, `${this.options.attributes.id}`];
     this.inputWrap = _DOM.createElement('div', {
       class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
@@ -79,6 +81,13 @@
         : { text: '0' };
       const inputCount = _DOM.createElement('div', { class: 'charCount', ...countMarkup });
       this.inputWrap.appendChild(inputCount);
+    }
+
+    // CHECKBOX TOGGLE
+    if (this.options.toggle) {
+      this.inputWrap.classList.add('toggle');
+    } else {
+      this.inputWrap.classList.add('notoggle');
     }
 
     this.inputWrap.appendChild(this.input);
@@ -150,6 +159,7 @@
    * Handles input change event
    *
    * @function
+   * @param {Function} cbFunc - Callback function to call
    */
   Input.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('change', e => {

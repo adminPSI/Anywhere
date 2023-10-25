@@ -1,6 +1,8 @@
 (function (global, factory) {
   global.Button = factory();
 })(this, function () {
+  //TODO: add icons
+
   /**
    * Default configuration
    * @type {Object}
@@ -50,13 +52,24 @@
     this.button = _DOM.createElement('button', {
       class: ['button', this.options.style, this.options.styleType],
       text: this.options.text,
-      type: this.options.type,
+      type: this.options.attributes.type,
     });
 
     return this;
   };
 
-  Button.prototype.onClick = function () {};
+  /**
+   * Handles button click event
+   *
+   * @function
+   * @param {Function} cbFunc - Callback function to call
+   */
+  Button.prototype.onClick = function (cbFunc) {
+    this.button.addEventListener('click', e => {
+      e.preventDefault();
+      cbFunc(e);
+    });
+  };
 
   /**
    * Renders the built Button element to the specified DOM node.

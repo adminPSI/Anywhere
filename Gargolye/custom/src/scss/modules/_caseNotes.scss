@@ -1,37 +1,54 @@
 .grid-container {
   background: $white;
 }
-.actioncenter[data-active-module='casenotes'] {
+.actioncenter[data-active-module='casenotes2.0'] {
   background: $white;
   padding: 0 0 20px;
   width: 100%;
 }
 
-#UI.caseNotesModule {
+[data-active-module='casenotes2.0'] .caseNotesModule {
   display: grid;
   grid-template-columns: auto 320px;
-  grid-template-rows: auto auto 600px 400px;
+  grid-template-rows: auto auto auto 600px;
   grid-template-areas:
     'nav nav'
+    'feedback feedback'
     'form roster'
-    'cards cards'
-    '. .';
-  row-gap: 20px;
+    'cards cards';
+  row-gap: 10px;
 
   .dateNavigation {
     //grid-column-start: span 2;
     grid-area: nav;
     order: 1;
-    padding: 0px 4px;
     position: sticky;
     top: 0px;
-    z-index: 999;
+    z-index: 99;
+  }
+
+  .validations {
+    display: flex;
+    column-gap: 4px;
+    flex-flow: row wrap;
+    grid-area: feedback;
+    margin: 0 20px;
+    row-gap: 8px;
+
+    .validationMessage {
+      border-radius: 20px;
+      padding: 4px 14px 4px 10px;
+
+      p {
+        font-weight: $_bold;
+      }
+    }
   }
 
   .rosterPicker {
-    height: 1000px;
     grid-area: roster;
     margin: 0 20px 0 10px;
+    max-height: 1000px;
     order: 3;
   }
 
@@ -42,11 +59,15 @@
     padding: 10px;
     column-gap: 10px;
     display: flex;
-    height: 1000px;
     flex-flow: row wrap;
     grid-area: form;
     margin: 0 10px 0 20px;
+    max-height: 1000px;
     order: 2;
+
+    .input {
+      flex-grow: 1;
+    }
 
     .input.time {
       width: calc(50% - 5px);
@@ -65,12 +86,33 @@
       min-width: 300px;
       width: calc(50% - 5px);
     }
+
+    button {
+      margin-left: auto;
+    }
+  }
+
+  .caseNotesPhrases {
+    align-items: flex-end;
+    display: flex;
+    column-gap: 10px;
+    flex-flow: row wrap;
+    row-gap: 14px;
+
+    .input.checkbox {
+    }
+    .input.select {
+      flex-grow: 1;
+      width: auto;
+      margin: 0;
+    }
+    .button {
+    }
   }
 
   .caseNotesOverview {
     border-radius: 6px;
     box-shadow: $shadow-m2;
-    grid-column-start: span 2;
     grid-area: cards;
     margin: 0 20px;
     padding: 20px;
@@ -144,12 +186,29 @@
       }
     }
   }
+
+  dialog[open] {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: 14px;
+
+    &::backdrop {
+      background-color: rgb(54, 106, 152);
+      opacity: 0.6;
+    }
+  }
+
+  .withFullscreenTextarea {
+    .input.textarea {
+      height: auto;
+    }
+  }
 }
 
 //============================================================
 // NEW UI STUFF NEEDS MOVED TO ITS OWN FOLDER
 //------------------------------------------------------------
-#UI {
+[data-UI] {
   //===========================================
   // FORM
   //-------------------------------------------
@@ -286,7 +345,7 @@
   }
 
   //*-- Checkbox ---------
-  .input {
+  .input.notoggle {
     input[type='checkbox'],
     input[type='radio'] {
       opacity: 0;
@@ -325,6 +384,73 @@
           top: 0px;
         }
       }
+    }
+  }
+
+  //*-- Checkbox As Toggle ---------
+  .input.toggle {
+    input[type='checkbox'] {
+      opacity: 0;
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+    }
+
+    input[type='checkbox'] ~ label {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      position: relative;
+      font-size: 1rem;
+    }
+
+    input[type='checkbox'] ~ label::before {
+      content: '';
+      background-color: $red;
+      border-radius: 16px;
+      border: none;
+      height: 20px;
+      width: 40px;
+      margin-right: 0.25em;
+      opacity: 0.3;
+      transition: background-color 200ms ease-in-out;
+    }
+
+    input[type='checkbox'] ~ label::after {
+      content: '';
+      align-items: center;
+      background-color: $red;
+      border-radius: 16px;
+      color: $white;
+      display: flex;
+      height: 14px;
+      justify-content: center;
+      left: 4px;
+      position: absolute;
+      width: 14px;
+      transition: background-color 200ms ease-in-out, transform 200ms ease-in-out;
+    }
+
+    input[type='checkbox']:focus ~ label::before {
+      outline: none;
+    }
+    input[type='checkbox']:checked ~ label::before {
+      background-color: $secondary;
+      opacity: 0.3;
+    }
+    input[type='checkbox']:checked ~ label::after {
+      transform: translateX(130%);
+      background-color: $secondary;
+    }
+
+    input[type='checkbox']:disabled ~ label {
+      color: $gray;
+    }
+    input[type='checkbox']:disabled ~ label::before {
+      background-color: rgba(211, 211, 211, 0.8);
+    }
+    input[type='checkbox']:disabled ~ label::after {
+      background-color: $gray;
     }
   }
 
@@ -417,7 +543,10 @@
   // ICONS
   //-------------------------------------------
   .svgIcon {
+    display: block;
+
     svg {
+      display: block;
       fill: currentColor;
     }
 
@@ -590,8 +719,8 @@
     border: 2px solid $black;
     border-radius: 4px;
     box-shadow: $shadow-m2;
-    height: 600px;
-    width: 400px;
+    height: 76%;
+    width: 50%;
     overflow: hidden;
     padding: 0;
   }
@@ -611,10 +740,42 @@
       padding: 16px 0 0 0;
       width: 100%;
       resize: none;
+    }
+  }
 
-      // label {
-      //   display: none;
-      // }
+  //===========================================
+  // VALIDATIONS
+  //-------------------------------------------
+  .validations {
+    border-radius: 6px;
+    box-shadow: $shadow-m2;
+    padding: 12px 10px;
+
+    .validationErros {
+      .validationMessage {
+        background-color: rgba(219, 22, 47, 0.4);
+
+        .svgIcon {
+          color: $error;
+        }
+      }
+    }
+
+    .validationWarnings {
+      .validationMessage {
+        background-color: rgba(255, 200, 87, 0.4);
+
+        .svgIcon {
+          color: $warning;
+        }
+      }
+    }
+
+    .validationMessage {
+      align-items: center;
+      column-gap: 4px;
+      display: flex;
+      flex-flow: row nowrap;
     }
   }
 }

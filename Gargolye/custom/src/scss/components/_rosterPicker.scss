@@ -18,20 +18,49 @@
   overflow-y: scroll;
 
   .visibilityAnimationWrapper {
+    border-radius: 4px;
     display: grid;
     grid-template-rows: 1fr;
     transition: grid-template-rows 0.2s ease-in;
-    order: 1;
-    margin: 0 0 6px;
+    padding: 4px 6px;
+    position: relative;
+    order: 2;
+
+    //? This should work someday
+    // &:nth-last-child(n + 1 of .selected) {
+    //   background: $secondary;
+    // }
 
     &.isClosed:not(.selected) {
       grid-template-rows: 0fr;
       margin: 0;
+      padding: 0;
     }
 
     &.selected {
-      background: pink;
+      background: $secondary;
+      color: $white;
       order: 0;
+      margin: 0 0 6px;
+    }
+
+    &.pinned {
+      order: 1;
+
+      .svgIcon {
+        color: $secondary;
+        rotate: 45deg;
+      }
+    }
+
+    .svgIcon {
+      color: $black;
+      pointer-events: all;
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      rotate: 0deg;
+      transition: rotate 0.3s ease-in;
     }
   }
 }
