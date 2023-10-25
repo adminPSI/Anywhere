@@ -3641,5 +3641,26 @@ namespace Anywhere
             return authWorker.getVenderLocationReviewEntries(token, vendorID);
         }
 
+        public ConsumerFinancesWorker.EditAccountInfo[] getEditAccountInfoById(string token, string accountId)
+        {
+            return cf.getEditAccountInfoById(token, accountId);
+        }
+
+        public ConsumerFinancesWorker.AccountClass[] getAccountClass(string token)
+        {
+            return cf.getAccountClass(token);
+        }
+
+        public ConsumerFinancesWorker.EditAccountInfo insertEditRegisterAccount(string token, string selectedConsumersId, string accountId, string name, string number, string type, string status, string classofAccount, string dateOpened, string dateClosed, string openingBalance, string description, string userId)
+        {
+            return cf.insertEditRegisterAccount(token, selectedConsumersId, accountId, name, number, type, status, classofAccount, dateOpened, dateClosed, openingBalance, description, userId);
+        }
+
+        public ActiveAccount[] getEditAccount(string token, string consumerId)
+        {
+            return cf.getEditAccount(token, consumerId);
+        }
+
+
     }
 }
