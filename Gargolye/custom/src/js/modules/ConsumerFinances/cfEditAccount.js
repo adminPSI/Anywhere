@@ -8,7 +8,7 @@ const CFEditAccount = (() => {
     var selectedConsumersId;
 
     //filter
-    let accountId = 0;
+    let accountId = '0';
     let BtnName;
     let page;
     let load;
@@ -23,7 +23,7 @@ const CFEditAccount = (() => {
                 page = 'Update';
                 load = 1;
                 account = '';
-                accountId = 0;
+                accountId = '0';
                 await loadCFEditLanding();
                 DOM.toggleNavLayout();
                 break;  
@@ -170,7 +170,7 @@ const CFEditAccount = (() => {
         descriptionTemp = '';
 
         if (page == 'Update') {
-            if (accountId != '' && accountId > 0) {
+            if (accountId != '' && accountId != '0') {
                 const result = await ConsumerFinancesAjax.getEditAccountInfoByIdAsync(accountId);
                 const { getEditAccountInfoByIdResult } = result;
                 name = getEditAccountInfoByIdResult[0].name;
@@ -193,7 +193,7 @@ const CFEditAccount = (() => {
         else {
             BtnName = 'SAVE';
             dateOpened = UTIL.getTodaysDate();
-            accountId = 0;
+            accountId = '0';
             account = '';
         }
 
@@ -352,7 +352,7 @@ const CFEditAccount = (() => {
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('editAccountBtnWrap');
-        btnWrap.style.marginLeft = '25%';
+        btnWrap.style.marginLeft = '45%';
         btnWrap.style.width = '50%';
 
         SAVE_BTN.style.width = '52%';
@@ -522,7 +522,12 @@ const CFEditAccount = (() => {
             return;
         } else {
             if (nameTemp != '' || numberTemp != '' || typeTemp != '' || statusTemp != '' || classofAccountTemp != '' || dateOpenedTemp != '' || dateClosedTemp != '' || openingBalanceTemp != '' || descriptionTemp != '') {
-                SAVE_BTN.classList.remove('disabled');
+                if (accountId == '0' && page == 'Update') {
+                    SAVE_BTN.classList.add('disabled'); 
+                }
+                else {
+                    SAVE_BTN.classList.remove('disabled');
+                }
             }
             else {
                 SAVE_BTN.classList.add('disabled');
@@ -544,7 +549,7 @@ const CFEditAccount = (() => {
 
     async function saveUpdateAccount() {
         if (page == 'Add') {
-            accountId = 0;
+            accountId = '0';
         }
         const result = await ConsumerFinancesAjax.insertEditRegisterAccountAsync(selectedConsumersId, accountId, name, number == '' ? null : number, type, status, classofAccount == '' ? null : classofAccount, dateOpened, dateClosed, openingBalance, description == '' ? null : description);
         const { insertEditRegisterAccountResult } = result;
