@@ -156,7 +156,29 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string FullName { get; set; }
 
         }
+        public class EditAccountInfo
+        {
+            public string Id { get; set; }
+            public string name { get; set; }
+            public string number { get; set; }
+            public string type { get; set; }
+            public string status { get; set; }
+            public string classofAccount { get; set; }
+            public string dateOpened { get; set; }
+            public string dateClosed { get; set; }
+            public string lastReconciled { get; set; }
+            public string openingBalance { get; set; }
+            public string balance { get; set; }
+            public string description { get; set; }
+            public string accountId { get; set; }
+        }
 
+        public class AccountClass
+        {
+            public string accountClass { get; set; }
+            public string SystemClass { get; set; }
+
+        }
 
         public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType)
         {
@@ -446,6 +468,84 @@ namespace Anywhere.service.Data.ConsumerFinances
 
                     return accountEntries;
 
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public EditAccountInfo[] getEditAccountInfoById(string token, string accountId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    EditAccountInfo[] accountInfo = js.Deserialize<EditAccountInfo[]>(Odg.getEditAccountInfoById(token, accountId, transaction));
+                    return accountInfo;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ConsumerFinancesWorker.AccountClass[] getAccountClass(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    AccountClass[] accountClass = js.Deserialize<AccountClass[]>(Odg.getAccountClass(token, transaction));
+                    return accountClass;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ConsumerFinancesWorker.EditAccountInfo insertEditRegisterAccount(string token, string selectedConsumersId, string accountId, string name, string number, string type, string status, string classofAccount, string dateOpened, string dateClosed, string openingBalance, string description, string userId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    EditAccountInfo acountRegister = new EditAccountInfo();
+
+                    String AccountID;
+
+                    AccountID = Odg.insertEditRegisterAccount(token, selectedConsumersId, accountId, name, number, type, status, classofAccount, dateOpened, dateClosed, openingBalance, description, userId, transaction);
+
+                    acountRegister.accountId = AccountID;
+                    return acountRegister;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public ActiveAccount[] getEditAccount(string token, string consumerId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getEditAccount(transaction, consumerId));
+                    return accounts;
                 }
                 catch (Exception ex)
                 {

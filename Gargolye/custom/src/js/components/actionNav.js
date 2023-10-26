@@ -205,6 +205,12 @@ var ACTION_NAV = (function () {
                 clear();
                 hide();
                 break;
+            }                
+            case 'CFEditAccount': {
+                CFEditAccount.handleActionNavEvent(target);
+                clear();
+                hide();
+                break;
             }
             case 'Employment': {
                 Employment.handleActionNavEvent(target);

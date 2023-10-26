@@ -122,6 +122,8 @@ const MODULE_MENU = (function () {
         document.getElementById('CFButton').removeAttribute("title");
         document.getElementById('AdminButton').removeAttribute("title");
         document.getElementById('resetButton').removeAttribute("title");
+        document.getElementById('accountButton').removeAttribute("title");
+        document.getElementById('editaccountButton').removeAttribute("title");
     }
 
     function addAttr() {
@@ -145,6 +147,8 @@ const MODULE_MENU = (function () {
         document.getElementById('CFButton').setAttribute("title", "Money Management");
         document.getElementById('AdminButton').setAttribute("title", "Administration");
         document.getElementById('resetButton').setAttribute("title", "Reset Passwords");
+        document.getElementById('accountButton').setAttribute("title", "Account Register");
+        document.getElementById('editaccountButton').setAttribute("title", "Edit Account");
     }
 
     return { init };

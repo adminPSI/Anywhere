@@ -955,3 +955,69 @@
         }
     }
 }
+
+[data-active-module="CFEditAccount"] {
+    .borderLine {
+        border-bottom: 2px solid $secondary;
+        display: flex;
+        flex-flow: row wrap;
+        padding: 0 0 5px 0;
+        position: relative;
+        margin: 10px 0;
+        max-width: 100%;
+    }
+
+    .editAccountBtnWrap {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .width50Per {
+        width: 100%;
+
+        @media screen and (min-width: 560px) {
+            width: 50%;
+        }
+    }
+
+    .width33Per {
+        width: 100%;
+
+        @media screen and (min-width: 560px) {
+            width: 33%;
+        }
+    }
+
+    .editAccountDTWrap {
+        display: flow;
+
+        .width10Per, .width16Per, .width23Per, .width50Per, .width32Per {
+            width: 97%;
+        }
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .width10Per {
+                width: 10%;
+            }
+
+            .width23Per {
+                width: 23%;
+            }
+
+            .width16Per {
+                width: 16%;
+            }
+
+            .width32Per {
+                width: 32%;
+            }
+
+            .width50Per {
+                width: 48.5%;
+            }
+        }
+    }
+}

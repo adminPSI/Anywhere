@@ -189,7 +189,7 @@
             <div id="authorizationsdiv" class="menu__item">
                 <button id="authorizationsButton" class="menu__button" data-load-module="authorizations">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-                        <path class="fill-path" d="M160-80v-240q0-33 23.5-56.5T240-400h480q33 0 56.5 23.5T800-320v240H160Zm80-160h480v-80H240v80Zm240-160L280-680q0-83 58.5-141.5T480-880q83 0 141.5 58.5T680-680L480-400Zm0-112 120-168q0-50-35-85t-85-35q-50 0-85 35t-35 85l120 168Zm0-144Z"/>
+                        <path class="fill-path" d="M160-80v-240q0-33 23.5-56.5T240-400h480q33 0 56.5 23.5T800-320v240H160Zm80-160h480v-80H240v80Zm240-160L280-680q0-83 58.5-141.5T480-880q83 0 141.5 58.5T680-680L480-400Zm0-112 120-168q0-50-35-85t-85-35q-50 0-85 35t-35 85l120 168Zm0-144Z" />
                     </svg>
                     <span class="menu__text">Authorizations</span>
                 </button>
@@ -295,13 +295,31 @@
             </div>
             <!-- Consumer Financesse -->
             <div id="consumerfinancessettingsdiv" class="menu__item">
-                <button id="CFButton" class="menu__button" data-load-module="ConsumerFinances">
+                <button id="CFButton" class="menu__button" onclick="showHideCF()" data-load-module="ConsumerFinancesMain">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path fill="none" d="M0 0h24v24H0V0z" />
                         <path class="fill-path" d="M14,11H13V7h2a1,1,0,0,1,1,1,1,1,0,0,0,2,0,3,3,0,0,0-3-3H13V3a1,1,0,0,0-2,0V5H10a4,4,0,0,0,0,8h1v4H9a1,1,0,0,1-1-1,1,1,0,0,0-2,0,3,3,0,0,0,3,3h2v2a1,1,0,0,0,2,0V19h1a4,4,0,0,0,0-8Zm-3,0H10a2,2,0,0,1,0-4h1Zm3,6H13V13h1a2,2,0,0,1,0,4Z" fill="#f5eded" class="color000 svgShape" />
                     </svg>
-                    <span class="menu__text">Money Management</span>
+                    <span class="menu__text">Money Management &#8645;</span>
                 </button>
+                <div id="cfDiv" style="display:none">
+                    <div id="cfAccountDiv">
+                        <button id="accountButton" class="menu__button" hidden="hidden" data-load-module="ConsumerFinances">
+                            <svg xmlns="" viewBox="0 0 24 24">
+                                <path fill="none" d="M0 0h24v24H0V0z" />
+                            </svg>
+                            <span class="menu__text">Account Register</span>
+                        </button>
+                    </div>
+                    <div id="cfEditAccountDiv">
+                        <button id="editaccountButton" class="menu__button" hidden="hidden" data-load-module="CFEditAccount">
+                            <svg xmlns="" viewBox="0 0 24 24">
+                                <path fill="none" d="M0 0h24v24H0V0z" />
+                            </svg>
+                            <span class="menu__text">Edit Account</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <!-- Reset Password -->
             <div id="Adminsettingdiv" class="menu__item">
@@ -497,7 +515,7 @@
         }
 
         function loadApp(appName, extraData) {
-            if (appName == 'Admin')
+            if (appName == 'Admin' || appName == 'ConsumerFinancesMain')
                 return;
             if ($.session.Token === '') {
                 backToLogin();
@@ -525,7 +543,7 @@
                     break;
                 }
                 case 'casenotes': {
-                    caseNotes.load();
+                    caseNotes.load();             
                     break;
                 }
                 case 'dayservices': {
@@ -611,6 +629,10 @@
                 }
                 case 'ConsumerFinances': {
                     ConsumerFinances.init();
+                    break;
+                }
+                case 'CFEditAccount': {
+                    CFEditAccount.init();
                     break;
                 }
                 case 'employment': {
@@ -749,14 +771,23 @@
                 resetBtn.style.display = "none";
             }
         }
+        function showHideCF() {
+            var cfBtn = document.getElementById('cfDiv')
+            if (cfBtn.style.display == 'none') {
+                cfBtn.style.display = "block";
+            }
+            else {
+                cfBtn.style.display = "none";
+            }
+        }
 
-        async function emailOnClick(emailLink) {   
+        async function emailOnClick(emailLink) {
             const success = await rosterAjax.verifyDefaultEmailClient();
             const { verifyDefaultEmailClientResult } = success;
             if (verifyDefaultEmailClientResult) {
                 window.location.href = emailLink;
             } else {
-                consumerInfo.closeCard(); 
+                consumerInfo.closeCard();
                 const defaultEmailConfPOPUP = POPUP.build({
                     hideX: true,
                 });

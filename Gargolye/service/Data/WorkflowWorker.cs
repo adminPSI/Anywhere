@@ -2104,22 +2104,20 @@ namespace Anywhere.service.Data
 
                         foreach (WorkflowTemplateStepDocument d in documents.FindAll(p => p.stepId == s.stepId))
                         {
-                            // insert step documents
-                            String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            // insert template step documents
+                            // what if a selected doc is one of the template docs (edited) -- you don't want both versions just the edited version
+                            bool isSelected = selecteddocuments.Any(sel => sel.description == d.description);
+                            if (!isSelected)
+                            {
+                                String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                            }
                         }
-
-                        //foreach (WorkflowTemplateStepDocument d in selecteddocuments.FindAll(p => p.stepId == s.stepId))
-                        //{
-
-                        //}
-
-                        //        List<WorkflowTemplateStepDocument> selecteddocuments = js.Deserialize<List<WorkflowTemplateStepDocument>>(wfdg.getWorkflowStepDocuments(null, wantedFormDescriptions, priorConsumerPlanId, transaction_insertWFDetails));
-                      
 
                         foreach (WorkflowTemplateStepDocument d in selecteddocuments.FindAll(p => p.stepId == s.stepId))
                         {
                             // insert selected step documents
                             String documentId = wfdg.insertWorkflowStepDocument(stepId, d.docOrder, d.description, d.attachmentId, null, "0", transaction_insertWFDetails);
+                          
                         }
 
                     }
