@@ -528,11 +528,11 @@ const planOutcomes = (() => {
     historyTextInput.addEventListener('input', e => {
       historyText = e.target.value;
 
-      if (historyText === '') {
-        historyTextInput.classList.add('error');
-      } else {
-        historyTextInput.classList.remove('error');
-      }
+      // if (historyText === '') {
+      //   historyTextInput.classList.add('error');
+      // } else {
+      //   historyTextInput.classList.remove('error');
+      // }
 
       toggleAddNewOutcomePopupDoneBtn();
     });
@@ -603,10 +603,10 @@ const planOutcomes = (() => {
       hasInitialErros = true;
       detailsTextInput.classList.add('error');
     }
-    if (historyText === '') {
-      hasInitialErros = true;
-      historyTextInput.classList.add('error');
-    }
+    // if (historyText === '') {
+    //   hasInitialErros = true;
+    //   historyTextInput.classList.add('error');
+    // }
     if (hasPreviousPlan && status === '1' && carryOverReason === '') {
       hasInitialErros = true;
       carryoverInput.classList.add('error');
@@ -2311,11 +2311,11 @@ const planOutcomes = (() => {
     historyInput.addEventListener('input', e => {
       outcomesUpdateData.history = e.target.value;
 
-      if (outcomesUpdateData.history === '') {
-        historyInput.classList.add('error');
-      } else {
-        historyInput.classList.remove('error');
-      }
+      // if (outcomesUpdateData.history === '') {
+      //   historyInput.classList.add('error');
+      // } else {
+      //   historyInput.classList.remove('error');
+      // }
     });
 
     // Tables
@@ -2329,9 +2329,9 @@ const planOutcomes = (() => {
     if (outcomesUpdateData.details === '') {
       detailsInput.classList.add('error');
     }
-    if (outcomesUpdateData.history === '') {
-      historyInput.classList.add('error');
-    }
+    // if (outcomesUpdateData.history === '') {
+    //   historyInput.classList.add('error');
+    // }
     if (
       hasPreviousPlan &&
       outcomesUpdateData.status === '1' &&
