@@ -282,8 +282,10 @@ const CFEditAccount = (() => {
             type: 'contained',
             icon: 'save',
             callback: async () => {
-                SAVE_BTN.classList.add('disabled');
-                await saveUpdateAccount();
+                if (!SAVE_BTN.classList.contains('disabled')) {
+                    SAVE_BTN.classList.add('disabled');
+                    await saveUpdateAccount();
+                } 
             },
         });
         CANCEL_BTN = button.build({
