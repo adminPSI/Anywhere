@@ -22,9 +22,11 @@ const CFEditAccount = (() => {
                 selectedConsumers = roster2.getActiveConsumers();
                 page = 'Update';
                 load = 1;
+                account = '';
+                accountId = 0;
                 await loadCFEditLanding();
                 DOM.toggleNavLayout();
-                break;
+                break;  
             }
             case 'miniRosterCancel': {
                 DOM.toggleNavLayout();
@@ -59,7 +61,7 @@ const CFEditAccount = (() => {
         if (getEditAccountResult.length > 0 && load == 1) {
             account = getEditAccountResult[0].accountName;
             accountId = getEditAccountResult[0].accountId;
-        }
+        }      
 
         if (page == 'Update') {
             const topButton = buildHeaderButton();
@@ -107,8 +109,8 @@ const CFEditAccount = (() => {
         });
 
         accountDropdown.addEventListener('change', event => {
-            accountId = event.target.options[event.target.selectedIndex].id;
-            account = event.target.value;
+            accountId =  event.target.value;
+            account = event.target.options[event.target.selectedIndex].id; 
             page = 'Update';
             load = 2;
             loadCFEditLanding();
@@ -155,6 +157,7 @@ const CFEditAccount = (() => {
         openingBalance = '';
         balance = '';
         description = '';
+        dateOpened = null;
 
         nameTemp = '';
         numberTemp = '';
@@ -181,6 +184,9 @@ const CFEditAccount = (() => {
                 openingBalance = getEditAccountInfoByIdResult[0].openingBalance;
                 balance = getEditAccountInfoByIdResult[0].balance;
                 description = getEditAccountInfoByIdResult[0].description;
+            }
+            else {
+                account = ''; 
             }
             BtnName = 'UPDATE';
         }
@@ -372,11 +378,11 @@ const CFEditAccount = (() => {
         } = await ConsumerFinancesAjax.getEditAccountAsync(selectedConsumersId);
 
         let dataAccount = accounts.map((account) => ({
-            id: account.accountId,
-            value: account.accountName,
+            id: account.accountName,
+            value: account.accountId,
             text: account.accountName + ' - $' + (account.totalBalance == '' ? '0.00' : account.totalBalance)
         }));
-        dropdown.populate("accountDropdown", dataAccount, account);
+        dropdown.populate("accountDropdown", dataAccount, accountId); 
     }
 
     async function populateDropdown() {
@@ -500,11 +506,11 @@ const CFEditAccount = (() => {
             opendDate.classList.remove('error');
         }
 
-        if (closeDateVal != null && closeDateVal != ''  && openDateVal > closeDateVal) {
-            closeDate.classList.add('error');     
+        if (closeDateVal != null && closeDateVal != '' && openDateVal > closeDateVal) {
+            closeDate.classList.add('error');
         }
-        else {  
-            closeDate.classList.remove('error'); 
+        else {
+            closeDate.classList.remove('error');
         }
         setBtnStatusOfAccountInfo();
     }
@@ -527,7 +533,8 @@ const CFEditAccount = (() => {
     function cancleAccount() {
         if (page == 'Add') {
             page = 'Update';
-            loadCFEditLanding();
+            load = 1;
+            loadCFEditLanding();  
         } else {
             roster2.clearSelectedConsumers();
             roster2.clearActiveConsumers();
