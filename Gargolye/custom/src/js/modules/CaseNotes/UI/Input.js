@@ -62,7 +62,7 @@
 
     // INPUT & LABEL
     this.input = _DOM.createElement('input', { ...this.options.attributes });
-    const labelEle = _DOM.createElement('label', {
+    this.labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
@@ -91,7 +91,7 @@
     }
 
     this.inputWrap.appendChild(this.input);
-    this.inputWrap.appendChild(labelEle);
+    this.inputWrap.appendChild(this.labelEle);
 
     return this;
   };
@@ -176,6 +176,20 @@
     this.input.addEventListener('keyup', e => {
       cbFunc(e);
     });
+  };
+
+  /**
+   *
+   * @param {*} newValue
+   */
+  Input.prototype.updateLableValue = function (newValue) {
+    if (_DOM.stringContainsHTML(newValue)) {
+      this.labelEle.innerHTML = newValue;
+
+      return;
+    }
+
+    this.labelEle.innerText = newValue;
   };
 
   /**

@@ -58,7 +58,6 @@
       .forEach(rd => {
         const overviewCard = _DOM.createElement('div', {
           class: 'overviewCard',
-          node: [cardOne, cardTwo, cardThree],
         });
 
         this.overviewCardsWrap.appendChild(overviewCard);

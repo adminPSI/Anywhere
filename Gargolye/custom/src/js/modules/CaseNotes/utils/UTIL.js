@@ -258,6 +258,29 @@
     };
   }
 
+  /**
+   * Validates the file type based on the provided regular expression pattern.
+   *
+   * @param {Event} event - The Event object, commonly from an input element of type 'file'.
+   * @param {RegExp} forbiddenTypesPattern - The regular expression pattern to match forbidden file types.
+   * @returns {boolean} Returns true if the file type is valid, false otherwise.
+   */
+  function validateFileType(event, forbiddenTypesPattern) {
+    const fileType = event.target.files[0]?.type;
+
+    if (!fileType) {
+      console.warn('No file selected.');
+      return false;
+    }
+
+    if (forbiddenTypesPattern.test(fileType)) {
+      alert('This application currently does not accept the selected file type.');
+      event.target.value = '';
+      return false;
+    }
+    return true;
+  }
+
   //=================================================================
   // TIME SPECIFIC METHODS
   //-----------------------------------------------------------------
@@ -299,6 +322,7 @@
     sortByProperty,
     splitObjectByPropNames,
     watchVariable,
+    validateFileType,
     // TIME METHODS
     getMilitaryTimeDifference,
   };

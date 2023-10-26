@@ -21,6 +21,7 @@
    */
   CaseNotesInsertPhrases.prototype.build = function () {
     this.dialog = new Dialog({ isModal: false });
+    this.dialog.dialog.classList.add('insertPhrases');
 
     this.showAllPhrasesToggle = new Input({
       type: 'checkbox',
@@ -31,8 +32,10 @@
     });
     this.showAllPhrasesToggle.build().renderTo(this.dialog.dialog);
 
-    this.phraseWrap = _DOM.createElement('div');
+    this.phraseWrap = _DOM.createElement('div', { class: 'phraseWrap' });
     this.dialog.dialog.appendChild(this.phraseWrap);
+
+    this.onPhraseListToggle();
 
     return this;
   };
@@ -49,7 +52,8 @@
 
       const phraseEle = _DOM.createElement('p', {
         id,
-        text: `${shortcut} - ${phrase.slice(0, 35)}...`,
+        html: `<span class="shortcut">${shortcut}</span><span class="phraseText">${phrase.slice(0, 35)}...</span>`,
+        class: 'phrase',
         'data-target': 'phrase',
       });
 
@@ -83,6 +87,19 @@
     };
 
     this.phraseWrap.addEventListener('click', handleClick);
+  };
+
+  /**
+   * @function
+   */
+  CaseNotesInsertPhrases.prototype.onPhraseListToggle = function () {
+    this.showAllPhrasesToggle.onChange(async e => {
+      this.showAllPhrases = e.target.checked ? true : false;
+
+      await this.fetchData();
+
+      this.populate();
+    });
   };
 
   /**

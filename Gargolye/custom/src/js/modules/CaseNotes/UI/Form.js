@@ -32,6 +32,9 @@
     // Data Init
     this.options = mergOptionsWithDefaults(options);
     this.inputs = {};
+
+    // DOM Ref
+    this.form = null;
   }
 
   /**
@@ -81,8 +84,9 @@
     });
 
     //const btn = _DOM.createElement('button', { type: 'submit', text: 'Save', class: 'button' });
-    const btn = new Button({ type: 'submit', text: 'Save', icon: 'save' }).renderTo(this.form);
-    //this.form.appendChild(btn);
+    const btnWrap = _DOM.createElement('div', { class: 'formButtons' });
+    new Button({ type: 'submit', text: 'Save', icon: 'save' }).renderTo(btnWrap);
+    this.form.appendChild(btnWrap);
 
     return this;
   };

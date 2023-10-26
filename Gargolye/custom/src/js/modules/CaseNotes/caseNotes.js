@@ -20,6 +20,10 @@ const CaseNotes = (() => {
   let selectedServiceCode;
   let caseManagerId;
   let isNewNote = true;
+  // attachments
+  let attachmentsForSave = {};
+  let attachmentCount = 0;
+  // phrases
   let showAllPhrases;
   // group notes
   let allowGroupNotes = false;
@@ -50,6 +54,34 @@ const CaseNotes = (() => {
   let cnForm;
   let cnOverview;
   let cnInsertPhrases;
+
+  function resetModule() {
+    selectedConsumers = [];
+    selectedDate = null;
+    selectedServiceCode;
+    caseManagerId = undefined;
+    isNewNote = true;
+    attachmentCount = 0;
+    showAllPhrases = undefined;
+    allowGroupNotes = false;
+    isGroupNote = false;
+    isDocTimeRequired = undefined;
+    isTravelTimeRequired = undefined;
+    dropdownData = undefined;
+    billerDropdownData = [];
+    vendorDropdownData = [];
+    serviceLocationDropdownData = [];
+    caseManagerReview = undefined;
+    consumersThatCanHaveMileage = undefined;
+    attachmentList = undefined;
+    moduleWrap = undefined;
+    cnFormWrap = undefined;
+    dateNavigation = undefined;
+    rosterPicker = undefined;
+    cnForm = undefined;
+    cnOverview = undefined;
+    cnInsertPhrases = undefined;
+  }
 
   // UTILS
   //--------------------------------------------------
@@ -521,8 +553,10 @@ const CaseNotes = (() => {
 
     if (!isStartBeforeEnd || !isValid) {
       cnForm.inputs['startTime'].setValidtyError('Start Time is invalid');
+      return false;
     } else {
       cnForm.inputs['startTime'].setValidtyError('');
+      return true;
     }
   }
   function onEndTimeChange(startTimeVal, endTimeVal) {
@@ -531,8 +565,10 @@ const CaseNotes = (() => {
 
     if (!isStartBeforeEnd || !isValid) {
       cnForm.inputs['endTime'].setValidtyError('End Time is invalid');
+      return false;
     } else {
       cnForm.inputs['endTime'].setValidtyError('');
+      return true;
     }
   }
   const onChangeCallbacks = {
@@ -555,6 +591,7 @@ const CaseNotes = (() => {
         allowGroupNotes = dropdownData[selectedServiceCode].allowGroupNotes === 'Y' ? true : false;
 
         cnForm.inputs['mileage'].toggleDisabled(mileageRequired !== 'Y');
+        cnForm.inputs['travelTime'].toggleDisabled(mileageRequired !== 'Y');
       } else {
         allowGroupNotes = true;
       }
@@ -595,11 +632,12 @@ const CaseNotes = (() => {
     startTime: ({ event, value, name, input }) => {
       const endTimeVal = cnForm.inputs['endTime'].getValue();
 
-      onStartTimeChange(value, endTimeVal);
-      onEndTimeChange(value, endTimeVal);
+      const isStartValid = onStartTimeChange(value, endTimeVal);
+      const isEndValid = onEndTimeChange(value, endTimeVal);
 
-      if (isStartBeforeEnd && isValid && endTimeVal) {
-        // _UTIL.debounce(doesTimeOverlap);
+      if (isStartValid && isEndValid) {
+        //_UTIL.debounce(doesTimeOverlap, 200);
+        doesTimeOverlap();
       } else {
         cnValidation.hide('overlap');
       }
@@ -607,11 +645,12 @@ const CaseNotes = (() => {
     endTime: ({ event, value, name, input }) => {
       const startTimeVal = cnForm.inputs['startTime'].getValue();
 
-      onEndTimeChange(startTimeVal, value);
-      onStartTimeChange(startTimeVal, value);
+      const isEndValid = onEndTimeChange(startTimeVal, value);
+      const isStartValid = onStartTimeChange(startTimeVal, value);
 
-      if (isStartBeforeEnd && isValid && startTimeVal) {
-        // _UTIL.debounce(doesTimeOverlap);
+      if (isStartValid && isEndValid) {
+        //_UTIL.debounce(doesTimeOverlap, 200);
+        doesTimeOverlap();
       } else {
         cnValidation.hide('overlap');
       }
@@ -621,20 +660,102 @@ const CaseNotes = (() => {
 
       const hasDecimal = event.key === '.' && value.indexOf('.') === 1 ? true : false;
     },
+    travelTime: ({ event, value, name, input }) => {},
     noteText: ({ event, value, name, input }) => {},
     confidential: ({ event, value, name, input }) => {},
+    attachments: async ({ event, value, name, input }) => {
+      if (value) {
+        const forbiddenTypes = new RegExp('(audio/)|(video/)');
+        const isFileTypeValid = _UTIL.validateFileType(event, forbiddenTypes);
+
+        // for saving
+        const attachmentObj = await _DOM.getAttachmentDetails(event);
+
+        // Create New Attachment Input
+        attachmentCount = attachmentCount + 1;
+        // on file upload create new Input type attachment and append it to form next to attachment
+        const newInputInstance = new Input({
+          type: 'file',
+          label: 'Add Attachment',
+          id: `attachments${attachmentCount}`,
+        });
+        newInputInstance.build();
+        // make sure to set input instance to cnForm.inputs
+        cnForm.inputs[`attachments${attachmentCount}`] = newInputInstance;
+        // insert new attachment input next to current one, afterend
+        input.inputWrap.insertAdjacentElement('beforebegin', newInputInstance.inputWrap);
+        // update attachment with new file
+        input.inputWrap.classList.add('hasFile');
+        input.labelEle.innerText = attachmentObj.description;
+        const deleteIcon = Icon.getIcon('delete');
+        input.labelEle.insertBefore(deleteIcon, input.labelEle.firstChild);
+        deleteIcon.addEventListener('click', e => {
+          e.stopPropagation();
+          // delete attachment on review, if new note just remove from attachmentsForSave
+          console.log('Delte Attachment');
+        });
+      }
+    },
   };
   const onKeyupCallbacks = {
+    travelTime: ({ event, value, name, input }) => {
+      if (value.length > 4) {
+        event.target.value = value.substr(0, 4);
+      }
+    },
+    /**
+     * @param {Object} data
+     * @param {Event} data.event - event obj
+     * @param {string} data.value - value of input
+     * @param {Event} data.name - name of input
+     * @param {Instance} data.input - noteText input instance
+     */
     noteText: ({ event, value, name, input }) => {
+      const words = value.split(/\s+/);
+
+      let cursorIndex;
+
       if (event.detail) {
-        //this is coming from the fullscreen textarea
-        debugger;
+        // check for the #ph
+        if (words.includes('#ph')) {
+          if (cnInsertPhrases.dialog.dialog.parentNode !== input.fullscreen.fullScreenDialog.dialog) {
+            cnInsertPhrases.renderTo(input.fullscreen.fullScreenDialog.dialog);
+          }
+
+          // get textarea clone in fullscreen popup
+          const textareaInput = input.fullscreen.textareaClone.querySelector('textarea');
+
+          // disable textarea and close buton
+          textareaInput.disabled = true;
+          input.fullscreen.disableCloseButon(true);
+
+          // show phrases dialog
+          cnInsertPhrases.show();
+
+          cnInsertPhrases.onPhraseSelect(phraseText => {
+            // Replace #ph with user-generated text
+            const textValue = value.replace('#ph', phraseText);
+            // Update the textarea's value
+            input.setValue(textValue);
+            textareaInput.value = textValue;
+            // re enable input
+            textareaInput.disabled = false;
+            // close dialog
+            cnInsertPhrases.close();
+            // disable textarea and close buton
+            textareaInput.disabled = false;
+            input.fullscreen.disableCloseButon(false);
+            // focus on textarea
+            textareaInput.focus();
+          });
+        }
       } else {
         // check for the #ph
-        const words = value.split(/\s+/);
-
         if (words.includes('#ph')) {
-          console.log("Found standalone '#ph'");
+          if (cnInsertPhrases.dialog.dialog.parentNode !== cnForm.inputs['noteText'].inputWrap) {
+            cnInsertPhrases.renderTo(cnForm.inputs['noteText'].inputWrap);
+          }
+
           // temp disable input
           input.toggleDisabled(true);
 
@@ -646,6 +767,7 @@ const CaseNotes = (() => {
             const textValue = value.replace('#ph', phraseText);
             // Update the textarea's value
             input.setValue(textValue);
+            input.fullscreen.updateCloneValue(textValue);
             // re enable input
             input.toggleDisabled(false);
             // close dialog
@@ -687,23 +809,27 @@ const CaseNotes = (() => {
     // Form
     cnForm = new Form({
       elements: [
+        //confidential
         {
           type: 'checkbox',
           label: 'Confidential',
           id: 'confidential',
         },
+        //startTime
         {
           type: 'time',
           label: 'Start Time',
           id: 'startTime',
           required: true,
         },
+        //endTime
         {
           type: 'time',
           label: 'End Time',
           id: 'endTime',
           required: true,
         },
+        //serviceCode
         {
           type: 'select',
           label: $.session.applicationName === 'Gatekeeper' ? 'Bill Code:' : 'Serv. Code:',
@@ -713,41 +839,48 @@ const CaseNotes = (() => {
           defaultValue: null,
           includeBlankOption: true,
         },
+        //location
         {
           type: 'select',
           label: 'Location',
           id: 'location',
           disabled: true,
         },
+        //service
         {
           type: 'select',
           label: 'Service',
           id: 'service',
           disabled: true,
         },
+        //need
         {
           type: 'select',
           label: 'Need',
           id: 'need',
           disabled: true,
         },
+        //contact
         {
           type: 'select',
           label: 'Contact',
           id: 'contact',
           disabled: true,
         },
+        //vendor
         {
           type: 'select',
           label: 'Vendor',
           id: 'vendor',
         },
+        //serviceLocation
         {
           type: 'select',
           label: 'Service Location',
           id: 'serviceLocation',
           hidden: $.session.applicationName === 'Gatekeeper',
         },
+        //noteText
         {
           type: 'textarea',
           label: 'Note',
@@ -755,11 +888,27 @@ const CaseNotes = (() => {
           required: true,
           fullscreen: true,
         },
+        //mileage
         {
           type: 'number',
           label: 'Mileage',
           id: 'mileage',
           disabled: true,
+        },
+        //travelTime
+        {
+          type: 'number',
+          label: 'Travel Time',
+          id: 'travelTime',
+          hidden: $.session.applicationName === 'Advisor',
+          disabled: true,
+        },
+        //attachments
+        {
+          type: 'file',
+          label: 'Add Attachment',
+          id: 'attachments',
+          hidden: $.session.applicationName === 'Advisor',
         },
       ],
     });
@@ -769,7 +918,7 @@ const CaseNotes = (() => {
     cnInsertPhrases = new CaseNotesInsertPhrases({
       showAllPhrases: showAllPhrases,
     });
-    cnInsertPhrases.build().renderTo(cnForm.inputs['noteText'].inputWrap);
+    cnInsertPhrases.build();
 
     // Overview
     cnOverview = new CaseNotesOverview();
@@ -828,9 +977,12 @@ const CaseNotes = (() => {
     });
     cnForm.onChange(event => {
       const value = event.target.value;
-      const name = event.target.name;
+      let name = event.target.name;
       const input = cnForm.inputs[name];
 
+      const isAttachment = name.includes('attachments');
+
+      if (isAttachment) name = 'attachments';
       if (!onChangeCallbacks[name]) return;
 
       onChangeCallbacks[name]({
@@ -842,9 +994,12 @@ const CaseNotes = (() => {
     });
     cnForm.onKeyup(event => {
       const value = event.target.value;
-      const name = event.target.name;
+      let name = event.target.name;
       const input = cnForm.inputs[name];
 
+      const isAttachment = name.includes('attachments');
+
+      if (isAttachment) name = 'attachments';
       if (!onKeyupCallbacks[name]) return;
 
       onKeyupCallbacks[name]({
@@ -859,7 +1014,7 @@ const CaseNotes = (() => {
       await saveNote({
         caseNote: data.noteText ?? '',
         casenotemileage: data.mileage ?? '0',
-        casenotetraveltime: '',
+        casenotetraveltime: data.travelTime ?? '',
         confidential: data.confidential === 'on' ? 'Y' : 'N',
         contactCode: data.contact ?? '',
         endTime: data.endTime ?? '',
@@ -898,5 +1053,6 @@ const CaseNotes = (() => {
 
   return {
     init,
+    resetModule,
   };
 })();

@@ -1,3 +1,24 @@
+/* The main scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* The background of the draggable scrolling handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* On hover, make the scrolling handle lighter */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* The scrollbar track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
 .grid-container {
   background: $white;
 }
@@ -7,195 +28,239 @@
   width: 100%;
 }
 
-[data-active-module='casenotes2.0'] .caseNotesModule {
-  display: grid;
-  grid-template-columns: auto 320px;
-  grid-template-rows: auto auto auto 600px;
-  grid-template-areas:
-    'nav nav'
-    'feedback feedback'
-    'form roster'
-    'cards cards';
-  row-gap: 10px;
+[data-active-module='casenotes2.0'] {
+  .caseNotesModule {
+    display: grid;
+    grid-template-columns: auto 320px;
+    grid-template-rows: auto auto minmax(50%, 1000px) 600px;
+    grid-template-areas:
+      'nav nav'
+      'feedback feedback'
+      'form roster'
+      'cards cards';
+    row-gap: 10px;
 
-  .dateNavigation {
-    //grid-column-start: span 2;
-    grid-area: nav;
-    order: 1;
-    position: sticky;
-    top: 0px;
-    z-index: 99;
-  }
-
-  .validations {
-    display: flex;
-    column-gap: 4px;
-    flex-flow: row wrap;
-    grid-area: feedback;
-    margin: 0 20px;
-    row-gap: 8px;
-
-    .validationMessage {
-      border-radius: 20px;
-      padding: 4px 14px 4px 10px;
-
-      p {
-        font-weight: $_bold;
-      }
+    .dateNavigation {
+      //grid-column-start: span 2;
+      grid-area: nav;
+      order: 1;
+      position: sticky;
+      top: 0px;
+      z-index: 99;
     }
-  }
 
-  .rosterPicker {
-    grid-area: roster;
-    margin: 0 20px 0 10px;
-    max-height: 1000px;
-    order: 3;
-  }
-
-  .caseNotesForm {
-    border-radius: 6px;
-    box-shadow: $shadow-m2;
-    grid-area: form;
-    margin: 0 10px 0 20px;
-    max-height: 1000px;
-    position: relative;
-    order: 2;
-
-    form {
-      align-content: flex-start;
-      padding: 10px;
-      column-gap: 10px;
+    .validations {
       display: flex;
+      column-gap: 4px;
       flex-flow: row wrap;
+      grid-area: feedback;
+      margin: 0 20px;
+      row-gap: 8px;
 
-      .input {
-        flex-grow: 1;
-      }
+      .validationMessage {
+        border-radius: 20px;
+        padding: 4px 14px 4px 10px;
 
-      .input.time {
-        width: calc(50% - 5px);
-      }
-      .input.checkbox {
-        margin: 0 0 14px;
-        width: 100%;
-      }
-      .input.textarea {
-        height: 200px;
-        position: relative;
-
-        dialog.dialog {
-          top: 40px;
-          margin: 0 0 0 auto;
-          padding: 16px;
+        p {
+          font-weight: $_bold;
         }
       }
-      .input.location,
-      .input.service,
-      .input.need,
-      .input.contact {
-        min-width: 300px;
-        width: calc(50% - 5px);
-      }
-
-      button {
-        margin-left: auto;
-      }
-    }
-  }
-
-  .caseNotesPhrases {
-    align-items: flex-end;
-    display: flex;
-    column-gap: 10px;
-    flex-flow: row wrap;
-    row-gap: 14px;
-
-    .input.select {
-      flex-grow: 1;
-      width: auto;
-      margin: 0;
-    }
-  }
-
-  .caseNotesOverview {
-    border-radius: 6px;
-    box-shadow: $shadow-m2;
-    grid-area: cards;
-    margin: 0 20px;
-    padding: 20px;
-    order: 3;
-
-    // .input.search {
-    // }
-
-    .overviewCardsWrap {
-      display: grid;
-      grid-template-columns: minmax(200px, auto) 1fr auto;
     }
 
-    .overviewCard {
-      align-items: center;
-      column-gap: 30px;
-      display: grid;
-      grid-template-columns: subgrid;
-      grid-column: 1 / -1;
-      box-shadow: $shadow-m2;
+    .rosterPicker {
+      grid-area: roster;
+      margin: 0 20px 0 10px;
+      max-height: 1000px;
+      order: 3;
+    }
+
+    .caseNotesForm {
       border-radius: 6px;
-      padding: 14px 20px;
-      margin: 0 0 8px;
+      box-shadow: $shadow-m2;
+      grid-area: form;
+      margin: 0 10px 0 20px;
+      max-height: 1000px;
+      position: relative;
+      order: 2;
 
-      .cardThree {
+      form {
+        align-content: flex-start;
+        padding: 10px;
+        column-gap: 10px;
         display: flex;
-        column-gap: 6px;
-        justify-content: flex-end;
+        flex-flow: row wrap;
+
+        .input {
+          flex-grow: 1;
+        }
+
+        .input.time,
+        .input.number {
+          width: calc(50% - 5px);
+        }
+        .input.checkbox {
+          margin: 0 0 14px;
+          width: 100%;
+        }
+        .input.textarea {
+          height: 200px;
+          position: relative;
+        }
+        .input.location,
+        .input.service,
+        .input.need,
+        .input.contact {
+          min-width: 300px;
+          width: calc(50% - 5px);
+        }
+
+        .formButtons {
+          width: 100%;
+        }
+        button {
+          margin-left: auto;
+        }
       }
 
-      .timeSpan {
-        display: flex;
-        flex-flow: row nowrap;
+      // special attachments START
+      form {
+        .input {
+          &.file {
+            width: auto;
+            flex-grow: 0;
+          }
+          input[type='file'] {
+            position: absolute;
+            right: 100px;
+            top: 10px;
+            visibility: hidden;
+          }
+
+          input[type='file'] ~ label {
+            align-items: center;
+            border: 2px solid $primary;
+            border-radius: 20px;
+            display: flex;
+            flex-flow: row nowrap;
+            height: 44px;
+            padding: 10px 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+          }
+
+          &.hasFile {
+            input[type='file'] ~ label {
+              border: 2px solid $secondary;
+
+              .svgIcon {
+                color: $error;
+              }
+            }
+          }
+        }
+      }
+      // special attachments END
+
+      .dialog.insertPhrases {
+        left: 6%;
+        top: -40%;
+      }
+    }
+
+    .caseNotesPhrases {
+      align-items: flex-end;
+      display: flex;
+      column-gap: 10px;
+      flex-flow: row wrap;
+      row-gap: 14px;
+
+      .input.select {
+        flex-grow: 1;
+        width: auto;
+        margin: 0;
+      }
+    }
+
+    .caseNotesOverview {
+      border-radius: 6px;
+      box-shadow: $shadow-m2;
+      grid-area: cards;
+      margin: 0 20px;
+      padding: 20px;
+      order: 3;
+
+      // .input.search {
+      // }
+
+      .overviewCardsWrap {
+        display: grid;
+        grid-template-columns: minmax(200px, auto) 1fr auto;
+      }
+
+      .overviewCard {
         align-items: center;
-        column-gap: 4px;
-        margin: 0 0 10px;
+        column-gap: 30px;
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1 / -1;
+        box-shadow: $shadow-m2;
+        border-radius: 6px;
+        padding: 14px 20px;
+        margin: 0 0 8px;
 
-        .timeText {
+        .cardThree {
           display: flex;
-          font-weight: $_bold;
-          font-size: $px18;
+          column-gap: 6px;
+          justify-content: flex-end;
+        }
 
-          .time {
-            align-self: center;
+        .timeSpan {
+          display: flex;
+          flex-flow: row nowrap;
+          align-items: center;
+          column-gap: 4px;
+          margin: 0 0 10px;
+
+          .timeText {
+            display: flex;
+            font-weight: $_bold;
+            font-size: $px18;
+
+            .time {
+              align-self: center;
+            }
+            .timeMeridiem {
+              align-self: flex-end;
+              font-size: $px14;
+            }
+            .separator {
+            }
           }
-          .timeMeridiem {
-            align-self: flex-end;
-            font-size: $px14;
-          }
-          .separator {
+          .duration {
+            font-size: $px16;
           }
         }
-        .duration {
+        .consumerName {
+          font-size: $px26;
+          font-weight: $_heavy;
+          margin: 0 0 4px;
+        }
+        .enteredBy {
+          span {
+            font-weight: $_bold;
+          }
+        }
+
+        //
+        .serviceInfoEle {
           font-size: $px16;
-        }
-      }
-      .consumerName {
-        font-size: $px26;
-        font-weight: $_heavy;
-        margin: 0 0 4px;
-      }
-      .enteredBy {
-        span {
           font-weight: $_bold;
         }
-      }
-
-      //
-      .serviceInfoEle {
-        font-size: $px16;
-        font-weight: $_bold;
       }
     }
   }
 
-  dialog[open] {
+  dialog.modal[open] {
     display: flex;
     flex-flow: column nowrap;
     row-gap: 14px;
@@ -206,9 +271,55 @@
     }
   }
 
-  .withFullscreenTextarea {
+  dialog.modal.fullscreenTextarea {
     .input.textarea {
       height: auto;
+    }
+  }
+
+  dialog.insertPhrases[open] {
+    border: none;
+    box-shadow: $shadow-m2;
+    display: flex;
+    flex-flow: column nowrap;
+    left: 10%;
+    top: 6%;
+    margin: 0;
+    max-height: 500px;
+    padding: 0;
+    min-width: 400px;
+    width: 60%;
+    max-width: 800px;
+    z-index: 99;
+
+    .phraseWrap {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      padding: 0px 4px 0 12px;
+    }
+    .phraseView {
+      margin: 0;
+      padding: 20px 10px 15px;
+    }
+    .phrase {
+      //border: 2px solid $black;
+      box-shadow: $shadow-m2;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      flex-flow: column nowrap;
+      margin: 0 8px 10px 0;
+      padding: 4px;
+
+      * {
+        pointer-events: none;
+      }
+
+      .shortcut {
+        font-weight: $_bold;
+      }
+      .phraseText {
+      }
     }
   }
 }
@@ -750,7 +861,7 @@
     }
   }
 
-  dialog.modal.withFullscreenTextarea {
+  dialog.modal.fullscreenTextarea {
     padding: 10px;
     resize: both;
 
@@ -782,6 +893,14 @@
 
         .svgIcon {
           color: $error;
+        }
+
+        &.success {
+          background-color: rgba(129, 185, 65, 0.4);
+
+          .svgIcon {
+            color: $green;
+          }
         }
       }
     }

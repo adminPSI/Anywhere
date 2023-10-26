@@ -37,6 +37,7 @@
     this.textareaInstance = textareaInstance;
 
     this.fullScreenDialog = null;
+    this.fullScreenCloseBtn = null;
     this.textareaClone = null;
 
     this.build();
@@ -48,7 +49,7 @@
 
     // build and append dialog
     this.fullScreenDialog.renderTo(_DOM.ACTIONCENTER);
-    this.fullScreenDialog.dialog.classList.add('withFullscreenTextarea');
+    this.fullScreenDialog.dialog.classList.add('fullscreenTextarea');
 
     // clone textarea for dialog
     this.textareaClone = this.textareaInstance.inputWrap.cloneNode(true);
@@ -95,11 +96,15 @@
         const event = new CustomEvent('keyup', {
           bubbles: true,
           cancelable: true,
-          detail: { fullscreenInstance: this },
+          detail: true,
         });
         this.textareaInstance.input.dispatchEvent(event);
       }, 100),
     );
+  };
+
+  FullscreenTextarea.prototype.disableCloseButon = function (isDisbled) {
+    this.fullScreenCloseBtn.style.pointerEvents = isDisbled ? 'none' : 'all';
   };
 
   //=======================================

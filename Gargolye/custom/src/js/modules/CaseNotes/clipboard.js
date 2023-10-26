@@ -81,32 +81,17 @@
 //   class: 'cardThree',
 // });
 
-// CaseNotesInsertPhrases.prototype.build = function () {
-//   this.phraseWrap = _DOM.createElement('div', { class: 'caseNotesPhrases' });
+// find cursor for popup positioning
+// const cursorIndex = input.input.selectionStart;
+// const coordinates = input.input.getBoundingClientRect();
+// const computedStyle = window.getComputedStyle(input.input);
+// const lineHeight = parseFloat(computedStyle.lineHeight);
+// const lines = Math.floor(cursorIndex / input.input.cols);
+// const oneCharWidth = parseFloat(computedStyle.fontSize);
+// const offsetX = (cursorIndex % input.input.cols) * oneCharWidth;
 
-//   this.phraseDropdown = new Select({
-//     id: 'phrases',
-//     label: 'Phrases',
-//     data: this.phrasesData,
-//     includeBlankOption: true,
-//   });
+// const leftStyle = coordinates.left + offsetX + 'px';
+// const topStyle = coordinates.top + lines * lineHeight + 'px';
 
-//   this.phraseInsertBtn = new Button({ type: 'button', text: 'Add' });
-
-//   this.phraseDropdown.build().renderTo(this.phraseWrap);
-//   this.phraseInsertBtn.build().renderTo(this.phraseWrap);
-
-//   this.setupEvents();
-
-//   return this;
-// };
-
-// this.showAllPhrasesToggle.onChange(async e => {
-//   this.showAllPhrases = e.target.checked ? true : false;
-
-//   await this.fetchData();
-
-//   this.phraseDropdown.populate(this.phrasesData);
-
-//
-// });
+// cnInsertPhrases.dialog.dialog.style.top = `calc(265% - ${topStyle})`;
+// cnInsertPhrases.dialog.dialog.style.left = `calc(25% - ${leftStyle})`;

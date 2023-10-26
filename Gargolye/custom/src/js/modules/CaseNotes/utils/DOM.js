@@ -63,6 +63,35 @@
 
     return element;
   }
+  /**
+   * Asynchronously fetches attachment details based on the given event object.
+   *
+   * @async
+   * @param {Event} event - The Event object, commonly from an input element of type 'file'.
+   * @returns {Promise<Object>} Returns a Promise that resolves to an object containing attachment details.
+   * @returns {Object} .attachmentObj - An object containing the description and type of the attachment, as well as its ArrayBuffer.
+   * @returns {string} .attachmentObj.description - The name of the attachment file.
+   * @returns {string} .attachmentObj.type - The file extension of the attachment.
+   * @returns {ArrayBuffer} .attachmentObj.arrayBuffer - The ArrayBuffer of the attachment file.
+   * @throws {Error} Throws an error if unable to fetch attachment details.
+   */
+  async function getAttachmentDetails(event) {
+    const attachmentObj = {};
+    const attachmentFile = event.target.files.item(0);
+    const attachmentName = attachmentFile.name;
+    const attachmentType = attachmentFile.name.split('.').pop();
+
+    attachmentObj.description = attachmentName;
+    attachmentObj.type = attachmentType;
+
+    // new Response(file) was added for Safari compatibility
+    const response = new Response(attachmentFile);
+    const arrayBuffer = await response.arrayBuffer();
+
+    attachmentObj.arrayBuffer = arrayBuffer;
+
+    return attachmentObj;
+  }
 
   /**
    * Test if node is reference-free
@@ -129,6 +158,21 @@
     ACTIONCENTER.setAttribute('data-active-section', sectionName);
   }
 
+  /**
+   * Checks if a given string contains HTML tags.
+   *
+   * @param {String} str - The string to be checked for HTML tags.
+   * @returns {Boolean} - True if the string contains HTML tags, false otherwise.
+   *
+   * @example
+   * console.log(containsHTML("Hello, World!"));  // Output: false
+   * console.log(containsHTML("<b>Hello, World!</b>"));  // Output: true
+   */
+  function stringContainsHTML(str) {
+    const regExp = /<[^>]*>/g;
+    return regExp.test(str);
+  }
+
   return {
     // DOM ref
     ACTIONCENTER,
@@ -136,7 +180,9 @@
     setActiveModuleSectionAttribute,
     // methods
     createElement,
+    getAttachmentDetails,
     isReferenceFree,
     separateHTMLAttribrutes,
+    stringContainsHTML,
   };
 });
