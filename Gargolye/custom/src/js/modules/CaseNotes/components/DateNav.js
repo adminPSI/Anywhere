@@ -80,7 +80,6 @@
   /**
    * @constructor
    * @param {Object} options
-   * @param {Function} options.onDateChange
    */
   function DateNavigation(options) {
     // Data Init
@@ -94,9 +93,6 @@
       start: this.weekStart,
       end: this.weekEnd,
     });
-
-    // Callbacks
-    this.onDateChange = options.onDateChange;
 
     // DOM
     this.navigationEle = null;
@@ -206,20 +202,6 @@
 
         return;
       }
-
-      if (e.target.dataset.target === 'date') {
-        const currentSelectedDate = this.weekWrapEle.querySelector('.selected');
-        if (currentSelectedDate) {
-          currentSelectedDate.classList.remove('selected');
-        }
-
-        this.selectedDate = new Date(e.target.dataset.date);
-        e.target.classList.add('selected');
-
-        this.onDateChange(this.selectedDate);
-
-        return;
-      }
     });
 
     this.customDatePicker.onDateChange(newDate => {
@@ -233,6 +215,30 @@
 
       this.populate();
       this.onDateChange(this.selectedDate);
+    });
+  };
+
+  /**
+   * On date change method
+   *
+   * @function
+   * @param {Function} cb -
+   */
+  DateNavigation.prototype.onDateChange = function (cb) {
+    this.navigationEle.addEventListener('click', e => {
+      if (e.target.dataset.target === 'date') {
+        const currentSelectedDate = this.weekWrapEle.querySelector('.selected');
+        if (currentSelectedDate) {
+          currentSelectedDate.classList.remove('selected');
+        }
+
+        this.selectedDate = new Date(e.target.dataset.date);
+        e.target.classList.add('selected');
+
+        cb(this.selectedDate);
+
+        return;
+      }
     });
   };
 

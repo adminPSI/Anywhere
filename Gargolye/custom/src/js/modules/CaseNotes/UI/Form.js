@@ -121,9 +121,12 @@
    * @function
    */
   Form.prototype.onKeyup = function (cbFunc) {
-    this.form.addEventListener('keyup', e => {
-      cbFunc(e);
-    });
+    this.form.addEventListener(
+      'keyup',
+      _UTIL.debounce(e => {
+        cbFunc(e);
+      }, 100),
+    );
   };
 
   /**

@@ -12,7 +12,6 @@
 //TODO: preSave() stops timer and speech to text
 //TODO: make sure im clearing out selected consumer on module leave/form submit
 
-// MAIN
 const CaseNotes = (() => {
   // SESSION DATA
   //--------------------------
@@ -21,6 +20,7 @@ const CaseNotes = (() => {
   let selectedServiceCode;
   let caseManagerId;
   let isNewNote = true;
+  let showAllPhrases;
   // group notes
   let allowGroupNotes = false;
   let isGroupNote = false;
@@ -41,6 +41,7 @@ const CaseNotes = (() => {
   // DOM
   //--------------------------
   let moduleWrap;
+  let cnFormWrap;
 
   // UI INSTANCES
   //--------------------------
@@ -48,7 +49,7 @@ const CaseNotes = (() => {
   let rosterPicker;
   let cnForm;
   let cnOverview;
-  let cnPhrases;
+  let cnInsertPhrases;
 
   // UTILS
   //--------------------------------------------------
@@ -459,6 +460,9 @@ const CaseNotes = (() => {
       consumersThatCanHaveMileage = await getconsumersThatCanHaveMileage();
     }
 
+    showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
+    showAllPhrases = showAllPhrases === 'Y' ? true : false;
+
     return;
 
     if ($.session.applicationName === 'Gatekeeper' && false) {
@@ -509,7 +513,7 @@ const CaseNotes = (() => {
     }
   }
 
-  // MAIN
+  // COMPONENTS
   //--------------------------------------------------
   function onStartTimeChange(startTimeVal, endTimeVal) {
     const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
@@ -617,83 +621,70 @@ const CaseNotes = (() => {
 
       const hasDecimal = event.key === '.' && value.indexOf('.') === 1 ? true : false;
     },
-    noteText: ({ event, value, name, input }) => {
-      //TODO: Phrases dialog, non modal with list of phrases and a toggle for all/my phrases
-      // PHRASES
-      //--------------------------------------------------
-      // const showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
-      // cnPhrases = new CaseNotesPhrases({
-      //   formNote: cnForm.inputs['noteText'],
-      //   showAllPhrases: showAllPhrases === 'Y' ? true : false,
-      // });
-      // await cnPhrases.fetchData();
-    },
+    noteText: ({ event, value, name, input }) => {},
     confidential: ({ event, value, name, input }) => {},
   };
+  const onKeyupCallbacks = {
+    noteText: ({ event, value, name, input }) => {
+      if (event.detail) {
+        //this is coming from the fullscreen textarea
+        debugger;
+      } else {
+        // check for the #ph
+        const words = value.split(/\s+/);
 
+        if (words.includes('#ph')) {
+          console.log("Found standalone '#ph'");
+          // temp disable input
+          input.toggleDisabled(true);
+
+          // show phrases dialog
+          cnInsertPhrases.show();
+
+          cnInsertPhrases.onPhraseSelect(phraseText => {
+            // Replace #ph with user-generated text
+            const textValue = value.replace('#ph', phraseText);
+            // Update the textarea's value
+            input.setValue(textValue);
+            // re enable input
+            input.toggleDisabled(false);
+            // close dialog
+            cnInsertPhrases.close();
+            // focus on textarea
+            input.setFocus();
+          });
+        }
+      }
+
+      // PHRASES
+      //--------------------------------------------------
+      // _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
+      // _UTIL.localStorageHandler.set('casenotes-showAllPhrases', 'N');
+    },
+  };
+
+  // MAIN
+  //--------------------------------------------------
   async function loadPage() {
-    // DATE NAVIGATION
-    //--------------------------------------------------
+    // LOAD INSTANCES / BUILD / RENDER
+    //-----------------------------------------
+    // Date Navigation
     dateNavigation = new DateNavigation({
       selectedDate: selectedDate,
-      async onDateChange(newDate) {
-        selectedDate = newDate;
-
-        //TODO: re validate times when date change
-
-        //re populate overview section when date change
-        await cnOverview.fetchData(selectedDate);
-        cnOverview.populate();
-      },
     });
     dateNavigation.build().renderTo(moduleWrap);
 
-    // FEEDBACK CENTER
-    //--------------------------------------------------
+    // Validation Center
     cnValidation = new ValidationCenter({});
     cnValidation.build().renderTo(moduleWrap);
 
-    // ROSTER PICKER
-    //--------------------------------------------------
+    // Roster Picker
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
-      async onConsumerSelect(data) {
-        selectedConsumers = data;
-
-        // Get Vendors By Consumer
-        vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
-          consumerId: selectedConsumers[0],
-          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-        });
-        vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
-        const vendorData = getVendorDropdownData();
-        cnForm.inputs['vendor'].populate(vendorData);
-
-        if ($.session.applicationName === 'Advisor') {
-          // Check Selected Consumer For Mileage
-          const canConsumerHaveMileage = consumersThatCanHaveMileage.includes(selectedConsumers[0]);
-          if (canConsumerHaveMileage) {
-            cnForm.inputs['mileage'].toggleDisabled(false);
-          }
-
-          // Get Serv Locations By Consumer
-          serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
-            consumerId: selectedConsumers[0],
-            serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-          });
-          serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
-          const servLocData = getServiceLocationDropdownData();
-          cnForm.inputs['serviceLocation'].populate(servLocData);
-        }
-
-        checkRequiredFields();
-      },
     });
-    await rosterPicker.fetchConsumers();
     rosterPicker.build().renderTo(moduleWrap);
 
-    // FORM
-    //--------------------------------------------------
+    // Form
     cnForm = new Form({
       elements: [
         {
@@ -772,7 +763,69 @@ const CaseNotes = (() => {
         },
       ],
     });
-    cnForm.build().renderTo(moduleWrap);
+    cnForm.build().renderTo(cnFormWrap);
+
+    // Phrases
+    cnInsertPhrases = new CaseNotesInsertPhrases({
+      showAllPhrases: showAllPhrases,
+    });
+    cnInsertPhrases.build().renderTo(cnForm.inputs['noteText'].inputWrap);
+
+    // Overview
+    cnOverview = new CaseNotesOverview();
+    cnOverview.build().renderTo(moduleWrap);
+
+    // FETCH DATA / POPULATE
+    //-----------------------------------------
+    await cnInsertPhrases.fetchData();
+    cnInsertPhrases.populate();
+    await rosterPicker.fetchConsumers();
+    rosterPicker.populate();
+    await cnOverview.fetchData(selectedDate);
+    cnOverview.populate();
+
+    // EVENTS / CALLBACKS
+    //-----------------------------------------
+    dateNavigation.onDateChange(async newDate => {
+      selectedDate = newDate;
+
+      //TODO: re validate times when date change
+
+      //re populate overview section when date change
+      await cnOverview.fetchData(selectedDate);
+      cnOverview.populate();
+    });
+    rosterPicker.onConsumerSelect(async data => {
+      selectedConsumers = data;
+
+      // Get Vendors By Consumer
+      vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+        consumerId: selectedConsumers[0],
+        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      });
+      vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
+      const vendorData = getVendorDropdownData();
+      cnForm.inputs['vendor'].populate(vendorData);
+
+      if ($.session.applicationName === 'Advisor') {
+        // Check Selected Consumer For Mileage
+        const canConsumerHaveMileage = consumersThatCanHaveMileage.includes(selectedConsumers[0]);
+        if (canConsumerHaveMileage) {
+          cnForm.inputs['mileage'].toggleDisabled(false);
+        }
+
+        // Get Serv Locations By Consumer
+        serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
+          consumerId: selectedConsumers[0],
+          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+        });
+        serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
+        const servLocData = getServiceLocationDropdownData();
+        cnForm.inputs['serviceLocation'].populate(servLocData);
+      }
+
+      checkRequiredFields();
+    });
     cnForm.onChange(event => {
       const value = event.target.value;
       const name = event.target.name;
@@ -781,6 +834,20 @@ const CaseNotes = (() => {
       if (!onChangeCallbacks[name]) return;
 
       onChangeCallbacks[name]({
+        event,
+        value,
+        name,
+        input,
+      });
+    });
+    cnForm.onKeyup(event => {
+      const value = event.target.value;
+      const name = event.target.name;
+      const input = cnForm.inputs[name];
+
+      if (!onKeyupCallbacks[name]) return;
+
+      onKeyupCallbacks[name]({
         event,
         value,
         name,
@@ -808,22 +875,14 @@ const CaseNotes = (() => {
       await cnOverview.fetchData(selectedDate);
       cnOverview.populate();
     });
-
-    // TIMERS
-    //--------------------------------------------------
-
-    // OVERVIEW
-    //--------------------------------------------------
-    cnOverview = new CaseNotesOverview();
-    cnOverview.build().renderTo(moduleWrap);
-    await cnOverview.fetchData(selectedDate);
-    cnOverview.populate();
   }
 
   // INIT/LOAD? (data & defaults)
   //--------------------------------------------------
   async function init() {
     moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
+    cnFormWrap = _DOM.createElement('div', { class: 'caseNotesForm' });
+    moduleWrap.appendChild(cnFormWrap);
 
     _DOM.ACTIONCENTER.innerHTML = '';
     _DOM.ACTIONCENTER.setAttribute('data-UI', true);

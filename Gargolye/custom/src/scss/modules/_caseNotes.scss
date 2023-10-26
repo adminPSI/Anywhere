@@ -52,43 +52,54 @@
     order: 3;
   }
 
-  form {
-    align-content: flex-start;
+  .caseNotesForm {
     border-radius: 6px;
     box-shadow: $shadow-m2;
-    padding: 10px;
-    column-gap: 10px;
-    display: flex;
-    flex-flow: row wrap;
     grid-area: form;
     margin: 0 10px 0 20px;
     max-height: 1000px;
+    position: relative;
     order: 2;
 
-    .input {
-      flex-grow: 1;
-    }
+    form {
+      align-content: flex-start;
+      padding: 10px;
+      column-gap: 10px;
+      display: flex;
+      flex-flow: row wrap;
 
-    .input.time {
-      width: calc(50% - 5px);
-    }
-    .input.checkbox {
-      margin: 0 0 14px;
-      width: 100%;
-    }
-    .input.textarea {
-      height: 200px;
-    }
-    .input.location,
-    .input.service,
-    .input.need,
-    .input.contact {
-      min-width: 300px;
-      width: calc(50% - 5px);
-    }
+      .input {
+        flex-grow: 1;
+      }
 
-    button {
-      margin-left: auto;
+      .input.time {
+        width: calc(50% - 5px);
+      }
+      .input.checkbox {
+        margin: 0 0 14px;
+        width: 100%;
+      }
+      .input.textarea {
+        height: 200px;
+        position: relative;
+
+        dialog.dialog {
+          top: 40px;
+          margin: 0 0 0 auto;
+          padding: 16px;
+        }
+      }
+      .input.location,
+      .input.service,
+      .input.need,
+      .input.contact {
+        min-width: 300px;
+        width: calc(50% - 5px);
+      }
+
+      button {
+        margin-left: auto;
+      }
     }
   }
 
@@ -147,11 +158,22 @@
         margin: 0 0 10px;
 
         .timeText {
+          display: flex;
           font-weight: $_bold;
           font-size: $px18;
+
+          .time {
+            align-self: center;
+          }
+          .timeMeridiem {
+            align-self: flex-end;
+            font-size: $px14;
+          }
+          .separator {
+          }
         }
         .duration {
-          font-size: $px15;
+          font-size: $px16;
         }
       }
       .consumerName {
@@ -718,14 +740,17 @@
   dialog {
     border: 2px solid $black;
     border-radius: 4px;
-    box-shadow: $shadow-m2;
-    height: 76%;
-    width: 50%;
     overflow: hidden;
     padding: 0;
+
+    &.modal {
+      box-shadow: $shadow-m2;
+      height: 76%;
+      width: 50%;
+    }
   }
 
-  dialog.withFullscreenTextarea {
+  dialog.modal.withFullscreenTextarea {
     padding: 10px;
     resize: both;
 

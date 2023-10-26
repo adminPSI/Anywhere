@@ -30,7 +30,6 @@
    * @constructor
    * @param {Object} options
    * @param {Boolean} [options.allowMultiSelect]
-   * @param {Function} options.onConsumerSelect
    */
   function RosterPicker(options) {
     // Data Init
@@ -77,7 +76,6 @@
     this.rosterCaseLoadInput.build().renderTo(this.rosterPickerEle);
     this.rosterPickerEle.appendChild(this.rosterWrapEle);
 
-    this.populate();
     this.setupEvents();
 
     return this;
@@ -152,32 +150,6 @@
 
         return;
       }
-
-      if (e.target.dataset.target === 'rosterCard') {
-        if (this.options.allowMultiSelect) {
-          if (!e.target.parentNode.classList.contains('selected')) {
-            e.target.parentNode.classList.add('selected');
-            this.selectedConsumers[e.target.dataset.id] = e.target;
-          } else {
-            e.target.parentNode.classList.remove('selected');
-            delete this.selectedConsumers[e.target.dataset.id];
-          }
-        } else {
-          if (e.target.parentNode.classList.contains('selected')) {
-            e.target.parentNode.classList.remove('selected');
-            delete this.selectedConsumers[e.target.dataset.id];
-          } else {
-            this.clearSelectedConsumers();
-
-            e.target.parentNode.classList.add('selected');
-            this.selectedConsumers[e.target.dataset.id] = e.target;
-          }
-        }
-
-        this.options.onConsumerSelect(Object.keys(this.selectedConsumers));
-
-        return;
-      }
     });
 
     this.rosterWrapEle.addEventListener('error', e => {
@@ -200,6 +172,42 @@
       this.groupCode = e.target.checked ? 'CAS' : 'ALL';
       await this.fetchConsumers();
       this.populate();
+    });
+  };
+
+  /**
+   * On consumer select method
+   *
+   * @function
+   * @param {Function} cb -
+   */
+  RosterPicker.prototype.onConsumerSelect = function (cb) {
+    this.rosterWrapEle.addEventListener('click', e => {
+      if (e.target.dataset.target === 'rosterCard') {
+        if (this.options.allowMultiSelect) {
+          if (!e.target.parentNode.classList.contains('selected')) {
+            e.target.parentNode.classList.add('selected');
+            this.selectedConsumers[e.target.dataset.id] = e.target;
+          } else {
+            e.target.parentNode.classList.remove('selected');
+            delete this.selectedConsumers[e.target.dataset.id];
+          }
+        } else {
+          if (e.target.parentNode.classList.contains('selected')) {
+            e.target.parentNode.classList.remove('selected');
+            delete this.selectedConsumers[e.target.dataset.id];
+          } else {
+            this.clearSelectedConsumers();
+
+            e.target.parentNode.classList.add('selected');
+            this.selectedConsumers[e.target.dataset.id] = e.target;
+          }
+        }
+
+        cb(Object.keys(this.selectedConsumers));
+
+        return;
+      }
     });
   };
 

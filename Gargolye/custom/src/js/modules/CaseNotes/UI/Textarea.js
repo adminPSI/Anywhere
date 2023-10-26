@@ -83,8 +83,23 @@
       this.fullScreenDialog.close();
     });
     this.textareaClone.addEventListener('change', e => {
+      // update value of orig textarea
       this.textareaInstance.setValue(e.target.value);
     });
+    this.textareaClone.addEventListener(
+      'keyup',
+      _UTIL.debounce(e => {
+        // update value of orig textarea
+        this.textareaInstance.setValue(e.target.value);
+        // trigger change event of orig textarea
+        const event = new CustomEvent('keyup', {
+          bubbles: true,
+          cancelable: true,
+          detail: { fullscreenInstance: this },
+        });
+        this.textareaInstance.input.dispatchEvent(event);
+      }, 100),
+    );
   };
 
   //=======================================
@@ -199,6 +214,15 @@
   };
 
   /**
+   * Sets focus to element
+   *
+   * @function
+   */
+  Textarea.prototype.setFocus = function () {
+    this.input.focus();
+  };
+
+  /**
    * Toggles textarea required state, if true input is required
    *
    * @function
@@ -216,6 +240,7 @@
    */
   Textarea.prototype.toggleDisabled = function (isDisbled) {
     this.input.disabled = isDisbled;
+    this.input.readonly = isDisbled;
   };
 
   /**
