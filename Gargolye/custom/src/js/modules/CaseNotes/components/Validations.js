@@ -134,7 +134,7 @@
       this.addWarning({ name, ...rest });
     }
 
-    this.items[name].itemEle.class.remove('hidden');
+    this.items[name].itemEle.classList.remove('hidden');
   };
   /**
    * Builds error message markup, this will auto show
@@ -162,7 +162,7 @@
       this.addError({ name, ...rest });
     }
 
-    this.items[name].itemEle.class.remove('hidden');
+    this.items[name].itemEle.classList.remove('hidden');
   };
   /**
    * Hides warning/error message
@@ -170,7 +170,8 @@
    * @function
    */
   ValidationCenter.prototype.hide = function (name) {
-    this.items[name].itemEle.class.add('hidden');
+    if (!this.items[name]) return;
+    this.items[name].itemEle.classList.add('hidden');
   };
   /**
    * Sets the status of the error to valid/invalid
@@ -179,9 +180,9 @@
    */
   ValidationCenter.prototype.toggleErrorStatus = function (name, isError) {
     if (isError) {
-      this.items[name].itemEle.class.remove('valid');
+      this.items[name].itemEle.classList.remove('valid');
     } else {
-      this.items[name].itemEle.class.add('valid');
+      this.items[name].itemEle.classList.add('valid');
     }
   };
 

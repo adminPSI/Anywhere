@@ -9,9 +9,8 @@
 
 //TODO: NO GROUP NOTES IF DOC TIME IS ALLOWED
 //TODO: if GK save attachments after note save
-//TODO: fix z index on settings menu
-//TODO: make sure im clearing out selected consumer
 //TODO: preSave() stops timer and speech to text
+//TODO: make sure im clearing out selected consumer on module leave/form submit
 
 // MAIN
 const CaseNotes = (() => {
@@ -484,7 +483,7 @@ const CaseNotes = (() => {
   // SAVE
   async function saveNote(formData) {
     if (isNewNote) {
-      await _UTIL.fetchData('saveCaseNote', {
+      const saveCaseNoteResults = await _UTIL.fetchData('saveCaseNote', {
         caseManagerId,
         caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
         casenotemileage: formData.casenotemileage,
@@ -502,15 +501,36 @@ const CaseNotes = (() => {
         serviceCode: formData.serviceCode,
         serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
         serviceLocationCode: formData.serviceLocationCode,
-        servieOrBillingCodeId: formData.servieOrBillingCodeId,
+        serviceOrBillingCodeId: formData.serviceOrBillingCodeId,
         startTime: formData.startTime,
         vendorId: formData.vendorId,
       });
+      console.log(saveCaseNoteResults);
     }
   }
 
   // MAIN
   //--------------------------------------------------
+  function onStartTimeChange(startTimeVal, endTimeVal) {
+    const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
+    const isValid = isTimePastOrPresent(startTimeVal);
+
+    if (!isStartBeforeEnd || !isValid) {
+      cnForm.inputs['startTime'].setValidtyError('Start Time is invalid');
+    } else {
+      cnForm.inputs['startTime'].setValidtyError('');
+    }
+  }
+  function onEndTimeChange(startTimeVal, endTimeVal) {
+    const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
+    const isValid = isTimePastOrPresent(endTimeVal);
+
+    if (!isStartBeforeEnd || !isValid) {
+      cnForm.inputs['endTime'].setValidtyError('End Time is invalid');
+    } else {
+      cnForm.inputs['endTime'].setValidtyError('');
+    }
+  }
   const onChangeCallbacks = {
     serviceCode: ({ event, value, name, input }) => {
       // set selectedServiceCode
@@ -571,14 +591,8 @@ const CaseNotes = (() => {
     startTime: ({ event, value, name, input }) => {
       const endTimeVal = cnForm.inputs['endTime'].getValue();
 
-      const isStartBeforeEnd = isStartTimeBeforeEndTime(value, endTimeVal);
-      const isValid = isTimePastOrPresent(value);
-
-      if (!isStartBeforeEnd || !isValid) {
-        input.setValidtyError('Start Time is invalid');
-      } else {
-        input.setValidtyError('');
-      }
+      onStartTimeChange(value, endTimeVal);
+      onEndTimeChange(value, endTimeVal);
 
       if (isStartBeforeEnd && isValid && endTimeVal) {
         // _UTIL.debounce(doesTimeOverlap);
@@ -589,14 +603,8 @@ const CaseNotes = (() => {
     endTime: ({ event, value, name, input }) => {
       const startTimeVal = cnForm.inputs['startTime'].getValue();
 
-      const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, value);
-      const isValid = isTimePastOrPresent(value);
-
-      if (!isStartBeforeEnd || !isValid) {
-        input.setValidtyError('End Time is invalid');
-      } else {
-        input.setValidtyError('');
-      }
+      onEndTimeChange(startTimeVal, value);
+      onStartTimeChange(startTimeVal, value);
 
       if (isStartBeforeEnd && isValid && startTimeVal) {
         // _UTIL.debounce(doesTimeOverlap);
@@ -618,7 +626,6 @@ const CaseNotes = (() => {
       //   formNote: cnForm.inputs['noteText'],
       //   showAllPhrases: showAllPhrases === 'Y' ? true : false,
       // });
-      // cnPhrases.build().renderTo(cnForm.inputs['noteText'].fullscreen.fullScreenDialog.dialog);
       // await cnPhrases.fetchData();
     },
     confidential: ({ event, value, name, input }) => {},
@@ -678,6 +685,8 @@ const CaseNotes = (() => {
           const servLocData = getServiceLocationDropdownData();
           cnForm.inputs['serviceLocation'].populate(servLocData);
         }
+
+        checkRequiredFields();
       },
     });
     await rosterPicker.fetchConsumers();
@@ -779,12 +788,11 @@ const CaseNotes = (() => {
       });
     });
     cnForm.onSubmit(async data => {
-      console.log('onSubmit ', data);
-
       //TODO: return succes or failure from SaveNote so I can display to user
       await saveNote({
         caseNote: data.noteText ?? '',
         casenotemileage: data.mileage ?? '0',
+        casenotetraveltime: '',
         confidential: data.confidential === 'on' ? 'Y' : 'N',
         contactCode: data.contact ?? '',
         endTime: data.endTime ?? '',
@@ -792,7 +800,7 @@ const CaseNotes = (() => {
         needCode: data.need ?? '',
         serviceCode: data.service ?? '',
         serviceLocationCode: data.serviceLocation ?? '',
-        servieOrBillingCodeId: data.serviceCode ?? '',
+        serviceOrBillingCodeId: data.serviceCode ?? '',
         startTime: data.startTime ?? '',
         vendorId: data.vendor ?? '',
       });

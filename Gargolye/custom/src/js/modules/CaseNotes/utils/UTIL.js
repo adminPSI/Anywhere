@@ -10,7 +10,7 @@
    * @param {Number} wait - The number of milliseconds to delay the function
    * @returns {Function} - Returns the debounced version of the provided function
    */
-  function debounce2(func, wait) {
+  function debounce(func, wait) {
     let timeout;
 
     return function executedFunction(...args) {
@@ -35,7 +35,7 @@
    * @param {Number} wait - The number of milliseconds to delay the function.
    * @returns {Function} - Returns the debounced version of the provided function.
    */
-  function debounce(func, wait) {
+  function debounce2(func, wait) {
     let timeout;
     let immediate = true;
 
@@ -273,10 +273,18 @@
     const formattedTime = [];
 
     if (hours > 0) {
-      formattedTime.push(`${hours}hr`);
+      if (hours === 1) {
+        formattedTime.push(`${hours} hr`);
+      } else {
+        formattedTime.push(`${hours} hrs`);
+      }
     }
     if (minutes > 0) {
-      formattedTime.push(`${minutes}min`);
+      if (minutes === 1) {
+        formattedTime.push(`${minutes} min`);
+      } else {
+        formattedTime.push(`${minutes} mins`);
+      }
     }
 
     return formattedTime.join(' ');

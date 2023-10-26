@@ -137,7 +137,7 @@
   };
 
   /**
-   * Sets up events for navigation
+   * Sets up events for roster picker
    *
    * @function
    */
@@ -167,10 +167,7 @@
             e.target.parentNode.classList.remove('selected');
             delete this.selectedConsumers[e.target.dataset.id];
           } else {
-            for (consumer in this.selectedConsumers) {
-              this.selectedConsumers[consumer].classList.remove('selected');
-              delete this.selectedConsumers[consumer];
-            }
+            this.clearSelectedConsumers();
 
             e.target.parentNode.classList.add('selected');
             this.selectedConsumers[e.target.dataset.id] = e.target;
@@ -271,6 +268,18 @@
    */
   RosterPicker.prototype.toggleMultiSelectOption = function (allowMultiSelect) {
     this.options.allowMultiSelect = allowMultiSelect;
+  };
+
+  /**
+   * Removes selected consumer
+   *
+   * @function
+   */
+  RosterPicker.prototype.clearSelectedConsumers = function () {
+    for (consumer in this.selectedConsumers) {
+      this.selectedConsumers[consumer].parentNode.classList.remove('selected');
+      delete this.selectedConsumers[consumer];
+    }
   };
 
   /**

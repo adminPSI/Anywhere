@@ -51,9 +51,16 @@
   Button.prototype.build = function () {
     this.button = _DOM.createElement('button', {
       class: ['button', this.options.style, this.options.styleType],
-      text: this.options.text,
       type: this.options.attributes.type,
     });
+
+    if (this.options.icon) {
+      this.button.innerText = this.options.text;
+      this.button.insertBefore(Icon.getIcon(this.options.icon), this.button.firstChild);
+      this.button.classList.add('icon');
+    } else {
+      this.button.innerText = this.options.text;
+    }
 
     return this;
   };

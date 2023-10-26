@@ -44,84 +44,97 @@ CaseNotesOverview.prototype.build = function () {
 CaseNotesOverview.prototype.populate = function () {
   this.overviewCardsWrap.innerHTML = '';
 
-  this.caseLoadReviewData.forEach(rd => {
-    // DATA
-    //---------------
-    const name = `${rd.lastname}, ${rd.firstname}`;
-    const location = rd.locationName;
-    const service = rd.serviceName;
-    const note = rd.caseNote;
-    const starttime = UTIL.convertFromMilitary(rd.starttime);
-    const endtime = UTIL.convertFromMilitary(rd.endtime);
-    const timeSpan = `${starttime} - ${endtime}`;
-    const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
-    const enteredBy = `${rd.enteredby} (${rd.originalUserFullName})`;
-    const isConfidential = rd.confidential === 'Y' ? true : false;
-    let mostRecentUpdate = new Intl.DateTimeFormat('en-US', {
-      day: 'numeric',
-      month: 'numeric',
-      year: '2-digit',
-      hour: 'numeric',
-      minute: 'numeric',
-      weekday: 'long',
-      // or just
-      // dateStyle: 'short',
-      // timeStyle: 'short',
-    }).format(new Date(rd.mostrecentupdate));
-    mostRecentUpdate = mostRecentUpdate.split(', ');
-    mostRecentUpdate = `${mostRecentUpdate[0].substring(0, 3)}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
+  this.caseLoadReviewData
+    .sort((a, b) => {
+      if (a.starttime < b.starttime) return -1;
+      if (a.starttime > b.starttime) return 1;
+      if (a.endtime < b.endtime) return -1;
+      if (a.endtime > b.endtime) return 1;
+      return 0;
+    })
+    .forEach(rd => {
+      // DATA
+      //---------------
+      const name = `${rd.lastname}, ${rd.firstname}`;
+      const location = rd.locationName;
+      const service = rd.serviceName;
+      const note = rd.caseNote;
+      const starttime = UTIL.convertFromMilitary(rd.starttime);
+      const endtime = UTIL.convertFromMilitary(rd.endtime);
+      const timeSpan = `${starttime} - ${endtime}`;
+      const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
+      const enteredBy = `${rd.enteredby} (${rd.originalUserFullName})`;
+      const isConfidential = rd.confidential === 'Y' ? true : false;
+      let mostRecentUpdate = new Intl.DateTimeFormat('en-US', {
+        day: 'numeric',
+        month: 'numeric',
+        year: '2-digit',
+        hour: 'numeric',
+        minute: 'numeric',
+        weekday: 'long',
+        // or just
+        // dateStyle: 'short',
+        // timeStyle: 'short',
+      }).format(new Date(rd.mostrecentupdate));
+      mostRecentUpdate = mostRecentUpdate.split(', ');
+      mostRecentUpdate = `${mostRecentUpdate[0].substring(0, 3)}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
 
-    //* GK ONLY
-    const attachmentCount = rd.attachcount; // if > 0 then will show gree attachment icon
+      //* GK ONLY
+      const attachmentCount = rd.attachcount; // if > 0 then will show gree attachment icon
 
-    // DOM
-    //---------------
-    // card items
-    const consumerNameEle = _DOM.createElement('p', { class: 'consumerName', text: name });
-    const serviceInfoEle = _DOM.createElement('p', {
-      class: 'serviceInfoEle',
-      html: `${service} | ${location}`,
-    });
-    const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
-    const timeSpanEle = _DOM.createElement('p', { class: 'timeSpan', text: timeSpan });
-    const totalTimeEle = _DOM.createElement('p', { class: 'timeDifference', text: timeDifference });
-    const lastEditEle = _DOM.createElement('p', {
-      class: 'lastEdit',
-      html: `<span>Last Edit:</span> ${mostRecentUpdate}`,
-    });
-    const enteredByEle = _DOM.createElement('p', {
-      class: 'enteredBy',
-      html: `<span>Entered By:</span> ${enteredBy}`,
-    });
-    const editButton = new Button({
-      text: 'edit',
-      style: 'primary',
-      styleType: 'contained',
-    });
-    const deleteButton = new Button({
-      text: 'delete',
-      style: 'danger',
-      styleType: 'outlined',
-    });
+      // DOM
+      //---------------
+      // card items
+      const consumerNameEle = _DOM.createElement('p', { class: 'consumerName', text: name });
+      const serviceInfoEle = _DOM.createElement('p', {
+        class: 'serviceInfoEle',
+        html: `${service} | ${location}`,
+      });
+      const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
+      const timeSpanEle = _DOM.createElement('p', {
+        class: 'timeSpan',
+        html: `<span class="timeText">${timeSpan}  | </span> <span class="duration">${timeDifference}</span>`,
+      });
+      const lastEditEle = _DOM.createElement('p', {
+        class: 'lastEdit',
+        html: `<span>Last Edit:</span> ${mostRecentUpdate}`,
+      });
+      const enteredByEle = _DOM.createElement('p', {
+        class: 'enteredBy',
+        html: `<span>Entered By:</span> ${enteredBy}`,
+      });
+      const editButton = new Button({
+        text: 'edit',
+        style: 'primary',
+        styleType: 'contained',
+        icon: 'edit',
+      });
+      const deleteButton = new Button({
+        text: 'delete',
+        style: 'danger',
+        styleType: 'outlined',
+        icon: 'delete',
+      });
 
-    // card layout
-    const cardLeft = _DOM.createElement('div', {
-      class: 'overviewCard__Left',
-      node: [timeSpanEle, totalTimeEle, editButton.button, deleteButton.button],
-    });
-    const cardCenter = _DOM.createElement('div', {
-      class: 'overviewCard__Center',
-      node: [consumerNameEle, serviceInfoEle, noteTextEle],
-    });
-    const cardRight = _DOM.createElement('div', { class: 'overviewCard__Right', node: [lastEditEle, enteredByEle] });
+      // card layout
+      const cardOne = _DOM.createElement('div', {
+        node: [timeSpanEle, enteredByEle],
+      });
+      const cardTwo = _DOM.createElement('div', {
+        node: [consumerNameEle, serviceInfoEle],
+      });
+      const cardThree = _DOM.createElement('div', {
+        node: [editButton.button, deleteButton.button],
+        class: 'cardThree',
+      });
 
-    const overviewCard = _DOM.createElement('div', {
-      class: 'overviewCard',
-      node: [cardLeft, cardCenter, cardRight],
-    });
+      const overviewCard = _DOM.createElement('div', {
+        class: 'overviewCard',
+        node: [cardOne, cardTwo, cardThree],
+      });
 
-    this.overviewCardsWrap.appendChild(overviewCard);
-  });
+      this.overviewCardsWrap.appendChild(overviewCard);
+    });
 };
 
 /**

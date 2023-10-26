@@ -164,6 +164,8 @@
       this.fullscreen = new FullscreenTextarea(this);
     }
 
+    this.setupEvents();
+
     return this;
   };
 
@@ -214,6 +216,19 @@
    */
   Textarea.prototype.toggleDisabled = function (isDisbled) {
     this.input.disabled = isDisbled;
+  };
+
+  /**
+   * Sets up events for textarea
+   *
+   * @function
+   */
+  Textarea.prototype.setupEvents = function () {
+    if (this.options.fullscreen) {
+      this.input.addEventListener('change', e => {
+        this.fullscreen.updateCloneValue(e.target.value);
+      });
+    }
   };
 
   /**
