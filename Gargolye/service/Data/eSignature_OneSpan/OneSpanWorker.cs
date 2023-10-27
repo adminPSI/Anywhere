@@ -152,7 +152,7 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 //.WithStatus(SenderStatus.ACTIVE)
                 .Build();
 
-                ossClient.AccountService.InviteUser(member);
+                //ossClient.AccountService.InviteUser(member);
 
                 SenderInfoBuilder sender = SenderInfoBuilder
                     .NewSenderInfo(senderInfoObj[0].Email)
