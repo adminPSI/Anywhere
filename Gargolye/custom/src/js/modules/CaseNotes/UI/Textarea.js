@@ -24,6 +24,73 @@
   };
 
   //=======================================
+  // TEXT TO SPEECH
+  //---------------------------------------
+  function TextToSpeech() {
+    this.speechConfig = null;
+    this.audioConfig = null;
+    this.isSpeechInitialized = false;
+  }
+
+  TextToSpeech.prototype.init = function () {
+    try {
+      this.speechConfig = SpeechSDK.SpeechConfig.fromSubscription($.session.azureSTTApi, 'eastus');
+      this.speechConfig.speechRecognitionLanguage = 'en-US';
+      this.speechConfig.enableDictation();
+      this.speechConfig.setServiceProperty(
+        'punctuation',
+        'explicit',
+        SpeechSDK.ServicePropertyChannel.UriQueryParameter,
+      );
+      this.audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+      this.isSpeechInitialized = true;
+    } catch (error) {
+      if (error.message === 'throwIfNullOrWhitespace:subscriptionKey') {
+        const errorMessage =
+          'Error initalizing Speech to Text. No API Key found, or API Key has been entered incorrectly. Please contact system administrator to add Azure Speech API Key.';
+        console.log(errorMessage);
+        return this;
+      }
+
+      const errorMessage =
+        'Error initalizing Speech to Text. Please contact system administrator to make sure you have a valid Speech to Text connection.';
+      console.log(errorMessage);
+    }
+  };
+
+  TextToSpeech.prototype.initSpeechRecognizer = function () {
+    this.speechRecognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+
+    this.speechRecognizer.recognized = (s, e) => {
+      if (e.result.reason == SpeechSDK.ResultReason.RecognizedSpeech) {
+        //textField.firstElementChild.value += `${e.result.text} `;
+        //textField.firstChild.dispatchEvent(new Event('keyup', { bubbles: true }));
+      } else {
+        console.log('NOMATCH: Speech could not be recognized.');
+      }
+    };
+    this.speechRecognizer.canceled = (s, e) => {
+      console.log(`CANCELED: Reason=${e.reason}`);
+
+      if (e.reason == CancellationReason.Error) {
+        console.log(`"CANCELED: ErrorCode=${e.errorCode}`);
+        console.log(`"CANCELED: ErrorDetails=${e.errorDetails}`);
+        console.log('CANCELED: Did you update the subscription info?');
+      }
+    };
+  };
+
+  TextToSpeech.prototype.startSpeechRecognizer = function () {
+    this.speechRecognizer.startContinuousRecognitionAsync();
+  };
+  TextToSpeech.prototype.stopSpeechRecognizer = function () {
+    this.speechRecognizer.stopContinuousRecognitionAsync();
+  };
+  TextToSpeech.prototype.closeSpeechRecognizer = function () {
+    this.speechRecognizer.close();
+  };
+
+  //=======================================
   // FULLSCREEN MODE
   //---------------------------------------
   /**
