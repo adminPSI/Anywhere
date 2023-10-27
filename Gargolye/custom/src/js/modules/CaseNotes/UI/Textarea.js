@@ -83,9 +83,11 @@
   TextToSpeech.prototype.startSpeechRecognizer = function () {
     this.speechRecognizer.startContinuousRecognitionAsync();
   };
+
   TextToSpeech.prototype.stopSpeechRecognizer = function () {
     this.speechRecognizer.stopContinuousRecognitionAsync();
   };
+
   TextToSpeech.prototype.closeSpeechRecognizer = function () {
     this.speechRecognizer.close();
   };
@@ -138,11 +140,6 @@
     this.setupEvents();
   };
 
-  FullscreenTextarea.prototype.updateCloneValue = function (value) {
-    const inputClone = this.textareaClone.querySelector('textarea');
-    inputClone.value = value;
-  };
-
   FullscreenTextarea.prototype.setupEvents = function () {
     this.textareaInstance.fullScreenShowBtn.addEventListener('click', e => {
       this.fullScreenDialog.show();
@@ -170,6 +167,11 @@
     );
   };
 
+  FullscreenTextarea.prototype.updateCloneValue = function (value) {
+    const inputClone = this.textareaClone.querySelector('textarea');
+    inputClone.value = value;
+  };
+
   FullscreenTextarea.prototype.disableCloseButon = function (isDisbled) {
     this.fullScreenCloseBtn.style.pointerEvents = isDisbled ? 'none' : 'all';
   };
@@ -188,7 +190,8 @@
    * @param {String} [options.minlength] - min char count
    * @param {String} [options.maxlength] - max char count
    * @param {Boolean} [options.hidden] - Whether to show or hide the input
-   * @param {Boolean} [options.fullscreen] - Whether to show or hide the input
+   * @param {Boolean} [options.fullscreen] - Enables textarea to enter fullscreen mode
+   * @param {Boolean} [options.textToSpeech] - Enables text to speech
    * @returns {Textarea}
    */
   function Textarea(options) {
@@ -198,6 +201,7 @@
     this.input = null;
     this.fullscreen = null;
     this.fullScreenShowBtn = null;
+    this.textToSpeechBtn = null;
   }
 
   /**
@@ -249,6 +253,16 @@
 
       // build fullscreenmode
       this.fullscreen = new FullscreenTextarea(this);
+    }
+
+    // TEXT TO SPEECH
+    if (this.options.textToSpeech) {
+      this.input.classList.add('textToSpeech');
+      this.textToSpeechBtn = _DOM.createElement('div', {
+        class: ['textToSpeechBtn', 'off'],
+        node: Icon.getIcon('micOff'),
+      });
+      this.inputWrap.appendChild(this.textToSpeechBtn);
     }
 
     this.setupEvents();

@@ -84,11 +84,17 @@
     attachmentObj.description = attachmentName;
     attachmentObj.type = attachmentType;
 
-    // new Response(file) was added for Safari compatibility
     const response = new Response(attachmentFile);
     const arrayBuffer = await response.arrayBuffer();
 
-    attachmentObj.arrayBuffer = arrayBuffer;
+    // convert arrayBuffer to a base64 encoded string
+    const bytes = new Uint8Array(arrayBuffer);
+    const binary = Array.from(bytes).reduce((acc, byte) => {
+      return acc + String.fromCharCode(byte);
+    }, '');
+    const abString = window.btoa(binary);
+
+    attachmentObj.arrayBuffer = abString;
 
     return attachmentObj;
   }

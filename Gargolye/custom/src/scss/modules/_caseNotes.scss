@@ -378,14 +378,14 @@
   .input:not(.checkbox):not(.radio) {
     display: flex;
     flex-flow: column-reverse nowrap;
-    margin: 0 0 20px;
+    margin-bottom: 20px;
     width: 100%;
 
     &.hidden {
       display: none !important;
     }
     &.withNote {
-      margin: 0 0 36px;
+      margin-bottom: 36px;
     }
 
     input,
@@ -437,18 +437,37 @@
     }
   }
   .input.textarea {
-    padding-top: 14px;
+    margin-top: 20px;
 
-    .fullscreenToggleBtn {
+    .fullscreenToggleBtn,
+    .textToSpeechBtn {
       cursor: pointer;
+      border-radius: 2px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
       position: absolute;
-      top: 0px;
-      right: 8px;
+      outline: 1px solid $black;
+      padding: 4px;
+      top: -22px;
       z-index: 1;
 
       * {
         pointer-events: none;
       }
+    }
+
+    .textToSpeechBtn {
+      color: $white;
+      background-color: $secondary;
+      right: 50px;
+
+      &.off {
+        color: $font-dark;
+        background-color: $gray;
+      }
+    }
+    .fullscreenToggleBtn {
+      background-color: $whitesmoke;
+      right: 8px;
     }
   }
 
