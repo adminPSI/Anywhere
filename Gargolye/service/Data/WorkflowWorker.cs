@@ -719,7 +719,7 @@ namespace Anywhere.service.Data
 
         }
 
-        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions)
+        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -1900,14 +1900,14 @@ namespace Anywhere.service.Data
         }
 
 
-        public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions, string priorConsumerPlanId)
+        public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId)
         //public string preInsertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormDescriptions, priorConsumerPlanId, transaction);
+                    return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", wantedFormAttachmentIds, priorConsumerPlanId, transaction);
                     //return insertWorkflowFromTemplate(token, templateId, peopleId, referenceId, "False", transaction);
                 }
                 catch (Exception ex)
@@ -1929,7 +1929,7 @@ namespace Anywhere.service.Data
 
 
 
-        string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, string wantedFormDescriptions, string priorConsumerPlanId, DistributedTransaction transaction_insertWFDetails)
+        string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, string wantedFormAttachmentIds, string priorConsumerPlanId, DistributedTransaction transaction_insertWFDetails)
        // string insertWorkflowFromTemplate(string token, string templateId, string peopleId, string referenceId, string carryStepEdit, DistributedTransaction transaction_insertWFDetails)
         {
 
@@ -1997,8 +1997,8 @@ namespace Anywhere.service.Data
                 // -- Get PreviousPlan StepId 
                 List<WorkflowTemplateStepDocument> selecteddocuments = new List<WorkflowTemplateStepDocument>();
                 
-                if (!string.IsNullOrEmpty(wantedFormDescriptions)) {
-                    string[] attachmentIds = wantedFormDescriptions.Split(',');
+                if (!string.IsNullOrEmpty(wantedFormAttachmentIds)) {
+                    string[] attachmentIds = wantedFormAttachmentIds.Split(',');
                     foreach (string attachmentID in attachmentIds)
                     {
                         String previousPlanStepId = wfdg.getWorkflowStepIdfromPreviousPlan(priorConsumerPlanId, attachmentID);
