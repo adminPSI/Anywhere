@@ -1,6 +1,22 @@
 (function (global, factory) {
   global.CaseNotesOverview = factory();
 })(this, function () {
+  function formatMostRecentUpdateDate(dateObj) {
+    let mostRecentUpdate = new Intl.DateTimeFormat('en-US', {
+      day: 'numeric',
+      month: 'numeric',
+      year: '2-digit',
+      hour: 'numeric',
+      minute: 'numeric',
+      weekday: 'long',
+    }).format(new Date(dateObj));
+    mostRecentUpdate = mostRecentUpdate.split(', ');
+    mostRecentUpdate = `${mostRecentUpdate[0].substring(0, 3)}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
+  }
+
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
   /**
    * @constructor
    */
@@ -56,10 +72,26 @@
         return 0;
       })
       .forEach(rd => {
-        const overviewCard = _DOM.createElement('div', {
-          class: 'overviewCard',
-        });
+        // Review Data
+        const consumerFullName = `${rd.lastname}, ${rd.firstname}`;
+        const location = rd.locationName;
+        const service = rd.serviceName;
+        const note = rd.caseNote;
+        const starttime = UTIL.convertFromMilitary(rd.starttime);
+        const endtime = UTIL.convertFromMilitary(rd.endtime);
+        const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
+        const mostRecentUpdate = formatMostRecentUpdateDate(rd.mostrecentupdate);
+        const enteredBy = `${rd.enteredby} (${rd.originalUserFullName})`;
+        const isConfidential = rd.confidential === 'Y' ? true : false;
+        const attachmentCountGK = rd.attachcount;
 
+        // Overview Card
+        const overviewCard = _DOM.createElement('div', { class: 'overviewCard' });
+
+        // Card Details
+        const consumerNameEle = _DOM.createElement('p', { class: 'consumerName', text: name });
+
+        //------------------------------------------------------------
         this.overviewCardsWrap.appendChild(overviewCard);
       });
   };

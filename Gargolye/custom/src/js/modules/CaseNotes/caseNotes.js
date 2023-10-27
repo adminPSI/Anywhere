@@ -22,7 +22,7 @@ const CaseNotes = (() => {
   let isNewNote = true;
   // attachments
   let attachmentsForSave = {};
-  let attachmentCount = 0;
+  let attachmentCountForIDs = 0;
   // phrases
   let showAllPhrases;
   // group notes
@@ -61,7 +61,7 @@ const CaseNotes = (() => {
     selectedServiceCode;
     caseManagerId = undefined;
     isNewNote = true;
-    attachmentCount = 0;
+    attachmentCountForIDs = 0;
     showAllPhrases = undefined;
     allowGroupNotes = false;
     isGroupNote = false;
@@ -517,6 +517,23 @@ const CaseNotes = (() => {
     // remove -> reviewRequired
   }
   // SAVE
+  async function saveAttachments(caseNoteId) {
+    for (attachment in attachmentsForSave) {
+      try {
+        console.log('save attach start');
+        const saveAttachmentResults = await _UTIL.fetchData('addCaseNoteAttachment', {
+          caseNoteId: caseNoteId,
+          description: attachmentsForSave[attachment].description,
+          attachmentType: attachmentsForSave[attachment].type,
+          attachment: attachmentsForSave[attachment].arrayBuffer,
+        });
+        console.log('save attach end');
+        console.log(saveAttachmentResults);
+      } catch (error) {
+        console.log('error saving attachment', attachment);
+      }
+    }
+  }
   async function saveNote(formData) {
     if (isNewNote) {
       const saveCaseNoteResults = await _UTIL.fetchData('saveCaseNote', {
@@ -542,10 +559,14 @@ const CaseNotes = (() => {
         vendorId: formData.vendorId,
       });
       console.log(saveCaseNoteResults);
+
+      if ($.session.applicationName === 'Gatekeeper') {
+        await saveAttachments();
+      }
     }
   }
 
-  // COMPONENTS
+  // EVENTS & CALLBACKS
   //--------------------------------------------------
   function onStartTimeChange(startTimeVal, endTimeVal) {
     const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
@@ -665,34 +686,41 @@ const CaseNotes = (() => {
     confidential: ({ event, value, name, input }) => {},
     attachments: async ({ event, value, name, input }) => {
       if (value) {
+        // check file type
         const forbiddenTypes = new RegExp('(audio/)|(video/)');
         const isFileTypeValid = _UTIL.validateFileType(event, forbiddenTypes);
 
-        // for saving
-        const attachmentObj = await _DOM.getAttachmentDetails(event);
+        if (!isFileTypeValid) return;
 
-        // Create New Attachment Input
-        attachmentCount = attachmentCount + 1;
-        // on file upload create new Input type attachment and append it to form next to attachment
+        // for saving attachment
+        const attachmentObj = await _DOM.getAttachmentDetails(event);
+        attachmentsForSave[attachmentObj.description] = attachmentObj;
+
+        attachmentCountForIDs = attachmentCountForIDs + 1;
+        // on file upload create new Input type attachment
         const newInputInstance = new Input({
           type: 'file',
           label: 'Add Attachment',
-          id: `attachments${attachmentCount}`,
+          id: `attachments${attachmentCountForIDs}`,
         });
         newInputInstance.build();
-        // make sure to set input instance to cnForm.inputs
-        cnForm.inputs[`attachments${attachmentCount}`] = newInputInstance;
-        // insert new attachment input next to current one, afterend
+
+        // set input instance to cnForm.inputs
+        cnForm.inputs[`attachments${attachmentCountForIDs}`] = newInputInstance;
+
+        // insert new attachment input next to current one
         input.inputWrap.insertAdjacentElement('beforebegin', newInputInstance.inputWrap);
-        // update attachment with new file
+
+        // update label of new attachment
         input.inputWrap.classList.add('hasFile');
         input.labelEle.innerText = attachmentObj.description;
         const deleteIcon = Icon.getIcon('delete');
         input.labelEle.insertBefore(deleteIcon, input.labelEle.firstChild);
         deleteIcon.addEventListener('click', e => {
           e.stopPropagation();
-          // delete attachment on review, if new note just remove from attachmentsForSave
-          console.log('Delte Attachment');
+          delete attachmentsForSave[attachmentObj.description];
+          delete cnForm.inputs[`attachments${attachmentCountForIDs}`];
+          newInputInstance.inputWrap.remove();
         });
       }
     },
@@ -838,6 +866,7 @@ const CaseNotes = (() => {
           data: getServiceBillCodeDropdownData(),
           defaultValue: null,
           includeBlankOption: true,
+          note: 'Im some helpful text',
         },
         //location
         {
@@ -887,6 +916,8 @@ const CaseNotes = (() => {
           id: 'noteText',
           required: true,
           fullscreen: true,
+          textToSpeech: true,
+          note: `Use the new quick insert key for phrases, type #ph. (#ph must not be apart of another word)`,
         },
         //mileage
         {
