@@ -3661,6 +3661,20 @@ namespace Anywhere
             return cf.getEditAccount(token, consumerId);
         }
 
+        public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
+        {
+            return cf.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName);
+        }
 
+        public ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token)
+        {
+            if (token == null)
+            {
+                logger.Error("token was null :" + token);
+                return null;
+            }
+
+            return cf.getCFWidgetConsumers(token);
+        }
     }
 }

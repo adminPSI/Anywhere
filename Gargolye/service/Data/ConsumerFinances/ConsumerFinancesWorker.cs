@@ -3,6 +3,8 @@ using System;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereWorker;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.OODWorker;
 
 namespace Anywhere.service.Data.ConsumerFinances
@@ -154,6 +156,8 @@ namespace Anywhere.service.Data.ConsumerFinances
         {
             [DataMember(Order = 0)]
             public string FullName { get; set; }
+            [DataMember(Order = 1)]
+            public string ID { get; set; }
 
         }
         public class EditAccountInfo
@@ -178,6 +182,21 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string accountClass { get; set; }
             public string SystemClass { get; set; }
 
+        }
+
+        [DataContract]
+        public class ConsumerFinanceEntriesWidget
+        {
+            [DataMember(Order = 0)]
+            public string name { get; set; }
+            [DataMember(Order = 1)]
+            public string lastTransaction { get; set; }
+            [DataMember(Order = 2)]
+            public string balance { get; set; }
+            [DataMember(Order = 3)]
+            public string account { get; set; }
+            [DataMember(Order = 3)]
+            public string Id { get; set; }
         }
 
         public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType)
@@ -645,6 +664,46 @@ namespace Anywhere.service.Data.ConsumerFinances
                     throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
                 }
             }
+        }
+
+        public ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    ConsumerFinanceEntriesWidget[] entries = js.Deserialize<ConsumerFinanceEntriesWidget[]>(Odg.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName,  transaction));
+
+                    return entries;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+
+        }
+
+        public ConsumerName[] getCFWidgetConsumers(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    string consumerString = Odg.getCFWidgetConsumers(token, transaction);
+                    ConsumerName[] consumerObj = js.Deserialize<ConsumerName[]>(consumerString);
+                    return consumerObj;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+           
         }
 
     }

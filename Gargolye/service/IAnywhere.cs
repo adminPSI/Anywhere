@@ -4904,6 +4904,21 @@ namespace Anywhere
              UriTemplate = "/getEditAccount/")]
         ConsumerFinancesWorker.ActiveAccount[] getEditAccount(string token, string consumerId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getConsumerFinanceWidgetEntriesData/")]
+        ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/getCFWidgetConsumers/")]
+        ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token);
     }
 
 
