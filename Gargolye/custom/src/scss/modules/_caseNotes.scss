@@ -31,12 +31,12 @@
 [data-active-module='casenotes2.0'] {
   .caseNotesModule {
     display: grid;
-    grid-template-columns: auto 320px;
-    grid-template-rows: auto auto minmax(50%, 1500px) 600px;
+    grid-template-columns: 320px auoto;
+    grid-template-rows: auto auto minmax(900px, 1300px) 600px;
     grid-template-areas:
       'nav nav'
       'feedback feedback'
-      'form roster'
+      'roster form'
       'cards cards';
     row-gap: 10px;
 
@@ -69,7 +69,7 @@
 
     .rosterPicker {
       grid-area: roster;
-      margin: 0 20px 0 10px;
+      margin: 0 10px 0 20px;
       order: 3;
     }
 
@@ -77,7 +77,7 @@
       border-radius: 6px;
       box-shadow: $shadow-m2;
       grid-area: form;
-      margin: 0 10px 0 20px;
+      margin: 0 20px 0 10px;
       position: relative;
       order: 2;
 
@@ -123,29 +123,28 @@
       // special attachments START
       form {
         .input {
-          &.file {
-            width: auto;
-            flex-grow: 0;
-          }
           input[type='file'] {
             position: absolute;
             right: 100px;
             top: 10px;
             visibility: hidden;
           }
-
           input[type='file'] ~ label {
             align-items: center;
             border: 2px solid $primary;
             border-radius: 20px;
             display: flex;
+            height: 40px;
             flex-flow: row nowrap;
-            height: 44px;
             padding: 10px 14px;
             font-weight: 500;
             text-transform: uppercase;
           }
 
+          &.file {
+            width: auto;
+            flex-grow: 0;
+          }
           &.hasFile {
             input[type='file'] ~ label {
               border: 2px solid $secondary;
@@ -428,7 +427,7 @@
       font-size: 12px;
       position: absolute;
       left: 0px;
-      bottom: -32px;
+      bottom: -18px;
     }
 
     .charCount {
@@ -891,7 +890,11 @@
     resize: both;
 
     .fullscreenToggleBtn {
-      top: -2px;
+      background-color: transparent;
+      box-shadow: none;
+      outline: none;
+      right: 0px;
+      top: -5px;
     }
 
     .input.textarea {
@@ -901,6 +904,10 @@
       padding: 16px 0 0 0;
       width: 100%;
       resize: none;
+
+      &.withNote {
+        margin-bottom: 16px;
+      }
     }
   }
 

@@ -81,7 +81,7 @@
    * @function
    * @param {Array} [data] data to populate select with
    */
-  Select.prototype.populate = function (data = []) {
+  Select.prototype.populate = function (data) {
     if (data && Array.isArray(data)) this.options.data = data;
 
     this.select.innerHTML = '';
@@ -95,7 +95,7 @@
     }
 
     //! If data is emtpy we set dropdown to disabled
-    if (!data || data.length === 0) {
+    if (!this.options.data || this.options.data.length === 0) {
       this.toggleDisabled(true);
     }
   };

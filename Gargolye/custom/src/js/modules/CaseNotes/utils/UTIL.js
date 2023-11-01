@@ -269,7 +269,7 @@
         filename.length - fileExtension.length,
       );
 
-      return `${firstPart}...${secondPart}.${fileExtension}`;
+      return `${firstPart}...${secondPart}${fileExtension}`;
     }
 
     return filename;

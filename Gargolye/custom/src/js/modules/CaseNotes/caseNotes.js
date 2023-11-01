@@ -678,15 +678,9 @@ const CaseNotes = (() => {
       // set selectedServiceCode
       selectedServiceCode = value;
 
-      // get required fields
-      const locationRequired = dropdownData[selectedServiceCode].locationRequired;
-      const needRequired = dropdownData[selectedServiceCode].needRequired;
-      const contactRequired = dropdownData[selectedServiceCode].contactRequired;
-      const serviceRequired = dropdownData[selectedServiceCode].serviceRequired;
-
       let mileageRequired;
 
-      if ($.session.applicationName === 'Gatekeeper') {
+      if ($.session.applicationName === 'Gatekeeper' && selectedServiceCode !== '') {
         mileageRequired = dropdownData[selectedServiceCode].mileageRequired;
         isTravelTimeRequired = dropdownData[selectedServiceCode].travelTimeRequired;
         isDocTimeRequired = dropdownData[selectedServiceCode].docTimeRequired;
@@ -698,30 +692,44 @@ const CaseNotes = (() => {
         allowGroupNotes = true;
       }
 
-      //populate dropdowns tied to this one
       if (selectedServiceCode !== '') {
+        // get required fields
+        const locationRequired = dropdownData[selectedServiceCode].locationRequired;
+        const needRequired = dropdownData[selectedServiceCode].needRequired;
+        const contactRequired = dropdownData[selectedServiceCode].contactRequired;
+        const serviceRequired = dropdownData[selectedServiceCode].serviceRequired;
+        // enable dropdowns
+        cnForm.inputs['location'].toggleDisabled(locationRequired === 'Y');
+        cnForm.inputs['service'].toggleDisabled(serviceRequired === 'Y');
+        cnForm.inputs['need'].toggleDisabled(needRequired === 'Y');
+        cnForm.inputs['contact'].toggleDisabled(contactRequired === 'Y');
+        // set required fields
+        cnForm.inputs['location'].toggleRequired(locationRequired === 'Y');
+        cnForm.inputs['service'].toggleRequired(serviceRequired === 'Y');
+        cnForm.inputs['need'].toggleRequired(needRequired === 'Y');
+        cnForm.inputs['contact'].toggleRequired(contactRequired === 'Y');
+        //populate dropdowns tied to this one
         cnForm.inputs['location'].populate(getLocationDropdownData());
         cnForm.inputs['service'].populate(getServicesDropdownData());
         cnForm.inputs['need'].populate(getNeedsDropdownData());
         cnForm.inputs['contact'].populate(getContactsDropdownData());
       } else {
+        // set required to false
+        cnForm.inputs['location'].toggleRequired(false);
+        cnForm.inputs['service'].toggleRequired(false);
+        cnForm.inputs['need'].toggleRequired(false);
+        cnForm.inputs['contact'].toggleRequired(false);
+        // disable dropdowns
+        cnForm.inputs['location'].toggleDisabled(true);
+        cnForm.inputs['service'].toggleDisabled(true);
+        cnForm.inputs['need'].toggleDisabled(true);
+        cnForm.inputs['contact'].toggleDisabled(true);
+        //clear dropdown values
         cnForm.inputs['location'].populate([]);
         cnForm.inputs['service'].populate([]);
         cnForm.inputs['need'].populate([]);
         cnForm.inputs['contact'].populate([]);
       }
-
-      // enable dropdowns
-      cnForm.inputs['location'].toggleDisabled(selectedServiceCode === '');
-      cnForm.inputs['service'].toggleDisabled(selectedServiceCode === '');
-      cnForm.inputs['need'].toggleDisabled(selectedServiceCode === '');
-      cnForm.inputs['contact'].toggleDisabled(selectedServiceCode === '');
-
-      // set required fields
-      cnForm.inputs['location'].toggleRequired(locationRequired === 'Y');
-      cnForm.inputs['service'].toggleRequired(serviceRequired === 'Y');
-      cnForm.inputs['need'].toggleRequired(needRequired === 'Y');
-      cnForm.inputs['contact'].toggleRequired(contactRequired === 'Y');
     },
     location: ({ event, value, name, input }) => {},
     service: ({ event, value, name, input }) => {},
