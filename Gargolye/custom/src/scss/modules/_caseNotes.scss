@@ -32,7 +32,7 @@
   .caseNotesModule {
     display: grid;
     grid-template-columns: auto 320px;
-    grid-template-rows: auto auto minmax(50%, 1000px) 600px;
+    grid-template-rows: auto auto minmax(50%, 1500px) 600px;
     grid-template-areas:
       'nav nav'
       'feedback feedback'
@@ -70,7 +70,6 @@
     .rosterPicker {
       grid-area: roster;
       margin: 0 20px 0 10px;
-      max-height: 1000px;
       order: 3;
     }
 
@@ -79,7 +78,6 @@
       box-shadow: $shadow-m2;
       grid-area: form;
       margin: 0 10px 0 20px;
-      max-height: 1000px;
       position: relative;
       order: 2;
 
@@ -189,72 +187,80 @@
       padding: 20px;
       order: 3;
 
-      // .input.search {
-      // }
+      .overviewCardsHeader {
+        // do stuff son
+      }
 
       .overviewCardsWrap {
         display: grid;
-        grid-template-columns: minmax(200px, auto) 1fr auto;
+        grid-template-columns: minmax(auto, 140px) minmax(auto, 140px) minmax(auto, 180px) auto auto;
       }
 
       .overviewCard {
         align-items: center;
-        column-gap: 30px;
+        box-shadow: $shadow-m2;
+        border-radius: 6px;
         display: grid;
         grid-template-columns: subgrid;
         grid-column: 1 / -1;
-        box-shadow: $shadow-m2;
-        border-radius: 6px;
-        padding: 14px 20px;
+        padding: 0;
         margin: 0 0 8px;
+        row-gap: 14px;
 
-        .cardThree {
-          display: flex;
-          column-gap: 6px;
-          justify-content: flex-end;
-        }
+        &Main {
+          grid-column: 1 / -1;
+          padding: 0 10px 20px;
 
-        .timeSpan {
-          display: flex;
-          flex-flow: row nowrap;
-          align-items: center;
-          column-gap: 4px;
-          margin: 0 0 10px;
-
-          .timeText {
-            display: flex;
+          .consumerName {
+            font-size: $px30;
             font-weight: $_bold;
+            letter-spacing: 0.04rem;
+            margin-bottom: 4px;
+          }
+          .serviceInfoEle {
             font-size: $px18;
-
-            .time {
-              align-self: center;
-            }
-            .timeMeridiem {
-              align-self: flex-end;
-              font-size: $px14;
-            }
-            .separator {
-            }
-          }
-          .duration {
-            font-size: $px16;
-          }
-        }
-        .consumerName {
-          font-size: $px26;
-          font-weight: $_heavy;
-          margin: 0 0 4px;
-        }
-        .enteredBy {
-          span {
             font-weight: $_bold;
+            letter-spacing: 0.04rem;
+            margin-bottom: 8px;
+          }
+          .noteText {
+            font-size: $px16;
+            font-weight: $_normal;
           }
         }
 
-        //
-        .serviceInfoEle {
-          font-size: $px16;
+        .withLabelWrap {
+          //border-bottom: 2px solid $black;
+          padding: 8px;
+        }
+
+        .withLabel {
+          font-size: $px24;
           font-weight: $_bold;
+          position: relative;
+          margin-top: 20px;
+        }
+        .withLabel::before {
+          font-size: $px14;
+          font-weight: $_normal;
+          position: absolute;
+          top: -20px;
+          left: 0px;
+        }
+        .startTime::before {
+          content: 'Start Time';
+        }
+        .endTime::before {
+          content: 'End Time';
+        }
+        .duration::before {
+          content: 'Total';
+        }
+        .enteredBy::before {
+          content: 'Entered By';
+        }
+        .consumer::before {
+          content: 'Consumer';
         }
       }
     }
@@ -318,8 +324,8 @@
       .shortcut {
         font-weight: $_bold;
       }
-      .phraseText {
-      }
+      // .phraseText {
+      // }
     }
   }
 }
@@ -422,7 +428,7 @@
       font-size: 12px;
       position: absolute;
       left: 0px;
-      bottom: -18px;
+      bottom: -32px;
     }
 
     .charCount {
@@ -440,7 +446,7 @@
     margin-top: 20px;
 
     .fullscreenToggleBtn,
-    .textToSpeechBtn {
+    .speechToTextBtn {
       cursor: pointer;
       border-radius: 2px;
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
@@ -455,7 +461,7 @@
       }
     }
 
-    .textToSpeechBtn {
+    .speechToTextBtn {
       color: $white;
       background-color: $secondary;
       right: 50px;
@@ -641,7 +647,7 @@
 
     //states
     &.disabled {
-      background: $whitesmoke;
+      background: $gray;
       opacity: 0.6;
       pointer-events: none;
     }
@@ -910,15 +916,53 @@
       .validationMessage {
         background-color: rgba(219, 22, 47, 0.4);
 
-        .svgIcon {
-          color: $error;
+        .iconWrap {
+          background-color: transparent;
+          height: 24px;
+          width: 24px;
+          perspective: 1000px;
         }
 
-        &.success {
+        .iconInner {
+          height: 100%;
+          position: relative;
+          transform-style: preserve-3d;
+          transition: transform 1s;
+          width: 100%;
+        }
+
+        .svgIcon {
+          color: $error;
+          position: absolute;
+          backface-visibility: hidden;
+          transition: opacity 0.2s;
+
+          &:first-child {
+            // error icon
+            opacity: 1;
+          }
+          &:last-child {
+            // checkmark icon
+            color: $secondary;
+            opacity: 0;
+            transform: rotateY(180deg);
+          }
+        }
+
+        &.valid {
           background-color: rgba(129, 185, 65, 0.4);
 
-          .svgIcon {
-            color: $green;
+          .iconInner {
+            transform: rotateY(180deg);
+          }
+
+          .svgIcon:first-child {
+            // error icon
+            opacity: 0;
+          }
+          .svgIcon:last-child {
+            // checkmark icon
+            opacity: 1;
           }
         }
       }

@@ -35,6 +35,7 @@
 
     // DOM Ref
     this.form = null;
+    this.submitButton = null;
   }
 
   /**
@@ -85,7 +86,7 @@
 
     //const btn = _DOM.createElement('button', { type: 'submit', text: 'Save', class: 'button' });
     const btnWrap = _DOM.createElement('div', { class: 'formButtons' });
-    new Button({ type: 'submit', text: 'Save', icon: 'save' }).renderTo(btnWrap);
+    this.submitButton = new Button({ type: 'submit', text: 'Save', icon: 'save' }).renderTo(btnWrap);
     this.form.appendChild(btnWrap);
 
     return this;

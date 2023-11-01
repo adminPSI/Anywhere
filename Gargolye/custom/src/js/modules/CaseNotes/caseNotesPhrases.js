@@ -46,7 +46,11 @@
   CaseNotesInsertPhrases.prototype.populate = function () {
     this.phraseWrap.innerHTML = '';
 
-    for (id in this.phrasesData) {
+    const sortedKeys = Object.keys(this.phrasesData).sort((a, b) => {
+      return this.phrasesData[a].shortcut.localeCompare(this.phrasesData[b].shortcut);
+    });
+
+    sortedKeys.forEach(id => {
       const phrase = this.phrasesData[id].phrase;
       const shortcut = this.phrasesData[id].shortcut;
 
@@ -58,7 +62,7 @@
       });
 
       this.phraseWrap.appendChild(phraseEle);
-    }
+    });
   };
 
   /**

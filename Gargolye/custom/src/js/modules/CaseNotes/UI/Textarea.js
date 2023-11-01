@@ -26,13 +26,16 @@
   //=======================================
   // TEXT TO SPEECH
   //---------------------------------------
-  function TextToSpeech() {
+  function SpeechToText(textareaInstance) {
+    this.textareaInstance = textareaInstance;
+
     this.speechConfig = null;
     this.audioConfig = null;
     this.isSpeechInitialized = false;
+    this.isListening = false;
   }
 
-  TextToSpeech.prototype.init = function () {
+  SpeechToText.prototype.init = function () {
     try {
       this.speechConfig = SpeechSDK.SpeechConfig.fromSubscription($.session.azureSTTApi, 'eastus');
       this.speechConfig.speechRecognitionLanguage = 'en-US';
@@ -56,15 +59,22 @@
         'Error initalizing Speech to Text. Please contact system administrator to make sure you have a valid Speech to Text connection.';
       console.log(errorMessage);
     }
+
+    if (this.isSpeechInitialized) {
+      this.initSpeechRecognizer();
+      this.mutationObserver();
+    }
   };
 
-  TextToSpeech.prototype.initSpeechRecognizer = function () {
-    this.speechRecognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+  SpeechToText.prototype.initSpeechRecognizer = function () {
+    this.speechRecognizer = new SpeechSDK.SpeechRecognizer(this.speechConfig, this.audioConfig);
 
     this.speechRecognizer.recognized = (s, e) => {
       if (e.result.reason == SpeechSDK.ResultReason.RecognizedSpeech) {
-        //textField.firstElementChild.value += `${e.result.text} `;
-        //textField.firstChild.dispatchEvent(new Event('keyup', { bubbles: true }));
+        const currValue = this.textareaInstance.getValue();
+        const newValue = `${currValue} ${e.result.text} `;
+        this.textareaInstance.setValue(newValue);
+        this.textareaInstance.input.dispatchEvent(new Event('change', { bubbles: true }));
       } else {
         console.log('NOMATCH: Speech could not be recognized.');
       }
@@ -80,16 +90,32 @@
     };
   };
 
-  TextToSpeech.prototype.startSpeechRecognizer = function () {
+  SpeechToText.prototype.startSpeechRecognizer = function () {
     this.speechRecognizer.startContinuousRecognitionAsync();
   };
 
-  TextToSpeech.prototype.stopSpeechRecognizer = function () {
+  SpeechToText.prototype.stopSpeechRecognizer = function () {
     this.speechRecognizer.stopContinuousRecognitionAsync();
   };
 
-  TextToSpeech.prototype.closeSpeechRecognizer = function () {
+  SpeechToText.prototype.closeSpeechRecognizer = function () {
     this.speechRecognizer.close();
+  };
+
+  SpeechToText.prototype.mutationObserver = function () {
+    // Mutation Observer for leaving section to disconnect STT API Call
+    const observer = new MutationObserver(function (mutationList, observer) {
+      for (let mutation of mutationList) {
+        if (mutation.type === 'attributes') {
+          if (mutation.attributeName === 'data-active-section') {
+            observer.disconnect();
+            this.closeSpeechRecognizer();
+          }
+        }
+      }
+    });
+
+    observer.observe(_DOM.ACTIONCENTER, { attributes: true });
   };
 
   //=======================================
@@ -191,7 +217,7 @@
    * @param {String} [options.maxlength] - max char count
    * @param {Boolean} [options.hidden] - Whether to show or hide the input
    * @param {Boolean} [options.fullscreen] - Enables textarea to enter fullscreen mode
-   * @param {Boolean} [options.textToSpeech] - Enables text to speech
+   * @param {Boolean} [options.speechToText] - Enables speech to text
    * @returns {Textarea}
    */
   function Textarea(options) {
@@ -201,7 +227,7 @@
     this.input = null;
     this.fullscreen = null;
     this.fullScreenShowBtn = null;
-    this.textToSpeechBtn = null;
+    this.speechToTextBtn = null;
   }
 
   /**
@@ -255,14 +281,18 @@
       this.fullscreen = new FullscreenTextarea(this);
     }
 
-    // TEXT TO SPEECH
-    if (this.options.textToSpeech) {
-      this.input.classList.add('textToSpeech');
-      this.textToSpeechBtn = _DOM.createElement('div', {
-        class: ['textToSpeechBtn', 'off'],
+    // SPEECH TO TEXT
+    if (this.options.speechToText) {
+      this.input.classList.add('speechToText');
+      this.speechToTextBtn = _DOM.createElement('div', {
+        class: ['speechToTextBtn', 'off'],
         node: Icon.getIcon('micOff'),
       });
-      this.inputWrap.appendChild(this.textToSpeechBtn);
+      this.inputWrap.appendChild(this.speechToTextBtn);
+
+      // init speech to text
+      this.speechToText = new SpeechToText(this);
+      this.speechToText.init();
     }
 
     this.setupEvents();
@@ -274,10 +304,20 @@
    * Sets value of textarea
    *
    * @function
-   * @param {*} value
+   * @param {String} value
    */
   Textarea.prototype.setValue = function (value) {
     this.input.value = value;
+  };
+
+  /**
+   * Returns value of textarea
+   *
+   * @function
+   * @param {String} value
+   */
+  Textarea.prototype.getValue = function () {
+    return this.input.value;
   };
 
   /**
@@ -326,7 +366,6 @@
    */
   Textarea.prototype.toggleDisabled = function (isDisbled) {
     this.input.disabled = isDisbled;
-    this.input.readonly = isDisbled;
   };
 
   /**
@@ -340,6 +379,32 @@
         this.fullscreen.updateCloneValue(e.target.value);
       });
     }
+
+    if (this.options.speechToText && this.speechToText.isSpeechInitialized) {
+      this.speechToTextBtn.addEventListener('click', e => {
+        this.speechToText.isListening = !this.speechToText.isListening;
+
+        if (this.speechToText.isListening) {
+          this.speechToText.startSpeechRecognizer(() => {
+            // this.speechToTextBtn
+            this.speechToTextBtn.innerHTML = '';
+            // set icon to micOn
+            this.speechToTextBtn.appendChild(Icon.getIcon('micOn'));
+            // remove class 'off'
+            this.speechToTextBtn.classList.remove('off');
+          });
+        } else {
+          this.speechToText.stopSpeechRecognizer(() => {
+            // this.speechToTextBtn
+            this.speechToTextBtn.innerHTML = '';
+            // set icon to micOff
+            this.speechToTextBtn.appendChild(Icon.getIcon('micOff'));
+            // add class 'off'
+            this.speechToTextBtn.classList.add('off');
+          });
+        }
+      });
+    }
   };
 
   /**
@@ -349,7 +414,7 @@
    */
   Textarea.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('change', e => {
-      cbFunc(e);
+      if (cbFunc) cbFunc(e);
 
       if (this.options.fullscreen) {
         this.fullscreen.updateCloneValue(e.target.value);
@@ -364,7 +429,7 @@
    */
   Textarea.prototype.onKeyup = function (cbFunc) {
     this.input.addEventListener('keyup', e => {
-      cbFunc(e);
+      if (cbFunc) cbFunc(e);
     });
   };
 

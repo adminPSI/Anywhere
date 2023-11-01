@@ -211,6 +211,33 @@ const dates = (function () {
     var dateRight = cloneDate(dirtyRightDate);
     return dateLeft.getTime() === dateRight.getTime();
   }
+  function isDateInCurrentWeek(dirtyDate) {
+    const date = cloneDate(dirtyDate);
+    date.setHours(0, 0, 0, 0);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const curentWeekStart = startDayOfWeek(currentDate);
+    const curentWeekEnd = endOfWeek(currentDate);
+
+    if (isAfter(date, curentWeekStart) && isBefore(date, curentWeekEnd)) {
+      return true;
+    }
+
+    return false;
+  }
+  function isDateInFuture(dirtyDate) {
+    const date = cloneDate(dirtyDate);
+    date.setHours(0, 0, 0, 0);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (isAfter(date, currentDate)) {
+      return true;
+    }
+
+    return false;
+  }
 
   function formatISO(dirtyDate, dirtyOptions) {
     if (arguments.length < 1) {
@@ -336,6 +363,8 @@ const dates = (function () {
     isAfter,
     isBefore,
     isEqual,
+    isDateInCurrentWeek,
+    isDateInFuture,
     formatISO,
     eachDayOfInterval,
     removeTimestamp,

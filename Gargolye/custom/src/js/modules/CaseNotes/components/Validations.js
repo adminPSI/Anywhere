@@ -31,9 +31,13 @@
 
     let iconWrap;
     if (this.type === 'error') {
+      const iconInner = _DOM.createElement('div', {
+        class: 'iconInner',
+        node: [Icon.getIcon('error'), Icon.getIcon('checkmark')],
+      });
       iconWrap = _DOM.createElement('div', {
         class: ['iconWrap', 'flippable'],
-        node: [Icon.getIcon('error'), Icon.getIcon('checkmark')],
+        node: iconInner,
       });
     } else {
       iconWrap = _DOM.createElement('div', { class: 'iconWrap', node: Icon.getIcon('warning') });
@@ -114,6 +118,10 @@
    * @function
    */
   ValidationCenter.prototype.addWarning = function ({ name, message }) {
+    if (this.items[name]) {
+      console.error(`name: ${name}, is already being used by another error/warning message`);
+    }
+
     const itemInstance = new ValidationMessage({
       name,
       message,
@@ -142,6 +150,10 @@
    * @function
    */
   ValidationCenter.prototype.addError = function ({ name, message }) {
+    if (this.items[name]) {
+      console.error(`name: ${name}, is already being used by another error/warning message`);
+    }
+
     const itemInstance = new ValidationMessage({
       name,
       message,

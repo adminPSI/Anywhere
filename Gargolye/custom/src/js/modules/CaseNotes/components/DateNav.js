@@ -76,27 +76,36 @@
    */
   const DEFAULT_OPTIONS = {
     selectedDate: dates.getTodaysDateObj(),
+    allowFutureDate: true,
   };
   /**
    * @constructor
    * @param {Object} options
+   * @param {Date} [options.selectedDate] - Initial date for date nav
+   * @param {Boolean} [options.allowFutureDate] - Whether toallow future dates to be selected
    */
   function DateNavigation(options) {
     // Data Init
     this.options = mergOptionsWithDefaults(options);
     //? by default selectedDate, weekStart, weekEnd and eachDayoFWeek
     //? will be the most current week of calandar year
-    this.selectedDate = this.options.selectedDate;
-    this.weekStart = dates.startDayOfWeek(this.selectedDate);
-    this.weekEnd = dates.endOfWeek(this.selectedDate);
+    this.weekStart = dates.startDayOfWeek(this.options.selectedDate);
+    this.weekEnd = dates.endOfWeek(this.options.selectedDate);
     this.eachDayOfWeek = dates.eachDayOfInterval({
       start: this.weekStart,
       end: this.weekEnd,
     });
 
+    this.isCurrentWeek = dates.isDateInCurrentWeek(this.options.selectedDate);
+
+    if (!this.options.allowFutureDate && dates.isDateInFuture(this.options.selectedDate)) {
+      throw new Error('Selected date option can not be in future if allow future date option is set to false');
+    }
+
     // DOM
     this.navigationEle = null;
     this.weekWrapEle = null;
+    this.prevWeekNavBtn = null;
   }
 
   /**
@@ -109,22 +118,22 @@
     this.navigationEle = _DOM.createElement('div', { class: 'dateNavigation' });
     this.weekWrapEle = _DOM.createElement('div', { class: 'week' });
 
-    const prevWeekNavBtn = _DOM.createElement('div', {
+    this.prevWeekNavBtn = _DOM.createElement('div', {
       class: 'navButtons',
       'data-target': 'prevWeek',
       node: Icon.getIcon('arrowLeft'),
     });
-    const nextWeekNavBtn = _DOM.createElement('div', {
-      class: 'navButtons',
+    this.nextWeekNavBtn = _DOM.createElement('div', {
+      class: this.isCurrentWeek ? ['navButtons', 'disabled'] : 'navButtons',
       'data-target': 'nextWeek',
       node: Icon.getIcon('arrowRight'),
     });
     this.customDatePicker = new DatePicker();
 
     this.navigationEle.appendChild(this.customDatePicker.inputWrap);
-    this.navigationEle.appendChild(prevWeekNavBtn);
+    this.navigationEle.appendChild(this.prevWeekNavBtn);
     this.navigationEle.appendChild(this.weekWrapEle);
-    this.navigationEle.appendChild(nextWeekNavBtn);
+    this.navigationEle.appendChild(this.nextWeekNavBtn);
 
     this.populate();
     this.setupEvents();
@@ -141,14 +150,19 @@
     this.weekWrapEle.innerHTML = '';
 
     this.eachDayOfWeek.forEach(date => {
-      let isDateCurrentlySelected = date.getTime() === this.selectedDate.getTime() ? true : false;
+      const isDateCurrentlySelected = date.getTime() === this.options.selectedDate.getTime() ? true : false;
+      const isDateInFuture = dates.isDateInFuture(date);
 
       const dayOfWeek = date.getDay();
       const month = date.getMonth() + 1;
       const day = date.getDate();
 
+      const classArray = ['day'];
+      if (isDateCurrentlySelected) classArray.push('selected');
+      if (isDateInFuture && !this.options.allowFutureDate) classArray.push('disabled');
+
       const dateWrapEle = _DOM.createElement('div', {
-        class: isDateCurrentlySelected ? ['day', 'selected'] : 'day',
+        class: classArray,
         'data-date': date.toDateString(),
         'data-target': 'date',
       });
@@ -178,10 +192,10 @@
         });
 
         //? default selected date to monday on week change
-        this.selectedDate = this.eachDayOfWeek[1];
+        this.options.selectedDate = this.eachDayOfWeek[1];
 
         this.populate();
-        this.onDateChange(this.selectedDate);
+        this.onDateChange(this.options.selectedDate);
 
         return;
       }
@@ -195,26 +209,41 @@
         });
 
         //? default selected date to monday on week change
-        this.selectedDate = this.eachDayOfWeek[1];
+        this.options.selectedDate = this.eachDayOfWeek[1];
 
         this.populate();
-        this.onDateChange(this.selectedDate);
+        this.onDateChange(this.options.selectedDate);
 
         return;
       }
     });
 
     this.customDatePicker.onDateChange(newDate => {
-      this.selectedDate = new Date(`${newDate}T00:00:00`);
-      this.weekStart = dates.startDayOfWeek(this.selectedDate);
-      this.weekEnd = dates.endOfWeek(this.selectedDate);
+      const newDateValue = new Date(`${newDate}T00:00:00`);
+
+      if (!this.options.allowFutureDate) {
+        if (dates.isDateInFuture(newDateValue)) {
+          return;
+        }
+      }
+
+      this.options.selectedDate = newDateValue;
+      this.isCurrentWeek = dates.isDateInCurrentWeek(this.options.selectedDate);
+      this.weekStart = dates.startDayOfWeek(this.options.selectedDate);
+      this.weekEnd = dates.endOfWeek(this.options.selectedDate);
       this.eachDayOfWeek = dates.eachDayOfInterval({
         start: this.weekStart,
         end: this.weekEnd,
       });
 
+      if (this.isCurrentWeek) {
+        this.nextWeekNavBtn.classList.add('disabled');
+      } else {
+        this.nextWeekNavBtn.classList.remove('disabled');
+      }
+
       this.populate();
-      this.onDateChange(this.selectedDate);
+      this.onDateChange(this.options.selectedDate);
     });
   };
 
@@ -232,10 +261,10 @@
           currentSelectedDate.classList.remove('selected');
         }
 
-        this.selectedDate = new Date(e.target.dataset.date);
+        this.options.selectedDate = new Date(e.target.dataset.date);
         e.target.classList.add('selected');
 
-        cb(this.selectedDate);
+        cb(this.options.selectedDate);
 
         return;
       }

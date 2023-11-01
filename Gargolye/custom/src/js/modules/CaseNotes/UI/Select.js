@@ -81,7 +81,7 @@
    * @function
    * @param {Array} [data] data to populate select with
    */
-  Select.prototype.populate = function (data) {
+  Select.prototype.populate = function (data = []) {
     if (data && Array.isArray(data)) this.options.data = data;
 
     this.select.innerHTML = '';
@@ -92,6 +92,11 @@
         const optionEle = _DOM.createElement('option', { value: d.value, text: d.text });
         this.select.appendChild(optionEle);
       });
+    }
+
+    //! If data is emtpy we set dropdown to disabled
+    if (!data || data.length === 0) {
+      this.toggleDisabled(true);
     }
   };
 

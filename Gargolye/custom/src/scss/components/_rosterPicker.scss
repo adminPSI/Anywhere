@@ -53,6 +53,12 @@
       }
     }
 
+    &.selected.pinned {
+      .svgIcon {
+        color: $white;
+      }
+    }
+
     .svgIcon {
       color: $black;
       pointer-events: all;

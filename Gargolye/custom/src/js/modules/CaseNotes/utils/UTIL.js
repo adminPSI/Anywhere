@@ -238,6 +238,44 @@
   }
 
   /**
+   * Truncates a filename to a specified maximum length by removing characters from the middle.
+   * Appends an ellipsis ('...') to indicate truncation.
+   *
+   * @function
+   * @param {string} filename - The original filename to truncate.
+   * @param {number} [maxLength=20] - The maximum length for the truncated filename. Default is 20.
+   *
+   * @returns {string} The truncated filename with an ellipsis in the middle.
+   *
+   * @example
+   * const original = 'reallyLongfilename.png';
+   * const truncated = truncateFilename(original, 15);
+   * console.log(truncated);  // Output will be "real...ame.png"
+   */
+  function truncateFilename(filename, maxLength = 20) {
+    const fileExtension = filename.split('.').pop();
+
+    // 3 characters are reserved for "..."
+    const maxMainLength = maxLength - fileExtension.length - 3;
+
+    if (filename.length > maxLength) {
+      const firstPartLength = Math.floor(maxMainLength / 2);
+      const secondPartLength = maxMainLength - firstPartLength;
+
+      // Extract the first and last portions of the main part of the filename
+      const firstPart = filename.substring(0, firstPartLength);
+      const secondPart = filename.substring(
+        filename.length - fileExtension.length - secondPartLength,
+        filename.length - fileExtension.length,
+      );
+
+      return `${firstPart}...${secondPart}.${fileExtension}`;
+    }
+
+    return filename;
+  }
+
+  /**
    * Watchs for the value of given variable to change
    *
    * @namespace watchVariable
@@ -321,6 +359,7 @@
     removeUnsavableNoteText,
     sortByProperty,
     splitObjectByPropNames,
+    truncateFilename,
     watchVariable,
     validateFileType,
     // TIME METHODS

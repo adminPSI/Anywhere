@@ -1,11 +1,9 @@
 //! QUESTIONS FOR JOSH
 //1. do we want to update the roster list of consumers on date change? ***MAYBE
 //2. how do we want to handle ssa notes, toggle button? ***DON'T KNOW YET
-//3. with new validations do we want to upate error messages to success messages or just remove them?
 
 //? Thoughts
 //1. checkbox to toggle between seing only yours vs everyones notes in overview
-//2. list vs card view for overview on mobile?
 
 //TODO: NO GROUP NOTES IF DOC TIME IS ALLOWED
 //TODO: if GK save attachments after note save
@@ -13,6 +11,7 @@
 //TODO: make sure im clearing out selected consumer on module leave/form submit
 
 const CaseNotes = (() => {
+  //--------------------------
   // SESSION DATA
   //--------------------------
   let selectedConsumers = [];
@@ -31,7 +30,7 @@ const CaseNotes = (() => {
   // timers
   let isDocTimeRequired;
   let isTravelTimeRequired;
-
+  //--------------------------
   // FETCH DATA
   //--------------------------
   let dropdownData;
@@ -41,12 +40,12 @@ const CaseNotes = (() => {
   let caseManagerReview;
   let consumersThatCanHaveMileage;
   let attachmentList;
-
+  //--------------------------
   // DOM
   //--------------------------
   let moduleWrap;
   let cnFormWrap;
-
+  //--------------------------
   // UI INSTANCES
   //--------------------------
   let dateNavigation;
@@ -145,26 +144,38 @@ const CaseNotes = (() => {
     time = UTIL.convertToMilitary(time);
     return time.slice(0, -3);
   }
-  function areTimesWithinWorkHours(startTime, endTime) {
+  function timesWithinWorkHoursCheck(startTime, endTime) {
     const valuesToCheck = [undefined, null, '', '00:00', 'Null'];
     const isWarningStartTimeValid = valuesToCheck.includes($.session.caseNotesWarningStartTime) ? false : true;
     const isWarningEndTimeValid = valuesToCheck.includes($.session.caseNotesWarningStartTime) ? false : true;
 
+    let areTimesWithinWorkHours;
+
     if (!isWarningStartTimeValid || !isWarningEndTimeValid) {
       // session warning times don't matter
-      return true;
+      areTimesWithinWorkHours = true;
     }
 
     const warnStart = parseSessionTime($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTime($.session.caseNotesWarningEndTime);
 
     if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
-      return false;
+      areTimesWithinWorkHours = false;
+    } else {
+      areTimesWithinWorkHours = true;
     }
 
-    return true;
+    if (areTimesWithinWorkHours) {
+      cnValidation.showWarning({
+        name: 'workhours',
+        message:
+          'The times you have entered are outside the current normal working hours. Click OK to proceed or cacnel to return to the form.',
+      });
+    } else {
+      cnValidation.hide('workhours');
+    }
   }
-  async function doesTimeOverlap(startTime, endTime) {
+  async function timeOverlapCheck(startTime, endTime) {
     const overlap = await getOverlapCheckData({
       caseManagerId,
       consumerId: selectedConsumers[0],
@@ -369,68 +380,29 @@ const CaseNotes = (() => {
   // VALIDATION / REQUIRED FIELDS
   //--------------------------------------------------
   function checkRequiredFields() {
+    const isFormValid = areAllFormFieldsValid();
+    let isSaveDisabled = false;
+
     if (selectedConsumers.length === 0) {
-      cnValidation.addError({
+      cnValidation.showError({
         name: 'consumer',
         message: 'Consumer is required',
       });
+      cnValidation.toggleErrorStatus('consumer', true);
+      isSaveDisabled = true;
     } else {
-      cnValidation.hide('consumer');
-      // or
-      // cnValidation.toggleErrorStatus('consumer', false)
+      cnValidation.toggleErrorStatus('consumer', false);
+    }
+
+    if (isSaveDisabled && !isFormValid) {
+      cnForm.submitButton.toggleDisabled(true);
+    } else {
+      cnForm.submitButton.toggleDisabled(false);
     }
   }
 
   // DATA
   //--------------------------------------------------
-  function showWarningModal(messageText, continueFunc) {
-    const message = _DOM.createElement('p', { text: messageText });
-
-    const warningModal = new Dialog({ isModal: true, node: message });
-
-    const continueBtn = new Button({
-      text: 'Continue',
-      style: 'primary',
-      styleType: 'contained',
-    });
-    const cancelBtn = new Button({
-      text: 'Cancel',
-      style: 'primary',
-      styleType: 'outlined',
-    });
-
-    continueBtn.renderTo(warningModal);
-    cancelBtn.renderTo(warningModal);
-
-    continueBtn.onClick(() => {
-      warningModal.close();
-      continueFunc();
-    });
-    cancelBtn.onClick(() => {
-      warningModal.close();
-    });
-
-    warningModal.renderTo(moduleWrap);
-
-    warningModal.show();
-  }
-  function preSaveValidation(formData) {
-    if ($.session.applicationName === 'Gatekeeper') {
-      // check times are within work hours
-      const timesWithinWorkHours = areTimesWithinWorkHours(formData.startTime, formData.endTime);
-
-      if (!timesWithinWorkHours) {
-        showWarningModal(
-          `The times you have entered are outside the current normal working hours. Click OK to proceed or cacnel to return to the form.`,
-          () => {
-            saveNote(formData);
-          },
-        );
-      }
-    } else {
-      saveNote(formData);
-    }
-  }
   function updateSingleNoteToGroupNote() {
     // 1. convertToGroupNotes === true | only if !isGroupNote && allowGroupNotes
     // 2. allowGroupNotes | this gets set on from service code dropdown event
@@ -568,6 +540,115 @@ const CaseNotes = (() => {
 
   // EVENTS & CALLBACKS
   //--------------------------------------------------
+  function setupEventsForInstances() {
+    dateNavigation.onDateChange(async newDate => {
+      selectedDate = newDate;
+
+      //TODO: re validate times when date change
+
+      //re populate overview section when date change
+      await cnOverview.fetchData(selectedDate);
+      cnOverview.populate();
+    });
+    rosterPicker.onConsumerSelect(async data => {
+      selectedConsumers = data;
+
+      // Get Vendors By Consumer
+      vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+        consumerId: selectedConsumers[0],
+        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      });
+      vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
+      const vendorData = getVendorDropdownData();
+      cnForm.inputs['vendor'].populate(vendorData);
+      if (vendorDropdownData.length === 1) {
+        cnForm.inputs['vendor'].setValue(vendorDropdownData[0].value);
+      }
+
+      if ($.session.applicationName === 'Advisor') {
+        // Check Selected Consumer For Mileage
+        const canConsumerHaveMileage = consumersThatCanHaveMileage.includes(selectedConsumers[0]);
+        if (canConsumerHaveMileage) {
+          cnForm.inputs['mileage'].toggleDisabled(false);
+        }
+
+        // Get Serv Locations By Consumer
+        serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
+          consumerId: selectedConsumers[0],
+          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+        });
+        serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
+        const servLocData = getServiceLocationDropdownData();
+        cnForm.inputs['serviceLocation'].populate(servLocData);
+      }
+
+      checkRequiredFields();
+    });
+    cnForm.onChange(event => {
+      const value = event.target.value;
+      let name = event.target.name;
+      const input = cnForm.inputs[name];
+
+      const isAttachment = name.includes('attachments');
+
+      if (isAttachment) name = 'attachments';
+      if (!onChangeCallbacks[name]) return;
+
+      onChangeCallbacks[name]({
+        event,
+        value,
+        name,
+        input,
+      });
+    });
+    cnForm.onKeyup(event => {
+      const value = event.target.value;
+      let name = event.target.name;
+      const input = cnForm.inputs[name];
+
+      const isAttachment = name.includes('attachments');
+
+      if (isAttachment) name = 'attachments';
+      if (!onKeyupCallbacks[name]) return;
+
+      onKeyupCallbacks[name]({
+        event,
+        value,
+        name,
+        input,
+      });
+    });
+    cnForm.onSubmit(async data => {
+      //TODO: return succes or failure from SaveNote so I can display to user
+      await saveNote({
+        caseNote: data.noteText ?? '',
+        casenotemileage: data.mileage ?? '0',
+        casenotetraveltime: data.travelTime ?? '',
+        confidential: data.confidential === 'on' ? 'Y' : 'N',
+        contactCode: data.contact ?? '',
+        endTime: data.endTime ?? '',
+        locationCode: data.location ?? '',
+        needCode: data.need ?? '',
+        serviceCode: data.service ?? '',
+        serviceLocationCode: data.serviceLocation ?? '',
+        serviceOrBillingCodeId: data.serviceCode ?? '',
+        startTime: data.startTime ?? '',
+        vendorId: data.vendor ?? '',
+      });
+
+      await cnOverview.fetchData(selectedDate);
+      cnOverview.populate();
+    });
+  }
+  function areAllFormFieldsValid() {
+    const invalidControls = cnForm.form.querySelectorAll(':invalid');
+
+    if (invalidControls.length === 0) {
+      return false;
+    }
+
+    return true;
+  }
   function onStartTimeChange(startTimeVal, endTimeVal) {
     const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
     const isValid = isTimePastOrPresent(startTimeVal);
@@ -657,10 +738,13 @@ const CaseNotes = (() => {
       const isEndValid = onEndTimeChange(value, endTimeVal);
 
       if (isStartValid && isEndValid) {
-        //_UTIL.debounce(doesTimeOverlap, 200);
-        doesTimeOverlap();
+        if ($.session.applicationName === 'Gatekeeper') {
+          timesWithinWorkHoursCheck(value, endTimeVal);
+        }
+        timeOverlapCheck(value, endTimeVal);
       } else {
         cnValidation.hide('overlap');
+        cnValidation.hide('workhours');
       }
     },
     endTime: ({ event, value, name, input }) => {
@@ -670,10 +754,13 @@ const CaseNotes = (() => {
       const isStartValid = onStartTimeChange(startTimeVal, value);
 
       if (isStartValid && isEndValid) {
-        //_UTIL.debounce(doesTimeOverlap, 200);
-        doesTimeOverlap();
+        if ($.session.applicationName === 'Gatekeeper') {
+          timesWithinWorkHoursCheck(startTimeVal, value);
+        }
+        timeOverlapCheck(startTimeVal, value);
       } else {
         cnValidation.hide('overlap');
+        cnValidation.hide('workhours');
       }
     },
     mileage: ({ event, value, name, input }) => {
@@ -692,11 +779,14 @@ const CaseNotes = (() => {
 
         if (!isFileTypeValid) return;
 
-        // for saving attachment
+        // data for saving attachment
         const attachmentObj = await _DOM.getAttachmentDetails(event);
         attachmentsForSave[attachmentObj.description] = attachmentObj;
 
+        // cache current id and update attachment id count
+        const currentAttachmentId = attachmentCountForIDs === 0 ? 'attachments' : `attachments${attachmentCountForIDs}`;
         attachmentCountForIDs = attachmentCountForIDs + 1;
+
         // on file upload create new Input type attachment
         const newInputInstance = new Input({
           type: 'file',
@@ -713,14 +803,14 @@ const CaseNotes = (() => {
 
         // update label of new attachment
         input.inputWrap.classList.add('hasFile');
-        input.labelEle.innerText = attachmentObj.description;
+        input.labelEle.innerText = _UTIL.truncateFilename(attachmentObj.description);
         const deleteIcon = Icon.getIcon('delete');
         input.labelEle.insertBefore(deleteIcon, input.labelEle.firstChild);
         deleteIcon.addEventListener('click', e => {
           e.stopPropagation();
           delete attachmentsForSave[attachmentObj.description];
-          delete cnForm.inputs[`attachments${attachmentCountForIDs}`];
-          newInputInstance.inputWrap.remove();
+          delete cnForm.inputs[currentAttachmentId];
+          input.inputWrap.remove();
         });
       }
     },
@@ -821,6 +911,7 @@ const CaseNotes = (() => {
     // Date Navigation
     dateNavigation = new DateNavigation({
       selectedDate: selectedDate,
+      allowFutureDate: false,
     });
     dateNavigation.build().renderTo(moduleWrap);
 
@@ -866,7 +957,6 @@ const CaseNotes = (() => {
           data: getServiceBillCodeDropdownData(),
           defaultValue: null,
           includeBlankOption: true,
-          note: 'Im some helpful text',
         },
         //location
         {
@@ -916,7 +1006,7 @@ const CaseNotes = (() => {
           id: 'noteText',
           required: true,
           fullscreen: true,
-          textToSpeech: true,
+          speechToText: true,
           note: `Use the new quick insert key for phrases, type #ph. (#ph must not be apart of another word)`,
         },
         //mileage
@@ -966,101 +1056,7 @@ const CaseNotes = (() => {
 
     // EVENTS / CALLBACKS
     //-----------------------------------------
-    dateNavigation.onDateChange(async newDate => {
-      selectedDate = newDate;
-
-      //TODO: re validate times when date change
-
-      //re populate overview section when date change
-      await cnOverview.fetchData(selectedDate);
-      cnOverview.populate();
-    });
-    rosterPicker.onConsumerSelect(async data => {
-      selectedConsumers = data;
-
-      // Get Vendors By Consumer
-      vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
-        consumerId: selectedConsumers[0],
-        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-      });
-      vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
-      const vendorData = getVendorDropdownData();
-      cnForm.inputs['vendor'].populate(vendorData);
-
-      if ($.session.applicationName === 'Advisor') {
-        // Check Selected Consumer For Mileage
-        const canConsumerHaveMileage = consumersThatCanHaveMileage.includes(selectedConsumers[0]);
-        if (canConsumerHaveMileage) {
-          cnForm.inputs['mileage'].toggleDisabled(false);
-        }
-
-        // Get Serv Locations By Consumer
-        serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
-          consumerId: selectedConsumers[0],
-          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-        });
-        serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
-        const servLocData = getServiceLocationDropdownData();
-        cnForm.inputs['serviceLocation'].populate(servLocData);
-      }
-
-      checkRequiredFields();
-    });
-    cnForm.onChange(event => {
-      const value = event.target.value;
-      let name = event.target.name;
-      const input = cnForm.inputs[name];
-
-      const isAttachment = name.includes('attachments');
-
-      if (isAttachment) name = 'attachments';
-      if (!onChangeCallbacks[name]) return;
-
-      onChangeCallbacks[name]({
-        event,
-        value,
-        name,
-        input,
-      });
-    });
-    cnForm.onKeyup(event => {
-      const value = event.target.value;
-      let name = event.target.name;
-      const input = cnForm.inputs[name];
-
-      const isAttachment = name.includes('attachments');
-
-      if (isAttachment) name = 'attachments';
-      if (!onKeyupCallbacks[name]) return;
-
-      onKeyupCallbacks[name]({
-        event,
-        value,
-        name,
-        input,
-      });
-    });
-    cnForm.onSubmit(async data => {
-      //TODO: return succes or failure from SaveNote so I can display to user
-      await saveNote({
-        caseNote: data.noteText ?? '',
-        casenotemileage: data.mileage ?? '0',
-        casenotetraveltime: data.travelTime ?? '',
-        confidential: data.confidential === 'on' ? 'Y' : 'N',
-        contactCode: data.contact ?? '',
-        endTime: data.endTime ?? '',
-        locationCode: data.location ?? '',
-        needCode: data.need ?? '',
-        serviceCode: data.service ?? '',
-        serviceLocationCode: data.serviceLocation ?? '',
-        serviceOrBillingCodeId: data.serviceCode ?? '',
-        startTime: data.startTime ?? '',
-        vendorId: data.vendor ?? '',
-      });
-
-      await cnOverview.fetchData(selectedDate);
-      cnOverview.populate();
-    });
+    setupEventsForInstances();
   }
 
   // INIT/LOAD? (data & defaults)

@@ -43,15 +43,28 @@
   CaseNotesOverview.prototype.build = function () {
     this.overviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview' });
 
+    // Header
+    const overviewHeader = _DOM.createElement('div', { class: 'overviewCardsHeader' });
+    this.overviewWrap.appendChild(overviewHeader);
+
     this.overviewSearch = new Input({
       type: 'search',
       id: 'overviewSearch',
       placeholder: 'Search...',
     });
+    this.overviewSearch.build().renderTo(overviewHeader);
 
+    const densitySmallButton = _DOM.createElement('div', {
+      class: ['densitySmall'],
+      node: Icon.getIcon('densitySmall'),
+    });
+    const densityMediumButton = _DOM.createElement('div', {
+      class: ['densityMedium'],
+      node: Icon.getIcon('densityMedium'),
+    });
+
+    // Cards
     this.overviewCardsWrap = _DOM.createElement('div', { class: 'overviewCardsWrap' });
-
-    this.overviewSearch.build().renderTo(this.overviewWrap);
     this.overviewWrap.appendChild(this.overviewCardsWrap);
 
     return this;
@@ -88,8 +101,56 @@
         // Overview Card
         const overviewCard = _DOM.createElement('div', { class: 'overviewCard' });
 
-        // Card Details
-        const consumerNameEle = _DOM.createElement('p', { class: 'consumerName', text: name });
+        // Card Top
+        const startTimeEle = _DOM.createElement('div', {
+          class: 'withLabelWrap',
+          html: `<p class="startTime withLabel">${starttime}</p>`,
+        });
+        const endTimeEle = _DOM.createElement('div', {
+          class: 'withLabelWrap',
+          html: `<p class="endTime withLabel">${endtime}</p>`,
+        });
+        const timeDurationEle = _DOM.createElement('div', {
+          class: 'withLabelWrap',
+          html: `<p class="duration withLabel">${timeDifference}</p>`,
+        });
+        const enteredByEle = _DOM.createElement('div', {
+          class: 'withLabelWrap',
+          html: `<p class="enteredBy withLabel">${enteredBy}</p>`,
+        });
+        const consumerNameEle = _DOM.createElement('div', {
+          class: 'withLabelWrap',
+          html: `<p class="consumer withLabel">${consumerFullName}</p>`,
+        });
+        overviewCard.appendChild(startTimeEle);
+        overviewCard.appendChild(endTimeEle);
+        overviewCard.appendChild(timeDurationEle);
+        overviewCard.appendChild(consumerNameEle);
+        overviewCard.appendChild(enteredByEle);
+
+        // Card Main
+        const overviewCardMain = _DOM.createElement('div', { class: 'overviewCardMain' });
+        overviewCard.appendChild(overviewCardMain);
+        const consumerEle = _DOM.createElement('p', { class: ['consumerName'], text: consumerFullName });
+        const serviceInfoEle = _DOM.createElement('p', { class: 'serviceInfoEle', text: `${service} | ${location}` });
+        const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
+
+        const editButton = new Button({
+          text: 'edit',
+          style: 'primary',
+          styleType: 'contained',
+          icon: 'edit',
+        });
+        const deleteButton = new Button({
+          text: 'delete',
+          style: 'danger',
+          styleType: 'outlined',
+          icon: 'delete',
+        });
+
+        overviewCardMain.appendChild(consumerEle);
+        overviewCardMain.appendChild(serviceInfoEle);
+        overviewCardMain.appendChild(noteTextEle);
 
         //------------------------------------------------------------
         this.overviewCardsWrap.appendChild(overviewCard);

@@ -38,6 +38,11 @@
     justify-content: center;
     cursor: pointer;
 
+    &.disabled {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
     * {
       pointer-events: none;
     }
@@ -65,6 +70,10 @@
         border-top-left-radius: 4px;
         opacity: 1;
         scale: 1;
+      }
+      &.disabled {
+        opacity: 0.2;
+        pointer-events: none;
       }
 
       * {

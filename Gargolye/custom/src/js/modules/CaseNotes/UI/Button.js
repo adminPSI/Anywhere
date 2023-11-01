@@ -74,8 +74,17 @@
   Button.prototype.onClick = function (cbFunc) {
     this.button.addEventListener('click', e => {
       e.preventDefault();
-      cbFunc(e);
+      if (cbFunc) cbFunc(e);
     });
+  };
+  /**
+   * Toggles button disabled state, if true input is disabled
+   *
+   * @function
+   * @param {Boolean} isDisbled
+   */
+  Button.prototype.toggleDisabled = function (isDisbled) {
+    this.button.disabled = isDisbled;
   };
 
   /**
