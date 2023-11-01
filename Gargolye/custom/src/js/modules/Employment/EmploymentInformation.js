@@ -207,13 +207,13 @@ const EmploymentInformation = (() => {
         message.style.marginTop = '1%';
 
         if (employmentPath == '1')
-            message.innerText = 'Path to Employment: I have a job but would like a better one or to move up.';
+            message.innerText = 'Path to Employment: 1 - I have a job but would like a better one or to move up.';
         else if (employmentPath == '2')
-            message.innerText = 'Path to Employment: I want a job! I need help to find one.';
+            message.innerText = 'Path to Employment: 2 - I want a job! I need help to find one.';
         else if (employmentPath == '3')
-            message.innerText = "Path to Employment: I'm not sure about work. I need help to learn more.";
+            message.innerText = "Path to Employment: 3 - I'm not sure about work. I need help to learn more.";
         else if (employmentPath == '4')
-            message.innerText = "Path to Employment: I don't think I want to work, but I may not know enough.";
+            message.innerText = "Path to Employment: 4 - I don't think I want to work, but I may not know enough.";
         else
             message.innerText = 'Path to Employment:';
 
@@ -664,10 +664,10 @@ const EmploymentInformation = (() => {
 
     function populateNewPathEmploymentDropdown() {
         const condfidentialDropdownData = ([
-            { id: 1, value: 1, text: "I have a job but would like a better one or to move up." },
-            { id: 2, value: 2, text: "I want a job! I need help to find one." },
-            { id: 3, value: 3, text: "I'm not sure about work. I need help to learn more." },
-            { id: 4, value: 4, text: "I don't think I want to work, but I may not know enough." },
+            { id: 1, value: 1, text: "1 - I have a job but would like a better one or to move up." },
+            { id: 2, value: 2, text: "2 - I want a job! I need help to find one." },
+            { id: 3, value: 3, text: "3 - I'm not sure about work. I need help to learn more." },
+            { id: 4, value: 4, text: "4 - I don't think I want to work, but I may not know enough." },
         ]);
         condfidentialDropdownData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newPathEmploymentDropdown", condfidentialDropdownData, employmentPath);

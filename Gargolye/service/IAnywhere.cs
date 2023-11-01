@@ -2774,7 +2774,7 @@ namespace Anywhere
            ResponseFormat = WebMessageFormat.Json,
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/copyWorkflowtemplateToRecord/")]
-        string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions, string priorConsumerPlanId);
+        string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId);
        // string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId);
 
         [OperationContract]
@@ -2831,7 +2831,7 @@ namespace Anywhere
             ResponseFormat = WebMessageFormat.Json,
             RequestFormat = WebMessageFormat.Json,
             UriTemplate = "/insertWorkflow/")]
-        String insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions);
+        String insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4904,6 +4904,21 @@ namespace Anywhere
              UriTemplate = "/getEditAccount/")]
         ConsumerFinancesWorker.ActiveAccount[] getEditAccount(string token, string consumerId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            ResponseFormat = WebMessageFormat.Json,
+            RequestFormat = WebMessageFormat.Json,
+            UriTemplate = "/getConsumerFinanceWidgetEntriesData/")]
+        ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/getCFWidgetConsumers/")]
+        ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token);
     }
 
 

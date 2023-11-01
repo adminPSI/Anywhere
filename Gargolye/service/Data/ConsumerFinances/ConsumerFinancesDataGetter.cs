@@ -498,7 +498,41 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
+        public string getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getConsumerFinanceWidgetEntriesData");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@locationName", DbType.String, locationName);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerName", DbType.String, consumerName);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@sortOrder", DbType.String, sortOrderName);
 
+               
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Dashboard_WidgetConsumerFinancesEntries(?, ?, ?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getConsumerFinancesEntries(" + consumerName + ")");
+                throw ex;
+            }
+        }
+
+        public string getCFWidgetConsumers(string token, DistributedTransaction transaction)
+        {          
+            try
+            {
+                logger.debug("getCFWidgetConsumers");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Dashboard_getCFWidgetConsumers", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Dashboard_getCFWidgetConsumers()");
+                throw ex;
+            }
+        }
 
     }
 }

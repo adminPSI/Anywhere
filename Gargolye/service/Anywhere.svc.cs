@@ -1920,9 +1920,9 @@ namespace Anywhere
             return wfw.isWorkflowAutoCreated(token, workflowName);
         }
 
-        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions)
+        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds)
         {
-            return wfw.insertWorkflow(token, templateId, peopleId, referenceId, wantedFormDescriptions);
+            return wfw.insertWorkflow(token, templateId, peopleId, referenceId, wantedFormAttachmentIds);
         }
         public string insertWorkflowStep(string token, WorkflowWorker.WorkflowStep step)
         {
@@ -1972,11 +1972,11 @@ namespace Anywhere
             return wfw.processWorkflowStepEvent(token, thisEvent);
         }
 
-        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions, string priorConsumerPlanId)
+        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId)
         //public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId)
 
         {
-            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormDescriptions, priorConsumerPlanId);
+            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormAttachmentIds, priorConsumerPlanId);
            // return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
         }
         #endregion
@@ -3661,6 +3661,20 @@ namespace Anywhere
             return cf.getEditAccount(token, consumerId);
         }
 
+        public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
+        {
+            return cf.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName);
+        }
 
+        public ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token)
+        {
+            if (token == null)
+            {
+                logger.Error("token was null :" + token);
+                return null;
+            }
+
+            return cf.getCFWidgetConsumers(token);
+        }
     }
 }

@@ -258,7 +258,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string getWorkflowStepDocuments(string stepId, string wantedFormDescriptions, string priorConsumerPlanId, DistributedTransaction transaction)
+        public string getWorkflowStepDocuments(string stepId, string wantedFormAttachmentIds, string priorConsumerPlanId, DistributedTransaction transaction)
         // public string getWorkflowTemplateStepDocuments(string stepId, DistributedTransaction transaction)
         {
             //wantedFormIds = "eac0d253-1586-41c4-a7f0-09e2848337ae,8A027884-33A4-4E5E-9455-61DFD45624D8";
@@ -269,7 +269,7 @@ namespace Anywhere.service.Data
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
                  args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorConsumerPlanId", DbType.String, priorConsumerPlanId);
-                  args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wantedFormDescriptions", DbType.String, wantedFormDescriptions);
+                  args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wantedFormAttachmentIds", DbType.String, wantedFormAttachmentIds);
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetWorkflowStepDocuments(?,?,?)", args, ref transaction);
                 return convertToJSON(returnMsg);
             }
@@ -280,7 +280,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public string getWorkflowStepIdfromPreviousPlan(string priorConsumerPlanId, string wantedFormDescriptions)
+        public string getWorkflowStepIdfromPreviousPlan(string priorConsumerPlanId, string wantedFormAttachmentIds)
         // public string getWorkflowTemplateStepDocuments(string stepId, DistributedTransaction transaction)
         {
             //wantedFormIds = "eac0d253-1586-41c4-a7f0-09e2848337ae,8A027884-33A4-4E5E-9455-61DFD45624D8";
@@ -291,7 +291,7 @@ namespace Anywhere.service.Data
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
                // args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@stepId", DbType.String, stepId);
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorConsumerPlanId", DbType.String, priorConsumerPlanId);
-                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wantedFormDescriptions", DbType.String, wantedFormDescriptions);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@wantedFormAttachmentIds", DbType.String, wantedFormAttachmentIds);
                // string returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetWorkflowStepDocuments(?,?)", args);
                 return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_WF_GetWorkflowStepIdfromPreviousPlan(?, ?)", args).ToString();
                // return convertToJSON(returnMsg);

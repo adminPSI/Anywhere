@@ -113,7 +113,7 @@ let currentEntryUserId;
         label: '# in Vehicle Per Trip',
         type: 'number',
         style: 'secondary',
-        value: numberInVehicle,
+        value: numberInVehicle === '0' || numberInVehicle === '0.00' ? '' : numberInVehicle,
         readonly: formReadOnly,
         attributes: [{ key: 'min', value: '0' }],
       });
@@ -145,7 +145,11 @@ let currentEntryUserId;
       icon: 'save',
       classNames: ['caseNoteSave', 'disabled'],
       callback: async () => { 
-        insertFormData('save');  
+        checkRequiredFields()
+        var hasErrors = [].slice.call(document.querySelectorAll('.error'));
+        if ((hasErrors.length === 0)) {
+          insertFormData('save');
+        } 
       },
     });
     saveAndNewNoteBtn = button.build({
@@ -155,7 +159,11 @@ let currentEntryUserId;
       icon: 'add',
       classNames: ['caseNoteSave', 'disabled'],
       callback: async () => {
+        checkRequiredFields()
+        var hasErrors = [].slice.call(document.querySelectorAll('.error'));
+        if ((hasErrors.length === 0)) {
           insertFormData('saveandNew');
+        }    
       },
     });
     updateNoteBtn = button.build({
@@ -456,7 +464,19 @@ function validateStartEndTimes(validateTime) {
       checkRequiredFields();
     });
 
-    
+    numberInVehicleInput.addEventListener('keypress', event => {
+      numberInVehicle = event.target.value;
+      if (event.key === '.' && event.target.value.indexOf('.') !== -1) {
+        // event.target.value = event.target.value.substr(0, (event.target.value.length - 1))
+        event.preventDefault();
+        return;
+      }
+        if (event.keyCode < 48 || event.keyCode > 57) {
+          event.preventDefault();
+          return;
+      }
+    });
+
     startLocationInput.addEventListener('input', event => {
       startLocation = event.target.value;
       checkRequiredFields();
@@ -478,6 +498,7 @@ function validateStartEndTimes(validateTime) {
       saveAndNewNoteBtn.classList.add('disabled');
       saveNoteBtn.classList.add('disabled');
 		});
+    
     
   }
 
@@ -515,14 +536,18 @@ function validateStartEndTimes(validateTime) {
       };
 
       OODAjax.updateForm10TransportationData(data, function(results) {
-        successfulSave.show();
+        if (results.includes("Error")) {
+            return;
+        } else {
+
+          successfulSave.show();
           setTimeout(function() {
             successfulSave.hide();
             OOD.loadOODLanding();
           }, 2000);
-        
-      });
 
+        }
+      });
     }
 
     function insertFormData(saveType) {
@@ -539,23 +564,26 @@ function validateStartEndTimes(validateTime) {
       };
 
       OODAjax.insertForm10TransportationData(data, function(results) {
-        successfulSave.show();
-        if (saveType == 'saveandNew') {
-          setTimeout(function() {
-            successfulSave.hide();
-            overlay.show();
-            OOD.buildEntryServicePopUp(consumerId, 'newEntry');
-          }, 2000);
-        } else {  //save
-          setTimeout(function() {
-            successfulSave.hide();
-            OOD.loadOODLanding();
-          }, 2000);
+        if (results.includes("Error")) {
+              return;
+        } else {
+
+          successfulSave.show();
+          if (saveType == 'saveandNew') {
+            setTimeout(function() {
+              successfulSave.hide();
+              overlay.show();
+              OOD.buildEntryServicePopUp(consumerId, 'newEntry');
+            }, 2000);
+          } else {  //save
+            setTimeout(function() {
+              successfulSave.hide();
+              OOD.loadOODLanding();
+            }, 2000);
+          }      
         }
-      });
-
-    }
-
+    });
+  }
     //TODO JOE : Look into DElete for Transporation
     function deleteConfirmation(OODTransportationId) {
       var deletepopup = POPUP.build({
