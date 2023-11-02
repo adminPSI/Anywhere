@@ -71,17 +71,17 @@
         locationDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             tempCFWidgetLocationName = selectedOption.value;
-           // cfWidgetLocationName = selectedOption.value;
+            // cfWidgetLocationName = selectedOption.value;
         });
         consumerDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             tempCFWidgetConsumerName = selectedOption.value;
-           // cfWidgetConsumerName = selectedOption.value;
+            // cfWidgetConsumerName = selectedOption.value;
         });
         sortOrderDropdown.addEventListener('change', event => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             tempCFWidgetSortOrderName = selectedOption.value;
-           // cfWidgetSortOrderName = selectedOption.value;
+            // cfWidgetSortOrderName = selectedOption.value;
         });
         applyFiltersBtn.addEventListener('click', event => {
             filterPopup.classList.remove('visible');
@@ -91,9 +91,9 @@
             updateFilterData({
                 tempCFWidgetLocationName,
                 tempCFWidgetConsumerName,
-                tempCFWidgetSortOrderName           
+                tempCFWidgetSortOrderName
             });
-            
+
             //Loading
             widgetBody.innerHTML = '';
             PROGRESS__ANYWHERE.init()
@@ -109,12 +109,12 @@
         cancelFilterBtn.addEventListener('click', event => {
             filterPopup.classList.remove('visible');
             overlay.hide();
-            bodyScrollLock.enableBodyScroll(filterPopup); 
-        }); 
+            bodyScrollLock.enableBodyScroll(filterPopup);
+        });
     }
 
     function updateFilterData(data) {
-        if (data.tempCFWidgetLocationName) cfWidgetLocationName = data.tempCFWidgetLocationName; 
+        if (data.tempCFWidgetLocationName) cfWidgetLocationName = data.tempCFWidgetLocationName;
         if (data.tempCFWidgetConsumerName) cfWidgetConsumerName = data.tempCFWidgetConsumerName;
         if (data.tempCFWidgetSortOrderName) cfWidgetSortOrderName = data.tempCFWidgetSortOrderName;
     }
@@ -193,9 +193,9 @@
 
             return {
                 id: ID,
-                values: [name, account, balance, moment(lastTransaction).format('MM/DD/YY')],
+                values: [name, account, balance == '' ? '' : '$' + balance, lastTransaction == '' ? '' : moment(lastTransaction).format('MM/DD/YY')],
                 attributes: [
-                    { key: 'data-consumer-id', value: ID },
+                    { key: 'data-consumer-id', value: ID }, 
                 ],
             };
         });
