@@ -1,6 +1,11 @@
 (function (global, factory) {
   global.Input = factory();
 })(this, function () {
+  //TODO ASH: create logic to update charcount on keyup, input
+
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
   /**
    * Default configuration
    * @type {Object}
@@ -10,21 +15,6 @@
     note: null,
   };
 
-  /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    userOptions.name = userOptions.id;
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  //=======================================
-  // MAIN LIB
-  //---------------------------------------
   /**
    * @constructor
    * @param {Object} options
@@ -41,8 +31,11 @@
    * @returns {Input}
    */
   function Input(options) {
-    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    // Data Init
+    this.options = _DOM.separateHTMLAttribrutes(_UTIL.mergeObjects(DEFAULT_OPTIONS, options));
+    this.options.attributes.name = this.options.attributes.id;
 
+    // DOM Ref
     this.inputWrap = null;
     this.input = null;
   }
@@ -162,7 +155,7 @@
    * @param {Function} cbFunc - Callback function to call
    */
   Input.prototype.onChange = function (cbFunc) {
-    this.input.addEventListener('change', e => {
+    this.input.addEventListener('input', e => {
       if (cbFunc) cbFunc(e);
     });
   };

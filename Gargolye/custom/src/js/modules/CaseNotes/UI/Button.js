@@ -1,8 +1,9 @@
 (function (global, factory) {
   global.Button = factory();
 })(this, function () {
-  //TODO: add icons
-
+  //=========================
+  // MAIN LIB
+  //-------------------------
   /**
    * Default configuration
    * @type {Object}
@@ -16,27 +17,20 @@
   };
 
   /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  //=========================
-  // MAIN LIB
-  //-------------------------
-  /**
    * @constructor
    * @param {Object} options
-   * @returns {Dialog}
+   * @param {String} options.text
+   * @param {String} [options.type]
+   * @param {String} [options.icon]
+   * @param {String} [options.style]
+   * @param {String} [options.styleType]
+   * @returns {Button}
    */
   function Button(options) {
-    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    // Data Init
+    this.options = _DOM.separateHTMLAttribrutes(_UTIL.mergeObjects(DEFAULT_OPTIONS, options));
 
+    // DOM Ref
     this.button = null;
 
     this.build();
@@ -52,10 +46,11 @@
     this.button = _DOM.createElement('button', {
       class: ['button', this.options.style, this.options.styleType],
       type: this.options.attributes.type,
+      name: this.options.attributes.name,
     });
 
     if (this.options.icon) {
-      this.button.innerText = this.options.text;
+      this.button.innerHTML = `<span>${this.options.text}</span>`;
       this.button.insertBefore(Icon.getIcon(this.options.icon), this.button.firstChild);
       this.button.classList.add('icon');
     } else {
@@ -77,6 +72,7 @@
       if (cbFunc) cbFunc(e);
     });
   };
+
   /**
    * Toggles button disabled state, if true input is disabled
    *

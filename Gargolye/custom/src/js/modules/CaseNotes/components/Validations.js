@@ -57,12 +57,6 @@
     this.messageEle.innerText = message;
   };
   /**
-   * @function
-   */
-  ValidationMessage.prototype.removeItem = function (message) {
-    // do stuff
-  };
-  /**
    * Renders Feedback Item markup to the specified DOM node.
    *
    * @function

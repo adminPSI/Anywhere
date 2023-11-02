@@ -1,26 +1,155 @@
 (function (global, factory) {
-  global.CaseNotesInsertPhrases = factory();
+  global.CaseNotesPhrases = factory();
 })(this, function () {
+  //=======================================
+  // ADDING NEW PHRASES
+  //---------------------------------------
   /**
    * @constructor
    */
-  function CaseNotesInsertPhrases(options) {
+  function CaseNotesAddPhrases(phrasesInstance) {
+    // Data Init
+    // Instances
+    this.dialog = null;
+    this.addPhraseForm = null;
+    this.PhrasesInstance = phrasesInstance;
+    // DOM Ref
+  }
+
+  /**
+   * @function
+   *
+   * @returns {CaseNotesAddPhrases} - Returns the current instances for chaining
+   */
+  CaseNotesAddPhrases.prototype.build = function () {
+    this.dialog = new Dialog();
+    this.dialog.dialog.classList.add('addPhrases');
+
+    this.addPhraseForm = new Form({
+      elements: [
+        {
+          type: 'checkbox',
+          label: 'Publicly Available',
+          id: 'public',
+        },
+        {
+          type: 'text',
+          label: 'shortcut',
+          id: 'shortcut',
+          required: true,
+          maxlength: 10,
+          //showCount: true,
+        },
+        {
+          type: 'textarea',
+          label: 'phrase',
+          id: 'phrase',
+          required: true,
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          icon: 'cancel',
+          style: 'primary',
+          styleType: 'outlined',
+          name: 'cancel',
+        },
+      ],
+    });
+
+    this.addPhraseForm.build().renderTo(this.dialog.dialog);
+
+    this.setupEvents();
+
+    return this;
+  };
+
+  /**
+   * @function
+   */
+  CaseNotesAddPhrases.prototype.show = function () {
+    this.dialog.show();
+  };
+
+  /**
+   * @function
+   */
+  CaseNotesAddPhrases.prototype.close = function () {
+    this.dialog.close();
+  };
+
+  /**
+   * @function
+   */
+  CaseNotesAddPhrases.prototype.setupEvents = function () {
+    this.addPhraseForm.onSubmit(async formData => {
+      const data = await _UTIL.fetchData('insertCustomPhrase', {
+        shortcut: formData.shortcut,
+        phrase: formData.phrase,
+        makePublic: formData.public === 'on' ? 'Y' : 'N',
+      });
+      const success = data.insertCustomPhraseResult;
+
+      this.close();
+
+      // update phrases list for inserting
+      await this.PhrasesInstance.InsertPhrases.fetchData();
+      this.PhrasesInstance.InsertPhrases.populate();
+    });
+    this.addPhraseForm.onChange(event => {
+      const value = event.target.value;
+      const name = event.target.name;
+      const input = this.addPhraseForm.inputs[name];
+    });
+  };
+
+  /**
+   * Renders Case Notes Phrase makrup to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node - DOM node to render case notes phrases to
+   * @returns {CaseNotesAddPhrases} - Returns the current instances for chaining
+   */
+  CaseNotesAddPhrases.prototype.renderTo = function (node) {
+    if (node instanceof Node) {
+      node.appendChild(this.dialog.dialog);
+    }
+
+    return this;
+  };
+
+  //=======================================
+  // INSERTING PHRASES
+  //---------------------------------------
+  /**
+   * @constructor
+   */
+  function CaseNotesInsertPhrases(phrasesInstance) {
     // Data Init
     this.phrasesData = [];
-    this.showAllPhrases = options.showAllPhrases;
+    this.showAllPhrases = null;
+
+    // Instance Ref
+    this.PhrasesInstance = phrasesInstance;
 
     // DOM Ref
     this.dialog = null;
     this.showAllPhrasesToggle = null;
+    this.addPhraseButton = null;
     this.phraseWrap = null;
   }
 
   /**
    * @function
+   *
    * @returns {CaseNotesInsertPhrases} - Returns the current instances for chaining
    */
   CaseNotesInsertPhrases.prototype.build = function () {
-    this.dialog = new Dialog({ isModal: false });
+    this.showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
+    this.showAllPhrases = this.showAllPhrases === 'Y' ? true : false;
+
+    this.dialog = new Dialog();
     this.dialog.dialog.classList.add('insertPhrases');
 
     this.showAllPhrasesToggle = new Input({
@@ -35,7 +164,9 @@
     this.phraseWrap = _DOM.createElement('div', { class: 'phraseWrap' });
     this.dialog.dialog.appendChild(this.phraseWrap);
 
-    this.onPhraseListToggle();
+    this.addPhraseButton = new Button({ text: 'New Phrase', icon: 'add' }).renderTo(this.dialog.dialog);
+
+    this.setupEvents();
 
     return this;
   };
@@ -96,16 +227,22 @@
   /**
    * @function
    */
-  CaseNotesInsertPhrases.prototype.onPhraseListToggle = function () {
+  CaseNotesInsertPhrases.prototype.setupEvents = function () {
+    // PHRASE LIST TOGGLE
     this.showAllPhrasesToggle.onChange(async e => {
       this.showAllPhrases = e.target.checked ? true : false;
+      _UTIL.localStorageHandler.set('casenotes-showAllPhrases', this.showAllPhrases ? 'Y' : 'N');
 
       await this.fetchData();
 
       this.populate();
     });
-  };
 
+    // ADD NEW PHRASE BUTTON CLICK
+    this.addPhraseButton.onClick(async e => {
+      this.PhrasesInstance.AddPhrases.show();
+    });
+  };
   /**
    * @function
    */
@@ -113,6 +250,7 @@
     const data = await _UTIL.fetchData('getCustomPhrases', {
       showAll: this.showAllPhrases ? 'Y' : 'N',
     });
+
     this.phrasesData = data.getCustomPhrasesResult.reduce((obj, phrase) => {
       if (!obj[phrase.phrase_id]) {
         obj[phrase.phrase_id] = {
@@ -140,5 +278,41 @@
     return this;
   };
 
-  return CaseNotesInsertPhrases;
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
+  /**
+   * @constructor
+   */
+  function CaseNotesPhrases() {
+    // Data Init
+    this.AddPhrases = new CaseNotesAddPhrases();
+    this.InsertPhrases = new CaseNotesInsertPhrases(this);
+  }
+
+  /**
+   * @function
+   *
+   * @returns {CaseNotesPhrases} - Returns the current instances for chaining
+   */
+  CaseNotesPhrases.prototype.build = function () {
+    this.AddPhrases.build();
+    this.InsertPhrases.build();
+
+    return this;
+  };
+
+  /**
+   * Renders Case Notes Phrase Dialogs to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node - DOM node to render case notes phrases to
+   * @returns {CaseNotesPhrases} - Returns the current instances for chaining
+   */
+  CaseNotesPhrases.prototype.renderTo = function (node) {
+    this.AddPhrases.renderTo(node);
+    this.InsertPhrases.renderTo(node);
+  };
+
+  return CaseNotesPhrases;
 });

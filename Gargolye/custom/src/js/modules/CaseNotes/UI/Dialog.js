@@ -1,6 +1,9 @@
 (function (global, factory) {
   global.Dialog = factory();
 })(this, function () {
+  //=========================
+  // MAIN LIB
+  //-------------------------
   /**
    * Default configuration
    * @type {Object}
@@ -10,27 +13,13 @@
   };
 
   /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  //=========================
-  // MAIN LIB
-  //-------------------------
-  /**
    * @constructor
    * @param {Object} options
    * @param {Boolean} [options.isModal] - Whether to display as basic dialog or modal dialog
    * @returns {Dialog}
    */
   function Dialog(options) {
-    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    this.options = _DOM.separateHTMLAttribrutes(_UTIL.mergeObjects(DEFAULT_OPTIONS, options));
 
     this.dialog = null;
 

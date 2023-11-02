@@ -14,6 +14,7 @@ const CaseNotes = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
+  let caseNoteId = null;
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
@@ -31,20 +32,13 @@ const CaseNotes = (() => {
   let isDocTimeRequired;
   let isTravelTimeRequired;
   //--------------------------
-  // FETCH DATA
-  //--------------------------
-  let dropdownData;
-  let billerDropdownData = [];
-  let vendorDropdownData = [];
-  let serviceLocationDropdownData = [];
-  let caseManagerReview;
-  let consumersThatCanHaveMileage;
-  let attachmentList;
-  //--------------------------
   // DOM
   //--------------------------
   let moduleWrap;
+  let cnHeader;
+  let cnDateNavWrap;
   let cnFormWrap;
+  let cnRosterWrap;
   //--------------------------
   // UI INSTANCES
   //--------------------------
@@ -52,34 +46,11 @@ const CaseNotes = (() => {
   let rosterPicker;
   let cnForm;
   let cnOverview;
-  let cnInsertPhrases;
+  let cnPhrases;
+  let cnNotifications;
 
   function resetModule() {
-    selectedConsumers = [];
-    selectedDate = null;
-    selectedServiceCode;
-    caseManagerId = undefined;
-    isNewNote = true;
-    attachmentCountForIDs = 0;
-    showAllPhrases = undefined;
-    allowGroupNotes = false;
-    isGroupNote = false;
-    isDocTimeRequired = undefined;
-    isTravelTimeRequired = undefined;
-    dropdownData = undefined;
-    billerDropdownData = [];
-    vendorDropdownData = [];
-    serviceLocationDropdownData = [];
-    caseManagerReview = undefined;
-    consumersThatCanHaveMileage = undefined;
-    attachmentList = undefined;
-    moduleWrap = undefined;
-    cnFormWrap = undefined;
-    dateNavigation = undefined;
-    rosterPicker = undefined;
-    cnForm = undefined;
-    cnOverview = undefined;
-    cnInsertPhrases = undefined;
+    //TODO ASH
   }
 
   // UTILS
@@ -94,6 +65,8 @@ const CaseNotes = (() => {
   }
   function setPermissions() {
     const viewOnly = $.session.CaseNotesUpdate ? false : true;
+
+    let isReadOnly;
 
     //TODO: check if case note is batched | *ONLY FOR REVIEW*
     // batched notes are readonly, if batched status === '' it is NOT BATCHED
@@ -166,33 +139,35 @@ const CaseNotes = (() => {
     }
 
     if (areTimesWithinWorkHours) {
-      cnValidation.showWarning({
-        name: 'workhours',
-        message:
-          'The times you have entered are outside the current normal working hours. Click OK to proceed or cacnel to return to the form.',
-      });
+      // cnValidation.showWarning({
+      //   name: 'workhours',
+      //   message:
+      //     'The times you have entered are outside the current normal working hours. Click OK to proceed or cacnel to return to the form.',
+      // });
     } else {
-      cnValidation.hide('workhours');
+      // cnValidation.hide('workhours');
     }
   }
   async function timeOverlapCheck(startTime, endTime) {
-    const overlap = await getOverlapCheckData({
-      caseManagerId,
-      consumerId: selectedConsumers[0],
-      endTime: endTime,
-      groupNoteId: 0,
-      noteId: 0,
-      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-      startTime: startTime,
-    });
+    const overlap = await cnData
+      .fetchTimeOverlapData({
+        caseManagerId,
+        consumerId: selectedConsumers[0],
+        endTime: endTime,
+        groupNoteId: 0,
+        noteId: 0,
+        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+        startTime: startTime,
+      })
+      .getOverlapData();
 
     if (overlap) {
-      cnValidation.showWarning({
-        name: 'overlap',
-        message: 'Overlap :(',
-      });
+      // cnValidation.showWarning({
+      //   name: 'overlap',
+      //   message: 'Overlap :(',
+      // });
     } else {
-      cnValidation.hide('overlap');
+      // cnValidation.hide('overlap');
     }
   }
   function checkServiceFundingADV() {
@@ -203,180 +178,6 @@ const CaseNotes = (() => {
     // else - enable dropdown, make required
   }
 
-  // DROPDOWNS
-  //--------------------------------------------------
-  function dealWithDropdownDataHugeString(res) {
-    function decipherXML(res) {
-      const xmlDoc = UTIL.parseXml('<?xml version="1.0" encoding="UTF-8"?>' + res);
-      const data = [];
-
-      const billingCodes = [].slice.call(xmlDoc.getElementsByTagName('billingcode'));
-      billingCodes.forEach(bc => {
-        const tmpServiceCode = [].slice.call(bc.getElementsByTagName('codename'))[0];
-        const tmpServiceId = [].slice.call(bc.getElementsByTagName('serviceid'))[0];
-        const tmpServiceFunding = [].slice.call(bc.getElementsByTagName('includeinfunding'))[0];
-        const tmpServiceRequired = [].slice.call(bc.getElementsByTagName('servicerequired'))[0];
-        const tmpLocationRequired = [].slice.call(bc.getElementsByTagName('locationrequired'))[0];
-        const tmpNeedRequired = [].slice.call(bc.getElementsByTagName('needrequired'))[0];
-        const tmpContactRequired = [].slice.call(bc.getElementsByTagName('contactrequired'))[0];
-        const tmpAllowGroupNotes = [].slice.call(bc.getElementsByTagName('allowgroupnotes'))[0];
-        const tmpMileageRequired = [].slice.call(bc.getElementsByTagName('mileagerequired'))[0];
-        const tmpDocTimeRequired = [].slice.call(bc.getElementsByTagName('doctimerequired'))[0];
-        const tmpTravelTimeRequired = [].slice.call(bc.getElementsByTagName('traveltimerequired'))[0];
-        const locations = [].slice.call(bc.getElementsByTagName('location'));
-        const contacts = [].slice.call(bc.getElementsByTagName('contact'));
-        const services = [].slice.call(bc.getElementsByTagName('service'));
-        const needs = [].slice.call(bc.getElementsByTagName('need'));
-
-        const tmpObject = {};
-        tmpObject.serviceCode = tmpServiceCode ? tmpServiceCode.textContent : '';
-        tmpObject.serviceId = tmpServiceId ? tmpServiceId.textContent : '';
-        tmpObject.serviceFunding = tmpServiceFunding ? tmpServiceFunding.textContent : '';
-        tmpObject.serviceRequired = tmpServiceRequired ? tmpServiceRequired.textContent : '';
-        tmpObject.locationRequired = tmpLocationRequired ? tmpLocationRequired.textContent : '';
-        tmpObject.needRequired = tmpNeedRequired ? tmpNeedRequired.textContent : '';
-        tmpObject.contactRequired = tmpContactRequired ? tmpContactRequired.textContent : '';
-        tmpObject.allowGroupNotes = tmpAllowGroupNotes ? tmpAllowGroupNotes.textContent : '';
-        tmpObject.mileageRequired = tmpMileageRequired ? tmpMileageRequired.textContent : '';
-        tmpObject.docTimeRequired = tmpDocTimeRequired ? tmpDocTimeRequired.textContent : '';
-        tmpObject.travelTimeRequired = tmpTravelTimeRequired ? tmpTravelTimeRequired.textContent : '';
-        tmpObject.locations = [];
-        tmpObject.contacts = [];
-        tmpObject.services = [];
-        tmpObject.needs = [];
-
-        locations.forEach(loc => {
-          const tmpLocName = [].slice.call(loc.getElementsByTagName('locname'))[0].textContent;
-          const tmpLocCode = [].slice.call(loc.getElementsByTagName('loccode'))[0].textContent;
-          tmpObject.locations.push({
-            locName: tmpLocName,
-            locCode: tmpLocCode,
-          });
-        });
-        contacts.forEach(loc => {
-          const tmpContactName = [].slice.call(loc.getElementsByTagName('contactname'))[0].textContent;
-          const tmpContactCode = [].slice.call(loc.getElementsByTagName('contactcode'))[0].textContent;
-          tmpObject.contacts.push({
-            contactName: tmpContactName,
-            contactCode: tmpContactCode,
-          });
-        });
-        services.forEach(loc => {
-          const tmpServiceName = [].slice.call(loc.getElementsByTagName('servicename'))[0].textContent;
-          const tmpServiceCode = [].slice.call(loc.getElementsByTagName('servicecode'))[0].textContent;
-          tmpObject.services.push({
-            serviceName: tmpServiceName,
-            serviceCode: tmpServiceCode,
-          });
-        });
-        needs.forEach(loc => {
-          const tmpNeedName = [].slice.call(loc.getElementsByTagName('needname'))[0].textContent;
-          const tmpNeedCode = [].slice.call(loc.getElementsByTagName('needcode'))[0].textContent;
-          tmpObject.needs.push({
-            needName: tmpNeedName,
-            needCode: tmpNeedCode,
-          });
-        });
-
-        data.push(tmpObject);
-      });
-
-      return data;
-    }
-
-    const beautifulObject = decipherXML(res);
-    let dropdownDataObj = {};
-
-    // create object for quick access
-    beautifulObject.forEach(dd => {
-      // create object for each billercode
-      if (!dropdownDataObj[dd.serviceId]) {
-        dropdownDataObj[dd.serviceId] = {
-          serviceId: dd.serviceId,
-          serviceCode: dd.serviceCode,
-          serviceFunding: dd.serviceFunding,
-          locations: [...dd.locations],
-          contacts: [...dd.contacts],
-          services: [...dd.services],
-          needs: [...dd.needs],
-          docTimeRequired: dd.docTimeRequired,
-          travelTimeRequired: dd.travelTimeRequired,
-          mileageRequired: dd.mileageRequired,
-          locationRequired: dd.locationRequired,
-          needRequired: dd.needRequired,
-          serviceRequired: dd.serviceRequired,
-          contactRequired: dd.contactRequired,
-          allowGroupNotes: dd.allowGroupNotes,
-        };
-      }
-    });
-
-    //dropdownDataKeys = Object.keys(dropdownDataObj);
-    return dropdownDataObj;
-  }
-  function getServiceBillCodeDropdownData() {
-    //TODO: caseManagerReview.serviceid = DEFAULT VALUE
-    let data = [];
-
-    for (serviceId in dropdownData) {
-      data.push({
-        value: serviceId,
-        text: UTIL.removeQuotes(dropdownData[serviceId].serviceCode),
-      });
-    }
-
-    return data;
-  }
-  function getLocationDropdownData() {
-    return dropdownData[selectedServiceCode].locations.map(location => {
-      return {
-        value: location.locCode,
-        text: location.locName,
-      };
-    });
-  }
-  function getServicesDropdownData() {
-    return dropdownData[selectedServiceCode].services.map(service => {
-      return {
-        value: service.serviceCode,
-        text: service.serviceName,
-      };
-    });
-  }
-  function getContactsDropdownData() {
-    return dropdownData[selectedServiceCode].contacts.map(contact => {
-      return {
-        value: contact.contactCode,
-        text: contact.contactName,
-      };
-    });
-  }
-  function getNeedsDropdownData() {
-    return dropdownData[selectedServiceCode].needs.map(need => {
-      return {
-        value: need.needCode,
-        text: need.needName,
-      };
-    });
-  }
-  function getVendorDropdownData() {
-    // consumer specific dropdown triggered when consumer is selected
-    return vendorDropdownData.map(vendor => {
-      return {
-        value: vendor.vendorId,
-        text: vendor.vendorName,
-      };
-    });
-  }
-  function getServiceLocationDropdownData() {
-    return serviceLocationDropdownData.map(location => {
-      return {
-        value: location.code,
-        text: location.caption,
-      };
-    });
-  }
-
   // VALIDATION / REQUIRED FIELDS
   //--------------------------------------------------
   function checkRequiredFields() {
@@ -384,20 +185,20 @@ const CaseNotes = (() => {
     let isSaveDisabled = false;
 
     if (selectedConsumers.length === 0) {
-      cnValidation.showError({
-        name: 'consumer',
-        message: 'Consumer is required',
-      });
-      cnValidation.toggleErrorStatus('consumer', true);
+      // cnValidation.showError({
+      //   name: 'consumer',
+      //   message: 'Consumer is required',
+      // });
+      // cnValidation.toggleErrorStatus('consumer', true);
       isSaveDisabled = true;
     } else {
-      cnValidation.toggleErrorStatus('consumer', false);
+      // cnValidation.toggleErrorStatus('consumer', false);
     }
 
     if (isSaveDisabled && !isFormValid) {
-      cnForm.submitButton.toggleDisabled(true);
+      cnForm.buttons['submit'].toggleDisabled(true);
     } else {
-      cnForm.submitButton.toggleDisabled(false);
+      cnForm.buttons['submit'].toggleDisabled(false);
     }
   }
 
@@ -418,59 +219,6 @@ const CaseNotes = (() => {
       //TODO: endTime = endTime.substring(0, 5);
       //TODO: startTime = startTime.substring(0, 5);
       //TODO: set page load to new?
-    }
-  }
-  // GET
-  async function getDropdownData() {
-    const data = await _UTIL.fetchData('populateDropdownData');
-    return dealWithDropdownDataHugeString(data.populateDropdownDataResult);
-  }
-  async function getCaseManagerReviewData() {
-    const data = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
-      caseManagerId,
-    });
-    return data.getReviewRequiredForCaseManagerResult;
-  }
-  async function getconsumersThatCanHaveMileage() {
-    let data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
-    data = data.getConsumersThatCanHaveMileageJSONResult;
-    return data.map(({ consumerid }) => consumerid);
-  }
-  async function getAttachmentsGK() {
-    const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId: null });
-    return data.getCaseNoteAttachmentsListResult;
-  }
-  async function getOverlapCheckData(retrieveData) {
-    let data = await _UTIL.fetchData('caseNoteOverlapCheck', { ...retrieveData });
-    if (data.caseNoteOverlapCheckResult && data.caseNoteOverlapCheckResult.length > 0) {
-      return data.caseNoteOverlapCheckResult.map(d => d.consumername);
-    }
-
-    return '';
-  }
-  async function getInitialData() {
-    selectedDate = setDefaultSelectedDate();
-
-    dropdownData = await getDropdownData();
-
-    caseManagerId = $.session.PeopleId;
-    caseManagerReview = await getCaseManagerReviewData();
-    reviewRequired = !caseManagerReview.reviewrequired ? 'N' : 'Y';
-
-    if ($.session.applicationName === 'Advisor') {
-      //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
-      //? For now going to leave this init, if init gets slow this can be moved to
-      //? rosterPicker event and setup to only run once.
-      consumersThatCanHaveMileage = await getconsumersThatCanHaveMileage();
-    }
-
-    showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
-    showAllPhrases = showAllPhrases === 'Y' ? true : false;
-
-    return;
-
-    if ($.session.applicationName === 'Gatekeeper' && false) {
-      attachmentList = await getAttachmentsGK();
     }
   }
   // DELETE
@@ -507,6 +255,9 @@ const CaseNotes = (() => {
     }
   }
   async function saveNote(formData) {
+    // let groupNoteId = await _UTIL.fetchData('getGroupNoteId');
+    // groupNoteId = groupNoteId.getGroupNoteIdResult;
+
     if (isNewNote) {
       const saveCaseNoteResults = await _UTIL.fetchData('saveCaseNote', {
         caseManagerId,
@@ -554,18 +305,21 @@ const CaseNotes = (() => {
       selectedConsumers = data;
 
       // Get Vendors By Consumer
-      vendorDropdownData = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+      await cnData.fetchVendorDropdownData({
         consumerId: selectedConsumers[0],
         serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
       });
-      vendorDropdownData = vendorDropdownData.getConsumerSpecificVendorsJSONResult;
-      const vendorData = getVendorDropdownData();
+      const vendorData = cnData.getVendorDropdownData();
       cnForm.inputs['vendor'].populate(vendorData);
-      if (vendorDropdownData.length === 1) {
-        cnForm.inputs['vendor'].setValue(vendorDropdownData[0].value);
+      if (vendorData.length === 1) {
+        cnForm.inputs['vendor'].setValue(vendorData[0].value);
       }
 
       if ($.session.applicationName === 'Advisor') {
+        //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
+        //? For now going to leave this init, if init gets slow this can be moved to
+        //? rosterPicker event and setup to only run once.
+        const consumersThatCanHaveMileage = await cnData.fetchConsumersThatCanHaveMileage();
         // Check Selected Consumer For Mileage
         const canConsumerHaveMileage = consumersThatCanHaveMileage.includes(selectedConsumers[0]);
         if (canConsumerHaveMileage) {
@@ -573,12 +327,11 @@ const CaseNotes = (() => {
         }
 
         // Get Serv Locations By Consumer
-        serviceLocationDropdownData = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
+        await cnData.fetchServiceLocationDropdownData({
           consumerId: selectedConsumers[0],
           serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
         });
-        serviceLocationDropdownData = serviceLocationDropdownData.getServiceLocationsForCaseNoteDropdownResult;
-        const servLocData = getServiceLocationDropdownData();
+        const servLocData = cnData.getServiceLocationDropdownData();
         cnForm.inputs['serviceLocation'].populate(servLocData);
       }
 
@@ -681,38 +434,38 @@ const CaseNotes = (() => {
       let mileageRequired;
 
       if ($.session.applicationName === 'Gatekeeper' && selectedServiceCode !== '') {
-        mileageRequired = dropdownData[selectedServiceCode].mileageRequired;
-        isTravelTimeRequired = dropdownData[selectedServiceCode].travelTimeRequired;
-        isDocTimeRequired = dropdownData[selectedServiceCode].docTimeRequired;
-        allowGroupNotes = dropdownData[selectedServiceCode].allowGroupNotes === 'Y' ? true : false;
+        mileageRequired = cnData.isMileageRequired(selectedServiceCode);
+        isTravelTimeRequired = cnData.isTravelTimeRequired(selectedServiceCode);
+        isDocTimeRequired = cnData.isDocTimeRequired(selectedServiceCode);
+        allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
 
-        cnForm.inputs['mileage'].toggleDisabled(mileageRequired !== 'Y');
-        cnForm.inputs['travelTime'].toggleDisabled(mileageRequired !== 'Y');
+        cnForm.inputs['mileage'].toggleDisabled(!mileageRequired);
+        cnForm.inputs['travelTime'].toggleDisabled(!isTravelTimeRequired);
       } else {
         allowGroupNotes = true;
       }
 
       if (selectedServiceCode !== '') {
         // get required fields
-        const locationRequired = dropdownData[selectedServiceCode].locationRequired;
-        const needRequired = dropdownData[selectedServiceCode].needRequired;
-        const contactRequired = dropdownData[selectedServiceCode].contactRequired;
-        const serviceRequired = dropdownData[selectedServiceCode].serviceRequired;
+        const locationRequired = cnData.isLocationRequired(selectedServiceCode);
+        const needRequired = cnData.isNeedRequired(selectedServiceCode);
+        const contactRequired = cnData.isContactRequired(selectedServiceCode);
+        const serviceRequired = cnData.isServiceRequired(selectedServiceCode);
         // enable dropdowns
-        cnForm.inputs['location'].toggleDisabled(locationRequired === 'Y');
-        cnForm.inputs['service'].toggleDisabled(serviceRequired === 'Y');
-        cnForm.inputs['need'].toggleDisabled(needRequired === 'Y');
-        cnForm.inputs['contact'].toggleDisabled(contactRequired === 'Y');
+        cnForm.inputs['location'].toggleDisabled(!locationRequired);
+        cnForm.inputs['service'].toggleDisabled(!serviceRequired);
+        cnForm.inputs['need'].toggleDisabled(!needRequired);
+        cnForm.inputs['contact'].toggleDisabled(!contactRequired);
         // set required fields
-        cnForm.inputs['location'].toggleRequired(locationRequired === 'Y');
-        cnForm.inputs['service'].toggleRequired(serviceRequired === 'Y');
-        cnForm.inputs['need'].toggleRequired(needRequired === 'Y');
-        cnForm.inputs['contact'].toggleRequired(contactRequired === 'Y');
+        cnForm.inputs['location'].toggleRequired(locationRequired);
+        cnForm.inputs['service'].toggleRequired(serviceRequired);
+        cnForm.inputs['need'].toggleRequired(needRequired);
+        cnForm.inputs['contact'].toggleRequired(contactRequired);
         //populate dropdowns tied to this one
-        cnForm.inputs['location'].populate(getLocationDropdownData());
-        cnForm.inputs['service'].populate(getServicesDropdownData());
-        cnForm.inputs['need'].populate(getNeedsDropdownData());
-        cnForm.inputs['contact'].populate(getContactsDropdownData());
+        cnForm.inputs['location'].populate(cnData.getLocationDropdownData(selectedServiceCode));
+        cnForm.inputs['service'].populate(cnData.getServicesDropdownData(selectedServiceCode));
+        cnForm.inputs['need'].populate(cnData.getNeedsDropdownData(selectedServiceCode));
+        cnForm.inputs['contact'].populate(cnData.getContactsDropdownData(selectedServiceCode));
       } else {
         // set required to false
         cnForm.inputs['location'].toggleRequired(false);
@@ -751,8 +504,8 @@ const CaseNotes = (() => {
         }
         timeOverlapCheck(value, endTimeVal);
       } else {
-        cnValidation.hide('overlap');
-        cnValidation.hide('workhours');
+        // cnValidation.hide('overlap');
+        // cnValidation.hide('workhours');
       }
     },
     endTime: ({ event, value, name, input }) => {
@@ -767,8 +520,8 @@ const CaseNotes = (() => {
         }
         timeOverlapCheck(startTimeVal, value);
       } else {
-        cnValidation.hide('overlap');
-        cnValidation.hide('workhours');
+        // cnValidation.hide('overlap');
+        // cnValidation.hide('workhours');
       }
     },
     mileage: ({ event, value, name, input }) => {
@@ -839,14 +592,12 @@ const CaseNotes = (() => {
     noteText: ({ event, value, name, input }) => {
       const words = value.split(/\s+/);
 
-      let cursorIndex;
-
       if (event.detail) {
         // check for the #ph
         if (words.includes('#ph')) {
-          if (cnInsertPhrases.dialog.dialog.parentNode !== input.fullscreen.fullScreenDialog.dialog) {
-            cnInsertPhrases.renderTo(input.fullscreen.fullScreenDialog.dialog);
-          }
+          // if (cnPhrases.InsertPhrases.dialog.dialog.parentNode !== input.fullscreen.fullScreenDialog.dialog) {
+          //   cnPhrases.InsertPhrases.renderTo(input.fullscreen.fullScreenDialog.dialog);
+          // }
 
           // get textarea clone in fullscreen popup
           const textareaInput = input.fullscreen.textareaClone.querySelector('textarea');
@@ -856,9 +607,9 @@ const CaseNotes = (() => {
           input.fullscreen.disableCloseButon(true);
 
           // show phrases dialog
-          cnInsertPhrases.show();
+          cnPhrases.InsertPhrases.show();
 
-          cnInsertPhrases.onPhraseSelect(phraseText => {
+          cnPhrases.InsertPhrases.onPhraseSelect(phraseText => {
             // Replace #ph with user-generated text
             const textValue = value.replace('#ph', phraseText);
             // Update the textarea's value
@@ -867,7 +618,7 @@ const CaseNotes = (() => {
             // re enable input
             textareaInput.disabled = false;
             // close dialog
-            cnInsertPhrases.close();
+            cnPhrases.InsertPhrases.close();
             // disable textarea and close buton
             textareaInput.disabled = false;
             input.fullscreen.disableCloseButon(false);
@@ -878,17 +629,17 @@ const CaseNotes = (() => {
       } else {
         // check for the #ph
         if (words.includes('#ph')) {
-          if (cnInsertPhrases.dialog.dialog.parentNode !== cnForm.inputs['noteText'].inputWrap) {
-            cnInsertPhrases.renderTo(cnForm.inputs['noteText'].inputWrap);
-          }
+          // if (cnPhrases.InsertPhrases.dialog.dialog.parentNode !== cnForm.inputs['noteText'].inputWrap) {
+          //   cnPhrases.InsertPhrases.renderTo(cnForm.inputs['noteText'].inputWrap);
+          // }
 
           // temp disable input
           input.toggleDisabled(true);
 
           // show phrases dialog
-          cnInsertPhrases.show();
+          cnPhrases.InsertPhrases.show();
 
-          cnInsertPhrases.onPhraseSelect(phraseText => {
+          cnPhrases.InsertPhrases.onPhraseSelect(phraseText => {
             // Replace #ph with user-generated text
             const textValue = value.replace('#ph', phraseText);
             // Update the textarea's value
@@ -897,17 +648,12 @@ const CaseNotes = (() => {
             // re enable input
             input.toggleDisabled(false);
             // close dialog
-            cnInsertPhrases.close();
+            cnPhrases.InsertPhrases.close();
             // focus on textarea
             input.setFocus();
           });
         }
       }
-
-      // PHRASES
-      //--------------------------------------------------
-      // _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
-      // _UTIL.localStorageHandler.set('casenotes-showAllPhrases', 'N');
     },
   };
 
@@ -916,22 +662,21 @@ const CaseNotes = (() => {
   async function loadPage() {
     // LOAD INSTANCES / BUILD / RENDER
     //-----------------------------------------
+    // Notifications (error/warning messages)
+    cnNotifications = new Notifications();
+
     // Date Navigation
     dateNavigation = new DateNavigation({
       selectedDate: selectedDate,
       allowFutureDate: false,
     });
-    dateNavigation.build().renderTo(moduleWrap);
-
-    // Validation Center
-    cnValidation = new ValidationCenter({});
-    cnValidation.build().renderTo(moduleWrap);
+    dateNavigation.build().renderTo(cnDateNavWrap);
 
     // Roster Picker
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
     });
-    rosterPicker.build().renderTo(moduleWrap);
+    rosterPicker.build().renderTo(cnRosterWrap);
 
     // Form
     cnForm = new Form({
@@ -962,7 +707,7 @@ const CaseNotes = (() => {
           label: $.session.applicationName === 'Gatekeeper' ? 'Bill Code:' : 'Serv. Code:',
           id: 'serviceCode',
           required: true,
-          data: getServiceBillCodeDropdownData(),
+          data: cnData.getServiceBillCodeDropdownData(),
           defaultValue: null,
           includeBlankOption: true,
         },
@@ -1043,20 +788,18 @@ const CaseNotes = (() => {
     });
     cnForm.build().renderTo(cnFormWrap);
 
-    // Phrases
-    cnInsertPhrases = new CaseNotesInsertPhrases({
-      showAllPhrases: showAllPhrases,
-    });
-    cnInsertPhrases.build();
-
     // Overview
     cnOverview = new CaseNotesOverview();
     cnOverview.build().renderTo(moduleWrap);
 
+    // Phrases
+    cnPhrases = new CaseNotesPhrases();
+    cnPhrases.build().renderTo(_DOM.ACTIONCENTER);
+
     // FETCH DATA / POPULATE
     //-----------------------------------------
-    await cnInsertPhrases.fetchData();
-    cnInsertPhrases.populate();
+    await cnPhrases.InsertPhrases.fetchData();
+    cnPhrases.InsertPhrases.populate();
     await rosterPicker.fetchConsumers();
     rosterPicker.populate();
     await cnOverview.fetchData(selectedDate);
@@ -1069,18 +812,42 @@ const CaseNotes = (() => {
 
   // INIT/LOAD? (data & defaults)
   //--------------------------------------------------
+  async function getAttachmentsData() {
+    if ($.session.applicationName === 'Gatekeeper' && isReview) {
+      await cnData.fetchAttachmentsGK(caseNoteId);
+      attachmentList = cnData.getAttachmentsList();
+    }
+  }
   async function init() {
-    moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
-    cnFormWrap = _DOM.createElement('div', { class: 'caseNotesForm' });
-    moduleWrap.appendChild(cnFormWrap);
+    // init module data
+    selectedDate = setDefaultSelectedDate();
+    caseManagerId = $.session.PeopleId;
 
+    // prep actioncenter
     _DOM.ACTIONCENTER.innerHTML = '';
     _DOM.ACTIONCENTER.setAttribute('data-UI', true);
     _DOM.setActiveModuleAttribute('casenotes2.0');
+
+    // build DOM skeleton
+    moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
+    cnHeader = _DOM.createElement('div', { class: 'caseNotesHeader', html: `<h1>Case Notes</h1>` });
+    cnDateNavWrap = _DOM.createElement('div', { class: 'caseNotesDateNav' });
+    cnFormWrap = _DOM.createElement('div', { class: 'caseNotesForm' });
+    cnRosterWrap = _DOM.createElement('div', { class: 'caseNotesRosterPicker' });
+
+    moduleWrap.appendChild(cnHeader);
+    moduleWrap.appendChild(cnDateNavWrap);
+    moduleWrap.appendChild(cnRosterWrap);
+    moduleWrap.appendChild(cnFormWrap);
     _DOM.ACTIONCENTER.appendChild(moduleWrap);
 
-    await getInitialData();
+    // init case notes data
+    cnData = new CaseNotesData();
+    await cnData.fetchDropdownData();
+    await cnData.fetchCaseManagerReviewData(caseManagerId);
+    reviewRequired = cnData.isReviewRequired();
 
+    // Load Case Notes w/Data
     await loadPage();
 
     checkRequiredFields();

@@ -1,6 +1,9 @@
 (function (global, factory) {
   global.Select = factory();
 })(this, function () {
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
   /**
    * Default configuration
    * @typ {Object}
@@ -13,21 +16,6 @@
   };
 
   /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    userOptions.name = userOptions.id;
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  //=======================================
-  // MAIN LIB
-  //---------------------------------------
-  /**
    * @constructor
    * @param {Object} options
    * @param {String} options.id - Id for input, use to link it with label. Also used for name attribute.
@@ -37,8 +25,11 @@
    * @param {Boolean} [options.hidden] - Whether to show or hide the select
    */
   function Select(options) {
-    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    // Data Init
+    this.options = _DOM.separateHTMLAttribrutes(_UTIL.mergeObjects(DEFAULT_OPTIONS, options));
+    this.options.attributes.name = this.options.attributes.id;
 
+    // DOM Ref
     this.inputWrap = null;
     this.select = null;
   }

@@ -1,26 +1,14 @@
 (function (global, factory) {
   global.Radio = factory();
 })(this, function () {
+  //=========================
+  // MAIN LIB
+  //-------------------------
   /**
    * Default configuration
    * @typ {Object}
    */
   const DEFAULT_OPTIONS = {};
-
-  /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  //=========================
-  // MAIN LIB
-  //-------------------------
 
   /**
    * @constructor
@@ -32,7 +20,7 @@
    * @param {String} [options.note] - Text for input note/message, displayed underneath input field
    */
   function Radio(options) {
-    this.options = mergOptionsWithDefaults(options);
+    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
     this.inputs = {};
   }
 

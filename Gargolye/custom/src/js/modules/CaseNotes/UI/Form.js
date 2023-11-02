@@ -1,28 +1,32 @@
 (function (global, factory) {
   global.Form = factory();
 })(this, function () {
+  function separateButtonElements(formElements) {
+    const separatedArrays = formElements.reduce(
+      (accumulator, element) => {
+        if (element.type === 'button') {
+          accumulator.buttons.push(element);
+        } else {
+          accumulator.inputs.push(element);
+        }
+        return accumulator;
+      },
+      { buttons: [], inputs: [] },
+    );
+
+    return {
+      buttonElements: separatedArrays.buttons,
+      inputElements: separatedArrays.inputs,
+    };
+  }
+  //=========================
+  // MAIN LIB
+  //-------------------------
   /**
    * Default configuration
    * @type {Object}
    */
-  const DEFAULT_OPTIONS = {
-    style: 'default',
-  };
-
-  /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  //=========================
-  // MAIN LIB
-  //-------------------------
+  const DEFAULT_OPTIONS = {};
 
   /**
    * @constructor
@@ -30,12 +34,13 @@
    */
   function Form(options) {
     // Data Init
-    this.options = mergOptionsWithDefaults(options);
+    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
+    //this.options.elements = separateButtonElements(this.options.elements);
     this.inputs = {};
+    this.buttons = {};
 
     // DOM Ref
     this.form = null;
-    this.submitButton = null;
   }
 
   /**
@@ -47,6 +52,7 @@
   Form.prototype.build = function () {
     this.form = _DOM.createElement('form');
 
+    // Build form input elements
     this.options.elements.forEach(ele => {
       let inputInstance;
 
@@ -77,6 +83,7 @@
       }
 
       if (typeof this.options.onChange === 'function') {
+        // this ties together the change events between form and inputs
         inputInstance.onChange(this.options.onChange);
       }
 
@@ -84,9 +91,21 @@
       this.inputs[ele.id] = inputInstance;
     });
 
-    //const btn = _DOM.createElement('button', { type: 'submit', text: 'Save', class: 'button' });
+    // Add default save button for all forms
     const btnWrap = _DOM.createElement('div', { class: 'formButtons' });
-    this.submitButton = new Button({ type: 'submit', text: 'Save', icon: 'save' }).renderTo(btnWrap);
+    const submitButton = new Button({ type: 'submit', text: 'Save', name: 'save', icon: 'save' }).renderTo(btnWrap);
+    this.buttons['submit'] = submitButton;
+
+    // Add additional form buttons
+    if (this.options.buttons) {
+      this.options.buttons.forEach(button => {
+        const newButton = new Button({ ...button }).renderTo(btnWrap);
+        if (button.name) {
+          this.buttons[button.name] = newButton;
+        }
+      });
+    }
+
     this.form.appendChild(btnWrap);
 
     return this;

@@ -1,28 +1,6 @@
 (function (global, factory) {
   global.Textarea = factory();
 })(this, function () {
-  /**
-   * Default configuration
-   * @type {Object}
-   */
-  const DEFAULT_OPTIONS = {
-    showcount: false,
-    note: null,
-    fullscreen: false,
-  };
-
-  /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    userOptions.name = userOptions.id;
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
   //=======================================
   // TEXT TO SPEECH
   //---------------------------------------
@@ -173,7 +151,7 @@
     this.fullScreenCloseBtn.addEventListener('click', e => {
       this.fullScreenDialog.close();
     });
-    this.textareaClone.addEventListener('change', e => {
+    this.textareaClone.addEventListener('input', e => {
       // update value of orig textarea
       this.textareaInstance.setValue(e.target.value);
     });
@@ -205,6 +183,18 @@
   //=======================================
   // MAIN LIB
   //---------------------------------------
+  //TODO ASH: create logic to update charcount on keyup, input
+
+  /**
+   * Default configuration
+   * @type {Object}
+   */
+  const DEFAULT_OPTIONS = {
+    showcount: false,
+    note: null,
+    fullscreen: false,
+  };
+
   /**
    * @constructor
    * @param {Object} options
@@ -221,8 +211,11 @@
    * @returns {Textarea}
    */
   function Textarea(options) {
-    this.options = _DOM.separateHTMLAttribrutes(mergOptionsWithDefaults(options));
+    // Data Init
+    this.options = _DOM.separateHTMLAttribrutes(_UTIL.mergeObjects(DEFAULT_OPTIONS, options));
+    this.options.attributes.name = this.options.attributes.id;
 
+    // DOM Ref
     this.inputWrap = null;
     this.input = null;
     this.fullscreen = null;
@@ -293,6 +286,10 @@
       // init speech to text
       this.speechToText = new SpeechToText(this);
       this.speechToText.init();
+    }
+
+    if (this.options.fullscreen || this.options.speechToText) {
+      this.inputWrap.classList.add('withIcons');
     }
 
     this.setupEvents();
@@ -413,7 +410,7 @@
    * @function
    */
   Textarea.prototype.onChange = function (cbFunc) {
-    this.input.addEventListener('change', e => {
+    this.input.addEventListener('input', e => {
       if (cbFunc) cbFunc(e);
 
       if (this.options.fullscreen) {

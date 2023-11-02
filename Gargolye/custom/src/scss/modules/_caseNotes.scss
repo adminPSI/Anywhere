@@ -31,46 +31,43 @@
 [data-active-module='casenotes2.0'] {
   .caseNotesModule {
     display: grid;
-    grid-template-columns: 320px auoto;
+    grid-template-columns: 320px auto;
     grid-template-rows: auto auto minmax(900px, 1300px) 600px;
     grid-template-areas:
+      'header header'
       'nav nav'
-      'feedback feedback'
       'roster form'
       'cards cards';
-    row-gap: 10px;
 
-    .dateNavigation {
-      //grid-column-start: span 2;
+    .caseNotesHeader {
+      grid-area: header;
+      padding: 10px 10px 10px;
+
+      h1 {
+        color: $primary;
+        font-size: $px32;
+        font-weight: $_bold;
+      }
+    }
+
+    .caseNotesDateNav {
+      background: $white;
       grid-area: nav;
-      order: 1;
+      margin-bottom: 10px;
       position: sticky;
       top: 0px;
       z-index: 99;
     }
 
-    .validations {
+    .caseNotesRosterPicker {
       display: flex;
-      column-gap: 4px;
-      flex-flow: row wrap;
-      grid-area: feedback;
-      margin: 0 20px;
-      row-gap: 8px;
-
-      .validationMessage {
-        border-radius: 20px;
-        padding: 4px 14px 4px 10px;
-
-        p {
-          font-weight: $_bold;
-        }
-      }
-    }
-
-    .rosterPicker {
       grid-area: roster;
       margin: 0 10px 0 20px;
-      order: 3;
+
+      .rosterPicker {
+        box-shadow: $shadow-m2;
+        border-radius: 6px;
+      }
     }
 
     .caseNotesForm {
@@ -79,14 +76,9 @@
       grid-area: form;
       margin: 0 20px 0 10px;
       position: relative;
-      order: 2;
 
       form {
-        align-content: flex-start;
         padding: 10px;
-        column-gap: 10px;
-        display: flex;
-        flex-flow: row wrap;
 
         .input {
           flex-grow: 1;
@@ -110,13 +102,6 @@
         .input.contact {
           min-width: 300px;
           width: calc(50% - 5px);
-        }
-
-        .formButtons {
-          width: 100%;
-        }
-        button {
-          margin-left: auto;
         }
       }
 
@@ -157,34 +142,14 @@
         }
       }
       // special attachments END
-
-      .dialog.insertPhrases {
-        left: 6%;
-        top: -40%;
-      }
-    }
-
-    .caseNotesPhrases {
-      align-items: flex-end;
-      display: flex;
-      column-gap: 10px;
-      flex-flow: row wrap;
-      row-gap: 14px;
-
-      .input.select {
-        flex-grow: 1;
-        width: auto;
-        margin: 0;
-      }
     }
 
     .caseNotesOverview {
       border-radius: 6px;
       box-shadow: $shadow-m2;
       grid-area: cards;
-      margin: 0 20px;
+      margin: 20px 20px 0px;
       padding: 20px;
-      order: 3;
 
       .overviewCardsHeader {
         // do stuff son
@@ -268,7 +233,6 @@
   dialog.modal[open] {
     display: flex;
     flex-flow: column nowrap;
-    row-gap: 14px;
 
     &::backdrop {
       background-color: rgb(54, 106, 152);
@@ -277,34 +241,31 @@
   }
 
   dialog.modal.fullscreenTextarea {
+    row-gap: 14px;
+
     .input.textarea {
       height: auto;
     }
   }
 
-  dialog.insertPhrases[open] {
-    border: none;
-    box-shadow: $shadow-m2;
-    display: flex;
-    flex-flow: column nowrap;
-    left: 10%;
-    top: 6%;
-    margin: 0;
-    max-height: 500px;
-    padding: 0;
+  dialog.modal.insertPhrases[open] {
+    height: 60%;
+    min-height: 300px;
+    max-height: 450px;
+    width: 80%;
     min-width: 400px;
-    width: 60%;
-    max-width: 800px;
-    z-index: 99;
+    max-width: 600px;
 
     .phraseWrap {
       overflow-y: scroll;
       overflow-x: hidden;
       padding: 0px 4px 0 12px;
+      flex-grow: 1;
     }
     .phraseView {
-      margin: 0;
+      margin: 0 0 10px 0;
       padding: 20px 10px 15px;
+      flex-grow: 0;
     }
     .phrase {
       //border: 2px solid $black;
@@ -326,6 +287,30 @@
       // .phraseText {
       // }
     }
+    button.button {
+      margin: 20px 12px 15px 12px;
+    }
+  }
+  dialog.modal.addPhrases[open] {
+    height: 60%;
+    min-height: 300px;
+    max-height: 400px;
+    width: 80%;
+    min-width: 400px;
+    max-width: 535px;
+
+    padding: 14px 10px;
+
+    form {
+      flex-grow: 1;
+
+      .input.checkbox {
+        margin: 0 0 10px;
+      }
+      .input.textarea {
+        height: 150px;
+      }
+    }
   }
 }
 
@@ -337,7 +322,7 @@
   // FORM
   //-------------------------------------------
   form {
-    // outline: 2px dotted black;
+    align-content: flex-start;
     column-gap: 10px;
     display: flex;
     flex-flow: row wrap;
@@ -442,7 +427,9 @@
     }
   }
   .input.textarea {
-    margin-top: 20px;
+    &.withIcons {
+      margin-top: 20px;
+    }
 
     .fullscreenToggleBtn,
     .speechToTextBtn {
@@ -629,8 +616,15 @@
   //===========================================
   // BUTTON
   //-------------------------------------------
+  .formButtons {
+    display: flex;
+    justify-content: flex-end;
+    column-gap: 10px;
+    width: 100%;
+  }
   .button {
     border-radius: 4px;
+    cursor: pointer;
     display: block;
     font-weight: $_bold;
     min-height: 40px;
@@ -642,6 +636,11 @@
       display: flex;
       align-items: center;
       column-gap: 4px;
+
+      span:last-child {
+        position: relative;
+        top: 2px;
+      }
     }
 
     //states
@@ -669,7 +668,8 @@
       background: none;
       border-width: 3px;
       border-style: solid;
-      color: $black;
+      //color: $black;
+      color: $primary;
 
       &.primary {
         border-color: $primary;
@@ -711,27 +711,6 @@
     path {
       pointer-events: none;
     }
-  }
-
-  .hamburger,
-  .hamburger::before,
-  .hamburger::after {
-    display: block;
-    background-color: #fff;
-    position: absolute;
-    height: 6px;
-    width: 32px;
-    border-radius: 3px;
-  }
-
-  .hamburger::before {
-    content: '';
-    margin-top: -8px;
-  }
-
-  .hamburger::after {
-    content: '';
-    margin-top: 8px;
   }
 
   //===========================================
@@ -879,15 +858,16 @@
     padding: 0;
 
     &.modal {
+      border: none;
       box-shadow: $shadow-m2;
-      height: 76%;
-      width: 50%;
     }
   }
 
   dialog.modal.fullscreenTextarea {
     padding: 10px;
     resize: both;
+    height: 76%;
+    width: 50%;
 
     .fullscreenToggleBtn {
       background-color: transparent;
@@ -996,4 +976,22 @@
       }
     }
   }
+
+  // .validations {
+  //   display: flex;
+  //   column-gap: 4px;
+  //   flex-flow: row wrap;
+  //   grid-area: feedback;
+  //   margin: 0 20px;
+  //   row-gap: 8px;
+
+  //   .validationMessage {
+  //     border-radius: 20px;
+  //     padding: 4px 14px 4px 10px;
+
+  //     p {
+  //       font-weight: $_bold;
+  //     }
+  //   }
+  // }
 }

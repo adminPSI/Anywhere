@@ -1,6 +1,9 @@
 (function (global, factory) {
   global.RosterPicker = factory();
 })(this, function () {
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
   /**
    * Default configuration
    * @type {Object}
@@ -9,20 +12,6 @@
     allowMultiSelect: false,
   };
 
-  /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  //=======================================
-  // MAIN LIB
-  //---------------------------------------
   /**
    * Displays a list of consumers, contains logic for selecting consumer(s).
    * Use onConsumerSelect passed in {options} to get array of selected consumer IDs.
@@ -33,7 +22,7 @@
    */
   function RosterPicker(options) {
     // Data Init
-    this.options = mergOptionsWithDefaults(options);
+    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
     this.consumers = [];
     this.selectedConsumers = {};
     this.failedImageCache = new Set();

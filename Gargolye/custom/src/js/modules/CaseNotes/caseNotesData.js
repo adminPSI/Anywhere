@@ -1,0 +1,294 @@
+(function (global, factory) {
+  global.CaseNotesData = factory();
+})(this, function () {
+  function dealWithDropdownDataHugeString(res) {
+    function decipherXML(res) {
+      const xmlDoc = UTIL.parseXml('<?xml version="1.0" encoding="UTF-8"?>' + res);
+      const data = [];
+
+      const billingCodes = [].slice.call(xmlDoc.getElementsByTagName('billingcode'));
+      billingCodes.forEach(bc => {
+        const tmpServiceCode = [].slice.call(bc.getElementsByTagName('codename'))[0];
+        const tmpServiceId = [].slice.call(bc.getElementsByTagName('serviceid'))[0];
+        const tmpServiceFunding = [].slice.call(bc.getElementsByTagName('includeinfunding'))[0];
+        const tmpServiceRequired = [].slice.call(bc.getElementsByTagName('servicerequired'))[0];
+        const tmpLocationRequired = [].slice.call(bc.getElementsByTagName('locationrequired'))[0];
+        const tmpNeedRequired = [].slice.call(bc.getElementsByTagName('needrequired'))[0];
+        const tmpContactRequired = [].slice.call(bc.getElementsByTagName('contactrequired'))[0];
+        const tmpAllowGroupNotes = [].slice.call(bc.getElementsByTagName('allowgroupnotes'))[0];
+        const tmpMileageRequired = [].slice.call(bc.getElementsByTagName('mileagerequired'))[0];
+        const tmpDocTimeRequired = [].slice.call(bc.getElementsByTagName('doctimerequired'))[0];
+        const tmpTravelTimeRequired = [].slice.call(bc.getElementsByTagName('traveltimerequired'))[0];
+        const locations = [].slice.call(bc.getElementsByTagName('location'));
+        const contacts = [].slice.call(bc.getElementsByTagName('contact'));
+        const services = [].slice.call(bc.getElementsByTagName('service'));
+        const needs = [].slice.call(bc.getElementsByTagName('need'));
+
+        const tmpObject = {};
+        tmpObject.serviceCode = tmpServiceCode ? tmpServiceCode.textContent : '';
+        tmpObject.serviceId = tmpServiceId ? tmpServiceId.textContent : '';
+        tmpObject.serviceFunding = tmpServiceFunding ? tmpServiceFunding.textContent : '';
+        tmpObject.serviceRequired = tmpServiceRequired ? tmpServiceRequired.textContent : '';
+        tmpObject.locationRequired = tmpLocationRequired ? tmpLocationRequired.textContent : '';
+        tmpObject.needRequired = tmpNeedRequired ? tmpNeedRequired.textContent : '';
+        tmpObject.contactRequired = tmpContactRequired ? tmpContactRequired.textContent : '';
+        tmpObject.allowGroupNotes = tmpAllowGroupNotes ? tmpAllowGroupNotes.textContent : '';
+        tmpObject.mileageRequired = tmpMileageRequired ? tmpMileageRequired.textContent : '';
+        tmpObject.docTimeRequired = tmpDocTimeRequired ? tmpDocTimeRequired.textContent : '';
+        tmpObject.travelTimeRequired = tmpTravelTimeRequired ? tmpTravelTimeRequired.textContent : '';
+        tmpObject.locations = [];
+        tmpObject.contacts = [];
+        tmpObject.services = [];
+        tmpObject.needs = [];
+
+        locations.forEach(loc => {
+          const tmpLocName = [].slice.call(loc.getElementsByTagName('locname'))[0].textContent;
+          const tmpLocCode = [].slice.call(loc.getElementsByTagName('loccode'))[0].textContent;
+          tmpObject.locations.push({
+            locName: tmpLocName,
+            locCode: tmpLocCode,
+          });
+        });
+        contacts.forEach(loc => {
+          const tmpContactName = [].slice.call(loc.getElementsByTagName('contactname'))[0].textContent;
+          const tmpContactCode = [].slice.call(loc.getElementsByTagName('contactcode'))[0].textContent;
+          tmpObject.contacts.push({
+            contactName: tmpContactName,
+            contactCode: tmpContactCode,
+          });
+        });
+        services.forEach(loc => {
+          const tmpServiceName = [].slice.call(loc.getElementsByTagName('servicename'))[0].textContent;
+          const tmpServiceCode = [].slice.call(loc.getElementsByTagName('servicecode'))[0].textContent;
+          tmpObject.services.push({
+            serviceName: tmpServiceName,
+            serviceCode: tmpServiceCode,
+          });
+        });
+        needs.forEach(loc => {
+          const tmpNeedName = [].slice.call(loc.getElementsByTagName('needname'))[0].textContent;
+          const tmpNeedCode = [].slice.call(loc.getElementsByTagName('needcode'))[0].textContent;
+          tmpObject.needs.push({
+            needName: tmpNeedName,
+            needCode: tmpNeedCode,
+          });
+        });
+
+        data.push(tmpObject);
+      });
+
+      return data;
+    }
+
+    const beautifulObject = decipherXML(res);
+    let dropdownDataObj = {};
+
+    // create object for quick access
+    beautifulObject.forEach(dd => {
+      // create object for each billercode
+      if (!dropdownDataObj[dd.serviceId]) {
+        dropdownDataObj[dd.serviceId] = {
+          serviceId: dd.serviceId,
+          serviceCode: dd.serviceCode,
+          serviceFunding: dd.serviceFunding,
+          locations: [...dd.locations],
+          contacts: [...dd.contacts],
+          services: [...dd.services],
+          needs: [...dd.needs],
+          docTimeRequired: dd.docTimeRequired,
+          travelTimeRequired: dd.travelTimeRequired,
+          mileageRequired: dd.mileageRequired,
+          locationRequired: dd.locationRequired,
+          needRequired: dd.needRequired,
+          serviceRequired: dd.serviceRequired,
+          contactRequired: dd.contactRequired,
+          allowGroupNotes: dd.allowGroupNotes,
+        };
+      }
+    });
+
+    //dropdownDataKeys = Object.keys(dropdownDataObj);
+    return dropdownDataObj;
+  }
+
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
+  function CaseNotesData() {
+    // Dropdown Data
+    this.dropdownData = {};
+    this.vendorDropdownData = [];
+    this.serviceLocationDropdownData = [];
+
+    // Other Data
+    this.caseManagerReview = {};
+    this.reviewRequired = null;
+    this.consumersThatCanHaveMileage = [];
+    this.attachmentList = null;
+    this.overlapData = null;
+  }
+
+  // FETCH DATA
+  //---------------------------------------
+  CaseNotesData.prototype.fetchDropdownData = async function () {
+    const data = await _UTIL.fetchData('populateDropdownData');
+    this.dropdownData = dealWithDropdownDataHugeString(data.populateDropdownDataResult);
+
+    return this;
+  };
+  CaseNotesData.prototype.fetchVendorDropdownData = async function (selectedConsumer, selectedDate) {
+    const data = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
+      consumerId: selectedConsumer,
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+    });
+    this.vendorDropdownData = data.getConsumerSpecificVendorsJSONResult;
+
+    return this;
+  };
+  CaseNotesData.prototype.fetchServiceLocationDropdownData = async function (selectedConsumer, selectedDate) {
+    const data = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
+      consumerId: selectedConsumer,
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+    });
+    this.serviceLocationDropdownData = data.getServiceLocationsForCaseNoteDropdownResult;
+
+    return this;
+  };
+  CaseNotesData.prototype.fetchCaseManagerReviewData = async function (caseManagerId) {
+    const data = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
+      caseManagerId,
+    });
+    this.caseManagerReview = data.getReviewRequiredForCaseManagerResult[0];
+    this.reviewRequired = !this.caseManagerReview.reviewrequired ? 'N' : 'Y';
+
+    return this;
+  };
+  CaseNotesData.prototype.fetchConsumersThatCanHaveMileage = async function () {
+    let data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
+    data = data.getConsumersThatCanHaveMileageJSONResult;
+    this.consumersThatCanHaveMileage = data.map(({ consumerid }) => consumerid);
+
+    return this;
+  };
+  CaseNotesData.prototype.fetchAttachmentsGK = async function (caseNoteId) {
+    const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId });
+    this.attachmentList = data.getCaseNoteAttachmentsListResult;
+
+    return this;
+  };
+  CaseNotesData.prototype.fetchTimeOverlapData = async function (retrieveData) {
+    const data = await _UTIL.fetchData('caseNoteOverlapCheck', { ...retrieveData });
+    this.overlapData = data.caseNoteOverlapCheckResult;
+
+    return this;
+  };
+
+  // DROPDOWN DATA MAPPING
+  //---------------------------------------
+  CaseNotesData.prototype.getServiceBillCodeDropdownData = function () {
+    //TODO: caseManagerReview.serviceid = DEFAULT VALUE
+    let data = [];
+
+    for (serviceId in this.dropdownData) {
+      data.push({
+        value: serviceId,
+        text: UTIL.removeQuotes(this.dropdownData[serviceId].serviceCode),
+      });
+    }
+
+    return data;
+  };
+  CaseNotesData.prototype.getLocationDropdownData = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].locations.map(location => {
+      return {
+        value: location.locCode,
+        text: location.locName,
+      };
+    });
+  };
+  CaseNotesData.prototype.getServicesDropdownData = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].services.map(service => {
+      return {
+        value: service.serviceCode,
+        text: service.serviceName,
+      };
+    });
+  };
+  CaseNotesData.prototype.getContactsDropdownData = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].contacts.map(contact => {
+      return {
+        value: contact.contactCode,
+        text: contact.contactName,
+      };
+    });
+  };
+  CaseNotesData.prototype.getNeedsDropdownData = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].needs.map(need => {
+      return {
+        value: need.needCode,
+        text: need.needName,
+      };
+    });
+  };
+  CaseNotesData.prototype.getVendorDropdownData = function () {
+    return this.vendorDropdownData.map(vendor => {
+      return {
+        value: vendor.vendorId,
+        text: vendor.vendorName,
+      };
+    });
+  };
+  CaseNotesData.prototype.getServiceLocationDropdownData = function () {
+    return this.serviceLocationDropdownData.map(location => {
+      return {
+        value: location.code,
+        text: location.caption,
+      };
+    });
+  };
+
+  // DATA GETTERS
+  //---------------------------------------
+  CaseNotesData.prototype.isLocationRequired = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].locationRequired === 'Y' ? true : false;
+  };
+  CaseNotesData.prototype.isNeedRequired = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].needRequired === 'Y' ? true : false;
+  };
+  CaseNotesData.prototype.isContactRequired = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].contactRequired === 'Y' ? true : false;
+  };
+  CaseNotesData.prototype.isServiceRequired = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].serviceRequired === 'Y' ? true : false;
+  };
+
+  CaseNotesData.prototype.isMileageRequired = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].mileageRequired === 'Y' ? true : false;
+  };
+  CaseNotesData.prototype.isTravelTimeRequired = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].travelTimeRequired === 'Y' ? true : false;
+  };
+  CaseNotesData.prototype.isDocTimeRequired = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].docTimeRequired === 'Y' ? true : false;
+  };
+  CaseNotesData.prototype.allowGroupNotes = function (selectedServiceCode) {
+    return this.dropdownData[selectedServiceCode].allowGroupNotes === 'Y' ? true : false;
+  };
+
+  CaseNotesData.prototype.isReviewRequired = function () {
+    return this.caseManagerReview.reviewrequired === 'Y' ? true : false;
+  };
+
+  CaseNotesData.prototype.getOvlerapData = function () {
+    if (this.overlapData && this.overlapData.length > 0) {
+      return this.overlapData.map(d => d.consumername);
+    }
+
+    return '';
+  };
+  CaseNotesData.prototype.getAttachmentsList = function () {
+    return this.attachmentList;
+  };
+
+  return CaseNotesData;
+});
