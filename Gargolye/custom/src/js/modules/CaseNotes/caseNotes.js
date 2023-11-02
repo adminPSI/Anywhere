@@ -283,7 +283,9 @@ const CaseNotes = (() => {
       });
       console.log(saveCaseNoteResults);
 
-      if ($.session.applicationName === 'Gatekeeper') {
+      if ($.session.applicationName === 'Gatekeeper' && saveCaseNoteResults) {
+        const respDoc = parser.parseFromString(results, 'text/xml');
+        const caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
         await saveAttachments();
       }
     }
@@ -372,7 +374,6 @@ const CaseNotes = (() => {
       });
     });
     cnForm.onSubmit(async data => {
-      //TODO: return succes or failure from SaveNote so I can display to user
       await saveNote({
         caseNote: data.noteText ?? '',
         casenotemileage: data.mileage ?? '0',

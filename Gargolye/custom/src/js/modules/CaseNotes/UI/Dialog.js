@@ -24,6 +24,7 @@
     this.dialog = null;
 
     this.build();
+    this.setupEvents();
   }
 
   /**
@@ -60,6 +61,26 @@
    */
   Dialog.prototype.close = function () {
     this.dialog.close();
+  };
+
+  /**
+   * Sets up events for Dialog Box
+   *
+   * @function
+   */
+  Dialog.prototype.setupEvents = function () {
+    this.dialog.addEventListener('click', e => {
+      const dialogDimensions = this.dialog.getBoundingClientRect();
+
+      if (
+        e.clientX < dialogDimensions.left ||
+        e.clientX > dialogDimensions.right ||
+        e.clientY < dialogDimensions.top ||
+        e.clientY > dialogDimensions.bottom
+      ) {
+        this.close();
+      }
+    });
   };
 
   /**
