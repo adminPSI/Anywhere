@@ -898,6 +898,7 @@ function getDefaultAnywhereSettings() {
       $.session.updateIncidentActionText = res.appendITImmediateAction === 'Y' ? true : false;
       $.session.updateIncidentPreventionText = res.appendITPreventionPlan === 'Y' ? true : false;
       $.session.updateIncidentCauseText = res.appendITCause === 'Y' ? true : false;
+      $.session.planFormCarryover = res.planFormCarryover === 'Y' ? true : false;
 
       //Hide stuff
       $.session.useAbsentFeature = res.useAbsentFeature;

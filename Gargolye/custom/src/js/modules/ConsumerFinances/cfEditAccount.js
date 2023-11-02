@@ -12,6 +12,7 @@ const CFEditAccount = (() => {
     let BtnName;
     let page;
     let load;
+    let IsDisabledAccount = false; 
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -40,7 +41,7 @@ const CFEditAccount = (() => {
     async function loadCFEditLanding() {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
-
+        
         if (!document.querySelector('.consumerListBtn')) roster2.miniRosterinit();
 
         landingPage = document.createElement('div');
@@ -121,12 +122,13 @@ const CFEditAccount = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'newEntryBtn',
+            readonly: $.session.CFInsertAccounts,
             callback: async () => {
                 page = 'Add';
                 loadCFEditLanding();
             },
         });
-        if ($.session.CFInsert) {
+        if ($.session.CFInsertAccounts) {
             entryBtn.classList.remove('disabled');
         }
         else {
@@ -144,6 +146,7 @@ const CFEditAccount = (() => {
     }
 
     async function buildAccountForm() {
+        disabledEnabledAccounts();
         const employeeInfoDiv = document.createElement('div');
         employeeInfoDiv.classList.add('additionalQuestionWrap');
 
@@ -202,6 +205,7 @@ const CFEditAccount = (() => {
             type: 'text',
             label: 'Name',
             style: 'secondary',
+            readonly: IsDisabledAccount,
             value: (name) ? name : '',
         });
         inputNumber = input.build({
@@ -209,24 +213,28 @@ const CFEditAccount = (() => {
             type: 'number',
             label: 'Number',
             style: 'secondary',
+            readonly: IsDisabledAccount,
             value: (number) ? number : '',
         });
         typeDropdown = dropdown.build({
             id: 'typeDropdown',
             label: "Type",
             dropdownId: "typeDropdown",
+            readonly: IsDisabledAccount,
             value: (type) ? type : '',
         });
         statusDropdown = dropdown.build({
             id: 'statusDropdown',
             label: "Status",
             dropdownId: "statusDropdown",
+            readonly: IsDisabledAccount,
             value: (status) ? status : '',
         });
         classDropdown = dropdown.build({
             id: 'classDropdown',
             label: "Class",
             dropdownId: "classDropdown",
+            readonly: IsDisabledAccount,
             value: (classofAccount) ? classofAccount : '',
         });
         opendDate = input.build({
@@ -234,6 +242,7 @@ const CFEditAccount = (() => {
             type: 'date',
             label: 'Date Opened',
             style: 'secondary',
+            readonly: IsDisabledAccount,
             value: (dateOpened) ? dateOpened : '',
         });
         closeDate = input.build({
@@ -241,6 +250,7 @@ const CFEditAccount = (() => {
             type: 'date',
             label: 'Date Closed',
             style: 'secondary',
+            readonly: IsDisabledAccount,
             value: (dateClosed) ? dateClosed : '',
         });
         lastReconciledDate = input.build({
@@ -256,6 +266,7 @@ const CFEditAccount = (() => {
             type: 'text',
             label: 'Opening Balance',
             style: 'secondary',
+            readonly: IsDisabledAccount,
             value: (openingBalance) ? '$' + openingBalance : '',
         });
         inputBal = input.build({
@@ -272,6 +283,7 @@ const CFEditAccount = (() => {
             type: 'text',
             label: 'Description',
             style: 'secondary',
+            readonly: IsDisabledAccount,
             value: (description) ? description : '',
         });
 
@@ -281,6 +293,7 @@ const CFEditAccount = (() => {
             style: 'secondary',
             type: 'contained',
             icon: 'save',
+            readonly: IsDisabledAccount,  
             callback: async () => {
                 if (!SAVE_BTN.classList.contains('disabled')) {
                     SAVE_BTN.classList.add('disabled');
@@ -354,7 +367,7 @@ const CFEditAccount = (() => {
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('editAccountBtnWrap');
-        btnWrap.style.marginLeft = '45%';
+        btnWrap.style.marginLeft = '25%';
         btnWrap.style.width = '50%';
 
         SAVE_BTN.style.width = '52%';
@@ -373,6 +386,18 @@ const CFEditAccount = (() => {
         return employeeInfoDiv;
     }
 
+
+    function disabledEnabledAccounts() {
+        if ($.session.CFUpdateEditAccounts && page == 'Update') {
+            IsDisabledAccount = false;
+        }
+        else if ($.session.CFInsertAccounts && page == 'Add') {
+            IsDisabledAccount = false;
+        }
+        else {
+            IsDisabledAccount = true;   
+        }       
+    }
     // Populate the Account DDL
     async function populateAccountDropdown() {
         const {

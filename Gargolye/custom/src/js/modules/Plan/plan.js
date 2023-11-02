@@ -2155,6 +2155,9 @@ const plan = (function () {
       PROGRESS__BTN.SPINNER.show('workflowContinueBtn', '', false);
       // TODO 100969 -- display list of User Forms for the selected Workflows
 
+      if ($.session.planFormCarryover) {
+
+      
          let selectedwfForms = [];
 
          const wfvPopup = document.querySelector('.workflowListPopup');
@@ -2221,8 +2224,10 @@ const plan = (function () {
          } else {
            createNewPlan(selectedConsumer, processId, selectedWorkflows);
          }
-
-    //  createNewPlan(selectedConsumer, processId, selectedWorkflows);
+        } else {   // if ($.session.planFormCarryover 
+            createNewPlan(selectedConsumer, processId, selectedWorkflows);      
+        }
+    
     };
     planWorkflow.showWorkflowListPopup(wfvData, workflowCallback);
   }
