@@ -15,7 +15,7 @@ using Convert = System.Convert;
 using Font = System.Drawing.Font;
 using Field = pdftron.PDF.Field;
 using pdftron.Filters;
-
+using System.Globalization;
 
 namespace OODForms
 {
@@ -639,7 +639,7 @@ namespace OODForms
 
             // Creates a unique string of numbers for the Invoice # field
             DateTime currentDate = DateTime.Now;
-            string currentDateStr = currentDate.ToString("yyyy-MM-dd");
+            string currentDateStr = currentDate.ToString("M/d/yy");
             string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
             string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
@@ -649,6 +649,9 @@ namespace OODForms
             // Gathers all the data for the table in the pdf (startTime, endTime, startLocation, endLocation, units, # in vehicle per trip, staff initials)
             string returnedData = oodfdg.getForm10PDFData(token, referenceNumber, startDate, endDate, consumerIdString, userId);
             List<form10Data> form10DataList = JsonConvert.DeserializeObject<List<form10Data>>(returnedData);
+
+            string startDateOnReport = minDate(form10DataList);
+            string endDateOnReport = maxDate(form10DataList);
 
             string authorizationNumber = referenceNumber;
             if (referenceNumber == "%")
@@ -666,8 +669,8 @@ namespace OODForms
                     ("Invoice_Date", currentDateStr),
                     ("Invoice_Status", "Final"),
                     ("Person Completing Report", personCompletingReport),
-                    ("Service_Start_Date_af_date", startDate),
-                    ("Service_End_Date_af_date", endDate),
+                    ("Service_Start_Date_af_date", startDateOnReport),
+                    ("Service_End_Date_af_date", endDateOnReport),
                     ("Individuals Name", form10DataList[0].individualsName),
                     ("Direct Service Staff Name and Initials", directServiceStaffNames),
                     ("Provider Name", form10DataList[0].vendorName),
@@ -688,14 +691,27 @@ namespace OODForms
             {
                 // gets correct format for date
                 DateTime dateTime = DateTime.Parse(form10DataList[i - 1].date);
-                string datePart = dateTime.ToString("yyyy-MM-dd");
+                string datePart = dateTime.ToString("M/d/yy");
+
+                // gets correct format for start/end times
+                DateTime parsedStartTime = DateTime.ParseExact(form10DataList[i - 1].startTime, "HH:mm:ss", CultureInfo.InvariantCulture);
+
+                // Format the DateTime as "hh:mm tt" (AM/PM format)
+                string formattedStartTime = parsedStartTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+
+                DateTime parsedEndTime = DateTime.ParseExact(form10DataList[i - 1].endTime, "HH:mm:ss", CultureInfo.InvariantCulture);
+
+                // Format the DateTime as "hh:mm tt" (AM/PM format)
+                string formattedEndTime = parsedEndTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+
+                    string formattedUnits = ExtractWholeNumber(form10DataList[i - 1].units);
 
                 var tableData = new List<(string fieldName, string value)>
                     {
                         ("Date3_af_date.0." + (i -1), datePart),
-                        ("START_TIMERow" + i, form10DataList[i-1].startTime),
-                        ("END_TIMERow" + i, form10DataList[i-1].endTime),
-                        ("UNITSRow" + i, form10DataList[i-1].units),
+                        ("START_TIMERow" + i, formattedStartTime),
+                        ("END_TIMERow" + i, formattedEndTime),
+                        ("UNITSRow" + i, formattedUnits),
                         ("People" + i, form10DataList[i-1].vehiclePerTrip),
                         ("START LOCATION STREETCITYRow" + i, form10DataList[i-1].startLocation),
                         ("END LOCATION STREETCITYRow" + i, form10DataList[i-1].endLocation),
@@ -739,6 +755,66 @@ namespace OODForms
             catch (Exception ex)
             {
                 return "Failed";
+            }
+        }
+
+        public string minDate(List<form10Data> dataList)
+        {
+            if (dataList.Count == 0)
+            {
+                // Handle the case where the list is empty
+                throw new InvalidOperationException("The list is empty.");
+            }
+
+            DateTime minDate = DateTime.Parse(dataList[0].date);
+
+            foreach (var item in dataList)
+            {
+                DateTime currentDate = DateTime.Parse(item.date);
+                if (currentDate < minDate)
+                {
+                    minDate = currentDate;
+                }
+            }
+
+            // Format the minDate as "m/d/yy" and return it as a string
+            return minDate.ToString("M/d/yy");
+        }
+
+        public string maxDate(List<form10Data> dataList)
+        {
+            if (dataList.Count == 0)
+            {
+                // Handle the case where the list is empty
+                throw new InvalidOperationException("The list is empty.");
+            }
+
+            DateTime maxDate = DateTime.Parse(dataList[0].date);
+
+            foreach (var item in dataList)
+            {
+                DateTime currentDate = DateTime.Parse(item.date);
+                if (currentDate > maxDate)
+                {
+                    maxDate = currentDate;
+                }
+            }
+
+            // Format the minDate as "m/d/yy" and return it as a string
+            return maxDate.ToString("M/d/yy");
+        }
+
+        public string ExtractWholeNumber(string numberString)
+        {
+            if (decimal.TryParse(numberString, out decimal decimalValue))
+            {
+                int wholeNumber = (int)decimalValue;
+                return wholeNumber.ToString();
+            }
+            else
+            {
+                // Handle the case where the input is not a valid decimal
+                throw new ArgumentException("Invalid number format.");
             }
         }
 
