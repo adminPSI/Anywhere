@@ -48,7 +48,7 @@ namespace OODForms
         public DataSet OODForm8GetDirectStaff(string AuthorizationNumber, string StartDate, string EndDate)
         {
             sb.Clear();
-            sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
+            sb.Append("SELECT DISTINCT  dba.EM_Job_Task.Position_ID ");
             sb.Append("FROM dba.EM_Job_Task ");
             sb.Append("LEFT OUTER JOIN dba.EMP_OOD ON dba.EM_Job_Task.Position_ID = dba.EMP_OOD.Position_ID ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.EMP_OOD.Case_Note_ID = dba.Case_Notes.Case_Note_ID ");
@@ -69,7 +69,7 @@ namespace OODForms
             }
 
             sb.Clear();
-            sb.Append("SELECT   dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, '' AS Initials ");
+            sb.Append("SELECT DISTINCT   dba.People.Last_Name, dba.People.First_Name, dba.People.Middle_Name, '' AS Initials ");
             sb.Append("FROM dba.EMP_OOD ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Case_Notes.Case_Note_ID = dba.EMP_OOD.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.People ON dba.People.Person_ID = dba.Case_Notes.Case_Manager_ID ");
