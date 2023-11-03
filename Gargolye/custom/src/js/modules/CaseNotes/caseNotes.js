@@ -204,7 +204,7 @@ const CaseNotes = (() => {
 
   // DATA
   //--------------------------------------------------
-  function updateSingleNoteToGroupNote() {
+  function convertSingleNoteToGroupNote() {
     // 1. convertToGroupNotes === true | only if !isGroupNote && allowGroupNotes
     // 2. allowGroupNotes | this gets set on from service code dropdown event
     // 3. isGroupNote | set when singleNotToGroupNote is called
@@ -221,13 +221,11 @@ const CaseNotes = (() => {
       //TODO: set page load to new?
     }
   }
-  // DELETE
   async function deleteNote(noteId) {
     await _UTIL.fetchData('deleteExistingCaseNote', {
       noteId: noteId,
     });
   }
-  // UPDATE
   async function updateNote() {
     //TODO: clean start time and end time:
     // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
@@ -236,18 +234,16 @@ const CaseNotes = (() => {
     // add -> groupNoteId, consumerId
     // remove -> reviewRequired
   }
-  // SAVE
+  function showRequestStatus(isSuccess) {}
   async function saveAttachments(caseNoteId) {
     for (attachment in attachmentsForSave) {
       try {
-        console.log('save attach start');
         const saveAttachmentResults = await _UTIL.fetchData('addCaseNoteAttachment', {
           caseNoteId: caseNoteId,
           description: attachmentsForSave[attachment].description,
           attachmentType: attachmentsForSave[attachment].type,
           attachment: attachmentsForSave[attachment].arrayBuffer,
         });
-        console.log('save attach end');
         console.log(saveAttachmentResults);
       } catch (error) {
         console.log('error saving attachment', attachment);
@@ -257,8 +253,12 @@ const CaseNotes = (() => {
   async function saveNote(formData) {
     // let groupNoteId = await _UTIL.fetchData('getGroupNoteId');
     // groupNoteId = groupNoteId.getGroupNoteIdResult;
+    const reqVisualizer = new AsyncRequestVisualizer();
+    reqVisualizer.build().renderTo(_DOM.ACTIONCENTER);
 
     if (isNewNote) {
+      reqVisualizer.show('Saving Case Note...');
+
       const saveCaseNoteResults = await _UTIL.fetchData('saveCaseNote', {
         caseManagerId,
         caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
@@ -283,10 +283,27 @@ const CaseNotes = (() => {
       });
       console.log(saveCaseNoteResults);
 
-      if ($.session.applicationName === 'Gatekeeper' && saveCaseNoteResults) {
-        const respDoc = parser.parseFromString(results, 'text/xml');
-        const caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
-        await saveAttachments();
+      if (saveCaseNoteResults) {
+        if ($.session.applicationName === 'Gatekeeper') {
+          await reqVisualizer.showSuccess('Case Note Saved!', 2000);
+
+          // save attachments
+          reqVisualizer.showPending('Saving Note Attachments');
+          const respDoc = parser.parseFromString(saveCaseNoteResults, 'text/xml');
+          const caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
+          const saveAttachmentsResults = await saveAttachments(caseNoteId);
+          console.log(saveAttachmentsResults);
+
+          if (saveAttachmentsResults) {
+            reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
+          } else {
+            reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
+          }
+        } else {
+          reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+        }
+      } else {
+        reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
       }
     }
   }

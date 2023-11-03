@@ -1,0 +1,52 @@
+[data-UI] {
+  .loadingAnimation {
+    position: relative;
+  }
+
+  .loadingAnimation__spinner {
+    animation: spin 1500ms linear infinite;
+    border: 16px solid rgba($black, 0.4);
+    border-top: 16px solid $primary;
+    border-radius: $r-circle;
+    height: 140px;
+    width: 140px;
+    margin: 0 auto;
+
+    // SIZE *large is default styles
+    &.medium {
+      border: 10px solid rgba($black, 0.4);
+      border-top: 10px solid $primary;
+      height: 60px;
+      width: 60px;
+    }
+    &.small {
+      border: 3.5px solid rgba($white, 0.6);
+      border-top: 3px solid $primary;
+      height: 17px;
+      width: 17px;
+    }
+
+    // SPEED *snail speed is default
+    &.slow {
+      animation-duration: 1s;
+    }
+    &.normal {
+      animation-duration: 500ms;
+    }
+    &.fast {
+      animation-duration: 250ms;
+    }
+    &.paulWalker {
+      animation-duration: 20ms;
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}

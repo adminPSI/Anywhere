@@ -2,6 +2,21 @@
   global._UTIL = factory();
 })(this, function () {
   /**
+   * Allows you to use async await with setTimeout
+   *
+   * @param {number} ms The number of milliseconds to delay.
+   * @param {Function} callback The callback function to execute after the delay.
+   * @returns {Promise<void>} A promise that resolves after the specified delay.
+   */
+  function asyncSetTimeout(callback, ms) {
+    return new Promise(resolve =>
+      setTimeout(() => {
+        callback();
+        resolve();
+      }, ms),
+    );
+  }
+  /**
    * Debounces a function, ensuring that it's not called until after the specified
    * amount of time has passed since the lat time it was invoked.
    *
@@ -352,6 +367,7 @@
   }
 
   return {
+    asyncSetTimeout,
     debounce,
     fetchData,
     localStorageHandler,
