@@ -135,13 +135,17 @@ class WorkflowStepComponent {
                 stepDescriptionContainer.classList.add("step-description-container");
 
                     let stepCompleteCheckbox = input.buildCheckbox({
-                        text: description,
+                        //text: description,
                         isChecked: doneDate
                     });
                     stepCompleteCheckbox.classList.add("step-checkbox-container");
                     
                 stepDescriptionContainer.appendChild(stepCompleteCheckbox);
-                
+
+                let stepDescription = document.createElement("div");
+                stepDescription.classList.add("step-description");
+                stepDescription.innerHTML = `<h4>${description}</h4>`;
+                stepDescriptionContainer.appendChild(stepDescription); 
                 stepSummaryContainer.appendChild(stepDescriptionContainer);                
 
             let summaryComponent;
