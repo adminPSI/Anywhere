@@ -51,6 +51,15 @@ const MODULE_MENU = (function () {
     const utilMenu = document.querySelector('.util-menu');
     let moduleMenu;
 
+    const elementsWithClass = document.querySelectorAll('.route-link');
+
+    // Add an event listener to each element
+    elementsWithClass.forEach(element => {
+        element.addEventListener('click', event => {
+            event.preventDefault();
+        });
+    });
+        
     async function handleMenuClick(event) {
         const target = event.target;
 
