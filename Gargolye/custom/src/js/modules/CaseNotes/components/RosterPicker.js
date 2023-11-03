@@ -13,12 +13,12 @@
   };
 
   /**
-   * Displays a list of consumers, contains logic for selecting consumer(s).
-   * Use onConsumerSelect passed in {options} to get array of selected consumer IDs.
+   * Constructor function for creating a Roster Picker component.
    *
    * @constructor
    * @param {Object} options
    * @param {Boolean} [options.allowMultiSelect]
+   * @returns {RosterPicker}
    */
   function RosterPicker(options) {
     // Data Init
@@ -34,13 +34,14 @@
     this.rosterSearchInput = null;
     this.rosterCaseLoadInput = null;
     this.consumerCards = null;
+
+    this.build();
   }
 
   /**
-   * Builds the Input element structure
+   * Builds the Input component HTML
    *
    * @function
-   * @returns {RosterPicker} - Returns the current instances for chaining
    */
   RosterPicker.prototype.build = function () {
     this.rosterPickerEle = _DOM.createElement('div', { class: 'rosterPicker' });
@@ -66,8 +67,6 @@
     this.rosterPickerEle.appendChild(this.rosterWrapEle);
 
     this.setupEvents();
-
-    return this;
   };
 
   /**
@@ -168,9 +167,9 @@
    * On consumer select method
    *
    * @function
-   * @param {Function} cb -
+   * @param {Function} cbFunc Callback function to call
    */
-  RosterPicker.prototype.onConsumerSelect = function (cb) {
+  RosterPicker.prototype.onConsumerSelect = function (cbFunc) {
     this.rosterWrapEle.addEventListener('click', e => {
       if (e.target.dataset.target === 'rosterCard') {
         if (this.options.allowMultiSelect) {
@@ -193,7 +192,7 @@
           }
         }
 
-        cb(Object.keys(this.selectedConsumers));
+        cbFunc(Object.keys(this.selectedConsumers));
 
         return;
       }
@@ -283,8 +282,8 @@
    * Renders the built Input element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the roster picker to
-   * @returns {RosterPicker} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the roster picker to
+   * @returns {RosterPicker} Returns the current instances for chaining
    */
   RosterPicker.prototype.renderTo = function (node) {
     if (node instanceof Node) {

@@ -114,6 +114,12 @@
   //=======================================
   // MAIN LIB
   //---------------------------------------
+  /**
+   * Constructor function for creating a Case Notes Data set.
+   *
+   * @constructor
+   * @returns {CaseNotesData}
+   */
   function CaseNotesData() {
     // Dropdown Data
     this.dropdownData = {};
@@ -130,30 +136,51 @@
 
   // FETCH DATA
   //---------------------------------------
+  /**
+   * @function
+   * @returns {CaseNotesData}
+   */
   CaseNotesData.prototype.fetchDropdownData = async function () {
     const data = await _UTIL.fetchData('populateDropdownData');
     this.dropdownData = dealWithDropdownDataHugeString(data.populateDropdownDataResult);
 
     return this;
   };
-  CaseNotesData.prototype.fetchVendorDropdownData = async function (selectedConsumer, selectedDate) {
+  /**
+   * @function
+   * @param {String} selectedConsumerId
+   * @param {Date} selectedDate
+   * @returns {CaseNotesData}
+   */
+  CaseNotesData.prototype.fetchVendorDropdownData = async function (selectedConsumerId, selectedDate) {
     const data = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
-      consumerId: selectedConsumer,
+      consumerId: selectedConsumerId,
       serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
     });
     this.vendorDropdownData = data.getConsumerSpecificVendorsJSONResult;
 
     return this;
   };
-  CaseNotesData.prototype.fetchServiceLocationDropdownData = async function (selectedConsumer, selectedDate) {
+  /**
+   * @function
+   * @param {String} selectedConsumerId
+   * @param {Date} selectedDate
+   * @returns {CaseNotesData}
+   */
+  CaseNotesData.prototype.fetchServiceLocationDropdownData = async function (selectedConsumerId, selectedDate) {
     const data = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
-      consumerId: selectedConsumer,
+      consumerId: selectedConsumerId,
       serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
     });
     this.serviceLocationDropdownData = data.getServiceLocationsForCaseNoteDropdownResult;
 
     return this;
   };
+  /**
+   * @function
+   * @param {String} caseManagerId
+   * @returns {CaseNotesData}
+   */
   CaseNotesData.prototype.fetchCaseManagerReviewData = async function (caseManagerId) {
     const data = await _UTIL.fetchData('getReviewRequiredForCaseManager', {
       caseManagerId,
@@ -163,6 +190,10 @@
 
     return this;
   };
+  /**
+   * @function
+   * @returns {CaseNotesData}
+   */
   CaseNotesData.prototype.fetchConsumersThatCanHaveMileage = async function () {
     let data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
     data = data.getConsumersThatCanHaveMileageJSONResult;
@@ -170,12 +201,22 @@
 
     return this;
   };
+  /**
+   * @function
+   * @param {String} caseNoteId
+   * @returns {CaseNotesData}
+   */
   CaseNotesData.prototype.fetchAttachmentsGK = async function (caseNoteId) {
     const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId });
     this.attachmentList = data.getCaseNoteAttachmentsListResult;
 
     return this;
   };
+  /**
+   * @function
+   * @param {Object} retrieveData
+   * @returns {CaseNotesData}
+   */
   CaseNotesData.prototype.fetchTimeOverlapData = async function (retrieveData) {
     const data = await _UTIL.fetchData('caseNoteOverlapCheck', { ...retrieveData });
     this.overlapData = data.caseNoteOverlapCheckResult;
@@ -198,6 +239,11 @@
 
     return data;
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Array}
+   */
   CaseNotesData.prototype.getLocationDropdownData = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].locations.map(location => {
       return {
@@ -206,6 +252,11 @@
       };
     });
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Array}
+   */
   CaseNotesData.prototype.getServicesDropdownData = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].services.map(service => {
       return {
@@ -214,6 +265,11 @@
       };
     });
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Array}
+   */
   CaseNotesData.prototype.getContactsDropdownData = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].contacts.map(contact => {
       return {
@@ -222,6 +278,11 @@
       };
     });
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Array}
+   */
   CaseNotesData.prototype.getNeedsDropdownData = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].needs.map(need => {
       return {
@@ -230,6 +291,10 @@
       };
     });
   };
+  /**
+   * @function
+   * @returns {Array}
+   */
   CaseNotesData.prototype.getVendorDropdownData = function () {
     return this.vendorDropdownData.map(vendor => {
       return {
@@ -238,6 +303,10 @@
       };
     });
   };
+  /**
+   * @function
+   * @returns {Array}
+   */
   CaseNotesData.prototype.getServiceLocationDropdownData = function () {
     return this.serviceLocationDropdownData.map(location => {
       return {
@@ -249,36 +318,80 @@
 
   // DATA GETTERS
   //---------------------------------------
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.isLocationRequired = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].locationRequired === 'Y' ? true : false;
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.isNeedRequired = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].needRequired === 'Y' ? true : false;
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.isContactRequired = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].contactRequired === 'Y' ? true : false;
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.isServiceRequired = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].serviceRequired === 'Y' ? true : false;
   };
-
+  /**
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.isMileageRequired = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].mileageRequired === 'Y' ? true : false;
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.isTravelTimeRequired = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].travelTimeRequired === 'Y' ? true : false;
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.isDocTimeRequired = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].docTimeRequired === 'Y' ? true : false;
   };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.allowGroupNotes = function (selectedServiceCode) {
     return this.dropdownData[selectedServiceCode].allowGroupNotes === 'Y' ? true : false;
   };
-
+  /**
+   * @function
+   * @returns {Boolean}
+   */
   CaseNotesData.prototype.isReviewRequired = function () {
     return this.caseManagerReview.reviewrequired === 'Y' ? true : false;
   };
-
+  /**
+   * @function
+   * @returns {Array}
+   */
   CaseNotesData.prototype.getOvlerapData = function () {
     if (this.overlapData && this.overlapData.length > 0) {
       return this.overlapData.map(d => d.consumername);
@@ -286,6 +399,10 @@
 
     return '';
   };
+  /**
+   * @function
+   * @returns {Array}
+   */
   CaseNotesData.prototype.getAttachmentsList = function () {
     return this.attachmentList;
   };

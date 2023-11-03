@@ -9,6 +9,8 @@
 //TODO: if GK save attachments after note save
 //TODO: preSave() stops timer and speech to text
 //TODO: make sure im clearing out selected consumer on module leave/form submit
+//TODO: DROPDOWN ICON
+//TODO: when you click outside modal re enable textarea for fullscreen mode
 
 const CaseNotes = (() => {
   //--------------------------
@@ -48,6 +50,7 @@ const CaseNotes = (() => {
   let cnOverview;
   let cnPhrases;
   let cnNotifications;
+  let cnDocTimer;
 
   function resetModule() {
     //TODO ASH
@@ -88,30 +91,14 @@ const CaseNotes = (() => {
       }
     }
   }
-  function setDefaultSelectedDate() {
-    const today = dates.getTodaysDateObj();
-    today.setHours(0, 0, 0, 0);
-    return today;
+  function checkServiceFundingADV() {
+    //! ADV ONLY
+    // based off selected servBillCode
+    // check its service funding value
+    // if funding value is "N" - disable service location dropdown
+    // else - enable dropdown, make required
   }
-  function isTimePastOrPresent(dirtyTime) {
-    const currentDate = new Date();
-    const selectedDateClone = new Date(selectedDate);
-
-    //If selectedDate is not today then time dosen't matter
-    if (currentDate.setHours(0, 0, 0, 0) === selectedDateClone.setHours(0, 0, 0, 0)) {
-      return true;
-    }
-
-    // CHECKS IF TIME IS IN FURUTRE
-    dirtyTime = dirtyTime.split(':');
-    selectedDateClone.setHours(dirtyTime[0], dirtyTime[1], 0, 0);
-    return dates.isAfter(selectedDateClone, currentDate);
-  }
-  function isStartTimeBeforeEndTime(startTime, endTime) {
-    if (!startTime || !endTime) return true;
-
-    return startTime < endTime ? true : false;
-  }
+  // TIME HELPERS
   function parseSessionTime(dirtyTime) {
     let time = `${dirtyTime.slice(0, -2)} ${dirtyTime.slice(-2)}`;
     time = UTIL.convertToMilitary(time);
@@ -148,6 +135,25 @@ const CaseNotes = (() => {
       // cnValidation.hide('workhours');
     }
   }
+  function isTimePastOrPresent(dirtyTime) {
+    const currentDate = new Date();
+    const selectedDateClone = new Date(selectedDate);
+
+    //If selectedDate is not today then time dosen't matter
+    if (currentDate.setHours(0, 0, 0, 0) === selectedDateClone.setHours(0, 0, 0, 0)) {
+      return true;
+    }
+
+    // CHECKS IF TIME IS IN FURUTRE
+    dirtyTime = dirtyTime.split(':');
+    selectedDateClone.setHours(dirtyTime[0], dirtyTime[1], 0, 0);
+    return dates.isAfter(selectedDateClone, currentDate);
+  }
+  function isStartTimeBeforeEndTime(startTime, endTime) {
+    if (!startTime || !endTime) return true;
+
+    return startTime < endTime ? true : false;
+  }
   async function timeOverlapCheck(startTime, endTime) {
     const overlap = await cnData
       .fetchTimeOverlapData({
@@ -169,13 +175,6 @@ const CaseNotes = (() => {
     } else {
       // cnValidation.hide('overlap');
     }
-  }
-  function checkServiceFundingADV() {
-    //! ADV ONLY
-    // based off selected servBillCode
-    // check its service funding value
-    // if funding value is "N" - disable service location dropdown
-    // else - enable dropdown, make required
   }
 
   // VALIDATION / REQUIRED FIELDS
@@ -234,7 +233,6 @@ const CaseNotes = (() => {
     // add -> groupNoteId, consumerId
     // remove -> reviewRequired
   }
-  function showRequestStatus(isSuccess) {}
   async function saveAttachments(caseNoteId) {
     for (attachment in attachmentsForSave) {
       try {
@@ -254,7 +252,7 @@ const CaseNotes = (() => {
     // let groupNoteId = await _UTIL.fetchData('getGroupNoteId');
     // groupNoteId = groupNoteId.getGroupNoteIdResult;
     const reqVisualizer = new AsyncRequestVisualizer();
-    reqVisualizer.build().renderTo(_DOM.ACTIONCENTER);
+    reqVisualizer.renderTo(_DOM.ACTIONCENTER);
 
     if (isNewNote) {
       reqVisualizer.show('Saving Case Note...');
@@ -678,7 +676,7 @@ const CaseNotes = (() => {
   // MAIN
   //--------------------------------------------------
   async function loadPage() {
-    // LOAD INSTANCES / BUILD / RENDER
+    // LOAD INSTANCES / BUILD & RENDER
     //-----------------------------------------
     // Notifications (error/warning messages)
     cnNotifications = new Notifications();
@@ -688,13 +686,17 @@ const CaseNotes = (() => {
       selectedDate: selectedDate,
       allowFutureDate: false,
     });
-    dateNavigation.build().renderTo(cnDateNavWrap);
+    dateNavigation.renderTo(cnDateNavWrap);
 
     // Roster Picker
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
     });
-    rosterPicker.build().renderTo(cnRosterWrap);
+    rosterPicker.renderTo(cnRosterWrap);
+
+    // Documentation Timer
+    cnDocTimer = new CaseNotesTimer();
+    cnDocTimer.renderTo(cnFormWrap);
 
     // Form
     cnForm = new Form({
@@ -762,6 +764,7 @@ const CaseNotes = (() => {
           type: 'select',
           label: 'Vendor',
           id: 'vendor',
+          note: '',
         },
         //serviceLocation
         {
@@ -808,11 +811,11 @@ const CaseNotes = (() => {
 
     // Overview
     cnOverview = new CaseNotesOverview();
-    cnOverview.build().renderTo(moduleWrap);
+    cnOverview.renderTo(moduleWrap);
 
     // Phrases
     cnPhrases = new CaseNotesPhrases();
-    cnPhrases.build().renderTo(_DOM.ACTIONCENTER);
+    cnPhrases.renderTo(_DOM.ACTIONCENTER);
 
     // FETCH DATA / POPULATE
     //-----------------------------------------
@@ -838,7 +841,7 @@ const CaseNotes = (() => {
   }
   async function init() {
     // init module data
-    selectedDate = setDefaultSelectedDate();
+    selectedDate = dates.getTodaysDateObj();
     caseManagerId = $.session.PeopleId;
 
     // prep actioncenter

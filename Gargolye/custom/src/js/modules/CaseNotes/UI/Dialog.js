@@ -13,10 +13,15 @@
   };
 
   /**
+   * Constructor function for creating a Dialog component.
+   *
    * @constructor
    * @param {Object} options
-   * @param {Boolean} [options.isModal] - Whether to display as basic dialog or modal dialog
+   * @param {Boolean} [options.isModal] Whether to display as basic dialog or modal dialog
    * @returns {Dialog}
+   *
+   * @example
+   * const popup = new Dialog();
    */
   function Dialog(options) {
     this.options = _DOM.separateHTMLAttribrutes(_UTIL.mergeObjects(DEFAULT_OPTIONS, options));
@@ -28,10 +33,10 @@
   }
 
   /**
-   * Builds the Dialog element structure
+   * Builds the Dialog element component HTML
    *
    * @function
-   * @returns {Dialog} - Returns the current instances for chaining
+   * @returns {Dialog} Returns the current instances for chaining
    */
   Dialog.prototype.build = function () {
     this.dialog = _DOM.createElement('dialog', {
@@ -87,8 +92,8 @@
    * Renders the built Dialog element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the dialog to
-   * @returns {Dialog} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the dialog to
+   * @returns {Dialog} Returns the current instances for chaining
    */
   Dialog.prototype.renderTo = function (node) {
     if (node instanceof Node) {

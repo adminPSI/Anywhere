@@ -31,7 +31,12 @@
 @import './components/dateNavigation';
 @import './components/rosterPicker';
 @import './components/requestVisualizer';
-@import './UI/loadingAnimation';
+@import './UI/button';
+@import './UI/form';
+@import './UI/icon';
+@import './UI/inputs';
+@import './UI/spinner';
+@import './UI/table';
 
 @import './modules/authorization';
 @import './modules/caseNotes';
@@ -48,7 +53,6 @@
 @import './modules/covid';
 @import './modules/transportation';
 @import './modules/simpleMar';
-
 @import './modules/plan/assesment';
 @import './modules/plan/ISP';
 @import './modules/plan/plan';

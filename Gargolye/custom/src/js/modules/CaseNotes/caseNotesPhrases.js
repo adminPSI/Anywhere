@@ -5,7 +5,10 @@
   // ADDING NEW PHRASES
   //---------------------------------------
   /**
+   * Constructor function for creating the Case Notes Add Phrases component.
+   *
    * @constructor
+   * @returns {CaseNotesAddPhrases}
    */
   function CaseNotesAddPhrases(phrasesInstance) {
     // Data Init
@@ -18,7 +21,6 @@
 
   /**
    * @function
-   *
    * @returns {CaseNotesAddPhrases} - Returns the current instances for chaining
    */
   CaseNotesAddPhrases.prototype.build = function () {
@@ -123,7 +125,10 @@
   // INSERTING PHRASES
   //---------------------------------------
   /**
+   * Constructor function for creating the Case Notes Insert Phrases component.
+   *
    * @constructor
+   * @returns {CaseNotesInsertPhrases}
    */
   function CaseNotesInsertPhrases(phrasesInstance) {
     // Data Init
@@ -142,7 +147,6 @@
 
   /**
    * @function
-   *
    * @returns {CaseNotesInsertPhrases} - Returns the current instances for chaining
    */
   CaseNotesInsertPhrases.prototype.build = function () {
@@ -243,6 +247,7 @@
       this.PhrasesInstance.AddPhrases.show();
     });
   };
+
   /**
    * @function
    */
@@ -267,8 +272,8 @@
    * Renders Case Notes Phrase makrup to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render case notes phrases to
-   * @returns {CaseNotesInsertPhrases} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render case notes phrases to
+   * @returns {CaseNotesInsertPhrases} Returns the current instances for chaining
    */
   CaseNotesInsertPhrases.prototype.renderTo = function (node) {
     if (node instanceof Node) {
@@ -282,12 +287,17 @@
   // MAIN LIB
   //---------------------------------------
   /**
+   * Constructor function for creating the Case Notes Phrases component.
+   *
    * @constructor
+   * @returns {CaseNotesPhrases}
    */
   function CaseNotesPhrases() {
     // Data Init
     this.AddPhrases = new CaseNotesAddPhrases();
     this.InsertPhrases = new CaseNotesInsertPhrases(this);
+
+    this.build();
   }
 
   /**
@@ -298,16 +308,14 @@
   CaseNotesPhrases.prototype.build = function () {
     this.AddPhrases.build();
     this.InsertPhrases.build();
-
-    return this;
   };
 
   /**
    * Renders Case Notes Phrase Dialogs to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render case notes phrases to
-   * @returns {CaseNotesPhrases} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render case notes phrases to
+   * @returns {CaseNotesPhrases} Returns the current instances for chaining
    */
   CaseNotesPhrases.prototype.renderTo = function (node) {
     this.AddPhrases.renderTo(node);

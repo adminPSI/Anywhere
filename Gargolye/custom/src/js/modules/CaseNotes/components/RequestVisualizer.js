@@ -18,8 +18,12 @@
     messageError: 'Error :(',
     duration: 2000,
   };
+
   /**
+   * Constructor function for creating a Async Request Visualizer component.
+   *
    * @constructor
+   * @returns {AsyncRequestVisualizer}
    */
   function AsyncRequestVisualizer(options) {
     // Data Init
@@ -28,27 +32,30 @@
     // Instance Ref
     this.dialog = null;
     this.spinner = null;
+
+    // DOM Ref
+    this.visualizerWrap = null;
+    this.messageEle = null;
+
+    this.build();
   }
 
   /**
-   * Builds the AsyncRequestVisualizer element structure
+   * Builds the AsyncRequestVisualizer component HTML
    *
    * @function
-   * @returns {AsyncRequestVisualizer} - Returns the current instances for chaining
    */
   AsyncRequestVisualizer.prototype.build = function () {
     this.dialog = new Dialog();
 
-    this.spinnerWrap = _DOM.createElement('div');
+    this.visualizerWrap = _DOM.createElement('div');
     this.dialog.dialog.appendChild(spinnerWrap);
 
-    this.spinner = new LoadingAnimation();
-    this.spinner.build().renderTo(this.spinnerWrap);
+    this.spinner = new Spinner();
+    this.spinner.renderTo(this.visualizerWrap);
 
-    this.message = _DOM.createElement('p');
-    this.dialog.dialog.appendChild(this.message);
-
-    return this;
+    this.messageEle = _DOM.createElement('p');
+    this.dialog.dialog.appendChild(this.messageEle);
   };
 
   /**
@@ -58,7 +65,7 @@
    * @param {String} message
    */
   AsyncRequestVisualizer.prototype.show = function (message) {
-    this.message.innerText = message;
+    this.messageEle.innerText = message;
     this.dialog.show();
   };
 
@@ -69,9 +76,9 @@
    * @param {String} message
    */
   AsyncRequestVisualizer.prototype.showPending = function (message) {
-    this.message.innerText = message;
-    this.spinnerWrap.childNodes[0].remove();
-    this.spinnerWrap.appendChild(this.spinner);
+    this.messageEle.innerText = message;
+    this.visualizerWrap.childNodes[0].remove();
+    this.visualizerWrap.appendChild(this.spinner.spinnerWrap);
   };
 
   /**
@@ -81,11 +88,12 @@
    * @param {String} message
    */
   AsyncRequestVisualizer.prototype.showSuccess = async function (message, duration = 2000) {
-    this.message.innerText = message;
+    this.messageEle.innerText = message;
     this.spinner.replaceWith(Icon.getIcon('checkmark'));
 
     await _UTIL.asyncSetTimeout(() => {}, duration);
   };
+
   /**
    * Shows error message/icon
    *
@@ -93,7 +101,7 @@
    * @param {String} message
    */
   AsyncRequestVisualizer.prototype.showError = function (message) {
-    this.message.innerText = message;
+    this.messageEle.innerText = message;
     this.spinner.replaceWith(Icon.getIcon('error'));
   };
 
@@ -121,8 +129,8 @@
    * Renders the built AsyncRequestVisualizer to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the AsyncRequestVisualizer to
-   * @returns {AsyncRequestVisualizer} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the AsyncRequestVisualizer to
+   * @returns {AsyncRequestVisualizer} Returns the current instances for chaining
    */
   AsyncRequestVisualizer.prototype.renderTo = function (node) {
     if (node instanceof Node) {

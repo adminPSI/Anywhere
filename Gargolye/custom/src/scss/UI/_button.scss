@@ -1,0 +1,78 @@
+//===========================================
+// BUTTON
+//-------------------------------------------
+[data-UI] {
+  .button {
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    font-weight: $_bold;
+    min-height: 40px;
+    min-width: 48px;
+    padding: 0 10px;
+    text-transform: uppercase;
+
+    &.icon {
+      display: flex;
+      align-items: center;
+      column-gap: 4px;
+
+      span:last-child {
+        position: relative;
+        top: 2px;
+      }
+    }
+
+    //states
+    &.disabled {
+      background: $gray;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    // styles
+    &.contained {
+      color: $white;
+
+      &.primary {
+        background: $primary;
+      }
+      &.danger {
+        background: $error;
+      }
+      &.warning {
+        color: $black;
+        background: $warning;
+      }
+    }
+    &.outlined {
+      background: none;
+      border-width: 3px;
+      border-style: solid;
+      //color: $black;
+      color: $primary;
+
+      &.primary {
+        border-color: $primary;
+
+        span {
+          color: $primary;
+        }
+      }
+      &.danger {
+        border-color: $error;
+
+        span {
+          color: $error;
+        }
+      }
+      &.warning {
+        border-color: $warning;
+      }
+    }
+    &.text {
+      background: none;
+      border: none;
+      color: $black;
+    }
+  }
+}

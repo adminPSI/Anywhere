@@ -16,13 +16,22 @@
   };
 
   /**
+   * Constructor function for creating a Select component.
+   *
    * @constructor
    * @param {Object} options
-   * @param {String} options.id - Id for input, use to link it with label. Also used for name attribute.
-   * @param {String} options.label - Text for label select
-   * @param {Boolean} [options.required] - Whether select is required for submission
-   * @param {String} [options.note] - Text for select note/message, displayed underneath select field
-   * @param {Boolean} [options.hidden] - Whether to show or hide the select
+   * @param {String} options.id Id for input, use to link it with label. Also used for name attribute.
+   * @param {String} options.label Text for label select
+   * @param {Boolean} [options.required] Whether select is required for submission
+   * @param {String} [options.note] Text for select note/message, displayed underneath select field
+   * @param {Boolean} [options.hidden] Whether to show or hide the select
+   * @returns {Select}
+   *
+   * @example
+   * const dropdown = new Select({
+   *   label: 'Locations',
+   *   id: 'locations'
+   * });
    */
   function Select(options) {
     // Data Init
@@ -35,10 +44,10 @@
   }
 
   /**
-   * Builds the Select element structure
+   * Builds the Select component HTML
    *
    * @function
-   * @returns {Select} - Returns the current instances for chaining
+   * @returns {Select} Returns the current instances for chaining
    */
   Select.prototype.build = function () {
     const classArray = ['input', 'select', `${this.options.attributes.id}`];
@@ -70,7 +79,7 @@
    * Populates the select with <options>
    *
    * @function
-   * @param {Array} [data] data to populate select with
+   * @param {Array} [data] Data to populate select with
    */
   Select.prototype.populate = function (data) {
     if (data && Array.isArray(data)) this.options.data = data;
@@ -95,7 +104,7 @@
    * Sets value of select
    *
    * @function
-   * @param {*} value
+   * @param {String} Value
    */
   Select.prototype.setValue = function (value) {
     this.select.value = value;
@@ -114,7 +123,7 @@
    * Sets Custom Validity on select
    *
    * @function
-   * @param {String} message - empty string will unset invalid status
+   * @param {String} message Empty string will unset invalid status
    */
   Select.prototype.setValidtyError = function (message) {
     this.select.setCustomValidity(message);
@@ -144,6 +153,7 @@
    * Handles select change event
    *
    * @function
+   * @param {Function} cbFunc Callback function to call
    */
   Select.prototype.onChange = function (cbFunc) {
     this.select.addEventListener('change', e => {
@@ -155,8 +165,8 @@
    * Renders the built Select element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the select to
-   * @returns {Select} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the select to
+   * @returns {Select} Returns the current instances for chaining
    */
   Select.prototype.renderTo = function (node) {
     if (node instanceof Node) {

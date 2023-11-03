@@ -61,6 +61,7 @@ const dates = (function () {
 
   // PUBLIC
   //------------------------------------
+  // GET
   function getTodaysDateObj() {
     const todaysDate = new Date();
     todaysDate.setHours(0, 0, 0, 0);
@@ -83,7 +84,7 @@ const dates = (function () {
     lastDayOfMonth.setHours(0, 0, 0, 0);
     return lastDayOfMonth.getDate();
   }
-
+  // ADD
   function addDays(dirtyDate, dirtyAmount) {
     var date = cloneDate(dirtyDate);
     var amount = toInteger(dirtyAmount);
@@ -111,7 +112,7 @@ const dates = (function () {
     var amount = toInteger(dirtyAmount);
     return addMonths(dirtyDate, amount * 12);
   }
-
+  // SUB
   function subDays(dirtyDate, dirtyAmount) {
     var amount = toInteger(dirtyAmount);
     return addDays(dirtyDate, -amount);
@@ -123,7 +124,7 @@ const dates = (function () {
     var amount = toInteger(dirtyAmount);
     return addYears(dirtyDate, -amount);
   }
-
+  // WEEKS
   function endOfWeek(dirtyDate, dirtyOptions) {
     //Get the end of the week for given date
     /**
@@ -183,7 +184,7 @@ const dates = (function () {
     date.setHours(0, 0, 0, 0);
     return date;
   }
-
+  // COMPARE
   function isAfter(dirtyDate, dirtyDateToCompare) {
     if (arguments.length < 2) {
       throw new TypeError('2 arguments required, but only ' + arguments.length + ' present');
@@ -238,7 +239,7 @@ const dates = (function () {
 
     return false;
   }
-
+  // FORMAT
   function formatISO(dirtyDate, dirtyOptions) {
     if (arguments.length < 1) {
       throw new TypeError(`1 argument required, but only ${arguments.length} present`);
@@ -311,7 +312,7 @@ const dates = (function () {
 
     return result;
   }
-
+  // INTERVALS
   function eachDayOfInterval(interval, options) {
     const startDate = toDate(interval.start);
     const endDate = toDate(interval.end);
@@ -346,6 +347,34 @@ const dates = (function () {
     const splitDate = date.split(' ');
     return `${splitDate[0]}`;
   }
+  function getMilitaryTimeDifference(startTime, endTime) {
+    const startDate = new Date(`1970-01-01T${startTime}`);
+    const endDate = new Date(`1970-01-01T${endTime}`);
+
+    const timeDifference = endDate - startDate;
+
+    const hours = Math.floor(timeDifference / 3600000);
+    const minutes = Math.floor((timeDifference % 3600000) / 60000);
+
+    const formattedTime = [];
+
+    if (hours > 0) {
+      if (hours === 1) {
+        formattedTime.push(`${hours} hr`);
+      } else {
+        formattedTime.push(`${hours} hrs`);
+      }
+    }
+    if (minutes > 0) {
+      if (minutes === 1) {
+        formattedTime.push(`${minutes} min`);
+      } else {
+        formattedTime.push(`${minutes} mins`);
+      }
+    }
+
+    return formattedTime.join(' ');
+  }
 
   return {
     getTodaysDateObj,
@@ -367,6 +396,8 @@ const dates = (function () {
     isDateInFuture,
     formatISO,
     eachDayOfInterval,
+    // TIME
     removeTimestamp,
+    getMilitaryTimeDifference,
   };
 })();

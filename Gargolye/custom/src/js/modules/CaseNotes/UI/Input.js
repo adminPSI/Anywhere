@@ -16,19 +16,28 @@
   };
 
   /**
+   * Constructor function for creating an Input component.
+   *
    * @constructor
    * @param {Object} options
-   * @param {String} options.id - Id for input, use to link it with label. Also used for name attribute.
-   * @param {String} options.type - HTML Input type
-   * @param {String} options.label - Text for label input
-   * @param {Boolean} [options.required] - Whether input is required for submission
-   * @param {String} [options.note] - Text for input note/message, displayed underneath input field
-   * @param {Boolean} [options.showCount] - Whether to show char count or not
-   * @param {String} [options.minlength] - min char count
-   * @param {String} [options.maxlength] - max char count
-   * @param {Boolean} [options.hidden] - Whether to show or hide the input
-   * @param {Boolean} [options.toggle] - *Checkbox only (instead of checkbox you will get a toggle button)
+   * @param {String} options.id Id for input, use to link it with label. Also used for name attribute.
+   * @param {String} options.type HTML Input type
+   * @param {String} options.label Text for label input
+   * @param {Boolean} [options.required] Whether input is required for submission
+   * @param {String} [options.note] Text for input note/message, displayed underneath input field
+   * @param {Boolean} [options.showCount] Whether to show char count or not
+   * @param {String} [options.minlength] Min char count
+   * @param {String} [options.maxlength] Max char count
+   * @param {Boolean} [options.hidden] Whether to show or hide the input
+   * @param {Boolean} [options.toggle] *Checkbox only (instead of checkbox you will get a toggle button)
    * @returns {Input}
+   *
+   * @example
+   * const fnInput = new Input({
+   *   type: 'text',
+   *   label: 'First Name',
+   *   id: 'firstName'
+   * });
    */
   function Input(options) {
     // Data Init
@@ -41,10 +50,10 @@
   }
 
   /**
-   * Builds the Input element structure
+   * Builds the Input component HTML
    *
    * @function
-   * @returns {Input} - Returns the current instances for chaining
+   * @returns {Input} Current instances for chaining
    */
   Input.prototype.build = function () {
     // INPUT WRAP
@@ -93,7 +102,7 @@
    * Sets value of input
    *
    * @function
-   * @param {*} value
+   * @param {String | Number} value
    */
   Input.prototype.setValue = function (value) {
     this.input.value = value;
@@ -103,7 +112,7 @@
    * Returns value of input
    *
    * @function
-   * @returns {*} - value of input
+   * @returns {*} Value of input
    */
   Input.prototype.getValue = function () {
     return this.input.value;
@@ -122,7 +131,7 @@
    * Sets Custom Validity on input
    *
    * @function
-   * @param {String} message - empty string will unset invalid status
+   * @param {String} message Empty string will unset invalid status
    */
   Input.prototype.setValidtyError = function (message) {
     this.input.setCustomValidity(message);
@@ -152,7 +161,7 @@
    * Handles input change event
    *
    * @function
-   * @param {Function} cbFunc - Callback function to call
+   * @param {Function} cbFunc Callback function to call
    */
   Input.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('input', e => {
@@ -164,6 +173,7 @@
    * Handles input keyup event
    *
    * @function
+   * @param {Function} cbFunc Callback function to call
    */
   Input.prototype.onKeyup = function (cbFunc) {
     this.input.addEventListener('keyup', e => {
@@ -172,8 +182,9 @@
   };
 
   /**
+   * Updates the text inside label element
    *
-   * @param {*} newValue
+   * @param {String} newValue
    */
   Input.prototype.updateLableValue = function (newValue) {
     if (_DOM.stringContainsHTML(newValue)) {
@@ -189,8 +200,8 @@
    * Renders the built Input element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the input to
-   * @returns {Input} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the input to
+   * @returns {Input} Returns the current instances for chaining
    */
   Input.prototype.renderTo = function (node) {
     if (node instanceof Node) {

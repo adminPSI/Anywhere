@@ -334,38 +334,6 @@
     return true;
   }
 
-  //=================================================================
-  // TIME SPECIFIC METHODS
-  //-----------------------------------------------------------------
-  function getMilitaryTimeDifference(startTime, endTime) {
-    const startDate = new Date(`1970-01-01T${startTime}`);
-    const endDate = new Date(`1970-01-01T${endTime}`);
-
-    const timeDifference = endDate - startDate;
-
-    const hours = Math.floor(timeDifference / 3600000);
-    const minutes = Math.floor((timeDifference % 3600000) / 60000);
-
-    const formattedTime = [];
-
-    if (hours > 0) {
-      if (hours === 1) {
-        formattedTime.push(`${hours} hr`);
-      } else {
-        formattedTime.push(`${hours} hrs`);
-      }
-    }
-    if (minutes > 0) {
-      if (minutes === 1) {
-        formattedTime.push(`${minutes} min`);
-      } else {
-        formattedTime.push(`${minutes} mins`);
-      }
-    }
-
-    return formattedTime.join(' ');
-  }
-
   return {
     asyncSetTimeout,
     debounce,
@@ -378,7 +346,5 @@
     truncateFilename,
     watchVariable,
     validateFileType,
-    // TIME METHODS
-    getMilitaryTimeDifference,
   };
 });

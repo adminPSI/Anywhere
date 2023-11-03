@@ -1,0 +1,44 @@
+//===========================================
+// DIALOG & DIALOG MODAL
+//-------------------------------------------
+[data-UI] {
+  dialog {
+    border: 2px solid $black;
+    border-radius: 4px;
+    overflow: hidden;
+    padding: 0;
+
+    &.modal {
+      border: none;
+      box-shadow: $shadow-m2;
+    }
+  }
+
+  dialog.modal.fullscreenTextarea {
+    padding: 10px;
+    resize: both;
+    height: 76%;
+    width: 50%;
+
+    .fullscreenToggleBtn {
+      background-color: transparent;
+      box-shadow: none;
+      outline: none;
+      right: 0px;
+      top: -5px;
+    }
+
+    .input.textarea {
+      border: none;
+      height: 100%;
+      margin: 0;
+      padding: 16px 0 0 0;
+      width: 100%;
+      resize: none;
+
+      &.withNote {
+        margin-bottom: 16px;
+      }
+    }
+  }
+}

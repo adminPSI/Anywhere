@@ -4,6 +4,12 @@
   //=======================================
   // TEXT TO SPEECH
   //---------------------------------------
+
+  /**
+   * @constructor
+   * @param {Instance} textareaInstance
+   * @returns {SpeechToText}
+   */
   function SpeechToText(textareaInstance) {
     this.textareaInstance = textareaInstance;
 
@@ -13,6 +19,9 @@
     this.isListening = false;
   }
 
+  /**
+   * @function
+   */
   SpeechToText.prototype.init = function () {
     try {
       this.speechConfig = SpeechSDK.SpeechConfig.fromSubscription($.session.azureSTTApi, 'eastus');
@@ -44,6 +53,11 @@
     }
   };
 
+  /**
+   * Builds the SpeechToText component HTML
+   *
+   * @function
+   */
   SpeechToText.prototype.initSpeechRecognizer = function () {
     this.speechRecognizer = new SpeechSDK.SpeechRecognizer(this.speechConfig, this.audioConfig);
 
@@ -68,18 +82,30 @@
     };
   };
 
+  /**
+   * @function
+   */
   SpeechToText.prototype.startSpeechRecognizer = function () {
     this.speechRecognizer.startContinuousRecognitionAsync();
   };
 
+  /**
+   * @function
+   */
   SpeechToText.prototype.stopSpeechRecognizer = function () {
     this.speechRecognizer.stopContinuousRecognitionAsync();
   };
 
+  /**
+   * @function
+   */
   SpeechToText.prototype.closeSpeechRecognizer = function () {
     this.speechRecognizer.close();
   };
 
+  /**
+   * @function
+   */
   SpeechToText.prototype.mutationObserver = function () {
     // Mutation Observer for leaving section to disconnect STT API Call
     const observer = new MutationObserver(function (mutationList, observer) {
@@ -100,7 +126,7 @@
   // FULLSCREEN MODE
   //---------------------------------------
   /**
-   * Gives textarea fullscreen mode funtionality
+   * Contructor function for creating fullscreen textarea component
    *
    * @constructor
    * @param {Textarea} textareaInstance
@@ -116,6 +142,11 @@
     this.build();
   }
 
+  /**
+   * Builds the FullscreenTextarea component HTML
+   *
+   * @function
+   */
   FullscreenTextarea.prototype.build = function () {
     // get new Dialog
     this.fullScreenDialog = new Dialog();
@@ -144,6 +175,9 @@
     this.setupEvents();
   };
 
+  /**
+   * @function
+   */
   FullscreenTextarea.prototype.setupEvents = function () {
     this.textareaInstance.fullScreenShowBtn.addEventListener('click', e => {
       this.fullScreenDialog.show();
@@ -171,11 +205,17 @@
     );
   };
 
+  /**
+   * @function
+   */
   FullscreenTextarea.prototype.updateCloneValue = function (value) {
     const inputClone = this.textareaClone.querySelector('textarea');
     inputClone.value = value;
   };
 
+  /**
+   * @function
+   */
   FullscreenTextarea.prototype.disableCloseButon = function (isDisbled) {
     this.fullScreenCloseBtn.style.pointerEvents = isDisbled ? 'none' : 'all';
   };
@@ -196,19 +236,27 @@
   };
 
   /**
+   * Constructor function for creating a Textarea component.
+   *
    * @constructor
    * @param {Object} options
-   * @param {String} options.id - Id for textarea, use to link it with label. Also used for name attribute.
-   * @param {String} options.label - Text for label
-   * @param {Boolean} [options.required] - Whether textarea is required for submission
-   * @param {String} [options.note] - Text for textarea note/message, displayed underneath textarea field
-   * @param {Boolean} [options.showCount] - Whether to show char count or not
-   * @param {String} [options.minlength] - min char count
-   * @param {String} [options.maxlength] - max char count
-   * @param {Boolean} [options.hidden] - Whether to show or hide the input
-   * @param {Boolean} [options.fullscreen] - Enables textarea to enter fullscreen mode
-   * @param {Boolean} [options.speechToText] - Enables speech to text
+   * @param {String} options.id Id for textarea, use to link it with label. Also used for name attribute.
+   * @param {String} options.label Text for label
+   * @param {Boolean} [options.required] Whether textarea is required for submission
+   * @param {String} [options.note] Text for textarea note/message, displayed underneath textarea field
+   * @param {Boolean} [options.showCount] Whether to show char count or not
+   * @param {String} [options.minlength] Min char count
+   * @param {String} [options.maxlength] Max char count
+   * @param {Boolean} [options.hidden] Whether to show or hide the input
+   * @param {Boolean} [options.fullscreen] Enables textarea to enter fullscreen mode
+   * @param {Boolean} [options.speechToText] Enables speech to text
    * @returns {Textarea}
+   *
+   * @example
+   * const note = new Textarea({
+   *   label: 'Note',
+   *   id: 'note'
+   * });
    */
   function Textarea(options) {
     // Data Init
@@ -224,10 +272,10 @@
   }
 
   /**
-   * Builds the Textarea element structure
+   * Builds the Textarea component HTML
    *
    * @function
-   * @returns {Textarea} - Returns the current instances for chaining
+   * @returns {Textarea} Returns the current instances for chaining
    */
   Textarea.prototype.build = function () {
     const classArray = ['input', 'textarea', `${this.options.attributes.id}`];
@@ -265,7 +313,7 @@
       this.input.classList.add('fullscreen');
       // add open fullscreen to orign textarea
       this.fullScreenShowBtn = _DOM.createElement('div', {
-        class: ['fullscreenToggleBtn', 'show'],
+        class: ['fullscreenToggleBtn', 'show', 'iconButton'],
         node: Icon.getIcon('openFullScreen'),
       });
       this.inputWrap.appendChild(this.fullScreenShowBtn);
@@ -278,7 +326,7 @@
     if (this.options.speechToText) {
       this.input.classList.add('speechToText');
       this.speechToTextBtn = _DOM.createElement('div', {
-        class: ['speechToTextBtn', 'off'],
+        class: ['speechToTextBtn', 'off', 'iconButton'],
         node: Icon.getIcon('micOff'),
       });
       this.inputWrap.appendChild(this.speechToTextBtn);
@@ -330,7 +378,7 @@
    * Sets Custom Validity on textarea
    *
    * @function
-   * @param {String} message - empty string will unset invalid status
+   * @param {String} message Empty string will unset invalid status
    */
   Textarea.prototype.setValidtyError = function (message) {
     this.input.setCustomValidity(message);
@@ -408,6 +456,7 @@
    * Handles textarea change event
    *
    * @function
+   * @param {Function} cbFunc Callback function to call
    */
   Textarea.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('input', e => {
@@ -423,6 +472,7 @@
    * Handles textarea keyup event
    *
    * @function
+   * @param {Function} cbFunc Callback function to call
    */
   Textarea.prototype.onKeyup = function (cbFunc) {
     this.input.addEventListener('keyup', e => {
@@ -434,8 +484,8 @@
    * Renders the built Textarea element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the textarea to
-   * @returns {Textarea} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the textarea to
+   * @returns {Textarea} Returns the current instances for chaining
    */
   Textarea.prototype.renderTo = function (node) {
     if (node instanceof Node) {

@@ -1,24 +1,6 @@
 (function (global, factory) {
   global.Form = factory();
 })(this, function () {
-  function separateButtonElements(formElements) {
-    const separatedArrays = formElements.reduce(
-      (accumulator, element) => {
-        if (element.type === 'button') {
-          accumulator.buttons.push(element);
-        } else {
-          accumulator.inputs.push(element);
-        }
-        return accumulator;
-      },
-      { buttons: [], inputs: [] },
-    );
-
-    return {
-      buttonElements: separatedArrays.buttons,
-      inputElements: separatedArrays.inputs,
-    };
-  }
   //=========================
   // MAIN LIB
   //-------------------------
@@ -29,8 +11,17 @@
   const DEFAULT_OPTIONS = {};
 
   /**
+   * Constructor function for creating a Form component.
+   *
    * @constructor
    * @param {Object} options
+   * @returns {Form}
+   *
+   * @example
+   * const myForm = new Form({
+   *  elements: [],
+   *  buttons: []
+   * })
    */
   function Form(options) {
     // Data Init
@@ -44,10 +35,10 @@
   }
 
   /**
-   * Builds the Form element structure
+   * Builds the Form element HTML
    *
    * @function
-   * @returns {Form} - Returns the current instances for chaining
+   * @returns {Form} Returns the current instances for chaining
    */
   Form.prototype.build = function () {
     this.form = _DOM.createElement('form');
@@ -115,6 +106,7 @@
    * Handles change event on form inputs
    *
    * @function
+   * @param {Function} cbFunc Callback function to call
    */
   Form.prototype.onSubmit = function (cbFunc) {
     this.form.addEventListener('submit', e => {
@@ -132,6 +124,7 @@
    * Handles change event on form inputs
    *
    * @function
+   * @param {Function} cbFunc Callback function to call
    */
   Form.prototype.onChange = function (cbFunc) {
     this.form.addEventListener('change', e => {
@@ -143,6 +136,7 @@
    * Handles keyup event on form inputs
    *
    * @function
+   * @param {Function} cbFunc Callback function to call
    */
   Form.prototype.onKeyup = function (cbFunc) {
     this.form.addEventListener(
@@ -166,8 +160,8 @@
    * Renders the built Form element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the form to
-   * @returns {Form} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the form to
+   * @returns {Form} Returns the current instances for chaining
    */
   Form.prototype.renderTo = function (node) {
     if (node instanceof Node) {

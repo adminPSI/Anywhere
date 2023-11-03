@@ -1,0 +1,28 @@
+[data-UI] {
+  //===========================================
+  // FORM
+  //-------------------------------------------
+  form {
+    align-content: flex-start;
+    column-gap: 10px;
+    display: flex;
+    flex-flow: row wrap;
+
+    // .cols {
+    //   display: flex;
+    //   flex-flow: row nowrap;
+    //   column-gap: 10px;
+
+    //   > * {
+    //     flex-grow: 1;
+    //   }
+    // }
+  }
+
+  .formButtons {
+    display: flex;
+    justify-content: flex-end;
+    column-gap: 10px;
+    width: 100%;
+  }
+}

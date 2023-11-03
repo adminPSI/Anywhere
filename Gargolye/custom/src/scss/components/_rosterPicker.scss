@@ -1,109 +1,113 @@
-.rosterPicker {
-  display: flex;
-  flex-flow: column nowrap;
-  overflow: hidden;
-  padding: 12px 6px;
-
-  .input.search,
-  .input.checkbox {
-    margin: 0 0 20px;
-  }
-}
-
-.rosterCardWrap {
-  display: flex;
-  flex-flow: column nowrap;
-  overflow-y: scroll;
-
-  .visibilityAnimationWrapper {
-    border-radius: 4px;
-    display: grid;
-    grid-template-rows: 1fr;
-    transition: grid-template-rows 0.2s ease-in;
-    padding: 4px 6px;
-    position: relative;
-    order: 2;
-
-    //? This should work someday
-    // &:nth-last-child(n + 1 of .selected) {
-    //   background: $secondary;
-    // }
-
-    &.isClosed:not(.selected) {
-      grid-template-rows: 0fr;
-      margin: 0;
-      padding: 0;
-    }
-
-    &.selected {
-      background: $secondary;
-      color: $white;
-      order: 0;
-      margin: 0 0 6px;
-    }
-
-    &.pinned {
-      order: 1;
-
-      .svgIcon {
-        color: $secondary;
-        rotate: 45deg;
-      }
-    }
-
-    &.selected.pinned {
-      .svgIcon {
-        color: $white;
-      }
-    }
-
-    .svgIcon {
-      color: $black;
-      pointer-events: all;
-      position: absolute;
-      top: 4px;
-      right: 6px;
-      rotate: 0deg;
-      transition: rotate 0.3s ease-in;
-    }
-  }
-}
-
-.rosterCard {
-  display: flex;
-  cursor: pointer;
-  flex-flow: row nowrap;
-  overflow: hidden;
-
-  * {
-    pointer-events: none;
-  }
-
-  .portrait {
-    border-radius: 50%;
-    height: 60px;
-    margin: 0 10px 0 0;
-    overflow: hidden;
-    position: relative;
-    width: 60px;
-
-    img {
-      height: auto;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: auto;
-    }
-  }
-
-  .details {
+[data-UI] {
+  .rosterPicker {
     display: flex;
     flex-flow: column nowrap;
-    justify-content: center;
-    white-space: nowrap;
+    overflow: hidden;
+    padding: 10px 0;
+
+    .input.search,
+    .input.checkbox {
+      margin: 0 0 20px;
+      padding: 0 10px;
+    }
+  }
+
+  .rosterCardWrap {
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-y: scroll;
+    padding: 0 10px;
+
+    .visibilityAnimationWrapper {
+      border-radius: 4px;
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.2s ease-in;
+      padding: 4px 6px;
+      position: relative;
+      order: 2;
+
+      //? This should work someday
+      // &:nth-last-child(n + 1 of .selected) {
+      //   background: $secondary;
+      // }
+
+      &.isClosed:not(.selected) {
+        grid-template-rows: 0fr;
+        margin: 0;
+        padding: 0;
+      }
+
+      &.selected {
+        background: $secondary;
+        color: $white;
+        order: 0;
+        margin: 0 0 6px;
+      }
+
+      &.pinned {
+        order: 1;
+
+        .svgIcon {
+          color: $secondary;
+          rotate: 45deg;
+        }
+      }
+
+      &.selected.pinned {
+        .svgIcon {
+          color: $white;
+        }
+      }
+
+      .svgIcon {
+        color: $black;
+        pointer-events: all;
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        rotate: 0deg;
+        transition: rotate 0.3s ease-in;
+      }
+    }
+  }
+
+  .rosterCard {
+    display: flex;
+    cursor: pointer;
+    flex-flow: row nowrap;
+    overflow: hidden;
+
+    * {
+      pointer-events: none;
+    }
+
+    .portrait {
+      border-radius: 50%;
+      height: 60px;
+      margin: 0 10px 0 0;
+      overflow: hidden;
+      position: relative;
+      width: 60px;
+
+      img {
+        height: auto;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: auto;
+      }
+    }
+
+    .details {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      white-space: nowrap;
+    }
   }
 }

@@ -11,33 +11,30 @@
     6: 'sat',
   };
 
-  /**
-   * Merge default options with user options
-   *
-   * @function
-   * @param {Object}  userOptions - User defined options object
-   * @return {Object} - Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
   //=======================================
   // CUSTOM DATE PICKER
   //---------------------------------------
   /**
+   * Constructor function for creating a Date Picker component.
+   *
    * @constructor
+   * @returns {DatePicker}
    */
   function DatePicker() {
-    this.inputWrap = null;
+    this.parentEle = null;
     this.input = null;
 
     this.build();
   }
 
+  /**
+   * Builds the DatePicker component HTML
+   *
+   * @function
+   */
   DatePicker.prototype.build = function () {
     // INPUT WRAP
-    this.inputWrap = _DOM.createElement('div', {
+    this.parentEle = _DOM.createElement('div', {
       class: 'datePicker',
     });
 
@@ -55,16 +52,35 @@
       this.input.showPicker();
     });
 
-    this.inputWrap.appendChild(this.input);
-    this.inputWrap.appendChild(labelEle);
-
-    return this;
+    this.parentEle.appendChild(this.input);
+    this.parentEle.appendChild(labelEle);
   };
 
-  DatePicker.prototype.onDateChange = function (cb) {
+  /**
+   * On date change method
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  DatePicker.prototype.onDateChange = function (cbFunc) {
     this.input.addEventListener('change', e => {
-      cb(e.target.value);
+      cbFunc(e.target.value);
     });
+  };
+
+  /**
+   * Renders the built DatePicker element to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node DOM node to render the input to
+   * @returns {DatePicker} Returns the current instances for chaining
+   */
+  DatePicker.prototype.renderTo = function (node) {
+    if (node instanceof Node) {
+      node.appendChild(this.parentEle);
+    }
+
+    return this;
   };
 
   //=======================================
@@ -78,15 +94,19 @@
     selectedDate: dates.getTodaysDateObj(),
     allowFutureDate: true,
   };
+
   /**
+   * Constructor function for creating a Date Navigation component.
+   *
    * @constructor
    * @param {Object} options
-   * @param {Date} [options.selectedDate] - Initial date for date nav
-   * @param {Boolean} [options.allowFutureDate] - Whether toallow future dates to be selected
+   * @param {Date} [options.selectedDate] Initial date for date nav
+   * @param {Boolean} [options.allowFutureDate] Whether toallow future dates to be selected
+   * @returns {DateNavigation}
    */
   function DateNavigation(options) {
     // Data Init
-    this.options = mergOptionsWithDefaults(options);
+    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
     //? by default selectedDate, weekStart, weekEnd and eachDayoFWeek
     //? will be the most current week of calandar year
     this.weekStart = dates.startDayOfWeek(this.options.selectedDate);
@@ -106,13 +126,14 @@
     this.navigationEle = null;
     this.weekWrapEle = null;
     this.prevWeekNavBtn = null;
+
+    this.build();
   }
 
   /**
-   * Builds the Navigation element structure
+   * Builds the Navigation component HTML
    *
    * @function
-   * @returns {DateNavigation} - Returns the current instances for chaining
    */
   DateNavigation.prototype.build = function () {
     this.navigationEle = _DOM.createElement('div', { class: 'dateNavigation' });
@@ -130,15 +151,13 @@
     });
     this.customDatePicker = new DatePicker();
 
-    this.navigationEle.appendChild(this.customDatePicker.inputWrap);
+    this.navigationEle.appendChild(this.customDatePicker.parentEle);
     this.navigationEle.appendChild(this.prevWeekNavBtn);
     this.navigationEle.appendChild(this.weekWrapEle);
     this.navigationEle.appendChild(this.nextWeekNavBtn);
 
     this.populate();
     this.setupEvents();
-
-    return this;
   };
 
   /**
@@ -251,9 +270,9 @@
    * On date change method
    *
    * @function
-   * @param {Function} cb -
+   * @param {Function} cbFunc Callback function to call
    */
-  DateNavigation.prototype.onDateChange = function (cb) {
+  DateNavigation.prototype.onDateChange = function (cbFunc) {
     this.navigationEle.addEventListener('click', e => {
       if (e.target.dataset.target === 'date') {
         const currentSelectedDate = this.weekWrapEle.querySelector('.selected');
@@ -264,7 +283,7 @@
         this.options.selectedDate = new Date(e.target.dataset.date);
         e.target.classList.add('selected');
 
-        cb(this.options.selectedDate);
+        cbFunc(this.options.selectedDate);
 
         return;
       }
@@ -275,8 +294,8 @@
    * Renders the built Date Navigation element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the navigation to
-   * @returns {DateNavigation} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the navigation to
+   * @returns {DateNavigation} Returns the current instances for chaining
    */
   DateNavigation.prototype.renderTo = function (node) {
     if (node instanceof Node) {

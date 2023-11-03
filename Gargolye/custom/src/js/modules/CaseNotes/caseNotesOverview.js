@@ -18,7 +18,10 @@
   // MAIN LIB
   //---------------------------------------
   /**
+   * Constructor function for creating the Case Notes Overview component.
+   *
    * @constructor
+   * @returns {CaseNotesOverview}
    */
   function CaseNotesOverview() {
     // Data Init
@@ -34,11 +37,14 @@
     this.overviewWrap;
     this.overviewSearch;
     this.overviewCardsWrap;
+
+    this.build();
   }
 
   /**
+   * Builds the CaseNotesOverview component HTML
+   *
    * @function
-   * @returns {CaseNotesOverview} - Returns the current instances for chaining
    */
   CaseNotesOverview.prototype.build = function () {
     this.overviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview' });
@@ -71,6 +77,8 @@
   };
 
   /**
+   * Populates the overview page
+   *
    * @function
    */
   CaseNotesOverview.prototype.populate = function () {
@@ -92,7 +100,7 @@
         const note = rd.caseNote;
         const starttime = UTIL.convertFromMilitary(rd.starttime);
         const endtime = UTIL.convertFromMilitary(rd.endtime);
-        const timeDifference = _UTIL.getMilitaryTimeDifference(rd.starttime, rd.endtime);
+        const timeDifference = dates.getMilitaryTimeDifference(rd.starttime, rd.endtime);
         const mostRecentUpdate = formatMostRecentUpdateDate(rd.mostrecentupdate);
         const enteredBy = `${rd.enteredby} (${rd.originalUserFullName})`;
         const isConfidential = rd.confidential === 'Y' ? true : false;
@@ -232,8 +240,8 @@
    * Renders Case Notes Overview markup to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render case notes overview to
-   * @returns {CaseNotesOverview} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render case notes overview to
+   * @returns {CaseNotesOverview} Returns the current instances for chaining
    */
   CaseNotesOverview.prototype.renderTo = function (node) {
     if (node instanceof Node) {

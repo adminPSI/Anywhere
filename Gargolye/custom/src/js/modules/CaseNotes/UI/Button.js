@@ -17,6 +17,8 @@
   };
 
   /**
+   * Constructor function for creating a Button component.
+   *
    * @constructor
    * @param {Object} options
    * @param {String} options.text
@@ -25,6 +27,11 @@
    * @param {String} [options.style]
    * @param {String} [options.styleType]
    * @returns {Button}
+   *
+   * @example
+   * const saveButton = new Button({
+   *   text: 'save',
+   * });
    */
   function Button(options) {
     // Data Init
@@ -37,7 +44,7 @@
   }
 
   /**
-   * Builds the Button element structure
+   * Builds the Button element component HTML
    *
    * @function
    * @returns {Button} - Returns the current instances for chaining
@@ -64,7 +71,7 @@
    * Handles button click event
    *
    * @function
-   * @param {Function} cbFunc - Callback function to call
+   * @param {Function} cbFunc Callback function to call
    */
   Button.prototype.onClick = function (cbFunc) {
     this.button.addEventListener('click', e => {
@@ -87,8 +94,8 @@
    * Renders the built Button element to the specified DOM node.
    *
    * @function
-   * @param {Node} node - DOM node to render the Button to
-   * @returns {Button} - Returns the current instances for chaining
+   * @param {Node} node DOM node to render the Button to
+   * @returns {Button} Returns the current instances for chaining
    */
   Button.prototype.renderTo = function (node) {
     if (node instanceof Node) {

@@ -103,7 +103,12 @@
     return _DOM.createElement('span', { html: svg[name], class: 'svgIcon' });
   };
 
+  const getIconButton = name => {
+    return _DOM.createElement('div', { html: `<span class="svgIcon">${svg[name]}</span>`, class: 'iconButton' });
+  };
+
   return {
     getIcon,
+    getIconButton,
   };
 });
