@@ -152,10 +152,10 @@
    * @param {Date} selectedDate
    * @returns {CaseNotesData}
    */
-  CaseNotesData.prototype.fetchVendorDropdownData = async function (selectedConsumerId, selectedDate) {
+  CaseNotesData.prototype.fetchVendorDropdownData = async function ({ consumerId, serviceDate }) {
     const data = await _UTIL.fetchData('getConsumerSpecificVendorsJSON', {
-      consumerId: selectedConsumerId,
-      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      consumerId,
+      serviceDate,
     });
     this.vendorDropdownData = data.getConsumerSpecificVendorsJSONResult;
 
@@ -167,10 +167,10 @@
    * @param {Date} selectedDate
    * @returns {CaseNotesData}
    */
-  CaseNotesData.prototype.fetchServiceLocationDropdownData = async function (selectedConsumerId, selectedDate) {
+  CaseNotesData.prototype.fetchServiceLocationDropdownData = async function ({ consumerId, serviceDate }) {
     const data = await _UTIL.fetchData('getServiceLocationsForCaseNoteDropdown', {
-      consumerId: selectedConsumerId,
-      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      consumerId,
+      serviceDate,
     });
     this.serviceLocationDropdownData = data.getServiceLocationsForCaseNoteDropdownResult;
 

@@ -12,7 +12,7 @@
     data: [],
     hidden: false,
     note: null,
-    requried: false,
+    required: false,
   };
 
   /**
@@ -82,12 +82,15 @@
    * @param {Array} [data] Data to populate select with
    */
   Select.prototype.populate = function (data) {
-    if (data && Array.isArray(data)) this.options.data = data;
+    if (data && Array.isArray(data)) this.options.data = [...data];
 
     this.select.innerHTML = '';
 
     if (this.options.data.length > 0) {
-      this.options.data.unshift({ value: '', text: '' });
+      if (this.options.includeBlankOption) {
+        this.options.data.unshift({ value: '', text: '' });
+      }
+
       this.options.data.sort(_UTIL.sortByProperty('text')).forEach(d => {
         const optionEle = _DOM.createElement('option', { value: d.value, text: d.text });
         this.select.appendChild(optionEle);
@@ -97,6 +100,8 @@
     //! If data is emtpy we set dropdown to disabled
     if (!this.options.data || this.options.data.length === 0) {
       this.toggleDisabled(true);
+    } else {
+      this.toggleDisabled(false);
     }
   };
 

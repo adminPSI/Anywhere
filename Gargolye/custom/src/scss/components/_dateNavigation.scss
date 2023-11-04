@@ -1,76 +1,44 @@
-.dateNavigation {
-  background: $white;
-  display: flex;
-  flex-flow: row nowrap;
-  position: relative;
-  padding: 40px 4px 10px;
-
-  .datePicker {
-    position: absolute;
-    top: 10px;
-    right: 14px;
-
-    label {
-      box-shadow: $shadow-m2;
-      background: $whitesmoke;
-      border-radius: 2px;
-      display: block;
-      padding: 4px;
-      outline: 1px solid $black;
-      margin: 0;
-
-      .svgIcon {
-        display: flex;
-      }
-    }
-
-    input {
-      position: absolute;
-      top: 10px;
-      right: 100px;
-      visibility: hidden;
-    }
-  }
-
-  .navButtons {
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-    cursor: pointer;
-
-    &.disabled {
-      opacity: 0.2;
-      pointer-events: none;
-    }
-
-    * {
-      pointer-events: none;
-    }
-  }
-
-  .week {
+[data-ui] {
+  .dateNavigation {
+    background: $white;
     display: flex;
     flex-flow: row nowrap;
-    flex-grow: 1;
+    position: relative;
+    padding: 40px 4px 10px;
 
-    .day {
-      cursor: pointer;
-      flex-basis: 14%;
-      flex-grow: 1;
-      padding: 20px 0;
-      opacity: 0.6;
-      scale: 0.9;
-      text-align: center;
-      transition: scale 0.2s ease-in;
+    .datePicker {
+      position: absolute;
+      top: 10px;
+      right: 14px;
 
-      &.selected {
-        box-shadow: $shadow-m1;
-        background: $white;
-        border-top-right-radius: 4px;
-        border-top-left-radius: 4px;
-        opacity: 1;
-        scale: 1;
+      label {
+        box-shadow: $shadow-m2;
+        background: $whitesmoke;
+        border-radius: 2px;
+        display: block;
+        padding: 4px;
+        outline: 1px solid $black;
+        margin: 0;
+
+        .svgIcon {
+          display: flex;
+        }
       }
+
+      input {
+        position: absolute;
+        top: 10px;
+        right: 100px;
+        visibility: hidden;
+      }
+    }
+
+    .navButtons {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      cursor: pointer;
+
       &.disabled {
         opacity: 0.2;
         pointer-events: none;
@@ -79,14 +47,48 @@
       * {
         pointer-events: none;
       }
+    }
 
-      .weekday {
-        font-weight: $_bold;
-        text-transform: uppercase;
-      }
+    .week {
+      display: flex;
+      flex-flow: row nowrap;
+      flex-grow: 1;
 
-      .date {
-        font-size: $px14;
+      .day {
+        cursor: pointer;
+        flex-basis: 14%;
+        flex-grow: 1;
+        padding: 20px 0;
+        opacity: 0.6;
+        scale: 0.9;
+        text-align: center;
+        transition: scale 0.2s ease-in;
+
+        &.selected {
+          box-shadow: $shadow-m1;
+          background: $white;
+          border-top-right-radius: 4px;
+          border-top-left-radius: 4px;
+          opacity: 1;
+          scale: 1;
+        }
+        &.disabled {
+          opacity: 0.2;
+          pointer-events: none;
+        }
+
+        * {
+          pointer-events: none;
+        }
+
+        .weekday {
+          font-weight: $_bold;
+          text-transform: uppercase;
+        }
+
+        .date {
+          font-size: $px14;
+        }
       }
     }
   }

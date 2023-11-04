@@ -1,10 +1,8 @@
 //=============================
 // Colors
 //-----------------------------
-$blue: #4181b9; // rgb(65,129,185)
-$blue2: rgb(54, 106, 152); // #366A98
+$blue: rgb(54, 106, 152); // #366A98
 $green: rgb(129, 185, 65); // #81B941
-$green2: #6a9836; // rgb(106,152,54)
 $red: #db162f; // rgb(219,22,47)
 $yellow: #ffc857; // rgb(255,200,87)
 $orange: #ee8434; // rgb(238,132,52)
@@ -14,7 +12,7 @@ $white2: rgb(250, 250, 250); // #FAFAFA
 $whitesmoke: rgb(245, 245, 245);
 $gray: rgb(211, 211, 211);
 
-$primary: $blue2;
+$primary: $blue;
 $secondary: $green;
 
 $error: $red;

@@ -6,7 +6,7 @@ $input_borderRadius: 4px;
 $input_fontSize: $px16;
 $label_fontSize: $px14;
 
-[data-UI] {
+[data-ui] {
   //===========================================
   // INPUTS
   //-------------------------------------------
@@ -14,7 +14,7 @@ $label_fontSize: $px14;
     position: relative;
 
     &.hidden {
-      display: none;
+      display: none !important;
     }
 
     input,
@@ -69,10 +69,8 @@ $label_fontSize: $px14;
 
     .inputNote {
       font-size: 12px;
+      margin-top: 4px;
       order: 1;
-      // position: absolute;
-      // left: 0px;
-      // bottom: -18px;
     }
 
     .charCount {

@@ -10,6 +10,7 @@
    */
   const DEFAULT_OPTIONS = {
     isModal: true,
+    clickOutToClose: true,
   };
 
   /**
@@ -74,18 +75,20 @@
    * @function
    */
   Dialog.prototype.setupEvents = function () {
-    this.dialog.addEventListener('click', e => {
-      const dialogDimensions = this.dialog.getBoundingClientRect();
+    if (this.options.clickOutToClose) {
+      this.dialog.addEventListener('click', e => {
+        const dialogDimensions = this.dialog.getBoundingClientRect();
 
-      if (
-        e.clientX < dialogDimensions.left ||
-        e.clientX > dialogDimensions.right ||
-        e.clientY < dialogDimensions.top ||
-        e.clientY > dialogDimensions.bottom
-      ) {
-        this.close();
-      }
-    });
+        if (
+          e.clientX < dialogDimensions.left ||
+          e.clientX > dialogDimensions.right ||
+          e.clientY < dialogDimensions.top ||
+          e.clientY > dialogDimensions.bottom
+        ) {
+          this.close();
+        }
+      });
+    }
   };
 
   /**

@@ -46,10 +46,13 @@
    * @function
    */
   AsyncRequestVisualizer.prototype.build = function () {
-    this.dialog = new Dialog();
+    this.dialog = new Dialog({
+      clickOutToClose: false,
+    });
+    this.dialog.dialog.classList.add('asyncRequestVisualizer');
 
     this.visualizerWrap = _DOM.createElement('div');
-    this.dialog.dialog.appendChild(spinnerWrap);
+    this.dialog.dialog.appendChild(this.visualizerWrap);
 
     this.spinner = new Spinner();
     this.spinner.renderTo(this.visualizerWrap);

@@ -44,8 +44,8 @@
    * @function
    */
   Spinner.prototype.build = function () {
-    this.spinnerWrap = _DOM.createElement('div', { class: 'loadingAnimation' });
-    this.spinner = _DOM.createElement('div', { class: 'loadingAnimation__spinner' });
+    this.spinnerWrap = _DOM.createElement('div', { class: 'loadingSpinner' });
+    this.spinner = _DOM.createElement('div', { class: 'loadingSpinner__bar' });
 
     this.spinnerWrap.appendChild(this.spinner);
   };

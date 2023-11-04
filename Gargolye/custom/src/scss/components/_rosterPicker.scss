@@ -1,4 +1,4 @@
-[data-UI] {
+[data-ui] {
   .rosterPicker {
     display: flex;
     flex-flow: column nowrap;
@@ -22,7 +22,7 @@
       border-radius: 4px;
       display: grid;
       grid-template-rows: 1fr;
-      transition: grid-template-rows 0.2s ease-in;
+      transition: grid-template-rows 0.1s ease-in;
       padding: 4px 6px;
       position: relative;
       order: 2;
@@ -39,7 +39,7 @@
       }
 
       &.selected {
-        background: $secondary;
+        background: rgba(129, 185, 65, 0.9);
         color: $white;
         order: 0;
         margin: 0 0 6px;

@@ -1,9 +1,10 @@
-[data-UI] {
-  .loadingAnimation {
+[data-ui] {
+  .loadingSpinner {
     position: relative;
+    overflow: hidden;
   }
 
-  .loadingAnimation__spinner {
+  .loadingSpinner__bar {
     animation: spin 1500ms linear infinite;
     border: 16px solid rgba($black, 0.4);
     border-top: 16px solid $primary;

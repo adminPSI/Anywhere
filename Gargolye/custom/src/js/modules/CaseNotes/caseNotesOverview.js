@@ -133,7 +133,7 @@
         overviewCard.appendChild(startTimeEle);
         overviewCard.appendChild(endTimeEle);
         overviewCard.appendChild(timeDurationEle);
-        overviewCard.appendChild(consumerNameEle);
+        //overviewCard.appendChild(consumerNameEle);
         overviewCard.appendChild(enteredByEle);
 
         // Card Main

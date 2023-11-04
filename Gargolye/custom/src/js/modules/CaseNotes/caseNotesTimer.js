@@ -16,7 +16,7 @@
     this.inactivityIntervalId = null;
 
     //DOM Ref
-    this.timer = null;
+    this.parentEle = null;
 
     this.build();
   }
@@ -25,7 +25,9 @@
    * @function
    */
   CaseNotesTimer.prototype.build = function () {
-    this.timer = _DOM.createElement('div', { class: 'caseNotesTimer' });
+    this.parentEle = _DOM.createElement('div', { class: 'caseNotesTimer' });
+
+    //this.
   };
 
   /**
@@ -119,7 +121,7 @@
    */
   CaseNotesTimer.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.timer);
+      node.appendChild(this.parentEle);
     }
 
     return this;

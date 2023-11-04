@@ -136,18 +136,19 @@ const CaseNotes = (() => {
     }
   }
   function isTimePastOrPresent(dirtyTime) {
-    const currentDate = new Date();
-    const selectedDateClone = new Date(selectedDate);
-
     //If selectedDate is not today then time dosen't matter
-    if (currentDate.setHours(0, 0, 0, 0) === selectedDateClone.setHours(0, 0, 0, 0)) {
+    const isToday = new Date().setHours(0, 0, 0, 0) !== new Date(selectedDate).setHours(0, 0, 0, 0);
+    if (!isToday || !dirtyTime) {
       return true;
     }
+
+    const currentDate = new Date();
+    const selectedDateClone = new Date(selectedDate);
 
     // CHECKS IF TIME IS IN FURUTRE
     dirtyTime = dirtyTime.split(':');
     selectedDateClone.setHours(dirtyTime[0], dirtyTime[1], 0, 0);
-    return dates.isAfter(selectedDateClone, currentDate);
+    return !dates.isAfter(selectedDateClone, currentDate);
   }
   function isStartTimeBeforeEndTime(startTime, endTime) {
     if (!startTime || !endTime) return true;
@@ -233,19 +234,45 @@ const CaseNotes = (() => {
     // add -> groupNoteId, consumerId
     // remove -> reviewRequired
   }
-  async function saveAttachments(caseNoteId) {
-    for (attachment in attachmentsForSave) {
-      try {
-        const saveAttachmentResults = await _UTIL.fetchData('addCaseNoteAttachment', {
-          caseNoteId: caseNoteId,
-          description: attachmentsForSave[attachment].description,
-          attachmentType: attachmentsForSave[attachment].type,
-          attachment: attachmentsForSave[attachment].arrayBuffer,
-        });
-        console.log(saveAttachmentResults);
-      } catch (error) {
-        console.log('error saving attachment', attachment);
+  async function saveAttachments(saveCaseNoteResults) {
+    const parser = new DOMParser();
+    const respDoc = parser.parseFromString(saveCaseNoteResults, 'text/xml');
+    const caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
+
+    try {
+      const saveAttachmentPromises = [];
+
+      // Store promises in array so we can handle each attachment individually
+      for (attachment in attachmentsForSave) {
+        const promise = await _UTIL
+          .fetchData('addCaseNoteAttachment', {
+            caseNoteId: caseNoteId,
+            description: attachmentsForSave[attachment].description,
+            attachmentType: attachmentsForSave[attachment].type,
+            attachment: attachmentsForSave[attachment].arrayBuffer,
+          })
+          .then(result => ({ status: 'fulfilled', value: result }))
+          .catch(error => ({ status: 'rejected', reason: error, attachment: attachmentsForSave[attachment] }));
+
+        saveAttachmentPromises.push(promise);
       }
+
+      // Loop through to check for any failed attachment saves
+      const failedSaves = [];
+      const saveAttachmentResults = await Promise.allSettled(saveAttachmentPromises);
+      saveAttachmentResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          failedSaves.push(result.attachment.description);
+        }
+      });
+
+      if (failedSaves.length === 0) {
+        reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
+      } else {
+        reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
+      }
+    } catch (error) {
+      console.log('An unexpected error occurred:', error);
     }
   }
   async function saveNote(formData) {
@@ -282,21 +309,13 @@ const CaseNotes = (() => {
       console.log(saveCaseNoteResults);
 
       if (saveCaseNoteResults) {
-        if ($.session.applicationName === 'Gatekeeper') {
+        if ($.session.applicationName === 'Gatekeeper' && Object.keys(attachmentsForSave).length) {
           await reqVisualizer.showSuccess('Case Note Saved!', 2000);
 
           // save attachments
           reqVisualizer.showPending('Saving Note Attachments');
-          const respDoc = parser.parseFromString(saveCaseNoteResults, 'text/xml');
-          const caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
-          const saveAttachmentsResults = await saveAttachments(caseNoteId);
-          console.log(saveAttachmentsResults);
 
-          if (saveAttachmentsResults) {
-            reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
-          } else {
-            reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
-          }
+          await saveAttachments(saveCaseNoteResults);
         } else {
           reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
         }
@@ -764,7 +783,7 @@ const CaseNotes = (() => {
           type: 'select',
           label: 'Vendor',
           id: 'vendor',
-          note: '',
+          note: 'Requires a consumer(s) to be selected',
         },
         //serviceLocation
         {

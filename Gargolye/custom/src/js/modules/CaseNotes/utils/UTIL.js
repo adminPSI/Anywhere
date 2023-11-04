@@ -105,6 +105,7 @@
       return data;
     } catch (error) {
       console.log(`There was a problem with ${service}`, error.message);
+      throw error;
     }
   }
 
