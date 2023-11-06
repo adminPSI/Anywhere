@@ -359,7 +359,7 @@ namespace OODForms
         public DataSet OODMinDate(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID)
         {
             sb.Clear();
-            sb.AppendFormat("SELECT DISTINCT MIN(dba.EM_Contacts.Contact_Date) AS MaxDate ");
+            sb.AppendFormat("SELECT MIN(Contact_Date) AS MaxDate ");
             sb.Append("FROM dba.Consumer_Services_Master ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
@@ -373,7 +373,7 @@ namespace OODForms
         public DataSet OODMaxDate(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID)
         {
             sb.Clear();
-            sb.AppendFormat("SELECT DISTINCT MAX(dba.EM_Contacts.Contact_Date) AS MaxDate ");
+            sb.AppendFormat("SELECT MAX(Contact_Date) AS MaxDate ");
             sb.Append("FROM dba.Consumer_Services_Master ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
@@ -392,8 +392,8 @@ namespace OODForms
             sb.Append("dba.Employer.Address1 AS LocationAddress, dba.Employer.City AS LocationCity, dba.EM_Contacts.Notes AS Comments, ");
             sb.Append("dba.EM_Contacts.Contact_Type AS ContactType, dba.Code_Table.Caption AS OutCome, dba.EM_Contacts.EM_Job_Seeker_Present AS JobSeekerPresent, ");
             sb.Append("dba.Consumer_Services_Master.Reference_Number, dba.Code_Table.Table_ID, dba.Case_Notes.Notes AS Note2, ");
-            sb.Append("DBA.Persons.Last_Name, DBA.Persons.First_Name, DBA.Persons.Middle_Name, dba.Code_Table.Code, dba.EM_Contacts.Application, dba.EM_Contacts.Interview, dba.EM_Contacts.Bilingual_Supplement ");
-            sb.Append("FROM dba.Consumer_Services_Master, dba.Vendors.name as VendorName ");
+            sb.Append("DBA.Persons.Last_Name, DBA.Persons.First_Name, DBA.Persons.Middle_Name, dba.Code_Table.Code, dba.EM_Contacts.Application, dba.EM_Contacts.Interview, dba.EM_Contacts.Bilingual_Supplement, dba.Vendors.name as VendorName  ");
+            sb.Append("FROM dba.Consumer_Services_Master ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Case_Notes.Case_Manager_ID = dba.Persons.Person_ID ");
