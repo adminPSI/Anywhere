@@ -55,7 +55,7 @@ namespace OODForms
             }
         }
 
-        public void Form8(string token, string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, string ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
+        public void Form8(string token, string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, string ServiceCodeID, string ReportPath, string registrationName, string registrationKey, string personCompletingReport)
         {
 
             Spreadsheet SS = new Spreadsheet();
@@ -95,6 +95,8 @@ namespace OODForms
             string MiddleName = string.Empty;
             DataSet ds = obj.OODForm8GetDirectStaff(AuthorizationNumber, StartDate, EndDate);
 
+            WS.Cell("m6").Value = personCompletingReport;
+
             if (ds.Tables.Count > 0)
             {
                 DataTable dt2 = ds.Tables[0];
@@ -107,10 +109,10 @@ namespace OODForms
                         OODStaff += String.Format("{0}, ", Staff.Trim());
                     }
 
-                    if ((WS.Cell("m6").Value) != null && Staff.ToString().Trim().Length > 0)
-                    {
-                        WS.Cell("m6").Value = Staff.ToString().Trim();
-                    }
+                    //if ((WS.Cell("m6").Value) != null && Staff.ToString().Trim().Length > 0)
+                    //{
+                    //    WS.Cell("m6").Value = Staff.ToString().Trim();
+                    //}
 
                     if (Staff.ToString().Trim().Length > 0)
                     {
@@ -263,7 +265,7 @@ namespace OODForms
             ConvertXLStoPDF(token, attachment);
         }
 
-        public void Form4(string token, string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, string ServiceCodeID, string ReportPath, string registrationName, string registrationKey)
+        public void Form4(string token, string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, string ServiceCodeID, string ReportPath, string registrationName, string registrationKey, string personCompletingReport)
         {
             Spreadsheet SS = new Spreadsheet();
             SS.RegistrationName = registrationName;
@@ -333,10 +335,12 @@ namespace OODForms
                             break;
                     }
 
-                    if ((WS.Cell("k6").Value == null) && Staff.ToString().Trim().Length > 0)
-                    {
-                        WS.Cell("k6").Value = Staff.ToString().Trim();
-                    }
+                    //if ((WS.Cell("k6").Value == null) && Staff.ToString().Trim().Length > 0)
+                    //{
+                    //    WS.Cell("k6").Value = Staff.ToString().Trim();
+                    //}
+
+                    WS.Cell("k6").Value = personCompletingReport;
 
                     if (Staff.Trim().Length > 0)
                     {
@@ -569,7 +573,12 @@ namespace OODForms
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form4(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey);
+                // Gather Data for the Person Completing the Report
+                string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
+                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+                obj.Form4(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey, personCompletingReport);
 
                 return "Success";
             }
@@ -604,7 +613,12 @@ namespace OODForms
                 string invoiceNumberDate = currentDate.ToString("yyy-MM-dd HH:MM:ss");
                 string invoiceNumber = Regex.Replace(invoiceNumberDate, "[^0-9]", "");
 
-                obj.Form8(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey);
+                // Gather Data for the Person Completing the Report
+                string personCompletingReportData = oodfdg.getPersonCompletingReportName(token);
+                personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
+                string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
+
+                obj.Form8(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey, personCompletingReport);
 
                 return "Success";
             }
