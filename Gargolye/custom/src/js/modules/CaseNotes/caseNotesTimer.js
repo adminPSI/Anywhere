@@ -2,21 +2,13 @@
   global.CaseNotesTimer = factory();
 })(this, function () {
   /**
-   * Constructor function for creating the Case Notes Timer component.
-   *
    * @constructor
-   * @returns {CaseNotesTimer}
    */
-  function CaseNotesTimer() {
-    this.startTime = null; // To store the time when the timer starts
-    this.intervalId = null; // To store the ID of the interval
-    this.timeOffset = 0; // To store additional time in seconds
-    this.elapsedTimeInSeconds = 0; // To store the elapsed time in seconds
+  function InactivityWarning() {
+    this.dialog = null;
 
-    this.inactivityIntervalId = null;
-
-    //DOM Ref
-    this.parentEle = null;
+    this.yesButton = null;
+    this.noButton = null;
 
     this.build();
   }
@@ -24,10 +16,113 @@
   /**
    * @function
    */
-  CaseNotesTimer.prototype.build = function () {
-    this.parentEle = _DOM.createElement('div', { class: 'caseNotesTimer' });
+  InactivityWarning.prototype.build = function () {
+    // Inactivity Warning
+    this.dialog = new Dialog({ className: 'inactivityWarning' });
 
-    //this.
+    const messageEle = _DOM.createElement('p', {
+      text: 'Your documentation timer has been paused. Continue timing?',
+    });
+
+    this.yesButton = new Button({ text: 'yes' });
+    this.noButton = new Button({ text: 'no', styleType: 'outlined' });
+
+    this.dialog.dialog.appendChild(messageEle);
+    this.yesButton.renderTo(this.dialog.dialog);
+    this.noButton.renderTo(this.dialog.dialog);
+
+    return this;
+  };
+
+  /**
+   * Shows the inactivity warning dialog
+   *
+   * @function
+   */
+  InactivityWarning.prototype.show = function () {
+    this.dialog.show();
+  };
+
+  /**
+   * @function
+   */
+  InactivityWarning.prototype.onClick = function (cbFunc) {
+    this.yesButton.onClick(e => {
+      cbFunc(true);
+      this.dialog.close();
+    });
+    this.noButton.onClick(e => {
+      cbFunc(false);
+      this.dialog.close();
+    });
+  };
+
+  /**
+   * Renders the built InactivityWarning element to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node DOM node to render the Inactivity Warning to
+   * @returns {InactivityWarning} Returns the current instances for chaining
+   */
+  InactivityWarning.prototype.renderTo = function (node) {
+    if (node instanceof Node) {
+      node.appendChild(this.dialog.dialog);
+    }
+
+    return this;
+  };
+
+  //=======================================
+  // MAIN LIB
+  //---------------------------------------
+  /**
+   * Constructor function for creating the Case Notes Timer component.
+   *
+   * @constructor
+   * @returns {CaseNotesTimer}
+   */
+  function CaseNotesTimer() {
+    this.startTime = null; // To store the time when the timer starts
+    this.timeOffset = 0; // To store additional time in seconds
+    this.elapsedTimeInSeconds = 0; // To store the elapsed time in seconds
+
+    this.intervalId = null; // To store the ID of the timer interval
+    this.inactivityIntervalId = null; // to store the ID of the inactivity timeout
+
+    // Instance Ref
+    this.inactivityWarningDialog = null;
+
+    // DOM Ref
+    this.rootElement = null;
+    this.timeDisplay = null;
+    this.playButton = null;
+    this.stopButton = null;
+
+    this.build();
+  }
+
+  /**
+   * Builds the Case Notes Timer element component HTML
+   *
+   * @function
+   * @returns {CaseNotesTimer} Returns the current instances for chaining
+   */
+  CaseNotesTimer.prototype.build = function () {
+    this.rootElement = _DOM.createElement('div', { class: 'caseNotesTimer' });
+
+    this.playButton = new Button({ icon: 'play', style: 'secondary', styleType: 'outlined' });
+    this.stopButton = new Button({ icon: 'stop', style: 'danger', styleType: 'outlined' });
+    this.timeDisplay = _DOM.createElement('p', { text: dates.formatSecondsToFullTime(this.elapsedTimeInSeconds) });
+
+    this.rootElement.appendChild(this.timeDisplay);
+    this.playButton.renderTo(this.rootElement);
+    this.stopButton.renderTo(this.rootElement);
+
+    // Inactivity Warning
+    this.inactivityWarning = new InactivityWarning();
+    this.inactivityWarning.renderTo(_DOM.ACTIONCENTER);
+
+    return this;
   };
 
   /**
@@ -49,34 +144,41 @@
     // Start a new interval
     this.intervalId = setInterval(() => {
       const currentTime = Date.now();
-      const elapsedTimeInSeconds = Math.floor((currentTime - this.startTime) / 1000) + this.timeOffset;
-      console.log(`Elapsed Time: ${elapsedTimeInSeconds} seconds`);
+      this.elapsedTimeInSeconds = Math.floor((currentTime - this.startTime) / 1000) + this.timeOffset;
+      this.timeDisplay.innerText = dates.formatSecondsToFullTime(this.elapsedTimeInSeconds);
+      console.log(`Elapsed Time: ${this.elapsedTimeInSeconds} seconds`);
     }, 1000);
 
-    // Start inactivity tiemr
-    // Start the inactivity timer right after
+    // clear existing inactivity interval
     if (this.inactivityIntervalId) {
-      clearInterval(this.inactivityIntervalId);
+      clearTimeout(this.inactivityIntervalId);
     }
-    const inactivityStartTime = Date.now();
-    this.inactivityIntervalId = setInterval(() => {
-      const currentTime = Date.now();
-      const inactivityTimeInSeconds = Math.floor((currentTime - inactivityStartTime) / 1000);
-      console.log(`Inactivity Time: ${inactivityTimeInSeconds} seconds`);
+    // Start inactivity timer
+    this.inactivityIntervalId = setTimeout(() => {
+      this.stop();
+      this.inactivityWarning.show();
     }, 120000);
   };
 
   /**
+   * Stops the Doc Timer. (aka pause)
+   *
    * @function
+   * @returns {CaseNotesTimer} Returns the current instances for chaining
    */
   CaseNotesTimer.prototype.stop = function () {
-    clearInterval(this.intervalId); // Stop the interval
+    clearInterval(this.intervalId);
+    clearTimeout(this.inactivityTimeoutId);
     this.intervalId = null;
+    this.inactivityTimeoutId = null;
     console.log('Timer has stopped.');
-    return this.elapsedTimeInSeconds; // Return the elapsed time
+
+    return this;
   };
 
   /**
+   * Restarts the Doc Timer from where it last left off.
+   *
    * @function
    */
   CaseNotesTimer.prototype.restart = function () {
@@ -97,20 +199,46 @@
   /**
    * @function
    */
-  CaseNotesTimer.prototype.reset = function () {
+  CaseNotesTimer.prototype.clear = function () {
     if (this.intervalId) {
       clearInterval(this.intervalId);
+    }
+    if (this.inactivityTimeoutId) {
+      clearTimeout(this.inactivityTimeoutId);
     }
 
     this.startTime = null;
     this.timeOffset = 0;
     this.intervalId = null;
+    this.inactivityTimeoutId = null;
+    this.elapsedTimeInSeconds = 0;
   };
 
   /**
    * @function
    */
-  CaseNotesTimer.prototype.mutationObserver = function () {};
+  CaseNotesTimer.prototype.getTime = function () {
+    return this.elapsedTimeInSeconds;
+  };
+
+  /**
+   * @function
+   */
+  CaseNotesTimer.prototype.setupEvents = function () {
+    this.playButton.onClick(e => {
+      this.start();
+      this.playButton.toggleDisabled(true);
+    });
+    this.stopButton.onClick(e => {
+      this.stop();
+      this.playButton.toggleDisabled(false);
+    });
+    this.inactivityWarning.onClick(continueTimer => {
+      if (continueTimer) {
+        this.start();
+      }
+    });
+  };
 
   /**
    * Renders Case Notes Timer makrup to the specified DOM node.
@@ -121,7 +249,7 @@
    */
   CaseNotesTimer.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.parentEle);
+      node.appendChild(this.rootElement);
     }
 
     return this;

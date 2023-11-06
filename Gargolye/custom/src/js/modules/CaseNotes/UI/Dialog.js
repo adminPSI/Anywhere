@@ -11,6 +11,7 @@
   const DEFAULT_OPTIONS = {
     isModal: true,
     clickOutToClose: true,
+    className: null,
   };
 
   /**
@@ -19,6 +20,9 @@
    * @constructor
    * @param {Object} options
    * @param {Boolean} [options.isModal] Whether to display as basic dialog or modal dialog
+   * @param {String} [options.className] Class name for <dialog> Element
+   * @param {Boolean} [options.clickOutToClose] Whether modal closes with backdrop click
+   * @param {Function} [options.clickOutToCloseCallback] Function to call when modal closes on backdrop click
    * @returns {Dialog}
    *
    * @example
@@ -40,8 +44,12 @@
    * @returns {Dialog} Returns the current instances for chaining
    */
   Dialog.prototype.build = function () {
+    let classArray = ['dialog'];
+    if (this.options.isModal) classArray.push('modal');
+    if (this.options.className) classArray.push(this.options.className);
+
     this.dialog = _DOM.createElement('dialog', {
-      class: this.options.isModal ? ['dialog', 'modal'] : ['dialog'],
+      class: classArray,
     });
 
     return this;
@@ -86,6 +94,7 @@
           e.clientY > dialogDimensions.bottom
         ) {
           this.close();
+          this.options.clickOutToCloseCallback();
         }
       });
     }

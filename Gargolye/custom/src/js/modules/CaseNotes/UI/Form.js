@@ -78,7 +78,7 @@
         inputInstance.onChange(this.options.onChange);
       }
 
-      this.form.appendChild(inputInstance.inputWrap);
+      this.form.appendChild(inputInstance.rootElement);
       this.inputs[ele.id] = inputInstance;
     });
 

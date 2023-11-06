@@ -126,9 +126,12 @@
     this.vendorDropdownData = [];
     this.serviceLocationDropdownData = [];
 
-    // Other Data
+    // case manager related
     this.caseManagerReview = {};
     this.reviewRequired = null;
+    this.defaultServiceCode = null;
+
+    // Other Data
     this.consumersThatCanHaveMileage = [];
     this.attachmentList = null;
     this.overlapData = null;
@@ -187,6 +190,7 @@
     });
     this.caseManagerReview = data.getReviewRequiredForCaseManagerResult[0];
     this.reviewRequired = !this.caseManagerReview.reviewrequired ? 'N' : 'Y';
+    this.defaultServiceCode = this.caseManagerReview.serviceid;
 
     return this;
   };
@@ -227,7 +231,7 @@
   // DROPDOWN DATA MAPPING
   //---------------------------------------
   CaseNotesData.prototype.getServiceBillCodeDropdownData = function () {
-    //TODO: caseManagerReview.serviceid = DEFAULT VALUE
+    //TODO-ASH: caseManagerReview.serviceid = DEFAULT VALUE
     let data = [];
 
     for (serviceId in this.dropdownData) {
@@ -378,8 +382,9 @@
    * @param {String} selectedServiceCode
    * @returns {Boolean}
    */
-  CaseNotesData.prototype.allowGroupNotes = function (selectedServiceCode) {
-    return this.dropdownData[selectedServiceCode].allowGroupNotes === 'Y' ? true : false;
+  CaseNotesData.prototype.isServiceFunding = function (selectedServiceCode) {
+    const serviceCode = selectedServiceCode ? selectedServiceCode : this.defaultServiceCode;
+    return this.dropdownData[serviceCode].serviceFunding === 'Y' ? true : false;
   };
   /**
    * @function
@@ -387,6 +392,22 @@
    */
   CaseNotesData.prototype.isReviewRequired = function () {
     return this.caseManagerReview.reviewrequired === 'Y' ? true : false;
+  };
+  /**
+   * @function
+   * @param {String} selectedServiceCode
+   * @returns {Boolean}
+   */
+  CaseNotesData.prototype.allowGroupNotes = function (selectedServiceCode) {
+    const serviceCode = selectedServiceCode ? selectedServiceCode : this.defaultServiceCode;
+    return this.dropdownData[serviceCode].allowGroupNotes === 'Y' ? true : false;
+  };
+  /**
+   * @function
+   * @returns {String}
+   */
+  CaseNotesData.prototype.getDefaultServiceCode = function () {
+    return this.defaultServiceCode;
   };
   /**
    * @function
@@ -405,6 +426,13 @@
    */
   CaseNotesData.prototype.getAttachmentsList = function () {
     return this.attachmentList;
+  };
+  /**
+   * @function
+   * @returns {Array}
+   */
+  CaseNotesData.prototype.canConsumerHaveMileage = function (consumerId) {
+    return this.consumersThatCanHaveMileage.includes(consumerId);
   };
 
   return CaseNotesData;

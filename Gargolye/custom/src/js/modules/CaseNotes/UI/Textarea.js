@@ -149,14 +149,16 @@
    */
   FullscreenTextarea.prototype.build = function () {
     // get new Dialog
-    this.fullScreenDialog = new Dialog();
-
-    // build and append dialog
+    this.fullScreenDialog = new Dialog({
+      className: 'fullscreenTextarea',
+      clickOutToCloseCallback() {
+        this.textareaClone.toggleDisabled(false);
+      },
+    });
     this.fullScreenDialog.renderTo(_DOM.ACTIONCENTER);
-    this.fullScreenDialog.dialog.classList.add('fullscreenTextarea');
 
     // clone textarea for dialog
-    this.textareaClone = this.textareaInstance.inputWrap.cloneNode(true);
+    this.textareaClone = this.textareaInstance.rootElement.cloneNode(true);
 
     // build and append dialog close button to textareaClone
     this.fullScreenCloseBtn = _DOM.createElement('div', {
@@ -223,7 +225,7 @@
   //=======================================
   // MAIN LIB
   //---------------------------------------
-  //TODO ASH: create logic to update charcount on keyup, input
+  //TODO-ASH: create logic to update charcount on keyup, input
 
   /**
    * Default configuration
@@ -264,6 +266,7 @@
     this.options.attributes.name = this.options.attributes.id;
 
     // DOM Ref
+    this.rootElement = null;
     this.inputWrap = null;
     this.input = null;
     this.fullscreen = null;
@@ -279,24 +282,25 @@
    */
   Textarea.prototype.build = function () {
     const classArray = ['input', 'textarea', `${this.options.attributes.id}`];
-    this.inputWrap = _DOM.createElement('div', {
+    this.rootElement = _DOM.createElement('div', {
       class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
     });
 
     // INPUT & LABEL
+    this.inputWrap = _DOM.createElement('div', { class: 'inputWrap' });
     this.input = _DOM.createElement('textarea', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
-    this.inputWrap.appendChild(this.input);
-    this.inputWrap.appendChild(labelEle);
+    this.rootElement.appendChild(this.input);
+    this.rootElement.appendChild(labelEle);
 
     // INPUT NOTE
     if (this.options.note) {
       const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
-      this.inputWrap.appendChild(inputNote);
-      this.inputWrap.classList.add('withNote');
+      this.rootElement.appendChild(inputNote);
+      this.rootElement.classList.add('withNote');
     }
 
     // CHAR COUNTER
@@ -305,7 +309,7 @@
         ? { html: `${0}<span>/</span>${this.options.attributes.maxlength}` }
         : { text: '0' };
       const inputCount = _DOM.createElement('div', { class: 'charCount', ...countMarkup });
-      this.inputWrap.appendChild(inputCount);
+      this.rootElement.appendChild(inputCount);
     }
 
     // FULLSCREEN MODE
@@ -316,7 +320,7 @@
         class: ['fullscreenToggleBtn', 'show', 'iconButton'],
         node: Icon.getIcon('openFullScreen'),
       });
-      this.inputWrap.appendChild(this.fullScreenShowBtn);
+      this.rootElement.appendChild(this.fullScreenShowBtn);
 
       // build fullscreenmode
       this.fullscreen = new FullscreenTextarea(this);
@@ -329,7 +333,7 @@
         class: ['speechToTextBtn', 'off', 'iconButton'],
         node: Icon.getIcon('micOff'),
       });
-      this.inputWrap.appendChild(this.speechToTextBtn);
+      this.rootElement.appendChild(this.speechToTextBtn);
 
       // init speech to text
       this.speechToText = new SpeechToText(this);
@@ -337,7 +341,7 @@
     }
 
     if (this.options.fullscreen || this.options.speechToText) {
-      this.inputWrap.classList.add('withIcons');
+      this.rootElement.classList.add('withIcons');
     }
 
     this.setupEvents();
@@ -489,7 +493,7 @@
    */
   Textarea.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.inputWrap);
+      node.appendChild(this.rootElement);
     }
 
     return this;

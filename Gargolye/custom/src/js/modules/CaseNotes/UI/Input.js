@@ -1,7 +1,7 @@
 (function (global, factory) {
   global.Input = factory();
 })(this, function () {
-  //TODO ASH: create logic to update charcount on keyup, input
+  //TODO-ASH: create logic to update charcount on keyup, input
 
   //=======================================
   // MAIN LIB
@@ -45,6 +45,7 @@
     this.options.attributes.name = this.options.attributes.id;
 
     // DOM Ref
+    this.rootElement = null;
     this.inputWrap = null;
     this.input = null;
   }
@@ -58,11 +59,12 @@
   Input.prototype.build = function () {
     // INPUT WRAP
     const classArray = ['input', `${this.options.attributes.type}`, `${this.options.attributes.id}`];
-    this.inputWrap = _DOM.createElement('div', {
+    this.rootElement = _DOM.createElement('div', {
       class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
     });
 
     // INPUT & LABEL
+    this.inputWrap = _DOM.createElement('div', { class: 'inputWrap' });
     this.input = _DOM.createElement('input', { ...this.options.attributes });
     this.labelEle = _DOM.createElement('label', {
       text: this.options.label,
@@ -72,8 +74,8 @@
     // INPUT NOTE
     if (this.options.note) {
       const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
-      this.inputWrap.appendChild(inputNote);
-      this.inputWrap.classList.add('withNote');
+      this.rootElement.appendChild(inputNote);
+      this.rootElement.classList.add('withNote');
     }
 
     // CHAR COUNTER
@@ -82,18 +84,23 @@
         ? { html: `${0}<span>/</span>${this.options.attributes.maxlength}` }
         : { text: '0' };
       const inputCount = _DOM.createElement('div', { class: 'charCount', ...countMarkup });
-      this.inputWrap.appendChild(inputCount);
+      this.rootElement.appendChild(inputCount);
     }
 
-    // CHECKBOX TOGGLE
-    if (this.options.toggle) {
-      this.inputWrap.classList.add('toggle');
-    } else {
-      this.inputWrap.classList.add('notoggle');
+    // CUSTOM FILE INPUTS
+    if (this.options.attributes.type === 'file') {
+      this.rootElement.classList.remove('input');
+    }
+
+    // CUSTOM CHECKBOX TOGGLE
+    if (this.options.attributes.type === 'checkbox' && this.options.toggle) {
+      this.rootElement.classList.remove('input');
+      this.rootElement.classList.add('toggle');
     }
 
     this.inputWrap.appendChild(this.input);
-    this.inputWrap.appendChild(this.labelEle);
+    this.rootElement.appendChild(this.inputWrap);
+    this.rootElement.appendChild(this.labelEle);
 
     return this;
   };
@@ -128,16 +135,6 @@
   };
 
   /**
-   * Sets Custom Validity on input
-   *
-   * @function
-   * @param {String} message Empty string will unset invalid status
-   */
-  Input.prototype.setValidtyError = function (message) {
-    this.input.setCustomValidity(message);
-  };
-
-  /**
    * Toggles inputs required state, if true input is required
    *
    * @function
@@ -156,6 +153,35 @@
   Input.prototype.toggleDisabled = function (isDisbled) {
     this.input.disabled = isDisbled;
   };
+
+  /**
+   * Sets Custom Validity on input
+   *
+   * @function
+   * @param {String} message Empty string will unset invalid status
+   */
+  Input.prototype.setValidtyError = function (message) {
+    this.input.setCustomValidity(message);
+  };
+
+  /**
+   * Adds error icon to end of input and updates note text with given error message
+   *
+   * @function
+   * @param {String} message
+   */
+  Input.prototype.showError = function (message) {};
+
+  /**
+   * Adds warning icon to end of input and updates note text with given warning message
+   *
+   * @function
+   * @param {String} message
+   */
+  Input.prototype.showWarning = function (message) {};
+
+  Input.prototype.clearError = function () {};
+  Input.prototype.clearWarning = function () {};
 
   /**
    * Handles input change event
@@ -205,7 +231,7 @@
    */
   Input.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.inputWrap);
+      node.appendChild(this.rootElement);
     }
 
     return this;

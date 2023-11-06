@@ -1,7 +1,7 @@
 (function (global, factory) {
   global.Spinner = factory();
 })(this, function () {
-  //TODO ASH: bring in web animation api for more control
+  //TODO-ASH: bring in web animation api for more control
 
   //=======================================
   // MAIN LIB

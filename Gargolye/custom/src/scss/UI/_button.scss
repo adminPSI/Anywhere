@@ -12,7 +12,7 @@
     padding: 0 10px;
     text-transform: uppercase;
 
-    &.icon {
+    &.withIcon {
       display: flex;
       align-items: center;
       column-gap: 4px;
@@ -21,6 +21,12 @@
         position: relative;
         top: 2px;
       }
+    }
+
+    &.iconOnly {
+      box-shadow: $shadow-m1;
+      min-height: auto;
+      min-width: auto;
     }
 
     //states
@@ -36,6 +42,9 @@
       &.primary {
         background: $primary;
       }
+      &.secondary {
+        background: $secondary;
+      }
       &.danger {
         background: $error;
       }
@@ -46,7 +55,7 @@
     }
     &.outlined {
       background: none;
-      border-width: 3px;
+      border-width: 2px;
       border-style: solid;
       //color: $black;
       color: $primary;
@@ -56,6 +65,13 @@
 
         span {
           color: $primary;
+        }
+      }
+      &.secondary {
+        border-color: $secondary;
+
+        span {
+          color: $secondary;
         }
       }
       &.danger {

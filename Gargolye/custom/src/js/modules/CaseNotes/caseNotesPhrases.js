@@ -24,8 +24,7 @@
    * @returns {CaseNotesAddPhrases} - Returns the current instances for chaining
    */
   CaseNotesAddPhrases.prototype.build = function () {
-    this.dialog = new Dialog();
-    this.dialog.dialog.classList.add('addPhrases');
+    this.dialog = new Dialog({ className: 'addPhrases' });
 
     this.addPhraseForm = new Form({
       elements: [
@@ -153,8 +152,7 @@
     this.showAllPhrases = _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
     this.showAllPhrases = this.showAllPhrases === 'Y' ? true : false;
 
-    this.dialog = new Dialog();
-    this.dialog.dialog.classList.add('insertPhrases');
+    this.dialog = new Dialog({ className: 'insertPhrases' });
 
     this.showAllPhrasesToggle = new Input({
       type: 'checkbox',
@@ -303,7 +301,7 @@
   /**
    * @function
    *
-   * @returns {CaseNotesPhrases} - Returns the current instances for chaining
+   * @returns {CaseNotesPhrases} Returns the current instances for chaining
    */
   CaseNotesPhrases.prototype.build = function () {
     this.AddPhrases.build();

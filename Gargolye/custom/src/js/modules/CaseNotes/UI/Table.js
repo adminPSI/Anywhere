@@ -7,10 +7,10 @@
 //? pagination
 //? allow table to go fullscreen
 
-//TODO: multiselect rows w/bulk actions
-//TODO: clickable end row icons
-//TODO: table headline <caption></caption>
-//TODO: row density control
+//TODO-ASH: multiselect rows w/bulk actions
+//TODO-ASH: clickable end row icons
+//TODO-ASH: table headline <caption></caption>
+//TODO-ASH: row density control
 
 (function (global, factory) {
   global = global || self;
@@ -166,7 +166,7 @@
       type: 'checkbox',
       label: '',
     });
-    const checkboxInput = newCheckbox.build().inputWrap;
+    const checkboxInput = newCheckbox.build().rootElement;
     checkboxInput.addEventListener('change', e => {
       console.log('I was selected');
     });
@@ -181,7 +181,7 @@
         type: 'checkbox',
         label: '',
       });
-      const checkboxInput = newCheckbox.build().inputWrap;
+      const checkboxInput = newCheckbox.build().rootElement;
       checkboxInput.addEventListener('change', e => {
         console.log('I was selected', row);
       });

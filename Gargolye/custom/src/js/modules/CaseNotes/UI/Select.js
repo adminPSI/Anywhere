@@ -39,6 +39,7 @@
     this.options.attributes.name = this.options.attributes.id;
 
     // DOM Ref
+    this.rootElement = null;
     this.inputWrap = null;
     this.select = null;
   }
@@ -51,24 +52,27 @@
    */
   Select.prototype.build = function () {
     const classArray = ['input', 'select', `${this.options.attributes.id}`];
-    this.inputWrap = _DOM.createElement('div', {
+    this.rootElement = _DOM.createElement('div', {
       class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
     });
 
+    this.inputWrap = _DOM.createElement('div', { class: 'inputWrap' });
     this.select = _DOM.createElement('select', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
 
+    this.inputWrap.appendChild(this.select);
+    this.rootElement.appendChild(this.inputWrap);
+    this.rootElement.appendChild(labelEle);
+    this.rootElement.appendChild(Icon.getIcon('chevron'));
+
     if (this.options.note) {
       const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
-      this.inputWrap.appendChild(inputNote);
-      this.inputWrap.classList.add('withNote');
+      this.rootElement.appendChild(inputNote);
+      this.rootElement.classList.add('withNote');
     }
-
-    this.inputWrap.appendChild(this.select);
-    this.inputWrap.appendChild(labelEle);
 
     this.populate();
 
@@ -81,7 +85,7 @@
    * @function
    * @param {Array} [data] Data to populate select with
    */
-  Select.prototype.populate = function (data) {
+  Select.prototype.populate = function (data, defaultValue) {
     if (data && Array.isArray(data)) this.options.data = [...data];
 
     this.select.innerHTML = '';
@@ -175,7 +179,7 @@
    */
   Select.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.inputWrap);
+      node.appendChild(this.rootElement);
     }
 
     return this;

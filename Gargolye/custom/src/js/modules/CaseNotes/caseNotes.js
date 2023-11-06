@@ -1,16 +1,9 @@
-//! QUESTIONS FOR JOSH
-//1. do we want to update the roster list of consumers on date change? ***MAYBE
-//2. how do we want to handle ssa notes, toggle button? ***DON'T KNOW YET
-
 //? Thoughts
 //1. checkbox to toggle between seing only yours vs everyones notes in overview
 
-//TODO: NO GROUP NOTES IF DOC TIME IS ALLOWED
-//TODO: if GK save attachments after note save
-//TODO: preSave() stops timer and speech to text
-//TODO: make sure im clearing out selected consumer on module leave/form submit
-//TODO: DROPDOWN ICON
-//TODO: when you click outside modal re enable textarea for fullscreen mode
+//TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
+//TODO-ASH: preSave() stops timer and speech to text
+//TODO-ASH: when you click outside modal re enable textarea for fullscreen mode
 
 const CaseNotes = (() => {
   //--------------------------
@@ -21,6 +14,7 @@ const CaseNotes = (() => {
   let selectedDate = null;
   let selectedServiceCode;
   let caseManagerId;
+  let reviewRequired;
   let isNewNote = true;
   // attachments
   let attachmentsForSave = {};
@@ -33,6 +27,8 @@ const CaseNotes = (() => {
   // timers
   let isDocTimeRequired;
   let isTravelTimeRequired;
+  // other
+  let mileageRequired;
   //--------------------------
   // DOM
   //--------------------------
@@ -352,13 +348,8 @@ const CaseNotes = (() => {
       }
 
       if ($.session.applicationName === 'Advisor') {
-        //! GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
-        //? For now going to leave this init, if init gets slow this can be moved to
-        //? rosterPicker event and setup to only run once.
-        const consumersThatCanHaveMileage = await cnData.fetchConsumersThatCanHaveMileage();
-        // Check Selected Consumer For Mileage
-        const canConsumerHaveMileage = consumersThatCanHaveMileage.includes(selectedConsumers[0]);
-        if (canConsumerHaveMileage) {
+        //* GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
+        if (cnData.canConsumerHaveMileage()) {
           cnForm.inputs['mileage'].toggleDisabled(false);
         }
 
@@ -466,8 +457,6 @@ const CaseNotes = (() => {
       // set selectedServiceCode
       selectedServiceCode = value;
 
-      let mileageRequired;
-
       if ($.session.applicationName === 'Gatekeeper' && selectedServiceCode !== '') {
         mileageRequired = cnData.isMileageRequired(selectedServiceCode);
         isTravelTimeRequired = cnData.isTravelTimeRequired(selectedServiceCode);
@@ -478,6 +467,9 @@ const CaseNotes = (() => {
         cnForm.inputs['travelTime'].toggleDisabled(!isTravelTimeRequired);
       } else {
         allowGroupNotes = true;
+
+        const isServiceFunding = cnData.isServiceFunding(selectedServiceCode);
+        cnForm.inputs['serviceLocation'].toggleDisabled(!isServiceFunding);
       }
 
       if (selectedServiceCode !== '') {
@@ -595,10 +587,10 @@ const CaseNotes = (() => {
         cnForm.inputs[`attachments${attachmentCountForIDs}`] = newInputInstance;
 
         // insert new attachment input next to current one
-        input.inputWrap.insertAdjacentElement('beforebegin', newInputInstance.inputWrap);
+        input.rootElement.insertAdjacentElement('beforebegin', newInputInstance.rootElement);
 
         // update label of new attachment
-        input.inputWrap.classList.add('hasFile');
+        input.rootElement.classList.add('hasFile');
         input.labelEle.innerText = _UTIL.truncateFilename(attachmentObj.description);
         const deleteIcon = Icon.getIcon('delete');
         input.labelEle.insertBefore(deleteIcon, input.labelEle.firstChild);
@@ -606,7 +598,7 @@ const CaseNotes = (() => {
           e.stopPropagation();
           delete attachmentsForSave[attachmentObj.description];
           delete cnForm.inputs[currentAttachmentId];
-          input.inputWrap.remove();
+          input.rootElement.remove();
         });
       }
     },
@@ -664,10 +656,6 @@ const CaseNotes = (() => {
       } else {
         // check for the #ph
         if (words.includes('#ph')) {
-          // if (cnPhrases.InsertPhrases.dialog.dialog.parentNode !== cnForm.inputs['noteText'].inputWrap) {
-          //   cnPhrases.InsertPhrases.renderTo(cnForm.inputs['noteText'].inputWrap);
-          // }
-
           // temp disable input
           input.toggleDisabled(true);
 
@@ -747,7 +735,7 @@ const CaseNotes = (() => {
           id: 'serviceCode',
           required: true,
           data: cnData.getServiceBillCodeDropdownData(),
-          defaultValue: null,
+          defaultValue: cnData.getDefaultServiceCode(),
           includeBlankOption: true,
         },
         //location
@@ -791,6 +779,7 @@ const CaseNotes = (() => {
           label: 'Service Location',
           id: 'serviceLocation',
           hidden: $.session.applicationName === 'Gatekeeper',
+          disabled: true,
         },
         //noteText
         {
@@ -849,20 +838,7 @@ const CaseNotes = (() => {
     //-----------------------------------------
     setupEventsForInstances();
   }
-
-  // INIT/LOAD? (data & defaults)
-  //--------------------------------------------------
-  async function getAttachmentsData() {
-    if ($.session.applicationName === 'Gatekeeper' && isReview) {
-      await cnData.fetchAttachmentsGK(caseNoteId);
-      attachmentList = cnData.getAttachmentsList();
-    }
-  }
-  async function init() {
-    // init module data
-    selectedDate = dates.getTodaysDateObj();
-    caseManagerId = $.session.PeopleId;
-
+  function loadPageSkeleton() {
     // prep actioncenter
     _DOM.ACTIONCENTER.innerHTML = '';
     _DOM.ACTIONCENTER.setAttribute('data-UI', true);
@@ -880,17 +856,35 @@ const CaseNotes = (() => {
     moduleWrap.appendChild(cnRosterWrap);
     moduleWrap.appendChild(cnFormWrap);
     _DOM.ACTIONCENTER.appendChild(moduleWrap);
+  }
 
-    // init case notes data
+  // INIT/LOAD? (data & defaults)
+  //--------------------------------------------------
+  async function init() {
+    loadPageSkeleton();
+
+    // 1) init module data
+    selectedDate = dates.getTodaysDateObj();
+    caseManagerId = $.session.PeopleId;
+
+    // 2) init case notes data
     cnData = new CaseNotesData();
     await cnData.fetchDropdownData();
     await cnData.fetchCaseManagerReviewData(caseManagerId);
+    await cnData.fetchConsumersThatCanHaveMileage();
     reviewRequired = cnData.isReviewRequired();
+    allowGroupNotes = cnData.allowGroupNotes();
 
-    // Load Case Notes w/Data
+    // 3) Load Case Notes w/Data
     await loadPage();
 
     checkRequiredFields();
+
+    return;
+    if ($.session.applicationName === 'Gatekeeper' && isReview) {
+      await cnData.fetchAttachmentsGK(caseNoteId);
+      attachmentList = cnData.getAttachmentsList();
+    }
   }
 
   return {

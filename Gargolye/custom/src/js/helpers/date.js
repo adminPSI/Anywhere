@@ -343,9 +343,21 @@ const dates = (function () {
 
   // TIME
   //----------------------------------------------------------------
-  function removeTimestamp(date) {
-    const splitDate = date.split(' ');
-    return `${splitDate[0]}`;
+  /**
+   * Formats the time as HH:MM:SS from a given number of seconds.
+   *
+   * @param {number} totalSeconds - The total number of seconds to format.
+   * @return {string} - The formatted time string.
+   */
+  function formatSecondsToFullTime(totalSeconds) {
+    if (!totalSeconds) return '00:00:00';
+    var hours = Math.floor(totalSeconds / 3600);
+    var minutes = Math.floor((totalSeconds - hours * 3600) / 60);
+    var seconds = totalSeconds % 60;
+
+    return [_UTIL.padNumberWithZero(hours), _UTIL.padNumberWithZero(minutes), _UTIL.padNumberWithZero(seconds)].join(
+      ':',
+    );
   }
   function getMilitaryTimeDifference(startTime, endTime) {
     const startDate = new Date(`1970-01-01T${startTime}`);
@@ -375,6 +387,10 @@ const dates = (function () {
 
     return formattedTime.join(' ');
   }
+  function removeTimestamp(date) {
+    const splitDate = date.split(' ');
+    return `${splitDate[0]}`;
+  }
 
   return {
     getTodaysDateObj,
@@ -397,7 +413,8 @@ const dates = (function () {
     formatISO,
     eachDayOfInterval,
     // TIME
-    removeTimestamp,
+    formatSecondsToFullTime,
     getMilitaryTimeDifference,
+    removeTimestamp,
   };
 })();

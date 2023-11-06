@@ -42,7 +42,7 @@
 
     this.options.radios.forEach(radio => {
       const newInput = new Input({ ...radio }).build();
-      const input = newInput.inputWrap;
+      const input = newInput.rootElement;
       this.inputGroup.appendChild(input);
 
       this.inputs[radio.id] = input;

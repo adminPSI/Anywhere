@@ -10,10 +10,10 @@
    */
   const DEFAULT_OPTIONS = {
     text: null,
-    type: 'button', // submit or button (don't use reset)
+    type: 'button',
     icon: null,
-    style: 'primary', // primary(blue), danger(red), warning(yellow)
-    styleType: 'contained', // contained(filled), outlined(border, no fill), text(no fill/border)
+    style: 'primary',
+    styleType: 'contained',
   };
 
   /**
@@ -21,11 +21,11 @@
    *
    * @constructor
    * @param {Object} options
-   * @param {String} options.text
-   * @param {String} [options.type]
-   * @param {String} [options.icon]
-   * @param {String} [options.style]
-   * @param {String} [options.styleType]
+   * @param {String} [options.text] button text
+   * @param {String} [options.type] submit or button (don't use reset)
+   * @param {String} [options.icon] icon to include
+   * @param {String} [options.style] primary(blue), secondary(green), danger(red), warning(yellow)
+   * @param {String} [options.styleType] contained(filled), outlined(border, no fill), text(no fill/border)
    * @returns {Button}
    *
    * @example
@@ -57,9 +57,14 @@
     });
 
     if (this.options.icon) {
-      this.button.innerHTML = `<span>${this.options.text}</span>`;
-      this.button.insertBefore(Icon.getIcon(this.options.icon), this.button.firstChild);
-      this.button.classList.add('icon');
+      if (this.options.text) {
+        this.button.innerHTML = `<span>${this.options.text}</span>`;
+        this.button.insertBefore(Icon.getIcon(this.options.icon), this.button.firstChild);
+        this.button.classList.add('withIcon');
+      } else {
+        this.button.appendChild(Icon.getIcon(this.options.icon));
+        this.button.classList.add('iconOnly');
+      }
     } else {
       this.button.innerText = this.options.text;
     }

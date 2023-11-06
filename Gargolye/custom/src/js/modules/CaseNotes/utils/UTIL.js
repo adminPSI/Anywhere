@@ -187,6 +187,16 @@
   }
 
   /**
+   * Pads a number with a leading zero if it is less than 10.
+   *
+   * @param {number} number - The number to pad.
+   * @return {string} - The padded number as a string.
+   */
+  function padNumberWithZero(number) {
+    return number < 10 ? '0' + number : number.toString();
+  }
+
+  /**
    * Removes and replaces certain characters that can't be saved into the DB.
    * @param {string} note Text that needs to be converted to a format that will save in the DB.
    * @returns {string} Returns the note that can now be saved into the DB.
@@ -341,6 +351,7 @@
     fetchData,
     localStorageHandler,
     mergeObjects,
+    padNumberWithZero,
     removeUnsavableNoteText,
     sortByProperty,
     splitObjectByPropNames,

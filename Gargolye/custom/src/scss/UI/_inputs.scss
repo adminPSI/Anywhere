@@ -34,7 +34,7 @@ $label_fontSize: $px14;
     }
   }
 
-  .input:not(.checkbox):not(.radio) {
+  .input:not(.checkbox):not(.radio):not(.file) {
     display: flex;
     flex-flow: column-reverse nowrap;
     margin-bottom: 20px;
@@ -84,6 +84,7 @@ $label_fontSize: $px14;
       }
     }
   }
+
   //===========================================
   // TEXTAREAS
   //-------------------------------------------
@@ -96,20 +97,10 @@ $label_fontSize: $px14;
       flex-grow: 1;
     }
 
-    .fullscreenToggleBtn,
-    .speechToTextBtn {
-      // cursor: pointer;
-      // border-radius: 2px;
-      // box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-      // position: absolute;
-      // outline: 1px solid $black;
-      // padding: 4px;
-      // top: -22px;
-      // z-index: 1;
-
-      // * {
-      //   pointer-events: none;
-      // }
+    .speechToTextBtn,
+    .fullscreenToggleBtn {
+      position: absolute;
+      top: -22px;
     }
 
     .speechToTextBtn {
@@ -127,6 +118,46 @@ $label_fontSize: $px14;
       right: 8px;
     }
   }
+
+  //===========================================
+  // FILES / ATTACHMENTS
+  //-------------------------------------------
+  .file {
+    flex-grow: 0;
+
+    input[type='file'] {
+      position: absolute;
+      right: 100px;
+      top: 10px;
+      visibility: hidden;
+    }
+    input[type='file'] ~ label {
+      align-items: center;
+      border: 2px solid $primary;
+      border-radius: 20px;
+      display: flex;
+      height: 40px;
+      flex-flow: row nowrap;
+      padding: 10px 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    &.file {
+      width: auto;
+      flex-grow: 0;
+    }
+    &.hasFile {
+      input[type='file'] ~ label {
+        border: 2px solid $secondary;
+
+        .svgIcon {
+          color: $error;
+        }
+      }
+    }
+  }
+
   //===========================================
   // CHECKBOXES & RADIOS
   //-------------------------------------------
@@ -139,7 +170,8 @@ $label_fontSize: $px14;
       margin: 0 0 10px;
     }
   }
-  .input.notoggle {
+  .input.checkbox,
+  .input.radio {
     input[type='checkbox'],
     input[type='radio'] {
       opacity: 0;
@@ -180,7 +212,7 @@ $label_fontSize: $px14;
       }
     }
   }
-  .input.toggle {
+  .checkbox.toggle {
     input[type='checkbox'] {
       opacity: 0;
       position: absolute;
@@ -245,7 +277,7 @@ $label_fontSize: $px14;
       background-color: $gray;
     }
   }
-  .input input[type='radio'] {
+  .input.radio input[type='radio'] {
     margin: 0 0 10px;
 
     label {
@@ -254,12 +286,22 @@ $label_fontSize: $px14;
       }
     }
   }
+
   //===========================================
   // DROPDOWNS
   //-------------------------------------------
   .select {
+    cursor: pointer;
+
     select {
       background: none;
+      padding-right: 30px;
+    }
+
+    > .svgIcon {
+      position: absolute;
+      right: 5px;
+      top: 26px;
     }
   }
 }

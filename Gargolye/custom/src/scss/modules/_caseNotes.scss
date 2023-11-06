@@ -31,12 +31,12 @@
 [data-active-module='casenotes2.0'] {
   .caseNotesModule {
     display: grid;
-    grid-template-columns: 340px auto;
+    grid-template-columns: auto 340px;
     grid-template-rows: auto auto minmax(900px, 1300px) 600px;
     grid-template-areas:
       'header header'
       'nav nav'
-      'roster form'
+      'form roster'
       'cards cards';
     justify-items: stretch;
 
@@ -63,7 +63,7 @@
     .caseNotesRosterPicker {
       display: flex;
       grid-area: roster;
-      margin: 0 10px 0 20px;
+      margin: 0 20px 0 10px;
       min-width: calc(100% - 30px);
 
       .rosterPicker {
@@ -79,12 +79,14 @@
     .caseNotesForm {
       border-radius: 6px;
       box-shadow: $shadow-m2;
+      display: flex;
+      flex-flow: column nowrap;
       grid-area: form;
-      margin: 0 20px 0 10px;
+      margin: 0 10px 0 20px;
       position: relative;
 
       form {
-        padding: 10px;
+        padding: 6px 10px 10px 10px;
 
         .input {
           flex-grow: 1;
@@ -110,44 +112,23 @@
           width: calc(50% - 5px);
         }
       }
+    }
+    .caseNotesTimer {
+      align-items: center;
+      align-self: flex-end;
+      display: flex;
+      padding: 10px 10px 6px 10px;
 
-      // special attachments START
-      form {
-        .input {
-          input[type='file'] {
-            position: absolute;
-            right: 100px;
-            top: 10px;
-            visibility: hidden;
-          }
-          input[type='file'] ~ label {
-            align-items: center;
-            border: 2px solid $primary;
-            border-radius: 20px;
-            display: flex;
-            height: 40px;
-            flex-flow: row nowrap;
-            padding: 10px 14px;
-            font-weight: 500;
-            text-transform: uppercase;
-          }
-
-          &.file {
-            width: auto;
-            flex-grow: 0;
-          }
-          &.hasFile {
-            input[type='file'] ~ label {
-              border: 2px solid $secondary;
-
-              .svgIcon {
-                color: $error;
-              }
-            }
-          }
-        }
+      p {
+        font-size: $px18;
+        line-height: normal;
+        margin-left: 10px;
+        order: 1;
       }
-      // special attachments END
+
+      button:first-of-type {
+        margin-right: 4px;
+      }
     }
 
     .caseNotesOverview {

@@ -48,8 +48,8 @@
   AsyncRequestVisualizer.prototype.build = function () {
     this.dialog = new Dialog({
       clickOutToClose: false,
+      className: 'asyncRequestVisualizer',
     });
-    this.dialog.dialog.classList.add('asyncRequestVisualizer');
 
     this.visualizerWrap = _DOM.createElement('div');
     this.dialog.dialog.appendChild(this.visualizerWrap);
