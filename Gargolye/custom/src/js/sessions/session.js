@@ -253,6 +253,7 @@ $.session.schedRequestOpenShifts = 'N';
 $.session.hideAllScheduleButton = false;
 // Authorizations
 $.session.authorizationsView = false;
+$.session.authorizationsVendorInfoView = false;
 //Plan
 $.session.planUpdate = false;
 $.session.planDelete = false;
@@ -628,6 +629,9 @@ function setSessionVariables() {
             if (tmpPerm == 'View' || $.session.isPSI == true) {
                 $.session.authorizationsView = true;
             }
+            if (tmpPerm == 'View Vendor Info' || $.session.isPSI == true) {
+                $.session.authorizationsVendorInfoView = true;
+            } 
         }
         //AeMAR
         if (tmpWindow == 'Anywhere eMAR' || $.session.isPSI == true) {

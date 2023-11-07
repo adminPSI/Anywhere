@@ -25,7 +25,8 @@ var authorizationLanding = (function () {
         btnWrap.classList.add('landingBtnWrap');
         btnWrap.appendChild(pasBtn);
         btnWrap.appendChild(assessmentHistoryBtn);
-        btnWrap.appendChild(vendorInfoBtn);
+        if ($.session.authorizationsVendorInfoView)
+            btnWrap.appendChild(vendorInfoBtn);  
         DOM.ACTIONCENTER.appendChild(btnWrap);
     }
 
