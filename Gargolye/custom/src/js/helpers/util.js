@@ -848,8 +848,12 @@ const UTIL = (function () {
     };
 })();
 
+const userActivityChannel = new BroadcastChannel('userActivityChannel');
+
 function autoLogout() {
     var isPopupVisible = false;
+    var idleTime = 0;
+    var logoutInterval = setInterval(timerIncrement, 60000);
 
     function timerIncrement() {
         var timeLimit = parseInt($.session.anywhereMinutestotimeout);
@@ -865,9 +869,7 @@ function autoLogout() {
     var logoutPopup = POPUP.build({});
     logoutPopup.innerHTML += logoutMessage;
 
-    var idleTime = 0;
-    var logoutInterval = setInterval(timerIncrement, 60000);
-
+    // Broadcast mouse movement event to other tabs
     document.addEventListener('mousemove', () => {
         if (isPopupVisible) {
             POPUP.hide(logoutPopup);
@@ -876,7 +878,12 @@ function autoLogout() {
         idleTime = 0;
         clearInterval(logoutInterval);
         logoutInterval = setInterval(timerIncrement, 60000);
+
+        // Broadcast mouse movement event to other tabs
+        userActivityChannel.postMessage({ type: 'mouseMove' });
     });
+
+    // Broadcast keyboard activity event to other tabs
     document.addEventListener('keydown', () => {
         if (isPopupVisible) {
             POPUP.hide(logoutPopup);
@@ -885,5 +892,26 @@ function autoLogout() {
         idleTime = 0;
         clearInterval(logoutInterval);
         logoutInterval = setInterval(timerIncrement, 60000);
+
+        // Broadcast keyboard activity event to other tabs
+        userActivityChannel.postMessage({ type: 'keyPress' });
     });
+
+    userActivityChannel.addEventListener('message', function(event) {
+        const message = event.data;
+    
+        if (message.type === 'mouseMove' || message.type === 'keyPress') {
+            // Reset idleTime to zero when there's user activity in other tabs
+            idleTime = 0;
+        } else if (message.type === 'buttonClick') {
+            setCookieOnFail('');
+        }
+    });
+}
+
+function handleLogoutButtonClick() {
+    setCookieOnFail('');
+
+    // Broadcast the button click event to other tabs
+    userActivityChannel.postMessage({ type: 'buttonClick' });
 }
