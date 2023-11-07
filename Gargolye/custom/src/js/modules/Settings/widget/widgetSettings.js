@@ -407,7 +407,7 @@ const widgetSettings = (function () {
     },
     15: { name: 'My Schedule', settings: {}, showHide: '', application: 'adv' },
     16: {
-      name: 'Incident Tracking',
+      name: 'Incident Tracking', 
       settings: {},
       showHide: '',
       application: 'adv',
@@ -417,7 +417,13 @@ const widgetSettings = (function () {
       settings: {},
       showHide: '',
       application: 'gk,adv',
-    },
+      },
+    18: {
+       name: 'Money Management',
+       settings: {},
+       showHide: '',
+       application: 'adv',  
+      },
   };
 
   function setWidgetSettings(widgetId) {

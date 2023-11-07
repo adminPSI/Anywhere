@@ -578,7 +578,7 @@
     function initMoneyManagementWidget() {
         const showHide = getWidgetSettings(widgetIds.moneyManagement).showHide;
         if (
-            $.session.anywhereConsumerFinancesPermission === 'Anywhere_Consumer_Finances' 
+            $.session.anywhereConsumerFinancesPermission === 'Anywhere_Consumer_Finances' && $.session.CFView == true
         ) {
             (function loadMoneyManagementWidget() {
                 var div = document.createElement('div');
