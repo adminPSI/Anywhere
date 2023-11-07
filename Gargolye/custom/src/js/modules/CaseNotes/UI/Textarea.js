@@ -225,8 +225,6 @@
   //=======================================
   // MAIN LIB
   //---------------------------------------
-  //TODO-ASH: create logic to update charcount on keyup, input
-
   /**
    * Default configuration
    * @type {Object}
@@ -281,26 +279,27 @@
    * @returns {Textarea} Returns the current instances for chaining
    */
   Textarea.prototype.build = function () {
-    const classArray = ['input', 'textarea', `${this.options.attributes.id}`];
+    const classArray = ['form_field', 'textarea', `${this.options.attributes.id}`];
     this.rootElement = _DOM.createElement('div', {
-      class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
+      class: this.options.hidden ? [...classArray, 'form_field--hidden'] : classArray,
     });
 
     // INPUT & LABEL
-    this.inputWrap = _DOM.createElement('div', { class: 'inputWrap' });
+    this.inputWrap = _DOM.createElement('div', { class: 'form_field__inner' });
     this.input = _DOM.createElement('textarea', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
-    this.rootElement.appendChild(this.input);
+    this.inputWrap.appendChild(this.input);
+
     this.rootElement.appendChild(labelEle);
+    this.rootElement.appendChild(this.inputWrap);
 
     // INPUT NOTE
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
+      const inputNote = _DOM.createElement('div', { class: 'form_field__note', text: this.options.note });
       this.rootElement.appendChild(inputNote);
-      this.rootElement.classList.add('withNote');
     }
 
     // CHAR COUNTER
@@ -341,7 +340,7 @@
     }
 
     if (this.options.fullscreen || this.options.speechToText) {
-      this.rootElement.classList.add('withIcons');
+      this.rootElement.classList.add('form_field--top-icons');
     }
 
     this.setupEvents();

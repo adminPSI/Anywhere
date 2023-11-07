@@ -154,8 +154,7 @@
 
     this.dialog = new Dialog({ className: 'insertPhrases' });
 
-    this.showAllPhrasesToggle = new Input({
-      type: 'checkbox',
+    this.showAllPhrasesToggle = new Checkbox({
       id: 'phraseView',
       label: 'Show All Phrases',
       toggle: true,

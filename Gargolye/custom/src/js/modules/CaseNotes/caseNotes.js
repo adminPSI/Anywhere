@@ -1,10 +1,3 @@
-//? Thoughts
-//1. checkbox to toggle between seing only yours vs everyones notes in overview
-
-//TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
-//TODO-ASH: preSave() stops timer and speech to text
-//TODO-ASH: when you click outside modal re enable textarea for fullscreen mode
-
 const CaseNotes = (() => {
   //--------------------------
   // SESSION DATA
@@ -14,16 +7,12 @@ const CaseNotes = (() => {
   let selectedDate = null;
   let selectedServiceCode;
   let caseManagerId;
-  let reviewRequired;
   let isNewNote = true;
   // attachments
   let attachmentsForSave = {};
   let attachmentCountForIDs = 0;
   // phrases
   let showAllPhrases;
-  // group notes
-  let allowGroupNotes = false;
-  let isGroupNote = false;
   // timers
   let isDocTimeRequired;
   let isTravelTimeRequired;
@@ -176,6 +165,15 @@ const CaseNotes = (() => {
 
   // VALIDATION / REQUIRED FIELDS
   //--------------------------------------------------
+  function areAllFormFieldsValid() {
+    const invalidControls = cnForm.form.querySelectorAll(':invalid');
+
+    if (invalidControls.length > 0) {
+      return false;
+    }
+
+    return true;
+  }
   function checkRequiredFields() {
     const isFormValid = areAllFormFieldsValid();
     let isSaveDisabled = false;
@@ -191,7 +189,7 @@ const CaseNotes = (() => {
       // cnValidation.toggleErrorStatus('consumer', false);
     }
 
-    if (isSaveDisabled && !isFormValid) {
+    if (isSaveDisabled || !isFormValid) {
       cnForm.buttons['submit'].toggleDisabled(true);
     } else {
       cnForm.buttons['submit'].toggleDisabled(false);
@@ -200,35 +198,10 @@ const CaseNotes = (() => {
 
   // DATA
   //--------------------------------------------------
-  function convertSingleNoteToGroupNote() {
-    // 1. convertToGroupNotes === true | only if !isGroupNote && allowGroupNotes
-    // 2. allowGroupNotes | this gets set on from service code dropdown event
-    // 3. isGroupNote | set when singleNotToGroupNote is called
-
-    if (!isGroupNote && allowGroupNotes) {
-      //* SINGLE NOTE TO GROUP NOTE LOGIC
-      //TODO: delete existing case note
-      //TODO: isGroupNote = true
-      //TODO: set noteId = 0?
-      //TODO: if (travelTime === null) travelTime = 0;
-      //TODO: if (documentationTime === null) documentationTime = 0;
-      //TODO: endTime = endTime.substring(0, 5);
-      //TODO: startTime = startTime.substring(0, 5);
-      //TODO: set page load to new?
-    }
-  }
   async function deleteNote(noteId) {
     await _UTIL.fetchData('deleteExistingCaseNote', {
       noteId: noteId,
     });
-  }
-  async function updateNote() {
-    //TODO: clean start time and end time:
-    // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
-    // startTime = startTime.length === 8 ? startTime.substring(0, 5) : startTime;
-    //? Different props from saveData
-    // add -> groupNoteId, consumerId
-    // remove -> reviewRequired
   }
   async function saveAttachments(saveCaseNoteResults) {
     const parser = new DOMParser();
@@ -274,12 +247,17 @@ const CaseNotes = (() => {
   async function saveNote(formData) {
     // let groupNoteId = await _UTIL.fetchData('getGroupNoteId');
     // groupNoteId = groupNoteId.getGroupNoteIdResult;
+
     const reqVisualizer = new AsyncRequestVisualizer();
     reqVisualizer.renderTo(_DOM.ACTIONCENTER);
 
+    // presave
+    if ($.session.applicationName === 'Gatekeeper') {
+      cnDocTimer.stop();
+    }
+
     if (isNewNote) {
       reqVisualizer.show('Saving Case Note...');
-
       const saveCaseNoteResults = await _UTIL.fetchData('saveCaseNote', {
         caseManagerId,
         caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
@@ -287,9 +265,9 @@ const CaseNotes = (() => {
         casenotetraveltime: formData.casenotetraveltime,
         confidential: formData.confidential,
         contactCode: formData.contactCode,
-        corrected: 'N', //TODO: crete checkbox for this (review only)
+        corrected: 'N',
         consumerId: selectedConsumers[0],
-        documentationTime: '',
+        documentationTime: $.session.applicationName === 'Gatekeeper' ? cnDocTimer.getTime() : '',
         endTime: formData.endTime,
         locationCode: formData.locationCode,
         needCode: formData.needCode,
@@ -310,7 +288,6 @@ const CaseNotes = (() => {
 
           // save attachments
           reqVisualizer.showPending('Saving Note Attachments');
-
           await saveAttachments(saveCaseNoteResults);
         } else {
           reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
@@ -323,111 +300,6 @@ const CaseNotes = (() => {
 
   // EVENTS & CALLBACKS
   //--------------------------------------------------
-  function setupEventsForInstances() {
-    dateNavigation.onDateChange(async newDate => {
-      selectedDate = newDate;
-
-      //TODO: re validate times when date change
-
-      //re populate overview section when date change
-      await cnOverview.fetchData(selectedDate);
-      cnOverview.populate();
-    });
-    rosterPicker.onConsumerSelect(async data => {
-      selectedConsumers = data;
-
-      // Get Vendors By Consumer
-      await cnData.fetchVendorDropdownData({
-        consumerId: selectedConsumers[0],
-        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-      });
-      const vendorData = cnData.getVendorDropdownData();
-      cnForm.inputs['vendor'].populate(vendorData);
-      if (vendorData.length === 1) {
-        cnForm.inputs['vendor'].setValue(vendorData[0].value);
-      }
-
-      if ($.session.applicationName === 'Advisor') {
-        //* GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
-        if (cnData.canConsumerHaveMileage()) {
-          cnForm.inputs['mileage'].toggleDisabled(false);
-        }
-
-        // Get Serv Locations By Consumer
-        await cnData.fetchServiceLocationDropdownData({
-          consumerId: selectedConsumers[0],
-          serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-        });
-        const servLocData = cnData.getServiceLocationDropdownData();
-        cnForm.inputs['serviceLocation'].populate(servLocData);
-      }
-
-      checkRequiredFields();
-    });
-    cnForm.onChange(event => {
-      const value = event.target.value;
-      let name = event.target.name;
-      const input = cnForm.inputs[name];
-
-      const isAttachment = name.includes('attachments');
-
-      if (isAttachment) name = 'attachments';
-      if (!onChangeCallbacks[name]) return;
-
-      onChangeCallbacks[name]({
-        event,
-        value,
-        name,
-        input,
-      });
-    });
-    cnForm.onKeyup(event => {
-      const value = event.target.value;
-      let name = event.target.name;
-      const input = cnForm.inputs[name];
-
-      const isAttachment = name.includes('attachments');
-
-      if (isAttachment) name = 'attachments';
-      if (!onKeyupCallbacks[name]) return;
-
-      onKeyupCallbacks[name]({
-        event,
-        value,
-        name,
-        input,
-      });
-    });
-    cnForm.onSubmit(async data => {
-      await saveNote({
-        caseNote: data.noteText ?? '',
-        casenotemileage: data.mileage ?? '0',
-        casenotetraveltime: data.travelTime ?? '',
-        confidential: data.confidential === 'on' ? 'Y' : 'N',
-        contactCode: data.contact ?? '',
-        endTime: data.endTime ?? '',
-        locationCode: data.location ?? '',
-        needCode: data.need ?? '',
-        serviceCode: data.service ?? '',
-        serviceLocationCode: data.serviceLocation ?? '',
-        serviceOrBillingCodeId: data.serviceCode ?? '',
-        startTime: data.startTime ?? '',
-        vendorId: data.vendor ?? '',
-      });
-
-      await cnOverview.fetchData(selectedDate);
-      cnOverview.populate();
-    });
-  }
-  function areAllFormFieldsValid() {
-    const invalidControls = cnForm.form.querySelectorAll(':invalid');
-
-    if (invalidControls.length === 0) {
-      return false;
-    }
-
-    return true;
-  }
   function onStartTimeChange(startTimeVal, endTimeVal) {
     const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
     const isValid = isTimePastOrPresent(startTimeVal);
@@ -461,13 +333,10 @@ const CaseNotes = (() => {
         mileageRequired = cnData.isMileageRequired(selectedServiceCode);
         isTravelTimeRequired = cnData.isTravelTimeRequired(selectedServiceCode);
         isDocTimeRequired = cnData.isDocTimeRequired(selectedServiceCode);
-        allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
 
         cnForm.inputs['mileage'].toggleDisabled(!mileageRequired);
         cnForm.inputs['travelTime'].toggleDisabled(!isTravelTimeRequired);
       } else {
-        allowGroupNotes = true;
-
         const isServiceFunding = cnData.isServiceFunding(selectedServiceCode);
         cnForm.inputs['serviceLocation'].toggleDisabled(!isServiceFunding);
       }
@@ -679,6 +548,104 @@ const CaseNotes = (() => {
       }
     },
   };
+  function onFormChange(event) {
+    const value = event.target.value;
+    let name = event.target.name;
+    const input = cnForm.inputs[name];
+
+    const isAttachment = name.includes('attachments');
+
+    if (isAttachment) name = 'attachments';
+    if (!onChangeCallbacks[name]) return;
+
+    onChangeCallbacks[name]({
+      event,
+      value,
+      name,
+      input,
+    });
+  }
+  function onFormKeyup(event) {
+    const value = event.target.value;
+    let name = event.target.name;
+    const input = cnForm.inputs[name];
+
+    const isAttachment = name.includes('attachments');
+
+    if (isAttachment) name = 'attachments';
+    if (!onKeyupCallbacks[name]) return;
+
+    onKeyupCallbacks[name]({
+      event,
+      value,
+      name,
+      input,
+    });
+  }
+  async function onFormSubmit(data) {
+    await saveNote({
+      caseNote: data.noteText ?? '',
+      casenotemileage: data.mileage ?? '0',
+      casenotetraveltime: data.travelTime ?? '',
+      confidential: data.confidential === 'on' ? 'Y' : 'N',
+      contactCode: data.contact ?? '',
+      endTime: data.endTime ?? '',
+      locationCode: data.location ?? '',
+      needCode: data.need ?? '',
+      serviceCode: data.service ?? '',
+      serviceLocationCode: data.serviceLocation ?? '',
+      serviceOrBillingCodeId: data.serviceCode ?? '',
+      startTime: data.startTime ?? '',
+      vendorId: data.vendor ?? '',
+    });
+
+    await cnOverview.fetchData(selectedDate);
+    cnOverview.populate();
+  }
+  async function onConsumerSelect(data) {
+    selectedConsumers = data;
+
+    // Get Vendors By Consumer
+    await cnData.fetchVendorDropdownData({
+      consumerId: selectedConsumers[0],
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+    });
+
+    const vendorData = cnData.getVendorDropdownData();
+    cnForm.inputs['vendor'].populate(vendorData);
+
+    if (vendorData.length === 1) {
+      cnForm.inputs['vendor'].setValue(vendorData[0].value);
+    }
+
+    if ($.session.applicationName === 'Advisor') {
+      //* GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
+      // await cnData.fetchConsumersThatCanHaveMileage();
+      // if (cnData.canConsumerHaveMileage()) {
+      //   cnForm.inputs['mileage'].toggleDisabled(false);
+      // }
+
+      // Get Serv Locations By Consumer
+      await cnData.fetchServiceLocationDropdownData({
+        consumerId: selectedConsumers[0],
+        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      });
+
+      const servLocData = cnData.getServiceLocationDropdownData();
+      cnForm.inputs['serviceLocation'].populate(servLocData);
+    }
+
+    checkRequiredFields();
+  }
+  async function onDateChange(newDate) {
+    selectedDate = newDate;
+
+    //TODO: re validate times when date change
+
+    //re populate overview section when date change
+    await cnOverview.fetchData(selectedDate);
+    cnOverview.populate();
+  }
 
   // MAIN
   //--------------------------------------------------
@@ -702,8 +669,10 @@ const CaseNotes = (() => {
     rosterPicker.renderTo(cnRosterWrap);
 
     // Documentation Timer
-    cnDocTimer = new CaseNotesTimer();
-    cnDocTimer.renderTo(cnFormWrap);
+    if ($.session.applicationName === 'Gatekeeper') {
+      cnDocTimer = new CaseNotesTimer();
+      cnDocTimer.renderTo(cnFormWrap);
+    }
 
     // Form
     cnForm = new Form({
@@ -814,6 +783,16 @@ const CaseNotes = (() => {
           hidden: $.session.applicationName === 'Advisor',
         },
       ],
+      buttons: [
+        {
+          type: 'submit',
+          text: 'Save & New',
+          icon: 'add',
+          style: 'primary',
+          styleType: 'outlined',
+          name: 'saveNew',
+        },
+      ],
     });
     cnForm.build().renderTo(cnFormWrap);
 
@@ -836,7 +815,11 @@ const CaseNotes = (() => {
 
     // EVENTS / CALLBACKS
     //-----------------------------------------
-    setupEventsForInstances();
+    dateNavigation.onDateChange(onDateChange);
+    rosterPicker.onConsumerSelect(onConsumerSelect);
+    cnForm.onChange(onFormChange);
+    cnForm.onKeyup(onFormKeyup);
+    cnForm.onSubmit(onFormSubmit);
   }
   function loadPageSkeleton() {
     // prep actioncenter
@@ -871,9 +854,6 @@ const CaseNotes = (() => {
     cnData = new CaseNotesData();
     await cnData.fetchDropdownData();
     await cnData.fetchCaseManagerReviewData(caseManagerId);
-    await cnData.fetchConsumersThatCanHaveMileage();
-    reviewRequired = cnData.isReviewRequired();
-    allowGroupNotes = cnData.allowGroupNotes();
 
     // 3) Load Case Notes w/Data
     await loadPage();

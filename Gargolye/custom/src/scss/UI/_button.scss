@@ -2,6 +2,14 @@
 // BUTTON
 //-------------------------------------------
 [data-ui] {
+  .button_wrap {
+    display: flex;
+
+    .button {
+      width: calc(50% - 5px);
+    }
+  }
+
   .button {
     border-radius: 4px;
     cursor: pointer;
@@ -12,7 +20,7 @@
     padding: 0 10px;
     text-transform: uppercase;
 
-    &.withIcon {
+    &--icon {
       display: flex;
       align-items: center;
       column-gap: 4px;
@@ -23,7 +31,7 @@
       }
     }
 
-    &.iconOnly {
+    &--icon-only {
       box-shadow: $shadow-m1;
       min-height: auto;
       min-width: auto;

@@ -231,7 +231,6 @@
   // DROPDOWN DATA MAPPING
   //---------------------------------------
   CaseNotesData.prototype.getServiceBillCodeDropdownData = function () {
-    //TODO-ASH: caseManagerReview.serviceid = DEFAULT VALUE
     let data = [];
 
     for (serviceId in this.dropdownData) {
@@ -429,7 +428,8 @@
   };
   /**
    * @function
-   * @returns {Array}
+   * @param {String} consumerId
+   * @returns {Boolean}
    */
   CaseNotesData.prototype.canConsumerHaveMileage = function (consumerId) {
     return this.consumersThatCanHaveMileage.includes(consumerId);

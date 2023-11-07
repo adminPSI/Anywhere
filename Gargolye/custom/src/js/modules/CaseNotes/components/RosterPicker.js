@@ -54,8 +54,7 @@
       placeholder: 'Search...',
     });
 
-    this.rosterCaseLoadInput = new Input({
-      type: 'checkbox',
+    this.rosterCaseLoadInput = new Checkbox({
       label: 'Only show caseload',
       id: 'caseloadtoggle',
       name: 'caseload',

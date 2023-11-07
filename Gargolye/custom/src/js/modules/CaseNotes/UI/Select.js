@@ -51,12 +51,12 @@
    * @returns {Select} Returns the current instances for chaining
    */
   Select.prototype.build = function () {
-    const classArray = ['input', 'select', `${this.options.attributes.id}`];
+    const classArray = ['form_field', 'select', `${this.options.attributes.id}`];
     this.rootElement = _DOM.createElement('div', {
       class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
     });
 
-    this.inputWrap = _DOM.createElement('div', { class: 'inputWrap' });
+    this.inputWrap = _DOM.createElement('div', { class: 'form_field__input-wrap' });
     this.select = _DOM.createElement('select', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
@@ -64,14 +64,14 @@
     });
 
     this.inputWrap.appendChild(this.select);
-    this.rootElement.appendChild(this.inputWrap);
+    this.inputWrap.appendChild(Icon.getIcon('chevron'));
+
     this.rootElement.appendChild(labelEle);
-    this.rootElement.appendChild(Icon.getIcon('chevron'));
+    this.rootElement.appendChild(this.inputWrap);
 
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
+      const inputNote = _DOM.createElement('div', { class: 'form_field__note', text: this.options.note });
       this.rootElement.appendChild(inputNote);
-      this.rootElement.classList.add('withNote');
     }
 
     this.populate();

@@ -24,12 +24,14 @@
       text: 'Your documentation timer has been paused. Continue timing?',
     });
 
+    const btnWrap = _DOM.createElement('div', { class: 'button_wrap' });
     this.yesButton = new Button({ text: 'yes' });
     this.noButton = new Button({ text: 'no', styleType: 'outlined' });
+    this.yesButton.renderTo(btnWrap);
+    this.noButton.renderTo(btnWrap);
 
     this.dialog.dialog.appendChild(messageEle);
-    this.yesButton.renderTo(this.dialog.dialog);
-    this.noButton.renderTo(this.dialog.dialog);
+    this.dialog.dialog.appendChild(btnWrap);
 
     return this;
   };
@@ -121,6 +123,8 @@
     // Inactivity Warning
     this.inactivityWarning = new InactivityWarning();
     this.inactivityWarning.renderTo(_DOM.ACTIONCENTER);
+
+    this.setupEvents();
 
     return this;
   };
@@ -226,16 +230,20 @@
    */
   CaseNotesTimer.prototype.setupEvents = function () {
     this.playButton.onClick(e => {
-      this.start();
+      this.start(this.elapsedTimeInSeconds);
       this.playButton.toggleDisabled(true);
     });
     this.stopButton.onClick(e => {
       this.stop();
       this.playButton.toggleDisabled(false);
+
+      if (this.inactivityTimeoutId) {
+        clearTimeout(this.inactivityTimeoutId);
+      }
     });
     this.inactivityWarning.onClick(continueTimer => {
       if (continueTimer) {
-        this.start();
+        this.start(this.elapsedTimeInSeconds);
       }
     });
   };

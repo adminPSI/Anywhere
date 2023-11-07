@@ -60,10 +60,10 @@
       if (this.options.text) {
         this.button.innerHTML = `<span>${this.options.text}</span>`;
         this.button.insertBefore(Icon.getIcon(this.options.icon), this.button.firstChild);
-        this.button.classList.add('withIcon');
+        this.button.classList.add('button--icon');
       } else {
         this.button.appendChild(Icon.getIcon(this.options.icon));
-        this.button.classList.add('iconOnly');
+        this.button.classList.add('button--icon-only');
       }
     } else {
       this.button.innerText = this.options.text;

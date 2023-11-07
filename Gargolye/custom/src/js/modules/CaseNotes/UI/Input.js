@@ -1,8 +1,6 @@
 (function (global, factory) {
   global.Input = factory();
 })(this, function () {
-  //TODO-ASH: create logic to update charcount on keyup, input
-
   //=======================================
   // MAIN LIB
   //---------------------------------------
@@ -18,6 +16,8 @@
   /**
    * Constructor function for creating an Input component.
    *
+   * Use for text, number, date, time
+   *
    * @constructor
    * @param {Object} options
    * @param {String} options.id Id for input, use to link it with label. Also used for name attribute.
@@ -29,7 +29,6 @@
    * @param {String} [options.minlength] Min char count
    * @param {String} [options.maxlength] Max char count
    * @param {Boolean} [options.hidden] Whether to show or hide the input
-   * @param {Boolean} [options.toggle] *Checkbox only (instead of checkbox you will get a toggle button)
    * @returns {Input}
    *
    * @example
@@ -58,24 +57,27 @@
    */
   Input.prototype.build = function () {
     // INPUT WRAP
-    const classArray = ['input', `${this.options.attributes.type}`, `${this.options.attributes.id}`];
+    const classArray = ['form_field', `${this.options.attributes.type}`, `${this.options.attributes.id}`];
     this.rootElement = _DOM.createElement('div', {
-      class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
+      class: this.options.hidden ? [...classArray, 'form_field--hidden'] : classArray,
     });
 
     // INPUT & LABEL
-    this.inputWrap = _DOM.createElement('div', { class: 'inputWrap' });
+    this.inputWrap = _DOM.createElement('div', { class: 'form_field__inner' });
     this.input = _DOM.createElement('input', { ...this.options.attributes });
     this.labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
+    this.inputWrap.appendChild(this.input);
+
+    this.rootElement.appendChild(this.labelEle);
+    this.rootElement.appendChild(this.inputWrap);
 
     // INPUT NOTE
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'inputNote', text: this.options.note });
+      const inputNote = _DOM.createElement('div', { class: 'form_field__note', text: this.options.note });
       this.rootElement.appendChild(inputNote);
-      this.rootElement.classList.add('withNote');
     }
 
     // CHAR COUNTER
@@ -83,24 +85,9 @@
       const countMarkup = this.options.attributes.maxlength
         ? { html: `${0}<span>/</span>${this.options.attributes.maxlength}` }
         : { text: '0' };
-      const inputCount = _DOM.createElement('div', { class: 'charCount', ...countMarkup });
+      const inputCount = _DOM.createElement('div', { class: 'form_field__char-count', ...countMarkup });
       this.rootElement.appendChild(inputCount);
     }
-
-    // CUSTOM FILE INPUTS
-    if (this.options.attributes.type === 'file') {
-      this.rootElement.classList.remove('input');
-    }
-
-    // CUSTOM CHECKBOX TOGGLE
-    if (this.options.attributes.type === 'checkbox' && this.options.toggle) {
-      this.rootElement.classList.remove('input');
-      this.rootElement.classList.add('toggle');
-    }
-
-    this.inputWrap.appendChild(this.input);
-    this.rootElement.appendChild(this.inputWrap);
-    this.rootElement.appendChild(this.labelEle);
 
     return this;
   };
@@ -180,7 +167,14 @@
    */
   Input.prototype.showWarning = function (message) {};
 
+  /**
+   * @function
+   */
   Input.prototype.clearError = function () {};
+
+  /**
+   * @function
+   */
   Input.prototype.clearWarning = function () {};
 
   /**

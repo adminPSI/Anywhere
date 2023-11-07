@@ -52,6 +52,10 @@
           inputInstance = new Radio({ ...ele }).build();
           break;
         }
+        case 'checkbox': {
+          inputInstance = new Checkbox({ ...ele }).build();
+          break;
+        }
         case 'select': {
           delete ele.type; // only needed for Form
           inputInstance = new Select({ ...ele }).build();
@@ -154,6 +158,9 @@
    */
   Form.prototype.clear = function () {
     // clear all values from form inputs
+    for (input in this.inputs) {
+      this.inputs[input].clear();
+    }
   };
 
   /**
