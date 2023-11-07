@@ -190,8 +190,8 @@ const vendorInfo = (function () {
                 <span>Vendor:</span> ${(filterValues.vendor == '%') ? 'ALL' : filterValues.vendor}&nbsp;&nbsp;
 			    <span>DD Number:</span> ${(filterValues.DDNumber == '') ? 'ALL' : filterValues.DDNumber}&nbsp;&nbsp;
                 <span>Local Number:</span> ${(filterValues.localNumber == '') ? 'ALL' : filterValues.localNumber}&nbsp;&nbsp;
-                <span>Good Standing:</span> ${(filterValues.goodStanding == '%') ? 'ALL' : filterValues.goodStanding == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp; 
-                <span>Home Services:</span> ${(filterValues.homeServices == '%') ? 'ALL' : filterValues.homeServices == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp;
+                <span>In Good Standing:</span> ${(filterValues.goodStanding == '%') ? 'ALL' : filterValues.goodStanding == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp; 
+                <span>In Home Services:</span> ${(filterValues.homeServices == '%') ? 'ALL' : filterValues.homeServices == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp;
                 <span>Taking New Referrals:</span> ${(filterValues.takingNewReferrals == '%') ? 'ALL' : filterValues.takingNewReferrals == 'Y' ? 'Yes' : 'No'} &nbsp;&nbsp;
                 <span>Funding Source:</span> ${(filterValues.fundingSource == '%') ? 'ALL' : filterValues.fundingSource} &nbsp;&nbsp;
                 <span>Service Code:</span> ${(filterValues.serviceCode == '%') ? 'ALL' : filterValues.serviceCode} 
@@ -235,13 +235,13 @@ const vendorInfo = (function () {
 
         goodStandingDropdown = dropdown.build({
             id: 'goodStandingDropdown',
-            label: "Good Standing",
+            label: "In Good Standing",
             dropdownId: "goodStandingDropdown",
         });
 
         homeServicesDropdown = dropdown.build({
             id: 'homeServicesDropdown',
-            label: "Home Services",
+            label: "In Home Services",
             dropdownId: "homeServicesDropdown",
         });
 
