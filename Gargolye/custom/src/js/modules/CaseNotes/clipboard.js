@@ -47,3 +47,7 @@
 //   // add -> groupNoteId, consumerId
 //   // remove -> reviewRequired
 // }
+
+// (function (global, factory) {
+//   global.RosterCard = factory();
+// })(this, function () {});

@@ -39,7 +39,7 @@
   }
 
   /**
-   * Builds the Input component HTML
+   * Builds the Roster Picker component HTML
    *
    * @function
    */
@@ -79,41 +79,16 @@
     this.consumers.forEach(c => {
       // ROSTER CARD
       const gridAnimationWrapper = _DOM.createElement('div', { class: 'visibilityAnimationWrapper' });
-      const rosterCard = _DOM.createElement('div', {
-        class: 'rosterCard',
-        'data-id': c.id,
-        'data-target': 'rosterCard',
-      });
 
-      // PORTRAIT
-      const imgSource = `./images/portraits/${c.id}.png?${new Date().setHours(0, 0, 0, 0)}`;
-      const defaultImgSource = `this.src='./images/new-icons/default.jpg'`;
-      const image = _DOM.createElement('img', {
-        src: this.failedImageCache.has(imgSource) ? defaultImgSource : imgSource,
-        onerror: defaultImgSource,
-        loading: 'lazy',
-      });
-      const portrait = _DOM.createElement('div', { class: 'portrait', node: image });
-
-      // DETAILS
-      const fragment = new DocumentFragment();
-      const firstName = _DOM.createElement('p', {
-        text: `${c.FN.trim()} ${c.MN?.trim() || ''}`.trim(),
-      });
-      const lastName = _DOM.createElement('p', { text: `${c.LN.trim()},` });
-      fragment.append(lastName, firstName);
-      const details = _DOM.createElement('div', { class: 'details', node: fragment });
+      const rosterCard = new RosterCard({ consumerId: c.id });
+      rosterCard.renderTo(gridAnimationWrapper);
 
       // PIN ICON
       const pinCardIcon = Icon.getIcon('pin');
       pinCardIcon.setAttribute('data-target', 'pinCardIcon');
+      rosterCard.rootElement.appendChild(pinCardIcon);
 
       // BUILD
-      rosterCard.appendChild(portrait);
-      rosterCard.appendChild(details);
-      rosterCard.appendChild(pinCardIcon);
-      gridAnimationWrapper.appendChild(rosterCard);
-
       this.rosterWrapEle.appendChild(gridAnimationWrapper);
 
       // SET REFERENCE TO DOM NODE ON DATA OBJ
@@ -278,7 +253,7 @@
   };
 
   /**
-   * Renders the built Input element to the specified DOM node.
+   * Renders the built Roster Picker component to the specified DOM node.
    *
    * @function
    * @param {Node} node DOM node to render the roster picker to
