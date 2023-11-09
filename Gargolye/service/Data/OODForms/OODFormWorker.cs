@@ -340,8 +340,6 @@ namespace OODForms
                     //    WS.Cell("k6").Value = Staff.ToString().Trim();
                     //}
 
-                    WS.Cell("k6").Value = personCompletingReport;
-
                     if (Staff.Trim().Length > 0)
                     {
                         StaffWithInitals += String.Format("{0}{1}", Staff, Initials);
@@ -354,6 +352,8 @@ namespace OODForms
                 }
 
             }
+
+            WS.Cell("k6").Value = personCompletingReport;
 
             DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, ServiceCodeID, PeopleID);
             if (dsOODStaff.Tables.Count > 0)
