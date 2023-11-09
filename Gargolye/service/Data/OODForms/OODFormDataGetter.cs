@@ -365,7 +365,11 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             sb.AppendFormat("AND  dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
-            sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
+
+            if (ServiceCodeID != "%")
+            {
+                sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
+            }
 
             return di.SelectRowsDS(sb.ToString());
         }
@@ -379,7 +383,11 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             sb.AppendFormat("AND  dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
-            sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
+
+            if (ServiceCodeID != "%")
+            {
+                sb.AppendFormat("AND dba.Case_Notes.Service_ID LIKE {0} ", ServiceCodeID);
+            }
 
             return di.SelectRowsDS(sb.ToString());
         }
@@ -404,7 +412,12 @@ namespace OODForms
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             //'sb.Append("AND (DBA.Code_Table.Field_ID = 'outcome') ") 'Removed per ticket 84964
             sb.AppendFormat("AND  dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
-            sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
+
+            if (ServiceCodeID != "%") 
+            {
+                sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
+            }
+
             sb.Append("ORDER BY dba.EM_Contacts.Contact_Date ASC, DBA.Case_Notes.Case_Note_ID ASC, DBA.Case_Notes.Case_Note_ID ASC ");
 
             return di.SelectRowsDS(sb.ToString());
