@@ -214,7 +214,6 @@
         this.options.selectedDate = this.eachDayOfWeek[1];
 
         this.populate();
-        this.onDateChange(this.options.selectedDate);
 
         return;
       }
@@ -226,12 +225,12 @@
           start: this.weekStart,
           end: this.weekEnd,
         });
+        //this.isCurrentWeek = dates.isDateInCurrentWeek(this.options.selectedDate);
 
         //? default selected date to monday on week change
         this.options.selectedDate = this.eachDayOfWeek[1];
 
         this.populate();
-        this.onDateChange(this.options.selectedDate);
 
         return;
       }
@@ -262,7 +261,6 @@
       }
 
       this.populate();
-      this.onDateChange(this.options.selectedDate);
     });
   };
 

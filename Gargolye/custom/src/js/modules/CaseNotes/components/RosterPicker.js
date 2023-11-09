@@ -80,7 +80,12 @@
       // ROSTER CARD
       const gridAnimationWrapper = _DOM.createElement('div', { class: 'visibilityAnimationWrapper' });
 
-      const rosterCard = new RosterCard({ consumerId: c.id });
+      const rosterCard = new RosterCard({
+        consumerId: c.id,
+        firstName: c.FN,
+        middleName: c.MN,
+        lastName: c.LN,
+      });
       rosterCard.renderTo(gridAnimationWrapper);
 
       // PIN ICON

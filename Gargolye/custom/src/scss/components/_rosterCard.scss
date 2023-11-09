@@ -1,0 +1,22 @@
+//===========================================
+// ROSTER CARD
+//-------------------------------------------
+[data-ui] {
+  .rosterCard {
+    display: flex;
+    cursor: pointer;
+    flex-flow: row nowrap;
+    overflow: hidden;
+
+    * {
+      pointer-events: none;
+    }
+
+    .details {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      white-space: nowrap;
+    }
+  }
+}

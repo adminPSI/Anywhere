@@ -29,16 +29,18 @@
     this.viewEntered = $.session.CaseNotesViewEntered;
     this.reviewGroups = {};
     this.reviewConsumers = [];
+    this.showAllNotes = false;
 
-    this.caseLoadRestrictions;
+    this.caseLoadRestrictions = null;
     this.caseLoadReviewData = [];
 
     // DOM Ref
-    this.overviewWrap;
-    this.overviewSearch;
-    this.overviewCardsWrap;
+    this.overviewWrap = null;
+    this.overviewSearch = null;
+    this.showAllNotesToggle = null;
+    this.overviewCardsWrap = null;
 
-    this.build();
+    this._build();
   }
 
   /**
@@ -46,13 +48,16 @@
    *
    * @function
    */
-  CaseNotesOverview.prototype.build = function () {
+  CaseNotesOverview.prototype._build = function () {
     this.overviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview' });
 
     // Header
-    const overviewHeader = _DOM.createElement('div', { class: 'overviewCardsHeader' });
+    //---------------------------------
+    const overviewHeader = _DOM.createElement('div', { class: 'caseNotesOverview__header' });
     this.overviewWrap.appendChild(overviewHeader);
 
+    // search
+    //---------------------------------
     this.overviewSearch = new Input({
       type: 'search',
       id: 'overviewSearch',
@@ -60,6 +65,18 @@
     });
     this.overviewSearch.build().renderTo(overviewHeader);
 
+    // all notes toggle
+    //---------------------------------
+    this.showAllNotesToggle = new Checkbox({
+      id: 'notesView',
+      label: 'My Notes',
+      toggle: true,
+      checked: !this.showAllNotes,
+    });
+    this.showAllNotesToggle.build().renderTo(overviewHeader);
+
+    // view
+    //---------------------------------
     const densitySmallButton = _DOM.createElement('div', {
       class: ['densitySmall'],
       node: Icon.getIcon('densitySmall'),
@@ -70,7 +87,8 @@
     });
 
     // Cards
-    this.overviewCardsWrap = _DOM.createElement('div', { class: 'overviewCardsWrap' });
+    //---------------------------------
+    this.overviewCardsWrap = _DOM.createElement('div', { class: 'caseNotesOverview__overview' });
     this.overviewWrap.appendChild(this.overviewCardsWrap);
 
     return this;
@@ -94,10 +112,11 @@
       })
       .forEach(rd => {
         // Review Data
+        //---------------------------------
         const consumerFullName = `${rd.lastname}, ${rd.firstname}`;
         const location = rd.locationName;
         const service = rd.serviceName;
-        const note = rd.caseNote;
+        const note = `${rd.caseNote.replace(/(\r\n|\n|\r)/gm, '').slice(0, 100)}...`;
         const starttime = UTIL.convertFromMilitary(rd.starttime);
         const endtime = UTIL.convertFromMilitary(rd.endtime);
         const timeDifference = dates.getMilitaryTimeDifference(rd.starttime, rd.endtime);
@@ -107,9 +126,9 @@
         const attachmentCountGK = rd.attachcount;
 
         // Overview Card
-        const overviewCard = _DOM.createElement('div', { class: 'overviewCard' });
+        //---------------------------------
+        const overviewCard = _DOM.createElement('div', { class: 'caseNotesOverview__overviewCard' });
 
-        // Card Top
         const startTimeEle = _DOM.createElement('div', {
           class: 'withLabelWrap',
           html: `<p class="startTime withLabel">${starttime}</p>`,
@@ -122,27 +141,23 @@
           class: 'withLabelWrap',
           html: `<p class="duration withLabel">${timeDifference}</p>`,
         });
+
+        const consumerNameEle = _DOM.createElement('div', {
+          class: 'consumer',
+          html: `<p class="name">${consumerFullName}</p>`,
+        });
+        const portrait = new Portrait(rd.consumerid.split('.')[0]);
+        portrait.renderTo(consumerNameEle);
+
+        const serviceInfoEle = _DOM.createElement('p', { class: 'serviceInfo', text: `${service} | ${location}` });
+        const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
+
         const enteredByEle = _DOM.createElement('div', {
           class: 'withLabelWrap',
           html: `<p class="enteredBy withLabel">${enteredBy}</p>`,
         });
-        const consumerNameEle = _DOM.createElement('div', {
-          class: 'withLabelWrap',
-          html: `<p class="consumer withLabel">${consumerFullName}</p>`,
-        });
-        overviewCard.appendChild(startTimeEle);
-        overviewCard.appendChild(endTimeEle);
-        overviewCard.appendChild(timeDurationEle);
-        //overviewCard.appendChild(consumerNameEle);
-        overviewCard.appendChild(enteredByEle);
 
-        // Card Main
-        const overviewCardMain = _DOM.createElement('div', { class: 'overviewCardMain' });
-        overviewCard.appendChild(overviewCardMain);
-        const consumerEle = _DOM.createElement('p', { class: ['consumerName'], text: consumerFullName });
-        const serviceInfoEle = _DOM.createElement('p', { class: 'serviceInfoEle', text: `${service} | ${location}` });
-        const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
-
+        const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
         const editButton = new Button({
           text: 'edit',
           style: 'primary',
@@ -155,12 +170,20 @@
           styleType: 'outlined',
           icon: 'delete',
         });
+        editButton.renderTo(btnWrap);
+        deleteButton.renderTo(btnWrap);
 
-        overviewCardMain.appendChild(consumerEle);
-        overviewCardMain.appendChild(serviceInfoEle);
-        overviewCardMain.appendChild(noteTextEle);
+        overviewCard.appendChild(startTimeEle);
+        overviewCard.appendChild(endTimeEle);
+        overviewCard.appendChild(timeDurationEle);
+        overviewCard.appendChild(consumerNameEle);
+        overviewCard.appendChild(serviceInfoEle);
+        overviewCard.appendChild(noteTextEle);
+        overviewCard.appendChild(enteredByEle);
+        overviewCard.appendChild(btnWrap);
 
-        //------------------------------------------------------------
+        //---------------------------------
+
         this.overviewCardsWrap.appendChild(overviewCard);
       });
   };
@@ -184,7 +207,7 @@
       contact: '%',
       confidential: '%',
       corrected: '%',
-      dateEnteredStart: dates.formatISO(selectedDate, { representation: 'date' }),
+      dateEnteredStart: '1900-01-01',
       dateEnteredEnd: dates.formatISO(selectedDate, { representation: 'date' }),
       location: '%',
       need: '%',

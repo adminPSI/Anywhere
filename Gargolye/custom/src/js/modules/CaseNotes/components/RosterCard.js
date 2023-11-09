@@ -8,7 +8,10 @@
    * @returns {RosterCard}
    */
   function RosterCard(options) {
-    this.options = options;
+    this.consumerId = options.consumerId;
+    this.firstName = options.firstName;
+    this.middleName = options.middleName;
+    this.lastName = options.lastName;
 
     this.rootElement = null;
 
@@ -23,19 +26,19 @@
   RosterCard.prototype.build = function () {
     this.rootElement = _DOM.createElement('div', {
       class: 'rosterCard',
-      'data-id': this.options.consumerId,
+      'data-id': this.consumerId,
       'data-target': 'rosterCard',
     });
 
     // PORTRAIT
-    const portrait = new Portrait({ consumerId: c.id });
+    const portrait = new Portrait(this.consumerId);
 
     // DETAILS
     const fragment = new DocumentFragment();
     const firstName = _DOM.createElement('p', {
-      text: `${c.FN.trim()} ${c.MN?.trim() || ''}`.trim(),
+      text: `${this.firstName.trim()} ${this.middleName?.trim() || ''}`.trim(),
     });
-    const lastName = _DOM.createElement('p', { text: `${c.LN.trim()},` });
+    const lastName = _DOM.createElement('p', { text: `${this.lastName.trim()},` });
     fragment.append(lastName, firstName);
     const details = _DOM.createElement('div', { class: 'details', node: fragment });
 

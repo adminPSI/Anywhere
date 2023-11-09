@@ -7,8 +7,8 @@
    * @constructor
    * @returns {RosterCard}
    */
-  function Portrait(options) {
-    this.options = options;
+  function Portrait(consumerId) {
+    this.consumerId = consumerId;
 
     this.rootElement = null;
 
@@ -21,7 +21,7 @@
    * @function
    */
   Portrait.prototype.build = function () {
-    const imgSource = `./images/portraits/${this.options.consumerId}.png?${new Date().setHours(0, 0, 0, 0)}`;
+    const imgSource = `./images/portraits/${this.consumerId}.png?${new Date().setHours(0, 0, 0, 0)}`;
     const defaultImgSource = `this.src='./images/new-icons/default.jpg'`;
 
     const image = _DOM.createElement('img', {

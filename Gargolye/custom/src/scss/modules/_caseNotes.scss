@@ -32,7 +32,7 @@
   .caseNotesModule {
     display: grid;
     grid-template-columns: auto 340px;
-    grid-template-rows: auto auto minmax(900px, 1300px) 600px;
+    grid-template-rows: auto auto minmax(900px, 1300px) auto;
     grid-template-areas:
       'header header'
       'nav nav'
@@ -122,8 +122,10 @@
     p {
       font-size: $px18;
       line-height: normal;
-      margin-left: 10px;
+      margin-left: 6px;
       order: 1;
+      text-align: center;
+      width: 90px;
     }
 
     button:first-of-type {
@@ -139,47 +141,78 @@
     margin: 20px 20px 0px;
     padding: 20px;
 
-    .overviewCardsHeader {
+    &__header {
       // do stuff son
     }
 
-    .overviewCardsWrap {
+    &__overview {
       display: grid;
       grid-template-columns: minmax(auto, 140px) minmax(auto, 140px) minmax(auto, 180px) auto;
     }
 
-    .overviewCard {
-      align-items: center;
+    &__overviewCard {
       box-shadow: $shadow-m2;
       border-radius: 6px;
-      display: grid;
-      grid-template-columns: subgrid;
       grid-column: 1 / -1;
       padding: 0;
       margin: 0 0 8px;
 
-      &Main {
-        border-top: 2px solid #606060;
-        grid-column: 1 / -1;
-        padding: 20px 10px;
+      .consumer {
+        align-items: center;
+        display: flex;
+        width: 100%;
 
-        .consumerName {
-          font-size: $px30;
-          font-weight: $_bold;
-          letter-spacing: 0.04rem;
-          margin-bottom: 4px;
+        .portrait {
+          height: 50px;
+          width: 50px;
         }
-        .serviceInfoEle {
-          font-size: $px18;
+
+        .name {
+          font-size: $px26;
           font-weight: $_bold;
-          letter-spacing: 0.04rem;
-          margin-bottom: 8px;
-        }
-        .noteText {
-          font-size: $px16;
-          font-weight: $_normal;
+          order: 1;
         }
       }
+
+      .serviceInfo {
+        font-size: $px18;
+        width: 100%;
+      }
+      .noteText {
+        width: 100%;
+      }
+      .button-wrap {
+        width: 100%;
+      }
+    }
+
+    &__overviewCard {
+      //align-items: center;
+      //display: grid;
+      //grid-template-columns: subgrid;
+
+      // &Main {
+      //   border-top: 2px solid #606060;
+      //   grid-column: 1 / -1;
+      //   padding: 20px 10px;
+
+      //   .consumerName {
+      //     font-size: $px30;
+      //     font-weight: $_bold;
+      //     letter-spacing: 0.04rem;
+      //     margin-bottom: 4px;
+      //   }
+      //   .serviceInfoEle {
+      //     font-size: $px18;
+      //     font-weight: $_bold;
+      //     letter-spacing: 0.04rem;
+      //     margin-bottom: 8px;
+      //   }
+      //   .noteText {
+      //     font-size: $px16;
+      //     font-weight: $_normal;
+      //   }
+      // }
 
       .withLabelWrap {
         //border-bottom: 2px solid $black;
@@ -211,9 +244,9 @@
       .enteredBy::before {
         content: 'Entered By';
       }
-      .consumer::before {
-        content: 'Consumer';
-      }
+      // .consumer::before {
+      //   content: 'Consumer';
+      // }
     }
   }
 

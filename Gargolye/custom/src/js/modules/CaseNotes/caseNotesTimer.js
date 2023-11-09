@@ -24,7 +24,7 @@
       text: 'Your documentation timer has been paused. Continue timing?',
     });
 
-    const btnWrap = _DOM.createElement('div', { class: 'button_wrap' });
+    const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
     this.yesButton = new Button({ text: 'yes' });
     this.noButton = new Button({ text: 'no', styleType: 'outlined' });
     this.yesButton.renderTo(btnWrap);
