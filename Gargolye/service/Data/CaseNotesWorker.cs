@@ -189,6 +189,7 @@ namespace Anywhere.service.Data
             public string casemanagerid { get; set; }
             public string originalupdate { get; set; }
             public string mostrecentupdate { get; set; }
+            public string mainbillingorservicecodeid { get; set; }
             public string groupnoteid { get; set; }
             public string lastupdatedby { get; set; }
             public string firstname { get; set; }

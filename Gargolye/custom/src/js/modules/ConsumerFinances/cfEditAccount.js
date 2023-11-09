@@ -12,7 +12,7 @@ const CFEditAccount = (() => {
     let BtnName;
     let page;
     let load;
-    let IsDisabledAccount = false; 
+    let IsDisabledAccount = false;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -27,7 +27,7 @@ const CFEditAccount = (() => {
                 accountId = '0';
                 await loadCFEditLanding();
                 DOM.toggleNavLayout();
-                break;  
+                break;
             }
             case 'miniRosterCancel': {
                 DOM.toggleNavLayout();
@@ -41,7 +41,7 @@ const CFEditAccount = (() => {
     async function loadCFEditLanding() {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
-        
+
         if (!document.querySelector('.consumerListBtn')) roster2.miniRosterinit();
 
         landingPage = document.createElement('div');
@@ -62,7 +62,7 @@ const CFEditAccount = (() => {
         if (getEditAccountResult.length > 0 && load == 1) {
             account = getEditAccountResult[0].accountName;
             accountId = getEditAccountResult[0].accountId;
-        }      
+        }
 
         if (page == 'Update') {
             const topButton = buildHeaderButton();
@@ -110,8 +110,8 @@ const CFEditAccount = (() => {
         });
 
         accountDropdown.addEventListener('change', event => {
-            accountId =  event.target.value;
-            account = event.target.options[event.target.selectedIndex].id; 
+            accountId = event.target.value;
+            account = event.target.options[event.target.selectedIndex].id;
             page = 'Update';
             load = 2;
             loadCFEditLanding();
@@ -124,8 +124,10 @@ const CFEditAccount = (() => {
             classNames: 'newEntryBtn',
             readonly: $.session.CFInsertAccounts,
             callback: async () => {
-                page = 'Add';
-                loadCFEditLanding();
+                if (!entryBtn.classList.contains('disabled')) {
+                    page = 'Add';
+                    loadCFEditLanding();
+                }
             },
         });
         if ($.session.CFInsertAccounts) {
@@ -189,7 +191,7 @@ const CFEditAccount = (() => {
                 description = getEditAccountInfoByIdResult[0].description;
             }
             else {
-                account = ''; 
+                account = '';
             }
             BtnName = 'UPDATE';
         }
@@ -293,12 +295,12 @@ const CFEditAccount = (() => {
             style: 'secondary',
             type: 'contained',
             icon: 'save',
-            readonly: IsDisabledAccount,  
+            readonly: IsDisabledAccount,
             callback: async () => {
                 if (!SAVE_BTN.classList.contains('disabled')) {
                     SAVE_BTN.classList.add('disabled');
                     await saveUpdateAccount();
-                } 
+                }
             },
         });
         CANCEL_BTN = button.build({
@@ -395,8 +397,8 @@ const CFEditAccount = (() => {
             IsDisabledAccount = false;
         }
         else {
-            IsDisabledAccount = true;   
-        }       
+            IsDisabledAccount = true;
+        }
     }
     // Populate the Account DDL
     async function populateAccountDropdown() {
@@ -409,7 +411,7 @@ const CFEditAccount = (() => {
             value: account.accountId,
             text: account.accountName + ' - $' + (account.totalBalance == '' ? '0.00' : account.totalBalance)
         }));
-        dropdown.populate("accountDropdown", dataAccount, accountId); 
+        dropdown.populate("accountDropdown", dataAccount, accountId);
     }
 
     async function populateDropdown() {
@@ -469,7 +471,7 @@ const CFEditAccount = (() => {
         inputOpeningBal.addEventListener('input', event => {
             let minAmount = event.target.value;
             var reg = new RegExp('^[0-9 . $ -]+$');
-            if (!reg.test(minAmount)) {
+            if (!reg.test(minAmount) && minAmount != '') {
                 document.getElementById('inputOpeningBal').value = minAmount.substring(0, minAmount.length - 1);
                 return;
             }
@@ -550,7 +552,7 @@ const CFEditAccount = (() => {
         } else {
             if (nameTemp != '' || numberTemp != '' || typeTemp != '' || statusTemp != '' || classofAccountTemp != '' || dateOpenedTemp != '' || dateClosedTemp != '' || openingBalanceTemp != '' || descriptionTemp != '') {
                 if (accountId == '0' && page == 'Update') {
-                    SAVE_BTN.classList.add('disabled'); 
+                    SAVE_BTN.classList.add('disabled');
                 }
                 else {
                     SAVE_BTN.classList.remove('disabled');
@@ -566,7 +568,7 @@ const CFEditAccount = (() => {
         if (page == 'Add') {
             page = 'Update';
             load = 1;
-            loadCFEditLanding();  
+            loadCFEditLanding();
         } else {
             roster2.clearSelectedConsumers();
             roster2.clearActiveConsumers();
@@ -578,6 +580,9 @@ const CFEditAccount = (() => {
         if (page == 'Add') {
             accountId = '0';
         }
+        debugger;   
+        if (dateClosed == '')
+            dateClosed = null;  
         const result = await ConsumerFinancesAjax.insertEditRegisterAccountAsync(selectedConsumersId, accountId, name, number == '' ? null : number, type, status, classofAccount == '' ? null : classofAccount, dateOpened, dateClosed, openingBalance, description == '' ? null : description);
         const { insertEditRegisterAccountResult } = result;
         if (insertEditRegisterAccountResult.accountId != null) {

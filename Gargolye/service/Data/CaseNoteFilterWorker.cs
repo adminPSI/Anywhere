@@ -43,7 +43,7 @@ namespace Anywhere.service.Data
         {
             sb.Clear();
             sb.Append("select cn.case_note_id as casenoteid,cn.Service_Date as servicedate,cn.Start_Time as starttime,cn.End_Time as endtime,cn.Case_Manager_ID as casemanagerid,cn.ID,cn.Original_Update as originalupdate, ");
-            sb.Append("cn.last_update  as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,p.first_name as firstname, ");
+            sb.Append("cn.last_update  as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,p.first_name as firstname,CN.service_id as mainbillingorservicecodeid, ");
             sb.Append("p.last_name as lastname,p.consumer_id as consumerid,cn.confidential as confidential,cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby,cn.service as serviceCode, cn.notes as caseNote, ");
             sb.Append("ANYW_CaseNotes_GetService(cn.service) as serviceName,ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
             sb.Append("from dba.case_notes as cn join dba.people as p on cn.id = p.Consumer_ID join dba.consumers as c on c.consumer_id = p.consumer_id ");
@@ -163,7 +163,7 @@ namespace Anywhere.service.Data
         {
             sb.Clear();
             sb.Append("select distinct cn.case_note_id as casenoteid,cn.Service_Date as servicedate,cn.Start_Time as starttime,cn.End_Time as endtime,cn.Case_Manager_ID as casemanagerid,cn.ID,cn.Original_Update as originalupdate, ");
-            sb.Append("cn.last_update as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,p.first_name as firstname, ");
+            sb.Append("cn.last_update as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,CN.service_id as mainbillingorservicecodeid,p.first_name as firstname, ");
             sb.Append("p.last_name as lastname,p.id as consumerid,cn.confidential as confidential, cn.corrected as corrected, cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby, ncr.Any_SSA_Note as isSSANote, Count(cna.Case_Note_ID) as attachcount,cn.service as serviceCode, cn.notes as caseNote, ");
             sb.Append("ANYW_CaseNotes_GetService(cn.service) as serviceName,ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
             sb.Append("from dba.case_notes as cn join dba.people as p on cn.id = p.id ");
