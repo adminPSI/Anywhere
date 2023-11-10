@@ -29,11 +29,13 @@ let userId;
 let serviceId;
 let referenceNumber;
 
-let formReadOnly = false;
+let formReadOnly;
 
 let currentEntryUserId;
 
   async function init(OODTransportationData, currentConsumer, selectedConsumerServiceId, selectedConsumerReferenceNumber, currentRecordUserId, selectedServiceDate, clickSource = 'OODGrid') {
+
+    formReadOnly = false;
 
     DOM.clearActionCenter();
     document.querySelectorAll('.consumerListBtn').forEach(e => e.remove());

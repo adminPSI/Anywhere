@@ -340,8 +340,6 @@ namespace OODForms
                     //    WS.Cell("k6").Value = Staff.ToString().Trim();
                     //}
 
-                    WS.Cell("k6").Value = personCompletingReport;
-
                     if (Staff.Trim().Length > 0)
                     {
                         StaffWithInitals += String.Format("{0}{1}", Staff, Initials);
@@ -354,6 +352,8 @@ namespace OODForms
                 }
 
             }
+
+            WS.Cell("k6").Value = personCompletingReport;
 
             DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, ServiceCodeID, PeopleID);
             if (dsOODStaff.Tables.Count > 0)
@@ -374,7 +374,6 @@ namespace OODForms
 
             WS.Cell("k8").Value = DateTime.Now.ToString("MM/dd/yy");
 
-            //string f9 = Convert.ToDateTime(string.Format("{0}", obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0],"MM/dd/yyyy"));
             //WS.Cell("k9").ValueAsDateTime = Convert.ToDateTime(string.Format("{0}", obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]));
             WS.Cell("k9").Value = Convert.ToDateTime(obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]).ToString("MM/dd/yy");
 
