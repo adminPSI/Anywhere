@@ -1,15 +1,14 @@
 //? QUESTIONS FOR JOSH
-//1. Since we are letting them doc time even if its not required,
-//   how will this work with no group notes if doc time is allowed?
-//2.
-
-//TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
+//1. what all causes overlap?
 //TODO-ASH: stop speech to text on save
-//TODO-ASH: create logic to update charcount on keyup, input
 
 //? REVIEW ONLY
 //-----------------------------
+//? QUESTIONS FOR JOSH
+//1. Since we are letting them doc time even if its not required,
+//   how will this work with no group notes if doc time is allowed?
 //TODO: crete checkbox for corrected (review only)
+//TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
 
 // let reviewRequired;
 // reviewRequired = cnData.isReviewRequired();

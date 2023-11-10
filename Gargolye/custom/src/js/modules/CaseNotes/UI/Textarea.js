@@ -1,6 +1,8 @@
 (function (global, factory) {
   global.Textarea = factory();
 })(this, function () {
+  //TODO-ASH: create logic to update charcount on keyup, input
+
   //=======================================
   // TEXT TO SPEECH
   //---------------------------------------
