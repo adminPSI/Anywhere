@@ -32,13 +32,14 @@
 
     // DOM Ref
     this.form = null;
+
+    this.build();
   }
 
   /**
    * Builds the Form element HTML
    *
    * @function
-   * @returns {Form} Returns the current instances for chaining
    */
   Form.prototype.build = function () {
     this.form = _DOM.createElement('form');
@@ -102,8 +103,6 @@
     }
 
     this.form.appendChild(btnWrap);
-
-    return this;
   };
 
   /**

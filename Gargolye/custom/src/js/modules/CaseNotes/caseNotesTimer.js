@@ -1,10 +1,13 @@
 (function (global, factory) {
   global.CaseNotesTimer = factory();
 })(this, function () {
+  //=======================================
+  // INACTIVITY
+  //---------------------------------------
   /**
    * @constructor
    */
-  function InactivityWarning() {
+  function InactivityWarningPopup() {
     this.dialog = null;
 
     this.yesButton = null;
@@ -16,7 +19,7 @@
   /**
    * @function
    */
-  InactivityWarning.prototype.build = function () {
+  InactivityWarningPopup.prototype.build = function () {
     // Inactivity Warning
     this.dialog = new Dialog({ className: 'inactivityWarning' });
 
@@ -41,14 +44,14 @@
    *
    * @function
    */
-  InactivityWarning.prototype.show = function () {
+  InactivityWarningPopup.prototype.show = function () {
     this.dialog.show();
   };
 
   /**
    * @function
    */
-  InactivityWarning.prototype.onClick = function (cbFunc) {
+  InactivityWarningPopup.prototype.onClick = function (cbFunc) {
     this.yesButton.onClick(e => {
       cbFunc(true);
       this.dialog.close();
@@ -60,13 +63,88 @@
   };
 
   /**
-   * Renders the built InactivityWarning element to the specified DOM node.
+   * Renders the built InactivityWarningPopup element to the specified DOM node.
    *
    * @function
-   * @param {Node} node DOM node to render the Inactivity Warning to
-   * @returns {InactivityWarning} Returns the current instances for chaining
+   * @param {Node} node DOM node to render the Inactivity Warning Popup to
+   * @returns {InactivityWarningPopup} Returns the current instances for chaining
    */
-  InactivityWarning.prototype.renderTo = function (node) {
+  InactivityWarningPopup.prototype.renderTo = function (node) {
+    if (node instanceof Node) {
+      node.appendChild(this.dialog.dialog);
+    }
+
+    return this;
+  };
+
+  //=======================================
+  // AUTO START
+  //---------------------------------------
+  /**
+   * @constructor
+   */
+  function TimerAutoStartPopup() {
+    this.dialog = null;
+
+    this.yesButton = null;
+    this.noButton = null;
+
+    this.build();
+  }
+
+  /**
+   * @function
+   */
+  TimerAutoStartPopup.prototype.build = function () {
+    this.dialog = new Dialog({ className: 'timerAutoStart' });
+
+    const messageEle = _DOM.createElement('p', {
+      text: 'Documentation Time is allowed for this bill code. Would you like to start the timer now?',
+    });
+
+    const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
+    this.yesButton = new Button({ text: 'yes' });
+    this.noButton = new Button({ text: 'no', styleType: 'outlined' });
+    this.yesButton.renderTo(btnWrap);
+    this.noButton.renderTo(btnWrap);
+
+    this.dialog.dialog.appendChild(messageEle);
+    this.dialog.dialog.appendChild(btnWrap);
+
+    return this;
+  };
+
+  /**
+   * Shows the auto start dialog
+   *
+   * @function
+   */
+  TimerAutoStartPopup.prototype.show = function () {
+    this.dialog.show();
+  };
+
+  /**
+   * @function
+   */
+  TimerAutoStartPopup.prototype.onClick = function (cbFunc) {
+    this.yesButton.onClick(e => {
+      cbFunc(true);
+      this.dialog.close();
+    });
+    this.noButton.onClick(e => {
+      cbFunc(false);
+      this.dialog.close();
+    });
+  };
+
+  /**
+   * Renders the built TimerAutoStartPopup element to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node DOM node to render the Timer Auto Start Popup to
+   * @returns {TimerAutoStartPopup} Returns the current instances for chaining
+   */
+  TimerAutoStartPopup.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.dialog.dialog);
     }
@@ -100,16 +178,17 @@
     this.playButton = null;
     this.stopButton = null;
 
-    this.build();
+    this._build();
   }
 
   /**
    * Builds the Case Notes Timer element component HTML
    *
    * @function
+   * @private
    * @returns {CaseNotesTimer} Returns the current instances for chaining
    */
-  CaseNotesTimer.prototype.build = function () {
+  CaseNotesTimer.prototype._build = function () {
     this.rootElement = _DOM.createElement('div', { class: 'caseNotesTimer' });
 
     this.playButton = new Button({ icon: 'play', style: 'secondary', styleType: 'outlined' });
@@ -121,12 +200,44 @@
     this.stopButton.renderTo(this.rootElement);
 
     // Inactivity Warning
-    this.inactivityWarning = new InactivityWarning();
-    this.inactivityWarning.renderTo(_DOM.ACTIONCENTER);
+    this.inactivityWarningPopup = new InactivityWarningPopup();
+    this.inactivityWarningPopup.renderTo(_DOM.ACTIONCENTER);
 
-    this.setupEvents();
+    // Auto Start
+    this.timerAutoStartPopup = new TimerAutoStartPopup();
+    this.timerAutoStartPopup.renderTo(_DOM.ACTIONCENTER);
+
+    this._setupEvents();
 
     return this;
+  };
+
+  /**
+   * @function
+   */
+  CaseNotesTimer.prototype._setupEvents = function () {
+    this.playButton.onClick(e => {
+      this.start(this.elapsedTimeInSeconds);
+      this.playButton.toggleDisabled(true);
+    });
+    this.stopButton.onClick(e => {
+      this.stop();
+      this.playButton.toggleDisabled(false);
+
+      if (this.inactivityTimeoutId) {
+        clearTimeout(this.inactivityTimeoutId);
+      }
+    });
+    this.inactivityWarningPopup.onClick(continueTimer => {
+      if (continueTimer) {
+        this.start(this.elapsedTimeInSeconds);
+      }
+    });
+    this.timerAutoStartPopup.onClick(autoStart => {
+      if (autoStart) {
+        this.start();
+      }
+    });
   };
 
   /**
@@ -160,7 +271,7 @@
     // Start inactivity timer
     this.inactivityIntervalId = setTimeout(() => {
       this.stop();
-      this.inactivityWarning.show();
+      this.inactivityWarningPopup.show();
     }, 120000);
   };
 
@@ -228,24 +339,10 @@
   /**
    * @function
    */
-  CaseNotesTimer.prototype.setupEvents = function () {
-    this.playButton.onClick(e => {
-      this.start(this.elapsedTimeInSeconds);
-      this.playButton.toggleDisabled(true);
-    });
-    this.stopButton.onClick(e => {
-      this.stop();
-      this.playButton.toggleDisabled(false);
+  CaseNotesTimer.prototype.showAutoStartPopup = function () {
+    if (this.intervalId) return;
 
-      if (this.inactivityTimeoutId) {
-        clearTimeout(this.inactivityTimeoutId);
-      }
-    });
-    this.inactivityWarning.onClick(continueTimer => {
-      if (continueTimer) {
-        this.start(this.elapsedTimeInSeconds);
-      }
-    });
+    this.timerAutoStartPopup.show();
   };
 
   /**

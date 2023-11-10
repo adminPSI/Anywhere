@@ -23,8 +23,9 @@
    * @constructor
    * @returns {CaseNotesOverview}
    */
-  function CaseNotesOverview() {
+  function CaseNotesOverview(cnData) {
     // Data Init
+    this.cnData = cnData;
     this.caseLoadOnly = $.session.CaseNotesCaseloadRestrictions;
     this.viewEntered = $.session.CaseNotesViewEntered;
     this.reviewGroups = {};
@@ -75,23 +76,23 @@
     });
     this.showAllNotesToggle.build().renderTo(overviewHeader);
 
-    // view
-    //---------------------------------
-    const densitySmallButton = _DOM.createElement('div', {
-      class: ['densitySmall'],
-      node: Icon.getIcon('densitySmall'),
-    });
-    const densityMediumButton = _DOM.createElement('div', {
-      class: ['densityMedium'],
-      node: Icon.getIcon('densityMedium'),
-    });
-
     // Cards
     //---------------------------------
     this.overviewCardsWrap = _DOM.createElement('div', { class: 'caseNotesOverview__overview' });
     this.overviewWrap.appendChild(this.overviewCardsWrap);
 
     return this;
+  };
+
+  CaseNotesOverview.prototype.setupEvents = function () {
+    this.showAllNotesToggle.onChange(async e => {
+      this.showAllNotes = e.target.checked ? true : false;
+      _UTIL.localStorageHandler.set('casenotes-showAllNotes', this.showAllNotes ? 'Y' : 'N');
+
+      await this.fetchData();
+
+      this.populate();
+    });
   };
 
   /**
@@ -114,6 +115,7 @@
         // Review Data
         //---------------------------------
         const consumerFullName = `${rd.lastname}, ${rd.firstname}`;
+        const mainService = cnData.getMainServiceCodeNameById(rd.mainbillingorservicecodeid);
         const location = rd.locationName;
         const service = rd.serviceName;
         const note = `${rd.caseNote.replace(/(\r\n|\n|\r)/gm, '').slice(0, 100)}...`;
@@ -149,7 +151,10 @@
         const portrait = new Portrait(rd.consumerid.split('.')[0]);
         portrait.renderTo(consumerNameEle);
 
-        const serviceInfoEle = _DOM.createElement('p', { class: 'serviceInfo', text: `${service} | ${location}` });
+        const serviceInfoEle = _DOM.createElement('p', {
+          class: 'serviceInfo',
+          text: `${mainService} - ${service} | ${location}`,
+        });
         const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
 
         const enteredByEle = _DOM.createElement('div', {
@@ -179,7 +184,6 @@
         overviewCard.appendChild(consumerNameEle);
         overviewCard.appendChild(serviceInfoEle);
         overviewCard.appendChild(noteTextEle);
-        overviewCard.appendChild(enteredByEle);
         overviewCard.appendChild(btnWrap);
 
         //---------------------------------

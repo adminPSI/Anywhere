@@ -9,16 +9,21 @@
    * @returns {Promise<void>} A promise that resolves after the specified delay.
    */
   function asyncSetTimeout(callback, ms) {
-    return new Promise(resolve =>
-      setTimeout(() => {
+    let timeoutId;
+
+    const promise = new Promise(resolve => {
+      timeoutId = setTimeout(() => {
         callback();
         resolve();
-      }, ms),
-    );
+        clearTimeout(timeoutId);
+      }, ms);
+    });
+
+    return promise;
   }
   /**
    * Debounces a function, ensuring that it's not called until after the specified
-   * amount of time has passed since the lat time it was invoked.
+   * amount of time has passed since the last time it was invoked.
    *
    * @function
    * @param {Function} func - The function to debounce.

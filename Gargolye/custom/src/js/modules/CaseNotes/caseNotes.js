@@ -334,6 +334,10 @@ const CaseNotes = (() => {
         isTravelTimeRequired = cnData.isTravelTimeRequired(selectedServiceCode);
         isDocTimeRequired = cnData.isDocTimeRequired(selectedServiceCode);
 
+        if (isDocTimeRequired) {
+          cnDocTimer.showAutoStartPopup();
+        }
+
         cnForm.inputs['mileage'].toggleDisabled(!mileageRequired);
         cnForm.inputs['travelTime'].toggleDisabled(!isTravelTimeRequired);
       } else {
@@ -620,10 +624,10 @@ const CaseNotes = (() => {
 
     if ($.session.applicationName === 'Advisor') {
       //* GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
-      // await cnData.fetchConsumersThatCanHaveMileage();
-      // if (cnData.canConsumerHaveMileage()) {
-      //   cnForm.inputs['mileage'].toggleDisabled(false);
-      // }
+      await cnData.fetchConsumersThatCanHaveMileage();
+      if (cnData.canConsumerHaveMileage()) {
+        cnForm.inputs['mileage'].toggleDisabled(false);
+      }
 
       // Get Serv Locations By Consumer
       await cnData.fetchServiceLocationDropdownData({
@@ -765,7 +769,7 @@ const CaseNotes = (() => {
           type: 'number',
           label: 'Mileage',
           id: 'mileage',
-          disabled: true,
+          disabled: $.session.applicationName === 'Gatekeeper' ? false : true,
         },
         //travelTime
         {
@@ -794,15 +798,23 @@ const CaseNotes = (() => {
         },
       ],
     });
-    cnForm.build().renderTo(cnFormWrap);
+    cnForm.renderTo(cnFormWrap);
 
     // Overview
-    cnOverview = new CaseNotesOverview();
+    cnOverview = new CaseNotesOverview(cnData);
     cnOverview.renderTo(moduleWrap);
 
     // Phrases
     cnPhrases = new CaseNotesPhrases();
     cnPhrases.renderTo(_DOM.ACTIONCENTER);
+
+    // EVENTS / CALLBACKS
+    //-----------------------------------------
+    dateNavigation.onDateChange(onDateChange);
+    rosterPicker.onConsumerSelect(onConsumerSelect);
+    cnForm.onChange(onFormChange);
+    cnForm.onKeyup(onFormKeyup);
+    cnForm.onSubmit(onFormSubmit);
 
     // FETCH DATA / POPULATE
     //-----------------------------------------
@@ -812,14 +824,6 @@ const CaseNotes = (() => {
     rosterPicker.populate();
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
-
-    // EVENTS / CALLBACKS
-    //-----------------------------------------
-    dateNavigation.onDateChange(onDateChange);
-    rosterPicker.onConsumerSelect(onConsumerSelect);
-    cnForm.onChange(onFormChange);
-    cnForm.onKeyup(onFormKeyup);
-    cnForm.onSubmit(onFormSubmit);
   }
   function loadPageSkeleton() {
     // prep actioncenter

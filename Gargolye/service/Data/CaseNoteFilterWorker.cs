@@ -149,7 +149,7 @@ namespace Anywhere.service.Data
             }
 
             sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
-            sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.Ratio_Consumers, ");
+            sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.Ratio_Consumers,cn.service_id, ");
             sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID,cn.service,cn.notes,cn.Location,ug.First_Name,ug.Last_Name ");
 
             sb.Append("order by cn.service_date desc,cn.Start_Time desc,p.Last_Name asc ");
@@ -291,7 +291,7 @@ namespace Anywhere.service.Data
             }
 
             sb.Append("Group By cn.case_note_id,cn.Service_Date,cn.Start_Time,cn.End_Time,cn.Case_Manager_ID,cn.ID,cn.Original_Update,cn.last_update, ");
-            sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.corrected,cn.Ratio_Consumers, ");
+            sb.Append("cn.Case_Note_Group_ID,cn.User_ID,p.first_name,p.last_name, p.id,cn.confidential,cn.corrected,cn.Ratio_Consumers,cn.service_id, ");
             sb.Append("cn.Original_User_ID, ncr.Any_SSA_Note, cna.Case_Note_ID,cn.service,cn.notes,cn.Location,ug.First_Name,ug.Last_Name ");
 
 

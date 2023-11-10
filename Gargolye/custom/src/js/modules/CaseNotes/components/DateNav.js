@@ -141,12 +141,10 @@
 
     this.prevWeekNavBtn = _DOM.createElement('div', {
       class: 'navButtons',
-      'data-target': 'prevWeek',
       node: Icon.getIcon('arrowLeft'),
     });
     this.nextWeekNavBtn = _DOM.createElement('div', {
       class: this.isCurrentWeek ? ['navButtons', 'disabled'] : 'navButtons',
-      'data-target': 'nextWeek',
       node: Icon.getIcon('arrowRight'),
     });
     this.customDatePicker = new DatePicker();
@@ -201,36 +199,54 @@
    * @function
    */
   DateNavigation.prototype.setupEvents = function () {
-    this.navigationEle.addEventListener('click', e => {
-      if (e.target.dataset.target === 'prevWeek') {
-        this.weekStart = dates.subWeeks(this.weekStart, 1);
-        this.weekEnd = dates.subWeeks(this.weekEnd, 1);
-        this.eachDayOfWeek = dates.eachDayOfInterval({
-          start: this.weekStart,
-          end: this.weekEnd,
-        });
+    this.prevWeekNavBtn.addEventListener('click', e => {
+      this.weekStart = dates.subWeeks(this.weekStart, 1);
+      this.weekEnd = dates.subWeeks(this.weekEnd, 1);
+      this.eachDayOfWeek = dates.eachDayOfInterval({
+        start: this.weekStart,
+        end: this.weekEnd,
+      });
 
-        //? default selected date to monday on week change
-        this.options.selectedDate = this.eachDayOfWeek[1];
+      this.options.selectedDate = this.eachDayOfWeek[1];
+      this.isCurrentWeek = dates.isDateInCurrentWeek(this.options.selectedDate);
+      this.nextWeekNavBtn.classList.toggle('disabled', this.isCurrentWeek);
 
-        this.populate();
+      this.populate();
 
-        return;
-      }
+      const customEvent = new CustomEvent('onDateChange');
+      this.weekWrapEle.dispatchEvent(customEvent);
+    });
 
-      if (e.target.dataset.target === 'nextWeek') {
-        this.weekStart = dates.addWeeks(this.weekStart, 1);
-        this.weekEnd = dates.addWeeks(this.weekEnd, 1);
-        this.eachDayOfWeek = dates.eachDayOfInterval({
-          start: this.weekStart,
-          end: this.weekEnd,
-        });
-        //this.isCurrentWeek = dates.isDateInCurrentWeek(this.options.selectedDate);
+    this.nextWeekNavBtn.addEventListener('click', e => {
+      this.weekStart = dates.addWeeks(this.weekStart, 1);
+      this.weekEnd = dates.addWeeks(this.weekEnd, 1);
+      this.eachDayOfWeek = dates.eachDayOfInterval({
+        start: this.weekStart,
+        end: this.weekEnd,
+      });
 
-        //? default selected date to monday on week change
-        this.options.selectedDate = this.eachDayOfWeek[1];
+      this.options.selectedDate = this.eachDayOfWeek[1];
+      this.isCurrentWeek = dates.isDateInCurrentWeek(this.options.selectedDate);
+      this.nextWeekNavBtn.classList.toggle('disabled', this.isCurrentWeek);
 
-        this.populate();
+      this.populate();
+
+      const customEvent = new CustomEvent('onDateChange');
+      this.weekWrapEle.dispatchEvent(customEvent);
+    });
+
+    this.weekWrapEle.addEventListener('click', e => {
+      if (e.target.dataset.target === 'date') {
+        const currentSelectedDate = this.weekWrapEle.querySelector('.selected');
+        if (currentSelectedDate) {
+          currentSelectedDate.classList.remove('selected');
+        }
+
+        this.options.selectedDate = new Date(e.target.dataset.date);
+        e.target.classList.add('selected');
+
+        const customEvent = new CustomEvent('onDateChange');
+        this.weekWrapEle.dispatchEvent(customEvent);
 
         return;
       }
@@ -254,13 +270,12 @@
         end: this.weekEnd,
       });
 
-      if (this.isCurrentWeek) {
-        this.nextWeekNavBtn.classList.add('disabled');
-      } else {
-        this.nextWeekNavBtn.classList.remove('disabled');
-      }
+      this.nextWeekNavBtn.classList.toggle('disabled', this.isCurrentWeek);
 
       this.populate();
+
+      const customEvent = new CustomEvent('onDateChange');
+      this.weekWrapEle.dispatchEvent(customEvent);
     });
   };
 
@@ -271,20 +286,8 @@
    * @param {Function} cbFunc Callback function to call
    */
   DateNavigation.prototype.onDateChange = function (cbFunc) {
-    this.navigationEle.addEventListener('click', e => {
-      if (e.target.dataset.target === 'date') {
-        const currentSelectedDate = this.weekWrapEle.querySelector('.selected');
-        if (currentSelectedDate) {
-          currentSelectedDate.classList.remove('selected');
-        }
-
-        this.options.selectedDate = new Date(e.target.dataset.date);
-        e.target.classList.add('selected');
-
-        cbFunc(this.options.selectedDate);
-
-        return;
-      }
+    this.weekWrapEle.addEventListener('onDateChange', () => {
+      cbFunc(this.options.selectedDate);
     });
   };
 

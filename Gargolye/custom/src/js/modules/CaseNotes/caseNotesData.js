@@ -410,6 +410,14 @@
   };
   /**
    * @function
+   * @param {String} serviceCode
+   * @returns {String}
+   */
+  CaseNotesData.prototype.getMainServiceCodeNameById = function (serviceCode) {
+    return this.dropdownData[serviceCode].serviceCode;
+  };
+  /**
+   * @function
    * @returns {Array}
    */
   CaseNotesData.prototype.getOvlerapData = function () {

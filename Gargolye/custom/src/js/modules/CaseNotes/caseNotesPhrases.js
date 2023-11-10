@@ -59,7 +59,7 @@
       ],
     });
 
-    this.addPhraseForm.build().renderTo(this.dialog.dialog);
+    this.addPhraseForm.renderTo(this.dialog.dialog);
 
     this.setupEvents();
 

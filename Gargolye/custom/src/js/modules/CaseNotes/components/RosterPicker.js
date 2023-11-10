@@ -117,6 +117,32 @@
 
         return;
       }
+      if (e.target.dataset.target === 'rosterCard') {
+        if (this.options.allowMultiSelect) {
+          if (!e.target.parentNode.classList.contains('selected')) {
+            e.target.parentNode.classList.add('selected');
+            this.selectedConsumers[e.target.dataset.id] = e.target;
+          } else {
+            e.target.parentNode.classList.remove('selected');
+            delete this.selectedConsumers[e.target.dataset.id];
+          }
+        } else {
+          if (e.target.parentNode.classList.contains('selected')) {
+            e.target.parentNode.classList.remove('selected');
+            delete this.selectedConsumers[e.target.dataset.id];
+          } else {
+            this.clearSelectedConsumers();
+
+            e.target.parentNode.classList.add('selected');
+            this.selectedConsumers[e.target.dataset.id] = e.target;
+          }
+        }
+
+        const customEvent = new CustomEvent('onConsumerSelect');
+        this.rosterWrapEle.dispatchEvent(customEvent);
+
+        return;
+      }
     });
 
     this.rosterWrapEle.addEventListener('error', e => {
@@ -149,32 +175,8 @@
    * @param {Function} cbFunc Callback function to call
    */
   RosterPicker.prototype.onConsumerSelect = function (cbFunc) {
-    this.rosterWrapEle.addEventListener('click', e => {
-      if (e.target.dataset.target === 'rosterCard') {
-        if (this.options.allowMultiSelect) {
-          if (!e.target.parentNode.classList.contains('selected')) {
-            e.target.parentNode.classList.add('selected');
-            this.selectedConsumers[e.target.dataset.id] = e.target;
-          } else {
-            e.target.parentNode.classList.remove('selected');
-            delete this.selectedConsumers[e.target.dataset.id];
-          }
-        } else {
-          if (e.target.parentNode.classList.contains('selected')) {
-            e.target.parentNode.classList.remove('selected');
-            delete this.selectedConsumers[e.target.dataset.id];
-          } else {
-            this.clearSelectedConsumers();
-
-            e.target.parentNode.classList.add('selected');
-            this.selectedConsumers[e.target.dataset.id] = e.target;
-          }
-        }
-
-        cbFunc(Object.keys(this.selectedConsumers));
-
-        return;
-      }
+    this.rosterWrapEle.addEventListener('onConsumerSelect', () => {
+      cbFunc(Object.keys(this.selectedConsumers));
     });
   };
 

@@ -4,8 +4,7 @@
 //2.
 
 //TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
-//TODO-ASH: preSave() stops timer and speech to text
-//TODO-ASH:: add checkbox to toggle between seing only yours vs everyones notes in overview
+//TODO-ASH: stop speech to text on save
 //TODO-ASH: create logic to update charcount on keyup, input
 
 //? REVIEW ONLY
@@ -48,6 +47,22 @@
 //   // remove -> reviewRequired
 // }
 
+// CODE SNIPPETS
+//----------------------------------------------
 // (function (global, factory) {
 //   global.RosterCard = factory();
 // })(this, function () {});
+
+// _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
+// _UTIL.localStorageHandler.set('casenotes-showAllPhrases', value);
+
+// view
+//---------------------------------
+// const densitySmallButton = _DOM.createElement('div', {
+//   class: ['densitySmall'],
+//   node: Icon.getIcon('densitySmall'),
+// });
+// const densityMediumButton = _DOM.createElement('div', {
+//   class: ['densityMedium'],
+//   node: Icon.getIcon('densityMedium'),
+// });
