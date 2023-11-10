@@ -686,8 +686,11 @@ const NewEntryCF = (() => {
             value: payees.Description,
             text: payees.Description
         }));
-        data.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("newPayeeDropdown", data, payee);
+        data.unshift({ id: null, value: 'Opening Balance', text: 'Opening Balance' });   
+        data.unshift({ id: null, value: '', text: '' });      
+         
+        dropdown.populate("newPayeeDropdown", data, payee); 
+       
         checkRequiredFieldsOfNewEntry();
 
     }
