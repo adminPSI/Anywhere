@@ -173,7 +173,7 @@ $label_fontSize: $px14;
       opacity: 0;
       position: absolute;
       left: -9999px;
-      top: -9999px;
+      top: 0px;
     }
 
     input[type='checkbox'] ~ label {

@@ -171,7 +171,7 @@
 
         // update with new value
         const updatedValue = JSON.stringify(storedValue);
-        localStorage.setItem(`anywstate_${user}`, updatedValue);
+        localStorage.setItem(`anywstate_${$.session.UserId}`, updatedValue);
       } catch (error) {
         console.log('An error occurred when setting the value to local storage', error);
       }

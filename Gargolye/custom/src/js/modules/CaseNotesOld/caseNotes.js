@@ -31,7 +31,7 @@ var caseNotes = (function () {
       callback: cnEditPhrases.init,
     });
     let tryNewCaseNotes = button.build({
-      text: 'Try Case Notes 2.0',
+      text: 'NEW! Case Note Entry',
       style: 'secondary',
       type: 'contained',
       callback: CaseNotes.init,
@@ -39,11 +39,11 @@ var caseNotes = (function () {
 
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('landingBtnWrap');
+    btnWrap.appendChild(tryNewCaseNotes);
     if ($.session.CaseNotesUpdate && $.session.CaseNotesSSANotes) btnWrap.appendChild(newSSABtn);
     if ($.session.CaseNotesUpdate) btnWrap.appendChild(newBtn);
     btnWrap.appendChild(overviewBtn);
     btnWrap.appendChild(editPhrasesBtn);
-    btnWrap.appendChild(tryNewCaseNotes);
     DOM.ACTIONCENTER.appendChild(btnWrap);
   }
 

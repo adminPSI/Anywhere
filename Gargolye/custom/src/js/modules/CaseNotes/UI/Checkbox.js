@@ -141,6 +141,7 @@
    */
   Checkbox.prototype.onChange = function (cbFunc) {
     this.input.addEventListener('input', e => {
+      if (this.options.toggle) e.preventDefault();
       if (cbFunc) cbFunc(e);
     });
   };

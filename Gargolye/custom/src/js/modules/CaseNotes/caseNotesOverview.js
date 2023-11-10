@@ -81,6 +81,8 @@
     this.overviewCardsWrap = _DOM.createElement('div', { class: 'caseNotesOverview__overview' });
     this.overviewWrap.appendChild(this.overviewCardsWrap);
 
+    this.setupEvents();
+
     return this;
   };
 
@@ -115,7 +117,7 @@
         // Review Data
         //---------------------------------
         const consumerFullName = `${rd.lastname}, ${rd.firstname}`;
-        const mainService = cnData.getMainServiceCodeNameById(rd.mainbillingorservicecodeid);
+        const mainService = cnData.getMainServiceCodeNameById(rd.mainbillingorservicecodeid.split('.')[0]);
         const location = rd.locationName;
         const service = rd.serviceName;
         const note = `${rd.caseNote.replace(/(\r\n|\n|\r)/gm, '').slice(0, 100)}...`;
