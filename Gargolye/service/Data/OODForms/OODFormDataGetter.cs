@@ -412,17 +412,17 @@ namespace OODForms
             sb.Append("dba.Employer.Address1 AS LocationAddress, dba.Employer.City AS LocationCity, dba.EM_Contacts.Notes AS Comments, ");
             sb.Append("dba.EM_Contacts.Contact_Type AS ContactType, dba.Code_Table.Caption AS OutCome, dba.EM_Contacts.EM_Job_Seeker_Present AS JobSeekerPresent, ");
             sb.Append("dba.Consumer_Services_Master.Reference_Number, dba.Code_Table.Table_ID, dba.Case_Notes.Notes AS Note2, ");
-            sb.Append("DBA.Persons.Last_Name, DBA.Persons.First_Name, DBA.Persons.Middle_Name, dba.Code_Table.Code, dba.EM_Contacts.Application, dba.EM_Contacts.Interview, dba.EM_Contacts.Bilingual_Supplement, dba.Vendors.name as VendorName  ");
+            sb.Append("DBA.Persons.Last_Name, DBA.Persons.First_Name, DBA.Persons.Middle_Name, dba.Code_Table.Code, dba.EM_Contacts.Application, dba.EM_Contacts.Interview, dba.EM_Contacts.Bilingual_Supplement ");
             sb.Append("FROM dba.Consumer_Services_Master ");
             sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
             sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Case_Notes.Case_Manager_ID = dba.Persons.Person_ID ");
             sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Contacts.Employer_ID = dba.Employer.Employer_ID ");
             sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
-            sb.Append("DBA.Consumers ON Consumer_Services_Master.Consumer_ID = DBA.Consumers.Consumer_ID  LEFT OUTER JOIN ");
-            sb.Append("DBA.Locations ON DBA.Consumers.Location_ID = DBA.Locations.Location_ID  LEFT OUTER JOIN ");
-            sb.Append("DBA.Regions ON DBA.Locations.Region_ID = DBA.Regions.Region_ID  LEFT OUTER JOIN ");
-            sb.Append("DBA.Vendors ON DBA.Regions.Vendor_ID = DBA.Vendors.Vendor_ID ");
+            //sb.Append("DBA.Consumers ON Consumer_Services_Master.Consumer_ID = DBA.Consumers.Consumer_ID  LEFT OUTER JOIN ");
+            //sb.Append("DBA.Locations ON DBA.Consumers.Location_ID = DBA.Locations.Location_ID  LEFT OUTER JOIN ");
+            //sb.Append("DBA.Regions ON DBA.Locations.Region_ID = DBA.Regions.Region_ID  LEFT OUTER JOIN ");
+            //sb.Append("DBA.Vendors ON DBA.Regions.Vendor_ID = DBA.Vendors.Vendor_ID ");
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             //'sb.Append("AND (DBA.Code_Table.Field_ID = 'outcome') ") 'Removed per ticket 84964
             sb.AppendFormat("AND  dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
