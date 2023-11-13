@@ -9,9 +9,9 @@
    * @type {Object}
    */
   const DEFAULT_OPTIONS = {
-    isModal: true,
     clickOutToClose: true,
     className: null,
+    isModal: true,
   };
 
   /**
@@ -33,8 +33,7 @@
 
     this.dialog = null;
 
-    this.build();
-    this.setupEvents();
+    this._build();
   }
 
   /**
@@ -43,7 +42,7 @@
    * @function
    * @returns {Dialog} Returns the current instances for chaining
    */
-  Dialog.prototype.build = function () {
+  Dialog.prototype._build = function () {
     let classArray = ['dialog'];
     if (this.options.isModal) classArray.push('modal');
     if (this.options.className) classArray.push(this.options.className);
@@ -52,7 +51,30 @@
       class: classArray,
     });
 
-    return this;
+    this._setupEvents();
+  };
+
+  /**
+   * Sets up events for Dialog Box
+   *
+   * @function
+   */
+  Dialog.prototype._setupEvents = function () {
+    if (this.options.clickOutToClose) {
+      this.dialog.addEventListener('click', e => {
+        const dialogDimensions = this.dialog.getBoundingClientRect();
+
+        if (
+          e.clientX < dialogDimensions.left ||
+          e.clientX > dialogDimensions.right ||
+          e.clientY < dialogDimensions.top ||
+          e.clientY > dialogDimensions.bottom
+        ) {
+          this.close();
+          this.options.clickOutToCloseCallback();
+        }
+      });
+    }
   };
 
   /**
@@ -75,29 +97,6 @@
    */
   Dialog.prototype.close = function () {
     this.dialog.close();
-  };
-
-  /**
-   * Sets up events for Dialog Box
-   *
-   * @function
-   */
-  Dialog.prototype.setupEvents = function () {
-    if (this.options.clickOutToClose) {
-      this.dialog.addEventListener('click', e => {
-        const dialogDimensions = this.dialog.getBoundingClientRect();
-
-        if (
-          e.clientX < dialogDimensions.left ||
-          e.clientX > dialogDimensions.right ||
-          e.clientY < dialogDimensions.top ||
-          e.clientY > dialogDimensions.bottom
-        ) {
-          this.close();
-          this.options.clickOutToCloseCallback();
-        }
-      });
-    }
   };
 
   /**

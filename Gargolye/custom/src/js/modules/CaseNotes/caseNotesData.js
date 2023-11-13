@@ -121,6 +121,13 @@
    * @returns {CaseNotesData}
    */
   function CaseNotesData() {
+    // Review Data
+    this.caseLoadOnly = $.session.CaseNotesCaseloadRestrictions;
+    this.viewEntered = $.session.CaseNotesViewEntered;
+    this.caseLoadRestrictions = null;
+    this.reviewGroups = {};
+    this.reviewConsumers = [];
+
     // Dropdown Data
     this.dropdownData = {};
     this.vendorDropdownData = [];
@@ -227,6 +234,32 @@
 
     return this;
   };
+  /**
+   * @function
+   * @param {Object} retrieveData
+   * @returns {CaseNotesData}
+   */
+  CaseNotesData.prototype.fetchReviewData = async function (retrieveData) {
+    if (this.caseLoadOnly) {
+      const restrictionsResponse = await _UTIL.fetchData('getCaseLoadRestriction');
+      this.caseLoadRestrictions = restrictionsResponse.getCaseLoadRestrictionResult;
+    }
+
+    const data = await _UTIL.fetchData('caseNotesFilteredSearchJSON', {
+      ...retrieveData,
+    });
+    this.caseNoteReviewData = data.caseNotesFilteredSearchJSONResult;
+
+    return this;
+  };
+  /**
+   * @function
+   * @param {Object} retrieveData
+   * @returns {CaseNotesData}
+   */
+  CaseNotesData.prototype.fetchNoteData = async function (retrieveData) {
+    return this;
+  };
 
   // DROPDOWN DATA MAPPING
   //---------------------------------------
@@ -321,6 +354,52 @@
 
   // DATA GETTERS
   //---------------------------------------
+  /**
+   * @function
+   * @param {Object} retrieveData
+   * @returns {CaseNotesData}
+   */
+  CaseNotesData.prototype.getReviewData = async function (retrieveData) {
+    return this.caseNoteReviewData.filter(data => {
+      // GROUPING
+      if (data.numberInGroup !== '1') {
+        const groupNoteId = data.groupnoteid.split('.')[0];
+        const consumerId = data.consumerid.split('.')[0];
+        const name = `${data.lastname}, ${data.firstname}`;
+
+        this.reviewGroups[groupNoteId] = this.reviewGroups[groupNoteId] ?? {};
+        this.reviewGroups[groupNoteId][consumerId] = name;
+      }
+
+      // TABLE CONSUMERS
+      this.reviewConsumers.push({
+        id: data.casenoteid.split('.')[0],
+        FirstName: data.firstname,
+        LastName: data.lastname,
+      });
+
+      // FOR VIEW ENTERED & CASELOAD ONLY
+      if (this.viewEntered && this.caseLoadOnly) {
+        const enteredByUser = data.enteredby.toUpperCase() === $.session.UserId.toUpperCase();
+        const onCaseload = this.caseLoadRestrictions.some(
+          cl => cl.id.toUpperCase() === data.consumerid.split('.')[0].toUpperCase(),
+        );
+        return enteredByUser || onCaseload;
+      }
+
+      // FOR VIEW ENTERED ONLY
+      if (this.viewEntered) {
+        return data.enteredby.toUpperCase() === $.session.UserId.toUpperCase();
+      }
+
+      // FOR CASELOAD ONLY
+      if (this.caseLoadOnly) {
+        return this.caseLoadRestrictions.some(cl => cl.id === data.consumerid.split('.')[0]);
+      }
+
+      return true; // If no conditions met, return the data as is
+    });
+  };
   /**
    * @function
    * @param {String} selectedServiceCode

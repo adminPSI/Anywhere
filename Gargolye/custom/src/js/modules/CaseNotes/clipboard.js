@@ -1,6 +1,7 @@
 //? QUESTIONS FOR JOSH
 //1. what all causes overlap?
 //TODO-ASH: stop speech to text on save
+//TODO-ASH: after they save a note, if they don't hit save and clear, allow them to immediatley convert note to a group note
 
 //? REVIEW ONLY
 //-----------------------------
@@ -39,11 +40,11 @@
 
 // async function updateNote() {
 //   //TODO-ASH: clean start time and end time:
-//   // endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
-//   // startTime = startTime.length === 8 ? startTime.substring(0, 5) : startTime;
+//   //TODO-ASH: endTime = endTime.length === 8 ? endTime.substring(0, 5) : endTime;
+//   //TODO-ASH: startTime = startTime.length === 8 ? startTime.substring(0, 5) : startTime;
 //   //? Different props from saveData
-//   // add -> groupNoteId, consumerId
-//   // remove -> reviewRequired
+//   //TODO-ASH: add -> groupNoteId, consumerId
+//   //TODO-ASH: remove -> reviewRequired
 // }
 
 // CODE SNIPPETS

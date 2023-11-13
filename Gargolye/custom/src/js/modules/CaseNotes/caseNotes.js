@@ -11,8 +11,6 @@ const CaseNotes = (() => {
   // attachments
   let attachmentsForSave = {};
   let attachmentCountForIDs = 0;
-  // phrases
-  let showAllPhrases;
   // timers
   let isDocTimeRequired;
   let isTravelTimeRequired;
@@ -552,6 +550,7 @@ const CaseNotes = (() => {
       }
     },
   };
+
   function onFormChange(event) {
     const value = event.target.value;
     let name = event.target.name;
@@ -800,7 +799,7 @@ const CaseNotes = (() => {
     });
     cnForm.renderTo(cnFormWrap);
 
-    // Overview
+    // Overview Cards
     cnOverview = new CaseNotesOverview(cnData);
     cnOverview.renderTo(moduleWrap);
 
@@ -837,6 +836,7 @@ const CaseNotes = (() => {
     cnDateNavWrap = _DOM.createElement('div', { class: 'caseNotesDateNav' });
     cnFormWrap = _DOM.createElement('div', { class: 'caseNotesForm' });
     cnRosterWrap = _DOM.createElement('div', { class: 'caseNotesRosterPicker' });
+    cnOverviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview' });
 
     moduleWrap.appendChild(cnHeader);
     moduleWrap.appendChild(cnDateNavWrap);

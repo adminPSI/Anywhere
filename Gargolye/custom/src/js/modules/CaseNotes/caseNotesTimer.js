@@ -242,7 +242,7 @@
 
   /**
    * Starts the Doc Timer.
-   * Should not be used to start timer after its been stopped, use restart() instead
+   * Should not be used to start timer after its been stopped
    *
    * @function
    * @param {Number} options
@@ -289,26 +289,6 @@
     console.log('Timer has stopped.');
 
     return this;
-  };
-
-  /**
-   * Restarts the Doc Timer from where it last left off.
-   *
-   * @function
-   */
-  CaseNotesTimer.prototype.restart = function () {
-    // Clear any existing intervals or timeouts
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-    if (this.inactivityTimeoutId) {
-      clearTimeout(this.inactivityTimeoutId);
-    }
-
-    // Start the main timer again
-    this.start(this.elapsedTimeInSeconds);
-
-    console.log('Timer and inactivity timer have been restarted.');
   };
 
   /**

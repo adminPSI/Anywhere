@@ -1,0 +1,117 @@
+[data-active-module='casenotes2.0'] {
+  .caseNotesOverview {
+    border-radius: 6px;
+    box-shadow: $shadow-m2;
+    grid-area: cards;
+    margin: 20px 20px 0px;
+    padding: 20px;
+
+    &__header {
+      // do stuff son
+    }
+
+    &__overview {
+      display: grid;
+      grid-template-columns: minmax(auto, 140px) minmax(auto, 140px) minmax(auto, 180px) auto;
+    }
+
+    &__overviewCard {
+      box-shadow: $shadow-m2;
+      border-radius: 6px;
+      grid-column: 1 / -1;
+      padding: 0;
+      margin: 0 0 8px;
+
+      .consumer {
+        align-items: center;
+        display: flex;
+        width: 100%;
+
+        .portrait {
+          height: 50px;
+          width: 50px;
+        }
+
+        .name {
+          font-size: $px26;
+          font-weight: $_bold;
+          order: 1;
+        }
+      }
+
+      .serviceInfo {
+        font-size: $px18;
+        width: 100%;
+      }
+      .noteText {
+        width: 100%;
+      }
+      .button-wrap {
+        width: 100%;
+      }
+    }
+
+    &__overviewCard {
+      //align-items: center;
+      //display: grid;
+      //grid-template-columns: subgrid;
+
+      // &Main {
+      //   border-top: 2px solid #606060;
+      //   grid-column: 1 / -1;
+      //   padding: 20px 10px;
+
+      //   .consumerName {
+      //     font-size: $px30;
+      //     font-weight: $_bold;
+      //     letter-spacing: 0.04rem;
+      //     margin-bottom: 4px;
+      //   }
+      //   .serviceInfoEle {
+      //     font-size: $px18;
+      //     font-weight: $_bold;
+      //     letter-spacing: 0.04rem;
+      //     margin-bottom: 8px;
+      //   }
+      //   .noteText {
+      //     font-size: $px16;
+      //     font-weight: $_normal;
+      //   }
+      // }
+
+      .withLabelWrap {
+        //border-bottom: 2px solid $black;
+        padding: 8px;
+      }
+
+      .withLabel {
+        font-size: $px24;
+        font-weight: $_bold;
+        position: relative;
+        margin-top: 20px;
+      }
+      .withLabel::before {
+        font-size: $px14;
+        font-weight: $_normal;
+        position: absolute;
+        top: -20px;
+        left: 0px;
+      }
+      .startTime::before {
+        content: 'Start Time';
+      }
+      .endTime::before {
+        content: 'End Time';
+      }
+      .duration::before {
+        content: 'Total';
+      }
+      .enteredBy::before {
+        content: 'Entered By';
+      }
+      // .consumer::before {
+      //   content: 'Consumer';
+      // }
+    }
+  }
+}

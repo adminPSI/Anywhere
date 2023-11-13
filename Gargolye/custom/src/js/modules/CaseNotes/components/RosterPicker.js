@@ -35,7 +35,7 @@
     this.rosterCaseLoadInput = null;
     this.consumerCards = null;
 
-    this.build();
+    this._build();
   }
 
   /**
@@ -43,7 +43,7 @@
    *
    * @function
    */
-  RosterPicker.prototype.build = function () {
+  RosterPicker.prototype._build = function () {
     this.rosterPickerEle = _DOM.createElement('div', { class: 'rosterPicker' });
     this.rosterWrapEle = _DOM.createElement('div', { class: 'rosterCardWrap' });
 
@@ -65,40 +65,7 @@
     this.rosterCaseLoadInput.build().renderTo(this.rosterPickerEle);
     this.rosterPickerEle.appendChild(this.rosterWrapEle);
 
-    this.setupEvents();
-  };
-
-  /**
-   * Populate consumer roster cards
-   *
-   * @function
-   */
-  RosterPicker.prototype.populate = function () {
-    this.rosterWrapEle.innerHTML = '';
-
-    this.consumers.forEach(c => {
-      // ROSTER CARD
-      const gridAnimationWrapper = _DOM.createElement('div', { class: 'visibilityAnimationWrapper' });
-
-      const rosterCard = new RosterCard({
-        consumerId: c.id,
-        firstName: c.FN,
-        middleName: c.MN,
-        lastName: c.LN,
-      });
-      rosterCard.renderTo(gridAnimationWrapper);
-
-      // PIN ICON
-      const pinCardIcon = Icon.getIcon('pin');
-      pinCardIcon.setAttribute('data-target', 'pinCardIcon');
-      rosterCard.rootElement.appendChild(pinCardIcon);
-
-      // BUILD
-      this.rosterWrapEle.appendChild(gridAnimationWrapper);
-
-      // SET REFERENCE TO DOM NODE ON DATA OBJ
-      c.cardEle = rosterCard;
-    });
+    this._setupEvents();
   };
 
   /**
@@ -106,7 +73,7 @@
    *
    * @function
    */
-  RosterPicker.prototype.setupEvents = function () {
+  RosterPicker.prototype._setupEvents = function () {
     this.rosterWrapEle.addEventListener('click', e => {
       if (e.target.dataset.target === 'pinCardIcon') {
         if (!e.target.parentNode.parentNode.classList.contains('pinned')) {
@@ -153,12 +120,12 @@
 
     this.rosterSearchInput.onKeyup(
       _UTIL.debounce(e => {
-        this.filterConsumersOnSearch(e);
+        this._filterConsumersOnSearch(e);
       }, 500),
     );
 
     this.rosterSearchInput.onChange(e => {
-      this.filterConsumersOnSearch(e);
+      this._filterConsumersOnSearch(e);
     });
 
     this.rosterCaseLoadInput.onChange(async e => {
@@ -169,28 +136,16 @@
   };
 
   /**
-   * On consumer select method
-   *
-   * @function
-   * @param {Function} cbFunc Callback function to call
-   */
-  RosterPicker.prototype.onConsumerSelect = function (cbFunc) {
-    this.rosterWrapEle.addEventListener('onConsumerSelect', () => {
-      cbFunc(Object.keys(this.selectedConsumers));
-    });
-  };
-
-  /**
    * Filters roster picker on search
    *
    * @function
    * @param {Event} e
    */
-  RosterPicker.prototype.filterConsumersOnSearch = function (e) {
+  RosterPicker.prototype._filterConsumersOnSearch = function (e) {
     this.consumers.forEach(consumer => {
-      const firstName = consumer.FN.toLowerCase();
-      const middleName = consumer.MN.toLowerCase();
-      const lastName = consumer.LN.toLowerCase();
+      const firstName = consumer.FN.toLowerCase().trim();
+      const middleName = consumer.MN.toLowerCase().trim();
+      const lastName = consumer.LN.toLowerCase().trim();
 
       const nameCombinations = [
         `${firstName} ${middleName} ${lastName}`,
@@ -207,6 +162,51 @@
       } else {
         consumer.cardEle.parentNode.classList.add('isClosed');
       }
+    });
+  };
+
+  /**
+   * Populate consumer roster cards
+   *
+   * @function
+   */
+  RosterPicker.prototype.populate = function () {
+    this.rosterWrapEle.innerHTML = '';
+
+    this.consumers.forEach(c => {
+      // ROSTER CARD
+      const gridAnimationWrapper = _DOM.createElement('div', { class: 'visibilityAnimationWrapper' });
+
+      const rosterCard = new RosterCard({
+        consumerId: c.id,
+        firstName: c.FN,
+        middleName: c.MN,
+        lastName: c.LN,
+      });
+      rosterCard.renderTo(gridAnimationWrapper);
+
+      // PIN ICON
+      const pinCardIcon = Icon.getIcon('pin');
+      pinCardIcon.setAttribute('data-target', 'pinCardIcon');
+      rosterCard.rootElement.appendChild(pinCardIcon);
+
+      // BUILD
+      this.rosterWrapEle.appendChild(gridAnimationWrapper);
+
+      // SET REFERENCE TO DOM NODE ON DATA OBJ
+      c.cardEle = rosterCard.rootElement;
+    });
+  };
+
+  /**
+   * On consumer select method
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  RosterPicker.prototype.onConsumerSelect = function (cbFunc) {
+    this.rosterWrapEle.addEventListener('onConsumerSelect', () => {
+      cbFunc(Object.keys(this.selectedConsumers));
     });
   };
 

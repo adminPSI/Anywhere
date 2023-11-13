@@ -14,6 +14,7 @@
     icon: null,
     style: 'primary',
     styleType: 'contained',
+    disabled: false,
   };
 
   /**
@@ -40,16 +41,15 @@
     // DOM Ref
     this.button = null;
 
-    this.build();
+    this._build();
   }
 
   /**
    * Builds the Button element component HTML
    *
    * @function
-   * @returns {Button} - Returns the current instances for chaining
    */
-  Button.prototype.build = function () {
+  Button.prototype._build = function () {
     this.button = _DOM.createElement('button', {
       class: ['button', this.options.style, this.options.styleType],
       type: this.options.attributes.type,
@@ -68,8 +68,6 @@
     } else {
       this.button.innerText = this.options.text;
     }
-
-    return this;
   };
 
   /**

@@ -41,8 +41,17 @@
     this.showAllNotesToggle = null;
     this.overviewCardsWrap = null;
 
+    this._init();
     this._build();
   }
+
+  /**
+   * @function
+   */
+  CaseNotesOverview.prototype._init = function () {
+    const showAllNotesLS = _UTIL.localStorageHandler.get('casenotes-showAllNotes');
+    this.showAllNotes = showAllNotesLS === 'Y' ? true : false;
+  };
 
   /**
    * Builds the CaseNotesOverview component HTML
@@ -50,7 +59,7 @@
    * @function
    */
   CaseNotesOverview.prototype._build = function () {
-    this.overviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview' });
+    this.overviewWrap = _DOM.createElement('div');
 
     // Header
     //---------------------------------
@@ -81,12 +90,13 @@
     this.overviewCardsWrap = _DOM.createElement('div', { class: 'caseNotesOverview__overview' });
     this.overviewWrap.appendChild(this.overviewCardsWrap);
 
-    this.setupEvents();
-
-    return this;
+    this._setupEvents();
   };
 
-  CaseNotesOverview.prototype.setupEvents = function () {
+  /**
+   * @function
+   */
+  CaseNotesOverview.prototype._setupEvents = function () {
     this.showAllNotesToggle.onChange(async e => {
       this.showAllNotes = e.target.checked ? true : false;
       _UTIL.localStorageHandler.set('casenotes-showAllNotes', this.showAllNotes ? 'Y' : 'N');
@@ -206,7 +216,7 @@
     const filteredSearchResponse = await _UTIL.fetchData('caseNotesFilteredSearchJSON', {
       applicationName: $.session.applicationName,
       attachments: '%',
-      billerId: $.session.PeopleId,
+      billerId: this.showAllNotes ? '%' : $.session.PeopleId,
       billingCode: '%',
       billed: '%',
       consumerId: '%',
@@ -224,6 +234,7 @@
       serviceStartDate: dates.formatISO(selectedDate, { representation: 'date' }),
       serviceEndDate: dates.formatISO(selectedDate, { representation: 'date' }),
     });
+
     this.caseLoadReviewData = filteredSearchResponse.caseNotesFilteredSearchJSONResult.filter(data => {
       // GROUPING
       if (data.numberInGroup !== '1') {

@@ -1,3 +1,24 @@
+/* The main scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* The background of the draggable scrolling handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* On hover, make the scrolling handle lighter */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* The scrollbar track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
 body {
   -webkit-overflow-scrolling: touch !important;
   background: $bg-light;

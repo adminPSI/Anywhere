@@ -41,8 +41,14 @@
 @import './UI/spinner';
 @import './UI/table';
 
-@import './modules/authorization';
+// MODULES
+// Case Notes
 @import './modules/caseNotes';
+@import './modules/caseNotes/caseNotesOverview';
+@import './modules/caseNotes/caseNotesForm';
+@import './modules/caseNotes/caseNotesPhrases';
+// other
+@import './modules/authorization';
 @import './modules/caseNotesOld';
 @import './modules/dashboard';
 @import './modules/incidentTracking';

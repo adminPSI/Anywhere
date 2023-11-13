@@ -15,12 +15,14 @@
     this.dialog = null;
 
     // DOM Ref
+
+    this._build();
   }
 
   /**
    * @function
    */
-  CaseNotesReports.prototype.build = function () {
+  CaseNotesReports.prototype._build = function () {
     this.dialog = new Dialog({ className: 'addPhrases' });
 
     //TODO-ASH: build form to allow user to select criteria for report
@@ -44,12 +46,14 @@
         },
       ],
     });
+
+    this._setupEvents();
   };
 
   /**
    * @function
    */
-  CaseNotesReports.prototype.setupEvents = function () {
+  CaseNotesReports.prototype._setupEvents = function () {
     this.detailReportForm.onSubmit(data => {
       this.generateDetailReport();
     });
