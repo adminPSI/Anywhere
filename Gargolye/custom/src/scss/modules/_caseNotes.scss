@@ -57,12 +57,250 @@
     }
   }
 
+  // FORM
+  .caseNotesForm {
+    border-radius: 6px;
+    box-shadow: $shadow-m2;
+    display: flex;
+    flex-flow: column nowrap;
+    grid-area: form;
+    margin: 0 10px 0 20px;
+    position: relative;
+
+    form {
+      padding: 6px 10px 10px 10px;
+    }
+
+    .form_field.time,
+    .form_field.number {
+      width: calc(50% - 5px);
+    }
+    .form_field.checkbox {
+      width: 100%;
+    }
+    .form_field.textarea {
+      height: 200px;
+      position: relative;
+    }
+    .form_field.location,
+    .form_field.service,
+    .form_field.need,
+    .form_field.contact {
+      min-width: 300px;
+      width: calc(50% - 5px);
+    }
+  }
+
+  // DOC TIMER
+  .caseNotesTimer {
+    align-items: center;
+    align-self: flex-end;
+    display: flex;
+    padding: 10px 10px 6px 10px;
+
+    p {
+      font-size: $px18;
+      line-height: normal;
+      margin-left: 6px;
+      order: 1;
+      text-align: center;
+      width: 90px;
+    }
+
+    button:first-of-type {
+      margin-right: 4px;
+    }
+  }
+
+  // OVERVIEW
+  .caseNotesOverview {
+    border-radius: 6px;
+    box-shadow: $shadow-m2;
+    grid-area: cards;
+    margin: 20px 20px 0px;
+    padding: 20px;
+
+    &__header {
+      // do stuff son
+    }
+
+    &__overview {
+      display: grid;
+      grid-template-columns: minmax(auto, 140px) minmax(auto, 140px) minmax(auto, 180px) auto;
+    }
+
+    &__overviewCard {
+      box-shadow: $shadow-m2;
+      border-radius: 6px;
+      grid-column: 1 / -1;
+      padding: 0;
+      margin: 0 0 8px;
+
+      .consumer {
+        align-items: center;
+        display: flex;
+        width: 100%;
+
+        .portrait {
+          height: 50px;
+          width: 50px;
+        }
+
+        .name {
+          font-size: $px26;
+          font-weight: $_bold;
+          order: 1;
+        }
+      }
+
+      .serviceInfo {
+        font-size: $px18;
+        width: 100%;
+      }
+      .noteText {
+        width: 100%;
+      }
+      .button-wrap {
+        width: 100%;
+      }
+    }
+
+    &__overviewCard {
+      //align-items: center;
+      //display: grid;
+      //grid-template-columns: subgrid;
+
+      // &Main {
+      //   border-top: 2px solid #606060;
+      //   grid-column: 1 / -1;
+      //   padding: 20px 10px;
+
+      //   .consumerName {
+      //     font-size: $px30;
+      //     font-weight: $_bold;
+      //     letter-spacing: 0.04rem;
+      //     margin-bottom: 4px;
+      //   }
+      //   .serviceInfoEle {
+      //     font-size: $px18;
+      //     font-weight: $_bold;
+      //     letter-spacing: 0.04rem;
+      //     margin-bottom: 8px;
+      //   }
+      //   .noteText {
+      //     font-size: $px16;
+      //     font-weight: $_normal;
+      //   }
+      // }
+
+      .withLabelWrap {
+        //border-bottom: 2px solid $black;
+        padding: 8px;
+      }
+
+      .withLabel {
+        font-size: $px24;
+        font-weight: $_bold;
+        position: relative;
+        margin-top: 20px;
+      }
+      .withLabel::before {
+        font-size: $px14;
+        font-weight: $_normal;
+        position: absolute;
+        top: -20px;
+        left: 0px;
+      }
+      .startTime::before {
+        content: 'Start Time';
+      }
+      .endTime::before {
+        content: 'End Time';
+      }
+      .duration::before {
+        content: 'Total';
+      }
+      .enteredBy::before {
+        content: 'Entered By';
+      }
+      // .consumer::before {
+      //   content: 'Consumer';
+      // }
+    }
+  }
+
   // INACTIVITY WARNING
   dialog.modal.inactivityWarning {
     padding: 14px 10px;
 
     p {
       margin-bottom: 20px;
+    }
+  }
+
+  // PHRASES POPUPS
+  dialog.modal.insertPhrases[open] {
+    height: 60%;
+    min-height: 300px;
+    max-height: 450px;
+    width: 80%;
+    min-width: 400px;
+    max-width: 600px;
+
+    .phraseWrap {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      padding: 0px 4px 0 12px;
+      flex-grow: 1;
+    }
+    .phraseView {
+      margin: 0 0 10px 0;
+      padding: 20px 10px 15px;
+      flex-grow: 0;
+    }
+    .phrase {
+      //border: 2px solid $black;
+      box-shadow: $shadow-m2;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      flex-flow: column nowrap;
+      margin: 0 8px 10px 0;
+      padding: 4px;
+
+      * {
+        pointer-events: none;
+      }
+
+      .shortcut {
+        font-weight: $_bold;
+      }
+      // .phraseText {
+      // }
+    }
+    button.button {
+      margin: 20px 12px 15px 12px;
+    }
+  }
+  dialog.modal.addPhrases[open] {
+    height: 60%;
+    min-height: 300px;
+    max-height: 400px;
+    width: 80%;
+    min-width: 400px;
+    max-width: 535px;
+
+    padding: 14px 10px;
+
+    form {
+      flex-grow: 1;
+
+      .form_field.checkbox {
+        margin: 0 0 10px;
+      }
+      .form_field.textarea {
+        height: 150px;
+      }
     }
   }
 }

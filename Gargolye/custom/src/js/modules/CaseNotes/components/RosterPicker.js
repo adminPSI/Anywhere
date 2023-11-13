@@ -29,7 +29,7 @@
     this.groupCode = 'ALL';
 
     // DOM Ref
-    this.rosterPickerEle = null;
+    this.rootElement = null;
     this.rosterWrapEle = null;
     this.rosterSearchInput = null;
     this.rosterCaseLoadInput = null;
@@ -44,8 +44,8 @@
    * @function
    */
   RosterPicker.prototype._build = function () {
-    this.rosterPickerEle = _DOM.createElement('div', { class: 'rosterPicker' });
-    this.rosterWrapEle = _DOM.createElement('div', { class: 'rosterCardWrap' });
+    this.rootElement = _DOM.createElement('div', { class: 'rosterPicker' });
+    this.rosterWrapEle = _DOM.createElement('div', { class: 'rosterPicker__cardsWrap' });
 
     this.rosterSearchInput = new Input({
       type: 'search',
@@ -61,9 +61,9 @@
       checked: false,
     });
 
-    this.rosterSearchInput.build().renderTo(this.rosterPickerEle);
-    this.rosterCaseLoadInput.build().renderTo(this.rosterPickerEle);
-    this.rosterPickerEle.appendChild(this.rosterWrapEle);
+    this.rosterSearchInput.build().renderTo(this.rootElement);
+    this.rosterCaseLoadInput.build().renderTo(this.rootElement);
+    this.rootElement.appendChild(this.rosterWrapEle);
 
     this._setupEvents();
   };
@@ -175,7 +175,7 @@
 
     this.consumers.forEach(c => {
       // ROSTER CARD
-      const gridAnimationWrapper = _DOM.createElement('div', { class: 'visibilityAnimationWrapper' });
+      const gridAnimationWrapper = _DOM.createElement('div', { class: 'rosterCardWrap' });
 
       const rosterCard = new RosterCard({
         consumerId: c.id,
@@ -268,7 +268,7 @@
    */
   RosterPicker.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.rosterPickerEle);
+      node.appendChild(this.rootElement);
     }
 
     return this;

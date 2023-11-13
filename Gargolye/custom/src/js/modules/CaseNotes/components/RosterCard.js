@@ -34,12 +34,14 @@
     const portrait = new Portrait(this.consumerId);
 
     // DETAILS
-    const fragment = new DocumentFragment();
     const firstName = _DOM.createElement('p', {
       text: `${this.firstName.trim()} ${this.middleName?.trim() || ''}`.trim(),
     });
     const lastName = _DOM.createElement('p', { text: `${this.lastName.trim()},` });
+
+    const fragment = new DocumentFragment();
     fragment.append(lastName, firstName);
+
     const details = _DOM.createElement('div', { class: 'details', node: fragment });
 
     // BUILD

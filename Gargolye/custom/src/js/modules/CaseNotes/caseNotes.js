@@ -836,7 +836,6 @@ const CaseNotes = (() => {
     cnDateNavWrap = _DOM.createElement('div', { class: 'caseNotesDateNav' });
     cnFormWrap = _DOM.createElement('div', { class: 'caseNotesForm' });
     cnRosterWrap = _DOM.createElement('div', { class: 'caseNotesRosterPicker' });
-    cnOverviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview' });
 
     moduleWrap.appendChild(cnHeader);
     moduleWrap.appendChild(cnDateNavWrap);

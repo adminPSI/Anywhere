@@ -59,7 +59,7 @@
    * @function
    */
   CaseNotesOverview.prototype._build = function () {
-    this.overviewWrap = _DOM.createElement('div');
+    this.overviewWrap = _DOM.createElement('div', { class: 'caseNotesOverview' });
 
     // Header
     //---------------------------------
