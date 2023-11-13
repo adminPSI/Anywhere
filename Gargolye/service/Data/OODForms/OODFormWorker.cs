@@ -16,7 +16,6 @@ using Font = System.Drawing.Font;
 using Field = pdftron.PDF.Field;
 using pdftron.Filters;
 using System.Globalization;
-using DocumentFormat.OpenXml.Drawing;
 
 namespace OODForms
 {
