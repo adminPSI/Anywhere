@@ -165,7 +165,7 @@
 
         const serviceInfoEle = _DOM.createElement('p', {
           class: 'serviceInfo',
-          text: `${mainService} - ${service} | ${location}`,
+          text: `${mainService} - ${service} ${location ? `| ${location}` : ''}`,
         });
         const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
 

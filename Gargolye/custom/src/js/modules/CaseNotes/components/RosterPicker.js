@@ -10,6 +10,7 @@
    */
   const DEFAULT_OPTIONS = {
     allowMultiSelect: false,
+    isConsumerRequired: false,
   };
 
   /**
@@ -85,24 +86,21 @@
         return;
       }
       if (e.target.dataset.target === 'rosterCard') {
-        if (this.options.allowMultiSelect) {
-          if (!e.target.parentNode.classList.contains('selected')) {
-            e.target.parentNode.classList.add('selected');
-            this.selectedConsumers[e.target.dataset.id] = e.target;
-          } else {
-            e.target.parentNode.classList.remove('selected');
-            delete this.selectedConsumers[e.target.dataset.id];
-          }
+        if (e.target.parentNode.classList.contains('selected')) {
+          e.target.parentNode.classList.remove('selected');
+          delete this.selectedConsumers[e.target.dataset.id];
         } else {
-          if (e.target.parentNode.classList.contains('selected')) {
-            e.target.parentNode.classList.remove('selected');
-            delete this.selectedConsumers[e.target.dataset.id];
-          } else {
-            this.clearSelectedConsumers();
+          if (!this.options.allowMultiSelect) this.clearSelectedConsumers();
 
-            e.target.parentNode.classList.add('selected');
-            this.selectedConsumers[e.target.dataset.id] = e.target;
-          }
+          e.target.parentNode.classList.add('selected');
+          this.selectedConsumers[e.target.dataset.id] = e.target;
+        }
+
+        // check if consumer is req
+        if (this.options.isConsumerRequired && Object.keys(this.selectedConsumers).length === 0) {
+          //
+        } else {
+          //
         }
 
         const customEvent = new CustomEvent('onConsumerSelect');

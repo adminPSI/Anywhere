@@ -1,5 +1,5 @@
 (function (global, factory) {
-  global.ToastNotification = factory();
+  global.Toast = factory();
 })(this, function () {
   //=======================================
   // MAIN LIB
@@ -23,9 +23,9 @@
    * @param {Object} options
    * @param {Boolean} [options.autoClose] if true, toast will hide after waitDuration
    * @param {Number} [options.waitDuration] how long to show toast, ms
-   * @returns {ToastNotification}
+   * @returns {Toast}
    */
-  function ToastNotification(options) {
+  function Toast(options) {
     // Data Init
     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
 
@@ -42,7 +42,7 @@
   /**
    * @function
    */
-  ToastNotification.prototype.build = function () {
+  Toast.prototype.build = function () {
     this.dialog = new Dialog({ className: 'toast' });
 
     this.messageEle = _DOM.createElement('p', {
@@ -59,7 +59,7 @@
   /**
    * @function
    */
-  ToastNotification.prototype.show = function (message) {
+  Toast.prototype.show = function (message) {
     if (message) this.messageEle.innerText = message;
     this.dialog.show();
   };
@@ -67,7 +67,7 @@
   /**
    * @function
    */
-  ToastNotification.prototype.close = function () {
+  Toast.prototype.close = function () {
     this.dialog.close();
   };
 
@@ -76,9 +76,9 @@
    *
    * @function
    * @param {Node} node DOM node to render the Toast Notification to
-   * @returns {ToastNotification} Returns the current instances for chaining
+   * @returns {Toast} Returns the current instances for chaining
    */
-  ToastNotification.prototype.renderTo = function (node) {
+  Toast.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.dialog.dialog);
     }
@@ -86,5 +86,5 @@
     return this;
   };
 
-  return ToastNotification;
+  return Toast;
 });

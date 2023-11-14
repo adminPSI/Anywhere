@@ -11,11 +11,6 @@ const CaseNotes = (() => {
   // attachments
   let attachmentsForSave = {};
   let attachmentCountForIDs = 0;
-  // timers
-  let isDocTimeRequired;
-  let isTravelTimeRequired;
-  // other
-  let mileageRequired;
   //--------------------------
   // DOM
   //--------------------------
@@ -32,7 +27,6 @@ const CaseNotes = (() => {
   let cnForm;
   let cnOverview;
   let cnPhrases;
-  let cnNotifications;
   let cnDocTimer;
 
   function resetModule() {
@@ -65,9 +59,11 @@ const CaseNotes = (() => {
           !$.session.CaseNotesUpdateEntered ||
           ($.session.CaseNotesUpdateEntered && caseManagerId === $.session.PeopleId)
         ) {
-          isReadOnly = false; //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
+          //can edit (correct alignment of Update and UpdateEntered Case Notes permissions)
+          isReadOnly = false;
         } else {
-          isReadOnly = true; //can not edit (with UpdateEntered permission, can't edit other people's case notes)
+          //can not edit (with UpdateEntered permission, can't edit other people's case notes)
+          isReadOnly = true;
         }
       } else {
         isReadOnly = true; //can not edit (no overall update permission)
@@ -81,7 +77,9 @@ const CaseNotes = (() => {
     // if funding value is "N" - disable service location dropdown
     // else - enable dropdown, make required
   }
+
   // TIME HELPERS
+  //--------------------------------------------------
   function parseSessionTime(dirtyTime) {
     let time = `${dirtyTime.slice(0, -2)} ${dirtyTime.slice(-2)}`;
     time = UTIL.convertToMilitary(time);
@@ -194,7 +192,7 @@ const CaseNotes = (() => {
     }
   }
 
-  // DATA
+  // CRUD
   //--------------------------------------------------
   async function deleteNote(noteId) {
     await _UTIL.fetchData('deleteExistingCaseNote', {
@@ -328,9 +326,9 @@ const CaseNotes = (() => {
       selectedServiceCode = value;
 
       if ($.session.applicationName === 'Gatekeeper' && selectedServiceCode !== '') {
-        mileageRequired = cnData.isMileageRequired(selectedServiceCode);
-        isTravelTimeRequired = cnData.isTravelTimeRequired(selectedServiceCode);
-        isDocTimeRequired = cnData.isDocTimeRequired(selectedServiceCode);
+        const mileageRequired = cnData.isMileageRequired(selectedServiceCode);
+        const isTravelTimeRequired = cnData.isTravelTimeRequired(selectedServiceCode);
+        const isDocTimeRequired = cnData.isDocTimeRequired(selectedServiceCode);
 
         if (isDocTimeRequired) {
           cnDocTimer.showAutoStartPopup();
@@ -550,7 +548,6 @@ const CaseNotes = (() => {
       }
     },
   };
-
   function onFormChange(event) {
     const value = event.target.value;
     let name = event.target.name;
@@ -649,34 +646,65 @@ const CaseNotes = (() => {
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
   }
+  function attachEvents() {
+    dateNavigation.onDateChange(onDateChange);
+    rosterPicker.onConsumerSelect(onConsumerSelect);
+    cnForm.onChange(onFormChange);
+    cnForm.onKeyup(onFormKeyup);
+    cnForm.onSubmit(onFormSubmit);
+  }
 
   // MAIN
   //--------------------------------------------------
+  async function populatePage() {
+    await cnPhrases.InsertPhrases.fetchData();
+    cnPhrases.InsertPhrases.populate();
+    await rosterPicker.fetchConsumers();
+    rosterPicker.populate();
+    await cnOverview.fetchData(selectedDate);
+    cnOverview.populate();
+  }
   async function loadPage() {
-    // LOAD INSTANCES / BUILD & RENDER
-    //-----------------------------------------
-    // Notifications (error/warning messages)
-    cnNotifications = new Notifications();
+    dateNavigation.renderTo(cnDateNavWrap);
+    rosterPicker.renderTo(cnRosterWrap);
+    cnForm.renderTo(cnFormWrap);
+    cnOverview.renderTo(moduleWrap);
+    cnPhrases.renderTo(_DOM.ACTIONCENTER);
 
+    attachEvents();
+  }
+  function loadPageSkeleton() {
+    // prep actioncenter
+    _DOM.ACTIONCENTER.innerHTML = '';
+    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
+    _DOM.setActiveModuleAttribute('casenotes2.0');
+
+    // build DOM skeleton
+    moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
+    cnHeader = _DOM.createElement('div', { class: 'caseNotesHeader', html: `<h1>Case Notes</h1>` });
+    cnDateNavWrap = _DOM.createElement('div', { class: 'caseNotesDateNav' });
+    cnFormWrap = _DOM.createElement('div', { class: 'caseNotesForm' });
+    cnRosterWrap = _DOM.createElement('div', { class: 'caseNotesRosterPicker' });
+
+    moduleWrap.appendChild(cnHeader);
+    moduleWrap.appendChild(cnDateNavWrap);
+    moduleWrap.appendChild(cnRosterWrap);
+    moduleWrap.appendChild(cnFormWrap);
+    _DOM.ACTIONCENTER.appendChild(moduleWrap);
+  }
+
+  // INIT/LOAD? (data & defaults)
+  //--------------------------------------------------
+  function initComponents() {
     // Date Navigation
     dateNavigation = new DateNavigation({
       selectedDate: selectedDate,
       allowFutureDate: false,
     });
-    dateNavigation.renderTo(cnDateNavWrap);
-
     // Roster Picker
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
     });
-    rosterPicker.renderTo(cnRosterWrap);
-
-    // Documentation Timer
-    if ($.session.applicationName === 'Gatekeeper') {
-      cnDocTimer = new CaseNotesTimer();
-      cnDocTimer.renderTo(cnFormWrap);
-    }
-
     // Form
     cnForm = new Form({
       elements: [
@@ -768,7 +796,7 @@ const CaseNotes = (() => {
           type: 'number',
           label: 'Mileage',
           id: 'mileage',
-          disabled: $.session.applicationName === 'Gatekeeper' ? false : true,
+          disabled: $.session.applicationName === 'Gatekeeper' ? true : false,
         },
         //travelTime
         {
@@ -797,73 +825,35 @@ const CaseNotes = (() => {
         },
       ],
     });
-    cnForm.renderTo(cnFormWrap);
-
     // Overview Cards
     cnOverview = new CaseNotesOverview(cnData);
-    cnOverview.renderTo(moduleWrap);
-
     // Phrases
     cnPhrases = new CaseNotesPhrases();
-    cnPhrases.renderTo(_DOM.ACTIONCENTER);
-
-    // EVENTS / CALLBACKS
-    //-----------------------------------------
-    dateNavigation.onDateChange(onDateChange);
-    rosterPicker.onConsumerSelect(onConsumerSelect);
-    cnForm.onChange(onFormChange);
-    cnForm.onKeyup(onFormKeyup);
-    cnForm.onSubmit(onFormSubmit);
-
-    // FETCH DATA / POPULATE
-    //-----------------------------------------
-    await cnPhrases.InsertPhrases.fetchData();
-    cnPhrases.InsertPhrases.populate();
-    await rosterPicker.fetchConsumers();
-    rosterPicker.populate();
-    await cnOverview.fetchData(selectedDate);
-    cnOverview.populate();
+    // Documentation Timer
+    if ($.session.applicationName === 'Gatekeeper') {
+      cnDocTimer = new CaseNotesTimer();
+      cnDocTimer.renderTo(cnFormWrap);
+    }
   }
-  function loadPageSkeleton() {
-    // prep actioncenter
-    _DOM.ACTIONCENTER.innerHTML = '';
-    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
-    _DOM.setActiveModuleAttribute('casenotes2.0');
-
-    // build DOM skeleton
-    moduleWrap = _DOM.createElement('div', { class: 'caseNotesModule' });
-    cnHeader = _DOM.createElement('div', { class: 'caseNotesHeader', html: `<h1>Case Notes</h1>` });
-    cnDateNavWrap = _DOM.createElement('div', { class: 'caseNotesDateNav' });
-    cnFormWrap = _DOM.createElement('div', { class: 'caseNotesForm' });
-    cnRosterWrap = _DOM.createElement('div', { class: 'caseNotesRosterPicker' });
-
-    moduleWrap.appendChild(cnHeader);
-    moduleWrap.appendChild(cnDateNavWrap);
-    moduleWrap.appendChild(cnRosterWrap);
-    moduleWrap.appendChild(cnFormWrap);
-    _DOM.ACTIONCENTER.appendChild(moduleWrap);
-  }
-
-  // INIT/LOAD? (data & defaults)
-  //--------------------------------------------------
   async function init() {
-    loadPageSkeleton();
-
-    // 1) init module data
     selectedDate = dates.getTodaysDateObj();
     caseManagerId = $.session.PeopleId;
 
-    // 2) init case notes data
+    loadPageSkeleton();
+
+    // init case notes data
     cnData = new CaseNotesData();
     await cnData.fetchDropdownData();
     await cnData.fetchCaseManagerReviewData(caseManagerId);
 
-    // 3) Load Case Notes w/Data
+    initComponents();
     await loadPage();
+    await populatePage();
 
     checkRequiredFields();
 
     return;
+
     if ($.session.applicationName === 'Gatekeeper' && isReview) {
       await cnData.fetchAttachmentsGK(caseNoteId);
       attachmentList = cnData.getAttachmentsList();
