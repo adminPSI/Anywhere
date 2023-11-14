@@ -7,10 +7,10 @@
   /**
    * Default configuration
    * @type {Object}
-   * @param {Number} [options.duration] - how long to show popup after success/error
-   * @param {String} [options.messagePending] - message while you wait
-   * @param {String} [options.messageSuccess] - message on success
-   * @param {String} [options.messageError] - message on error
+   * @param {Number} [options.duration] how long to show popup after success/error
+   * @param {String} [options.messagePending] message while you wait
+   * @param {String} [options.messageSuccess] message on success
+   * @param {String} [options.messageError] message on error
    */
   const DEFAULT_OPTIONS = {
     messagePending: 'Loading...',

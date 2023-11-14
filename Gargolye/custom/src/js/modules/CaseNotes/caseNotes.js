@@ -2,7 +2,6 @@ const CaseNotes = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
-  let caseNoteId = null;
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
@@ -31,6 +30,7 @@ const CaseNotes = (() => {
 
   function resetModule() {
     //TODO ASH
+    _DOM.ACTIONCENTER.removeAttribute('data-ui');
   }
 
   // UTILS
@@ -187,8 +187,10 @@ const CaseNotes = (() => {
 
     if (isSaveDisabled || !isFormValid) {
       cnForm.buttons['submit'].toggleDisabled(true);
+      cnForm.buttons['saveNew'].toggleDisabled(true);
     } else {
       cnForm.buttons['submit'].toggleDisabled(false);
+      cnForm.buttons['saveNew'].toggleDisabled(false);
     }
   }
 

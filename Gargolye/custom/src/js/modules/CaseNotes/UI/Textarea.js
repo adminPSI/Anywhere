@@ -153,9 +153,6 @@
     // get new Dialog
     this.fullScreenDialog = new Dialog({
       className: 'fullscreenTextarea',
-      clickOutToCloseCallback() {
-        this.textareaClone.toggleDisabled(false);
-      },
     });
     this.fullScreenDialog.renderTo(_DOM.ACTIONCENTER);
 
@@ -207,6 +204,9 @@
         this.textareaInstance.input.dispatchEvent(event);
       }, 100),
     );
+    this.fullScreenDialog.onClose(() => {
+      this.textareaClone.toggleDisabled(false);
+    });
   };
 
   /**

@@ -1,5 +1,5 @@
 (function (global, factory) {
-  global.ValidationCenter = factory();
+  global.VallidationController = factory();
 })(this, function () {
   //=======================================
   // MAIN LIB
@@ -10,7 +10,7 @@
    *
    * @constructor
    */
-  function ValidationCenter(options) {
+  function VallidationController(options) {
     // Data Init
     this.options = { ...options };
     this.items = {};
@@ -18,13 +18,14 @@
     this.validationWrap = null;
     this.errorsWrap = null;
     this.warningsWrap = null;
+
+    this._build();
   }
 
   /**
    * @function
-   * @returns {ValidationCenter} - Returns the current instances for chaining
    */
-  ValidationCenter.prototype.build = function () {
+  VallidationController.prototype._build = function () {
     this.validationWrap = _DOM.createElement('div', { class: 'validations' });
 
     this.errorsWrap = _DOM.createElement('div', { class: 'validationErros' });
@@ -33,15 +34,13 @@
 
     this.validationWrap.appendChild(this.errorsWrap);
     this.validationWrap.appendChild(this.warningsWrap);
-
-    return this;
   };
   /**
    * Builds warning message markup, this will auto show
    *
    * @function
    */
-  ValidationCenter.prototype.addWarning = function ({ name, message }) {
+  VallidationController.prototype.addWarning = function ({ name, message }) {
     if (this.items[name]) {
       console.error(`name: ${name}, is already being used by another error/warning message`);
     }
@@ -61,7 +60,7 @@
    *
    * @function
    */
-  ValidationCenter.prototype.showWarning = function ({ name, ...rest }) {
+  VallidationController.prototype.showWarning = function ({ name, ...rest }) {
     if (!this.items[name]) {
       this.addWarning({ name, ...rest });
     }
@@ -73,7 +72,7 @@
    *
    * @function
    */
-  ValidationCenter.prototype.addError = function ({ name, message }) {
+  VallidationController.prototype.addError = function ({ name, message }) {
     if (this.items[name]) {
       console.error(`name: ${name}, is already being used by another error/warning message`);
     }
@@ -93,7 +92,7 @@
    *
    * @function
    */
-  ValidationCenter.prototype.showError = function ({ name, ...rest }) {
+  VallidationController.prototype.showError = function ({ name, ...rest }) {
     if (!this.items[name]) {
       this.addError({ name, ...rest });
     }
@@ -105,7 +104,7 @@
    *
    * @function
    */
-  ValidationCenter.prototype.hide = function (name) {
+  VallidationController.prototype.hide = function (name) {
     if (!this.items[name]) return;
     this.items[name].itemEle.classList.add('hidden');
   };
@@ -114,7 +113,7 @@
    *
    * @function
    */
-  ValidationCenter.prototype.toggleErrorStatus = function (name, isError) {
+  VallidationController.prototype.toggleErrorStatus = function (name, isError) {
     if (isError) {
       this.items[name].itemEle.classList.remove('valid');
     } else {
@@ -123,13 +122,13 @@
   };
 
   /**
-   * Renders ValidationCenter markup to the specified DOM node.
+   * Renders VallidationController markup to the specified DOM node.
    *
    * @function
    * @param {Node} node - DOM node to render case notes feedback to
-   * @returns {ValidationCenter} - Returns the current instances for chaining
+   * @returns {VallidationController} - Returns the current instances for chaining
    */
-  ValidationCenter.prototype.renderTo = function (node) {
+  VallidationController.prototype.renderTo = function (node) {
     if (node instanceof Node) {
       node.appendChild(this.validationWrap);
     }
@@ -137,5 +136,5 @@
     return this;
   };
 
-  return ValidationCenter;
+  return VallidationController;
 });

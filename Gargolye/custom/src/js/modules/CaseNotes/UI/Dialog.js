@@ -1,6 +1,10 @@
 (function (global, factory) {
   global.Dialog = factory();
 })(this, function () {
+  function Confirmation() {}
+
+  function Alert() {}
+
   //=========================
   // MAIN LIB
   //-------------------------
@@ -12,8 +16,6 @@
     clickOutToClose: true,
     className: null,
     isModal: true,
-    isConfirmation: false,
-    confirmationMessage: null,
   };
 
   /**
@@ -22,11 +24,8 @@
    * @constructor
    * @param {Object} options
    * @param {Boolean} [options.isModal] Whether to display as basic dialog or modal dialog
-   * @param {String} [options.isConfirmation]
-   * @param {String} [options.confirmationMessage]
    * @param {String} [options.className] Class name for <dialog> Element
    * @param {Boolean} [options.clickOutToClose] Whether modal closes with backdrop click
-   * @param {Function} [options.clickOutToCloseCallback] Function to call when modal closes on backdrop click
    * @returns {Dialog}
    *
    * @example
@@ -37,9 +36,6 @@
 
     // Instance Ref
     this.dialog = null;
-
-    // DOM Ref
-    this.confirmationButtons = null;
 
     this._build();
   }
@@ -58,20 +54,6 @@
     this.dialog = _DOM.createElement('dialog', {
       class: classArray,
     });
-
-    if (this.options.isConfirmation) {
-      const messageEle = _DOM.createElement('p', {
-        text: this.options.message,
-      });
-
-      this.confirmationButtons = _DOM.createElement('div', { class: 'button-wrap' });
-      const yesButton = new Button({ text: 'yes', 'data-target': 'yes' });
-      const noButton = new Button({ text: 'no', styleType: 'outlined', 'data-target': 'no' });
-      yesButton.renderTo(this.confirmationButtons);
-      noButton.renderTo(this.confirmationButtons);
-
-      this.dialog.dialog.append(messageEle, this.confirmationButtons);
-    }
 
     this._setupEvents();
   };
@@ -93,23 +75,22 @@
           e.clientY > dialogDimensions.bottom
         ) {
           this.close();
-          this.options.clickOutToCloseCallback();
+
+          const customEvent = new CustomEvent('onClose');
+          this.dialog.dispatchEvent(customEvent);
         }
       });
     }
+  };
 
-    if (this.options.isConfirmation) {
-      this.confirmationButtons.addEventListener('click', e => {
-        this.dialog.close();
-
-        const customEvent = new CustomEvent('onConfirmationClick', {
-          bubbles: true,
-          cancelable: true,
-          detail: e.target.dataset.target === 'yes' ? true : false,
-        });
-        this.confirmationButtons.dispatchEvent(customEvent);
-      });
-    }
+  /**
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Dialog.prototype.onClose = function (cbFunc) {
+    this.dialog.addEventListener('onClose', e => {
+      cbFunc();
+    });
   };
 
   /**
@@ -132,16 +113,6 @@
    */
   Dialog.prototype.close = function () {
     this.dialog.close();
-  };
-
-  /**
-   * @function
-   * @param {Function} cbFunc Callback function to call
-   */
-  Dialog.prototype.onConfirmationClick = function (cbFunc) {
-    this.confirmationButtons.addEventListener('onConfirmationClick', e => {
-      cbFunc(e.detail);
-    });
   };
 
   /**
