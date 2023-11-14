@@ -1093,8 +1093,11 @@ const roster2 = (function () {
       selectedGroupId,
       selectedLocationId,
       selectedDate,
-    };
-    rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
+      };
+    if (!rosterConsumers || rosterConsumers.length === 0) {
+          rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
+     }
+    
     // I am not sure why consumer location was being set to the selected location ID?
     const seenIds = {};
 

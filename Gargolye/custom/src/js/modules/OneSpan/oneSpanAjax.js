@@ -5,7 +5,7 @@
     //token, assessmentID, userID, versionID, extraSpace, isp, oneSpan
     try {
       const data = await $.ajax({
-        type: 'POST',
+        type: 'POST',//
         url:
           $.webServer.protocol +
           '://' +
