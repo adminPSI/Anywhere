@@ -86,3 +86,90 @@
 //     this.selectedConsumers[e.target.dataset.id] = e.target;
 //   }
 // }
+
+(function (global, factory) {
+  global.ConfirmationPopup = factory();
+})(this, function () {
+  //=========================
+  // MAIN LIB
+  //-------------------------
+  /**
+   * Default configuration
+   * @type {Object}
+   */
+  const DEFAULT_OPTIONS = {
+    style: 'default', // warning, error
+  };
+
+  /**
+   * @constructor
+   */
+  function ConfirmationPopup(options) {
+    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
+    // Instance Ref
+    this.dialog = null;
+
+    // DOM Ref
+    this.confirmationButtons = null;
+    this.yesButton = null;
+    this.noButton = null;
+
+    this._build();
+  }
+
+  ConfirmationPopup.prototype._build = function () {
+    this.dialog = new Dialog({ className: 'inactivityWarning' });
+
+    const messageEle = _DOM.createElement('p', {
+      text: this.options.message,
+    });
+
+    this.confirmationButtons = _DOM.createElement('div', { class: 'button-wrap' });
+    this.yesButton = new Button({ text: 'yes' });
+    this.noButton = new Button({ text: 'no', styleType: 'outlined' });
+    this.yesButton.renderTo(this.confirmationButtons);
+    this.noButton.renderTo(this.confirmationButtons);
+
+    this.dialog.dialog.appendChild(messageEle);
+    this.dialog.dialog.appendChild(this.confirmationButtons);
+  };
+
+  /**
+   * Sets up events for Dialog Box
+   *
+   * @function
+   */
+  ConfirmationPopup.prototype._setupEvents = function () {
+    this.confirmationButtons.addEventListener('click', e => {
+      this.dialog.close();
+
+      const customEvent = new CustomEvent('onConfirmationClick', {
+        bubbles: true,
+        cancelable: true,
+        detail: e.target.dataset.target === 'yes' ? true : false,
+      });
+      this.confirmationButtons.dispatchEvent(customEvent);
+    });
+  };
+
+  /**
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  ConfirmationPopup.prototype.onClick = function (cbFunc) {
+    this.confirmationButtons.addEventListener('onConfirmationClick', e => {
+      cbFunc(e.detail);
+    });
+  };
+
+  /**
+   * Shows the confirmation popup/dialog
+   *
+   * @function
+   */
+  ConfirmationPopup.prototype.show = function () {
+    this.dialog.show();
+  };
+
+  return ConfirmationPopup;
+});
