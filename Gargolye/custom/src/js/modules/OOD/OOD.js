@@ -758,21 +758,21 @@ const OOD = (() => {
     pendingSavePopup.style.display = 'none';
   
     // Handle popup actions based on success
-    if (success) {
-      pendingSave.fulfill('All Done!');
-      setTimeout(() => {
-        const savePopup = document.querySelector('.successfulSavePopup');
-        DOM.ACTIONCENTER.removeChild(savePopup);
-        //POPUP.hide(createOODFormPopup);
-      }, 700);
-    } else {
-      pendingSave.reject('Failed to Generate, please try again.');
-      setTimeout(() => {
-        const failPopup = document.querySelector('.failSavePopup');
-        DOM.ACTIONCENTER.removeChild(failPopup);
-        //createOODFormPopup.style.removeProperty('display');
-      }, 2000);
-    }
+    // if (success) {
+    //   pendingSave.fulfill('All Done!');
+    //   setTimeout(() => {
+    //     const savePopup = document.querySelector('.successfulSavePopup');
+    //     DOM.ACTIONCENTER.removeChild(savePopup);
+    //     //POPUP.hide(createOODFormPopup);
+    //   }, 700);
+    // } else {
+    //   pendingSave.reject('Failed to Generate, please try again.');
+    //   setTimeout(() => {
+    //     const failPopup = document.querySelector('.failSavePopup');
+    //     DOM.ACTIONCENTER.removeChild(failPopup);
+    //     //createOODFormPopup.style.removeProperty('display');
+    //   }, 2000);
+    // }
   }
 
   // build Filter button, which filters the data displayed on the OOD Entries Table

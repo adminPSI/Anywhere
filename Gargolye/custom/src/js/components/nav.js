@@ -78,6 +78,13 @@ const MODULE_MENU = (function () {
             bodyScrollLock.enableBodyScroll(moduleMenu);
             loadApp(target.dataset.loadModule);
 
+            // Get a reference to the overlay element
+            const overlay = document.querySelector('.overlay');
+
+            if (overlay.classList.contains('visible')) {
+                overlay.classList.remove('visible');
+            }
+
             return;
         }
 

@@ -719,9 +719,19 @@ namespace OODForms
                 // Format the DateTime as "hh:mm tt" (AM/PM format)
                 string formattedEndTime = parsedEndTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
 
-                    string formattedUnits = ExtractWholeNumber(form10DataList[i - 1].units);
+                // Get the correct units for each row
+                TimeSpan timeDifference = parsedEndTime - parsedStartTime;
+                double hoursDifference = timeDifference.TotalHours;
+                double result = hoursDifference * 10;
+                // Check if the end time is before the start time and adjust the result to be negative
+                if (parsedEndTime < parsedStartTime)
+                {
+                    result = -result;
+                }
 
-                var tableData = new List<(string fieldName, string value)>
+                    string formattedUnits = result.ToString();
+
+                    var tableData = new List<(string fieldName, string value)>
                     {
                         ("Date3_af_date.0." + (i -1), datePart),
                         ("START_TIMERow" + i, formattedStartTime),
@@ -817,20 +827,6 @@ namespace OODForms
 
             // Format the minDate as "m/d/yy" and return it as a string
             return maxDate.ToString("M/d/yy");
-        }
-
-        public string ExtractWholeNumber(string numberString)
-        {
-            if (decimal.TryParse(numberString, out decimal decimalValue))
-            {
-                int wholeNumber = (int)decimalValue;
-                return wholeNumber.ToString();
-            }
-            else
-            {
-                // Handle the case where the input is not a valid decimal
-                throw new ArgumentException("Invalid number format.");
-            }
         }
 
         public void DisplayAttachment(Attachment attachment, string fileExtension, string contentType)
