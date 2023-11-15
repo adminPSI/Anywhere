@@ -131,22 +131,22 @@ namespace OODForms
             }
 
 
-            DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, ServiceCodeID, Convert.ToInt64(row["Consumer_ID"]));
-            if (dsOODStaff.Tables.Count > 0)
-            {
-                DataTable dtOODStaff = dsOODStaff.Tables[0];
-                foreach (DataRow rowOODStaff in dtOODStaff.Rows)
-                {
-                    if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
-                    {
-                        OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
-                    }
-                }
+            //DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, ServiceCodeID, Convert.ToInt64(row["Consumer_ID"]));
+            //if (dsOODStaff.Tables.Count > 0)
+            //{
+            //    DataTable dtOODStaff = dsOODStaff.Tables[0];
+            //    foreach (DataRow rowOODStaff in dtOODStaff.Rows)
+            //    {
+            //        if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
+            //        {
+            //            OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
+            //        }
+            //    }
 
-            }
+            //}
 
-            //OODStaff = OODStaff.Remove(OODStaff.LastIndexOf(","), 1);
-            WS.Cell("m7").Value = OODStaff;
+            ////OODStaff = OODStaff.Remove(OODStaff.LastIndexOf(","), 1);
+            //WS.Cell("m7").Value = OODStaff;
 
             WS.Cell("m8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
 
@@ -299,71 +299,61 @@ namespace OODForms
             string ConsumerName = String.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
             WS.Cell("k4").Value = ConsumerName;
 
+            string ServiceName = String.Format("{0}", row["ServiceName"].ToString().Trim());
+            WS.Cell("A12").Value = "Site Coordination";
+
+            string EmploymentGoal = String.Format("{0}", row["ReviewGoal"].ToString().Trim());
+            WS.Cell("k19").Value = EmploymentGoal;
+
             string Staff = string.Empty;
             string StaffWithInitals = string.Empty;
             string OODStaff = string.Empty;
             string MiddleName = string.Empty;
-            DataSet ds = obj.OODStaff(AuthorizationNumber, ServiceCodeID);
+            DataSet ds = obj.OODStaff(AuthorizationNumber, ServiceCodeID, StartDate, EndDate);
+            List<string> personInitialsList = new List<string>();
             if (ds.Tables.Count > 0)
             {
+                HashSet<string> uniqueInitials = new HashSet<string>();
                 DataTable dt2 = ds.Tables[0];
                 foreach (DataRow row2 in dt2.Rows)
-                {
-                    if (row2["StaffFirstName"].ToString().Trim().Length > 0 && row["StaffLastName"].ToString().Trim().Length > 0)
-                    {
-                        Staff = String.Format("{0} {1} ", row2["StaffFirstName"], row2["StaffLastName"]); //This needs middle name and initials
-                        MiddleName = row2["StaffMiddleName"].ToString();
-                        OODStaff += String.Format("{0}, ", Staff.Trim());
-                    }
+                {                    
+                    string lastName = row2["Last_Name"] as string;
+                    string middleName = row2["Middle_Name"] as string;
+                    string firstName = row2["First_Name"] as string;
 
-                    string Initials = string.Empty;
+                    char? lastInitial = null;
+                    char? middleInitial = null;
+                    char? firstInitial = null;
 
-                    switch (MiddleName.ToString().Length)
-                    {
-                        case 0:
-                            if (row2["StaffFirstName"].ToString().Trim().Length > 0 && row2["StaffLastName"].ToString().Trim().Length > 0)
-                            {
-                                Initials = String.Format("({0}{1}", row2["StaffFirstName"].ToString().Substring(0, 1), row2["StaffLastName"].ToString().Substring(0, 1));
-                            }
-                            break;
+                    // Check if the values are not null and extract the first letter
+                    if (!string.IsNullOrEmpty(lastName)) lastInitial = lastName[0];
+                    if (!string.IsNullOrEmpty(middleName)) middleInitial = middleName[0];
+                    if (!string.IsNullOrEmpty(firstName)) firstInitial = firstName[0];
 
-                        default:
-                            if (row2["StaffFirstName"].ToString().Trim().Length > 0 && row2["StaffLastName"].ToString().Trim().Length > 0)
-                            {
-                                Initials = String.Format("({0}{1}{2}", row2["StaffFirstName"].ToString().Substring(0, 1), row2["StaffMiddleName"].ToString().Substring(0, 1), row2["StaffLastName"].ToString().Substring(0, 1));
-                            }
-                            break;
-                    }
+                    // Concatenate initials for the current person
+                    string personInitials = $"{firstInitial}{middleInitial}{lastInitial}";
 
-                    //if ((WS.Cell("k6").Value == null) && Staff.ToString().Trim().Length > 0)
-                    //{
-                    //    WS.Cell("k6").Value = Staff.ToString().Trim();
-                    //}
-
-                    if (Staff.Trim().Length > 0)
-                    {
-                        StaffWithInitals += String.Format("{0}{1}", Staff, Initials);
-                    }
+                    // Add the person's initials to the list
+                    personInitialsList.Add(personInitials);
                 }
 
-                if (StaffWithInitals.Length > 2)
-                {
-                    WS.Cell("k5").Value = StaffWithInitals.ToString().Trim().Substring(0, StaffWithInitals.Length - 2);
-                }
+                // Combine all the initials into one string separated by commas
+                string uniqueInitialsString = string.Join(", ", personInitialsList);
 
+                WS.Cell("k5").Value = uniqueInitialsString;
             }
 
             WS.Cell("k6").Value = personCompletingReport;
 
-            DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, ServiceCodeID, PeopleID);
+            DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, ServiceCodeID, StartDate, EndDate);
             if (dsOODStaff.Tables.Count > 0)
             {
                 DataTable dtOODStaff = dsOODStaff.Tables[0];
                 foreach (DataRow rowOODStaff in dtOODStaff.Rows)
                 {
-                    if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
+                    if (rowOODStaff["First_Name"].ToString().Trim().Length > 0 && rowOODStaff["Last_Name"].ToString().Trim().Length > 0)
                     {
-                        OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"], rowOODStaff["LastName"]);
+                        OODStaff = String.Format("{0} {1}, ", rowOODStaff["First_Name"], rowOODStaff["Last_Name"]);
                     }
                 }
             }
@@ -518,7 +508,10 @@ namespace OODForms
                             break;
                     }
 
-                    string LOC = String.Format("{0} {1} {2}", row2["Location"].ToString().Trim(), row2["LocationAddress"].ToString().Trim(), row2["LocationCity"].ToString().Trim());
+                    string LOC = String.Format("{0}, {1}, {2}", row2["Location"].ToString().Trim(), row2["LocationAddress"].ToString().Trim(), row2["LocationCity"].ToString().Trim());
+                    WS.Cell(String.Format("k{0}", i)).Value = LOC;
+
+                    WS.Cell(String.Format("l{0}", i)).Value = row2["Narrative"].ToString().Trim();
 
                     WS.Cell(String.Format("a{0}", i)).AlignmentHorizontal = Bytescout.Spreadsheet.Constants.AlignmentHorizontal.Centered;
                     WS.Cell(String.Format("b{0}", i)).AlignmentHorizontal = Bytescout.Spreadsheet.Constants.AlignmentHorizontal.Centered;
@@ -530,6 +523,7 @@ namespace OODForms
                     WS.Cell(String.Format("h{0}", i)).AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
                     WS.Cell(String.Format("i{0}", i)).AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
                     WS.Cell(String.Format("j{0}", i)).AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
+                    WS.Cell(String.Format("k{0}", i)).AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
                 }
 
                 WS.Cell("a19").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
@@ -692,6 +686,8 @@ namespace OODForms
                     ("VR CounselorCoordinator", form10DataList[0].VR_CounselorContractor)
                 };
 
+                double invoiceTotal = 0;
+
             // Iterate through the field data and set values
             foreach (var (fieldName, value) in fieldData)
             {
@@ -729,6 +725,9 @@ namespace OODForms
                     result = -result;
                 }
 
+                    double currentRowTotal = (result / Double.Parse(form10DataList[i - 1].vehiclePerTrip)) * 5.6;
+                    invoiceTotal = Math.Round((invoiceTotal + currentRowTotal), 2); ;
+
                     string formattedUnits = result.ToString();
 
                     var tableData = new List<(string fieldName, string value)>
@@ -741,6 +740,7 @@ namespace OODForms
                         ("START LOCATION STREETCITYRow" + i, form10DataList[i-1].startLocation),
                         ("END LOCATION STREETCITYRow" + i, form10DataList[i-1].endLocation),
                         ("STAFF INITIALSRow" + i, form10DataList[i-1].staffInitials),
+                        ("Text4", invoiceTotal.ToString())
                     };
 
                 // Iterate through the table data and set values for each row
@@ -754,14 +754,17 @@ namespace OODForms
 
 
             List<string> fieldNames = new List<string>();
-            FieldIterator itr;
+                List<string> test = new List<string>();
+                FieldIterator itr;
 
             for (itr = form10Template.GetFieldIterator(); itr.HasNext(); itr.Next())
             {
                 Field field = itr.Current();
                 string fieldName = field.GetName();
                 fieldNames.Add(fieldName);
-                Console.WriteLine("Field name: {0}", fieldName);
+
+                string testing = field.GetType().ToString();
+                test.Add(testing);
             }
 
             MemoryStream pdfStream = new MemoryStream();
