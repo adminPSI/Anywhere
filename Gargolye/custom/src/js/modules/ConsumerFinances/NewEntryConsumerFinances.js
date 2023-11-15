@@ -237,7 +237,13 @@ const NewEntryCF = (() => {
         if (registerId) {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_DELETE_BTN);
-            enableDisabledInputs();
+
+            if (payee == 'Opening Balance') {
+                DisabledAllInputs();
+            }
+            else {
+                enableDisabledInputs(); 
+            }          
         }
         else {
             btnWrap.appendChild(NEW_SAVE_BTN);
@@ -357,7 +363,6 @@ const NewEntryCF = (() => {
         else {
             DisabledAllInputs();
         }
-
     }
 
     function DisabledAllInputs() {
@@ -421,7 +426,7 @@ const NewEntryCF = (() => {
             newAccountDropdown.classList.remove('error');
         }
 
-        if (payee.value === '') {
+        if (payee.value === '' || payee.value === 'Opening Balance') {  
             newPayeeDropdown.classList.add('error');
         } else {
             newPayeeDropdown.classList.remove('error');

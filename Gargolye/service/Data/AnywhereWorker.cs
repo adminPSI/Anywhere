@@ -594,6 +594,7 @@ namespace Anywhere.service.Data
         public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
         {
             string consumersString = dg.getConsumerswithSaleforceIds(token);
+            js.MaxJsonLength = Int32.MaxValue;
             PlanInformedConsentWorker.InformedConsentSSAs[] consumersObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(consumersString);
             return consumersObj;
         }

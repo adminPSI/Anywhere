@@ -73,7 +73,7 @@ const newVendorInfo = (function () {
 
         const newIspMarkup = await getMarkup();
 
-        heading.innerHTML = `<h4>${Name}: ${Phone}</h4>`;
+        heading.innerHTML = `<h4>${Name} ${Phone}</h4>`;
         headingName.innerHTML = `<h4>DD Number: ${DDNumber} </h4>`;
         localNumberheading.innerHTML = `<h4>Local Number: ${LocalNumber}</h4>`;
         ispWrap.appendChild(newIspMarkup);
