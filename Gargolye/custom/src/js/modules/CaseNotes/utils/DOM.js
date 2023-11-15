@@ -156,10 +156,16 @@
     return { ...b, attributes: { ...a } };
   }
 
+  /**
+   * @function
+   */
   function setActiveModuleAttribute(appName) {
     ACTIONCENTER.setAttribute('data-active-module', appName);
   }
 
+  /**
+   * @function
+   */
   function setActiveModuleSectionAttribute(sectionName) {
     ACTIONCENTER.setAttribute('data-active-section', sectionName);
   }
@@ -179,6 +185,17 @@
     return regExp.test(str);
   }
 
+  /**
+   * @function
+   */
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+  }
+
   return {
     // DOM ref
     ACTIONCENTER,
@@ -190,5 +207,6 @@
     isReferenceFree,
     separateHTMLAttribrutes,
     stringContainsHTML,
+    scrollToTop,
   };
 });
