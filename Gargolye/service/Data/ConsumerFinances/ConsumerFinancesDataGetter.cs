@@ -534,5 +534,25 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
+        public string getEditAccountRunningBalance(string openingBalance, string account, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getEditAccountRunningBalance");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@openingBalance", DbType.String, openingBalance);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@account", DbType.Double, account);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getEditAccountRunningBalance(?, ?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getEditAccountRunningBalance(" + openingBalance + "," + account + ")");
+                throw ex;
+            }
+
+        }
+
     }
 }

@@ -543,6 +543,11 @@ namespace Anywhere.service.Data.ConsumerFinances
                     String AccountID;
 
                     AccountID = Odg.insertEditRegisterAccount(token, selectedConsumersId, accountId, name, number, type, status, classofAccount, dateOpened, dateClosed, openingBalance, description, userId, transaction);
+                    if(accountId != "0")
+                    {
+                        ConsumerFinancesEntry[] updateRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getEditAccountRunningBalance(openingBalance, accountId, transaction));
+                        updateAccountBalance(updateRunningBal[0].activityDate, accountId, transaction, updateRunningBal[0].balance);
+                    }
 
                     acountRegister.accountId = AccountID;
                     return acountRegister;

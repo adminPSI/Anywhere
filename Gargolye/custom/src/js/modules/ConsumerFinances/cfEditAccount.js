@@ -445,7 +445,7 @@ const CFEditAccount = (() => {
     function eventListeners() {
         inputName.addEventListener('input', event => {
             nameTemp = 'Changed';
-            name = event.target.value;
+            name = event.target.value.trim();  
             getRequiredFieldsOfAccountInfo();
         });
         inputNumber.addEventListener('input', event => {
@@ -479,7 +479,7 @@ const CFEditAccount = (() => {
                 document.getElementById('inputOpeningBal').value = minAmount.substring(0, minAmount.length - 1);
                 return;
             }
-            openingBalance = minAmount.replace('$', '');
+            openingBalance = minAmount.replace('$', ''); 
             openingBalanceTemp = 'Changed';
             getRequiredFieldsOfAccountInfo();
         });
@@ -511,7 +511,7 @@ const CFEditAccount = (() => {
     }
 
     function checkRequiredFieldsOfAccountInfo(nameVal, typeVal, statusVal, openDateVal, closeDateVal) {
-        if (nameVal === '') {
+        if (nameVal.trim() === '') { 
             inputName.classList.add('error');
         } else {
             inputName.classList.remove('error');
@@ -580,7 +580,7 @@ const CFEditAccount = (() => {
         if (page == 'Add') {
             accountId = '0';
         }
-        debugger;   
+ 
         if (dateClosed == '')
             dateClosed = null;  
         const result = await ConsumerFinancesAjax.insertEditRegisterAccountAsync(selectedConsumersId, accountId, name, number == '' ? null : number, type, status, classofAccount == '' ? null : classofAccount, dateOpened, dateClosed, openingBalance, description == '' ? null : description);
