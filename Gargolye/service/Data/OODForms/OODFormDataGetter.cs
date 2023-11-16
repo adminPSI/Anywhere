@@ -12,6 +12,7 @@ using System.Web.Script.Serialization;
 using Anywhere.Log;
 using System.Configuration;
 using System.Linq;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -285,21 +286,6 @@ namespace OODForms
 
         public DataSet Counslor(string AuthorizationNumber, string ServiceCodeID, string StartDate, string EndDate)
         {
-            //sb.Clear();
-            //sb.Append("SELECT DISTINCT dba.Persons.Last_Name AS LastName, dba.Persons.Middle_Name AS MiddleName, dba.Persons.First_Name AS FirstName ");
-            //sb.Append("FROM dba.Persons ");
-            //sb.Append("RIGHT OUTER JOIN dba.Consumer_Services_Master ON dba.Persons.Person_ID = dba.Consumer_Services_Master.Person_ID ");
-            //sb.Append("LEFT OUTER JOIN dba.Services ON dba.Consumer_Services_Master.Service_ID = dba.Services.Service_ID ");
-
-            //if (ServiceCodeID != "%") {
-            //    sb.AppendFormat("WHERE dba.Services.Service_ID LIKE {0} ", ServiceCodeID);
-            //}
-
-            //sb.AppendFormat("AND dba.Consumer_Services_Master.Consumer_ID = {0} ", ConsumerID);
-            //sb.AppendFormat("AND dba.Consumer_Services_Master.Reference_Number LIKE '{0}' ", AuthorizationNumber);
-            //sb.Append("GROUP BY dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name ");
-            //return di.SelectRowsDS(sb.ToString());
-
             sb.Clear();
             sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name ");
             sb.Append("FROM dba.Consumer_Services_Master ");
@@ -360,7 +346,7 @@ namespace OODForms
             }
         }
 
-        public DataSet OODStaff(string AuthorizationNumber, string ServiceCodeID, string StartDate, string EndDate)
+        public DataSet OODStaff(string AuthorizationNumber, string ServiceCodeID, string StartDate, string EndDate, string userID)
         {
             sb.Clear();
             sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name ");
@@ -372,6 +358,7 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
             sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
             sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
+            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
 
             if (ServiceCodeID != "%")
             {
@@ -411,13 +398,13 @@ namespace OODForms
 
             if (ServiceCodeID != "%")
             {
-                sb.AppendFormat("AND dba.Case_Notes.Service_ID LIKE {0} ", ServiceCodeID);
+                sb.AppendFormat("AND dba.Case_Notes.Service_ID LIKE {0} ", ServiceCodeID); 
             }
 
             return di.SelectRowsDS(sb.ToString());
         }
 
-        public DataSet OODDevelopment2(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID)
+        public DataSet OODDevelopment2(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID, string userID)
         {
             sb.Clear();
             sb.Append("SELECT DISTINCT  DBA.Case_Notes.Case_Note_ID, dba.EM_Contacts.Contact_Date, dba.Case_Notes.Start_Time AS StartTime, ");
@@ -433,6 +420,8 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Contacts.Employer_ID = dba.Employer.Employer_ID ");
             sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
+            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
+
             //'sb.Append("AND (DBA.Code_Table.Field_ID = 'outcome') ") 'Removed per ticket 84964
             sb.AppendFormat("AND  dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
 

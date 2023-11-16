@@ -131,22 +131,22 @@ namespace OODForms
             }
 
 
-            //DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, ServiceCodeID, Convert.ToInt64(row["Consumer_ID"]));
-            //if (dsOODStaff.Tables.Count > 0)
-            //{
-            //    DataTable dtOODStaff = dsOODStaff.Tables[0];
-            //    foreach (DataRow rowOODStaff in dtOODStaff.Rows)
-            //    {
-            //        if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
-            //        {
-            //            OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
-            //        }
-            //    }
+            DataSet dsOODStaff = obj.Counslor(AuthorizationNumber, ServiceCodeID, StartDate, EndDate);
+            if (dsOODStaff.Tables.Count > 0)
+            {
+                DataTable dtOODStaff = dsOODStaff.Tables[0];
+                foreach (DataRow rowOODStaff in dtOODStaff.Rows)
+                {
+                    if (rowOODStaff["FirstName"].ToString().Trim().Length > 0 && rowOODStaff["LastName"].ToString().Trim().Length > 0)
+                    {
+                        OODStaff = String.Format("{0} {1}, ", rowOODStaff["FirstName"].ToString().Trim(), rowOODStaff["LastName"].ToString().Trim());
+                    }
+                }
 
-            //}
+            }
 
-            ////OODStaff = OODStaff.Remove(OODStaff.LastIndexOf(","), 1);
-            //WS.Cell("m7").Value = OODStaff;
+            //OODStaff = OODStaff.Remove(OODStaff.LastIndexOf(","), 1);
+            WS.Cell("m7").Value = OODStaff;
 
             WS.Cell("m8").ValueAsDateTime = DateTime.Parse(DateTime.Now.ToString("MM/dd/yyyy"));
 
@@ -265,7 +265,7 @@ namespace OODForms
             ConvertXLStoPDF(token, attachment);
         }
 
-        public void Form4(string token, string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, string ServiceCodeID, string ReportPath, string registrationName, string registrationKey, string personCompletingReport)
+        public void Form4(string token, string AuthorizationNumber, string invoiceNumber, long PeopleID, string StartDate, string EndDate, string ServiceCodeID, string ReportPath, string registrationName, string registrationKey, string personCompletingReport, string userID)
         {
             Spreadsheet SS = new Spreadsheet();
             SS.RegistrationName = registrationName;
@@ -299,8 +299,8 @@ namespace OODForms
             string ConsumerName = String.Format("{0} {1}", row["ConsumerFirstName"].ToString().Trim(), row["ConsumerLastName"].ToString().Trim());
             WS.Cell("k4").Value = ConsumerName;
 
-            string ServiceName = String.Format("{0}", row["ServiceName"].ToString().Trim());
-            WS.Cell("A12").Value = "Site Coordination";
+            string servicename = string.Format("{0}", row["servicename"].ToString().Trim());
+            WS.Cell("a12").Value = servicename;
 
             string EmploymentGoal = String.Format("{0}", row["ReviewGoal"].ToString().Trim());
             WS.Cell("k19").Value = EmploymentGoal;
@@ -309,14 +309,15 @@ namespace OODForms
             string StaffWithInitals = string.Empty;
             string OODStaff = string.Empty;
             string MiddleName = string.Empty;
-            DataSet ds = obj.OODStaff(AuthorizationNumber, ServiceCodeID, StartDate, EndDate);
+            DataSet ds = obj.OODStaff(AuthorizationNumber, ServiceCodeID, StartDate, EndDate, userID);
             List<string> personInitialsList = new List<string>();
+
             if (ds.Tables.Count > 0)
             {
                 HashSet<string> uniqueInitials = new HashSet<string>();
                 DataTable dt2 = ds.Tables[0];
                 foreach (DataRow row2 in dt2.Rows)
-                {                    
+                {
                     string lastName = row2["Last_Name"] as string;
                     string middleName = row2["Middle_Name"] as string;
                     string firstName = row2["First_Name"] as string;
@@ -325,15 +326,12 @@ namespace OODForms
                     char? middleInitial = null;
                     char? firstInitial = null;
 
-                    // Check if the values are not null and extract the first letter
                     if (!string.IsNullOrEmpty(lastName)) lastInitial = lastName[0];
                     if (!string.IsNullOrEmpty(middleName)) middleInitial = middleName[0];
                     if (!string.IsNullOrEmpty(firstName)) firstInitial = firstName[0];
 
-                    // Concatenate initials for the current person
-                    string personInitials = $"{firstInitial}{middleInitial}{lastInitial}";
+                    string personInitials = $"{firstName}{MiddleName}{lastName} {firstInitial}{middleInitial}{lastInitial}";
 
-                    // Add the person's initials to the list
                     personInitialsList.Add(personInitials);
                 }
 
@@ -375,22 +373,6 @@ namespace OODForms
             int cpt = row["CPT_Code"].ToString().ToUpper().Trim().LastIndexOf(":") + 2;
             string Code = row["ServiceDescription"].ToString().ToUpper().Trim().Substring(0, cpt);
 
-            switch (row["ServiceDescription"].ToString().ToUpper().Trim())
-            {
-                case "OJDUOS":
-                    WS.Cell("a12").Value = "JD_UOS";
-                    break;
-                case "OSCOORD":
-                    WS.Cell("a12").Value = "Site Coordination";
-                    break;
-                case "OSDEVLP":
-                    WS.Cell("a12").Value = "Site Development";
-                    break;
-                default:
-                    WS.Cell("a12").Value = "Service Description 1";
-                    break;
-            }
-
             if ((row["ServiceDescription"].ToString().ToUpper().Trim().Substring(0, 2)) == "OP")
             {
                 if (row["ServiceDescription"].ToString().ToUpper().Trim().Contains("MR"))
@@ -407,7 +389,7 @@ namespace OODForms
 
             WS.Cell("k74").Value = row["PotentialIssues"].ToString().Trim();
 
-            ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, ServiceCodeID);
+            ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, ServiceCodeID, userID);
             if (ds.Tables.Count > 0)
             {
                 dt = ds.Tables[0];
@@ -544,7 +526,7 @@ namespace OODForms
             ConvertXLStoPDF(token, attachment);
         }
 
-        public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode)
+        public string generateForm4(string token, string AuthorizationNumber, string peopleIDString, string StartDate, string EndDate, string serviceCode, string userID)
         {
             try
             {
@@ -573,7 +555,7 @@ namespace OODForms
                 personCompletingReport[] personCompletingReportObj = JsonConvert.DeserializeObject<personCompletingReport[]>(personCompletingReportData);
                 string personCompletingReport = personCompletingReportObj[0].First_Name + " " + personCompletingReportObj[0].Last_Name;
 
-                obj.Form4(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey, personCompletingReport);
+                obj.Form4(token, AuthorizationNumber, invoiceNumber, PeopleID, StartDate, EndDate, serviceCode, reportPath, registrationName, registrationKey, personCompletingReport, userID);
 
                 return "Success";
             }
