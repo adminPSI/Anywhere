@@ -33,7 +33,7 @@
     // DOM Ref
     this.form = null;
 
-    this.build();
+    this._build();
   }
 
   /**
@@ -41,7 +41,7 @@
    *
    * @function
    */
-  Form.prototype.build = function () {
+  Form.prototype._build = function () {
     this.form = _DOM.createElement('form');
 
     // Build form input elements
@@ -159,6 +159,18 @@
     // clear all values from form inputs
     for (input in this.inputs) {
       this.inputs[input].clear();
+    }
+  };
+
+  /**
+   * Populates form fields with given data
+   *
+   * @function
+   * @param {Object} data
+   */
+  Form.prototype.populate = function (data) {
+    for (inputName in data) {
+      this.inputs[inputName].setValue(data[inputName]);
     }
   };
 

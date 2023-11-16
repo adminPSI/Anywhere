@@ -1,7 +1,7 @@
 (function (global, factory) {
   global.CaseNotesOverview = factory();
 })(this, function () {
-  function formatMostRecentUpdateDate(dateObj) {
+  function buildMostRecentUpdateElement(dateObj) {
     let mostRecentUpdate = new Intl.DateTimeFormat('en-US', {
       day: 'numeric',
       month: 'numeric',
@@ -12,6 +12,66 @@
     }).format(new Date(dateObj));
     mostRecentUpdate = mostRecentUpdate.split(', ');
     mostRecentUpdate = `${mostRecentUpdate[0].substring(0, 3)}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
+    return mostRecentUpdate;
+  }
+  function buildStartTimeElement(dirtyStart) {
+    const time = UTIL.convertFromMilitary(dirtyStart);
+    return _DOM.createElement('div', {
+      class: 'withLabelWrap',
+      html: `
+        <p class="startTime withLabel">
+          <span>${time.split(' ')[0]}</span>
+          <span>${time.split(' ')[1]}</span>
+        </p>
+      `,
+    });
+  }
+  function buildEndTimeElement(dirtyEnd) {
+    const time = UTIL.convertFromMilitary(dirtyEnd);
+    return _DOM.createElement('div', {
+      class: 'withLabelWrap',
+      html: `
+        <p class="endTime withLabel">
+          <span>${time.split(' ')[0]}</span>
+          <span>${time.split(' ')[1]}</span>
+        </p>
+      `,
+    });
+  }
+  function buildTimeDiffElement(dirtyStart, dirtyEnd) {
+    const timDiff = dates.getMilitaryTimeDifference(dirtyStart, dirtyEnd, true);
+    return _DOM.createElement('div', {
+      class: 'withLabelWrap',
+      html: `<p class="duration withLabel">${timDiff}</p>`,
+    });
+  }
+  function buildConsumerElement(id, firstname, lastname) {
+    const consumerFullName = `${lastname}, ${firstname}`;
+
+    const consumerNameEle = _DOM.createElement('div', {
+      class: 'consumer',
+      html: `<p class="name">${consumerFullName}</p>`,
+    });
+    const portrait = new Portrait(id);
+    portrait.renderTo(consumerNameEle);
+
+    return consumerNameEle;
+  }
+  function buildServiceInfoElement(mainService, service, location) {
+    return _DOM.createElement('p', {
+      class: 'serviceInfo',
+      text: `${mainService} - ${service} ${location ? `| ${location}` : ''}`,
+    });
+  }
+  function buildNoteElement(noteText) {
+    const note = noteText.length > 100 ? `${noteText.replace(/(\r\n|\n|\r)/gm, '').slice(0, 100)}...` : noteText;
+    return _DOM.createElement('p', { class: 'noteText', text: note });
+  }
+  function buildEnteredByElement(enteredBy, originalUserFullName) {
+    return _DOM.createElement('div', {
+      class: 'withLabelWrap',
+      html: `<p class="enteredBy withLabel">${enteredBy} (${originalUserFullName})</p>`,
+    });
   }
 
   //=======================================
@@ -40,6 +100,7 @@
     this.overviewSearch = null;
     this.showAllNotesToggle = null;
     this.overviewCardsWrap = null;
+    this.overviewCards = {};
 
     this._init();
     this._build();
@@ -87,7 +148,7 @@
 
     // Cards
     //---------------------------------
-    this.overviewCardsWrap = _DOM.createElement('div', { class: 'caseNotesOverview__overview' });
+    this.overviewCardsWrap = _DOM.createElement('div', { class: 'caseNotesOverview__cardsWrap' });
     this.overviewWrap.appendChild(this.overviewCardsWrap);
 
     this._setupEvents();
@@ -124,56 +185,44 @@
         return 0;
       })
       .forEach(rd => {
+        console.table(rd);
         // Review Data
         //---------------------------------
-        const consumerFullName = `${rd.lastname}, ${rd.firstname}`;
-        const mainService = cnData.getMainServiceCodeNameById(rd.mainbillingorservicecodeid.split('.')[0]);
-        const location = rd.locationName;
-        const service = rd.serviceName;
-        const note = `${rd.caseNote.replace(/(\r\n|\n|\r)/gm, '').slice(0, 100)}...`;
-        const starttime = UTIL.convertFromMilitary(rd.starttime);
-        const endtime = UTIL.convertFromMilitary(rd.endtime);
-        const timeDifference = dates.getMilitaryTimeDifference(rd.starttime, rd.endtime);
-        const mostRecentUpdate = formatMostRecentUpdateDate(rd.mostrecentupdate);
-        const enteredBy = `${rd.enteredby} (${rd.originalUserFullName})`;
+        const caseNoteId = rd.casenoteid.split('.')[0];
+        const consumerId = rd.consumerid.split('.')[0];
+        const mainService = this.cnData.getMainServiceCodeNameById(rd.mainbillingorservicecodeid.split('.')[0]);
         const isConfidential = rd.confidential === 'Y' ? true : false;
         const attachmentCountGK = rd.attachcount;
 
         // Overview Card
         //---------------------------------
         const overviewCard = _DOM.createElement('div', { class: 'caseNotesOverview__overviewCard' });
+        const overviewCardTop = _DOM.createElement('div', { class: 'caseNotesOverview__overviewCardTop' });
+        const overviewCardMain = _DOM.createElement('div', { class: 'caseNotesOverview__overviewCardMain' });
+        // overviewCard.appendChild(overviewCardTop);
+        // overviewCard.appendChild(overviewCardMain);
 
-        const startTimeEle = _DOM.createElement('div', {
-          class: 'withLabelWrap',
-          html: `<p class="startTime withLabel">${starttime}</p>`,
-        });
-        const endTimeEle = _DOM.createElement('div', {
-          class: 'withLabelWrap',
-          html: `<p class="endTime withLabel">${endtime}</p>`,
-        });
-        const timeDurationEle = _DOM.createElement('div', {
-          class: 'withLabelWrap',
-          html: `<p class="duration withLabel">${timeDifference}</p>`,
-        });
+        // IDK YET??
+        const mostRecentUpdateEle = buildMostRecentUpdateElement(rd.mostrecentupdate);
+        const enteredByEle = buildEnteredByElement(rd.enteredby, rd.originalUserFullName);
 
-        const consumerNameEle = _DOM.createElement('div', {
-          class: 'consumer',
-          html: `<p class="name">${consumerFullName}</p>`,
-        });
-        const portrait = new Portrait(rd.consumerid.split('.')[0]);
-        portrait.renderTo(consumerNameEle);
+        // TOP
+        const startTimeEle = buildStartTimeElement(rd.starttime);
+        const endTimeEle = buildEndTimeElement(rd.endtime);
+        const timeDurationEle = buildTimeDiffElement(rd.starttime, rd.endtime);
+        overviewCard.appendChild(startTimeEle);
+        overviewCard.appendChild(endTimeEle);
+        overviewCard.appendChild(timeDurationEle);
 
-        const serviceInfoEle = _DOM.createElement('p', {
-          class: 'serviceInfo',
-          text: `${mainService} - ${service} ${location ? `| ${location}` : ''}`,
-        });
-        const noteTextEle = _DOM.createElement('p', { class: 'noteText', text: note });
+        // MAIN
+        const consumerNameEle = buildConsumerElement(consumerId, rd.firstname, rd.lastname);
+        const serviceInfoEle = buildServiceInfoElement(mainService, rd.serviceName, rd.locationName);
+        const noteTextEle = buildNoteElement(rd.caseNote);
+        // overviewCardMain.appendChild(consumerNameEle);
+        // overviewCardMain.appendChild(serviceInfoEle);
+        // overviewCardMain.appendChild(noteTextEle);
 
-        const enteredByEle = _DOM.createElement('div', {
-          class: 'withLabelWrap',
-          html: `<p class="enteredBy withLabel">${enteredBy}</p>`,
-        });
-
+        // BUTTONS
         const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
         const editButton = new Button({
           text: 'edit',
@@ -190,16 +239,26 @@
         editButton.renderTo(btnWrap);
         deleteButton.renderTo(btnWrap);
 
-        overviewCard.appendChild(startTimeEle);
-        overviewCard.appendChild(endTimeEle);
-        overviewCard.appendChild(timeDurationEle);
-        overviewCard.appendChild(consumerNameEle);
-        overviewCard.appendChild(serviceInfoEle);
-        overviewCard.appendChild(noteTextEle);
-        overviewCard.appendChild(btnWrap);
+        editButton.onClick(e => {
+          const customEvent = new CustomEvent('onCardEdit', {
+            bubbles: true,
+            cancelable: true,
+            detail: { caseNoteId },
+          });
+          this.overviewCardsWrap.dispatchEvent(customEvent);
+        });
+        deleteButton.onClick(e => {
+          const customEvent = new CustomEvent('onCardDelete', {
+            bubbles: true,
+            cancelable: true,
+            detail: { caseNoteId },
+          });
+          this.overviewCardsWrap.dispatchEvent(customEvent);
+        });
+        // overviewCardMain.appendChild(btnWrap);
 
         //---------------------------------
-
+        this.overviewCards[caseNoteId] = overviewCard;
         this.overviewCardsWrap.appendChild(overviewCard);
       });
   };
@@ -224,7 +283,7 @@
       confidential: '%',
       corrected: '%',
       dateEnteredStart: '1900-01-01',
-      dateEnteredEnd: dates.formatISO(selectedDate, { representation: 'date' }),
+      dateEnteredEnd: dates.formatISO(dates.getTodaysDateObj(), { representation: 'date' }),
       location: '%',
       need: '%',
       noteText: '%%%',
@@ -273,6 +332,35 @@
       }
 
       return true; // If no conditions met, return the data as is
+    });
+  };
+
+  /**
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  CaseNotesOverview.prototype.onCardEdit = function (cbFunc) {
+    this.overviewCardsWrap.addEventListener('onCardEdit', e => {
+      cbFunc(e.detail.caseNoteId);
+    });
+  };
+
+  /**
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  CaseNotesOverview.prototype.onCardDelete = function (cbFunc) {
+    this.overviewCardsWrap.addEventListener('onCardDelete', e => {
+      // remove data
+      const noteId = e.detail.caseNoteId;
+      const index = this.caseLoadReviewData.findIndex(obj => obj.casenoteid === noteId);
+      this.caseLoadReviewData.splice(index, 1);
+
+      // remove card
+      this.overviewCards[noteId].remove();
+      delete this.overviewCards[noteId];
+
+      cbFunc(noteId);
     });
   };
 

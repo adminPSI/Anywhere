@@ -24,7 +24,7 @@
   function RosterPicker(options) {
     // Data Init
     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
-    this.consumers = [];
+    this.consumers = {};
     this.selectedConsumers = {};
     this.failedImageCache = new Set();
     this.groupCode = 'ALL';
@@ -140,10 +140,10 @@
    * @param {Event} e
    */
   RosterPicker.prototype._filterConsumersOnSearch = function (e) {
-    this.consumers.forEach(consumer => {
-      const firstName = consumer.FN.toLowerCase().trim();
-      const middleName = consumer.MN.toLowerCase().trim();
-      const lastName = consumer.LN.toLowerCase().trim();
+    for (consumerID in this.consumers) {
+      const firstName = this.consumers[consumerID].FN.toLowerCase().trim();
+      const middleName = this.consumers[consumerID].MN.toLowerCase().trim();
+      const lastName = this.consumers[consumerID].LN.toLowerCase().trim();
 
       const nameCombinations = [
         `${firstName} ${middleName} ${lastName}`,
@@ -156,11 +156,11 @@
 
       const isMatch = nameCombinations.some(combo => combo.indexOf(e.target.value.toLowerCase()) !== -1);
       if (isMatch) {
-        consumer.cardEle.parentNode.classList.remove('isClosed');
+        this.consumers[consumerID].cardEle.parentNode.classList.remove('isClosed');
       } else {
-        consumer.cardEle.parentNode.classList.add('isClosed');
+        this.consumers[consumerID].cardEle.parentNode.classList.add('isClosed');
       }
-    });
+    }
   };
 
   /**
@@ -171,29 +171,40 @@
   RosterPicker.prototype.populate = function () {
     this.rosterWrapEle.innerHTML = '';
 
-    this.consumers.forEach(c => {
-      // ROSTER CARD
-      const gridAnimationWrapper = _DOM.createElement('div', { class: 'rosterCardWrap' });
+    Object.values(this.consumers)
+      .sort((a, b) => {
+        if (a.LN < b.LN) return -1;
+        if (a.LN > b.LN) return 1;
 
-      const rosterCard = new RosterCard({
-        consumerId: c.id,
-        firstName: c.FN,
-        middleName: c.MN,
-        lastName: c.LN,
+        if (a.FN < b.FN) return -1;
+        if (a.FN > b.FN) return 1;
+
+        return 0;
+      })
+      .forEach(consumer => {
+        // ROSTER CARD
+        const gridAnimationWrapper = _DOM.createElement('div', { class: 'rosterCardWrap' });
+
+        const rosterCard = new RosterCard({
+          consumerId: consumer.id,
+          firstName: consumer.FN,
+          middleName: consumer.MN,
+          lastName: consumer.LN,
+        });
+        rosterCard.renderTo(gridAnimationWrapper);
+
+        // PIN ICON
+        const pinCardIcon = Icon.getIcon('pin');
+        pinCardIcon.setAttribute('data-target', 'pinCardIcon');
+        rosterCard.rootElement.appendChild(pinCardIcon);
+
+        // BUILD
+        this.rosterWrapEle.appendChild(gridAnimationWrapper);
+
+        // SET REFERENCE TO DOM NODE ON DATA OBJ
+        console.log(this.consumers[consumer.id] === consumer);
+        consumer.cardEle = rosterCard.rootElement;
       });
-      rosterCard.renderTo(gridAnimationWrapper);
-
-      // PIN ICON
-      const pinCardIcon = Icon.getIcon('pin');
-      pinCardIcon.setAttribute('data-target', 'pinCardIcon');
-      rosterCard.rootElement.appendChild(pinCardIcon);
-
-      // BUILD
-      this.rosterWrapEle.appendChild(gridAnimationWrapper);
-
-      // SET REFERENCE TO DOM NODE ON DATA OBJ
-      c.cardEle = rosterCard.rootElement;
-    });
   };
 
   /**
@@ -227,7 +238,10 @@
         serviceDate: dates.formatISO(todaysDate, { representation: 'date' }),
         daysBackDate: daysBackDate,
       });
-      this.consumers = data.getConsumersByGroupJSONResult;
+      this.consumers = data.getConsumersByGroupJSONResult.reduce((acc, cv) => {
+        acc[cv.id] = cv;
+        return acc;
+      }, {});
     } catch (error) {
       console.log('uh oh something went horribly wrong :(', error.message);
     }
@@ -251,10 +265,23 @@
    * @function
    */
   RosterPicker.prototype.clearSelectedConsumers = function () {
-    for (consumer in this.selectedConsumers) {
-      this.selectedConsumers[consumer].parentNode.classList.remove('selected');
-      delete this.selectedConsumers[consumer];
+    for (consumerID in this.selectedConsumers) {
+      this.selectedConsumers[consumerID].parentNode.classList.remove('selected');
+      delete this.selectedConsumers[consumerID];
     }
+  };
+
+  /**
+   * @function
+   * @param {Array} consumerIds
+   */
+  RosterPicker.prototype.setSelectedConsumers = function (consumerIds) {
+    this.clearSelectedConsumers();
+
+    consumerIds.forEach(cid => {
+      this.consumers[cid].cardEle.parentNode.classList.add('selected');
+      this.selectedConsumers[cid] = this.consumers[cid].cardEle;
+    });
   };
 
   /**

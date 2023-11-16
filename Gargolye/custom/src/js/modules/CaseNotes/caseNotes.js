@@ -6,7 +6,6 @@ const CaseNotes = (() => {
   let selectedDate = null;
   let selectedServiceCode;
   let caseManagerId;
-  let isNewNote = true;
   // attachments
   let attachmentsForSave = {};
   let attachmentCountForIDs = 0;
@@ -197,10 +196,12 @@ const CaseNotes = (() => {
   // CRUD
   //--------------------------------------------------
   async function deleteNote(noteId) {
-    await _UTIL.fetchData('deleteExistingCaseNote', {
+    const success = await _UTIL.fetchData('deleteExistingCaseNote', {
       noteId: noteId,
     });
+    console.log(success);
   }
+  async function updateNote() {}
   async function saveAttachments(saveCaseNoteResults) {
     const parser = new DOMParser();
     const respDoc = parser.parseFromString(saveCaseNoteResults, 'text/xml');
@@ -254,45 +255,43 @@ const CaseNotes = (() => {
       cnDocTimer.stop();
     }
 
-    if (isNewNote) {
-      reqVisualizer.show('Saving Case Note...');
-      const saveCaseNoteResults = await _UTIL.fetchData('saveCaseNote', {
-        caseManagerId,
-        caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
-        casenotemileage: formData.casenotemileage,
-        casenotetraveltime: formData.casenotetraveltime,
-        confidential: formData.confidential,
-        contactCode: formData.contactCode,
-        corrected: 'N',
-        consumerId: selectedConsumers[0],
-        documentationTime: $.session.applicationName === 'Gatekeeper' ? cnDocTimer.getTime() : '',
-        endTime: formData.endTime,
-        locationCode: formData.locationCode,
-        needCode: formData.needCode,
-        noteId: 0,
-        reviewRequired: '',
-        serviceCode: formData.serviceCode,
-        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-        serviceLocationCode: formData.serviceLocationCode,
-        serviceOrBillingCodeId: formData.serviceOrBillingCodeId,
-        startTime: formData.startTime,
-        vendorId: formData.vendorId,
-      });
-      console.log(saveCaseNoteResults);
+    reqVisualizer.show('Saving Case Note...');
+    const saveCaseNoteResults = await _UTIL.fetchData('saveCaseNote', {
+      caseManagerId,
+      caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
+      casenotemileage: formData.casenotemileage,
+      casenotetraveltime: formData.casenotetraveltime,
+      confidential: formData.confidential,
+      contactCode: formData.contactCode,
+      corrected: 'N',
+      consumerId: selectedConsumers[0],
+      documentationTime: $.session.applicationName === 'Gatekeeper' ? cnDocTimer.getTime() : '',
+      endTime: formData.endTime,
+      locationCode: formData.locationCode,
+      needCode: formData.needCode,
+      noteId: 0,
+      reviewRequired: '',
+      serviceCode: formData.serviceCode,
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      serviceLocationCode: formData.serviceLocationCode,
+      serviceOrBillingCodeId: formData.serviceOrBillingCodeId,
+      startTime: formData.startTime,
+      vendorId: formData.vendorId,
+    });
+    console.log(saveCaseNoteResults);
 
-      if (saveCaseNoteResults) {
-        if ($.session.applicationName === 'Gatekeeper' && Object.keys(attachmentsForSave).length) {
-          await reqVisualizer.showSuccess('Case Note Saved!', 2000);
+    if (saveCaseNoteResults) {
+      if ($.session.applicationName === 'Gatekeeper' && Object.keys(attachmentsForSave).length) {
+        await reqVisualizer.showSuccess('Case Note Saved!', 2000);
 
-          // save attachments
-          reqVisualizer.showPending('Saving Note Attachments');
-          await saveAttachments(saveCaseNoteResults);
-        } else {
-          reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
-        }
+        // save attachments
+        reqVisualizer.showPending('Saving Note Attachments');
+        await saveAttachments(saveCaseNoteResults);
       } else {
-        reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+        reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
       }
+    } else {
+      reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
     }
   }
 
@@ -648,12 +647,31 @@ const CaseNotes = (() => {
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
   }
+  async function onOverviewCardEdit(caseNoteId) {
+    console.log('edit', caseNoteId);
+    // get edit data
+    const editData = _UTIL.fetchData('getCaseNotedEditJSON', {
+      noteId: caseNoteId,
+    });
+    // populate form with data
+    // set selected consumer to roster picker
+    // display attachments?
+    // scroll to form
+    _DOM.scrollToTop();
+  }
+  async function onOverviewCardDelete(caseNoteId) {
+    console.log('delete', caseNoteId);
+    deleteNote(caseNoteId);
+  }
+
   function attachEvents() {
     dateNavigation.onDateChange(onDateChange);
     rosterPicker.onConsumerSelect(onConsumerSelect);
     cnForm.onChange(onFormChange);
     cnForm.onKeyup(onFormKeyup);
     cnForm.onSubmit(onFormSubmit);
+    cnOverview.onCardEdit(onOverviewCardEdit);
+    cnOverview.onCardDelete(onOverviewCardDelete);
   }
 
   // MAIN

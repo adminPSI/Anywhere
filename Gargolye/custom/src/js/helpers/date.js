@@ -344,6 +344,49 @@ const dates = (function () {
   // TIME
   //----------------------------------------------------------------
   /**
+   * Converts a 24hr time to 12hr standard time.
+   *
+   * @function
+   * @param {string} time Time you would like to convert
+   * @returns {string} Converted time
+   */
+  function convertFromMilitary(time) {
+    if (!time || time === '') return '';
+
+    time = time.split(':');
+    var hh = parseInt(time[0]);
+    var mm = parseInt(time[1]);
+    var amPm = hh <= 11 ? 'AM' : 'PM';
+
+    if (hh === 0) hh = 12;
+    if (amPm === 'PM' && hh !== 12) hh -= 12;
+
+    return `${hh}:${leadingZero(mm)} ${amPm}`;
+  }
+  /**
+   * Converts a 12hr time to 24hr military time.
+   *
+   * @function
+   * @param {string} time Time you would like to convert
+   * @returns {string} Converted time
+   */
+  function convertToMilitary(time) {
+    // time format must be hh:mm am/pm
+    if (!time || time === '') return '';
+
+    time = time.split(' ');
+    timeString = time[0].split(':');
+
+    var amPM = time[1].toLowerCase();
+    var hh = parseInt(timeString[0]);
+    var mm = parseInt(timeString[1]);
+
+    if (amPM === 'pm' && hh !== 12) hh += 12;
+    if (amPM === 'am' && hh === 12) hh = 0;
+
+    return `${leadingZero(hh)}:${leadingZero(mm)}:00`;
+  }
+  /**
    * Formats the time as HH:MM:SS from a given number of seconds.
    *
    * @param {number} totalSeconds - The total number of seconds to format.
@@ -359,34 +402,57 @@ const dates = (function () {
       ':',
     );
   }
-  function getMilitaryTimeDifference(startTime, endTime) {
+  /**
+   * Calculates the time difference between two military time values.
+   *
+   * @param {string} startTime - The start time in military format (e.g., "14:00").
+   * @param {string} endTime - The end time in military format (e.g., "16:30").
+   * @param {boolean} [format=true] - If true, returns the time difference formatted as a string with hours and minutes.
+   *                                 If false, returns only the total minutes as a formatted string.
+   * @returns {string} The time difference as a formatted string. If `format` is true, the difference is returned
+   *                   in terms of hours and minutes (e.g., "2 hrs 30 mins"). If `format` is false, the difference
+   *                   is returned as total minutes (e.g., "150 mins").
+   *
+   * @example
+   * // Returns "2 hrs 30 mins"
+   * getMilitaryTimeDifference("14:00", "16:30", true);
+   *
+   * @example
+   * // Returns "150 mins"
+   * getMilitaryTimeDifference("14:00", "16:30", false);
+   */
+  function getMilitaryTimeDifference(startTime, endTime, format = true) {
     const startDate = new Date(`1970-01-01T${startTime}`);
     const endDate = new Date(`1970-01-01T${endTime}`);
 
     const timeDifference = endDate - startDate;
 
-    const hours = Math.floor(timeDifference / 3600000);
-    const minutes = Math.floor((timeDifference % 3600000) / 60000);
+    // Calculate total time in minutes
+    const totalMinutes = Math.floor(timeDifference / 60000);
 
-    const formattedTime = [];
+    if (format) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
 
-    if (hours > 0) {
-      if (hours === 1) {
-        formattedTime.push(`${hours} hr`);
-      } else {
-        formattedTime.push(`${hours} hrs`);
+      const formattedTime = [];
+      if (hours > 0) {
+        formattedTime.push(`${hours} ${hours === 1 ? 'hr' : 'hrs'}`);
       }
-    }
-    if (minutes > 0) {
-      if (minutes === 1) {
-        formattedTime.push(`${minutes} min`);
-      } else {
-        formattedTime.push(`${minutes} mins`);
+      if (minutes > 0) {
+        formattedTime.push(`${minutes} ${minutes === 1 ? 'min' : 'mins'}`);
       }
-    }
 
-    return formattedTime.join(' ');
+      return formattedTime.join(' ');
+    } else {
+      // Return total minutes in formatted string
+      return `${totalMinutes} ${totalMinutes === 1 ? 'min' : 'mins'}`;
+    }
   }
+  /**
+   *
+   * @param {*} date
+   * @returns
+   */
   function removeTimestamp(date) {
     const splitDate = date.split(' ');
     return `${splitDate[0]}`;
@@ -413,6 +479,8 @@ const dates = (function () {
     formatISO,
     eachDayOfInterval,
     // TIME
+    convertFromMilitary,
+    convertToMilitary,
     formatSecondsToFullTime,
     getMilitaryTimeDifference,
     removeTimestamp,

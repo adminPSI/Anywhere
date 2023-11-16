@@ -12,6 +12,7 @@ using System.Web.Script.Serialization;
 using Anywhere.Log;
 using System.Configuration;
 using System.Linq;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -261,13 +262,13 @@ namespace OODForms
             sb.Clear();
             sb.Append("SELECT DBA.Consumer_Services_Master.Reference_Number AS AuthorizationNum, DBA.Services.Procedure_Code AS ServiceDescription, ");
             sb.Append("DBA.Consumer_Services_Master.Consumer_ID, DBA.Consumer_Services_Master.Rate, DBA.Consumer_Services_Master.Fixed_Rate, ");
-            sb.Append("DBA.Consumer_Services_Master.Authorized_Units, DBA.Consumer_Services_Master.Consumer_Services_Master_ID, ");
+            sb.Append("DBA.Consumer_Services_Master.Authorized_Units, DBA.Consumer_Services_Master.Consumer_Services_Master_ID, DBA.Consumer_Services_Master.Service_ID AS ServiceId, ");
             sb.Append("DBA.People.Last_Name AS ConsumerLastName, DBA.People.First_Name AS ConsumerFirstName, DBA.Persons.Last_Name AS StaffLastName, ");
             sb.Append("DBA.Persons.First_Name AS StaffFirstName, DBA.EM_Review.EM_Review_Goal AS EmpGoal, DBA.EM_Review.Num_Months_Job_Dev AS NumberOfMonths, ");
             sb.Append("DBA.EM_Review.Num_Contacts_Staff_Emp AS NumberEmployerContacts, DBA.EM_Review.Num_Contacts_Emp_Con AS NumberContactInd, ");
-            sb.Append("DBA.EM_Review.EM_Review_Other_Impediments AS PotentialIssues, DBA.EM_Review.EM_Review_Summary_Next AS PlanGoalsNextMonth, ");
+            sb.Append("DBA.EM_Review.EM_Review_Other_Impediments AS PotentialIssues, DBA.EM_Review.EM_Review_Summary_Next AS PlanGoalsNextMonth, DBA.EM_Review.EM_Review_Goal AS ReviewGoal, ");
             sb.Append("DBA.Consumer_Services_Master.From_Date, DBA.Consumer_Services_Master.To_Date, DBA.EM_Review.EM_Review_Summary AS IndividualsInputOnSearch, ");
-            sb.Append("DBA.Services.CPT_Code, DBA.Vendors.Name AS VendorName ");
+            sb.Append("DBA.Services.CPT_Code, DBA.Services.Name AS ServiceName, DBA.Vendors.Name AS VendorName ");
             sb.Append("FROM   DBA.Consumer_Services_Master LEFT OUTER JOIN ");
             sb.Append("DBA.Persons ON DBA.Consumer_Services_Master.Person_ID = DBA.Persons.Person_ID LEFT OUTER JOIN ");
             sb.Append("DBA.EM_Review ON DBA.Consumer_Services_Master.Reference_Number = DBA.EM_Review.Reference_Num  LEFT OUTER JOIN ");
@@ -283,23 +284,23 @@ namespace OODForms
 
         }
 
-        public DataSet Counslor(string AuthorizationNumber, string ServiceCodeID, long ConsumerID)
+        public DataSet Counslor(string AuthorizationNumber, string ServiceCodeID, string StartDate, string EndDate)
         {
             sb.Clear();
-            sb.Append("SELECT DISTINCT dba.Persons.Last_Name AS LastName, dba.Persons.Middle_Name AS MiddleName, dba.Persons.First_Name AS FirstName ");
-            sb.Append("FROM dba.Persons ");
-            sb.Append("RIGHT OUTER JOIN dba.Consumer_Services_Master ON dba.Persons.Person_ID = dba.Consumer_Services_Master.Person_ID ");
-            sb.Append("LEFT OUTER JOIN dba.Services ON dba.Consumer_Services_Master.Service_ID = dba.Services.Service_ID ");
+            sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name ");
+            sb.Append("FROM dba.Consumer_Services_Master ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Consumer_Services_Master.Person_Id = dba.Persons.Person_ID ");
+            sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
+            sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
 
-            if (ServiceCodeID != "%") {
-                sb.AppendFormat("WHERE dba.Services.Service_ID LIKE {0} ", ServiceCodeID);
+            if (ServiceCodeID != "%")
+            {
+                sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
             }
-            
-            sb.AppendFormat("AND dba.Consumer_Services_Master.Consumer_ID = {0} ", ConsumerID);
-            sb.AppendFormat("AND dba.Consumer_Services_Master.Reference_Number LIKE '{0}' ", AuthorizationNumber);
-            sb.Append("GROUP BY dba.Persons.Last_Name, dba.Persons.First_Name, dba.Persons.Middle_Name ");
-            return di.SelectRowsDS(sb.ToString());
 
+            return di.SelectRowsDS(sb.ToString());
         }
 
         private string WorkDaysPercent(string WhatPercent)
@@ -345,27 +346,26 @@ namespace OODForms
             }
         }
 
-        public DataSet OODStaff(string AuthorizationNumber, string ServiceCodeID)
+        public DataSet OODStaff(string AuthorizationNumber, string ServiceCodeID, string StartDate, string EndDate, string userID)
         {
             sb.Clear();
-            sb.Append("SELECT DISTINCT DBA.Persons.Last_Name AS StaffLastName, DBA.Persons.Middle_Name AS StaffMiddleName,  DBA.Persons.First_Name AS StaffFirstName ");
-            sb.Append("FROM    DBA.EM_Contacts ");
-            sb.Append("LEFT OUTER JOIN DBA.Case_Notes ON DBA.EM_Contacts.Case_Note_ID = DBA.Case_Notes.Case_Note_ID ");
-            sb.Append("LEFT OUTER JOIN DBA.Consumer_Services_Master ON DBA.Case_Notes.ID = DBA.Consumer_Services_Master.Consumer_ID ");
-            sb.Append("LEFT OUTER JOIN DBA.Services ON DBA.Consumer_Services_Master.Service_ID = DBA.Services.Service_ID ");
-            sb.Append("LEFT OUTER JOIN DBA.Funding_Sources ON DBA.Services.Funding_Source_ID = DBA.Funding_Sources.Funding_Source_ID ");
-            sb.Append("LEFT OUTER JOIN DBA.Persons ON DBA.Case_Notes.Case_Manager_ID = DBA.Persons.Person_ID ");
+            sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name ");
+            sb.Append("FROM dba.Consumer_Services_Master ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Case_Notes.Case_Manager_ID = dba.Persons.Person_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Contacts.Employer_ID = dba.Employer.Employer_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
+            sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
+            sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
+            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
 
             if (ServiceCodeID != "%")
             {
                 sb.AppendFormat("AND dba.Case_Notes.Service_ID = {0} ", ServiceCodeID);
             }
-                
-            sb.AppendFormat("WHERE   DBA.Consumer_Services_Master.Reference_Number = '{0}' ", AuthorizationNumber);
-            sb.Append("GROUP BY dba.Persons.Last_Name, dba.Persons.First_Name, Persons.Middle_Name ");
 
             return di.SelectRowsDS(sb.ToString());
-
         }
 
         public DataSet OODMinDate(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID)
@@ -398,19 +398,19 @@ namespace OODForms
 
             if (ServiceCodeID != "%")
             {
-                sb.AppendFormat("AND dba.Case_Notes.Service_ID LIKE {0} ", ServiceCodeID);
+                sb.AppendFormat("AND dba.Case_Notes.Service_ID LIKE {0} ", ServiceCodeID); 
             }
 
             return di.SelectRowsDS(sb.ToString());
         }
 
-        public DataSet OODDevelopment2(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID)
+        public DataSet OODDevelopment2(string AuthorizationNumber, string StartDate, string EndDate, string ServiceCodeID, string userID)
         {
             sb.Clear();
             sb.Append("SELECT DISTINCT  DBA.Case_Notes.Case_Note_ID, dba.EM_Contacts.Contact_Date, dba.Case_Notes.Start_Time AS StartTime, ");
             sb.Append("dba.Case_Notes.End_Time AS EndTime, dba.Case_Notes.Service_Area_Modifier AS SAMLevel, dba.Employer.Name AS Location, ");
             sb.Append("dba.Employer.Address1 AS LocationAddress, dba.Employer.City AS LocationCity, dba.EM_Contacts.Notes AS Comments, ");
-            sb.Append("dba.EM_Contacts.Contact_Type AS ContactType, dba.Code_Table.Caption AS OutCome, dba.EM_Contacts.EM_Job_Seeker_Present AS JobSeekerPresent, ");
+            sb.Append("dba.EM_Contacts.Contact_Type AS ContactType, dba.EM_Contacts.Notes as Narrative, dba.Code_Table.Caption AS OutCome, dba.EM_Contacts.EM_Job_Seeker_Present AS JobSeekerPresent, ");
             sb.Append("dba.Consumer_Services_Master.Reference_Number, dba.Code_Table.Table_ID, dba.Case_Notes.Notes AS Note2, ");
             sb.Append("DBA.Persons.Last_Name, DBA.Persons.First_Name, DBA.Persons.Middle_Name, dba.Code_Table.Code, dba.EM_Contacts.Application, dba.EM_Contacts.Interview, dba.EM_Contacts.Bilingual_Supplement ");
             sb.Append("FROM dba.Consumer_Services_Master ");
@@ -419,11 +419,9 @@ namespace OODForms
             sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Case_Notes.Case_Manager_ID = dba.Persons.Person_ID ");
             sb.Append("LEFT OUTER JOIN dba.Employer ON dba.EM_Contacts.Employer_ID = dba.Employer.Employer_ID ");
             sb.Append("LEFT OUTER JOIN dba.Code_Table ON dba.EM_Contacts.Activity_Code = dba.Code_Table.Code ");
-            //sb.Append("DBA.Consumers ON Consumer_Services_Master.Consumer_ID = DBA.Consumers.Consumer_ID  LEFT OUTER JOIN ");
-            //sb.Append("DBA.Locations ON DBA.Consumers.Location_ID = DBA.Locations.Location_ID  LEFT OUTER JOIN ");
-            //sb.Append("DBA.Regions ON DBA.Locations.Region_ID = DBA.Regions.Region_ID  LEFT OUTER JOIN ");
-            //sb.Append("DBA.Vendors ON DBA.Regions.Vendor_ID = DBA.Vendors.Vendor_ID ");
             sb.AppendFormat("WHERE   dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
+            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userID);
+
             //'sb.Append("AND (DBA.Code_Table.Field_ID = 'outcome') ") 'Removed per ticket 84964
             sb.AppendFormat("AND  dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
 
