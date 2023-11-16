@@ -7,7 +7,6 @@ const CaseNotes = (() => {
   let selectedServiceCode;
   let caseManagerId;
   // attachments
-  let attachmentsForSave = {};
   let attachmentCountForIDs = 0;
   //--------------------------
   // DOM
@@ -76,6 +75,13 @@ const CaseNotes = (() => {
     // if funding value is "N" - disable service location dropdown
     // else - enable dropdown, make required
   }
+  /**
+   * This along with the onKeyUp method for attachments needs moved somewhere,
+   * i just don't know yet
+   *
+   * @function
+   */
+  function setAttachmentsToForm() {}
 
   // TIME HELPERS
   //--------------------------------------------------
@@ -439,7 +445,6 @@ const CaseNotes = (() => {
 
         // data for saving attachment
         const attachmentObj = await _DOM.getAttachmentDetails(event);
-        attachmentsForSave[attachmentObj.description] = attachmentObj;
 
         // cache current id and update attachment id count
         const currentAttachmentId = attachmentCountForIDs === 0 ? 'attachments' : `attachments${attachmentCountForIDs}`;
@@ -451,7 +456,6 @@ const CaseNotes = (() => {
           label: 'Add Attachment',
           id: `attachments${attachmentCountForIDs}`,
         });
-        newInputInstance.build();
 
         // set input instance to cnForm.inputs
         cnForm.inputs[`attachments${attachmentCountForIDs}`] = newInputInstance;
@@ -466,7 +470,6 @@ const CaseNotes = (() => {
         input.labelEle.insertBefore(deleteIcon, input.labelEle.firstChild);
         deleteIcon.addEventListener('click', e => {
           e.stopPropagation();
-          delete attachmentsForSave[attachmentObj.description];
           delete cnForm.inputs[currentAttachmentId];
           input.rootElement.remove();
         });
@@ -650,14 +653,36 @@ const CaseNotes = (() => {
   async function onOverviewCardEdit(caseNoteId) {
     console.log('edit', caseNoteId);
     // get edit data
-    const editData = _UTIL.fetchData('getCaseNotedEditJSON', {
+    let editData = await _UTIL.fetchData('getCaseNoteEditJSON', {
       noteId: caseNoteId,
     });
+    editData = editData.getCaseNoteEditJSONResult[0];
+    console.table(editData);
     // populate form with data
-    // set selected consumer to roster picker
+    // cnForm.populate({
+    //   serviceCode: editData.mainbillingorservicecodeid,
+    //   location: editData.locationcode,
+    //   serviceLocation: editData.servicelocationid,
+    //   need: editData.serviceneedcode,
+    //   vendor: editData.vendorid,
+    //   contact: editData.contactcode,
+    //   startTime: editData.starttime,
+    //   endTime: editData.endtime,
+    //   mileage: editData.totalmiles,
+    //   travelTime: editData.traveltime,
+    //   noteText: editData.casenote,
+    //   confidential: editData.confidential === 'Y' ? true : false,
+    // });
+
+    // set selected consumer
+    selectedConsumers = [editData.consumerid];
+    rosterPicker.setSelectedConsumers(selectedConsumers);
     // display attachments?
+
     // scroll to form
     _DOM.scrollToTop();
+
+    checkRequiredFields();
   }
   async function onOverviewCardDelete(caseNoteId) {
     console.log('delete', caseNoteId);

@@ -51,7 +51,7 @@
     min-width: calc(100% - 30px);
 
     .rosterPicker {
-      .form_field.search {
+      .inputGroup.search {
         min-width: 310px;
       }
     }
@@ -71,21 +71,21 @@
       padding: 6px 10px 10px 10px;
     }
 
-    .form_field.time,
-    .form_field.number {
+    .inputGroup.time,
+    .inputGroup.number {
       width: calc(50% - 5px);
     }
-    .form_field.checkbox {
+    .inputGroup.checkbox {
       width: 100%;
     }
-    .form_field.textarea {
+    .inputGroup.textarea {
       height: 200px;
       position: relative;
     }
-    .form_field.location,
-    .form_field.service,
-    .form_field.need,
-    .form_field.contact {
+    .inputGroup.location,
+    .inputGroup.service,
+    .inputGroup.need,
+    .inputGroup.contact {
       min-width: 300px;
       width: calc(50% - 5px);
     }
@@ -286,10 +286,10 @@
     form {
       flex-grow: 1;
 
-      .form_field.checkbox {
+      .inputGroup.checkbox {
         margin: 0 0 10px;
       }
-      .form_field.textarea {
+      .inputGroup.textarea {
         height: 150px;
       }
     }

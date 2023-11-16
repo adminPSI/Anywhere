@@ -10,7 +10,7 @@ $label_fontSize: $px14;
   //===========================================
   // GLOBAL
   //-------------------------------------------
-  .form_field {
+  .inputGroup {
     display: flex;
     flex-flow: column nowrap;
     flex-grow: 1;
@@ -25,7 +25,7 @@ $label_fontSize: $px14;
       margin-top: 20px;
     }
 
-    &__inner {
+    &__inputWrap {
       position: relative;
       flex-grow: 1;
     }
@@ -33,7 +33,7 @@ $label_fontSize: $px14;
       font-size: 12px;
       margin-top: 4px;
     }
-    &__char-count {
+    &__charCount {
       font-size: 11px;
       position: absolute;
       right: 0px;

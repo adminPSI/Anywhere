@@ -50,8 +50,20 @@
 // CODE SNIPPETS
 //----------------------------------------------
 // (function (global, factory) {
-//   global.RosterCard = factory();
-// })(this, function () {});
+//   global.Attachment = factory();
+// })(this, function () {
+//   /**
+//    * @constructor
+//    */
+//   function Attachment() {}
+
+//   /**
+//    * @function
+//    */
+//   Attachment.prototype._build = function () {};
+
+//   return Attachment;
+// });
 
 // _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
 // _UTIL.localStorageHandler.set('casenotes-showAllPhrases', value);

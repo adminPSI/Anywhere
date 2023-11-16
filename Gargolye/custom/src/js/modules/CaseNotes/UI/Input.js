@@ -45,8 +45,8 @@
 
     // DOM Ref
     this.rootElement = null;
-    this.inputWrap = null;
     this.input = null;
+    this.labelEle = null;
   }
 
   /**
@@ -57,27 +57,26 @@
    */
   Input.prototype.build = function () {
     // INPUT WRAP
-    const classArray = ['form_field', `${this.options.attributes.type}`, `${this.options.attributes.id}`];
-    this.rootElement = _DOM.createElement('div', {
-      class: this.options.hidden ? [...classArray, 'form_field--hidden'] : classArray,
+    const classArray = ['inputGroup', `${this.options.attributes.type}`, `${this.options.attributes.id}`];
+    const inputGroup = _DOM.createElement('div', {
+      class: this.options.hidden ? [...classArray, 'inputGroup--hidden'] : classArray,
     });
 
     // INPUT & LABEL
-    this.inputWrap = _DOM.createElement('div', { class: 'form_field__inner' });
+    const inputWrap = _DOM.createElement('div', { class: 'inputGroup__inputWrap' });
     this.input = _DOM.createElement('input', { ...this.options.attributes });
     this.labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,
     });
-    this.inputWrap.appendChild(this.input);
+    inputWrap.append(this.input);
 
-    this.rootElement.appendChild(this.labelEle);
-    this.rootElement.appendChild(this.inputWrap);
+    inputGroup.append(this.labelEle, inputWrap);
 
     // INPUT NOTE
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'form_field__note', text: this.options.note });
-      this.rootElement.appendChild(inputNote);
+      const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note });
+      inputGroup.append(inputNote);
     }
 
     // CHAR COUNTER
@@ -85,9 +84,11 @@
       const countMarkup = this.options.attributes.maxlength
         ? { html: `${0}<span>/</span>${this.options.attributes.maxlength}` }
         : { text: '0' };
-      const inputCount = _DOM.createElement('div', { class: 'form_field__char-count', ...countMarkup });
-      this.rootElement.appendChild(inputCount);
+      const inputCount = _DOM.createElement('div', { class: 'inputGroup__charCount', ...countMarkup });
+      inputGroup.append(inputCount);
     }
+
+    this.rootElement = inputGroup;
 
     return this;
   };

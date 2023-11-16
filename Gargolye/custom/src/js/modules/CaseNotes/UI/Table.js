@@ -1,5 +1,3 @@
-'use-strict';
-
 //? table filtering
 //? custom visible columns
 //? row styles: grid, horizontal, free form,
@@ -105,11 +103,11 @@
     const data = this.options.data;
 
     //* create table
-    const wrapper = DOM.createElement('div', { class: 'ui_table' });
-    const tableNav = DOM.createElement('div', { class: 'ui-table__nav' });
-    const table = DOM.createElement('table');
-    const tableBody = DOM.createElement('tbody');
-    const tableHeader = DOM.createElement('thead', { html: '<tr></tr>' });
+    const wrapper = _DOM.createElement('div', { class: 'ui_table' });
+    const tableNav = _DOM.createElement('div', { class: 'ui-table__nav' });
+    const table = _DOM.createElement('table');
+    const tableBody = _DOM.createElement('tbody');
+    const tableHeader = _DOM.createElement('thead', { html: '<tr></tr>' });
 
     console.log(wrapper);
 
@@ -155,6 +153,11 @@
   };
 
   /**
+   * @function
+   */
+  Table.prototype.populate = function () {};
+
+  /**
    * Multi select rows w/bulk actions
    */
   Table.prototype.multiSelect = function () {
@@ -166,7 +169,7 @@
       type: 'checkbox',
       label: '',
     });
-    const checkboxInput = newCheckbox.build().rootElement;
+    const checkboxInput = newCheckbox.rootElement;
     checkboxInput.addEventListener('change', e => {
       console.log('I was selected');
     });
@@ -181,7 +184,7 @@
         type: 'checkbox',
         label: '',
       });
-      const checkboxInput = newCheckbox.build().rootElement;
+      const checkboxInput = newCheckbox.rootElement;
       checkboxInput.addEventListener('change', e => {
         console.log('I was selected', row);
       });

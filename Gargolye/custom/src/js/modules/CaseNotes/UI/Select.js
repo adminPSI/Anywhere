@@ -51,12 +51,12 @@
    * @returns {Select} Returns the current instances for chaining
    */
   Select.prototype.build = function () {
-    const classArray = ['form_field', 'select', `${this.options.attributes.id}`];
+    const classArray = ['inputGroup', 'select', `${this.options.attributes.id}`];
     this.rootElement = _DOM.createElement('div', {
       class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
     });
 
-    this.inputWrap = _DOM.createElement('div', { class: 'form_field__input-wrap' });
+    this.inputWrap = _DOM.createElement('div', { class: 'inputGroup__inputWrap' });
     this.select = _DOM.createElement('select', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
@@ -70,7 +70,7 @@
     this.rootElement.appendChild(this.inputWrap);
 
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'form_field__note', text: this.options.note });
+      const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note });
       this.rootElement.appendChild(inputNote);
     }
 

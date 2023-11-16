@@ -37,6 +37,7 @@
     this.consumerCards = null;
 
     this._build();
+    this._setupEvents();
   }
 
   /**
@@ -62,11 +63,9 @@
       checked: false,
     });
 
-    this.rosterSearchInput.build().renderTo(this.rootElement);
-    this.rosterCaseLoadInput.build().renderTo(this.rootElement);
+    this.rosterSearchInput.renderTo(this.rootElement);
+    this.rosterCaseLoadInput.renderTo(this.rootElement);
     this.rootElement.appendChild(this.rosterWrapEle);
-
-    this._setupEvents();
   };
 
   /**
@@ -161,6 +160,13 @@
         this.consumers[consumerID].cardEle.parentNode.classList.add('isClosed');
       }
     }
+  };
+
+  /**
+   * @function
+   */
+  RosterPicker.prototype._scrollToTop = function () {
+    this.rosterWrapEle.scrollTop = 0;
   };
 
   /**
@@ -282,6 +288,8 @@
       this.consumers[cid].cardEle.parentNode.classList.add('selected');
       this.selectedConsumers[cid] = this.consumers[cid].cardEle;
     });
+
+    this._scrollToTop();
   };
 
   /**

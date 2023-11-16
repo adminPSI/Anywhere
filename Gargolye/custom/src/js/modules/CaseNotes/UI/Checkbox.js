@@ -35,6 +35,7 @@
     // Data Init
     this.options = _DOM.separateHTMLAttribrutes(_UTIL.mergeObjects(DEFAULT_OPTIONS, options));
     this.options.attributes.name = this.options.attributes.id;
+    this.options.attributes.type = 'checkbox';
 
     // DOM Ref
     this.rootElement = null;
@@ -50,10 +51,10 @@
    */
   Checkbox.prototype.build = function () {
     // CHECKBOX WRAP
-    const classArray = ['form_field', `${this.options.attributes.id}`];
+    const classArray = ['inputGroup', `${this.options.attributes.id}`];
     this.options.toggle ? classArray.push('checkbox_toggle') : classArray.push('checkbox');
     this.rootElement = _DOM.createElement('div', {
-      class: this.options.hidden ? [...classArray, 'form_field--hidden'] : classArray,
+      class: this.options.hidden ? [...classArray, 'inputGroup--hidden'] : classArray,
     });
 
     // CHECKBOX & LABEL
@@ -67,7 +68,7 @@
 
     // CHECKBOX NOTE
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'form_field__note', text: this.options.note });
+      const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note });
       this.rootElement.appendChild(inputNote);
     }
 
@@ -81,7 +82,7 @@
    * @param {String | Number} value
    */
   Checkbox.prototype.setValue = function (value) {
-    this.input.value = value;
+    this.input.checked = value;
   };
 
   /**
@@ -100,7 +101,7 @@
    * @function
    */
   Checkbox.prototype.clear = function () {
-    this.input.value = '';
+    this.input.checked = false;
   };
 
   /**

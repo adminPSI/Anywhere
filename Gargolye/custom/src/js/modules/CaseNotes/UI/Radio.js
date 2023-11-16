@@ -41,7 +41,7 @@
     this.inputGroup.appendChild(groupLabel);
 
     this.options.radios.forEach(radio => {
-      const newInput = new Input({ ...radio }).build();
+      const newInput = new Input({ ...radio });
       const input = newInput.rootElement;
       this.inputGroup.appendChild(input);
 

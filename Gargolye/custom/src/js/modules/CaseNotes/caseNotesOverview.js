@@ -104,6 +104,7 @@
 
     this._init();
     this._build();
+    this._setupEvents();
   }
 
   /**
@@ -134,7 +135,7 @@
       id: 'overviewSearch',
       placeholder: 'Search...',
     });
-    this.overviewSearch.build().renderTo(overviewHeader);
+    this.overviewSearch.renderTo(overviewHeader);
 
     // all notes toggle
     //---------------------------------
@@ -144,14 +145,12 @@
       toggle: true,
       checked: !this.showAllNotes,
     });
-    this.showAllNotesToggle.build().renderTo(overviewHeader);
+    this.showAllNotesToggle.renderTo(overviewHeader);
 
     // Cards
     //---------------------------------
     this.overviewCardsWrap = _DOM.createElement('div', { class: 'caseNotesOverview__cardsWrap' });
     this.overviewWrap.appendChild(this.overviewCardsWrap);
-
-    this._setupEvents();
   };
 
   /**
@@ -205,23 +204,6 @@
         // IDK YET??
         const mostRecentUpdateEle = buildMostRecentUpdateElement(rd.mostrecentupdate);
         const enteredByEle = buildEnteredByElement(rd.enteredby, rd.originalUserFullName);
-
-        // TOP
-        const startTimeEle = buildStartTimeElement(rd.starttime);
-        const endTimeEle = buildEndTimeElement(rd.endtime);
-        const timeDurationEle = buildTimeDiffElement(rd.starttime, rd.endtime);
-        overviewCard.appendChild(startTimeEle);
-        overviewCard.appendChild(endTimeEle);
-        overviewCard.appendChild(timeDurationEle);
-
-        // MAIN
-        const consumerNameEle = buildConsumerElement(consumerId, rd.firstname, rd.lastname);
-        const serviceInfoEle = buildServiceInfoElement(mainService, rd.serviceName, rd.locationName);
-        const noteTextEle = buildNoteElement(rd.caseNote);
-        // overviewCardMain.appendChild(consumerNameEle);
-        // overviewCardMain.appendChild(serviceInfoEle);
-        // overviewCardMain.appendChild(noteTextEle);
-
         // BUTTONS
         const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
         const editButton = new Button({
@@ -238,7 +220,6 @@
         });
         editButton.renderTo(btnWrap);
         deleteButton.renderTo(btnWrap);
-
         editButton.onClick(e => {
           const customEvent = new CustomEvent('onCardEdit', {
             bubbles: true,
@@ -255,6 +236,24 @@
           });
           this.overviewCardsWrap.dispatchEvent(customEvent);
         });
+
+        // TOP
+        const startTimeEle = buildStartTimeElement(rd.starttime);
+        const endTimeEle = buildEndTimeElement(rd.endtime);
+        const timeDurationEle = buildTimeDiffElement(rd.starttime, rd.endtime);
+        overviewCard.appendChild(startTimeEle);
+        overviewCard.appendChild(endTimeEle);
+        overviewCard.appendChild(timeDurationEle);
+        overviewCard.appendChild(btnWrap);
+
+        // MAIN
+        const consumerNameEle = buildConsumerElement(consumerId, rd.firstname, rd.lastname);
+        const serviceInfoEle = buildServiceInfoElement(mainService, rd.serviceName, rd.locationName);
+        const noteTextEle = buildNoteElement(rd.caseNote);
+        // overviewCardMain.appendChild(consumerNameEle);
+        // overviewCardMain.appendChild(serviceInfoEle);
+        // overviewCardMain.appendChild(noteTextEle);
+
         // overviewCardMain.appendChild(btnWrap);
 
         //---------------------------------

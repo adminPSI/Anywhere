@@ -2,6 +2,13 @@
   global.Form = factory();
 })(this, function () {
   //=========================
+  // ATTACHMENTS
+  //-------------------------
+  function Attachments() {
+    this.attachmentCount = 0;
+  }
+
+  //=========================
   // MAIN LIB
   //-------------------------
   /**
@@ -34,6 +41,7 @@
     this.form = null;
 
     this._build();
+    this._setupEvents();
   }
 
   /**
@@ -50,28 +58,28 @@
 
       switch (ele.type.toLowerCase()) {
         case 'radio': {
-          inputInstance = new Radio({ ...ele }).build();
+          inputInstance = new Radio({ ...ele });
           break;
         }
         case 'checkbox': {
-          inputInstance = new Checkbox({ ...ele }).build();
+          inputInstance = new Checkbox({ ...ele });
           break;
         }
         case 'select': {
           delete ele.type; // only needed for Form
-          inputInstance = new Select({ ...ele }).build();
+          inputInstance = new Select({ ...ele });
           break;
         }
         case 'textarea': {
           delete ele.type; // only needed for Form
-          inputInstance = new Textarea({ ...ele }).build();
+          inputInstance = new Textarea({ ...ele });
           if (typeof this.options.onKeyup === 'function') {
             inputInstance.onKeyup(this.options.onKeyup);
           }
           break;
         }
         default: {
-          inputInstance = new Input({ ...ele }).build();
+          inputInstance = new Input({ ...ele });
           if (typeof this.options.onKeyup === 'function') {
             inputInstance.onKeyup(this.options.onKeyup);
           }
@@ -105,6 +113,20 @@
     this.form.appendChild(btnWrap);
   };
 
+  Form.prototype._setupEvents = function () {
+    this.form.addEventListener('change', e => {
+      const customEvent = new CustomEvent('onChange');
+      this.form.dispatchEvent(customEvent);
+    });
+    this.form.addEventListener(
+      'keyup',
+      _UTIL.debounce(e => {
+        const customEvent = new CustomEvent('onKeyup');
+        this.form.dispatchEvent(customEvent);
+      }, 100),
+    );
+  };
+
   /**
    * Handles change event on form inputs
    *
@@ -130,7 +152,7 @@
    * @param {Function} cbFunc Callback function to call
    */
   Form.prototype.onChange = function (cbFunc) {
-    this.form.addEventListener('change', e => {
+    this.form.addEventListener('onChange', e => {
       cbFunc(e);
     });
   };
@@ -143,7 +165,7 @@
    */
   Form.prototype.onKeyup = function (cbFunc) {
     this.form.addEventListener(
-      'keyup',
+      'onKeyup',
       _UTIL.debounce(e => {
         cbFunc(e);
       }, 100),
@@ -169,6 +191,8 @@
    * @param {Object} data
    */
   Form.prototype.populate = function (data) {
+    this.clear();
+
     for (inputName in data) {
       this.inputs[inputName].setValue(data[inputName]);
     }

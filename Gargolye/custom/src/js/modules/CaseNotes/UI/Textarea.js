@@ -281,13 +281,13 @@
    * @returns {Textarea} Returns the current instances for chaining
    */
   Textarea.prototype.build = function () {
-    const classArray = ['form_field', 'textarea', `${this.options.attributes.id}`];
+    const classArray = ['inputGroup', 'textarea', `${this.options.attributes.id}`];
     this.rootElement = _DOM.createElement('div', {
-      class: this.options.hidden ? [...classArray, 'form_field--hidden'] : classArray,
+      class: this.options.hidden ? [...classArray, 'inputGroup--hidden'] : classArray,
     });
 
     // INPUT & LABEL
-    this.inputWrap = _DOM.createElement('div', { class: 'form_field__inner' });
+    this.inputWrap = _DOM.createElement('div', { class: 'inputGroup__inner' });
     this.input = _DOM.createElement('textarea', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
@@ -300,7 +300,7 @@
 
     // INPUT NOTE
     if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'form_field__note', text: this.options.note });
+      const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note });
       this.rootElement.appendChild(inputNote);
     }
 
@@ -342,7 +342,7 @@
     }
 
     if (this.options.fullscreen || this.options.speechToText) {
-      this.rootElement.classList.add('form_field--top-icons');
+      this.rootElement.classList.add('inputGroup--top-icons');
     }
 
     this.setupEvents();

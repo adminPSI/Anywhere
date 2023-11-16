@@ -38,6 +38,7 @@
     this.dialog = null;
 
     this._build();
+    this._setupEvents();
   }
 
   /**
@@ -54,8 +55,6 @@
     this.dialog = _DOM.createElement('dialog', {
       class: classArray,
     });
-
-    this._setupEvents();
   };
 
   /**

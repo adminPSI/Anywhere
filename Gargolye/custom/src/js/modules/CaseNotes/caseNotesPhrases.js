@@ -160,7 +160,7 @@
       toggle: true,
       checked: this.showAllPhrases,
     });
-    this.showAllPhrasesToggle.build().renderTo(this.dialog.dialog);
+    this.showAllPhrasesToggle.renderTo(this.dialog.dialog);
 
     this.phraseWrap = _DOM.createElement('div', { class: 'phraseWrap' });
     this.dialog.dialog.appendChild(this.phraseWrap);
@@ -294,7 +294,7 @@
     this.AddPhrases = new CaseNotesAddPhrases();
     this.InsertPhrases = new CaseNotesInsertPhrases(this);
 
-    this.build();
+    this._build();
   }
 
   /**
@@ -302,7 +302,7 @@
    *
    * @returns {CaseNotesPhrases} Returns the current instances for chaining
    */
-  CaseNotesPhrases.prototype.build = function () {
+  CaseNotesPhrases.prototype._build = function () {
     this.AddPhrases.build();
     this.InsertPhrases.build();
   };

@@ -17,6 +17,7 @@
     // DOM Ref
 
     this._build();
+    this._setupEvents();
   }
 
   /**
@@ -46,8 +47,6 @@
         },
       ],
     });
-
-    this._setupEvents();
   };
 
   /**
