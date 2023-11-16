@@ -12,8 +12,6 @@ using System.Web.Script.Serialization;
 using Anywhere.Log;
 using System.Configuration;
 using System.Linq;
-using DocumentFormat.OpenXml.Wordprocessing;
-using System.Runtime.InteropServices.ComTypes;
 //using System.Threading.Tasks;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
