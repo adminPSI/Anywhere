@@ -468,12 +468,13 @@ namespace Anywhere.service.Data.PlanSignature
             return psdg.updatePlanSignatureOrder(assessmentId, signatureId, newPos);
         }
 
-        public string uploadPlanToDODD(string consumerId, string planId)
+        public string[] uploadPlanToDODD(string consumerId, string planId)
         {
+            string[] UploadFail = { "Upload Failed" };
             try
             {
                 ISPDTData ispDT = new ISPDTData();
-                string result = ispDT.UploadISP(long.Parse(consumerId), long.Parse(planId));
+                string[] result = ispDT.UploadISP(long.Parse(consumerId), long.Parse(planId));
                 //No sales force id found or id. Auto updates table
                 //Last = OISP - Bartee   111
                 return result;
@@ -483,7 +484,7 @@ namespace Anywhere.service.Data.PlanSignature
 
             }
 
-            return "Upload Failed";
+            return UploadFail;
         }
 
         public void carryOverTeamMembersToNewPlan(string consumerPlanId, string priorConsumerPlanId, string token)
