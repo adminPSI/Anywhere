@@ -84,6 +84,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string packageId { get; set; }
             public string signedStatus { get; set; }
             public string vendorId { get; set; }
+            public string email { get; set; }
+            public string parentOfMinor { get; set; }
         }
 
         public class SigId
@@ -503,7 +505,7 @@ namespace Anywhere.service.Data.PlanSignature
                     psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", "", signatureObj[i].csChangeMindSSAPeopleId,
                                             "", signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, "", "", "",
                                             "", "", "", "", signatureObj[i].buildingNumber,
-                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, signatureObj[i].vendorId, signatureObj[i].relationship);
+                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, signatureObj[i].vendorId, signatureObj[i].relationship, signatureObj[i].email, signatureObj[i].parentOfMinor);
                     //psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", signatureObj[i].csChangeMind, signatureObj[i].csChangeMindSSAPeopleId,
                     //                        signatureObj[i].csContact, signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, signatureObj[i].csRightsReviewed, signatureObj[i].csAgreeToPlan, signatureObj[i].csFCOPExplained,
                     //                        signatureObj[i].csDueProcess, signatureObj[i].csResidentialOptions, signatureObj[i].csSupportsHealthNeeds, signatureObj[i].csTechnology, signatureObj[i].buildingNumber,
