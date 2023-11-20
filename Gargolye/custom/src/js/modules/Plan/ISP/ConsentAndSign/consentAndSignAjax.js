@@ -341,7 +341,7 @@ const consentAndSignAjax = (() => {
     // contactId, peopleId, buildingNumber, dateOfBirth, planYearStart, planYearEnd
     // csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput
     // csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology,
-    // useExisting, relationshipImport, consumerId, createRelationship, isVeendor(bool)
+    // useExisting, relationshipImport, consumerId, createRelationship, isVeendor(bool), email, parentOfMinor
     try {
       const data = await $.ajax({
         type: 'POST',

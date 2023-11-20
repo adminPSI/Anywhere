@@ -54,7 +54,7 @@ namespace Anywhere.service.Data.PlanSignature
 
         public string insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
-               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType, string vendorId, string relationship)
+               string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string salesForceId, string signatureType, string vendorId, string relationship, string email, string parentOfMinor)
         {
             if (tokenValidator(token) == false) return null;
             //if (stringInjectionValidator(relationship) == false) return null;
@@ -90,6 +90,8 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(salesForceId);
             list.Add(signatureType);
             list.Add(relationship);
+            list.Add(email);
+            list.Add(parentOfMinor);
             string text = "CALL DBA.ANYW_ISP_InsertTeamMember(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {

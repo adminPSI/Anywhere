@@ -84,6 +84,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string packageId { get; set; }
             public string signedStatus { get; set; }
             public string vendorId { get; set; }
+            public string email { get; set; }
+            public string parentOfMinor { get; set; }
         }
 
         public class SigId
@@ -153,7 +155,7 @@ namespace Anywhere.service.Data.PlanSignature
         public SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
-               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId, string relationship)
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId, string relationship, string email, string parentOfMinor)
         {
             string signatureIdString = "";
             string signatureId = "";
@@ -229,7 +231,7 @@ namespace Anywhere.service.Data.PlanSignature
                 if (dateOfBirth == null) dateOfBirth = "";
                 signatureIdString = psdg.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact,
                                         csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
-                                    csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, salesforceId, signatureType, vendorId, relationship);
+                                    csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, salesforceId, signatureType, vendorId, relationship, email, parentOfMinor);
                 SigId[] sigObj = js.Deserialize<SigId[]>(signatureIdString);
                 if (hasWetSignature)
                 {
@@ -503,7 +505,7 @@ namespace Anywhere.service.Data.PlanSignature
                     psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", "", signatureObj[i].csChangeMindSSAPeopleId,
                                             "", signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, "", "", "",
                                             "", "", "", "", signatureObj[i].buildingNumber,
-                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, signatureObj[i].vendorId, signatureObj[i].relationship);
+                                            signatureObj[i].dateOfBirth, signatureObj[i].peopleId, signatureObj[i].useExisting, signatureObj[i].relationshipImport, signatureObj[i].salesForceId, signatureObj[i].signatureType, signatureObj[i].vendorId, signatureObj[i].relationship, signatureObj[i].email, signatureObj[i].parentOfMinor);
                     //psdg.insertPlanTeamMember(token, newPlanId.ToString(), signatureObj[i].teamMember, signatureObj[i].name, signatureObj[i].lastName, "", "", signatureObj[i].contactId, signatureObj[i].planYearStart, signatureObj[i].planYearEnd, "", "", signatureObj[i].csChangeMind, signatureObj[i].csChangeMindSSAPeopleId,
                     //                        signatureObj[i].csContact, signatureObj[i].csContactProviderVendorId, signatureObj[i].csContactInput, signatureObj[i].csRightsReviewed, signatureObj[i].csAgreeToPlan, signatureObj[i].csFCOPExplained,
                     //                        signatureObj[i].csDueProcess, signatureObj[i].csResidentialOptions, signatureObj[i].csSupportsHealthNeeds, signatureObj[i].csTechnology, signatureObj[i].buildingNumber,

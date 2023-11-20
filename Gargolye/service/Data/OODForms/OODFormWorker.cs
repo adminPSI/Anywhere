@@ -362,11 +362,11 @@ namespace OODForms
 
             WS.Cell("k8").Value = DateTime.Now.ToString("MM/dd/yy");
 
-            //WS.Cell("k9").ValueAsDateTime = Convert.ToDateTime(string.Format("{0}", obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]));
-            WS.Cell("k9").Value = Convert.ToDateTime(obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]).ToString("MM/dd/yy");
+           // WS.Cell("k9").ValueAsDateTime = Convert.ToDateTime(string.Format("{0}", obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]));
+           // WS.Cell("k9").Value = Convert.ToDateTime(obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]).ToString("MM/dd/yy");
 
-           //WS.Cell("k10").ValueAsDateTime = Convert.ToDateTime(string.Format("{0}", obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0], "MM/dd/yyyy"));
-            WS.Cell("k10").Value = Convert.ToDateTime(obj.OODMaxDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]).ToString("MM/dd/yy");
+           // WS.Cell("k10").ValueAsDateTime = Convert.ToDateTime(string.Format("{0}", obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0], "MM/dd/yyyy"));
+           // WS.Cell("k10").Value = Convert.ToDateTime(obj.OODMaxDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]).ToString("MM/dd/yy");
 
             WS.Cell("k11").Value = "Final";
 
@@ -383,11 +383,18 @@ namespace OODForms
 
             }
 
-            WS.Cell("k19").Value = row["EmpGoal"].ToString().Trim();
+            //WS.Cell("k19").Value = row["EmpGoal"].ToString().Trim();
 
             WS.Cell("k73").Value = row["IndividualsInputOnSearch"].ToString().Trim();
 
             WS.Cell("k74").Value = row["PotentialIssues"].ToString().Trim();
+
+            ds = obj.EmpGoal(AuthorizationNumber, StartDate, EndDate);
+            string employeeGoal = ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0 ? ds.Tables[0].Rows[0][0].ToString() : string.Empty;
+            WS.Cell("k19").Value = employeeGoal;
+
+            DateTime oldestDate = DateTime.MaxValue;
+            DateTime newestDate = DateTime.MinValue;
 
             ds = obj.OODDevelopment2(AuthorizationNumber, StartDate, EndDate, ServiceCodeID, userID);
             if (ds.Tables.Count > 0)
@@ -397,11 +404,45 @@ namespace OODForms
                 {
                     long i = dt.Rows.IndexOf(row2) + 21;
 
+                    DateTime contactDate = Convert.ToDateTime(row2["Contact_Date"]);
+
+                    if (contactDate < oldestDate)
+                    {
+                        oldestDate = contactDate;
+                    }
+
+                    if (contactDate > newestDate)
+                    {
+                        newestDate = contactDate;
+                    }
+
+                    DateTime parsedStartTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["StartTime"]));
+
+                    string formattedStartTime = parsedStartTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+
+                    DateTime parsedEndTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["EndTime"]));
+
+                    string formattedEndTime = parsedEndTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
+
+                    TimeSpan timeDifference = parsedEndTime - parsedStartTime;
+                    double minutesDifference = timeDifference.TotalMinutes;
+
+                    int units = (int)Math.Ceiling(minutesDifference / 6);
+
+                    if (parsedEndTime < parsedStartTime)
+                    {
+                        units = -units;
+                    }
+
+                    string formattedUnits = units.ToString();
+
                     WS.Cell(String.Format("a{0}", i)).ValueAsDateTime = Convert.ToDateTime(Convert.ToDateTime(row2["Contact_Date"]).ToString("MM/dd/yyyy"));
 
                     WS.Cell(String.Format("b{0}", i)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["StartTime"])); // DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"),row2["StartTime"]));
 
                     WS.Cell(String.Format("c{0}", i)).ValueAsDateTime = Convert.ToDateTime(string.Format("12/31/1899 {0}", row2["EndTime"])); //DateTime.Parse(String.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd"), row2["EndTime"]));
+
+                    //WS.Cell(String.Format("e{0}", i)).Value = formattedUnits;
 
                     switch (row2["SAMLevel"].ToString())
                     {
@@ -415,7 +456,7 @@ namespace OODForms
                             WS.Cell(String.Format("f{0}", i)).Value = "NA";
                             break;
                     }
-                    
+
                     string MN = string.Empty;
                     if (row2["Middle_Name"].ToString().Length > 0)
                     {
@@ -513,6 +554,12 @@ namespace OODForms
                 WS.Cell("a74").AlignmentVertical = Bytescout.Spreadsheet.Constants.AlignmentVertical.Top;
 
             }
+
+            //WS.Cell("k9").ValueAsDateTime = Convert.ToDateTime(string.Format("{0}", obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0]));
+            WS.Cell("k9").Value = oldestDate.ToString("MM/dd/yy");
+
+            //WS.Cell("k10").ValueAsDateTime = Convert.ToDateTime(string.Format("{0}", obj.OODMinDate(AuthorizationNumber, StartDate, EndDate, ServiceCodeID).Tables[0].Rows[0][0], "MM/dd/yyyy"));
+            WS.Cell("k10").Value = newestDate.ToString("MM/dd/yy");
 
             MemoryStream ms = new MemoryStream();
             SS.SaveToStreamXLSX(ms);
@@ -651,7 +698,7 @@ namespace OODForms
             };
 
             // Takes all the staff Initials from the table and uses unique values to store the direct service staff initials
-            string directServiceStaffNames = string.Join(" ", form10DataList.Select(data => data.staffInitials).Distinct());
+            string directServiceStaffNames = string.Join(" ", form10DataList.Select(data => data.nameAndInitials).Distinct());
 
             var fieldData = new List<(string fieldName, string value)>
                 {
@@ -682,35 +729,31 @@ namespace OODForms
 
             for (int i = 1; i <= form10DataList.Count; i++)
             {
-                // gets correct format for date
                 DateTime dateTime = DateTime.Parse(form10DataList[i - 1].date);
                 string datePart = dateTime.ToString("M/d/yy");
 
-                // gets correct format for start/end times
                 DateTime parsedStartTime = DateTime.ParseExact(form10DataList[i - 1].startTime, "HH:mm:ss", CultureInfo.InvariantCulture);
 
-                // Format the DateTime as "hh:mm tt" (AM/PM format)
                 string formattedStartTime = parsedStartTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
 
                 DateTime parsedEndTime = DateTime.ParseExact(form10DataList[i - 1].endTime, "HH:mm:ss", CultureInfo.InvariantCulture);
 
-                // Format the DateTime as "hh:mm tt" (AM/PM format)
                 string formattedEndTime = parsedEndTime.ToString("hh:mm tt", CultureInfo.InvariantCulture);
 
-                // Get the correct units for each row
-                TimeSpan timeDifference = parsedEndTime - parsedStartTime;
-                double hoursDifference = timeDifference.TotalHours;
-                double result = hoursDifference * 10;
-                // Check if the end time is before the start time and adjust the result to be negative
-                if (parsedEndTime < parsedStartTime)
-                {
-                    result = -result;
-                }
+                    TimeSpan timeDifference = parsedEndTime - parsedStartTime;
+                    double minutesDifference = timeDifference.TotalMinutes;
 
-                    double currentRowTotal = (result / Double.Parse(form10DataList[i - 1].vehiclePerTrip)) * 5.6;
+                    int units = (int)Math.Ceiling(minutesDifference / 6);
+
+                    if (parsedEndTime < parsedStartTime)
+                    {
+                        units = -units;
+                    }
+
+                    double currentRowTotal = (units / Double.Parse(form10DataList[i - 1].vehiclePerTrip)) * 5.6;
                     invoiceTotal = Math.Round((invoiceTotal + currentRowTotal), 2); ;
 
-                    string formattedUnits = result.ToString();
+                    string formattedUnits = units.ToString();
 
                     var tableData = new List<(string fieldName, string value)>
                     {
@@ -722,7 +765,7 @@ namespace OODForms
                         ("START LOCATION STREETCITYRow" + i, form10DataList[i-1].startLocation),
                         ("END LOCATION STREETCITYRow" + i, form10DataList[i-1].endLocation),
                         ("STAFF INITIALSRow" + i, form10DataList[i-1].staffInitials),
-                        ("Text4", invoiceTotal.ToString())
+                        ("Text4", invoiceTotal.ToString("C2"))
                     };
 
                 // Iterate through the table data and set values for each row
@@ -859,6 +902,7 @@ namespace OODForms
         public string startLocation { get; set; }
         public string endLocation { get; set; }
         public string staffInitials { get; set; }
+        public string nameAndInitials { get; set; }
         public string individualsName { get; set; }
         public string authorizationNumber { get; set; }
         public string vendorName { get; set; }
