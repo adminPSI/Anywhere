@@ -284,6 +284,23 @@ namespace OODForms
 
         }
 
+        public DataSet EmpGoal(string AuthorizationNumber, string StartDate, string EndDate)
+        {
+            sb.Clear();
+            sb.Append("SELECT DISTINCT DBA.Persons.Last_Name, DBA.Persons.Middle_Name, DBA.Persons.First_Name, em_review.em_review_goal ");
+            sb.Append("FROM dba.Consumer_Services_Master ");
+            sb.Append("LEFT OUTER JOIN dba.Case_Notes ON dba.Consumer_Services_Master.Consumer_ID = dba.Case_Notes.ID ");
+            sb.Append("LEFT OUTER JOIN dba.EM_Contacts ON dba.Case_Notes.Case_Note_ID = dba.EM_Contacts.Case_Note_ID ");
+            sb.Append("LEFT OUTER JOIN dba.Persons ON dba.Consumer_Services_Master.Person_Id = dba.Persons.Person_ID ");
+            sb.Append("LEFT OUTER JOIN dba.em_review ON dba.Consumer_Services_Master.Reference_Number = em_review.Reference_Num ");
+            sb.AppendFormat("WHERE dba.Consumer_Services_Master.Reference_Number = '{0}'", AuthorizationNumber);
+            sb.AppendFormat("AND dba.EM_Contacts.Contact_Date BETWEEN '{0}' and '{1}' ", StartDate, EndDate);
+            sb.AppendFormat("AND MONTH(em_review.em_review_date) = MONTH('{0}') AND YEAR(em_review.em_review_date) = YEAR('{0}')", StartDate);
+
+
+            return di.SelectRowsDS(sb.ToString());
+        }
+
         public DataSet Counslor(string AuthorizationNumber, string ServiceCodeID, string StartDate, string EndDate)
         {
             sb.Clear();
