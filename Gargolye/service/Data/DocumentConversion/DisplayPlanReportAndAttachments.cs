@@ -83,9 +83,9 @@ namespace Anywhere.service.Data.DocumentConversion
                 return null;
             }
         }
-        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
+        public string[] sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
-            string sendtoDODDResult = string.Empty;
+            string[] sendtoDODDResult = { };
 
             try
             {
@@ -102,9 +102,11 @@ namespace Anywhere.service.Data.DocumentConversion
 
                 sendtoDODDResult = psiOispDT.UploadISP(lngConsumerId, lngPlanId);
             
-                if (sendtoDODDResult != "ISP Successfully Uploaded.")
+                if (sendtoDODDResult[0] != "ISP Successfully Uploaded.")
                 {
-                    return "Error uploading ISP. Error details: <br><br> " + sendtoDODDResult;
+                    sendtoDODDResult[0] = "Error uploading ISP. Error details: <br><br> " + sendtoDODDResult[0];
+
+                    return sendtoDODDResult;
                 }
                 if(wfAttachmentIds != null)
                 {
@@ -118,10 +120,12 @@ namespace Anywhere.service.Data.DocumentConversion
                             wfAttachId = long.Parse(wfAttachmentId);
 
                             // success -- Successful
-                            sendtoDODDResult = psiOispDT.Attachment(wfAttachId, true);
-                            if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                            string strsendtoDODDResult = psiOispDT.Attachment(wfAttachId, true);
+                            if (strsendtoDODDResult == "Error" || strsendtoDODDResult == "")
                             {
-                                return "Error uploading Workflow Attachment. Please try again.";
+                                sendtoDODDResult[0] = "Error uploading Workflow Attachment. Please try again.";
+
+                                return sendtoDODDResult;
                             }
 
                         }
@@ -139,10 +143,16 @@ namespace Anywhere.service.Data.DocumentConversion
                             //Type cast sigAttachmentId from string to long
                             sigAttachId = long.Parse(sigAttachmentId);
 
-                            sendtoDODDResult = psiOispDT.Attachment(sigAttachId, false);
-                            if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                            string strsendtoDODDResult = psiOispDT.Attachment(sigAttachId, false);
+                            strsendtoDODDResult = psiOispDT.Attachment(sigAttachId, false);
+                            if (strsendtoDODDResult == "Error" || strsendtoDODDResult == "")
                             {
-                                return "Error uploading Signature Attachment. Please try again.";
+
+                                sendtoDODDResult[0] = "Error uploading Signature Attachment. Please try again.";
+
+                                return sendtoDODDResult;
+
+                            //    return "Error uploading Signature Attachment. Please try again.";
                             }
 
                         }
@@ -160,10 +170,15 @@ namespace Anywhere.service.Data.DocumentConversion
                             //Type cast planAttachmentId from string to long
                             planAttachId = long.Parse(planAttachmentId);
 
-                            sendtoDODDResult = psiOispDT.Attachment(planAttachId, false);
-                            if (sendtoDODDResult == "Error" || sendtoDODDResult == "")
+                            string strsendtoDODDResult = psiOispDT.Attachment(planAttachId, false);
+                            
+                            if (strsendtoDODDResult == "Error" || strsendtoDODDResult == "")
                             {
-                                return "Error uploading Plan Attachment. Please try again.";
+                                sendtoDODDResult[0] = "Error uploading Plan Attachment. Please try again.";
+
+                                return sendtoDODDResult;
+
+                                // return "Error uploading Plan Attachment. Please try again.";
                             }
 
                         }
@@ -173,18 +188,32 @@ namespace Anywhere.service.Data.DocumentConversion
             }
             catch (Exception ex)
             {
-                return "There was failure in the send process. Please contact your administrator." + ex.ToString();
+                sendtoDODDResult[0] = "There was failure in the send process. Please contact your administrator." + ex.ToString();
+
+                return sendtoDODDResult;
+
+                //return "There was failure in the send process. Please contact your administrator." + ex.ToString();
             }
 
             if (wfAttachmentIds.Length == 0 && sigAttachmentIds.Length == 0 && planAttachmentIds.Length == 0)
             {
                 aadg.setUploadUserId(token, planId);
-                return "Successfully sent Plan to DODD.";
+
+                sendtoDODDResult[0] = "Successfully sent Plan to DODD.";
+
+                return sendtoDODDResult;
+
+                //return "Successfully sent Plan to DODD.";
             }
             else
             {
                 aadg.setUploadUserId(token, planId);
-                return "Successfully sent Plan and selected Attachments to DODD.";
+
+                sendtoDODDResult[0] = "Successfully sent Plan and selected Attachments to DODD.";
+
+                return sendtoDODDResult;
+
+              //  return "Successfully sent Plan and selected Attachments to DODD.";
             }
 
             // }

@@ -2572,7 +2572,7 @@ namespace Anywhere
             return psw.GetSalesForceId(consumerId, peopleId);
         }
 
-        public string uploadPlanToDODD(string consumerId, string planId)
+        public string[] uploadPlanToDODD(string consumerId, string planId)
         {
             return psw.uploadPlanToDODD(consumerId, planId);
         }
@@ -3070,7 +3070,7 @@ namespace Anywhere
             return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
         }
 
-        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
+        public string[] sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
             return dpra.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
         }
