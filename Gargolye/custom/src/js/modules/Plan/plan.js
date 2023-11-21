@@ -1504,11 +1504,14 @@ const plan = (function () {
       text: 'Copy Error to Clipboard',
       style: 'secondary',
       type: 'contained',
-      icon: 'checkmark',
+    //  icon: 'checkmark',
       callback: async function () {
         navigator.clipboard.writeText(sendtoDODDResponse[0]);
         POPUP.hide(generalMessagePopup);
         overlay.show();
+        showOKPopup();
+    
+  
       },
     });
     var displayDetailBtn = button.build({
@@ -1544,11 +1547,12 @@ const plan = (function () {
     text: 'Copy Error to Clipboard',
     style: 'secondary',
     type: 'contained',
-    icon: 'checkmark',
+    // icon: 'checkmark',
     callback: async function () {
       navigator.clipboard.writeText(sendtoDODDResponse[1]);
       POPUP.hide(detailMessagePopup);
       overlay.show();
+      showOKPopup();
     },
   });
   var displayGeneralBtn = button.build({
@@ -1572,6 +1576,35 @@ const plan = (function () {
   POPUP.show(detailMessagePopup);
   }
 
+  
+  function showOKPopup(){
+    var OKPopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+    });
+    var OKBtnWrap = document.createElement('div');
+    OKBtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      // icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(OKPopup);
+        overlay.show();
+        
+      },
+    });
+
+    OKBtnWrap.appendChild(alertokBtn);
+    var OKMessage = document.createElement('p');
+    OKMessage.innerHTML = 'Error Copied to Clipboard';
+    OKPopup.appendChild(OKMessage);
+    OKPopup.appendChild(OKBtnWrap);
+    POPUP.show(OKPopup);
+
+  }
+
   function sendToPortalAlert(sendtoPortalResponse) {
     var alertPopup = POPUP.build({
       id: 'saveAlertPopup',
@@ -1587,6 +1620,7 @@ const plan = (function () {
       callback: async function () {
         POPUP.hide(alertPopup);
         overlay.show();
+        
       },
     });
 
@@ -1597,6 +1631,7 @@ const plan = (function () {
     alertPopup.appendChild(alertbtnWrap);
     POPUP.show(alertPopup);
   }
+
 
   function buildMorePopupMenu() {
     const morepopupmenu = document.createElement('div');
