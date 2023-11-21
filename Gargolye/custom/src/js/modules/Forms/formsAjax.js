@@ -544,8 +544,8 @@
                         const resultStepDoc = await WorkflowViewerAjax.insertStepDocumentAsync(stepId, docOrder, formName + '.pdf', 'pdf', data, documentEdited); 
                         const {insertWorkflowStepDocumentResult: {attachmentId, documentId}} = resultStepDoc;
                         // save the original Form Document with any edits included
-                        const resultFormDoc = await formsAjax.updateConsumerFormAsync(formId, data, documentEdited); 
-                                  const {updateConsumerFormResult: {formID}} = resultFormDoc;
+                       // const resultFormDoc = await formsAjax.updateConsumerFormAsync(formId, data, documentEdited); 
+                        //          const {updateConsumerFormResult: {formID}} = resultFormDoc;
 
                         const newDocObj = {
                           documentId: documentId,

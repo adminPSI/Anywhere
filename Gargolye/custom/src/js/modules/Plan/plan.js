@@ -1502,9 +1502,12 @@ const plan = (function () {
     var generalMessagePopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
+      hideX: true,
     });
     var generalBtnWrap = document.createElement('div');
     generalBtnWrap.classList.add('btnWrap');
+    var closeBtnWrap = document.createElement('div');
+    closeBtnWrap.classList.add('btnWrap');
     var alertokBtn = button.build({
       text: 'Copy Error to Clipboard',
       style: 'secondary',
@@ -1523,6 +1526,7 @@ const plan = (function () {
       text: 'Show Error Details',
       style: 'secondary',
       type: 'contained',
+      
       //icon: 'checkmark',
       callback: async function () {
         POPUP.hide(generalMessagePopup);
@@ -1530,13 +1534,27 @@ const plan = (function () {
         sendtoDODDDetailErrorMessage(sendtoDODDResponse);
       },
     });
+    var closeBtn = button.build({
+      text: 'Close',
+      style: 'secondary',
+      type: 'contained',
+     // classNames: 'btnWrap',
+      // icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(generalMessagePopup);
+        overlay.show();
+        
+      },
+    });
 
     generalBtnWrap.appendChild(alertokBtn);
     generalBtnWrap.appendChild(displayDetailBtn);
+    closeBtnWrap.appendChild(closeBtn);
     var generalMessage = document.createElement('p');
     generalMessage.innerHTML = sendtoDODDResponse[0];
     generalMessagePopup.appendChild(generalMessage);
     generalMessagePopup.appendChild(generalBtnWrap);
+    generalMessagePopup.appendChild(closeBtnWrap);
     POPUP.show(generalMessagePopup);
   }
 
@@ -1545,9 +1563,12 @@ const plan = (function () {
    var detailMessagePopup = POPUP.build({
     id: 'saveAlertPopup',
     classNames: 'warning',
+    hideX: true,
   });
   var detailBtnWrap = document.createElement('div');
   detailBtnWrap.classList.add('btnWrap');
+  var closeBtnWrap = document.createElement('div');
+  closeBtnWrap.classList.add('btnWrap');
   var alertokBtn = button.build({
     text: 'Copy Error to Clipboard',
     style: 'secondary',
@@ -1571,13 +1592,28 @@ const plan = (function () {
       sendtoDODDGeneralErrorMessage(sendtoDODDResponse);
     },
   });
+  var closeBtn = button.build({
+    text: 'Close',
+    style: 'secondary',
+    type: 'contained',
+   // classNames: 'btnWrap',
+    // icon: 'checkmark',
+    callback: async function () {
+      POPUP.hide(detailMessagePopup);
+      overlay.show();
+      
+    },
+  });
+
 
   detailBtnWrap.appendChild(alertokBtn);
   detailBtnWrap.appendChild(displayGeneralBtn);
+  closeBtnWrap.appendChild(closeBtn);
   var detailMessage = document.createElement('p');
   detailMessage.innerHTML = sendtoDODDResponse[1];
   detailMessagePopup.appendChild(detailMessage);
   detailMessagePopup.appendChild(detailBtnWrap);
+  detailMessagePopup.appendChild(closeBtnWrap);
   POPUP.show(detailMessagePopup);
   }
 
@@ -1586,6 +1622,7 @@ const plan = (function () {
     var OKPopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
+      hideX: true,
     });
     var OKBtnWrap = document.createElement('div');
     OKBtnWrap.classList.add('btnWrap');
@@ -1614,6 +1651,7 @@ const plan = (function () {
     var sendtoDODDSuccessPopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
+      hideX: true,
     });
     var OKBtnWrap = document.createElement('div');
     OKBtnWrap.classList.add('btnWrap');
@@ -1628,7 +1666,7 @@ const plan = (function () {
         
       },
     });
-
+   
     OKBtnWrap.appendChild(alertokBtn);
     var sendtoDODDSuccessMesssage = document.createElement('p');
     sendtoDODDSuccessMesssage.innerHTML = sendtoDODDResponse[0] ;
