@@ -1479,7 +1479,12 @@ const plan = (function () {
         // });
         // }
 
-        sendtoDODDGeneralMessage(sendSuccess);
+        if (sendSuccess && sendSuccess[0] === "ISP Successfully Uploaded.") {
+          sendtoDODDSuccessMessage(sendSuccess);
+        } else {
+          sendtoDODDGeneralErrorMessage(sendSuccess);
+        }
+        
 
         DODDScreen.removeChild(spinner);
         DODDScreen.appendChild(screenInner);
@@ -1493,7 +1498,7 @@ const plan = (function () {
     DODDScreen.appendChild(doneBtn);
   }
 
-  function sendtoDODDGeneralMessage(sendtoDODDResponse) {
+  function sendtoDODDGeneralErrorMessage(sendtoDODDResponse) {
     var generalMessagePopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
@@ -1522,7 +1527,7 @@ const plan = (function () {
       callback: async function () {
         POPUP.hide(generalMessagePopup);
         overlay.show();
-        sendtoDODDDetailMessage(sendtoDODDResponse);
+        sendtoDODDDetailErrorMessage(sendtoDODDResponse);
       },
     });
 
@@ -1535,7 +1540,7 @@ const plan = (function () {
     POPUP.show(generalMessagePopup);
   }
 
-  function sendtoDODDDetailMessage(sendtoDODDResponse) {
+  function sendtoDODDDetailErrorMessage(sendtoDODDResponse) {
    // alert(sendtoDODDResponse[1]);
    var detailMessagePopup = POPUP.build({
     id: 'saveAlertPopup',
@@ -1563,7 +1568,7 @@ const plan = (function () {
     callback: async function () {
       POPUP.hide(detailMessagePopup);
       overlay.show();
-      sendtoDODDGeneralMessage(sendtoDODDResponse);
+      sendtoDODDGeneralErrorMessage(sendtoDODDResponse);
     },
   });
 
@@ -1602,6 +1607,34 @@ const plan = (function () {
     OKPopup.appendChild(OKMessage);
     OKPopup.appendChild(OKBtnWrap);
     POPUP.show(OKPopup);
+
+  }
+
+  function sendtoDODDSuccessMessage(sendtoDODDResponse){
+    var sendtoDODDSuccessPopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+    });
+    var OKBtnWrap = document.createElement('div');
+    OKBtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      // icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(sendtoDODDSuccessPopup);
+        overlay.show();
+        
+      },
+    });
+
+    OKBtnWrap.appendChild(alertokBtn);
+    var sendtoDODDSuccessMesssage = document.createElement('p');
+    sendtoDODDSuccessMesssage.innerHTML = sendtoDODDResponse[0] ;
+    sendtoDODDSuccessPopup.appendChild(sendtoDODDSuccessMesssage);
+    sendtoDODDSuccessPopup.appendChild(OKBtnWrap);
+    POPUP.show(sendtoDODDSuccessPopup);
 
   }
 
