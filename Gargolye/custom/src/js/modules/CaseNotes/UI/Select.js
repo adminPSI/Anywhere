@@ -42,15 +42,16 @@
     this.rootElement = null;
     this.inputWrap = null;
     this.select = null;
+
+    this._build();
   }
 
   /**
    * Builds the Select component HTML
    *
    * @function
-   * @returns {Select} Returns the current instances for chaining
    */
-  Select.prototype.build = function () {
+  Select.prototype._build = function () {
     const classArray = ['inputGroup', 'select', `${this.options.attributes.id}`];
     this.rootElement = _DOM.createElement('div', {
       class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
@@ -75,8 +76,6 @@
     }
 
     this.populate();
-
-    return this;
   };
 
   /**

@@ -2,13 +2,6 @@
   global.Form = factory();
 })(this, function () {
   //=========================
-  // ATTACHMENTS
-  //-------------------------
-  function Attachments() {
-    this.attachmentCount = 0;
-  }
-
-  //=========================
   // MAIN LIB
   //-------------------------
   /**
@@ -73,16 +66,15 @@
         case 'textarea': {
           delete ele.type; // only needed for Form
           inputInstance = new Textarea({ ...ele });
-          if (typeof this.options.onKeyup === 'function') {
-            inputInstance.onKeyup(this.options.onKeyup);
-          }
+          break;
+        }
+        case 'attachment': {
+          delete ele.type; // only needed for Form
+          inputInstance = new Attachments({ ...ele });
           break;
         }
         default: {
           inputInstance = new Input({ ...ele });
-          if (typeof this.options.onKeyup === 'function') {
-            inputInstance.onKeyup(this.options.onKeyup);
-          }
         }
       }
 
@@ -115,13 +107,14 @@
 
   Form.prototype._setupEvents = function () {
     this.form.addEventListener('change', e => {
-      const customEvent = new CustomEvent('onChange');
+      const customEvent = new CustomEvent('onChange', { detail: e });
       this.form.dispatchEvent(customEvent);
     });
+
     this.form.addEventListener(
       'keyup',
       _UTIL.debounce(e => {
-        const customEvent = new CustomEvent('onKeyup');
+        const customEvent = new CustomEvent('onKeyup', { detail: e });
         this.form.dispatchEvent(customEvent);
       }, 100),
     );
@@ -153,7 +146,7 @@
    */
   Form.prototype.onChange = function (cbFunc) {
     this.form.addEventListener('onChange', e => {
-      cbFunc(e);
+      cbFunc(e.detail);
     });
   };
 
@@ -167,9 +160,21 @@
     this.form.addEventListener(
       'onKeyup',
       _UTIL.debounce(e => {
-        cbFunc(e);
+        cbFunc(e.detail);
       }, 100),
     );
+  };
+
+  /**
+   * Handles file delete event
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Form.prototype.onFileDelete = function (cbFunc) {
+    this.form.addEventListener('fileDelete', e => {
+      cbFunc(e);
+    });
   };
 
   /**
@@ -179,8 +184,8 @@
    */
   Form.prototype.clear = function () {
     // clear all values from form inputs
-    for (input in this.inputs) {
-      this.inputs[input].clear();
+    for (inputName in this.inputs) {
+      this.inputs[inputName].clear();
     }
   };
 

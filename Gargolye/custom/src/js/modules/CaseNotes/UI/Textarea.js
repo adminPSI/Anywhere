@@ -272,22 +272,24 @@
     this.fullscreen = null;
     this.fullScreenShowBtn = null;
     this.speechToTextBtn = null;
+
+    this._build();
+    this._setupEvents();
   }
 
   /**
    * Builds the Textarea component HTML
    *
    * @function
-   * @returns {Textarea} Returns the current instances for chaining
    */
-  Textarea.prototype.build = function () {
+  Textarea.prototype._build = function () {
     const classArray = ['inputGroup', 'textarea', `${this.options.attributes.id}`];
     this.rootElement = _DOM.createElement('div', {
       class: this.options.hidden ? [...classArray, 'inputGroup--hidden'] : classArray,
     });
 
     // INPUT & LABEL
-    this.inputWrap = _DOM.createElement('div', { class: 'inputGroup__inner' });
+    this.inputWrap = _DOM.createElement('div', { class: 'inputGroup__inputWrap' });
     this.input = _DOM.createElement('textarea', { ...this.options.attributes });
     const labelEle = _DOM.createElement('label', {
       text: this.options.label,
@@ -344,10 +346,45 @@
     if (this.options.fullscreen || this.options.speechToText) {
       this.rootElement.classList.add('inputGroup--top-icons');
     }
+  };
 
-    this.setupEvents();
+  /**
+   * Sets up events for textarea
+   *
+   * @function
+   */
+  Textarea.prototype._setupEvents = function () {
+    if (this.options.fullscreen) {
+      this.input.addEventListener('change', e => {
+        this.fullscreen.updateCloneValue(e.target.value);
+      });
+    }
 
-    return this;
+    if (this.options.speechToText && this.speechToText.isSpeechInitialized) {
+      this.speechToTextBtn.addEventListener('click', e => {
+        this.speechToText.isListening = !this.speechToText.isListening;
+
+        if (this.speechToText.isListening) {
+          this.speechToText.startSpeechRecognizer(() => {
+            // this.speechToTextBtn
+            this.speechToTextBtn.innerHTML = '';
+            // set icon to micOn
+            this.speechToTextBtn.appendChild(Icon.getIcon('micOn'));
+            // remove class 'off'
+            this.speechToTextBtn.classList.remove('off');
+          });
+        } else {
+          this.speechToText.stopSpeechRecognizer(() => {
+            // this.speechToTextBtn
+            this.speechToTextBtn.innerHTML = '';
+            // set icon to micOff
+            this.speechToTextBtn.appendChild(Icon.getIcon('micOff'));
+            // add class 'off'
+            this.speechToTextBtn.classList.add('off');
+          });
+        }
+      });
+    }
   };
 
   /**
@@ -416,45 +453,6 @@
    */
   Textarea.prototype.toggleDisabled = function (isDisbled) {
     this.input.disabled = isDisbled;
-  };
-
-  /**
-   * Sets up events for textarea
-   *
-   * @function
-   */
-  Textarea.prototype.setupEvents = function () {
-    if (this.options.fullscreen) {
-      this.input.addEventListener('change', e => {
-        this.fullscreen.updateCloneValue(e.target.value);
-      });
-    }
-
-    if (this.options.speechToText && this.speechToText.isSpeechInitialized) {
-      this.speechToTextBtn.addEventListener('click', e => {
-        this.speechToText.isListening = !this.speechToText.isListening;
-
-        if (this.speechToText.isListening) {
-          this.speechToText.startSpeechRecognizer(() => {
-            // this.speechToTextBtn
-            this.speechToTextBtn.innerHTML = '';
-            // set icon to micOn
-            this.speechToTextBtn.appendChild(Icon.getIcon('micOn'));
-            // remove class 'off'
-            this.speechToTextBtn.classList.remove('off');
-          });
-        } else {
-          this.speechToText.stopSpeechRecognizer(() => {
-            // this.speechToTextBtn
-            this.speechToTextBtn.innerHTML = '';
-            // set icon to micOff
-            this.speechToTextBtn.appendChild(Icon.getIcon('micOff'));
-            // add class 'off'
-            this.speechToTextBtn.classList.add('off');
-          });
-        }
-      });
-    }
   };
 
   /**

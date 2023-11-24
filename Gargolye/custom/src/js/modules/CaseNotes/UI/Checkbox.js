@@ -41,6 +41,8 @@
     this.rootElement = null;
     this.inputWrap = null;
     this.input = null;
+
+    this._build();
   }
 
   /**
@@ -49,7 +51,7 @@
    * @function
    * @returns {Checkbox} Current instances for chaining
    */
-  Checkbox.prototype.build = function () {
+  Checkbox.prototype._build = function () {
     // CHECKBOX WRAP
     const classArray = ['inputGroup', `${this.options.attributes.id}`];
     this.options.toggle ? classArray.push('checkbox_toggle') : classArray.push('checkbox');
@@ -71,8 +73,6 @@
       const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note });
       this.rootElement.appendChild(inputNote);
     }
-
-    return this;
   };
 
   /**

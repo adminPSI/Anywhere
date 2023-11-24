@@ -31,6 +31,39 @@
    */
   CaseNotesReviewTable.prototype._build = function () {
     this.rootElement = _DOM.createElement('div');
+
+    this.reviewTable = new Table({
+      data: {
+        headings: [
+          {
+            text: 'Service Date',
+            type: 'date',
+          },
+          {
+            text: 'Start Time',
+            type: 'time',
+          },
+          {
+            text: 'End Time',
+            type: 'time',
+          },
+          {
+            text: 'Name',
+            type: 'string',
+          },
+          {
+            text: 'Created',
+            type: 'date',
+          },
+          {
+            text: 'User Updated',
+            type: 'string',
+          },
+        ],
+      },
+    });
+
+    this.reviewTable.renderTo(this.rootElement);
   };
 
   /**
@@ -114,7 +147,7 @@
    */
   CaseNotesReviewTable.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.overviewWrap);
+      node.appendChild(this.rootElement);
     }
 
     return this;

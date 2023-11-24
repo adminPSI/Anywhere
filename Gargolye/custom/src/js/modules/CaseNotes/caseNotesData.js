@@ -206,6 +206,9 @@
    * @returns {CaseNotesData}
    */
   CaseNotesData.prototype.fetchConsumersThatCanHaveMileage = async function () {
+    //* GATEKEEPER ALL CONSUMERS CAN HAVE MILEAGE
+    //if ($.session.applicationName === 'Gatekeeper') return this;
+
     let data = await _UTIL.fetchData('getConsumersThatCanHaveMileageJSON');
     data = data.getConsumersThatCanHaveMileageJSONResult;
     this.consumersThatCanHaveMileage = data.map(({ consumerid }) => consumerid);
