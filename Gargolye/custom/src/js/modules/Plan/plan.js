@@ -1441,7 +1441,7 @@ const plan = (function () {
         // runSendToDODDScreen();
 
         //Send the selected plan attachments to DODD by calling the same function the report uses
-        let sendSuccess;
+        let sendSuccess = [];
         // build & show spinner
         const spinner = PROGRESS.SPINNER.get('Sending to DODD...');
         const screenInner = DODDScreen.querySelector('.attachmentsWrap');
@@ -1479,7 +1479,12 @@ const plan = (function () {
         // });
         // }
 
-        sendtoDODDAlert(sendSuccess);
+        if (sendSuccess && sendSuccess[0] === "Successfully sent Plan to DODD.") {
+          sendtoDODDSuccessMessage(sendSuccess);
+        } else {
+          sendtoDODDGeneralErrorMessage(sendSuccess);
+        }
+        
 
         DODDScreen.removeChild(spinner);
         DODDScreen.appendChild(screenInner);
@@ -1493,30 +1498,182 @@ const plan = (function () {
     DODDScreen.appendChild(doneBtn);
   }
 
-  function sendtoDODDAlert(sendtoDODDResponse) {
-    var alertPopup = POPUP.build({
+  function sendtoDODDGeneralErrorMessage(sendtoDODDResponse) {
+    var generalMessagePopup = POPUP.build({
       id: 'saveAlertPopup',
       classNames: 'warning',
+      hideX: true,
     });
-    var alertbtnWrap = document.createElement('div');
-    alertbtnWrap.classList.add('btnWrap');
+    var generalBtnWrap = document.createElement('div');
+    generalBtnWrap.classList.add('btnWrap');
+    var closeBtnWrap = document.createElement('div');
+    closeBtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
+      text: 'Copy Error to Clipboard',
+      style: 'secondary',
+      type: 'contained',
+    //  icon: 'checkmark',
+      callback: async function () {
+        navigator.clipboard.writeText(sendtoDODDResponse[0]);
+        POPUP.hide(generalMessagePopup);
+        overlay.show();
+        showOKPopup();
+    
+  
+      },
+    });
+    var displayDetailBtn = button.build({
+      text: 'Show Error Details',
+      style: 'secondary',
+      type: 'contained',
+      
+      //icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(generalMessagePopup);
+        overlay.show();
+        sendtoDODDDetailErrorMessage(sendtoDODDResponse);
+      },
+    });
+    var closeBtn = button.build({
+      text: 'Close',
+      style: 'secondary',
+      type: 'contained',
+     // classNames: 'btnWrap',
+      // icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(generalMessagePopup);
+        overlay.show();
+        
+      },
+    });
+
+    generalBtnWrap.appendChild(alertokBtn);
+    generalBtnWrap.appendChild(displayDetailBtn);
+    closeBtnWrap.appendChild(closeBtn);
+    var generalMessage = document.createElement('p');
+    generalMessage.innerHTML = sendtoDODDResponse[0];
+    generalMessagePopup.appendChild(generalMessage);
+    generalMessagePopup.appendChild(generalBtnWrap);
+    generalMessagePopup.appendChild(closeBtnWrap);
+    POPUP.show(generalMessagePopup);
+  }
+
+  function sendtoDODDDetailErrorMessage(sendtoDODDResponse) {
+   // alert(sendtoDODDResponse[1]);
+   var detailMessagePopup = POPUP.build({
+    id: 'saveAlertPopup',
+    classNames: 'warning',
+    hideX: true,
+  });
+  var detailBtnWrap = document.createElement('div');
+  detailBtnWrap.classList.add('btnWrap');
+  var closeBtnWrap = document.createElement('div');
+  closeBtnWrap.classList.add('btnWrap');
+  var alertokBtn = button.build({
+    text: 'Copy Error to Clipboard',
+    style: 'secondary',
+    type: 'contained',
+    // icon: 'checkmark',
+    callback: async function () {
+      navigator.clipboard.writeText(sendtoDODDResponse[1]);
+      POPUP.hide(detailMessagePopup);
+      overlay.show();
+      showOKPopup();
+    },
+  });
+  var displayGeneralBtn = button.build({
+    text: 'Hide Error Details',
+    style: 'secondary',
+    type: 'contained',
+    //icon: 'checkmark',
+    callback: async function () {
+      POPUP.hide(detailMessagePopup);
+      overlay.show();
+      sendtoDODDGeneralErrorMessage(sendtoDODDResponse);
+    },
+  });
+  var closeBtn = button.build({
+    text: 'Close',
+    style: 'secondary',
+    type: 'contained',
+   // classNames: 'btnWrap',
+    // icon: 'checkmark',
+    callback: async function () {
+      POPUP.hide(detailMessagePopup);
+      overlay.show();
+      
+    },
+  });
+
+
+  detailBtnWrap.appendChild(alertokBtn);
+  detailBtnWrap.appendChild(displayGeneralBtn);
+  closeBtnWrap.appendChild(closeBtn);
+  var detailMessage = document.createElement('p');
+  detailMessage.innerHTML = sendtoDODDResponse[1];
+  detailMessagePopup.appendChild(detailMessage);
+  detailMessagePopup.appendChild(detailBtnWrap);
+  detailMessagePopup.appendChild(closeBtnWrap);
+  POPUP.show(detailMessagePopup);
+  }
+
+  
+  function showOKPopup(){
+    var OKPopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+      hideX: true,
+    });
+    var OKBtnWrap = document.createElement('div');
+    OKBtnWrap.classList.add('btnWrap');
     var alertokBtn = button.build({
       text: 'OK',
       style: 'secondary',
       type: 'contained',
-      icon: 'checkmark',
+      // icon: 'checkmark',
       callback: async function () {
-        POPUP.hide(alertPopup);
+        POPUP.hide(OKPopup);
         overlay.show();
+        
       },
     });
 
-    alertbtnWrap.appendChild(alertokBtn);
-    var alertMessage = document.createElement('p');
-    alertMessage.innerHTML = sendtoDODDResponse;
-    alertPopup.appendChild(alertMessage);
-    alertPopup.appendChild(alertbtnWrap);
-    POPUP.show(alertPopup);
+    OKBtnWrap.appendChild(alertokBtn);
+    var OKMessage = document.createElement('p');
+    OKMessage.innerHTML = 'Error Copied to Clipboard';
+    OKPopup.appendChild(OKMessage);
+    OKPopup.appendChild(OKBtnWrap);
+    POPUP.show(OKPopup);
+
+  }
+
+  function sendtoDODDSuccessMessage(sendtoDODDResponse){
+    var sendtoDODDSuccessPopup = POPUP.build({
+      id: 'saveAlertPopup',
+      classNames: 'warning',
+      hideX: true,
+    });
+    var OKBtnWrap = document.createElement('div');
+    OKBtnWrap.classList.add('btnWrap');
+    var alertokBtn = button.build({
+      text: 'OK',
+      style: 'secondary',
+      type: 'contained',
+      // icon: 'checkmark',
+      callback: async function () {
+        POPUP.hide(sendtoDODDSuccessPopup);
+        overlay.show();
+        
+      },
+    });
+   
+    OKBtnWrap.appendChild(alertokBtn);
+    var sendtoDODDSuccessMesssage = document.createElement('p');
+    sendtoDODDSuccessMesssage.innerHTML = sendtoDODDResponse[0] ;
+    sendtoDODDSuccessPopup.appendChild(sendtoDODDSuccessMesssage);
+    sendtoDODDSuccessPopup.appendChild(OKBtnWrap);
+    POPUP.show(sendtoDODDSuccessPopup);
+
   }
 
   function sendToPortalAlert(sendtoPortalResponse) {
@@ -1534,6 +1691,7 @@ const plan = (function () {
       callback: async function () {
         POPUP.hide(alertPopup);
         overlay.show();
+        
       },
     });
 
@@ -1544,6 +1702,7 @@ const plan = (function () {
     alertPopup.appendChild(alertbtnWrap);
     POPUP.show(alertPopup);
   }
+
 
   function buildMorePopupMenu() {
     const morepopupmenu = document.createElement('div');

@@ -2572,7 +2572,7 @@ namespace Anywhere
             return psw.GetSalesForceId(consumerId, peopleId);
         }
 
-        public string uploadPlanToDODD(string consumerId, string planId)
+        public string[] uploadPlanToDODD(string consumerId, string planId)
         {
             return psw.uploadPlanToDODD(consumerId, planId);
         }
@@ -2580,12 +2580,12 @@ namespace Anywhere
         public PlanSignatureWorker.SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
-               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId, string relationship)
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId, string relationship, string email, string parentOfMinor)
         {
             return psw.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact,
                                 csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
                                 csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, consumerId, createRelationship, salesforceId,
-                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType, vendorId, relationship);
+                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType, vendorId, relationship, email, parentOfMinor);
         }
         public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
                                             bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear)
@@ -3070,7 +3070,7 @@ namespace Anywhere
             return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
         }
 
-        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
+        public string[] sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
             return dpra.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
         }
