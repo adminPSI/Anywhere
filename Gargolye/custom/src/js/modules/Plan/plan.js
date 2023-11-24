@@ -1479,7 +1479,7 @@ const plan = (function () {
         // });
         // }
 
-        if (sendSuccess && sendSuccess[0] === "ISP Successfully Uploaded.") {
+        if (sendSuccess && sendSuccess[0] === "Successfully sent Plan to DODD.") {
           sendtoDODDSuccessMessage(sendSuccess);
         } else {
           sendtoDODDGeneralErrorMessage(sendSuccess);
