@@ -177,13 +177,13 @@ const CaseNotes = (() => {
       isSaveDisabled = false;
     }
 
-    if (isSaveDisabled || !isFormValid) {
-      cnForm.buttons['submit'].toggleDisabled(true);
-      cnForm.buttons['saveNew'].toggleDisabled(true);
-    } else {
-      cnForm.buttons['submit'].toggleDisabled(false);
-      cnForm.buttons['saveNew'].toggleDisabled(false);
-    }
+    // if (isSaveDisabled || !isFormValid) {
+    //   cnForm.buttons['submit'].toggleDisabled(true);
+    //   cnForm.buttons['saveNew'].toggleDisabled(true);
+    // } else {
+    //   cnForm.buttons['submit'].toggleDisabled(false);
+    //   cnForm.buttons['saveNew'].toggleDisabled(false);
+    // }
   }
 
   // CRUD
@@ -602,6 +602,7 @@ const CaseNotes = (() => {
 
     checkRequiredFields();
   }
+
   // DATE NAV
   //--------------------------------------------------
   async function onDateChange(newDate) {
@@ -705,19 +706,18 @@ const CaseNotes = (() => {
 
     //*------------------------------------------
     //* CASE NOTES REVIEW BUTTON
-    const caseNotesReviewButton = new Button({
-      type: 'submit',
-      text: 'Review',
-      name: 'cnreview',
-    }).renderTo(cnHeader);
-    caseNotesReviewButton.onClick(e => {
-      cnReviewTable = new CaseNotesReviewTable();
+    // const caseNotesReviewButton = new Button({
+    //   type: 'submit',
+    //   text: 'Review',
+    //   name: 'cnreview',
+    // }).renderTo(cnHeader);
+    // caseNotesReviewButton.onClick(e => {
+    //   cnReviewTable = new CaseNotesReviewTable();
 
-      moduleWrap.innerHTML = '';
+    //   moduleWrap.innerHTML = '';
 
-      cnReviewTable.renderTo(moduleWrap);
-    });
-
+    //   cnReviewTable.renderTo(moduleWrap);
+    // });
     //* CASE NOTES REVIEW BUTTON
     //*------------------------------------------
 
