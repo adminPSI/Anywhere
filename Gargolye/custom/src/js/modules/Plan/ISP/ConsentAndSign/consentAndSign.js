@@ -86,6 +86,7 @@ const planConsentAndSign = (() => {
       name: selectedMemberData.name,
       lastName: selectedMemberData.lastName,
       participated: selectedMemberData.participated,
+      parentOfMinor: selectedMemberData.parentOfMinor,
       relationship: selectedMemberData.relationship ? selectedMemberData.relationship : '',
       // sign/disent
       signature: selectedMemberData.signature,
