@@ -503,13 +503,13 @@ namespace Anywhere.service.Data.ConsumerFinances
             try
             {
                 logger.debug("getConsumerFinanceWidgetEntriesData");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[3];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[4];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@locationName", DbType.String, locationName);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerName", DbType.String, consumerName);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@sortOrder", DbType.String, sortOrderName);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
 
-               
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Dashboard_WidgetConsumerFinancesEntries(?, ?, ?)", args, ref transaction);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Dashboard_WidgetConsumerFinancesEntries(?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)

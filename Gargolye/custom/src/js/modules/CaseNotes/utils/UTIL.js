@@ -2,6 +2,42 @@
   global._UTIL = factory();
 })(this, function () {
   /**
+   * Auto-increments the numeric suffix of an identifier string. If the provided string
+   * does not end in a hyphen followed by a number, it appends '-1'. If it does end
+   * with a number, the number is incremented by one.
+   *
+   * This function is useful for automatically generating incremented ID values in
+   * scenarios where unique and sequential identifiers are needed.
+   *
+   * @param {string} str - The input string which may or may not end with a numeric suffix.
+   * @returns {string} The input string
+   *
+   * @example
+   * autoIncrementIdString('example');
+   * //* returns 'example-1'
+   *
+   * @example
+   * autoIncrementIdString('example-4');
+   * //* returns 'example-5'
+   */
+  function autoIncrementId(str) {
+    // Regular expression to match the pattern "-number" at the end of the string
+    const regex = /-(\d+)$/;
+
+    // Check if the string matches the pattern
+    const match = str.match(regex);
+
+    if (match) {
+      // If it matches, increment the number and return the string
+      const number = parseInt(match[1], 10) + 1;
+      return str.replace(regex, `-${number}`);
+    } else {
+      // If it doesn't match, append "-1" to the string
+      return `${str}-1`;
+    }
+  }
+
+  /**
    * Allows you to use async await with setTimeout
    *
    * @param {number} ms The number of milliseconds to delay.
@@ -21,6 +57,7 @@
 
     return promise;
   }
+
   /**
    * Debounces a function, ensuring that it's not called until after the specified
    * amount of time has passed since the last time it was invoked.
@@ -45,6 +82,7 @@
       timeout = setTimeout(later, wait);
     };
   }
+
   /**
    * Debounces a function, ensuring that it's not called until after the specified
    * amount of time has passed since the last time it was invoked. Executes the
@@ -351,6 +389,7 @@
   }
 
   return {
+    autoIncrementId,
     asyncSetTimeout,
     debounce,
     fetchData,

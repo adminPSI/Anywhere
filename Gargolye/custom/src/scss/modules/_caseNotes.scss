@@ -21,6 +21,8 @@
 
   // HEADER
   .caseNotesHeader {
+    display: flex;
+    flex-flow: row wrap;
     grid-area: header;
     padding: 10px 10px 10px;
 

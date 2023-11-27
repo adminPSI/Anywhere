@@ -102,7 +102,7 @@ const assessmentAjax = (function () {
         dataType: 'json',
       });
 
-      return data.sendSelectedAttachmentsToDODDResult[0];
+      return data.sendSelectedAttachmentsToDODDResult;
     } catch (error) {
       console.log(error);
     }

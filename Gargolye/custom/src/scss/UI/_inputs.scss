@@ -244,43 +244,63 @@ $label_fontSize: $px14;
     }
 
     .svgIcon {
+      pointer-events: none;
       position: absolute;
       right: 6px;
-      top: 31px;
+      top: 10px;
     }
   }
 
   //===========================================
   // FILES / ATTACHMENTS
   //-------------------------------------------
-  .file {
-    flex-grow: 0 !important;
-    width: auto;
+  .attachments {
+    column-gap: 6px;
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
 
-    input {
-      position: absolute;
-      right: 100px;
-      top: 10px;
-      visibility: hidden;
-    }
-    label {
-      align-items: center;
-      border: 2px solid $primary;
-      border-radius: 20px;
+    .file {
       display: flex;
-      height: 40px;
-      flex-flow: row nowrap;
-      padding: 10px 14px;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
+      flex-flow: column nowrap;
+      position: relative;
+      margin-bottom: 20px;
+      width: 100%;
+      flex-grow: 0 !important;
+      width: auto;
 
-    &.hasFile {
-      label {
-        border: 2px solid $secondary;
+      input {
+        position: absolute;
+        right: 100px;
+        top: 10px;
+        visibility: hidden;
+      }
+      label,
+      .fakelabel {
+        align-items: center;
+        border: 2px solid $primary;
+        border-radius: 20px;
+        color: #272727;
+        display: flex;
+        height: 40px;
+        flex-flow: row nowrap;
+        padding: 10px 14px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin: 0 0 4px;
+      }
 
-        .svgIcon {
-          color: $error;
+      &.hasFile {
+        label,
+        .fakelabel {
+          border: 2px solid $secondary;
+          pointer-events: none;
+
+          .svgIcon {
+            color: $error;
+            pointer-events: all;
+          }
         }
       }
     }

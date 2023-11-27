@@ -15,43 +15,6 @@
   global.Table = factory();
 })(this, function () {
   /**
-   * Default configuration
-   * @type {Object}
-   */
-  const DEFAULT_OPTIONS = {
-    style: 'default',
-    rowSortable: false,
-    columnSortable: false,
-    allowCopy: false,
-  };
-
-  /**
-   * Merge default options with user options
-   * @param {Object}  userOptions  User defined options object
-   * @return {Object}              Merged options object
-   */
-  const mergOptionsWithDefaults = userOptions => {
-    let formatedColumnOptions = {};
-
-    if (userOptions.columns) {
-      userOptions.columns.forEach(data => {
-        // convert single column selection to array
-        if (!isNaN(data.select)) {
-          data.select = [data.select];
-        }
-
-        data.select.forEach(column => {
-          formatedColumnOptions[column] = (({ select, ...rest }) => ({ ...rest }))(data);
-        });
-      });
-
-      return Object.assign({}, DEFAULT_OPTIONS, userOptions, { columns: formatedColumnOptions });
-    }
-
-    return Object.assign({}, DEFAULT_OPTIONS, userOptions);
-  };
-
-  /**
    * Get the index of node related to sibilings
    * @param {HTMLElement} node
    * @returns {Number}
@@ -73,19 +36,35 @@
   // MAIN LIB
   //-------------------------
   /**
+   * Default configuration
+   * @type {Object}
+   */
+  const DEFAULT_OPTIONS = {
+    style: 'default',
+    rowSortable: false,
+    columnSortable: false,
+    allowCopy: false,
+  };
+
+  /**
    * @class Table
    * @param {Object}  options
+   * @param {Array}   options.headings
    * @param {String}  [options.style]           Table style
    * @param {Boolean} [options.rowSortable]     Row re ordering
    * @param {Boolean} [options.columnSortable]  Column sorting by header
    * @param {Boolean} [options.allowCopy]       Row's can be duplicated by copy
-   * @param {Array}   [optins.headings]
-   * @param {Array}   [optins.data]
    */
   function Table(options) {
-    this.options = mergOptionsWithDefaults(options);
+    // Data Init
+    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
     this.rows = {};
     this.selectedRows = {};
+
+    this.rootElement = null;
+    this.table = null;
+
+    this._build();
 
     // this.table = table ref
     // this.table.tHead = table header
@@ -99,38 +78,40 @@
   /**
    * Builds & Populates Table
    */
-  Table.prototype.build = function () {
+  Table.prototype._build = function () {
     const data = this.options.data;
 
     //* create table
-    const wrapper = _DOM.createElement('div', { class: 'ui_table' });
+    this.rootElement = _DOM.createElement('div', { class: 'ui_table' });
     const tableNav = _DOM.createElement('div', { class: 'ui-table__nav' });
-    const table = _DOM.createElement('table');
+    this.table = _DOM.createElement('table');
     const tableBody = _DOM.createElement('tbody');
     const tableHeader = _DOM.createElement('thead', { html: '<tr></tr>' });
 
-    console.log(wrapper);
+    this.table.appendChild(tableHeader);
+    this.table.appendChild(tableBody);
 
-    table.appendChild(tableHeader);
-    table.appendChild(tableBody);
-
-    wrapper.appendChild(tableNav);
-    wrapper.appendChild(table);
+    this.rootElement.appendChild(tableNav);
+    this.rootElement.appendChild(this.table);
 
     //* populate table header
-    data.headings.forEach((heading, i) => {
-      const dataType = this.options.columns[i]?.type ?? '';
-      const cell = DOM.createElement('th', {
-        text: heading,
+    data.headings.forEach(heading => {
+      const cell = _DOM.createElement('th', {
+        text: heading.text,
         class: 'sortable',
-        'data-type': dataType,
+        'data-type': heading.type,
       });
       tableHeader.rows[0].appendChild(cell);
     });
+  };
 
+  /**
+   * @function
+   */
+  Table.prototype.populate = function () {
     //* populate table body
     data.rows.forEach((row, i) => {
-      const rowEle = DOM.createElement('tr', { ...row.attributes, id: row.id });
+      const rowEle = _DOM.createElement('tr', { ...row.attributes, id: row.id });
 
       this.rows[row.id] = rowEle;
 
@@ -138,24 +119,13 @@
       row.values.forEach((rd, i) => {
         const dataType = this.options.columns[i]?.type ?? '';
         rd = dataType === 'date' ? formatDate(rd) : rd;
-        const cell = DOM.createElement('td', { text: rd, 'data-type': dataType });
+        const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
         rowEle.appendChild(cell);
       });
 
       tableBody.appendChild(rowEle);
     });
-
-    //* set refs
-    this.table = table;
-    this.wrapper = wrapper;
-
-    return this;
   };
-
-  /**
-   * @function
-   */
-  Table.prototype.populate = function () {};
 
   /**
    * Multi select rows w/bulk actions
@@ -173,7 +143,7 @@
     checkboxInput.addEventListener('change', e => {
       console.log('I was selected');
     });
-    const th = DOM.createElement('th', { node: checkboxInput });
+    const th = _DOM.createElement('th', { node: checkboxInput });
     this.table.tHead.rows[0].insertBefore(th, this.table.tHead.rows[0].cells[0]);
 
     // add checkbox to each tbody row
@@ -188,7 +158,7 @@
       checkboxInput.addEventListener('change', e => {
         console.log('I was selected', row);
       });
-      const td = DOM.createElement('td', { node: checkboxInput });
+      const td = _DOM.createElement('td', { node: checkboxInput });
       row.insertBefore(td, row.cells[0]);
     });
 
@@ -290,7 +260,7 @@
 
     // add drag cell for sorting rows
     if (this.options.rowSortable) {
-      const cell = DOM.createElement('td', { html: ICONS.drag });
+      const cell = _DOM.createElement('td', { html: ICONS.drag });
       rowEle.appendChild(cell);
     }
 
@@ -298,21 +268,23 @@
     if (this.options.rowSortable) {
       this.initRowSort();
 
-      const td = DOM.createElement('th');
+      const td = _DOM.createElement('th');
       this.tableHeader.rows[0].insertBefore(td, this.tableHeader.rows[0].cells[0]);
       this.table.classList.add('sortable');
     }
   };
 
   /**
-   * Appends table to node
+   * Renders Table markup to the specified DOM node.
+   *
+   * @function
+   * @param {Node} node DOM node to render table to
+   * @returns {Table} Returns the current instances for chaining
    */
-  Table.prototype.render = function (node) {
+  Table.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.wrapper);
-      return;
+      node.appendChild(this.rootElement);
     }
-    document.body.appendChild(this.wrapper);
 
     return this;
   };

@@ -47,6 +47,8 @@
     this.rootElement = null;
     this.input = null;
     this.labelEle = null;
+
+    this._build();
   }
 
   /**
@@ -55,7 +57,7 @@
    * @function
    * @returns {Input} Current instances for chaining
    */
-  Input.prototype.build = function () {
+  Input.prototype._build = function () {
     // INPUT WRAP
     const classArray = ['inputGroup', `${this.options.attributes.type}`, `${this.options.attributes.id}`];
     const inputGroup = _DOM.createElement('div', {
@@ -158,7 +160,9 @@
    * @function
    * @param {String} message
    */
-  Input.prototype.showError = function (message) {};
+  Input.prototype.showError = function (message) {
+    //TODO-ASH:
+  };
 
   /**
    * Adds warning icon to end of input and updates note text with given warning message
@@ -166,17 +170,23 @@
    * @function
    * @param {String} message
    */
-  Input.prototype.showWarning = function (message) {};
+  Input.prototype.showWarning = function (message) {
+    //TODO-ASH:
+  };
 
   /**
    * @function
    */
-  Input.prototype.clearError = function () {};
+  Input.prototype.clearError = function () {
+    //TODO-ASH:
+  };
 
   /**
    * @function
    */
-  Input.prototype.clearWarning = function () {};
+  Input.prototype.clearWarning = function () {
+    //TODO-ASH:
+  };
 
   /**
    * Handles input change event
