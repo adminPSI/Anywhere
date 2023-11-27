@@ -67,7 +67,7 @@
    * Asynchronously fetches attachment details based on the given event object.
    *
    * @async
-   * @param {Event} event - The Event object, commonly from an input element of type 'file'.
+   * @param {Object} file File object
    * @returns {Promise<Object>} Returns a Promise that resolves to an object containing attachment details.
    * @returns {Object} .attachmentObj - An object containing the description and type of the attachment, as well as its ArrayBuffer.
    * @returns {string} .attachmentObj.description - The name of the attachment file.
@@ -75,9 +75,9 @@
    * @returns {ArrayBuffer} .attachmentObj.arrayBuffer - The ArrayBuffer of the attachment file.
    * @throws {Error} Throws an error if unable to fetch attachment details.
    */
-  async function getAttachmentDetails(event) {
+  async function getAttachmentDetails(file) {
     const attachmentObj = {};
-    const attachmentFile = event.target.files.item(0);
+    const attachmentFile = file;
     const attachmentName = attachmentFile.name;
     const attachmentType = attachmentFile.name.split('.').pop();
 

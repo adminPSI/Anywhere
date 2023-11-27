@@ -258,13 +258,14 @@ $label_fontSize: $px14;
     column-gap: 6px;
     display: flex;
     flex-flow: row wrap;
+    margin-bottom: 20px;
     width: 100%;
 
     .file {
       display: flex;
       flex-flow: column nowrap;
       position: relative;
-      margin-bottom: 20px;
+      margin: 0;
       width: 100%;
       flex-grow: 0 !important;
       width: auto;

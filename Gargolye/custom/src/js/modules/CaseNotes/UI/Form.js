@@ -89,7 +89,12 @@
 
     // Add default save button for all forms
     const btnWrap = _DOM.createElement('div', { class: 'formButtons' });
-    const submitButton = new Button({ type: 'submit', text: 'Save', name: 'save', icon: 'save' }).renderTo(btnWrap);
+    const submitButton = new Button({
+      type: 'submit',
+      text: 'Save',
+      name: 'save',
+      icon: 'save',
+    }).renderTo(btnWrap);
     this.buttons['submit'] = submitButton;
 
     // Add additional form buttons
@@ -131,10 +136,11 @@
       e.preventDefault();
 
       const formData = new FormData(this.form);
+      console.log(formData, e.submitter);
       const entries = formData.entries();
       const data = Object.fromEntries(entries);
 
-      cbFunc(data);
+      cbFunc(data, e.submitter);
     });
   };
 

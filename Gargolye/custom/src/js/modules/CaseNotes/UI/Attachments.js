@@ -12,6 +12,7 @@
   function File(options) {
     // Data Init
     this.options = _DOM.separateHTMLAttribrutes(options);
+    this.options.attributes.name = this.options.attributes.id;
 
     // DOM Ref
     this.rootElement = null;
@@ -138,10 +139,12 @@
   Attachments.prototype.addAttachments = function (newAttachments) {
     newAttachments.forEach(newAttachment => {
       const inputGroup = _DOM.createElement('div', { class: ['file', 'hasFile'] });
+
       const label = _DOM.createElement('div', {
         class: 'fakelabel',
         text: _UTIL.truncateFilename(newAttachment.description),
       });
+
       const deleteIcon = Icon.getIcon('delete');
       deleteIcon.addEventListener('click', e => {
         const customEvent = new CustomEvent('fileDelete', {
@@ -151,7 +154,7 @@
         this.rootElement.dispatchEvent(customEvent);
       });
 
-      label.append(deleteIcon);
+      label.insertBefore(deleteIcon, label.firstChild);
       inputGroup.append(label);
 
       this.rootElement.append(inputGroup);

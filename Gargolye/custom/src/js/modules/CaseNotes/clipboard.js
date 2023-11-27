@@ -103,6 +103,25 @@ async function updateNote() {
 //   }
 // }
 
+// if (saveCaseNoteResults) {
+//   if ($.session.applicationName === 'Gatekeeper' && Object.keys(attachmentsForSave).length) {
+//     await reqVisualizer.showSuccess('Case Note Saved!', 2000);
+
+//     // save attachments
+//     reqVisualizer.showPending('Saving Note Attachments');
+//     const saveAttachmentsResults = await saveAttachments(saveCaseNoteResults);
+//     if (saveAttachmentsResults === 'success') {
+//       reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
+//     } else {
+//       reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
+//     }
+//   } else {
+//     reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+//   }
+// } else {
+//   reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+// }
+
 // (function (global, factory) {
 //   global.ConfirmationPopup = factory();
 // })(this, function () {

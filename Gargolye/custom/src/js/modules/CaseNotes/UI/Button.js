@@ -22,8 +22,10 @@
    *
    * @constructor
    * @param {Object} options
+   * @param {String} options.type submit or button (don't use reset)
    * @param {String} [options.text] button text
-   * @param {String} [options.type] submit or button (don't use reset)
+   * @param {String} [options.name] button name
+   * @param {String} [options.value] button value
    * @param {String} [options.icon] icon to include
    * @param {String} [options.style] primary(blue), secondary(green), danger(red), warning(yellow)
    * @param {String} [options.styleType] contained(filled), outlined(border, no fill), text(no fill/border)
@@ -54,6 +56,7 @@
       class: ['button', this.options.style, this.options.styleType],
       type: this.options.attributes.type,
       name: this.options.attributes.name,
+      value: this.options.attributes.value,
     });
 
     if (this.options.icon) {
