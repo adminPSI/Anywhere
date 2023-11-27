@@ -25,6 +25,8 @@ const csTeamMember = (() => {
   let radioDiv;
   let participatedYesRadio;
   let participatedNoRadio;
+  let parentOfMinorYesRadio;
+  let parentOfMinorNoRadio;
   let saveTeamMemberBtn;
 
   //*------------------------------------------------------
@@ -160,6 +162,8 @@ const csTeamMember = (() => {
       teamMemberDropdown.classList.remove('disabled');
       participatedYesRadio.classList.remove('disabled');
       participatedNoRadio.classList.remove('disabled');
+      parentOfMinorYesRadio.classList.remove('disabled');
+      parentOfMinorNoRadio.classList.remove('disabled');
       signatureTypeDropdown.classList.remove('disabled');
       // set errors
       if (selectedMemberData.teamMember === '') {
@@ -593,7 +597,52 @@ const csTeamMember = (() => {
     radioContainer.appendChild(radioDiv);
 
     return radioContainer;
-  }
+    }
+
+    function buildParentOfMinorRadios() {
+        const radioContainer = document.createElement('div');
+        radioContainer.classList.add('sig_radioContainer');
+
+        const radioContainerTitle = document.createElement('p');
+        radioContainerTitle.innerText = 'Parent of Minor?';
+
+        parentOfMinorYesRadio = input.buildRadio({
+            text: 'Yes',
+            name: 'pomRadioSet',
+            isChecked: selectedMemberData.parentOfMinor === 'Y',
+            isDisabled: isSigned || readOnly,
+            callback: () => {
+                selectedMemberData.parentOfMinor = 'Y';
+                radioDiv.classList.remove('error');
+                checkTeamMemberPopupForErrors();
+            },
+        });
+        parentOfMinorNoRadio = input.buildRadio({
+            text: 'No',
+            name: 'pomRadioSet',
+            isChecked: selectedMemberData.parentOfMinor === 'N',
+            isDisabled: isSigned || readOnly,
+            callback: () => {
+                selectedMemberData.parentOfMinor = 'N';
+                radioDiv.classList.remove('error');
+                checkTeamMemberPopupForErrors();
+            },
+        });
+
+        radioDiv = document.createElement('div');
+        radioDiv.classList.add('signatures_radioDiv');
+        radioDiv.appendChild(parentOfMinorYesRadio);
+        radioDiv.appendChild(parentOfMinorNoRadio);
+
+        if (isNew && $.session.planInsertNewTeamMember) {
+            radioDiv.classList.add('error');
+        }
+
+        radioContainer.appendChild(radioContainerTitle);
+        radioContainer.appendChild(radioDiv);
+
+        return radioContainer;
+    }
 
   function buildDateSignedDisplay() {
     const dateSignedDisplay = document.createElement('p');
@@ -886,6 +935,8 @@ const csTeamMember = (() => {
         buildingNumberInput.classList.remove('disabled');
         participatedYesRadio.classList.remove('disabled');
         participatedNoRadio.classList.remove('disabled');
+        parentOfMinorYesRadio.classList.remove('disabled');
+        parentOfMinorNoRadio.classList.remove('disabled');
         signatureTypeDropdown.classList.remove('disabled');
       }
 
@@ -1115,7 +1166,8 @@ const csTeamMember = (() => {
       },
     });
     // Participate Yes/NO
-    const participationRadios = buildParticipationRadios();
+      const participationRadios = buildParticipationRadios();
+      const parentOfMinorRadios = buildParentOfMinorRadios();
 
     // Signature Type
     signatureTypeDropdown = dropdown.build({
@@ -1179,6 +1231,8 @@ const csTeamMember = (() => {
       buildingNumberInput.classList.add('disabled');
       participatedYesRadio.classList.add('disabled');
       participatedNoRadio.classList.add('disabled');
+      parentOfMinorYesRadio.classList.add('disabled');
+      parentOfMinorNoRadio.classList.add('disabled');
       // radioDiv.classList.remove('error');
       signatureTypeDropdown.classList.add('disabled');
       saveTeamMemberBtn.classList.add('disabled');
@@ -1187,6 +1241,8 @@ const csTeamMember = (() => {
     if ($.session.planUpdate) {
       participatedYesRadio.classList.remove('disabled');
       participatedNoRadio.classList.remove('disabled');
+      parentOfMinorYesRadio.classList.remove('disabled');
+      parentOfMinorNoRadio.classList.remove('disabled');
       signatureTypeDropdown.classList.remove('disabled');
     }
 
@@ -1248,6 +1304,7 @@ const csTeamMember = (() => {
       relationshipTypeInput.classList.add('disabled');
     }
     teamMemberPopup.appendChild(participationRadios);
+    teamMemberPopup.appendChild(parentOfMinorRadios);//
     teamMemberPopup.appendChild(signatureTypeDropdown);
 
     if (showConsentStatments) {
