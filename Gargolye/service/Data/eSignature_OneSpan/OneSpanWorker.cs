@@ -149,10 +149,10 @@ namespace Anywhere.service.Data.eSignature___OneSpan
                 AccountMember member = AccountMemberBuilder.NewAccountMember(senderInfoObj[0].Email)
                 .WithFirstName(senderFirstName)
                 .WithLastName(senderLastName)
-                .WithStatus(SenderStatus.ACTIVE)
+                //.WithStatus(SenderStatus.ACTIVE)
                 .Build();
 
-                ossClient.AccountService.InviteUser(member);
+                //ossClient.AccountService.InviteUser(member);
 
                 SenderInfoBuilder sender = SenderInfoBuilder
                     .NewSenderInfo(senderInfoObj[0].Email)
