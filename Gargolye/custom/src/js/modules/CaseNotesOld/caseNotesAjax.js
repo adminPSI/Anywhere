@@ -1,4 +1,5 @@
 var caseNotesAjax = (function () {
+  // GET
   function getFilteredCaseNotesList(data, callback) {
     const spinner = PROGRESS.SPINNER.get('Loading Overlaps...');
     const reviewTable = document.querySelector('#caseNotesReviewTable .table__body');
@@ -136,8 +137,183 @@ var caseNotesAjax = (function () {
       },
     });
   }
-
-  // Saving & Updating
+  function getDropdownData(callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/populateDropdownData/',
+      data: '{"token":"' + $.session.Token + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response;
+        callback(res);
+      },
+    });
+  }
+  function getConsumersThatCanHaveMileage(callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getConsumersThatCanHaveMileageJSON/',
+      data: '{"token":"' + $.session.Token + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getConsumersThatCanHaveMileageJSONResult;
+        callback(res);
+      },
+    });
+  }
+  function getBillersListForDropDown(callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getBillersListForDropDownJSON/',
+      data: '{"token":"' + $.session.Token + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getBillersListForDropDownJSONResult;
+        // var allString = '<biller><billerId>000</billerId><billerName>All</billerName></biller>';
+        // res = res.slice(0, 45) + allString + res.slice(45);
+        // createBillerDropdown(res);
+        callback(res);
+        // if ($.session.CaseNotesCaseloadRestriction == false) {
+        // 	convertDaysBackForCaseNoteLoadFilter($.session.defaultCaseNoteReviewDays);
+        // }
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+  function getReviewRequiredForCaseManager(caseManagerId, callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getReviewRequiredForCaseManager/',
+      data: '{"token":"' + $.session.Token + '", "caseManagerId":"' + caseManagerId + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = JSON.stringify(response);
+        callback(res);
+      },
+    });
+  }
+  function getCaseNoteAttachmentsList(caseNoteId, cb) {
+    data = {
+      token: $.session.Token,
+      caseNoteId: caseNoteId,
+    };
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getCaseNoteAttachmentsList/',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getCaseNoteAttachmentsListResult;
+        cb(res);
+      },
+      error: function (xhr, status, error) {},
+    });
+  }
+  function getConsumerSpecificVendors(consumerId, serviceDate, callback) {
+    if (consumerId == '' || consumerId == undefined) {
+      consumerId = $.session.caseNoteConsumerId;
+    }
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getConsumerSpecificVendorsJSON/',
+      data:
+        '{"token":"' + $.session.Token + '", "consumerId":"' + consumerId + '", "serviceDate":"' + serviceDate + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getConsumerSpecificVendorsJSONResult;
+        callback(res);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+  function getServiceLocationsForCaseNoteDropDown(data, callback) {
+    //** OBJ **
+    // data = { serviceDate, consumerId }
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getServiceLocationsForCaseNoteDropDown/',
+      data:
+        '{"token":"' +
+        $.session.Token +
+        '", "serviceDate":"' +
+        data.serviceDate +
+        '", "consumerId":"' +
+        data.consumerId +
+        '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getServiceLocationsForCaseNoteDropDownResult;
+        callback(res);
+      },
+    });
+  }
   function caseNoteOverlapCheck(data, callback) {
     // data = {consumerId, startTime, endTime, serviceDate, caseManagerId, noteId, groupNoteId}
     $.ajax({
@@ -177,7 +353,10 @@ var caseNotesAjax = (function () {
       },
     });
   }
+
+  // SAVE, UPDATE, DELETE
   function saveSingleCaseNote(data, callback) {
+    // saveCaseNote
     data = {
       token: $.session.Token,
       noteId: data.noteId,
@@ -221,6 +400,7 @@ var caseNotesAjax = (function () {
     });
   }
   function saveGroupCaseNote(data, callback) {
+    // saveGroupCaseNote
     $.ajax({
       type: 'POST',
       url:
@@ -290,6 +470,7 @@ var caseNotesAjax = (function () {
     });
   }
   function saveAdditionalGroupCaseNote(data, callback) {
+    // saveAdditionalGroupCaseNote
     $.ajax({
       type: 'POST',
       url:
@@ -354,6 +535,7 @@ var caseNotesAjax = (function () {
     });
   }
   function updateGroupNoteValues(data, callback) {
+    // updateGroupNoteValues
     $.ajax({
       type: 'POST',
       url:
@@ -389,30 +571,6 @@ var caseNotesAjax = (function () {
       },
     });
   }
-  function getCaseLoadRestriction(callback) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getCaseLoadRestriction/',
-      data: '{"token":"' + $.session.Token + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = JSON.parse(response.getCaseLoadRestrictionResult);
-        callback(res);
-      },
-      error: function (xhr, status, error) {
-        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-      },
-    });
-  }
   async function deleteExistingCaseNote(noteId) {
     try {
       const data = {
@@ -445,61 +603,8 @@ var caseNotesAjax = (function () {
       console.log(error);
     }
   }
-  function getCustomPhrases(showAll, cb) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getCustomPhrases/',
-      data: '{"token":"' + $.session.Token + '", "showAll":"' + showAll + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getCustomPhrasesResult;
-        cb(res);
-      },
-      error: function (xhr, status, error) {
-        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-      },
-    });
-  }
-  function insertCustomPhrases(shortcut, phrase, makePublic, cb) {
-    data = {
-      token: $.session.Token,
-      shortcut: shortcut,
-      phrase: phrase,
-      makePublic: makePublic,
-    };
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/insertCustomPhrase/',
-      //data: '{"token":"' + $.session.Token + '", "shortcut":"' + shortcut + '", "phrase":"' + phrase + '", "makePublic":"' + makePublic + '"}',
-      data: JSON.stringify(data),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getCustomPhraseResult;
-        cb(res);
-      },
-      error: function (xhr, status, error) {
-        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-      },
-    });
-  }
+
+  // ATTACHMENTS
   function addCaseNoteAttachment(caseNoteId, desc, attachmentType, buf, cb) {
     // let abString = btoa(String.fromCharCode.apply(null, new Uint8Array(buf)))
     var binary = '';
@@ -595,6 +700,63 @@ var caseNotesAjax = (function () {
 
     form.submit();
   }
+
+  // PHRASES
+  function getCustomPhrases(showAll, cb) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getCustomPhrases/',
+      data: '{"token":"' + $.session.Token + '", "showAll":"' + showAll + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getCustomPhrasesResult;
+        cb(res);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+  function insertCustomPhrases(shortcut, phrase, makePublic, cb) {
+    data = {
+      token: $.session.Token,
+      shortcut: shortcut,
+      phrase: phrase,
+      makePublic: makePublic,
+    };
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/insertCustomPhrase/',
+      //data: '{"token":"' + $.session.Token + '", "shortcut":"' + shortcut + '", "phrase":"' + phrase + '", "makePublic":"' + makePublic + '"}',
+      data: JSON.stringify(data),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = response.getCustomPhraseResult;
+        cb(res);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
   function getConsumersForCNFilter(callback) {
     data = {
       token: $.session.Token,
@@ -621,90 +783,8 @@ var caseNotesAjax = (function () {
       error: function (xhr, status, error) {},
     });
   }
-  //ASYNC AJAX CALL
-  function getCNPopulateFilterDropdowns(serviceCodeId) {
-    // Pass % service code on initial load and when service code/bill code == ALL
-    data = {
-      token: $.session.Token,
-      serviceCodeId: serviceCodeId,
-    };
-    return $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getCNPopulateFilterDropdowns/',
-      data: JSON.stringify(data),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-    });
-  }
-  function getSSAServiceOptionsDropdown(consumerId, serviceDate, callback) {
-    if (consumerId == '' || consumerId == undefined) {
-      consumerId = $.session.caseNoteConsumerId;
-    }
 
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getSSAServiceOptionsDropdown/',
-      data:
-        '{"token":"' + $.session.Token + '", "serviceDate":"' + serviceDate + '", "consumerId":"' + consumerId + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getSSAServiceOptionsDropdownResult;
-        callback(res);
-      },
-      error: function (xhr, status, error) {
-        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-      },
-    });
-  }
-  //ADD - ajax to call getSSABillCodesFromService(string token, string serviceName)
-  function getSSABillCodesFromService(serviceName, servicePersonApproved, callback) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getSSABillCodesFromService/',
-      data:
-        '{"token":"' +
-        $.session.Token +
-        '", "serviceName":"' +
-        serviceName +
-        '", "personApproved":"' +
-        servicePersonApproved +
-        '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getSSABillCodesFromServiceResult;
-        callback(res, servicePersonApproved);
-      },
-      error: function (xhr, status, error) {
-        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-      },
-    });
-  }
+  // REPORTS
   function generateCNDetailReport(filterValues, callback) {
     //data = {
     //    token: $.session.Token,
@@ -866,108 +946,14 @@ var caseNotesAjax = (function () {
     form.submit();
   }
 
-  //===============================================================
-  // DONE
-  //---------------------------------------------------------------
-  function getDropdownData(callback) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/populateDropdownData/',
-      data: '{"token":"' + $.session.Token + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response;
-        callback(res);
-      },
-    });
-  }
-  function getConsumersThatCanHaveMileage(callback) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getConsumersThatCanHaveMileageJSON/',
-      data: '{"token":"' + $.session.Token + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getConsumersThatCanHaveMileageJSONResult;
-        callback(res);
-      },
-    });
-  }
-  function getBillersListForDropDown(callback) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getBillersListForDropDownJSON/',
-      data: '{"token":"' + $.session.Token + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getBillersListForDropDownJSONResult;
-        // var allString = '<biller><billerId>000</billerId><billerName>All</billerName></biller>';
-        // res = res.slice(0, 45) + allString + res.slice(45);
-        // createBillerDropdown(res);
-        callback(res);
-        // if ($.session.CaseNotesCaseloadRestriction == false) {
-        // 	convertDaysBackForCaseNoteLoadFilter($.session.defaultCaseNoteReviewDays);
-        // }
-      },
-      error: function (xhr, status, error) {
-        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
-      },
-    });
-  }
-  function getReviewRequiredForCaseManager(caseManagerId, callback) {
-    $.ajax({
-      type: 'POST',
-      url:
-        $.webServer.protocol +
-        '://' +
-        $.webServer.address +
-        ':' +
-        $.webServer.port +
-        '/' +
-        $.webServer.serviceName +
-        '/getReviewRequiredForCaseManager/',
-      data: '{"token":"' + $.session.Token + '", "caseManagerId":"' + caseManagerId + '"}',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = JSON.stringify(response);
-        callback(res);
-      },
-    });
-  }
-  function getCaseNoteAttachmentsList(caseNoteId, cb) {
+  // OTHER
+  function getCNPopulateFilterDropdowns(serviceCodeId) {
+    // Pass % service code on initial load and when service code/bill code == ALL
     data = {
       token: $.session.Token,
-      caseNoteId: caseNoteId,
+      serviceCodeId: serviceCodeId,
     };
-    $.ajax({
+    return $.ajax({
       type: 'POST',
       url:
         $.webServer.protocol +
@@ -977,21 +963,17 @@ var caseNotesAjax = (function () {
         $.webServer.port +
         '/' +
         $.webServer.serviceName +
-        '/getCaseNoteAttachmentsList/',
+        '/getCNPopulateFilterDropdowns/',
       data: JSON.stringify(data),
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
-      success: function (response, status, xhr) {
-        var res = response.getCaseNoteAttachmentsListResult;
-        cb(res);
-      },
-      error: function (xhr, status, error) {},
     });
   }
-  function getConsumerSpecificVendors(consumerId, serviceDate, callback) {
+  function getSSAServiceOptionsDropdown(consumerId, serviceDate, callback) {
     if (consumerId == '' || consumerId == undefined) {
       consumerId = $.session.caseNoteConsumerId;
     }
+
     $.ajax({
       type: 'POST',
       url:
@@ -1002,13 +984,13 @@ var caseNotesAjax = (function () {
         $.webServer.port +
         '/' +
         $.webServer.serviceName +
-        '/getConsumerSpecificVendorsJSON/',
+        '/getSSAServiceOptionsDropdown/',
       data:
-        '{"token":"' + $.session.Token + '", "consumerId":"' + consumerId + '", "serviceDate":"' + serviceDate + '"}',
+        '{"token":"' + $.session.Token + '", "serviceDate":"' + serviceDate + '", "consumerId":"' + consumerId + '"}',
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
-        var res = response.getConsumerSpecificVendorsJSONResult;
+        var res = response.getSSAServiceOptionsDropdownResult;
         callback(res);
       },
       error: function (xhr, status, error) {
@@ -1016,11 +998,7 @@ var caseNotesAjax = (function () {
       },
     });
   }
-  //Gets information for dynamic dropdown of service location
-  //which is only rendered if the service has funding checked yes
-  function getServiceLocationsForCaseNoteDropDown(data, callback) {
-    //** OBJ **
-    // data = { serviceDate, consumerId }
+  function getCaseLoadRestriction(callback) {
     $.ajax({
       type: 'POST',
       url:
@@ -1031,24 +1009,50 @@ var caseNotesAjax = (function () {
         $.webServer.port +
         '/' +
         $.webServer.serviceName +
-        '/getServiceLocationsForCaseNoteDropDown/',
+        '/getCaseLoadRestriction/',
+      data: '{"token":"' + $.session.Token + '"}',
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function (response, status, xhr) {
+        var res = JSON.parse(response.getCaseLoadRestrictionResult);
+        callback(res);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
+      },
+    });
+  }
+  function getSSABillCodesFromService(serviceName, servicePersonApproved, callback) {
+    $.ajax({
+      type: 'POST',
+      url:
+        $.webServer.protocol +
+        '://' +
+        $.webServer.address +
+        ':' +
+        $.webServer.port +
+        '/' +
+        $.webServer.serviceName +
+        '/getSSABillCodesFromService/',
       data:
         '{"token":"' +
         $.session.Token +
-        '", "serviceDate":"' +
-        data.serviceDate +
-        '", "consumerId":"' +
-        data.consumerId +
+        '", "serviceName":"' +
+        serviceName +
+        '", "personApproved":"' +
+        servicePersonApproved +
         '"}',
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
-        var res = response.getServiceLocationsForCaseNoteDropDownResult;
-        callback(res);
+        var res = response.getSSABillCodesFromServiceResult;
+        callback(res, servicePersonApproved);
+      },
+      error: function (xhr, status, error) {
+        //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
       },
     });
   }
-  //===============================================================
 
   return {
     getConsumersThatCanHaveMileage,

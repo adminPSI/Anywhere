@@ -184,7 +184,7 @@
         return 0;
       })
       .forEach(rd => {
-        console.table(rd);
+        //console.table(rd);
         // Review Data
         //---------------------------------
         const caseNoteId = rd.casenoteid.split('.')[0];

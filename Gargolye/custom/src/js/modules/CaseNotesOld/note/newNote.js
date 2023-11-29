@@ -97,7 +97,7 @@ var newNote = (function () {
               var warningText = `Time Overlap(s): ${uniqueConsumers.join(', ')}`;
               warningPopup(warningText, function () {
                 saveData.consumerGroupCount = selectedConsumerIds.length;
-                saveData.consumerId = cId;  
+                saveData.consumerId = cId;
                 caseNotesAjax.saveGroupCaseNote(saveData, function (results) {
                   fulfill();
                 });
@@ -154,8 +154,7 @@ var newNote = (function () {
       } else {
         if (results !== null) {
           const saveResponseDoc = parser.parseFromString(results, 'text/xml');
-          const caseNoteId = saveResponseDoc.getElementsByTagName('caseNoteId')[0].childNodes[0]
-            .nodeValue;
+          const caseNoteId = saveResponseDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
           saveAttachments(caseNoteId, attachments, saveAndNew);
         } else {
           pendingSave.fulfill();
@@ -271,13 +270,12 @@ var newNote = (function () {
 
   function init(dashboardConsumer) {
     if (dashboardConsumer) {
-      initPageLoad(dashboardConsumer)
+      initPageLoad(dashboardConsumer);
     } else {
       setActiveModuleSectionAttribute('caseNotes-new');
       roster2.setAllowedConsumers(['%']);
       roster2.showMiniRoster();
     }
-    
   }
 
   return {
