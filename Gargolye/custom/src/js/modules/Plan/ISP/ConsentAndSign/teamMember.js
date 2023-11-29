@@ -20,6 +20,7 @@ const csTeamMember = (() => {
   let lNameInput;
   let dateOfBirthInput;
   let buildingNumberInput;
+  let emailInput;
   let relationshipTypeInput;
   let signatureTypeDropdown;
   let radioDiv;
@@ -112,6 +113,7 @@ const csTeamMember = (() => {
     nameInput.childNodes[0].value = selectedMemberData.name;
     lNameInput.childNodes[0].value = selectedMemberData.lastName;
     buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber;
+    emailInput.childNodes[0].value = selectedMemberData.email;
     if (selectedMemberData.dateOfBirth) {
       dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
         dates.removeTimestamp(selectedMemberData.dateOfBirth),
@@ -131,11 +133,13 @@ const csTeamMember = (() => {
       },
     });
     buildingNumberInput.after(relationshipTypeInput);
+    emailInput.after(buildingNumberInput);
 
     // remove errors from inputs
     nameInput.classList.remove('error');
     lNameInput.classList.remove('error');
-    buildingNumberInput.classList.remove('error');
+      buildingNumberInput.classList.remove('error');
+      emailInput.classList.remove('error');
     dateOfBirthInput.classList.remove('error');
 
     // make name and relationship readonly
@@ -932,7 +936,8 @@ const csTeamMember = (() => {
         nameInput.classList.remove('disabled');
         lNameInput.classList.remove('disabled');
         dateOfBirthInput.classList.remove('disabled');
-        buildingNumberInput.classList.remove('disabled');
+        buildingNumberInput.classList.remove('disabled');//
+        emailInput.classList.remove('disabled');
         participatedYesRadio.classList.remove('disabled');
         participatedNoRadio.classList.remove('disabled');
         parentOfMinorYesRadio.classList.remove('disabled');
@@ -1136,7 +1141,12 @@ const csTeamMember = (() => {
       value: UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateOfBirth)),
       readonly: isSigned || readOnly,
       callback: event => {
-        selectedMemberData.dateOfBirth = event.target.value;
+          selectedMemberData.dateOfBirth = event.target.value;
+          if (selectedMemberData.dateOfBirth !== '') {
+              dateOfBirthInput.classList.remove('error');
+          } else {
+              dateOfBirthInput.classList.add('error');
+          }
 
         checkTeamMemberPopupForErrors();
       },
@@ -1153,6 +1163,27 @@ const csTeamMember = (() => {
         checkTeamMemberPopupForErrors();
       },
     });
+
+    //Email
+      emailInput = input.build({
+          label: 'Email',
+          value: selectedMemberData.email,
+          readonly: isSigned || readOnly,
+          callbackType: 'input',
+          callback: event => {
+              let validEmail = validateEmail(event.target.value);
+              if (validEmail) {
+                  selectedMemberData.email = event.target.value;
+                  emailInput.classList.remove('error');
+              } else {
+                  selectedMemberData.email = '';
+                  emailInput.classList.add('error');
+              }
+              
+              
+              checkTeamMemberPopupForErrors();
+          },
+      });
     // Relationship Type
     relationshipTypeInput = input.build({
       label: 'Relationship Type',
@@ -1192,6 +1223,11 @@ const csTeamMember = (() => {
     if (showConsentStatments) {
       changeMindQuestion = getChangeMindMarkup();
       complaintQuestion = await getContactMarkup();
+    }
+
+    function validateEmail(email) {
+        const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        return regex.test(email);
     }
 
     //* BUTTONS
@@ -1298,7 +1334,8 @@ const csTeamMember = (() => {
       if (selectedMemberData.lastName !== '') teamMemberPopup.appendChild(lNameInput);
     }
     teamMemberPopup.appendChild(dateOfBirthInput);
-    teamMemberPopup.appendChild(buildingNumberInput);
+      teamMemberPopup.appendChild(buildingNumberInput);
+      teamMemberPopup.appendChild(emailInput);
     if (!isNew && selectedMemberData.relationship) {
       teamMemberPopup.appendChild(relationshipTypeInput);
       relationshipTypeInput.classList.add('disabled');

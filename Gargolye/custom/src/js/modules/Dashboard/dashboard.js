@@ -619,7 +619,7 @@
     /*15*/ initClockedInWidget(); // Day Services Clocked In
     /*16*/ initIncidentTrackingWidget(); // Incident Tracking
     /*17*/ initInfalWidget(); // InfalTimeClock Widget
-        /*18*/ //initSignaturesWidget(); // Missing Signatures Widget
+    /*18*/ initSignaturesWidget(); // Missing Signatures Widget
     /*18*/ initMoneyManagementWidget(); // Money Management Widget 
 
         var actioncenter = document.getElementById('actioncenter');
