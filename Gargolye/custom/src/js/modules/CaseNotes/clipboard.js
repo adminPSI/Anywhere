@@ -131,26 +131,30 @@ async function updateNote() {
 //   // procedure => updateGroupNoteValues()
 // }
 
-// if (selectedConsumers.length === 1) {
-//   // save/update single note
-//   saveData.consumerId = selectedConsumers[0];
-//   await saveNote(saveData, attachmentsForSave);
-// } else {
-//   if (!caseNoteEditData.groupid) {
-//     await saveGroupNote(saveData, attachmentsForSave);
-//   } else {
-//     selectedConsumers.forEach(async consumerId => {
-//       saveData.consumerId = consumerId;
+// async function saveNote(formData, attachmentsForSave = {}) {
+//   // presave
+//   if ($.session.applicationName === 'Gatekeeper') {
+//     cnDocTimer.stop();
+//   }
 
-//       if (caseNoteEditData.consumerid === consumerId) {
-//         saveData.noteId = caseNoteEditData.noteid;
-//         await saveNote(saveData, attachmentsForSave);
-//         await updateGroupNote();
-//       } else {
-//         saveData.noteId = 0;
-//         await saveAdditionGroupNote();
-//         await updateGroupNote();
-//       }
-//     });
+//   if (!saveCaseNoteResults) {
+//     reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+//     return;
+//   }
+
+//   if ($.session.applicationName === 'Advisor' || !Object.keys(attachmentsForSave).length) {
+//     reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+//     return;
+//   }
+
+//   await reqVisualizer.showSuccess('Case Note Saved!', 2000);
+
+//   reqVisualizer.showPending('Saving Note Attachments');
+//   const saveAttachmentsResults = await saveAttachments(saveCaseNoteResults, attachmentsForSave);
+
+//   if (saveAttachmentsResults === 'success') {
+//     reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
+//   } else {
+//     reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
 //   }
 // }

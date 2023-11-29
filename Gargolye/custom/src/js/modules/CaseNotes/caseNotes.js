@@ -27,6 +27,7 @@ const CaseNotes = (() => {
   let cnOverview;
   let cnPhrases;
   let cnDocTimer;
+  let reqVisualizer;
 
   function resetModule() {
     //TODO-ASH
@@ -300,6 +301,8 @@ const CaseNotes = (() => {
     }
   }
   async function saveGroupNote(formData) {
+    await deleteNote(caseNoteId);
+
     const groupNoteId = await _UTIL.fetchData('getGroupNoteId');
     const consumerGroupCount = selectedConsumers.length;
 
@@ -330,43 +333,6 @@ const CaseNotes = (() => {
       return 'success';
     } else {
       return 'error';
-    }
-  }
-  //-----
-  async function saveNote(formData, attachmentsForSave = {}) {
-    // presave
-    if ($.session.applicationName === 'Gatekeeper') {
-      cnDocTimer.stop();
-    }
-
-    reqVisualizer.show('Saving Case Note...');
-    const saveCaseNoteResults = (
-      await _UTIL.fetchData('saveCaseNote', {
-        caseManagerId,
-        ...formData,
-      })
-    ).saveCaseNoteResults;
-    //const saveCaseNoteResults = saveNoteResponse.saveCaseNoteResults;
-
-    if (!saveCaseNoteResults) {
-      reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
-      return;
-    }
-
-    if ($.session.applicationName === 'Advisor' || !Object.keys(attachmentsForSave).length) {
-      reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
-      return;
-    }
-
-    await reqVisualizer.showSuccess('Case Note Saved!', 2000);
-
-    reqVisualizer.showPending('Saving Note Attachments');
-    const saveAttachmentsResults = await saveAttachments(saveCaseNoteResults, attachmentsForSave);
-
-    if (saveAttachmentsResults === 'success') {
-      reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
-    } else {
-      reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
     }
   }
 
@@ -480,7 +446,7 @@ const CaseNotes = (() => {
         if ($.session.applicationName === 'Gatekeeper') {
           timesWithinWorkHoursCheck(value, endTimeVal);
         }
-        timeOverlapCheck(value, endTimeVal);
+        //timeOverlapCheck(value, endTimeVal);
       } else {
         // cnValidation.hide('overlap');
         // cnValidation.hide('workhours');
@@ -496,7 +462,7 @@ const CaseNotes = (() => {
         if ($.session.applicationName === 'Gatekeeper') {
           timesWithinWorkHoursCheck(startTimeVal, value);
         }
-        timeOverlapCheck(startTimeVal, value);
+        //timeOverlapCheck(startTimeVal, value);
       } else {
         // cnValidation.hide('overlap');
         // cnValidation.hide('workhours');
@@ -643,6 +609,8 @@ const CaseNotes = (() => {
   async function onFormSubmit(data, submitter) {
     const attachmentsForSave = await processAttachmentsForSave(data);
 
+    let saveCaseNoteResults, updateGroupValuesResults;
+
     const saveData = {
       caseManagerId,
       caseNote: data.noteText ? _UTIL.removeUnsavableNoteText(data.noteText) : '',
@@ -666,14 +634,13 @@ const CaseNotes = (() => {
       vendorId: data.vendor ?? '',
     };
 
-    const reqVisualizer = new AsyncRequestVisualizer();
-    reqVisualizer.renderTo(_DOM.ACTIONCENTER);
-
     if (selectedConsumers.length === 1) {
-      const saveCaseNoteResults = (await _UTIL.fetchData('saveCaseNote', saveData)).saveCaseNoteResults;
+      reqVisualizer.show('Saving Case Note...');
+      saveCaseNoteResults = (await _UTIL.fetchData('saveCaseNote', saveData)).saveCaseNoteResult;
+      caseNoteId = extractCaseNoteId(saveCaseNoteResults);
 
-      if (caseNoteId && caseNoteEditData.groupid) {
-        const updateGroupValuesResults = (
+      if (caseNoteEditData.groupid) {
+        updateGroupValuesResults = (
           await _UTIL.fetchData('updateGroupNoteValues', {
             groupNoteId: caseNoteEditData.groupid,
             noteId: caseNoteId,
@@ -682,14 +649,33 @@ const CaseNotes = (() => {
             startTime: saveData.startTime,
             endTime: saveData.endTime,
           })
-        ).updateGroupNoteValuesResults;
+        ).updateGroupNoteValuesResult;
+      }
+
+      if (saveCaseNoteResults) {
+        reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+
+        caseNoteEditData = (
+          await _UTIL.fetchData('getCaseNoteEditJSON', {
+            noteId: caseNoteId,
+          })
+        ).getCaseNoteEditJSONResult[0];
+      } else {
+        reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
       }
     } else {
+      let saveGroupResults, updateGroupResults;
+
       if (!caseNoteEditData.groupid) {
-        await deleteNote(caseNoteId);
-        const saveGroupResults = await saveGroupNote(saveData);
+        saveGroupResults = await saveGroupNote(saveData);
       } else {
-        const updateGroupResults = await updateGroupNote(saveData);
+        updateGroupResults = await updateGroupNote(saveData);
+      }
+
+      if (saveGroupResults === 'success' || updateGroupResults === 'success') {
+        reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+      } else {
+        reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
       }
     }
 
@@ -1029,6 +1015,9 @@ const CaseNotes = (() => {
       cnDocTimer = new CaseNotesTimer();
       cnDocTimer.renderTo(cnFormWrap);
     }
+    // Req Visualizer
+    reqVisualizer = new AsyncRequestVisualizer();
+    reqVisualizer.renderTo(_DOM.ACTIONCENTER);
   }
   async function init() {
     selectedDate = dates.getTodaysDateObj();
