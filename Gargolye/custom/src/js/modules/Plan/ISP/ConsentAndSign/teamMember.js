@@ -97,6 +97,19 @@ const csTeamMember = (() => {
     dropdown.populate(stateGuardianDropdown, guarddata);
   }
 
+  function calculateAge(dobStr) {
+      const dob = new Date(dobStr);
+      const today = new Date();
+
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDifference = today.getMonth() - dob.getMonth();
+      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
+          age--;
+      }
+
+      return age;
+  }
+
   async function applySelectedRelationship(relData) {
     importedFromRelationship = true;
 
@@ -604,6 +617,9 @@ const csTeamMember = (() => {
     }
 
     function buildParentOfMinorRadios() {
+        
+        const age = calculateAge();
+
         const radioContainer = document.createElement('div');
         radioContainer.classList.add('sig_radioContainer');
 

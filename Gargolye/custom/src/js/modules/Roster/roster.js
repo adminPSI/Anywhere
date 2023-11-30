@@ -242,7 +242,7 @@ const roster2 = (function () {
     const consumers = rosterConsumers.filter(rc => {
       var firstName = rc.FN.toLowerCase();
       var lastName = rc.LN.toLowerCase();
-      var middleName = rc.MN.toLowerCase();
+      var middleName = rc.MN.toLowerCase();//
       var fullName = `${firstName} ${middleName} ${lastName}`;
       var fullNameReversed = `${lastName} ${firstName} ${middleName}`;
       var matchesName = fullName.indexOf(searchValue);
