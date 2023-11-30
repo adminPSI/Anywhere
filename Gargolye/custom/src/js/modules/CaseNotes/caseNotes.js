@@ -5,6 +5,8 @@ const CaseNotes = (() => {
   let caseNoteId = null;
   let caseNoteEditData = {};
   let caseManagerId;
+  let isGroupNote = false;
+  let isNewNote = true;
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
@@ -25,9 +27,10 @@ const CaseNotes = (() => {
   let cnOverview;
   let cnPhrases;
   let cnDocTimer;
+  let reqVisualizer;
 
   function resetModule() {
-    //TODO ASH
+    //TODO-ASH
     _DOM.ACTIONCENTER.removeAttribute('data-ui');
   }
 
@@ -46,7 +49,7 @@ const CaseNotes = (() => {
 
     let isReadOnly;
 
-    //TODO: check if case note is batched | *ONLY FOR REVIEW*
+    //TODO-ASH: check if case note is batched | *ONLY FOR REVIEW*
     // batched notes are readonly, if batched status === '' it is NOT BATCHED
 
     //! GK ONLY
@@ -199,10 +202,11 @@ const CaseNotes = (() => {
   // CRUD
   //--------------------------------------------------
   async function deleteNote(noteId) {
-    const success = await _UTIL.fetchData('deleteExistingCaseNote', {
+    const response = await _UTIL.fetchData('deleteExistingCaseNote', {
       noteId: noteId,
     });
-    console.log(success);
+
+    return response.deleteExistingCaseNoteResults;
   }
   async function saveAttachments(saveCaseNoteResults, attachmentsForSave) {
     const parser = new DOMParser();
@@ -210,109 +214,131 @@ const CaseNotes = (() => {
     const caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
     const cnID = extractCaseNoteId(saveCaseNoteResults);
 
-    try {
-      const saveAttachmentPromises = [];
+    const saveAttachmentPromises = [];
 
-      // Store promises in array so we can handle each attachment individually
-      for (attachment in attachmentsForSave) {
-        const promise = await _UTIL
-          .fetchData('addCaseNoteAttachment', {
-            caseNoteId: caseNoteId,
-            description: attachmentsForSave[attachment].description,
-            attachmentType: attachmentsForSave[attachment].type,
-            attachment: attachmentsForSave[attachment].arrayBuffer,
-          })
-          .then(result => ({ status: 'fulfilled', value: result }))
-          .catch(error => ({ status: 'rejected', reason: error, attachment: attachmentsForSave[attachment] }));
+    // Store promises in array so we can handle each attachment individually
+    for (attachment in attachmentsForSave) {
+      const promise = _UTIL
+        .fetchData('addCaseNoteAttachment', {
+          caseNoteId: caseNoteId,
+          description: attachmentsForSave[attachment].description,
+          attachmentType: attachmentsForSave[attachment].type,
+          attachment: attachmentsForSave[attachment].arrayBuffer,
+        })
+        .then(result => ({ status: 'fulfilled', value: result }))
+        .catch(error => ({ status: 'rejected', reason: error, attachment: attachmentsForSave[attachment] }));
 
-        saveAttachmentPromises.push(promise);
+      saveAttachmentPromises.push(promise);
+    }
+
+    // Loop through to check for any failed attachment saves
+    const failedSaves = [];
+    const saveAttachmentResults = await Promise.allSettled(saveAttachmentPromises);
+    saveAttachmentResults.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        failedSaves.push(result.attachment.description);
       }
+    });
 
-      // Loop through to check for any failed attachment saves
-      const failedSaves = [];
-      const saveAttachmentResults = await Promise.allSettled(saveAttachmentPromises);
-      saveAttachmentResults.forEach((result, index) => {
-        if (result.status === 'rejected') {
-          failedSaves.push(result.attachment.description);
-        }
-      });
-
-      if (failedSaves.length === 0) {
-        return 'success';
-      } else {
-        return 'error';
-      }
-    } catch (error) {
+    if (failedSaves.length === 0) {
+      return 'success';
+    } else {
       return 'error';
     }
   }
-  async function saveNote(formData, attachmentsForSave = {}) {
-    const reqVisualizer = new AsyncRequestVisualizer();
-    reqVisualizer.renderTo(_DOM.ACTIONCENTER);
+  async function updateGroupNote(formData) {
+    const savePromises = [];
+    selectedConsumers.forEach(consumerId => {
+      formData.consumerId = consumerId;
 
-    // presave
-    if ($.session.applicationName === 'Gatekeeper') {
-      cnDocTimer.stop();
-    }
+      if (caseNoteEditData.consumerid === consumerId) {
+        // A: for consumer already on note
+        formData.noteId = caseNoteEditData.noteid;
 
-    // set data
-    const saveUpdateData = {
-      caseManagerId,
-      caseNote: _UTIL.removeUnsavableNoteText(formData.caseNote),
-      casenotemileage: formData.casenotemileage,
-      casenotetraveltime: formData.casenotetraveltime,
-      confidential: formData.confidential,
-      contactCode: formData.contactCode,
-      corrected: 'N',
-      consumerId: selectedConsumers[0],
-      documentationTime: $.session.applicationName === 'Gatekeeper' ? cnDocTimer.getTime() : '',
-      endTime: formData.endTime.substring(0, 5),
-      locationCode: formData.locationCode,
-      needCode: formData.needCode,
-      noteId: caseNoteId ?? 0,
-      reviewRequired: '',
-      serviceCode: formData.serviceCode,
-      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-      serviceLocationCode: formData.serviceLocationCode,
-      serviceOrBillingCodeId: formData.serviceOrBillingCodeId,
-      startTime: formData.startTime.substring(0, 5),
-      vendorId: formData.vendorId,
-    };
-    if (caseNoteId && selectedConsumers.length > 1) {
-      const groupNoteId = await _UTIL.fetchData('getGroupNoteId');
-      saveUpdateData.groupNoteId = groupNoteId.getGroupNoteIdResult;
+        const saveNotePromise = _UTIL.fetchData('saveCaseNote', saveData);
+        const updateGroupPromise = _UTIL.fetchData('updateGroupNoteValues', {
+          groupNoteId: caseNoteEditData.groupid,
+          noteId: caseNoteId,
+          serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
+          serviceDate: saveData.serviceDate,
+          startTime: saveData.startTime,
+          endTime: saveData.endTime,
+        });
 
-      // blend caseNoteEditData with saveUpdateData
-      // {...caseNoteEditData, ...saveUpdateData }
-    }
+        savePromises.push(saveNotePromise);
+        savePromises.push(updateGroupPromise);
+      } else {
+        // B: for newly added consumer
+        formData.noteId = 0;
 
-    reqVisualizer.show('Saving Case Note...');
-    const saveNoteResponse = await _UTIL.fetchData('saveCaseNote', saveUpdateData);
-    saveCaseNoteResults = saveNoteResponse.saveCaseNoteResults;
+        const saveNotePromise = _UTIL.fetchData('saveAdditionalGroupCaseNote', saveData);
+        const updateGroupPromise = _UTIL.fetchData('updateGroupNoteValues', {
+          groupNoteId: caseNoteEditData.groupid,
+          noteId: caseNoteId,
+          serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
+          serviceDate: saveData.serviceDate,
+          startTime: saveData.startTime,
+          endTime: saveData.endTime,
+        });
 
-    if (!saveCaseNoteResults) {
-      reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
-      return;
-    }
+        savePromises.push(saveNotePromise);
+        savePromises.push(updateGroupPromise);
+      }
+    });
 
-    if ($.session.applicationName === 'Advisor' || !Object.keys(attachmentsForSave).length) {
-      reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
-      return;
-    }
+    const failedSaves = [];
+    const groupSaveResults = await Promise.allSettled(savePromises);
+    groupSaveResults.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        failedSaves.push(consumerId);
+      }
+    });
 
-    await reqVisualizer.showSuccess('Case Note Saved!', 2000);
-
-    reqVisualizer.showPending('Saving Note Attachments');
-    const saveAttachmentsResults = await saveAttachments(saveCaseNoteResults, attachmentsForSave);
-    if (saveAttachmentsResults === 'success') {
-      reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
+    if (failedSaves.length === 0) {
+      return 'success';
     } else {
-      reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
+      return 'error';
+    }
+  }
+  async function saveGroupNote(formData) {
+    await deleteNote(caseNoteId);
+
+    const groupNoteId = await _UTIL.fetchData('getGroupNoteId');
+    const consumerGroupCount = selectedConsumers.length;
+
+    const savePromises = [];
+    selectedConsumers.forEach(consumerId => {
+      const promise = _UTIL
+        .fetchData('saveGroupCaseNote', {
+          ...formData,
+          consumerId,
+          consumerGroupCount,
+          groupNoteId,
+        })
+        .then(result => ({ status: 'fulfilled', value: result }))
+        .catch(error => ({ status: 'rejected', reason: error }));
+
+      savePromises.push(promise);
+    });
+
+    const failedSaves = [];
+    const groupSaveResults = await Promise.allSettled(savePromises);
+    groupSaveResults.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        failedSaves.push(consumerId);
+      }
+    });
+
+    if (failedSaves.length === 0) {
+      return 'success';
+    } else {
+      return 'error';
     }
   }
 
   // FORM
   //--------------------------------------------------
+  // CHANGE
   function onStartTimeChange(startTimeVal, endTimeVal) {
     const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
     const isValid = isTimePastOrPresent(startTimeVal);
@@ -420,7 +446,7 @@ const CaseNotes = (() => {
         if ($.session.applicationName === 'Gatekeeper') {
           timesWithinWorkHoursCheck(value, endTimeVal);
         }
-        timeOverlapCheck(value, endTimeVal);
+        //timeOverlapCheck(value, endTimeVal);
       } else {
         // cnValidation.hide('overlap');
         // cnValidation.hide('workhours');
@@ -436,7 +462,7 @@ const CaseNotes = (() => {
         if ($.session.applicationName === 'Gatekeeper') {
           timesWithinWorkHoursCheck(startTimeVal, value);
         }
-        timeOverlapCheck(startTimeVal, value);
+        //timeOverlapCheck(startTimeVal, value);
       } else {
         // cnValidation.hide('overlap');
         // cnValidation.hide('workhours');
@@ -450,8 +476,24 @@ const CaseNotes = (() => {
     travelTime: ({ event, value, name, input }) => {},
     noteText: ({ event, value, name, input }) => {},
     confidential: ({ event, value, name, input }) => {},
-    attachments: ({ event, value, name, input }) => {},
   };
+  function onFormChange(event) {
+    const value = event.target.value;
+    let name = event.target.name;
+    const input = cnForm.inputs[name];
+
+    if (!onChangeCallbacks[name]) return;
+
+    onChangeCallbacks[name]({
+      event,
+      value,
+      name,
+      input,
+    });
+
+    checkRequiredFields();
+  }
+  // KEYUP
   const onKeyupCallbacks = {
     travelTime: ({ event, value, name, input }) => {
       if (value.length > 4) {
@@ -528,22 +570,6 @@ const CaseNotes = (() => {
       }
     },
   };
-  function onFormChange(event) {
-    const value = event.target.value;
-    let name = event.target.name;
-    const input = cnForm.inputs[name];
-
-    if (!onChangeCallbacks[name]) return;
-
-    onChangeCallbacks[name]({
-      event,
-      value,
-      name,
-      input,
-    });
-
-    checkRequiredFields();
-  }
   function onFormKeyup(event) {
     const value = event.target.value;
     let name = event.target.name;
@@ -560,41 +586,98 @@ const CaseNotes = (() => {
 
     checkRequiredFields();
   }
+  // ATTACHMENT DELETE
   async function onFileDelete(e) {
     console.log(e.target);
     console.log('File delete from form', e.detail);
   }
-  async function onFormSubmit(data, submitter) {
+  // SUBMIT
+  async function processAttachmentsForSave(data) {
     const attachmentsForSave = {};
+
     for (const key in data) {
       if (key.includes('attachment')) {
         if (data[key].name) {
           const attachmentDetails = await _DOM.getAttachmentDetails(data[key]);
           attachmentsForSave[attachmentDetails.description] = attachmentDetails;
         }
-
-        delete data[key];
       }
     }
 
-    await saveNote(
-      {
-        caseNote: data.noteText ?? '',
-        casenotemileage: data.mileage ?? '0',
-        casenotetraveltime: data.travelTime ?? '',
-        confidential: data.confidential === 'on' ? 'Y' : 'N',
-        contactCode: data.contact ?? '',
-        endTime: data.endTime ?? '',
-        locationCode: data.location ?? '',
-        needCode: data.need ?? '',
-        serviceCode: data.service ?? '',
-        serviceLocationCode: data.serviceLocation ?? '',
-        serviceOrBillingCodeId: data.serviceCode ?? '',
-        startTime: data.startTime ?? '',
-        vendorId: data.vendor ?? '',
-      },
-      attachmentsForSave,
-    );
+    return attachmentsForSave;
+  }
+  async function onFormSubmit(data, submitter) {
+    const attachmentsForSave = await processAttachmentsForSave(data);
+
+    let saveCaseNoteResults, updateGroupValuesResults;
+
+    const saveData = {
+      caseManagerId,
+      caseNote: data.noteText ? _UTIL.removeUnsavableNoteText(data.noteText) : '',
+      casenotemileage: data.mileage ?? '0',
+      casenotetraveltime: data.travelTime ?? '',
+      consumerId: selectedConsumers[0],
+      confidential: data.confidential === 'on' ? 'Y' : 'N',
+      contactCode: data.contact ?? '',
+      corrected: 'N',
+      documentationTime: $.session.applicationName === 'Gatekeeper' ? cnDocTimer.getTime() : '',
+      endTime: data.endTime ? data.endTime.substring(0, 5) : '',
+      locationCode: data.location ?? '',
+      noteId: caseNoteId ?? 0,
+      needCode: data.need ?? '',
+      reviewRequired: '',
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      serviceCode: data.service ?? '',
+      serviceLocationCode: data.serviceLocation ?? '',
+      serviceOrBillingCodeId: data.serviceCode ?? '',
+      startTime: data.startTime ? data.startTime.substring(0, 5) : '',
+      vendorId: data.vendor ?? '',
+    };
+
+    if (selectedConsumers.length === 1) {
+      reqVisualizer.show('Saving Case Note...');
+      saveCaseNoteResults = (await _UTIL.fetchData('saveCaseNote', saveData)).saveCaseNoteResult;
+      caseNoteId = extractCaseNoteId(saveCaseNoteResults);
+
+      if (caseNoteEditData.groupid) {
+        updateGroupValuesResults = (
+          await _UTIL.fetchData('updateGroupNoteValues', {
+            groupNoteId: caseNoteEditData.groupid,
+            noteId: caseNoteId,
+            serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
+            serviceDate: saveData.serviceDate,
+            startTime: saveData.startTime,
+            endTime: saveData.endTime,
+          })
+        ).updateGroupNoteValuesResult;
+      }
+
+      if (saveCaseNoteResults) {
+        reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+
+        caseNoteEditData = (
+          await _UTIL.fetchData('getCaseNoteEditJSON', {
+            noteId: caseNoteId,
+          })
+        ).getCaseNoteEditJSONResult[0];
+      } else {
+        reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+      }
+    } else {
+      let saveGroupResults, updateGroupResults;
+
+      if (!caseNoteEditData.groupid) {
+        saveGroupResults = await saveGroupNote(saveData);
+      } else {
+        updateGroupResults = await updateGroupNote(saveData);
+      }
+
+      if (saveGroupResults === 'success' || updateGroupResults === 'success') {
+        reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+      } else {
+        reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+      }
+    }
 
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
@@ -603,6 +686,7 @@ const CaseNotes = (() => {
       cnForm.clear();
       caseNoteId = null;
       caseNoteEditData = {};
+      caseManagerId = $.session.PeopleId;
     }
   }
 
@@ -651,7 +735,7 @@ const CaseNotes = (() => {
   async function onDateChange(newDate) {
     selectedDate = newDate;
 
-    //TODO: re validate times when date change
+    //TODO-ASH: re validate times when date change
 
     //re populate overview section when date change
     await cnOverview.fetchData(selectedDate);
@@ -665,7 +749,7 @@ const CaseNotes = (() => {
     deleteNote(caseNoteId);
   }
   async function onOverviewCardEdit(noteId) {
-    caseNoteId = noteId;
+    //TODO-ASH: crete checkbox for corrected (review only)
 
     // scroll to form
     _DOM.scrollToTop();
@@ -674,8 +758,11 @@ const CaseNotes = (() => {
     const editData = await _UTIL.fetchData('getCaseNoteEditJSON', {
       noteId: caseNoteId,
     });
+    console.log(editData.getCaseNoteEditJSONResult[0]);
+
     caseNoteEditData = editData.getCaseNoteEditJSONResult[0];
-    console.log(caseNoteEditData);
+    caseNoteId = noteId;
+    caseManagerId = caseNoteEditData.casemanagerid;
 
     // set selected consumer
     selectedConsumers = [caseNoteEditData.consumerid];
@@ -928,6 +1015,9 @@ const CaseNotes = (() => {
       cnDocTimer = new CaseNotesTimer();
       cnDocTimer.renderTo(cnFormWrap);
     }
+    // Req Visualizer
+    reqVisualizer = new AsyncRequestVisualizer();
+    reqVisualizer.renderTo(_DOM.ACTIONCENTER);
   }
   async function init() {
     selectedDate = dates.getTodaysDateObj();

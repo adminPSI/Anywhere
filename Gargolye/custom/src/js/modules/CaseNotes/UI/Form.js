@@ -136,7 +136,6 @@
       e.preventDefault();
 
       const formData = new FormData(this.form);
-      console.log(formData, e.submitter);
       const entries = formData.entries();
       const data = Object.fromEntries(entries);
 

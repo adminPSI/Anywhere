@@ -160,9 +160,7 @@
    * @function
    * @param {String} message
    */
-  Input.prototype.showError = function (message) {
-    //TODO-ASH:
-  };
+  Input.prototype.showError = function (message) {};
 
   /**
    * Adds warning icon to end of input and updates note text with given warning message
@@ -170,23 +168,17 @@
    * @function
    * @param {String} message
    */
-  Input.prototype.showWarning = function (message) {
-    //TODO-ASH:
-  };
+  Input.prototype.showWarning = function (message) {};
 
   /**
    * @function
    */
-  Input.prototype.clearError = function () {
-    //TODO-ASH:
-  };
+  Input.prototype.clearError = function () {};
 
   /**
    * @function
    */
-  Input.prototype.clearWarning = function () {
-    //TODO-ASH:
-  };
+  Input.prototype.clearWarning = function () {};
 
   /**
    * Handles input change event

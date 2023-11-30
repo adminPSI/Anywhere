@@ -1,16 +1,3 @@
-//? QUESTIONS FOR JOSH
-//1. what all causes overlap?
-//TODO-ASH: stop speech to text on save
-//TODO-ASH: after they save a note, if they don't hit save and clear, allow them to immediatley convert note to a group note
-
-//? REVIEW ONLY
-//-----------------------------
-//? QUESTIONS FOR JOSH
-//1. Since we are letting them doc time even if its not required,
-//   how will this work with no group notes if doc time is allowed?
-//TODO: crete checkbox for corrected (review only)
-//TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
-
 // let reviewRequired;
 // reviewRequired = cnData.isReviewRequired();
 
@@ -49,39 +36,20 @@ async function updateNote() {
 // (function (global, factory) {
 //   global.Attachment = factory();
 // })(this, function () {
-//   /**
-//    * @constructor
-//    */
 //   function Attachment() {}
-
-//   /**
-//    * @function
-//    */
 //   Attachment.prototype._build = function () {};
-
 //   return Attachment;
 // });
 
 // const customEvent = new CustomEvent('onCardEdit', {
 //   bubbles: true,
 //   cancelable: true,
-//   detail: { caseNoteId },
+//   detail: { },
 // });
-// this.overviewCardsWrap.dispatchEvent(customEvent);
+// overviewCardsWrap.dispatchEvent(customEvent);
 
 // _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
 // _UTIL.localStorageHandler.set('casenotes-showAllPhrases', value);
-
-// view
-//---------------------------------
-// const densitySmallButton = _DOM.createElement('div', {
-//   class: ['densitySmall'],
-//   node: Icon.getIcon('densitySmall'),
-// });
-// const densityMediumButton = _DOM.createElement('div', {
-//   class: ['densityMedium'],
-//   node: Icon.getIcon('densityMedium'),
-// });
 
 // if (this.options.allowMultiSelect) {
 //   if (!e.target.parentNode.classList.contains('selected')) {
@@ -122,89 +90,71 @@ async function updateNote() {
 //   reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
 // }
 
-// (function (global, factory) {
-//   global.ConfirmationPopup = factory();
-// })(this, function () {
-//   //=========================
-//   // MAIN LIB
-//   //-------------------------
-//   /**
-//    * Default configuration
-//    * @type {Object}
-//    */
-//   const DEFAULT_OPTIONS = {
-//     style: 'default', // warning, error
-//   };
+//---------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------
 
-//   /**
-//    * @constructor
-//    */
-//   function ConfirmationPopup(options) {
-//     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
-//     // Instance Ref
-//     this.dialog = null;
+// if (selectedConsumers.length === 1 && !caseNoteId) {
+//   // save single case note
+//   // procedure => saveCaseNote()
+// }
 
-//     // DOM Ref
-//     this.confirmationButtons = null;
-//     this.yesButton = null;
-//     this.noButton = null;
+// if (selectedConsumers.length === 1 && caseNoteId && !caseNoteEditData.groupid) {
+//   // save single case note
+//   // procedure => saveCaseNote()
+// }
 
-//     this._build();
+// if (selectedConsumers.length === 1 && caseNoteId && caseNoteEditData.groupid) {
+//   // save single case note
+//   // procedure => saveCaseNote()
+//   // save group values
+//   // procedure => updateGroupNoteValues()
+// }
+
+// if (selectedConsumers.length > 1 && caseNoteId && !caseNoteEditData.groupid) {
+//   // delete existing note
+//   // for each consumer
+//   // save group case note
+//   // procedure => saveGroupCaseNote()
+// }
+
+// if (selectedConsumers.length > 1 && caseNoteId && caseNoteEditData.groupid) {
+//   // A: for consumer already on note
+//   // save single case note
+//   // procedure => saveCaseNote()
+//   // save group values
+//   // procedure => updateGroupNoteValues()
+//   //------------------------------------------------
+//   // B: for newly added consumer
+//   // save additional group case note
+//   // procedure => saveAdditionalGroupCaseNote()
+//   // save group values
+//   // procedure => updateGroupNoteValues()
+// }
+
+// async function saveNote(formData, attachmentsForSave = {}) {
+//   // presave
+//   if ($.session.applicationName === 'Gatekeeper') {
+//     cnDocTimer.stop();
 //   }
 
-//   ConfirmationPopup.prototype._build = function () {
-//     this.dialog = new Dialog({ className: 'inactivityWarning' });
+//   if (!saveCaseNoteResults) {
+//     reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+//     return;
+//   }
 
-//     const messageEle = _DOM.createElement('p', {
-//       text: this.options.message,
-//     });
+//   if ($.session.applicationName === 'Advisor' || !Object.keys(attachmentsForSave).length) {
+//     reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+//     return;
+//   }
 
-//     this.confirmationButtons = _DOM.createElement('div', { class: 'button-wrap' });
-//     this.yesButton = new Button({ text: 'yes' });
-//     this.noButton = new Button({ text: 'no', styleType: 'outlined' });
-//     this.yesButton.renderTo(this.confirmationButtons);
-//     this.noButton.renderTo(this.confirmationButtons);
+//   await reqVisualizer.showSuccess('Case Note Saved!', 2000);
 
-//     this.dialog.dialog.appendChild(messageEle);
-//     this.dialog.dialog.appendChild(this.confirmationButtons);
-//   };
+//   reqVisualizer.showPending('Saving Note Attachments');
+//   const saveAttachmentsResults = await saveAttachments(saveCaseNoteResults, attachmentsForSave);
 
-//   /**
-//    * Sets up events for Dialog Box
-//    *
-//    * @function
-//    */
-//   ConfirmationPopup.prototype._setupEvents = function () {
-//     this.confirmationButtons.addEventListener('click', e => {
-//       this.dialog.close();
-
-//       const customEvent = new CustomEvent('onConfirmationClick', {
-//         bubbles: true,
-//         cancelable: true,
-//         detail: e.target.dataset.target === 'yes' ? true : false,
-//       });
-//       this.confirmationButtons.dispatchEvent(customEvent);
-//     });
-//   };
-
-//   /**
-//    * @function
-//    * @param {Function} cbFunc Callback function to call
-//    */
-//   ConfirmationPopup.prototype.onClick = function (cbFunc) {
-//     this.confirmationButtons.addEventListener('onConfirmationClick', e => {
-//       cbFunc(e.detail);
-//     });
-//   };
-
-//   /**
-//    * Shows the confirmation popup/dialog
-//    *
-//    * @function
-//    */
-//   ConfirmationPopup.prototype.show = function () {
-//     this.dialog.show();
-//   };
-
-//   return ConfirmationPopup;
-// });
+//   if (saveAttachmentsResults === 'success') {
+//     reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
+//   } else {
+//     reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
+//   }
+// }

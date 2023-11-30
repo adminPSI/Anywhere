@@ -1575,7 +1575,7 @@ const plan = (function () {
     type: 'contained',
     // icon: 'checkmark',
     callback: async function () {
-      navigator.clipboard.writeText(sendtoDODDResponse[1]);
+      navigator.clipboard.writeText(sendtoDODDResponse[0] + '        ' + sendtoDODDResponse[1]);
       POPUP.hide(detailMessagePopup);
       overlay.show();
       showOKPopup();
@@ -1610,7 +1610,7 @@ const plan = (function () {
   detailBtnWrap.appendChild(displayGeneralBtn);
   closeBtnWrap.appendChild(closeBtn);
   var detailMessage = document.createElement('p');
-  detailMessage.innerHTML = sendtoDODDResponse[1];
+  detailMessage.innerHTML = sendtoDODDResponse[0] + '</br></br>' + sendtoDODDResponse[1];
   detailMessagePopup.appendChild(detailMessage);
   detailMessagePopup.appendChild(detailBtnWrap);
   detailMessagePopup.appendChild(closeBtnWrap);
