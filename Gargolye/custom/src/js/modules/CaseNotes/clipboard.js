@@ -7,6 +7,8 @@
 // allowGroupNotes = cnData.allowGroupNotes();
 // allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
 
+//TODO-ASH: crete checkbox for corrected (review only)
+
 function convertSingleNoteToGroupNote() {
   //TODO-ASH: 1. convertToGroupNotes === true | only if !isGroupNote && allowGroupNotes
   //TODO-ASH: 2. allowGroupNotes | this gets set on from service code dropdown event
@@ -51,110 +53,196 @@ async function updateNote() {
 // _UTIL.localStorageHandler.get('casenotes-showAllPhrases');
 // _UTIL.localStorageHandler.set('casenotes-showAllPhrases', value);
 
-// if (this.options.allowMultiSelect) {
-//   if (!e.target.parentNode.classList.contains('selected')) {
-//     e.target.parentNode.classList.add('selected');
-//     this.selectedConsumers[e.target.dataset.id] = e.target;
-//   } else {
-//     e.target.parentNode.classList.remove('selected');
-//     delete this.selectedConsumers[e.target.dataset.id];
-//   }
-// } else {
-//   if (e.target.parentNode.classList.contains('selected')) {
-//     e.target.parentNode.classList.remove('selected');
-//     delete this.selectedConsumers[e.target.dataset.id];
-//   } else {
-//     this.clearSelectedConsumers();
-
-//     e.target.parentNode.classList.add('selected');
-//     this.selectedConsumers[e.target.dataset.id] = e.target;
-//   }
-// }
-
+// reqVisualizer.show('Saving Case Note...');
+// reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+// reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+// await reqVisualizer.showSuccess('Case Note Saved!', 2000);
 // if (saveCaseNoteResults) {
-//   if ($.session.applicationName === 'Gatekeeper' && Object.keys(attachmentsForSave).length) {
-//     await reqVisualizer.showSuccess('Case Note Saved!', 2000);
-
-//     // save attachments
-//     reqVisualizer.showPending('Saving Note Attachments');
-//     const saveAttachmentsResults = await saveAttachments(saveCaseNoteResults);
-//     if (saveAttachmentsResults === 'success') {
-//       reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
-//     } else {
-//       reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
-//     }
-//   } else {
-//     reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
-//   }
-// } else {
-//   reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+//   caseNoteEditData = (
+//     await _UTIL.fetchData('getCaseNoteEditJSON', {
+//       noteId: caseNoteId,
+//     })
+//   ).getCaseNoteEditJSONResult[0];
 // }
 
 //---------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------
 
 // if (selectedConsumers.length === 1 && !caseNoteId) {
-//   // save single case note
-//   // procedure => saveCaseNote()
+// save single case note
+// procedure => saveCaseNote()
 // }
 
 // if (selectedConsumers.length === 1 && caseNoteId && !caseNoteEditData.groupid) {
-//   // save single case note
-//   // procedure => saveCaseNote()
+// save single case note
+// procedure => saveCaseNote()
 // }
 
 // if (selectedConsumers.length === 1 && caseNoteId && caseNoteEditData.groupid) {
-//   // save single case note
-//   // procedure => saveCaseNote()
-//   // save group values
-//   // procedure => updateGroupNoteValues()
+// save single case note
+// procedure => saveCaseNote()
+// save group values
+// procedure => updateGroupNoteValues()
 // }
 
 // if (selectedConsumers.length > 1 && caseNoteId && !caseNoteEditData.groupid) {
-//   // delete existing note
-//   // for each consumer
-//   // save group case note
-//   // procedure => saveGroupCaseNote()
+// delete existing note
+// for each consumer
+// save group case note
+// procedure => saveGroupCaseNote()
 // }
 
 // if (selectedConsumers.length > 1 && caseNoteId && caseNoteEditData.groupid) {
-//   // A: for consumer already on note
-//   // save single case note
-//   // procedure => saveCaseNote()
-//   // save group values
-//   // procedure => updateGroupNoteValues()
-//   //------------------------------------------------
-//   // B: for newly added consumer
-//   // save additional group case note
-//   // procedure => saveAdditionalGroupCaseNote()
-//   // save group values
-//   // procedure => updateGroupNoteValues()
+// A: for consumer already on note
+// save single case note
+// procedure => saveCaseNote()
+// save group values
+// procedure => updateGroupNoteValues()
+//------------------------------------------------
+// B: for newly added consumer
+// save additional group case note
+// procedure => saveAdditionalGroupCaseNote()
+// save group values
+// procedure => updateGroupNoteValues()
+// }
+// async function onFormSubmit(data, submitter) {
+//   let saveCaseNoteResults, updateGroupValuesResults;
+
+//   const saveData = {
+//     caseManagerId,
+//     caseNote: data.noteText ? _UTIL.removeUnsavableNoteText(data.noteText) : '',
+//     casenotemileage: data.mileage ?? '0',
+//     casenotetraveltime: data.travelTime ?? '',
+//     consumerId: selectedConsumers[0],
+//     confidential: data.confidential === 'on' ? 'Y' : 'N',
+//     contactCode: data.contact ?? '',
+//     corrected: 'N',
+//     documentationTime: $.session.applicationName === 'Gatekeeper' ? cnDocTimer.getTime() : '',
+//     endTime: data.endTime ? data.endTime.substring(0, 5) : '',
+//     locationCode: data.location ?? '',
+//     noteId: caseNoteId ?? 0,
+//     needCode: data.need ?? '',
+//     reviewRequired: '',
+//     serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+//     serviceCode: data.service ?? '',
+//     serviceLocationCode: data.serviceLocation ?? '',
+//     serviceOrBillingCodeId: data.serviceCode ?? '',
+//     startTime: data.startTime ? data.startTime.substring(0, 5) : '',
+//     vendorId: data.vendor ?? '',
+//   };
+
+//   if (selectedConsumers.length === 1) {
+//     saveCaseNoteResults = (await _UTIL.fetchData('saveCaseNote', saveData)).saveCaseNoteResult;
+//   } else {
+//     let saveGroupResults, updateGroupResults;
+
+//     if (!caseNoteEditData.groupid) {
+//       saveGroupResults = await saveGroupNote(saveData);
+//     } else {
+//       updateGroupResults = await updateGroupNote(saveData);
+//     }
+//   }
+
+//   if (caseNoteEditData.groupid) {
+//     updateGroupValuesResults = (
+//       await _UTIL.fetchData('updateGroupNoteValues', {
+//         groupNoteId: caseNoteEditData.groupid,
+//         noteId: caseNoteId,
+//         serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
+//         serviceDate: saveData.serviceDate,
+//         startTime: saveData.startTime,
+//         endTime: saveData.endTime,
+//       })
+//     ).updateGroupNoteValuesResult;
+//   }
 // }
 
-// async function saveNote(formData, attachmentsForSave = {}) {
-//   // presave
-//   if ($.session.applicationName === 'Gatekeeper') {
-//     cnDocTimer.stop();
-//   }
+// async function updateGroupNote(formData) {
+//   const savePromises = [];
+//   selectedConsumers.forEach(consumerId => {
+//     formData.consumerId = consumerId;
 
-//   if (!saveCaseNoteResults) {
-//     reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
-//     return;
-//   }
+//     if (caseNoteEditData.consumerid === consumerId) {
+//       // A: for consumer already on note
+//       formData.noteId = caseNoteEditData.noteid;
 
-//   if ($.session.applicationName === 'Advisor' || !Object.keys(attachmentsForSave).length) {
-//     reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
-//     return;
-//   }
+//       const saveNotePromise = _UTIL.fetchData('saveCaseNote', saveData);
+//       const updateGroupPromise = _UTIL.fetchData('updateGroupNoteValues', {
+//         groupNoteId: caseNoteEditData.groupid,
+//         noteId: caseNoteId,
+//         serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
+//         serviceDate: saveData.serviceDate,
+//         startTime: saveData.startTime,
+//         endTime: saveData.endTime,
+//       });
 
-//   await reqVisualizer.showSuccess('Case Note Saved!', 2000);
+//       savePromises.push(saveNotePromise);
+//       savePromises.push(updateGroupPromise);
+//     } else {
+//       // B: for newly added consumer
+//       formData.noteId = 0;
 
-//   reqVisualizer.showPending('Saving Note Attachments');
-//   const saveAttachmentsResults = await saveAttachments(saveCaseNoteResults, attachmentsForSave);
+//       const saveNotePromise = _UTIL.fetchData('saveAdditionalGroupCaseNote', saveData);
+//       const updateGroupPromise = _UTIL.fetchData('updateGroupNoteValues', {
+//         groupNoteId: caseNoteEditData.groupid,
+//         noteId: caseNoteId,
+//         serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
+//         serviceDate: saveData.serviceDate,
+//         startTime: saveData.startTime,
+//         endTime: saveData.endTime,
+//       });
 
-//   if (saveAttachmentsResults === 'success') {
-//     reqVisualizer.fullfill('success', 'Attachments Saved!', 2000);
+//       savePromises.push(saveNotePromise);
+//       savePromises.push(updateGroupPromise);
+//     }
+//   });
+
+//   const failedSaves = [];
+//   const groupSaveResults = await Promise.allSettled(savePromises);
+//   groupSaveResults.forEach((result, index) => {
+//     if (result.status === 'rejected') {
+//       failedSaves.push(consumerId);
+//     }
+//   });
+
+//   if (failedSaves.length === 0) {
+//     return 'success';
 //   } else {
-//     reqVisualizer.fullfill('error', 'Error Saving Note Attachments', 2000);
+//     return 'error';
+//   }
+// }
+// async function saveGroupNote(formData) {
+//   await deleteNote(caseNoteId);
+
+//   const groupNoteId = await _UTIL.fetchData('getGroupNoteId');
+//   const consumerGroupCount = selectedConsumers.length;
+
+//   const savePromises = [];
+//   selectedConsumers.forEach(consumerId => {
+//     const promise = _UTIL
+//       .fetchData('saveGroupCaseNote', {
+//         ...formData,
+//         consumerId,
+//         consumerGroupCount,
+//         groupNoteId,
+//       })
+//       .then(result => ({ status: 'fulfilled', value: result }))
+//       .catch(error => ({ status: 'rejected', reason: error }));
+
+//     savePromises.push(promise);
+//   });
+
+//   const failedSaves = [];
+//   const groupSaveResults = await Promise.allSettled(savePromises);
+//   groupSaveResults.forEach((result, index) => {
+//     if (result.status === 'rejected') {
+//       failedSaves.push(consumerId);
+//     }
+//   });
+
+//   if (failedSaves.length === 0) {
+//     return 'success';
+//   } else {
+//     return 'error';
 //   }
 // }

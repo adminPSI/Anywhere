@@ -3,10 +3,9 @@ const CaseNotes = (() => {
   // SESSION DATA
   //--------------------------
   let caseNoteId = null;
+  let caseNoteGroupId = null;
   let caseNoteEditData = {};
   let caseManagerId;
-  let isGroupNote = false;
-  let isNewNote = true;
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
@@ -246,98 +245,127 @@ const CaseNotes = (() => {
       return 'error';
     }
   }
-  async function updateGroupNote(formData) {
+  async function saveGroup(data) {
     const savePromises = [];
+    let newGroupId;
+    let consumerGroupCount;
+
+    if (!caseNoteGroupId) {
+      deleteNote(caseNoteId);
+      newGroupId = await _UTIL.fetchData('getGroupNoteId');
+      consumerGroupCount = selectedConsumers.length;
+    }
+
     selectedConsumers.forEach(consumerId => {
-      formData.consumerId = consumerId;
+      if (!caseNoteGroupId) {
+        savePromises.push(
+          _UTIL
+            .fetchData('saveGroupCaseNote', {
+              ...data,
+              consumerId,
+              consumerGroupCount,
+              groupNoteId: newGroupId,
+            })
+            .then(result => ({ status: 'fulfilled', value: result }))
+            .catch(error => ({ status: 'rejected', reason: error })),
+        );
+        return;
+      }
 
       if (caseNoteEditData.consumerid === consumerId) {
-        // A: for consumer already on note
-        formData.noteId = caseNoteEditData.noteid;
-
-        const saveNotePromise = _UTIL.fetchData('saveCaseNote', saveData);
-        const updateGroupPromise = _UTIL.fetchData('updateGroupNoteValues', {
-          groupNoteId: caseNoteEditData.groupid,
-          noteId: caseNoteId,
-          serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
-          serviceDate: saveData.serviceDate,
-          startTime: saveData.startTime,
-          endTime: saveData.endTime,
-        });
-
-        savePromises.push(saveNotePromise);
-        savePromises.push(updateGroupPromise);
+        savePromises.push(_UTIL.fetchData('saveCaseNote', data));
       } else {
-        // B: for newly added consumer
-        formData.noteId = 0;
-
-        const saveNotePromise = _UTIL.fetchData('saveAdditionalGroupCaseNote', saveData);
-        const updateGroupPromise = _UTIL.fetchData('updateGroupNoteValues', {
-          groupNoteId: caseNoteEditData.groupid,
-          noteId: caseNoteId,
-          serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
-          serviceDate: saveData.serviceDate,
-          startTime: saveData.startTime,
-          endTime: saveData.endTime,
-        });
-
-        savePromises.push(saveNotePromise);
-        savePromises.push(updateGroupPromise);
+        data.consumerId = consumerId;
+        savePromises.push(_UTIL.fetchData('saveAdditionalGroupCaseNote', data));
       }
     });
 
-    const failedSaves = [];
-    const groupSaveResults = await Promise.allSettled(savePromises);
-    groupSaveResults.forEach((result, index) => {
-      if (result.status === 'rejected') {
-        failedSaves.push(consumerId);
-      }
-    });
-
-    if (failedSaves.length === 0) {
-      return 'success';
-    } else {
-      return 'error';
-    }
-  }
-  async function saveGroupNote(formData) {
-    await deleteNote(caseNoteId);
-
-    const groupNoteId = await _UTIL.fetchData('getGroupNoteId');
-    const consumerGroupCount = selectedConsumers.length;
-
-    const savePromises = [];
-    selectedConsumers.forEach(consumerId => {
-      const promise = _UTIL
-        .fetchData('saveGroupCaseNote', {
-          ...formData,
-          consumerId,
-          consumerGroupCount,
-          groupNoteId,
-        })
-        .then(result => ({ status: 'fulfilled', value: result }))
-        .catch(error => ({ status: 'rejected', reason: error }));
-
+    if (caseNoteGroupId) {
+      const promise = _UTIL.fetchData('updateGroupNoteValues', {
+        groupNoteId: caseNoteGroupId,
+        noteId: caseNoteId,
+        serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
+        serviceDate: saveData.serviceDate,
+        startTime: saveData.startTime,
+        endTime: saveData.endTime,
+      });
       savePromises.push(promise);
-    });
-
-    const failedSaves = [];
-    const groupSaveResults = await Promise.allSettled(savePromises);
-    groupSaveResults.forEach((result, index) => {
-      if (result.status === 'rejected') {
-        failedSaves.push(consumerId);
-      }
-    });
-
-    if (failedSaves.length === 0) {
-      return 'success';
     } else {
-      return 'error';
+      groupNoteId = newGroupId;
+    }
+
+    const groupSaveResults = await Promise.allSettled(savePromises);
+    const failedSaves = groupSaveResults.reduce((acc, result) => {
+      if (result.status === 'rejected') {
+        acc.push(consumerId);
+      }
+      return acc;
+    }, []);
+
+    return failedSaves.length === 0 ? 'success' : 'error';
+  }
+  async function saveNote(data, attachments) {
+    let saveResponse;
+
+    reqVisualizer.show('Saving Case Note...');
+
+    if (selectedConsumers.length === 1 && !caseNoteGroupId) {
+      // NEW NOTE or EDIT NON GROUP NOTE
+      saveResponse = (await _UTIL.fetchData('saveCaseNote', data)).saveCaseNoteResult;
+      caseNoteId = extractCaseNoteId(saveResponse);
+      return;
+    } else {
+      saveResponse = await saveGroup(data);
+    }
+
+    if (saveResponse === 'success') {
+      reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
+    } else {
+      reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
     }
   }
 
   // FORM
   //--------------------------------------------------
+  // DROPDOWNS
+  async function updateVendorDropdownByConsumer() {
+    await cnData.fetchVendorDropdownData({
+      consumerId: selectedConsumers[0],
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+    });
+
+    const vendorData = cnData.getVendorDropdownData();
+    cnForm.inputs['vendor'].populate(vendorData);
+
+    if (vendorData.length === 1) {
+      cnForm.inputs['vendor'].setValue(vendorData[0].value);
+    }
+  }
+  async function updateServiceLocationDropdownByConsumer() {
+    await cnData.fetchServiceLocationDropdownData({
+      consumerId: selectedConsumers[0],
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+    });
+
+    const servLocData = cnData.getServiceLocationDropdownData();
+    cnForm.inputs['serviceLocation'].populate(servLocData);
+  }
+  async function setConsumerRelatedDropdowns() {
+    // handle consumer related dropdowns
+    await updateVendorDropdownByConsumer();
+    if ($.session.applicationName === 'Advisor') {
+      await updateServiceLocationDropdownByConsumer();
+
+      if (cnData.canConsumerHaveMileage(selectedConsumers[0])) {
+        cnForm.inputs['mileage'].toggleDisabled(false);
+      }
+    }
+  }
+  // ATTACHMENT DELETE
+  async function onFileDelete(e) {
+    console.log(e.target);
+    console.log('File delete from form', e.detail);
+  }
   // CHANGE
   function onStartTimeChange(startTimeVal, endTimeVal) {
     const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
@@ -586,11 +614,6 @@ const CaseNotes = (() => {
 
     checkRequiredFields();
   }
-  // ATTACHMENT DELETE
-  async function onFileDelete(e) {
-    console.log(e.target);
-    console.log('File delete from form', e.detail);
-  }
   // SUBMIT
   async function processAttachmentsForSave(data) {
     const attachmentsForSave = {};
@@ -608,8 +631,6 @@ const CaseNotes = (() => {
   }
   async function onFormSubmit(data, submitter) {
     const attachmentsForSave = await processAttachmentsForSave(data);
-
-    let saveCaseNoteResults, updateGroupValuesResults;
 
     const saveData = {
       caseManagerId,
@@ -634,86 +655,25 @@ const CaseNotes = (() => {
       vendorId: data.vendor ?? '',
     };
 
-    if (selectedConsumers.length === 1) {
-      reqVisualizer.show('Saving Case Note...');
-      saveCaseNoteResults = (await _UTIL.fetchData('saveCaseNote', saveData)).saveCaseNoteResult;
-      caseNoteId = extractCaseNoteId(saveCaseNoteResults);
-
-      if (caseNoteEditData.groupid) {
-        updateGroupValuesResults = (
-          await _UTIL.fetchData('updateGroupNoteValues', {
-            groupNoteId: caseNoteEditData.groupid,
-            noteId: caseNoteId,
-            serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
-            serviceDate: saveData.serviceDate,
-            startTime: saveData.startTime,
-            endTime: saveData.endTime,
-          })
-        ).updateGroupNoteValuesResult;
-      }
-
-      if (saveCaseNoteResults) {
-        reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
-
-        caseNoteEditData = (
-          await _UTIL.fetchData('getCaseNoteEditJSON', {
-            noteId: caseNoteId,
-          })
-        ).getCaseNoteEditJSONResult[0];
-      } else {
-        reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
-      }
-    } else {
-      let saveGroupResults, updateGroupResults;
-
-      if (!caseNoteEditData.groupid) {
-        saveGroupResults = await saveGroupNote(saveData);
-      } else {
-        updateGroupResults = await updateGroupNote(saveData);
-      }
-
-      if (saveGroupResults === 'success' || updateGroupResults === 'success') {
-        reqVisualizer.fullfill('success', 'Case Note Saved!', 2000);
-      } else {
-        reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
-      }
-    }
+    await saveNote(saveData, attachmentsForSave);
 
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
 
     if (submitter.name.toLowerCase() === 'saveandnew') {
-      cnForm.clear();
       caseNoteId = null;
+      caseNoteGroupId = null;
       caseNoteEditData = {};
       caseManagerId = $.session.PeopleId;
+      selectedConsumers = [];
+
+      cnForm.clear();
+      rosterPicker.setSelectedConsumers([]);
     }
   }
 
   // ROSTER
   //--------------------------------------------------
-  async function updateVendorDropdownByConsumer() {
-    await cnData.fetchVendorDropdownData({
-      consumerId: selectedConsumers[0],
-      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-    });
-
-    const vendorData = cnData.getVendorDropdownData();
-    cnForm.inputs['vendor'].populate(vendorData);
-
-    if (vendorData.length === 1) {
-      cnForm.inputs['vendor'].setValue(vendorData[0].value);
-    }
-  }
-  async function updateServiceLocationDropdownByConsumer() {
-    await cnData.fetchServiceLocationDropdownData({
-      consumerId: selectedConsumers[0],
-      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-    });
-
-    const servLocData = cnData.getServiceLocationDropdownData();
-    cnForm.inputs['serviceLocation'].populate(servLocData);
-  }
   async function onConsumerSelect(data) {
     selectedConsumers = data;
 
@@ -749,40 +709,24 @@ const CaseNotes = (() => {
     deleteNote(caseNoteId);
   }
   async function onOverviewCardEdit(noteId) {
-    //TODO-ASH: crete checkbox for corrected (review only)
-
-    // scroll to form
     _DOM.scrollToTop();
 
-    // get edit data
-    const editData = await _UTIL.fetchData('getCaseNoteEditJSON', {
-      noteId: caseNoteId,
-    });
-    console.log(editData.getCaseNoteEditJSONResult[0]);
+    caseNoteEditData = (
+      await _UTIL.fetchData('getCaseNoteEditJSON', {
+        noteId: caseNoteId,
+      })
+    ).getCaseNoteEditJSONResult[0];
 
-    caseNoteEditData = editData.getCaseNoteEditJSONResult[0];
     caseNoteId = noteId;
+    caseNoteGroupId = caseNoteEditData.groupid;
     caseManagerId = caseNoteEditData.casemanagerid;
-
-    // set selected consumer
     selectedConsumers = [caseNoteEditData.consumerid];
-    rosterPicker.setSelectedConsumers(selectedConsumers);
-
-    // handle consumer related dropdowns
-    await updateVendorDropdownByConsumer();
-    if ($.session.applicationName === 'Advisor') {
-      await updateServiceLocationDropdownByConsumer();
-
-      if (cnData.canConsumerHaveMileage(selectedConsumers[0])) {
-        cnForm.inputs['mileage'].toggleDisabled(false);
-      }
-    }
-
-    // handle service/billing code related drodowns
     selectedServiceCode = caseNoteEditData.mainbillingorservicecodeid;
+
+    rosterPicker.setSelectedConsumers(selectedConsumers);
+    setConsumerRelatedDropdowns();
     onServiceCodeChange();
 
-    // populate form with data
     cnForm.populate({
       serviceCode: caseNoteEditData.mainbillingorservicecodeid,
       location: caseNoteEditData.locationcode,
@@ -798,7 +742,6 @@ const CaseNotes = (() => {
       confidential: caseNoteEditData.confidential === 'Y' ? true : false,
     });
 
-    // display attachments
     if ($.session.applicationName === 'Gatekeeper') {
       await cnData.fetchAttachmentsGK(caseNoteId);
       const attachmentList = cnData.getAttachmentsList();
