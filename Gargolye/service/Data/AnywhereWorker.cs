@@ -442,6 +442,7 @@ namespace Anywhere.service.Data
             public string id { get; set; }
             public string FN { get; set; }
             public string LN { get; set; }
+            public string dob { get; set; }
             public string LId { get; set; }
             public string IDa { get; set; }
             public string SD { get; set; }

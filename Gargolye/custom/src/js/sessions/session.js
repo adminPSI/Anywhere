@@ -89,6 +89,7 @@ $.session.UpdateCaseNotesDocTime = false;
 $.session.batchedNoteEdit = false;
 $.session.groupNoteAttemptWithDocTime = false;
 $.session.sendToDODD = false;
+$.session.dobString = '';
 //remove section when ready for testing.  Forcing all features on.
 //$.session.CaseNotesView = true;
 //$.session.CaseNotesTablePermissionView = true;

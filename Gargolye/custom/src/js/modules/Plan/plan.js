@@ -1479,7 +1479,7 @@ const plan = (function () {
         // });
         // }
 
-        if (sendSuccess && sendSuccess[0] === "Successfully sent Plan to DODD.") {
+        if (sendSuccess && (sendSuccess[0] === "Successfully sent Plan to DODD." || sendSuccess[0] === "Successfully sent Plan and selected Attachments to DODD.")) {
           sendtoDODDSuccessMessage(sendSuccess);
         } else {
           sendtoDODDGeneralErrorMessage(sendSuccess);
@@ -1515,7 +1515,7 @@ const plan = (function () {
     //  icon: 'checkmark',
       callback: async function () {
         navigator.clipboard.writeText(sendtoDODDResponse[0]);
-        POPUP.hide(generalMessagePopup);
+        // POPUP.hide(generalMessagePopup);
         overlay.show();
         showOKPopup();
     
@@ -1576,7 +1576,7 @@ const plan = (function () {
     // icon: 'checkmark',
     callback: async function () {
       navigator.clipboard.writeText(sendtoDODDResponse[0] + '        ' + sendtoDODDResponse[1]);
-      POPUP.hide(detailMessagePopup);
+     // POPUP.hide(detailMessagePopup);
       overlay.show();
       showOKPopup();
     },

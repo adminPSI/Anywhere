@@ -24,6 +24,7 @@ const csTeamMember = (() => {
   let relationshipTypeInput;
   let signatureTypeDropdown;
   let radioDiv;
+  let radioDiv2;
   let participatedYesRadio;
   let participatedNoRadio;
   let parentOfMinorYesRadio;
@@ -95,6 +96,19 @@ const csTeamMember = (() => {
     }
 
     dropdown.populate(stateGuardianDropdown, guarddata);
+  }
+
+  function calculateAge(dobStr) {
+      const dob = new Date(dobStr);
+      const today = new Date();
+
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDifference = today.getMonth() - dob.getMonth();
+      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
+          age--;
+      }
+
+      return age;
   }
 
   async function applySelectedRelationship(relData) {
@@ -604,6 +618,12 @@ const csTeamMember = (() => {
     }
 
     function buildParentOfMinorRadios() {
+        
+        const isNoChecked = isNew ? true : selectedMemberData.parentOfMinor === 'N';
+        const isYesChecked = isNew ? false : selectedMemberData.parentOfMinor === 'Y';
+
+        
+
         const radioContainer = document.createElement('div');
         radioContainer.classList.add('sig_radioContainer');
 
@@ -613,37 +633,37 @@ const csTeamMember = (() => {
         parentOfMinorYesRadio = input.buildRadio({
             text: 'Yes',
             name: 'pomRadioSet',
-            isChecked: selectedMemberData.parentOfMinor === 'Y',
-            isDisabled: isSigned || readOnly,
+            isChecked: isYesChecked,
+            isDisabled: true,
             callback: () => {
                 selectedMemberData.parentOfMinor = 'Y';
-                radioDiv.classList.remove('error');
+                //radioDiv.classList.remove('error');
                 checkTeamMemberPopupForErrors();
             },
         });
         parentOfMinorNoRadio = input.buildRadio({
             text: 'No',
             name: 'pomRadioSet',
-            isChecked: selectedMemberData.parentOfMinor === 'N',
-            isDisabled: isSigned || readOnly,
+            isChecked: isNoChecked,
+            isDisabled: true,
             callback: () => {
                 selectedMemberData.parentOfMinor = 'N';
-                radioDiv.classList.remove('error');
+                //radioDiv.classList.remove('error');
                 checkTeamMemberPopupForErrors();
             },
         });
 
-        radioDiv = document.createElement('div');
-        radioDiv.classList.add('signatures_radioDiv');
-        radioDiv.appendChild(parentOfMinorYesRadio);
-        radioDiv.appendChild(parentOfMinorNoRadio);
+        radioDiv2 = document.createElement('div');
+        radioDiv2.classList.add('signatures_radioDiv');
+        radioDiv2.appendChild(parentOfMinorYesRadio);
+        radioDiv2.appendChild(parentOfMinorNoRadio);
 
-        if (isNew && $.session.planInsertNewTeamMember) {
-            radioDiv.classList.add('error');
-        }
+        //if (isNew && $.session.planInsertNewTeamMember) {
+        //    radioDiv.classList.add('error');
+        //}
 
         radioContainer.appendChild(radioContainerTitle);
-        radioContainer.appendChild(radioDiv);
+        radioContainer.appendChild(radioDiv2);
 
         return radioContainer;
     }
@@ -845,6 +865,9 @@ const csTeamMember = (() => {
   //* MAIN
   //*------------------------------------------------------
   async function showPopup({ isNewMember, isReadOnly, memberData, currentTeamMemberData }) {
+    const selectedTeamMember = plan.getSelectedConsumer();
+    const age = calculateAge(selectedTeamMember.card.dataset.dob);
+    const isMinor = age < 18 ? true : false;
     isNew = isNewMember;
     isSigned = memberData.dateSigned !== '';
     readOnly = isReadOnly;
@@ -969,6 +992,15 @@ const csTeamMember = (() => {
           }
         }
       }
+        if (selectedMemberData.teamMember === 'Parent') {
+            selectedMemberData.parentOfMinor = isMinor ? 'Y' : 'N';
+            parentOfMinorYesRadio.querySelector('input').checked = isMinor ? true : false;
+            parentOfMinorNoRadio.querySelector('input').checked = isMinor ? false : true;
+        } else {
+            selectedMemberData.parentOfMinor = 'N';
+            parentOfMinorYesRadio.querySelector('input').checked = false;//
+            parentOfMinorNoRadio.querySelector('input').checked = true;
+        }
     }
 
     // inserting/removing the conditional fields based on teamMemberDropdown selection
