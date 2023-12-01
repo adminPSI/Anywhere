@@ -1479,7 +1479,7 @@ const plan = (function () {
         // });
         // }
 
-        if (sendSuccess && sendSuccess[0] === "Successfully sent Plan to DODD.") {
+        if (sendSuccess && (sendSuccess[0] === "Successfully sent Plan to DODD." || sendSuccess[0] === "Successfully sent Plan and selected Attachments to DODD.")) {
           sendtoDODDSuccessMessage(sendSuccess);
         } else {
           sendtoDODDGeneralErrorMessage(sendSuccess);
