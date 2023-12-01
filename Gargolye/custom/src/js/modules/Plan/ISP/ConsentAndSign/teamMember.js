@@ -99,16 +99,16 @@ const csTeamMember = (() => {
   }
 
   function calculateAge(dobStr) {
-      const dob = new Date(dobStr);
-      const today = new Date();
+    const dob = new Date(dobStr);
+    const today = new Date();
 
-      let age = today.getFullYear() - dob.getFullYear();
-      const monthDifference = today.getMonth() - dob.getMonth();
-      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
-          age--;
-      }
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDifference = today.getMonth() - dob.getMonth();
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
 
-      return age;
+    return age;
   }
 
   async function applySelectedRelationship(relData) {
@@ -152,8 +152,8 @@ const csTeamMember = (() => {
     // remove errors from inputs
     nameInput.classList.remove('error');
     lNameInput.classList.remove('error');
-      buildingNumberInput.classList.remove('error');
-      emailInput.classList.remove('error');
+    buildingNumberInput.classList.remove('error');
+    emailInput.classList.remove('error');
     dateOfBirthInput.classList.remove('error');
 
     // make name and relationship readonly
@@ -230,8 +230,7 @@ const csTeamMember = (() => {
 
   async function saveTeamMember() {
     if (
-      (selectedMemberData.teamMember === 'Guardian' ||
-        selectedMemberData.teamMember === 'Parent/Guardian') &&
+      (selectedMemberData.teamMember === 'Guardian' || selectedMemberData.teamMember === 'Parent/Guardian') &&
       $.session.areInSalesForce === true
     ) {
       var continueGuardianSave = await continueSaveofGuardianTeamMember();
@@ -341,10 +340,7 @@ const csTeamMember = (() => {
   // Handling of selection of teamMember == Guardian or teamMember == Parent/Guardian
   async function continueSaveofGuardianTeamMember() {
     // Ensure that the same saleForceId is not added twice as a TeamMember for a Plan
-    if (
-      hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId) &&
-      $.session.areInSalesForce === true
-    ) {
+    if (hasSalesForceIdBeenUsed(selectedStateGuardianSalesForceId) && $.session.areInSalesForce === true) {
       alert(
         `This team Member will not be saved. This State Guardian has already been used for a team Member in this Plan.`,
       );
@@ -353,9 +349,7 @@ const csTeamMember = (() => {
 
     // A -- No State Guardian in Dropdown (stateGuardianDropdown) -- you can't save
     if (!selectedStateGuardianSalesForceId && $.session.areInSalesForce === true) {
-      alert(
-        `A Guardian is not listed in Salesforce for this individual and must be entered on SalesForce Portal.`,
-      );
+      alert(`A Guardian is not listed in Salesforce for this individual and must be entered on SalesForce Portal.`);
       return false;
     }
 
@@ -482,11 +476,7 @@ const csTeamMember = (() => {
       (!DBteamMemberswithStateSalesForceId ||
         (DBteamMemberswithStateSalesForceId && DBteamMemberswithStateSalesForceId.length === 0))
     ) {
-      if (
-        confirm(
-          'Is the selected State Guardian the same person as the Imported Guardian in the form?',
-        )
-      ) {
+      if (confirm('Is the selected State Guardian the same person as the Imported Guardian in the form?')) {
         // YES -- Continue
       } else {
         alert(
@@ -615,58 +605,55 @@ const csTeamMember = (() => {
     radioContainer.appendChild(radioDiv);
 
     return radioContainer;
-    }
+  }
 
-    function buildParentOfMinorRadios() {
-        
-        const isNoChecked = isNew ? true : selectedMemberData.parentOfMinor === 'N';
-        const isYesChecked = isNew ? false : selectedMemberData.parentOfMinor === 'Y';
+  function buildParentOfMinorRadios() {
+    const isNoChecked = isNew ? true : selectedMemberData.parentOfMinor === 'N';
+    const isYesChecked = isNew ? false : selectedMemberData.parentOfMinor === 'Y';
 
-        
+    const radioContainer = document.createElement('div');
+    radioContainer.classList.add('sig_radioContainer');
 
-        const radioContainer = document.createElement('div');
-        radioContainer.classList.add('sig_radioContainer');
+    const radioContainerTitle = document.createElement('p');
+    radioContainerTitle.innerText = 'Parent of Minor?';
 
-        const radioContainerTitle = document.createElement('p');
-        radioContainerTitle.innerText = 'Parent of Minor?';
+    parentOfMinorYesRadio = input.buildRadio({
+      text: 'Yes',
+      name: 'pomRadioSet',
+      isChecked: isYesChecked,
+      isDisabled: true,
+      callback: () => {
+        selectedMemberData.parentOfMinor = 'Y';
+        //radioDiv.classList.remove('error');
+        checkTeamMemberPopupForErrors();
+      },
+    });
+    parentOfMinorNoRadio = input.buildRadio({
+      text: 'No',
+      name: 'pomRadioSet',
+      isChecked: isNoChecked,
+      isDisabled: true,
+      callback: () => {
+        selectedMemberData.parentOfMinor = 'N';
+        //radioDiv.classList.remove('error');
+        checkTeamMemberPopupForErrors();
+      },
+    });
 
-        parentOfMinorYesRadio = input.buildRadio({
-            text: 'Yes',
-            name: 'pomRadioSet',
-            isChecked: isYesChecked,
-            isDisabled: true,
-            callback: () => {
-                selectedMemberData.parentOfMinor = 'Y';
-                //radioDiv.classList.remove('error');
-                checkTeamMemberPopupForErrors();
-            },
-        });
-        parentOfMinorNoRadio = input.buildRadio({
-            text: 'No',
-            name: 'pomRadioSet',
-            isChecked: isNoChecked,
-            isDisabled: true,
-            callback: () => {
-                selectedMemberData.parentOfMinor = 'N';
-                //radioDiv.classList.remove('error');
-                checkTeamMemberPopupForErrors();
-            },
-        });
+    radioDiv2 = document.createElement('div');
+    radioDiv2.classList.add('signatures_radioDiv');
+    radioDiv2.appendChild(parentOfMinorYesRadio);
+    radioDiv2.appendChild(parentOfMinorNoRadio);
 
-        radioDiv2 = document.createElement('div');
-        radioDiv2.classList.add('signatures_radioDiv');
-        radioDiv2.appendChild(parentOfMinorYesRadio);
-        radioDiv2.appendChild(parentOfMinorNoRadio);
+    //if (isNew && $.session.planInsertNewTeamMember) {
+    //    radioDiv.classList.add('error');
+    //}
 
-        //if (isNew && $.session.planInsertNewTeamMember) {
-        //    radioDiv.classList.add('error');
-        //}
+    radioContainer.appendChild(radioContainerTitle);
+    radioContainer.appendChild(radioDiv2);
 
-        radioContainer.appendChild(radioContainerTitle);
-        radioContainer.appendChild(radioDiv2);
-
-        return radioContainer;
-    }
+    return radioContainer;
+  }
 
   function buildDateSignedDisplay() {
     const dateSignedDisplay = document.createElement('p');
@@ -959,7 +946,7 @@ const csTeamMember = (() => {
         nameInput.classList.remove('disabled');
         lNameInput.classList.remove('disabled');
         dateOfBirthInput.classList.remove('disabled');
-        buildingNumberInput.classList.remove('disabled');//
+        buildingNumberInput.classList.remove('disabled'); //
         emailInput.classList.remove('disabled');
         participatedYesRadio.classList.remove('disabled');
         participatedNoRadio.classList.remove('disabled');
@@ -971,6 +958,11 @@ const csTeamMember = (() => {
       //* Required Fields
       //*------------------------------
       if ($.session.planInsertNewTeamMember) {
+        if (selectedMemberData.dateOfBirth !== '') {
+          dateOfBirthInput.classList.remove('error');
+        } else {
+          dateOfBirthInput.classList.add('error');
+        }
         if (selectedMemberData.teamMember === '') {
           teamMemberDropdown.classList.add('error');
         } else {
@@ -992,15 +984,15 @@ const csTeamMember = (() => {
           }
         }
       }
-        if (selectedMemberData.teamMember === 'Parent') {
-            selectedMemberData.parentOfMinor = isMinor ? 'Y' : 'N';
-            parentOfMinorYesRadio.querySelector('input').checked = isMinor ? true : false;
-            parentOfMinorNoRadio.querySelector('input').checked = isMinor ? false : true;
-        } else {
-            selectedMemberData.parentOfMinor = 'N';
-            parentOfMinorYesRadio.querySelector('input').checked = false;//
-            parentOfMinorNoRadio.querySelector('input').checked = true;
-        }
+      if (selectedMemberData.teamMember === 'Parent') {
+        selectedMemberData.parentOfMinor = isMinor ? 'Y' : 'N';
+        parentOfMinorYesRadio.querySelector('input').checked = isMinor ? true : false;
+        parentOfMinorNoRadio.querySelector('input').checked = isMinor ? false : true;
+      } else {
+        selectedMemberData.parentOfMinor = 'N';
+        parentOfMinorYesRadio.querySelector('input').checked = false; //
+        parentOfMinorNoRadio.querySelector('input').checked = true;
+      }
     }
 
     // inserting/removing the conditional fields based on teamMemberDropdown selection
@@ -1035,9 +1027,7 @@ const csTeamMember = (() => {
 
         insertingFieldsBasedonConsentable(isSelectedTeamMemberConsentable);
 
-        const isSelectedTeamMemberGuardian = planConsentAndSign.isTeamMemberGuardian(
-          selectedMemberData.teamMember,
-        );
+        const isSelectedTeamMemberGuardian = planConsentAndSign.isTeamMemberGuardian(selectedMemberData.teamMember);
 
         await insertingFieldsBasedonGuardian(isSelectedTeamMemberGuardian);
       } //end if -- team member has been selected
@@ -1061,10 +1051,7 @@ const csTeamMember = (() => {
           teamMemberPopup.insertBefore(complaintQuestion, participationRadios);
           //
           // width them
-          planConsentAndSign.setSSADropdownInitialWidth(
-            teamMemberPopup,
-            selectedMemberData.csChangeMindSSAPeopleId,
-          );
+          planConsentAndSign.setSSADropdownInitialWidth(teamMemberPopup, selectedMemberData.csChangeMindSSAPeopleId);
           planConsentAndSign.setVendorDropdownInitialWidth(
             teamMemberPopup,
             selectedMemberData.csContactProviderVendorId,
@@ -1173,12 +1160,12 @@ const csTeamMember = (() => {
       value: UTIL.formatDateToIso(dates.removeTimestamp(selectedMemberData.dateOfBirth)),
       readonly: isSigned || readOnly,
       callback: event => {
-          selectedMemberData.dateOfBirth = event.target.value;
-          if (selectedMemberData.dateOfBirth !== '') {
-              dateOfBirthInput.classList.remove('error');
-          } else {
-              dateOfBirthInput.classList.add('error');
-          }
+        selectedMemberData.dateOfBirth = event.target.value;
+        if (selectedMemberData.dateOfBirth !== '') {
+          dateOfBirthInput.classList.remove('error');
+        } else {
+          dateOfBirthInput.classList.add('error');
+        }
 
         checkTeamMemberPopupForErrors();
       },
@@ -1197,25 +1184,24 @@ const csTeamMember = (() => {
     });
 
     //Email
-      emailInput = input.build({
-          label: 'Email',
-          value: selectedMemberData.email,
-          readonly: isSigned || readOnly,
-          callbackType: 'input',
-          callback: event => {
-              let validEmail = validateEmail(event.target.value);
-              if (validEmail) {
-                  selectedMemberData.email = event.target.value;
-                  emailInput.classList.remove('error');
-              } else {
-                  selectedMemberData.email = '';
-                  emailInput.classList.add('error');
-              }
-              
-              
-              checkTeamMemberPopupForErrors();
-          },
-      });
+    emailInput = input.build({
+      label: 'Email',
+      value: selectedMemberData.email,
+      readonly: isSigned || readOnly,
+      callbackType: 'input',
+      callback: event => {
+        let validEmail = validateEmail(event.target.value);
+        if (validEmail) {
+          selectedMemberData.email = event.target.value;
+          emailInput.classList.remove('error');
+        } else {
+          selectedMemberData.email = '';
+          emailInput.classList.add('error');
+        }
+
+        checkTeamMemberPopupForErrors();
+      },
+    });
     // Relationship Type
     relationshipTypeInput = input.build({
       label: 'Relationship Type',
@@ -1229,8 +1215,8 @@ const csTeamMember = (() => {
       },
     });
     // Participate Yes/NO
-      const participationRadios = buildParticipationRadios();
-      const parentOfMinorRadios = buildParentOfMinorRadios();
+    const participationRadios = buildParticipationRadios();
+    const parentOfMinorRadios = buildParentOfMinorRadios();
 
     // Signature Type
     signatureTypeDropdown = dropdown.build({
@@ -1258,8 +1244,8 @@ const csTeamMember = (() => {
     }
 
     function validateEmail(email) {
-        const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        return regex.test(email);
+      const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      return regex.test(email);
     }
 
     //* BUTTONS
@@ -1317,6 +1303,11 @@ const csTeamMember = (() => {
     //* Required Fields
     //*------------------------------
     if ($.session.planInsertNewTeamMember) {
+      if (selectedMemberData.dateOfBirth !== '') {
+        dateOfBirthInput.classList.remove('error');
+      } else {
+        dateOfBirthInput.classList.add('error');
+      }
       if (selectedMemberData.teamMember === '') {
         teamMemberDropdown.classList.add('error');
       } else {
@@ -1350,11 +1341,7 @@ const csTeamMember = (() => {
       if (!selectedMemberData.contactId) {
         teamMemberPopup.appendChild(linkToRelationshipBtn);
       }
-      if (
-        $.session.areInSalesForce &&
-        !selectedMemberData.salesForceId &&
-        selectedMemberData.contactId
-      ) {
+      if ($.session.areInSalesForce && !selectedMemberData.salesForceId && selectedMemberData.contactId) {
         teamMemberPopup.appendChild(linkToSalesforceBtn);
       }
     }
@@ -1366,28 +1353,22 @@ const csTeamMember = (() => {
       if (selectedMemberData.lastName !== '') teamMemberPopup.appendChild(lNameInput);
     }
     teamMemberPopup.appendChild(dateOfBirthInput);
-      teamMemberPopup.appendChild(buildingNumberInput);
-      teamMemberPopup.appendChild(emailInput);
+    teamMemberPopup.appendChild(buildingNumberInput);
+    teamMemberPopup.appendChild(emailInput);
     if (!isNew && selectedMemberData.relationship) {
       teamMemberPopup.appendChild(relationshipTypeInput);
       relationshipTypeInput.classList.add('disabled');
     }
     teamMemberPopup.appendChild(participationRadios);
-    teamMemberPopup.appendChild(parentOfMinorRadios);//
+    teamMemberPopup.appendChild(parentOfMinorRadios); //
     teamMemberPopup.appendChild(signatureTypeDropdown);
 
     if (showConsentStatments) {
       teamMemberPopup.appendChild(changeMindQuestion);
       teamMemberPopup.appendChild(complaintQuestion);
 
-      planConsentAndSign.setSSADropdownInitialWidth(
-        teamMemberPopup,
-        selectedMemberData.csChangeMindSSAPeopleId,
-      );
-      planConsentAndSign.setVendorDropdownInitialWidth(
-        teamMemberPopup,
-        selectedMemberData.csContactProviderVendorId,
-      );
+      planConsentAndSign.setSSADropdownInitialWidth(teamMemberPopup, selectedMemberData.csChangeMindSSAPeopleId);
+      planConsentAndSign.setVendorDropdownInitialWidth(teamMemberPopup, selectedMemberData.csContactProviderVendorId);
     }
 
     teamMemberPopup.appendChild(btns);
