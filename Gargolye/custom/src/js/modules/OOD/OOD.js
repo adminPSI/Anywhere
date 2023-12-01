@@ -348,7 +348,7 @@ const OOD = (() => {
         ),
     });
     editEmployersBtn = buildEditEmployersBtn();
-    createFormsBtn = buildCreateFormsBtn();
+    //createFormsBtn = buildCreateFormsBtn();
     newFilterBtn = buildNewFilterBtn();
 
     const oodBtnsWrap = document.createElement('div');
@@ -356,7 +356,7 @@ const OOD = (() => {
     oodBtnsWrap.appendChild(entryBtn);
     oodBtnsWrap.appendChild(summaryBtn);
     oodBtnsWrap.appendChild(editEmployersBtn);
-    oodBtnsWrap.appendChild(createFormsBtn);
+    //oodBtnsWrap.appendChild(createFormsBtn);
 
     buttonBar.appendChild(newFilterBtn);
     buttonBar.appendChild(oodBtnsWrap);
