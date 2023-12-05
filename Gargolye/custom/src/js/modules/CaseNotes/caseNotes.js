@@ -86,6 +86,33 @@ const CaseNotes = (() => {
     const match = xmlString.match(/<caseNoteId>(\d+)<\/caseNoteId>/);
     return match ? match[1] : null;
   }
+  function areAllFormFieldsValid() {
+    const invalidControls = cnForm.form.querySelectorAll(':invalid');
+
+    if (invalidControls.length > 0) {
+      return false;
+    }
+
+    return true;
+  }
+  function checkRequiredFields() {
+    // const isFormValid = areAllFormFieldsValid();
+    let isSaveDisabled = false;
+
+    if (selectedConsumers.length === 0) {
+      isSaveDisabled = true;
+    } else {
+      isSaveDisabled = false;
+    }
+
+    if (isSaveDisabled || !isFormValid) {
+      cnForm.buttons['submit'].toggleDisabled(true);
+      cnForm.buttons['saveNew'].toggleDisabled(true);
+    } else {
+      cnForm.buttons['submit'].toggleDisabled(false);
+      cnForm.buttons['saveNew'].toggleDisabled(false);
+    }
+  }
 
   // TIME HELPERS
   //--------------------------------------------------
@@ -99,37 +126,24 @@ const CaseNotes = (() => {
     const isWarningStartTimeValid = valuesToCheck.includes($.session.caseNotesWarningStartTime) ? false : true;
     const isWarningEndTimeValid = valuesToCheck.includes($.session.caseNotesWarningStartTime) ? false : true;
 
-    let areTimesWithinWorkHours;
-
     if (!isWarningStartTimeValid || !isWarningEndTimeValid) {
       // session warning times don't matter
-      areTimesWithinWorkHours = true;
+      return true;
     }
 
     const warnStart = parseSessionTime($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTime($.session.caseNotesWarningEndTime);
 
-    if (startTime < warnStart || startTime > warnEnd || endTime < warnStart || endTime > warnEnd) {
-      areTimesWithinWorkHours = false;
-    } else {
-      areTimesWithinWorkHours = true;
-    }
+    const validStart = startTime < warnStart || startTime > warnEnd ? false : true;
+    const validEnd = endTime < warnStart || endTime > warnEnd ? false : true;
 
-    if (areTimesWithinWorkHours) {
-      // cnValidation.showWarning({
-      //   name: 'workhours',
-      //   message:
-      //     'The times you have entered are outside the current normal working hours. Click OK to proceed or cacnel to return to the form.',
-      // });
-    } else {
-      // cnValidation.hide('workhours');
-    }
+    return { validStart, validEnd };
   }
-  function isTimePastOrPresent(dirtyTime) {
+  function isFutureTime(dirtyTime) {
     //If selectedDate is not today then time dosen't matter
     const isToday = new Date().setHours(0, 0, 0, 0) !== new Date(selectedDate).setHours(0, 0, 0, 0);
     if (!isToday || !dirtyTime) {
-      return true;
+      return false;
     }
 
     const currentDate = new Date();
@@ -138,7 +152,7 @@ const CaseNotes = (() => {
     // CHECKS IF TIME IS IN FURUTRE
     dirtyTime = dirtyTime.split(':');
     selectedDateClone.setHours(dirtyTime[0], dirtyTime[1], 0, 0);
-    return !dates.isAfter(selectedDateClone, currentDate);
+    return dates.isAfter(selectedDateClone, currentDate);
   }
   function isStartTimeBeforeEndTime(startTime, endTime) {
     if (!startTime || !endTime) return true;
@@ -168,36 +182,6 @@ const CaseNotes = (() => {
     }
   }
 
-  // VALIDATION / REQUIRED FIELDS
-  //--------------------------------------------------
-  function areAllFormFieldsValid() {
-    const invalidControls = cnForm.form.querySelectorAll(':invalid');
-
-    if (invalidControls.length > 0) {
-      return false;
-    }
-
-    return true;
-  }
-  function checkRequiredFields() {
-    const isFormValid = areAllFormFieldsValid();
-    let isSaveDisabled = false;
-
-    if (selectedConsumers.length === 0) {
-      isSaveDisabled = true;
-    } else {
-      isSaveDisabled = false;
-    }
-
-    // if (isSaveDisabled || !isFormValid) {
-    //   cnForm.buttons['submit'].toggleDisabled(true);
-    //   cnForm.buttons['saveNew'].toggleDisabled(true);
-    // } else {
-    //   cnForm.buttons['submit'].toggleDisabled(false);
-    //   cnForm.buttons['saveNew'].toggleDisabled(false);
-    // }
-  }
-
   // CRUD
   //--------------------------------------------------
   async function deleteNote(noteId) {
@@ -210,8 +194,8 @@ const CaseNotes = (() => {
   async function saveAttachments(saveCaseNoteResults, attachmentsForSave) {
     const parser = new DOMParser();
     const respDoc = parser.parseFromString(saveCaseNoteResults, 'text/xml');
-    const caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
-    const cnID = extractCaseNoteId(saveCaseNoteResults);
+    let caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
+    let cnID = extractCaseNoteId(saveCaseNoteResults);
 
     const saveAttachmentPromises = [];
 
@@ -231,19 +215,15 @@ const CaseNotes = (() => {
     }
 
     // Loop through to check for any failed attachment saves
-    const failedSaves = [];
     const saveAttachmentResults = await Promise.allSettled(saveAttachmentPromises);
-    saveAttachmentResults.forEach((result, index) => {
+    const failedSaves = saveAttachmentResults.reduce((acc, result) => {
       if (result.status === 'rejected') {
-        failedSaves.push(result.attachment.description);
+        acc.push(result.attachment.description);
       }
-    });
+      return acc;
+    }, []);
 
-    if (failedSaves.length === 0) {
-      return 'success';
-    } else {
-      return 'error';
-    }
+    return failedSaves.length === 0 ? 'success' : 'error';
   }
   async function saveGroup(data) {
     const savePromises = [];
@@ -291,7 +271,7 @@ const CaseNotes = (() => {
       });
       savePromises.push(promise);
     } else {
-      groupNoteId = newGroupId;
+      caseNoteGroupId = newGroupId;
     }
 
     const groupSaveResults = await Promise.allSettled(savePromises);
@@ -313,6 +293,11 @@ const CaseNotes = (() => {
       // NEW NOTE or EDIT NON GROUP NOTE
       saveResponse = (await _UTIL.fetchData('saveCaseNote', data)).saveCaseNoteResult;
       caseNoteId = extractCaseNoteId(saveResponse);
+
+      if ($.session.applicationName === 'Gatekeeper') {
+        // save attachments
+        saveAttachments(caseNoteId, attachments);
+      }
       return;
     } else {
       saveResponse = await saveGroup(data);
@@ -351,8 +336,8 @@ const CaseNotes = (() => {
     cnForm.inputs['serviceLocation'].populate(servLocData);
   }
   async function setConsumerRelatedDropdowns() {
-    // handle consumer related dropdowns
     await updateVendorDropdownByConsumer();
+
     if ($.session.applicationName === 'Advisor') {
       await updateServiceLocationDropdownByConsumer();
 
@@ -366,30 +351,43 @@ const CaseNotes = (() => {
     console.log(e.target);
     console.log('File delete from form', e.detail);
   }
-  // CHANGE
-  function onStartTimeChange(startTimeVal, endTimeVal) {
-    const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
-    const isValid = isTimePastOrPresent(startTimeVal);
+  // CHANGE \ KEYUP
+  function onTimeChange(target) {
+    const inputKey = target === 'start' ? 'startTime' : 'endTime';
+    const startTimeVal = cnForm.inputs['startTime'].getValue();
+    const endTimeVal = cnForm.inputs['endTime'].getValue();
 
-    if (!isStartBeforeEnd || !isValid) {
-      cnForm.inputs['startTime'].setValidtyError('Start Time is invalid');
-      return false;
-    } else {
-      cnForm.inputs['startTime'].setValidtyError('');
-      return true;
+    const isTimeFuture = isFutureTime(target === 'start' ? startTimeVal : endTimeVal);
+    if (isTimeFuture) {
+      cnForm.inputs[inputKey].setValidtyError('error');
+      cnForm.inputs[inputKey].showError('Time can not be in future.');
+      return;
     }
-  }
-  function onEndTimeChange(startTimeVal, endTimeVal) {
-    const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
-    const isValid = isTimePastOrPresent(endTimeVal);
 
-    if (!isStartBeforeEnd || !isValid) {
-      cnForm.inputs['endTime'].setValidtyError('End Time is invalid');
-      return false;
-    } else {
-      cnForm.inputs['endTime'].setValidtyError('');
-      return true;
+    const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
+    if (!isStartBeforeEnd) {
+      cnForm.inputs['startTime'].setValidtyError(`error`);
+      cnForm.inputs['startTime'].showError(`Start time can't be after end time.`);
+      return;
     }
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      const { validStart, validEnd } = timesWithinWorkHoursCheck(startTimeVal, endTimeVal);
+      if (!validStart) {
+        cnForm.inputs['startTime'].showWarning(`Time is outside current normal working hours.`);
+      }
+
+      if (!validEnd) {
+        cnForm.inputs['endTime'].showWarning(`Time is outside current normal working hours.`);
+      }
+
+      return;
+    }
+
+    cnForm.inputs['startTime'].setValidtyError('');
+    cnForm.inputs['endTime'].setValidtyError('');
+    cnForm.inputs['startTime'].clear();
+    cnForm.inputs['endTime'].clear();
   }
   function onServiceCodeChange() {
     if (caseNoteId) {
@@ -456,54 +454,20 @@ const CaseNotes = (() => {
       selectedServiceCode = value;
       onServiceCodeChange();
     },
-    location: ({ event, value, name, input }) => {},
-    service: ({ event, value, name, input }) => {},
     serviceLocation: ({ event, value, name, input }) => {
       // adv only
     },
-    need: ({ event, value, name, input }) => {},
-    vendor: ({ event, value, name, input }) => {},
-    contact: ({ event, value, name, input }) => {},
-    startTime: ({ event, value, name, input }) => {
-      const endTimeVal = cnForm.inputs['endTime'].getValue();
-
-      const isStartValid = onStartTimeChange(value, endTimeVal);
-      const isEndValid = onEndTimeChange(value, endTimeVal);
-
-      if (isStartValid && isEndValid) {
-        if ($.session.applicationName === 'Gatekeeper') {
-          timesWithinWorkHoursCheck(value, endTimeVal);
-        }
-        //timeOverlapCheck(value, endTimeVal);
-      } else {
-        // cnValidation.hide('overlap');
-        // cnValidation.hide('workhours');
-      }
+    startTime: () => {
+      onTimeChange('start');
     },
-    endTime: ({ event, value, name, input }) => {
-      const startTimeVal = cnForm.inputs['startTime'].getValue();
-
-      const isEndValid = onEndTimeChange(startTimeVal, value);
-      const isStartValid = onStartTimeChange(startTimeVal, value);
-
-      if (isStartValid && isEndValid) {
-        if ($.session.applicationName === 'Gatekeeper') {
-          timesWithinWorkHoursCheck(startTimeVal, value);
-        }
-        //timeOverlapCheck(startTimeVal, value);
-      } else {
-        // cnValidation.hide('overlap');
-        // cnValidation.hide('workhours');
-      }
+    endTime: () => {
+      onTimeChange('end');
     },
     mileage: ({ event, value, name, input }) => {
       return;
 
       const hasDecimal = event.key === '.' && value.indexOf('.') === 1 ? true : false;
     },
-    travelTime: ({ event, value, name, input }) => {},
-    noteText: ({ event, value, name, input }) => {},
-    confidential: ({ event, value, name, input }) => {},
   };
   function onFormChange(event) {
     const value = event.target.value;
@@ -521,7 +485,6 @@ const CaseNotes = (() => {
 
     checkRequiredFields();
   }
-  // KEYUP
   const onKeyupCallbacks = {
     travelTime: ({ event, value, name, input }) => {
       if (value.length > 4) {
@@ -828,6 +791,7 @@ const CaseNotes = (() => {
     // Roster Picker
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
+      consumerRequired: true,
     });
     // Form
     cnForm = new Form({

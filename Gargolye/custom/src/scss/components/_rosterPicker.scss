@@ -5,6 +5,17 @@
     overflow: hidden;
     padding: 10px 0;
 
+    &__message {
+      color: $secondary;
+      flex-grow: 0;
+      font-weight: $_bold;
+      padding: 4px 10px;
+
+      &.error {
+        color: $error;
+      }
+    }
+
     .inputGroup.search,
     .inputGroup.checkbox {
       flex-grow: 0;

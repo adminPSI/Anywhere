@@ -10,7 +10,7 @@
    */
   const DEFAULT_OPTIONS = {
     allowMultiSelect: false,
-    isConsumerRequired: false,
+    consumerRequired: false,
   };
 
   /**
@@ -19,6 +19,7 @@
    * @constructor
    * @param {Object} options
    * @param {Boolean} [options.allowMultiSelect]
+   * @param {Boolean} [options.consumerRequired]
    * @returns {RosterPicker}
    */
   function RosterPicker(options) {
@@ -49,6 +50,12 @@
     this.rootElement = _DOM.createElement('div', { class: 'rosterPicker' });
     this.rosterWrapEle = _DOM.createElement('div', { class: 'rosterPicker__cardsWrap' });
 
+    this.messageEle = _DOM.createElement('p', {
+      class: 'rosterPicker__message',
+      text: this.consumerRequired ? 'Consumer(s) is required' : 'Please select a consumer',
+    });
+    this.messageEle.classList.toggle('error', this.consumerRequired && !Object.keys(this.selectedConsumers).length);
+
     this.rosterSearchInput = new Input({
       type: 'search',
       id: 'rosterPickerSearch',
@@ -63,9 +70,12 @@
       checked: false,
     });
 
-    this.rosterSearchInput.renderTo(this.rootElement);
-    this.rosterCaseLoadInput.renderTo(this.rootElement);
-    this.rootElement.appendChild(this.rosterWrapEle);
+    this.rootElement.append(
+      this.messageEle,
+      this.rosterSearchInput.rootElement,
+      this.rosterCaseLoadInput.rootElement,
+      this.rosterWrapEle,
+    );
   };
 
   /**
@@ -96,11 +106,7 @@
         }
 
         // check if consumer is req
-        if (this.options.isConsumerRequired && Object.keys(this.selectedConsumers).length === 0) {
-          //
-        } else {
-          //
-        }
+        this.messageEle.classList.toggle('error', this.consumerRequired && !Object.keys(this.selectedConsumers).length);
 
         const customEvent = new CustomEvent('onConsumerSelect');
         this.rosterWrapEle.dispatchEvent(customEvent);
