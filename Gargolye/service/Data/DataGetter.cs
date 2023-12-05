@@ -1032,6 +1032,23 @@ namespace Anywhere.Data
             }
         }
 
+        public string getCaseNoteAttachmentsListForGroupNote(string caseNoteId)
+        {            
+            logger.debug("deleteCaseNoteAttachment");
+            List<string> list = new List<string>();
+            list.Add(caseNoteId);
+            string text = "CALL DBA.ANYW_CaseNotes_GetNoteAttachmentsForGroupNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("539.3", ex.Message + "ANYW_CaseNotes_GetNoteAttachmentsForGroupNote(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "539.3: error ANYW_CaseNotes_GetNoteAttachmentsForGroupNote";
+            }
+        }
+
         public string updatePortrait(string token, string employeeUserName, string imageFile, string id, string portraitPath)
         {
             if (tokenValidator(token) == false) return null;

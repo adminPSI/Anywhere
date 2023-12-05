@@ -469,6 +469,14 @@ namespace Anywhere
                 BodyStyle = WebMessageBodyStyle.Wrapped,
                 ResponseFormat = WebMessageFormat.Json,
                 RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getCaseNoteAttachmentsListForGroupNote/")]
+        CaseNotesWorker.AttachmentListForGroup[] getCaseNoteAttachmentsListForGroupNote(string caseNoteId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
                 UriTemplate = "/getConsumerOrganizationId/")]
         AnywhereWorker.OrganiztionId[] getConsumerOrganizationId(string peopleId);
 
