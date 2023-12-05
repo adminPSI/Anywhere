@@ -611,7 +611,7 @@ const csTeamMember = (() => {
     const isNoChecked = isNew ? true : selectedMemberData.parentOfMinor === 'N';
     const isYesChecked = isNew ? false : selectedMemberData.parentOfMinor === 'Y';
 
-    const radioContainer = document.createElement('div');
+    radioContainer = document.createElement('div');
     radioContainer.classList.add('sig_radioContainer');
 
     const radioContainerTitle = document.createElement('p');
@@ -645,9 +645,9 @@ const csTeamMember = (() => {
     radioDiv2.appendChild(parentOfMinorYesRadio);
     radioDiv2.appendChild(parentOfMinorNoRadio);
 
-    //if (isNew && $.session.planInsertNewTeamMember) {
-    //    radioDiv.classList.add('error');
-    //}
+    if (isNew) {
+        radioContainer.style.display = 'none';
+    }
 
     radioContainer.appendChild(radioContainerTitle);
     radioContainer.appendChild(radioDiv2);
@@ -985,13 +985,15 @@ const csTeamMember = (() => {
         }
       }
       if (selectedMemberData.teamMember === 'Parent') {
+        radioContainer.style.display = 'flex'
         selectedMemberData.parentOfMinor = isMinor ? 'Y' : 'N';
         parentOfMinorYesRadio.querySelector('input').checked = isMinor ? true : false;
-        parentOfMinorNoRadio.querySelector('input').checked = isMinor ? false : true;
+        parentOfMinorNoRadio.querySelector('input').checked = isMinor ? false : true;         
       } else {
         selectedMemberData.parentOfMinor = 'N';
-        parentOfMinorYesRadio.querySelector('input').checked = false; //
-        parentOfMinorNoRadio.querySelector('input').checked = true;
+        //parentOfMinorYesRadio.querySelector('input').checked = false; 
+        //parentOfMinorNoRadio.querySelector('input').checked = true;
+        radioContainer.style.display = 'none'
       }
     }
 
@@ -1332,6 +1334,7 @@ const csTeamMember = (() => {
 
     //* Add elements to popup
     //*------------------------------
+    
     if (isSigned) {
       teamMemberPopup.appendChild(dateSignedDisplay);
     }

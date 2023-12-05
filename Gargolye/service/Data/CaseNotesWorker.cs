@@ -1,6 +1,7 @@
 ﻿using Anywhere.Data;
 using System;
 using System.Collections.Generic;
+using System.Management.Automation.Language;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -108,6 +109,13 @@ namespace Anywhere.service.Data
             return attachmentsObj;
         }
 
+        public AttachmentListForGroup[] getCaseNoteAttachmentsListForGroupNote(string caseNoteId)
+        {
+            string attachmentsString = dg.getCaseNoteAttachmentsListForGroupNote(caseNoteId);
+            AttachmentListForGroup[] attachmentsObj = js.Deserialize<AttachmentListForGroup[]>(attachmentsString);
+            return attachmentsObj;
+        }
+
         public ConsumersForFilter[] getConsumersForCNFilter(string token, string caseLoadOnly)
         {
             string consumersString = dg.getConsumersForCNFilter(token, caseLoadOnly);
@@ -140,6 +148,14 @@ namespace Anywhere.service.Data
         {
             public string attachmentId { get; set; }
             public string description { get; set; }
+        }
+
+        public class AttachmentListForGroup
+        {
+            public string attachmentId { get; set; }
+            public string description { get; set; }
+            public string Attachment { get; set; }
+            public string attachmentType { get; set; }
         }
 
         public class CustomPhrases

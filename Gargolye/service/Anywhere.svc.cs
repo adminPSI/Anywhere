@@ -34,10 +34,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Management.Automation.Language;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAssessmentWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
+using static Anywhere.service.Data.CaseNotesWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
@@ -2065,6 +2067,11 @@ namespace Anywhere
         public CaseNotesWorker.AttachmentList[] getCaseNoteAttachmentsList(string token, string caseNoteId)
         {
             return caseNotesWorker.getCaseNoteAttachmentsList(token, caseNoteId);
+        }
+
+        public CaseNotesWorker.AttachmentListForGroup[] getCaseNoteAttachmentsListForGroupNote(string caseNoteId)
+        {
+            return caseNotesWorker.getCaseNoteAttachmentsListForGroupNote(caseNoteId);
         }
 
         public string setTestValue(string val)
