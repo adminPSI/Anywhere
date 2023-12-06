@@ -127,7 +127,7 @@ const csTeamMember = (() => {
     nameInput.childNodes[0].value = selectedMemberData.name;
     lNameInput.childNodes[0].value = selectedMemberData.lastName;
     buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber;
-    emailInput.childNodes[0].value = selectedMemberData.email;
+    emailInput.childNodes[0].value = selectedMemberData.email !== undefined ? selectedMemberData.email : '';
     if (selectedMemberData.dateOfBirth) {
       dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
         dates.removeTimestamp(selectedMemberData.dateOfBirth),
@@ -1002,6 +1002,14 @@ const csTeamMember = (() => {
         //parentOfMinorNoRadio.querySelector('input').checked = true;
         radioContainer.style.display = 'none';
       }
+
+      if (!$.session.planSignatureUpdateDOB) {
+        dateOfBirthInput.classList.remove('error');
+        dateOfBirthInput.classList.add('disabled');
+      }
+      if (!$.session.planSignatureUpdateBuildingNumber) {
+        buildingNumberInput.classList.add('disabled');
+      }
     }
 
     // inserting/removing the conditional fields based on teamMemberDropdown selection
@@ -1299,14 +1307,16 @@ const csTeamMember = (() => {
       // radioDiv.classList.remove('error');
       signatureTypeDropdown.classList.add('disabled');
       saveTeamMemberBtn.classList.add('disabled');
-    }
 
-    if ($.session.planUpdate) {
-      participatedYesRadio.classList.remove('disabled');
-      participatedNoRadio.classList.remove('disabled');
-      parentOfMinorYesRadio.classList.remove('disabled');
-      parentOfMinorNoRadio.classList.remove('disabled');
-      signatureTypeDropdown.classList.remove('disabled');
+      if (!$.session.planSignatureUpdateDOB) {
+        dateOfBirthInput.classList.add('disabled');
+      }
+      if (!$.session.planSignatureUpdateBuildingNumber) {
+        buildingNumberInput.classList.add('disabled');
+      }
+      if (!$.session.updateEmail) {
+        emailInput.classList.add('disabled');
+      }
     }
 
     //* Required Fields
@@ -1336,6 +1346,14 @@ const csTeamMember = (() => {
         if (selectedMemberData.lastName === '') {
           lNameInput.classList.add('error');
         }
+      }
+
+      if ($.session.planUpdate) {
+        participatedYesRadio.classList.remove('disabled');
+        participatedNoRadio.classList.remove('disabled');
+        parentOfMinorYesRadio.classList.remove('disabled');
+        parentOfMinorNoRadio.classList.remove('disabled');
+        signatureTypeDropdown.classList.remove('disabled');
       }
     }
 
