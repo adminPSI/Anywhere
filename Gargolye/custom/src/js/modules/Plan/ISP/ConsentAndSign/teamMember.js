@@ -166,6 +166,9 @@ const csTeamMember = (() => {
     if (!$.session.planSignatureUpdateBuildingNumber) {
       buildingNumberInput.classList.add('disabled');
     }
+    if (!$.session.updateEmail) {
+      emailInput.classList.add('disabled');
+    }
 
     teamMemberPopup.style.removeProperty('display');
 
@@ -176,6 +179,9 @@ const csTeamMember = (() => {
       }
       if ($.session.planSignatureUpdateBuildingNumber) {
         buildingNumberInput.classList.remove('disabled');
+      }
+      if ($.session.updateEmail) {
+          emailInput.classList.remove('disabled');
       }
       teamMemberDropdown.classList.remove('disabled');
       participatedYesRadio.classList.remove('disabled');
@@ -901,7 +907,7 @@ const csTeamMember = (() => {
       type: 'contained',
       classNames: ['linkBtn', 'salesforceLink'],
       callback: async () => {
-        linkToSalesforceBtn.classList.add('disabled');
+          linkToSalesforceBtn.classList.add('disabled'); planSignatureUpdateDOB
         await csSalesforce.showPopup();
       },
     });
