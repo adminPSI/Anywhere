@@ -42,6 +42,7 @@
     this.rootElement = null;
     this.inputWrap = null;
     this.select = null;
+    this.inputNote = null;
 
     this._build();
   }
@@ -70,10 +71,8 @@
     this.rootElement.appendChild(labelEle);
     this.rootElement.appendChild(this.inputWrap);
 
-    if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note });
-      this.rootElement.appendChild(inputNote);
-    }
+    const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note ?? '' });
+    this.rootElement.appendChild(this.inputNote);
 
     this.populate();
   };
@@ -135,6 +134,33 @@
    */
   Select.prototype.setValidtyError = function (message) {
     this.select.setCustomValidity(message);
+  };
+
+  /**
+   * Adds error icon to end of select and updates note text with given error message
+   *
+   * @function
+   * @param {String} message
+   */
+  Input.prototype.showError = function (message) {
+    this.inputNote.append(Icon.getIcon('error'), message);
+  };
+
+  /**
+   * Adds warning icon to end of select and updates note text with given warning message
+   *
+   * @function
+   * @param {String} message
+   */
+  Input.prototype.showWarning = function (message) {
+    this.inputNote.append(Icon.getIcon('warning'), message);
+  };
+
+  /**
+   * @function
+   */
+  Input.prototype.clear = function () {
+    this.inputNote.innerText = this.options.note ?? '';
   };
 
   /**

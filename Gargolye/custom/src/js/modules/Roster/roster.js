@@ -515,7 +515,7 @@ const roster2 = (function () {
       const rosterlists = [...ROSTER_WRAP.querySelectorAll('.roster__list')];
       rosterlists && rosterlists.forEach(rl => ROSTER_WRAP.removeChild(rl));
       totalConsumerCount = 0;
-      await getRosterConsumersData();
+      await getRosterConsumersData(true);
       //Ugly... should be re-done to be able to pass a custom apply action for the filter if needed
       // but I'm running out of thime for this release. THis is needed to reset the set allowed consumers
       //when filtering on a location or group.
@@ -1067,7 +1067,7 @@ const roster2 = (function () {
       console.log(error);
     }
   }
-  async function getRosterConsumersData() {
+  async function getRosterConsumersData(forceGroupFilter) {
     if ($.session.formsCaseload == true && $.loadedApp === 'forms') selectedGroupCode = 'CAS';
     const getConsumerByGroupData = {
       selectedGroupCode,
@@ -1076,9 +1076,9 @@ const roster2 = (function () {
       selectedDate,
     };
 
-    //if (!rosterConsumers || rosterConsumers.length === 0) {
+    if (!rosterConsumers || rosterConsumers.length === 0 || forceGroupFilter) {
     rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
-    //}
+    }
 
     // I am not sure why consumer location was being set to the selected location ID?
     const seenIds = {};
@@ -1154,7 +1154,7 @@ const roster2 = (function () {
     totalConsumerCount = 0;
 
     await getRosterData();
-    await getRosterConsumersData();
+    await getRosterConsumersData(true);
     populateRoster();
   }
   function rosterEventSetup() {

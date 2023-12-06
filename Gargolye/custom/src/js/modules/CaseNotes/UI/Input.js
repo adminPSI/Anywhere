@@ -47,6 +47,7 @@
     this.rootElement = null;
     this.input = null;
     this.labelEle = null;
+    this.inputNote = null;
 
     this._build();
   }
@@ -76,10 +77,8 @@
     inputGroup.append(this.labelEle, inputWrap);
 
     // INPUT NOTE
-    if (this.options.note) {
-      const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note });
-      inputGroup.append(inputNote);
-    }
+    this.inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note ?? '' });
+    inputGroup.append(this.inputNote);
 
     // CHAR COUNTER
     if (this.options.showcount) {
@@ -160,7 +159,9 @@
    * @function
    * @param {String} message
    */
-  Input.prototype.showError = function (message) {};
+  Input.prototype.showError = function (message) {
+    this.inputNote.append(Icon.getIcon('error'), message);
+  };
 
   /**
    * Adds warning icon to end of input and updates note text with given warning message
@@ -168,17 +169,16 @@
    * @function
    * @param {String} message
    */
-  Input.prototype.showWarning = function (message) {};
+  Input.prototype.showWarning = function (message) {
+    this.inputNote.append(Icon.getIcon('warning'), message);
+  };
 
   /**
    * @function
    */
-  Input.prototype.clearError = function () {};
-
-  /**
-   * @function
-   */
-  Input.prototype.clearWarning = function () {};
+  Input.prototype.clear = function () {
+    this.inputNote.innerText = this.options.note;
+  };
 
   /**
    * Handles input change event

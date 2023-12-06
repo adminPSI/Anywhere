@@ -37,6 +37,7 @@
         },
       ],
     });
+
     this.timeAnalysisReportForm = new Form({
       elements: [
         {
