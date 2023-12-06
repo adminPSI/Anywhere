@@ -357,9 +357,7 @@ function getCustomLoginTextAndVersion(callback) {
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
-      var res = response.getCustomTextAndAnywhereVersionResult
-        .replace(/\r/g, '')
-        .replace(/\n/g, '<br>');
+      var res = response.getCustomTextAndAnywhereVersionResult.replace(/\r/g, '').replace(/\n/g, '<br>');
       //var res = JSON.stringify(response);
       callback(res);
     },
@@ -587,16 +585,7 @@ function tokenCheck() {
 function postError(errNum, errMsg, errLvl) {
   var d = new Date();
   var curr_month = d.getMonth() + 1; //Months are zero based
-  var strDate =
-    d.getDate() +
-    '-' +
-    curr_month +
-    '-' +
-    d.getFullYear() +
-    ' ' +
-    d.getHours() +
-    ':' +
-    d.getMinutes();
+  var strDate = d.getDate() + '-' + curr_month + '-' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes();
   var dataString =
     't=' +
     strDate +
@@ -633,14 +622,7 @@ function saveDefaultLocationValueAjax(switchCase, locationId) {
       '/' +
       $.webServer.serviceName +
       '/saveDefaultLocationValue/',
-    data:
-      '{"token":"' +
-      $.session.Token +
-      '", "switchCase":"' +
-      switchCase +
-      '", "locationId":"' +
-      locationId +
-      '"}',
+    data: '{"token":"' + $.session.Token + '", "switchCase":"' + switchCase + '", "locationId":"' + locationId + '"}',
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
@@ -663,13 +645,7 @@ function saveDefaultLocationNameAjax(switchCase, locationName) {
       $.webServer.serviceName +
       '/saveDefaultLocationName/',
     data:
-      '{"token":"' +
-      $.session.Token +
-      '", "switchCase":"' +
-      switchCase +
-      '", "locationName":"' +
-      locationName +
-      '"}',
+      '{"token":"' + $.session.Token + '", "switchCase":"' + switchCase + '", "locationName":"' + locationName + '"}',
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
@@ -776,49 +752,52 @@ function getUserPermissions(callback) {
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
-        var res = response.getUserPermissionsResult;
-      //var res = JSON.stringify(response);
-      $.session.permissionString = res;
+      $.session.permissionString = response.getUserPermissionsResult;
 
-      //checks if any role of employee has 'y' for viewing casenotes
-      if (
-        res.indexOf('<window_name>EnableCaseNotes</window_name><permission>Y</permission>') > -1
-      ) {
-        $.session.CaseNotesTablePermissionView = true;
-      }
-      //Check if user is supervisor and can see Admin Single Entry Module
-      if (res.indexOf('<window_name>Supervisor</window_name><permission>Y</permission>') > -1) {
-        $.session.ViewAdminSingleEntry = true;
-      }
-      //Update doc time editable
-      if (
-        res.indexOf(
-          '<window_name>UpdateDocTime</window_name><permission>Update Doc Time</permission>',
-        ) > -1 ||
-        res.indexOf(
-          '<window_name>Anywhere Case Notes</window_name><permission>Update Doc Time</permission>',
-        ) > -1
-      ) {
-        $.session.UpdateCaseNotesDocTime = true;
-      } else {
-        $.session.UpdateCaseNotesDocTime = false;
-      }
-      //View Admin Single Entry Widget
-      if (
-        res.indexOf('<window_name>SESupervisorApprove</window_name><permission>Y</permission>') > -1
-      ) {
-        $.session.SEViewAdminWidget = true;
-      }
+      const caseNotesPerm = $.session.permissionString.find(obj => obj.window_name === 'EnableCaseNotes');
+      const supervisorPerm = $.session.permissionString.find(obj => obj.window_name === 'Supervisor');
+      const docTimePerm = $.session.permissionString.find(obj => obj.window_name === 'UpdateDocTime');
+      const caseNoteDocTimePerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
+      const adminSEPerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
+
+      $.session.CaseNotesTablePermissionView = caseNotesPerm.permission === 'Y' ? true : false;
+      $.session.ViewAdminSingleEntry = supervisorPerm.permission === 'Y' ? true : false;
+      $.session.UpdateCaseNotesDocTime =
+        docTimePerm.permission === 'Y' && caseNoteDocTimePerm.permission ? true : false;
+      $.session.SEViewAdminWidget = adminSEPerm.permission === 'Y' ? true : false;
+
+      // //checks if any role of employee has 'y' for viewing casenotes
+      // if (res.indexOf('<window_name>EnableCaseNotes</window_name><permission>Y</permission>') > -1) {
+      //   $.session.CaseNotesTablePermissionView = true;
+      // }
+      // //Check if user is supervisor and can see Admin Single Entry Module
+      // if (res.indexOf('<window_name>Supervisor</window_name><permission>Y</permission>') > -1) {
+      //   $.session.ViewAdminSingleEntry = true;
+      // }
+      // //Update doc time editable
+      // if (
+      //   res.indexOf('<window_name>UpdateDocTime</window_name><permission>Update Doc Time</permission>') > -1 ||
+      //   res.indexOf('<window_name>Anywhere Case Notes</window_name><permission>Update Doc Time</permission>') > -1
+      // ) {
+      //   $.session.UpdateCaseNotesDocTime = true;
+      // } else {
+      //   $.session.UpdateCaseNotesDocTime = false;
+      // }
+      // //View Admin Single Entry Widget
+      // if (res.indexOf('<window_name>SESupervisorApprove</window_name><permission>Y</permission>') > -1) {
+      //   $.session.SEViewAdminWidget = true;
+      // }
+
       setSessionVariables();
+
       //check to see which modules should be disabled
       checkModulePermissions();
+
       if (callback) callback();
+
       $('#userName').text($.session.Name);
       $('#firstName').text($.session.Name);
       $('#lastName').text($.session.LName);
-    },
-    error: function (xhr, status, error) {
-      //alert("Error\n-----\n" + xhr.status + '\n' + xhr.responseText);
     },
   });
 }
@@ -871,14 +850,11 @@ function getDefaultAnywhereSettings() {
 
       $.session.anAdmin = res.admistrator;
       $.session.defaultCaseNoteReviewDays = res.setting_value === '' ? '7' : res.setting_value;
-      $.session.defaultProgressNoteReviewDays =
-        res.notes_days_back === '' ? '99' : res.notes_days_back;
+      $.session.defaultProgressNoteReviewDays = res.notes_days_back === '' ? '99' : res.notes_days_back;
       $.session.defaultIncidentTrackingDaysBack =
         res.incidentTracking_days_back === '' ? '7' : res.incidentTracking_days_back;
-      $.session.defaultProgressNoteChecklistReviewDays =
-        res.checklist_days_back === '' ? '7' : res.checklist_days_back;
-      $.session.anywhereMinutestotimeout =
-        res.minutesToTimeout === '' ? '15' : res.minutesToTimeout;
+      $.session.defaultProgressNoteChecklistReviewDays = res.checklist_days_back === '' ? '7' : res.checklist_days_back;
+      $.session.anywhereMinutestotimeout = res.minutesToTimeout === '' ? '15' : res.minutesToTimeout;
       $.session.removeGoalsWidget = res.removeGoalsWidget === 'Y' ? true : false;
       $.session.seAdminRemoveMap = res.removeSEAdminMap === 'Y' ? true : false;
       $.session.isASupervisor = res.isASupervisor === '' ? false : true;
@@ -892,8 +868,7 @@ function getDefaultAnywhereSettings() {
 
       $.session.incidentTrackingShowCauseAndContributingFactors =
         res.incidentTrackingShowCauseAndContributingFactors === 'Y' ? true : false;
-      $.session.incidentTrackingShowPreventionPlan =
-        res.incidentTrackingShowPreventionPlan === 'Y' ? true : false;
+      $.session.incidentTrackingShowPreventionPlan = res.incidentTrackingShowPreventionPlan === 'Y' ? true : false;
 
       $.session.updateIncidentSummaryText = res.appendITSummary === 'Y' ? true : false;
       $.session.updateIncidentActionText = res.appendITImmediateAction === 'Y' ? true : false;
