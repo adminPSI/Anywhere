@@ -180,6 +180,7 @@ $.session.planPeopleId = '';
 $.session.showDynamic = true;
 $.session.singleEntryUseServiceLocations = false;
 $.session.editCaseNoteId = '';
+$.session.updateEmail = false;
 //$.session.groupCaseNoteId = '';
 $.session.tempServiceFunding = 'N';
 $.session.usePersonalPrefernces = 'N';
@@ -624,6 +625,9 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'Download Plans' || $.session.isPSI == true) {
                 $.session.downloadPlans = true;
+            }
+            if (tmpPerm == 'Update Email' || $.session.isPSI == true) {
+                $.session.updateEmail = true;
             }
         }
         if (tmpWindow == 'Anywhere Authorizations' || $.session.isPSI == true) {

@@ -154,7 +154,7 @@ namespace Anywhere.service.Data
         {
             public string attachmentId { get; set; }
             public string description { get; set; }
-            public string Attachment { get; set; }
+            public string attachment { get; set; }
             public string attachmentType { get; set; }
         }
 

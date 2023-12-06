@@ -54,6 +54,7 @@ namespace Anywhere
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(typeof(AnywhereService));
         private static Loger logger2 = new Loger();
+        JavaScriptSerializer js = new JavaScriptSerializer();
         DataGetter dg = new DataGetter();
         OODDataGetter Odg = new OODDataGetter();
         IntelliviewDataGetter idg = new IntelliviewDataGetter();
@@ -499,9 +500,9 @@ namespace Anywhere
             return dg.updatePortrait(token, employeeUserName, imageFile, id, portraitPath);
         }
 
-        public string getUserPermissions(string token)
+        public AnywhereWorker.UserPermissions[] getUserPermissions(string token)
         {
-            return dg.getUserPermissions(token);
+            return anywhereWorker.getUserPermissions(token);
         }
 
         public string featureLogging(string token, string featureDescription)
