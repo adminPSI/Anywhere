@@ -71,7 +71,7 @@
     this.rootElement.appendChild(labelEle);
     this.rootElement.appendChild(this.inputWrap);
 
-    const inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note ?? '' });
+    this.inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note ?? '' });
     this.rootElement.appendChild(this.inputNote);
 
     this.populate();

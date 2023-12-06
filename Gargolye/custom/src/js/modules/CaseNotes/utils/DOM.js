@@ -94,7 +94,7 @@
     }, '');
     const abString = window.btoa(binary);
 
-    attachmentObj.arrayBuffer = abString;
+    attachmentObj.attachment = abString;
 
     return attachmentObj;
   }

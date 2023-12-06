@@ -60,3 +60,7 @@ async function updateNote() {
 // }
 
 //----------------------------------------------------------
+//const parser = new DOMParser();
+// const respDoc = parser.parseFromString(saveCaseNoteResults, 'text/xml');
+// let caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
+// let cnID = extractCaseNoteId(saveCaseNoteResults);

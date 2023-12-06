@@ -221,8 +221,13 @@
    * @returns {CaseNotesData}
    */
   CaseNotesData.prototype.fetchAttachmentsGK = async function (caseNoteId) {
-    const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId });
-    this.attachmentList = data.getCaseNoteAttachmentsListResult;
+    // const data = await _UTIL.fetchData('getCaseNoteAttachmentsList', { caseNoteId });
+    // this.attachmentList = data.getCaseNoteAttachmentsListResult;
+    // console.log(data);
+
+    const data2 = await _UTIL.fetchData('getCaseNoteAttachmentsListForGroupNote', { caseNoteId });
+    this.attachmentList = data2.getCaseNoteAttachmentsListForGroupNoteResult;
+    console.log(data2);
 
     return this;
   };

@@ -5,6 +5,8 @@ const CaseNotes = (() => {
   let caseNoteId = null;
   let caseNoteGroupId = null;
   let caseNoteEditData = {};
+  let caseNoteAttachmentsData = [];
+  let attachmentsForDelete = [];
   let caseManagerId;
   let selectedConsumers = [];
   let selectedDate = null;
@@ -191,12 +193,7 @@ const CaseNotes = (() => {
 
     return response.deleteExistingCaseNoteResults;
   }
-  async function saveAttachments(saveCaseNoteResults, attachmentsForSave) {
-    const parser = new DOMParser();
-    const respDoc = parser.parseFromString(saveCaseNoteResults, 'text/xml');
-    let caseNoteId = respDoc.getElementsByTagName('caseNoteId')[0].childNodes[0].nodeValue;
-    let cnID = extractCaseNoteId(saveCaseNoteResults);
-
+  async function saveAttachments(attachmentsForSave) {
     const saveAttachmentPromises = [];
 
     // Store promises in array so we can handle each attachment individually
@@ -206,7 +203,7 @@ const CaseNotes = (() => {
           caseNoteId: caseNoteId,
           description: attachmentsForSave[attachment].description,
           attachmentType: attachmentsForSave[attachment].type,
-          attachment: attachmentsForSave[attachment].arrayBuffer,
+          attachment: attachmentsForSave[attachment].attachment,
         })
         .then(result => ({ status: 'fulfilled', value: result }))
         .catch(error => ({ status: 'rejected', reason: error, attachment: attachmentsForSave[attachment] }));
@@ -249,38 +246,60 @@ const CaseNotes = (() => {
             .then(result => ({ status: 'fulfilled', value: result }))
             .catch(error => ({ status: 'rejected', reason: error })),
         );
+
         return;
       }
 
       if (caseNoteEditData.consumerid === consumerId) {
-        savePromises.push(_UTIL.fetchData('saveCaseNote', data));
+        savePromises.push(
+          _UTIL
+            .fetchData('saveCaseNote', data)
+            .then(result => ({ status: 'fulfilled', value: result }))
+            .catch(error => ({ status: 'rejected', reason: error })),
+        );
       } else {
         data.consumerId = consumerId;
-        savePromises.push(_UTIL.fetchData('saveAdditionalGroupCaseNote', data));
+        savePromises.push(
+          _UTIL
+            .fetchData('saveAdditionalGroupCaseNote', data)
+            .then(result => ({ status: 'fulfilled', value: result }))
+            .catch(error => ({ status: 'rejected', reason: error })),
+        );
       }
     });
 
     if (caseNoteGroupId) {
-      const promise = _UTIL.fetchData('updateGroupNoteValues', {
-        groupNoteId: caseNoteGroupId,
-        noteId: caseNoteId,
-        serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
-        serviceDate: saveData.serviceDate,
-        startTime: saveData.startTime,
-        endTime: saveData.endTime,
-      });
-      savePromises.push(promise);
-    } else {
-      caseNoteGroupId = newGroupId;
+      savePromises.push(
+        _UTIL
+          .fetchData('updateGroupNoteValues', {
+            groupNoteId: caseNoteGroupId,
+            noteId: caseNoteId,
+            serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
+            serviceDate: saveData.serviceDate,
+            startTime: saveData.startTime,
+            endTime: saveData.endTime,
+          })
+          .then(result => ({ status: 'fulfilled', value: result }))
+          .catch(error => ({ status: 'rejected', reason: error })),
+      );
     }
 
     const groupSaveResults = await Promise.allSettled(savePromises);
     const failedSaves = groupSaveResults.reduce((acc, result) => {
       if (result.status === 'rejected') {
-        acc.push(consumerId);
+        acc.push('fail');
       }
       return acc;
     }, []);
+
+    if (!caseNoteGroupId && caseNoteAttachmentsData.length) {
+      // re saving attachments back to orig note
+      saveAttachments(caseNoteAttachmentsData);
+    }
+
+    if (newGroupId) {
+      caseNoteGroupId = newGroupId;
+    }
 
     return failedSaves.length === 0 ? 'success' : 'error';
   }
@@ -296,7 +315,7 @@ const CaseNotes = (() => {
 
       if ($.session.applicationName === 'Gatekeeper') {
         // save attachments
-        saveAttachments(caseNoteId, attachments);
+        saveAttachments(attachments);
       }
       return;
     } else {
@@ -350,6 +369,8 @@ const CaseNotes = (() => {
   async function onFileDelete(e) {
     console.log(e.target);
     console.log('File delete from form', e.detail);
+
+    attachmentsForDelete.push(e.detail);
   }
   // CHANGE \ KEYUP
   function onTimeChange(target) {
@@ -685,6 +706,7 @@ const CaseNotes = (() => {
     caseManagerId = caseNoteEditData.casemanagerid;
     selectedConsumers = [caseNoteEditData.consumerid];
     selectedServiceCode = caseNoteEditData.mainbillingorservicecodeid;
+    attachmentsForDelete = [];
 
     rosterPicker.setSelectedConsumers(selectedConsumers);
     setConsumerRelatedDropdowns();
@@ -707,8 +729,8 @@ const CaseNotes = (() => {
 
     if ($.session.applicationName === 'Gatekeeper') {
       await cnData.fetchAttachmentsGK(caseNoteId);
-      const attachmentList = cnData.getAttachmentsList();
-      cnForm.inputs['attachment'].addAttachments(attachmentList);
+      caseNoteAttachmentsData = cnData.getAttachmentsList();
+      cnForm.inputs['attachment'].addAttachments(caseNoteAttachmentsData);
     }
 
     checkRequiredFields();

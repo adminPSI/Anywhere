@@ -144,7 +144,7 @@
         throw new Error('Issue with network, response was not OK');
       }
 
-      let data = response.json();
+      let data = await response.json();
       return data;
     } catch (error) {
       console.log(`There was a problem with ${service}`, error.message);

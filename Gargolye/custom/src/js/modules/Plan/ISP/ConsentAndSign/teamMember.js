@@ -646,7 +646,7 @@ const csTeamMember = (() => {
     radioDiv2.appendChild(parentOfMinorNoRadio);
 
     if (isNew) {
-        radioContainer.style.display = 'none';
+      radioContainer.style.display = 'none';
     }
 
     radioContainer.appendChild(radioContainerTitle);
@@ -984,16 +984,17 @@ const csTeamMember = (() => {
           }
         }
       }
+
       if (selectedMemberData.teamMember === 'Parent') {
-        radioContainer.style.display = 'flex'
+        radioContainer.style.display = 'flex';
         selectedMemberData.parentOfMinor = isMinor ? 'Y' : 'N';
         parentOfMinorYesRadio.querySelector('input').checked = isMinor ? true : false;
-        parentOfMinorNoRadio.querySelector('input').checked = isMinor ? false : true;         
+        parentOfMinorNoRadio.querySelector('input').checked = isMinor ? false : true;
       } else {
         selectedMemberData.parentOfMinor = 'N';
-        //parentOfMinorYesRadio.querySelector('input').checked = false; 
+        //parentOfMinorYesRadio.querySelector('input').checked = false;
         //parentOfMinorNoRadio.querySelector('input').checked = true;
-        radioContainer.style.display = 'none'
+        radioContainer.style.display = 'none';
       }
     }
 
@@ -1334,7 +1335,7 @@ const csTeamMember = (() => {
 
     //* Add elements to popup
     //*------------------------------
-    
+
     if (isSigned) {
       teamMemberPopup.appendChild(dateSignedDisplay);
     }
