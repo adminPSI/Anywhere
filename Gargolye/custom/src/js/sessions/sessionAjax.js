@@ -776,7 +776,8 @@ function getUserPermissions(callback) {
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
+        var res = response.getUserPermissionsResult;
+      //var res = JSON.stringify(response);
       $.session.permissionString = res;
 
       //checks if any role of employee has 'y' for viewing casenotes
