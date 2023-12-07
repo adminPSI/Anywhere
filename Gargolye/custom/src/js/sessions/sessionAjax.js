@@ -760,11 +760,10 @@ function getUserPermissions(callback) {
       const caseNoteDocTimePerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
       const adminSEPerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
 
-      $.session.CaseNotesTablePermissionView = caseNotesPerm.permission === 'Y' ? true : false;
-      $.session.ViewAdminSingleEntry = supervisorPerm.permission === 'Y' ? true : false;
-      $.session.UpdateCaseNotesDocTime =
-        docTimePerm.permission === 'Y' && caseNoteDocTimePerm.permission ? true : false;
-      $.session.SEViewAdminWidget = adminSEPerm.permission === 'Y' ? true : false;
+      $.session.CaseNotesTablePermissionView = (caseNotesPerm && caseNotesPerm.permission === 'Y') ? true : false;
+      $.session.ViewAdminSingleEntry = (supervisorPerm && supervisorPerm.permission === 'Y') ? true : false;
+      $.session.UpdateCaseNotesDocTime = (docTimePerm && caseNoteDocTimePerm && docTimePerm.permission === 'Y' && caseNoteDocTimePerm.permission) ? true : false;
+      $.session.SEViewAdminWidget = (adminSEPerm && adminSEPerm.permission === 'Y') ? true : false;
 
       // //checks if any role of employee has 'y' for viewing casenotes
       // if (res.indexOf('<window_name>EnableCaseNotes</window_name><permission>Y</permission>') > -1) {
