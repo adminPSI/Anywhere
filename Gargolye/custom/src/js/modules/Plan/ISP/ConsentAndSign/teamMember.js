@@ -127,7 +127,7 @@ const csTeamMember = (() => {
     nameInput.childNodes[0].value = selectedMemberData.name;
     lNameInput.childNodes[0].value = selectedMemberData.lastName;
     buildingNumberInput.childNodes[0].value = selectedMemberData.buildingNumber;
-    emailInput.childNodes[0].value = selectedMemberData.email;
+    emailInput.childNodes[0].value = selectedMemberData.email ?? '';
     if (selectedMemberData.dateOfBirth) {
       dateOfBirthInput.childNodes[0].value = UTIL.formatDateToIso(
         dates.removeTimestamp(selectedMemberData.dateOfBirth),
@@ -181,7 +181,7 @@ const csTeamMember = (() => {
         buildingNumberInput.classList.remove('disabled');
       }
       if ($.session.updateEmail) {
-          emailInput.classList.remove('disabled');
+        emailInput.classList.remove('disabled');
       }
       teamMemberDropdown.classList.remove('disabled');
       participatedYesRadio.classList.remove('disabled');
@@ -907,7 +907,8 @@ const csTeamMember = (() => {
       type: 'contained',
       classNames: ['linkBtn', 'salesforceLink'],
       callback: async () => {
-          linkToSalesforceBtn.classList.add('disabled'); planSignatureUpdateDOB
+        linkToSalesforceBtn.classList.add('disabled');
+        planSignatureUpdateDOB;
         await csSalesforce.showPopup();
       },
     });
@@ -968,6 +969,11 @@ const csTeamMember = (() => {
           dateOfBirthInput.classList.remove('error');
         } else {
           dateOfBirthInput.classList.add('error');
+        }
+        if (selectedMemberData.email !== '') {
+          emailInput.classList.remove('error');
+        } else {
+          emailInput.classList.add('error');
         }
         if (selectedMemberData.teamMember === '') {
           teamMemberDropdown.classList.add('error');
@@ -1195,11 +1201,12 @@ const csTeamMember = (() => {
     //Email
     emailInput = input.build({
       label: 'Email',
-      value: selectedMemberData.email,
+      value: selectedMemberData.email ?? '',
       readonly: isSigned || readOnly,
       callbackType: 'input',
       callback: event => {
         let validEmail = validateEmail(event.target.value);
+
         if (validEmail) {
           selectedMemberData.email = event.target.value;
           emailInput.classList.remove('error');
@@ -1312,6 +1319,11 @@ const csTeamMember = (() => {
         dateOfBirthInput.classList.remove('error');
       } else {
         dateOfBirthInput.classList.add('error');
+      }
+      if (selectedMemberData.email !== '') {
+        emailInput.classList.remove('error');
+      } else {
+        emailInput.classList.add('error');
       }
       if (selectedMemberData.teamMember === '') {
         teamMemberDropdown.classList.add('error');
