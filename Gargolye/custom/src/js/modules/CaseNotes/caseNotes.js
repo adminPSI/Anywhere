@@ -109,10 +109,10 @@ const CaseNotes = (() => {
 
     if (isSaveDisabled || !isFormValid) {
       cnForm.buttons['submit'].toggleDisabled(true);
-      cnForm.buttons['saveNew'].toggleDisabled(true);
+      cnForm.buttons['saveAndNew'].toggleDisabled(true);
     } else {
       cnForm.buttons['submit'].toggleDisabled(false);
-      cnForm.buttons['saveNew'].toggleDisabled(false);
+      cnForm.buttons['saveAndNew'].toggleDisabled(false);
     }
   }
 
@@ -136,8 +136,8 @@ const CaseNotes = (() => {
     const warnStart = parseSessionTime($.session.caseNotesWarningStartTime);
     const warnEnd = parseSessionTime($.session.caseNotesWarningEndTime);
 
-    const validStart = startTime < warnStart || startTime > warnEnd ? false : true;
-    const validEnd = endTime < warnStart || endTime > warnEnd ? false : true;
+    const validStart = (startTime < warnStart || startTime > warnEnd) && startTime !== '' ? false : true;
+    const validEnd = (endTime < warnStart || endTime > warnEnd) && endTime !== '' ? false : true;
 
     return { validStart, validEnd };
   }
