@@ -970,7 +970,7 @@ const csTeamMember = (() => {
         } else {
           dateOfBirthInput.classList.add('error');
         }
-        if (selectedMemberData.email !== '') {
+        if (selectedMemberData.email) {
           emailInput.classList.remove('error');
         } else {
           emailInput.classList.add('error');
@@ -1320,7 +1320,7 @@ const csTeamMember = (() => {
       } else {
         dateOfBirthInput.classList.add('error');
       }
-      if (selectedMemberData.email !== '') {
+      if (selectedMemberData.email) {
         emailInput.classList.remove('error');
       } else {
         emailInput.classList.add('error');
