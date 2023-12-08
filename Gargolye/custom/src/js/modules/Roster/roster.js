@@ -504,6 +504,12 @@ const roster2 = (function () {
     });
     APPLY_BTN.addEventListener('click', async () => {
       POPUP.hide(FILTER_POPUP);
+
+      ROSTER_WRAP.removeChild(LOAD_MORE_BTN);
+
+      ROSTER_SPINNER = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
+      ROSTER_WRAP.appendChild(ROSTER_SPINNER);
+      
       customGroups.init(rosterGroups);
 
       if (locationHasUnreadNote) {
@@ -1113,6 +1119,10 @@ const roster2 = (function () {
     }
 
     rosterGroups = await getConsumerGroupsData(selectedLocationId);
+    
+    ROSTER_SPINNER = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
+    ROSTER_WRAP.appendChild(ROSTER_SPINNER);
+
     if (!selectedGroupName || ($.session.formsCaseload == true && $.loadedApp === 'forms')) setSelectedGroupData();
 
     locationsWithUnreadNotes = await getLocationsWithUnreadNotesData();
