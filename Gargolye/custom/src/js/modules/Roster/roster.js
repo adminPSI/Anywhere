@@ -20,6 +20,8 @@ const roster2 = (function () {
   let DESELECT_ALL_BTN;
   let LOCATION_NOTES_BTN;
   let MASS_ABSENT_BTN;
+  let loadingRosterWrap;
+  let loadRosterSpinner;
   // DOM - MINI ROSTER
   let MINI_ROSTER_BTN;
   let MINI_ROSTER_POPUP;
@@ -504,6 +506,12 @@ const roster2 = (function () {
     });
     APPLY_BTN.addEventListener('click', async () => {
       POPUP.hide(FILTER_POPUP);
+
+      ROSTER_WRAP.removeChild(LOAD_MORE_BTN);
+
+      ROSTER_SPINNER = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
+      ROSTER_WRAP.appendChild(ROSTER_SPINNER);
+      
       customGroups.init(rosterGroups);
 
       if (locationHasUnreadNote) {
@@ -1036,6 +1044,13 @@ const roster2 = (function () {
   }
   async function getConsumerGroupsData() {
     try {
+      loadingRosterWrap = document.createElement('div');
+      DOM.ACTIONCENTER.appendChild(loadingRosterWrap);
+
+      loadRosterSpinner = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
+
+      loadingRosterWrap.appendChild(loadRosterSpinner);
+
       const data = (await customGroupsAjax.getConsumerGroups(selectedLocationId)).getConsumerGroupsJSONResult;
       return data;
     } catch (error) {
@@ -1045,6 +1060,7 @@ const roster2 = (function () {
   async function getLocationsWithUnreadNotesData() {
     try {
       const data = (await locationNotesAjax.getLocationsWithUnreadNotes()).getLocationsWithUnreadNotesResult;
+      DOM.ACTIONCENTER.removeChild(loadingRosterWrap);
       return JSON.parse(data);
     } catch (error) {
       console.log(error);
