@@ -28,6 +28,7 @@
   function Toast(options) {
     // Data Init
     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
+    this.displayStatus = null;
 
     // Instance Ref
     this.dialog = null;
@@ -36,13 +37,13 @@
     this.closeToastButton = null;
     this.messageEle = null;
 
-    this.build();
+    this._build();
   }
 
   /**
    * @function
    */
-  Toast.prototype.build = function () {
+  Toast.prototype._build = function () {
     this.dialog = new Dialog({ className: 'toast' });
 
     this.messageEle = _DOM.createElement('p', {
@@ -53,15 +54,18 @@
     this.closeToastButton = new Button({ icon: 'cancel', style: 'secondary', styleType: 'outlined' });
 
     this.closeToastButton.renderTo(this.dialog.dialog);
-    this.dialog.dialog.appendChild(messageEle);
+    this.dialog.dialog.appendChild(this.messageEle);
   };
 
   /**
    * @function
    */
   Toast.prototype.show = function (message) {
+    if (this.displayStatus === 'open') return;
+
     if (message) this.messageEle.innerText = message;
     this.dialog.show();
+    this.displayStatus = 'open';
   };
 
   /**
@@ -69,6 +73,7 @@
    */
   Toast.prototype.close = function () {
     this.dialog.close();
+    this.displayStatus = 'closed';
   };
 
   /**

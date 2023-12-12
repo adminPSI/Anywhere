@@ -384,8 +384,6 @@ function eraseCookie(name) {
 function setSessionVariables() {
   var cookieInnards = $.session.permissionString;
 
-  console.log(cookieInnards);
-
   cookieInnards.forEach(cookie => {
     tmpWindow = cookie.window_name;
     tmpPerm = cookie.permission;

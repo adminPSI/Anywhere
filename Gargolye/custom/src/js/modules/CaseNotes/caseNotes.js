@@ -5,12 +5,13 @@ const CaseNotes = (() => {
   let caseNoteId = null;
   let caseNoteGroupId = null;
   let caseNoteEditData = {};
-  let caseNoteAttachmentsData = [];
+  let caseNoteAttachmentsEditData = [];
   let attachmentsForDelete = [];
   let caseManagerId;
   let selectedConsumers = [];
   let selectedDate = null;
   let selectedServiceCode;
+  let updatedInputs = {};
   //--------------------------
   // DOM
   //--------------------------
@@ -30,9 +31,34 @@ const CaseNotes = (() => {
   let cnDocTimer;
   let reqVisualizer;
 
-  function resetModule() {
-    //TODO-ASH
+  function resetModuleData() {
     _DOM.ACTIONCENTER.removeAttribute('data-ui');
+
+    moduleWrap = undefined;
+    cnHeader = undefined;
+    cnDateNavWrap = undefined;
+    cnFormWrap = undefined;
+    cnRosterWrap = undefined;
+    dateNavigation = undefined;
+    rosterPicker = undefined;
+    cnForm = undefined;
+    cnOverview = undefined;
+    cnPhrases = undefined;
+    cnDocTimer = undefined;
+    reqVisualizer = undefined;
+
+    resetNoteData();
+  }
+  function resetNoteData() {
+    caseNoteId = null;
+    caseNoteGroupId = null;
+    caseNoteEditData = {};
+    caseNoteAttachmentsEditData = [];
+    attachmentsForDelete = [];
+    caseManagerId;
+    selectedConsumers = [];
+    selectedServiceCode;
+    updatedInputs = {};
   }
 
   // UTILS
@@ -81,21 +107,12 @@ const CaseNotes = (() => {
   }
   function checkGroupNotesPermission() {
     const allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
-    //TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
-    rosterPicker.toggleMultiSelectOption(allowGroupNotes === 'Y' ? true : false);
+    const allowMultiSelect = allowGroupNotes === 'Y' ? true : false;
+    rosterPicker.toggleMultiSelectOption(allowMultiSelect);
   }
   function extractCaseNoteId(xmlString) {
     const match = xmlString.match(/<caseNoteId>(\d+)<\/caseNoteId>/);
     return match ? match[1] : null;
-  }
-  function areAllFormFieldsValid() {
-    const invalidControls = cnForm.form.querySelectorAll(':invalid');
-
-    if (invalidControls.length > 0) {
-      return false;
-    }
-
-    return true;
   }
   function checkRequiredFields() {
     // const isFormValid = areAllFormFieldsValid();
@@ -107,12 +124,14 @@ const CaseNotes = (() => {
       isSaveDisabled = false;
     }
 
-    if (isSaveDisabled || !isFormValid) {
+    if (isSaveDisabled) {
       cnForm.buttons['submit'].toggleDisabled(true);
       cnForm.buttons['saveAndNew'].toggleDisabled(true);
+      cnForm.buttons['update'].toggleDisabled(true);
     } else {
       cnForm.buttons['submit'].toggleDisabled(false);
       cnForm.buttons['saveAndNew'].toggleDisabled(false);
+      cnForm.buttons['update'].toggleDisabled(false);
     }
   }
 
@@ -174,14 +193,7 @@ const CaseNotes = (() => {
       })
       .getOverlapData();
 
-    if (overlap) {
-      // cnValidation.showWarning({
-      //   name: 'overlap',
-      //   message: 'Overlap :(',
-      // });
-    } else {
-      // cnValidation.hide('overlap');
-    }
+    return overlap ? 'success' : overlap;
   }
 
   // CRUD
@@ -292,9 +304,9 @@ const CaseNotes = (() => {
       return acc;
     }, []);
 
-    if (!caseNoteGroupId && caseNoteAttachmentsData.length) {
+    if (!caseNoteGroupId && caseNoteAttachmentsEditData.length) {
       // re saving attachments back to orig note
-      saveAttachments(caseNoteAttachmentsData);
+      saveAttachments(caseNoteAttachmentsEditData);
     }
 
     if (newGroupId) {
@@ -310,14 +322,18 @@ const CaseNotes = (() => {
 
     if (selectedConsumers.length === 1 && !caseNoteGroupId) {
       // NEW NOTE or EDIT NON GROUP NOTE
-      saveResponse = (await _UTIL.fetchData('saveCaseNote', data)).saveCaseNoteResult;
-      caseNoteId = extractCaseNoteId(saveResponse);
+      const response = (await _UTIL.fetchData('saveCaseNote', data)).saveCaseNoteResult;
+      caseNoteId = extractCaseNoteId(response);
+      saveResponse = caseNoteId ? 'success' : 'error';
 
-      if ($.session.applicationName === 'Gatekeeper') {
-        // save attachments
-        saveAttachments(attachments);
+      // SAVE ATTACHMENTS
+      if ($.session.applicationName === 'Gatekeeper' && attachments.length > 0) {
+        const attachSaveResponse = saveAttachments(attachments);
+        if (attachSaveResponse === 'error') {
+          reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+          return;
+        }
       }
-      return;
     } else {
       saveResponse = await saveGroup(data);
     }
@@ -331,6 +347,49 @@ const CaseNotes = (() => {
 
   // FORM
   //--------------------------------------------------
+  function areAllFormFieldsValid() {
+    const invalidControls = cnForm.form.querySelectorAll(':invalid');
+
+    if (invalidControls.length > 0) {
+      return false;
+    }
+
+    return true;
+  }
+  function checkFormForUnsavedChanges(inputName, newValue) {
+    const originalNoteDataMap = {
+      serviceCode: caseNoteEditData.mainbillingorservicecodeid,
+      location: caseNoteEditData.locationcode,
+      serviceLocation: caseNoteEditData.servicelocationid,
+      need: caseNoteEditData.serviceneedcode,
+      vendor: caseNoteEditData.vendorid,
+      contact: caseNoteEditData.contactcode,
+      startTime: caseNoteEditData.starttime,
+      endTime: caseNoteEditData.endtime,
+      mileage: caseNoteEditData.totalmiles,
+      travelTime: caseNoteEditData.traveltime,
+      noteText: caseNoteEditData.casenote,
+      confidential: caseNoteEditData.confidential,
+    };
+
+    if (originalNoteDataMap[inputName] !== newValue) {
+      updatedInputs[inputName] = true;
+    } else {
+      delete updatedInputs[inputName];
+    }
+
+    if (Object.keys(updatedInputs).length) {
+      cnFormToast.show('Unsaved changes detected');
+    } else {
+      cnFormToast.close();
+    }
+  }
+  function toggleFormButtonShowHide() {
+    cnForm.buttons['submit'].toggleVisibility(caseNoteId ? true : false);
+    cnForm.buttons['saveAndNew'].toggleVisibility(caseNoteId ? true : false);
+    cnForm.buttons['update'].toggleVisibility(caseNoteId ? false : true);
+    cnForm.buttons['delete'].toggleVisibility(caseNoteId ? false : true);
+  }
   // DROPDOWNS
   async function updateVendorDropdownByConsumer() {
     await cnData.fetchVendorDropdownData({
@@ -392,23 +451,29 @@ const CaseNotes = (() => {
       return;
     }
 
+    cnForm.inputs['startTime'].setValidtyError('');
+    cnForm.inputs['endTime'].setValidtyError('');
+
+    let validStart = true;
+    let validEnd = true;
     if ($.session.applicationName === 'Gatekeeper') {
-      const { validStart, validEnd } = timesWithinWorkHoursCheck(startTimeVal, endTimeVal);
+      ({ validStart, validEnd } = timesWithinWorkHoursCheck(startTimeVal, endTimeVal));
+
       if (!validStart) {
-        cnForm.inputs['startTime'].showWarning(`Time is outside current normal working hours.`);
+        cnForm.inputs['startTime'].showWarning(`Time is outside normal working hours.`);
       }
 
       if (!validEnd) {
-        cnForm.inputs['endTime'].showWarning(`Time is outside current normal working hours.`);
+        cnForm.inputs['endTime'].showWarning(`Time is outside normal working hours.`);
       }
-
-      return;
     }
 
-    cnForm.inputs['startTime'].setValidtyError('');
-    cnForm.inputs['endTime'].setValidtyError('');
-    cnForm.inputs['startTime'].clear();
-    cnForm.inputs['endTime'].clear();
+    if (validStart) {
+      cnForm.inputs['startTime'].clearErrorOrWarning();
+    }
+    if (validEnd) {
+      cnForm.inputs['endTime'].clearErrorOrWarning();
+    }
   }
   function onServiceCodeChange() {
     if (caseNoteId) {
@@ -505,6 +570,10 @@ const CaseNotes = (() => {
     });
 
     checkRequiredFields();
+
+    if (caseNoteId) {
+      checkFormForUnsavedChanges(name, value);
+    }
   }
   const onKeyupCallbacks = {
     travelTime: ({ event, value, name, input }) => {
@@ -614,6 +683,18 @@ const CaseNotes = (() => {
     return attachmentsForSave;
   }
   async function onFormSubmit(data, submitter) {
+    const buttonName = submitter.name.toLowerCase();
+
+    if (buttonName === 'delete') {
+      resetNoteData();
+      cnForm.clear();
+      rosterPicker.setSelectedConsumers([]);
+
+      await deleteNote(caseNoteId);
+
+      return;
+    }
+
     const attachmentsForSave = await processAttachmentsForSave(data);
 
     const saveData = {
@@ -639,18 +720,17 @@ const CaseNotes = (() => {
       vendorId: data.vendor ?? '',
     };
 
+    const overlaps = await timeOverlapCheck(saveData.startTime, saveData.endTime);
+
     await saveNote(saveData, attachmentsForSave);
+
+    cnFormToast.close();
 
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
 
-    if (submitter.name.toLowerCase() === 'saveandnew') {
-      caseNoteId = null;
-      caseNoteGroupId = null;
-      caseNoteEditData = {};
-      caseManagerId = $.session.PeopleId;
-      selectedConsumers = [];
-
+    if (buttonName === 'saveandnew') {
+      resetNoteData();
       cnForm.clear();
       rosterPicker.setSelectedConsumers([]);
     }
@@ -695,11 +775,17 @@ const CaseNotes = (() => {
   async function onOverviewCardEdit(noteId) {
     _DOM.scrollToTop();
 
-    caseNoteEditData = (
-      await _UTIL.fetchData('getCaseNoteEditJSON', {
+    let data = await _UTIL.fetchData('getCaseNoteEditJSON', {
+      noteId: caseNoteId,
+    });
+    if (!data.getCaseNoteEditJSONResult[0]) {
+      console.log('I failed on the first run for some reason????');
+      data = await _UTIL.fetchData('getCaseNoteEditJSON', {
         noteId: caseNoteId,
-      })
-    ).getCaseNoteEditJSONResult[0];
+      });
+    }
+    caseNoteEditData = data.getCaseNoteEditJSONResult[0];
+    console.log(caseNoteEditData);
 
     caseNoteId = noteId;
     caseNoteGroupId = caseNoteEditData.groupid;
@@ -708,7 +794,7 @@ const CaseNotes = (() => {
     selectedServiceCode = caseNoteEditData.mainbillingorservicecodeid;
     attachmentsForDelete = [];
 
-    rosterPicker.setSelectedConsumers(selectedConsumers);
+    rosterPicker.setSelectedConsumers(selectedConsumers, true);
     setConsumerRelatedDropdowns();
     onServiceCodeChange();
 
@@ -729,9 +815,14 @@ const CaseNotes = (() => {
 
     if ($.session.applicationName === 'Gatekeeper') {
       await cnData.fetchAttachmentsGK(caseNoteId);
-      caseNoteAttachmentsData = cnData.getAttachmentsList();
-      cnForm.inputs['attachment'].addAttachments(caseNoteAttachmentsData);
+      caseNoteAttachmentsEditData = cnData.getAttachmentsList();
+      cnForm.inputs['attachment'].addAttachments(caseNoteAttachmentsEditData);
     }
+
+    //TODO-ASH: do something with buttons, add cancel button?
+    toggleFormButtonShowHide();
+    //TODO-ASH: Add entered by (caseNoteEditData.originaluserfullname, caseNoteEditData.originaluserid)
+    //TODO-ASH: Add last edit on (caseNoteEditData.lastupdate)
 
     checkRequiredFields();
   }
@@ -759,6 +850,7 @@ const CaseNotes = (() => {
   async function loadPage() {
     dateNavigation.renderTo(cnDateNavWrap);
     rosterPicker.renderTo(cnRosterWrap);
+    cnFormToast.renderTo(cnFormWrap);
     cnForm.renderTo(cnFormWrap);
     cnOverview.renderTo(moduleWrap);
     cnPhrases.renderTo(_DOM.ACTIONCENTER);
@@ -933,8 +1025,27 @@ const CaseNotes = (() => {
           style: 'primary',
           styleType: 'outlined',
         },
+        {
+          type: 'submit',
+          text: 'Update',
+          icon: 'save',
+          name: 'update',
+          style: 'primary',
+          styleType: 'outlined',
+          hidden: true,
+        },
+        {
+          type: 'submit',
+          text: 'Delete',
+          name: 'delete',
+          icon: 'delete',
+          style: 'danger',
+          styleType: 'outlined',
+          hidden: true,
+        },
       ],
     });
+    cnFormToast = new Toast();
     // Overview Cards
     cnOverview = new CaseNotesOverview(cnData);
     // Phrases
@@ -971,6 +1082,6 @@ const CaseNotes = (() => {
 
   return {
     init,
-    resetModule,
+    resetModuleData,
   };
 })();

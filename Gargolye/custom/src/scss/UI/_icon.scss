@@ -4,10 +4,14 @@
 [data-ui] {
   .svgIcon {
     display: block;
+    height: 24px;
+    width: 24px;
 
     svg {
       display: block;
       fill: currentColor;
+      height: 100%;
+      width: 100%;
     }
 
     svg,

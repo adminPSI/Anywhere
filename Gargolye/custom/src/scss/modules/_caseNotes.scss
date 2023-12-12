@@ -127,30 +127,27 @@
     }
 
     &__cardsWrap {
-      display: grid;
-      grid-template-columns: minmax(100px, 120px) minmax(100px, 120px) auto;
+      // display: grid;
+      // grid-template-columns: minmax(100px, 101px) minmax(100px, 101px) auto auto;
     }
 
     &__overviewCard {
       align-items: center;
       display: grid;
-      grid-template-columns: subgrid;
+      grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) auto auto;
+      grid-template-rows: auto;
+      row-gap: 10px;
 
       box-shadow: $shadow-m2;
       border-radius: 6px;
-      grid-column: 1 / -1;
       position: relative;
       padding: 10px;
       margin: 0 0 8px;
 
-      &Top {
-      }
-      &Main {
-      }
-
       .consumer {
         align-items: center;
         display: flex;
+        grid-area: 2/1/2/4;
         width: 100%;
 
         .portrait {
@@ -173,10 +170,7 @@
       }
       .button-wrap {
         column-gap: 6px;
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: auto;
+        justify-self: end;
 
         .button {
           width: auto;
@@ -186,22 +180,22 @@
       .startTime,
       .endTime {
         span:last-child {
-          font-size: $px18;
+          font-size: $px17;
         }
       }
 
       // TOP ROW
       .withLabel {
-        font-size: $px24;
+        font-size: $px20;
         font-weight: $_bold;
         position: relative;
         margin: 20px 8px 0 0;
       }
       .withLabel::before {
-        font-size: $px14;
+        font-size: $px12;
         font-weight: $_normal;
         position: absolute;
-        top: -18px;
+        top: -14px;
         left: 0px;
       }
       .startTime::before {

@@ -12,7 +12,7 @@
     }).format(new Date(dateObj));
     mostRecentUpdate = mostRecentUpdate.split(', ');
     mostRecentUpdate = `${mostRecentUpdate[0].substring(0, 3)}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
-    return mostRecentUpdate;
+    return _DOM.createElement('p', { class: 'noteText', text: mostRecentUpdate });
   }
   function buildStartTimeElement(dirtyStart) {
     const time = UTIL.convertFromMilitary(dirtyStart);
@@ -204,6 +204,7 @@
         // IDK YET??
         const mostRecentUpdateEle = buildMostRecentUpdateElement(rd.mostrecentupdate);
         const enteredByEle = buildEnteredByElement(rd.enteredby, rd.originalUserFullName);
+
         // BUTTONS
         const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
         const editButton = new Button({
@@ -250,11 +251,11 @@
         const consumerNameEle = buildConsumerElement(consumerId, rd.firstname, rd.lastname);
         const serviceInfoEle = buildServiceInfoElement(mainService, rd.serviceName, rd.locationName);
         const noteTextEle = buildNoteElement(rd.caseNote);
-        // overviewCardMain.appendChild(consumerNameEle);
-        // overviewCardMain.appendChild(serviceInfoEle);
-        // overviewCardMain.appendChild(noteTextEle);
-
-        // overviewCardMain.appendChild(btnWrap);
+        overviewCard.appendChild(consumerNameEle);
+        overviewCard.appendChild(serviceInfoEle);
+        overviewCard.appendChild(noteTextEle);
+        // overviewCard.appendChild(enteredByEle);
+        // overviewCard.appendChild(mostRecentUpdateEle);
 
         //---------------------------------
         this.overviewCards[caseNoteId] = overviewCard;

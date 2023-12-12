@@ -50,11 +50,16 @@
     this.rootElement = _DOM.createElement('div', { class: 'rosterPicker' });
     this.rosterWrapEle = _DOM.createElement('div', { class: 'rosterPicker__cardsWrap' });
 
+    this.messageEleIcon = this.options.consumerRequired ? Icon.getIcon('error') : '';
     this.messageEle = _DOM.createElement('p', {
       class: 'rosterPicker__message',
-      text: this.consumerRequired ? 'Consumer(s) is required' : 'Please select a consumer',
+      node: this.messageEleIcon,
+      text: this.options.consumerRequired ? 'Consumer(s) is required' : 'Please select a consumer',
     });
-    this.messageEle.classList.toggle('error', this.consumerRequired && !Object.keys(this.selectedConsumers).length);
+    this.messageEle.classList.toggle(
+      'error',
+      this.options.consumerRequired && !Object.keys(this.selectedConsumers).length,
+    );
 
     this.rosterSearchInput = new Input({
       type: 'search',
@@ -94,6 +99,7 @@
 
         return;
       }
+
       if (e.target.dataset.target === 'rosterCard') {
         if (e.target.parentNode.classList.contains('selected')) {
           e.target.parentNode.classList.remove('selected');
@@ -105,8 +111,7 @@
           this.selectedConsumers[e.target.dataset.id] = e.target;
         }
 
-        // check if consumer is req
-        this.messageEle.classList.toggle('error', this.consumerRequired && !Object.keys(this.selectedConsumers).length);
+        this._updateMessage();
 
         const customEvent = new CustomEvent('onConsumerSelect');
         this.rosterWrapEle.dispatchEvent(customEvent);
@@ -173,6 +178,24 @@
    */
   RosterPicker.prototype._scrollToTop = function () {
     this.rosterWrapEle.scrollTop = 0;
+  };
+
+  /**
+   * Updates the status of the message element
+   */
+  RosterPicker.prototype._updateMessage = function () {
+    let newIcon;
+
+    if (this.options.consumerRequired && !Object.keys(this.selectedConsumers).length) {
+      newIcon = Icon.getIcon('error');
+      this.messageEle.classList.add('error');
+    } else {
+      newIcon = Icon.getIcon('checkmark');
+      this.messageEle.classList.remove('error');
+    }
+
+    this.messageEle.replaceChild(newIcon, this.messageEleIcon);
+    this.messageEleIcon = newIcon;
   };
 
   /**
@@ -269,6 +292,16 @@
    */
   RosterPicker.prototype.toggleMultiSelectOption = function (allowMultiSelect) {
     this.options.allowMultiSelect = allowMultiSelect;
+
+    if (this.options.allowMultiSelect) {
+      // clear selected consumers except locked consumers
+      for (consumerID in this.selectedConsumers) {
+        if (!this.selectedConsumers[consumerID].parentNode.classList.contains('locked')) {
+          this.selectedConsumers[consumerID].parentNode.classList.remove('selected');
+          delete this.selectedConsumers[consumerID];
+        }
+      }
+    }
   };
 
   /**
@@ -284,16 +317,24 @@
   };
 
   /**
+   * Selects consumer(s) in roster picker
+   *
    * @function
    * @param {Array} consumerIds
    */
-  RosterPicker.prototype.setSelectedConsumers = function (consumerIds) {
+  RosterPicker.prototype.setSelectedConsumers = function (consumerIds, lockdown) {
     this.clearSelectedConsumers();
 
     consumerIds.forEach(cid => {
-      this.consumers[cid].cardEle.parentNode.classList.add('selected');
       this.selectedConsumers[cid] = this.consumers[cid].cardEle;
+      this.consumers[cid].cardEle.parentNode.classList.add('selected');
+
+      if (lockdown) {
+        this.consumers[cid].cardEle.parentNode.classList.add('locked');
+      }
     });
+
+    this._updateMessage();
 
     this._scrollToTop();
   };

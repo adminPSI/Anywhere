@@ -26,7 +26,6 @@
   function Form(options) {
     // Data Init
     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
-    //this.options.elements = separateButtonElements(this.options.elements);
     this.inputs = {};
     this.buttons = {};
 
@@ -202,6 +201,8 @@
    */
   Form.prototype.populate = function (data) {
     this.clear();
+
+    this.formData = data;
 
     for (inputName in data) {
       this.inputs[inputName].setValue(data[inputName]);

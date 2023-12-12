@@ -52,8 +52,9 @@
    * @function
    */
   Button.prototype._build = function () {
+    const classes = ['button', this.options.style, this.options.styleType];
     this.button = _DOM.createElement('button', {
-      class: ['button', this.options.style, this.options.styleType],
+      class: this.options.hidden ? [...classes, 'button--hidden'] : classes,
       type: this.options.attributes.type,
       name: this.options.attributes.name,
       value: this.options.attributes.value,
@@ -61,8 +62,10 @@
 
     if (this.options.icon) {
       if (this.options.text) {
-        this.button.innerHTML = `<span>${this.options.text}</span>`;
-        this.button.insertBefore(Icon.getIcon(this.options.icon), this.button.firstChild);
+        const textNode = document.createTextNode(this.options.text);
+        this.button.append(Icon.getIcon(this.options.icon), textNode);
+        // this.button.innerHTML = `<span>${this.options.text}</span>`;
+        // this.button.insertBefore(Icon.getIcon(this.options.icon), this.button.firstChild);
         this.button.classList.add('button--icon');
       } else {
         this.button.appendChild(Icon.getIcon(this.options.icon));
@@ -94,6 +97,28 @@
    */
   Button.prototype.toggleDisabled = function (isDisbled) {
     this.button.disabled = isDisbled;
+  };
+
+  /**
+   * Toggles button visibility state, if true input is hidden
+   *
+   * @function
+   * @param {Boolean} isHidden
+   */
+  Button.prototype.toggleVisibility = function (isHidden) {
+    this.button.classList.toggle('hidden', isHidden);
+  };
+
+  Button.prototype.updateText = function (newText) {
+    this.button.innerText = '';
+
+    const textNode = document.createTextNode(newText);
+
+    if (this.options.icon) {
+      this.button.append(Icon.getIcon(this.options.icon));
+    }
+
+    this.button.append(textNode);
   };
 
   /**

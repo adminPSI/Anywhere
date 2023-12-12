@@ -21,28 +21,43 @@
    */
   function createElement(tag, attributes) {
     const element = document.createElement(tag);
+    const fragment = new DocumentFragment();
 
     if (attributes && typeof attributes === 'object') {
       let attributeName;
       for (attributeName in attributes) {
         if (!attributes[attributeName]) continue;
+
         switch (attributeName) {
-          case 'html':
-            element.innerHTML = attributes[attributeName];
+          case 'html': {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = attributes[attributeName];
+
+            const htmlFragment = new DocumentFragment();
+
+            while (tempDiv.firstChild) {
+              htmlFragment.appendChild(tempDiv.firstChild);
+            }
+
+            fragment.append(htmlFragment);
             break;
-          case 'text':
-            element.innerText = attributes[attributeName];
+          }
+          case 'text': {
+            const textNode = document.createTextNode(attributes[attributeName]);
+            fragment.append(textNode);
             break;
-          case 'node':
+          }
+          case 'node': {
             if (Array.isArray(attributes[attributeName])) {
               attributes[attributeName].forEach(att => {
-                element.appendChild(att);
+                fragment.append(att);
               });
             } else {
-              element.appendChild(attributes[attributeName]);
+              fragment.append(attributes[attributeName]);
             }
             break;
-          case 'class':
+          }
+          case 'class': {
             if (Array.isArray(attributes[attributeName])) {
               attributes[attributeName].forEach(att => {
                 element.classList.add(att);
@@ -51,16 +66,19 @@
               element.classList.add(attributes[attributeName]);
             }
             break;
-          default:
+          }
+          default: {
             if (typeof attributes[attributeName] === 'boolean') {
               element.setAttribute(attributeName, '');
             } else {
               element.setAttribute(attributeName, attributes[attributeName]);
             }
+          }
         }
       }
     }
 
+    element.append(fragment);
     return element;
   }
   /**

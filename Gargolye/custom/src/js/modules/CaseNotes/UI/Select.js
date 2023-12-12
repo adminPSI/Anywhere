@@ -143,7 +143,8 @@
    * @param {String} message
    */
   Input.prototype.showError = function (message) {
-    this.inputNote.append(Icon.getIcon('error'), message);
+    this.inputNote.innerHTML = message;
+    //this.inputNote.append(Icon.getIcon('error'), message);
   };
 
   /**
@@ -153,13 +154,14 @@
    * @param {String} message
    */
   Input.prototype.showWarning = function (message) {
-    this.inputNote.append(Icon.getIcon('warning'), message);
+    this.inputNote.innerHTML = message;
+    //this.inputNote.append(Icon.getIcon('warning'), message);
   };
 
   /**
    * @function
    */
-  Input.prototype.clear = function () {
+  Input.prototype.clearErrorOrWarning = function () {
     this.inputNote.innerText = this.options.note ?? '';
   };
 

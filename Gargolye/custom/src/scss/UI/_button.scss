@@ -25,16 +25,20 @@
       align-items: center;
       column-gap: 4px;
 
-      span:last-child {
-        position: relative;
-        top: 2px;
-      }
+      // span:last-child {
+      //   position: relative;
+      //   top: 2px;
+      // }
     }
 
     &--icon-only {
       box-shadow: $shadow-m1;
       min-height: auto;
       min-width: auto;
+    }
+
+    &--hidden {
+      display: none !important;
     }
 
     //states
@@ -66,27 +70,27 @@
       background: none;
       border-width: 2px;
       border-style: solid;
-      //color: $black;
-      color: $primary;
+      color: $black;
 
       &.primary {
         border-color: $primary;
+        color: $primary;
 
-        span {
+        .svgIcon {
           color: $primary;
         }
       }
       &.secondary {
         border-color: $secondary;
 
-        span {
+        .svgIcon {
           color: $secondary;
         }
       }
       &.danger {
         border-color: $error;
 
-        span {
+        .svgIcon {
           color: $error;
         }
       }

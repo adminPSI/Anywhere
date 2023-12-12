@@ -34,7 +34,7 @@
     this.spinner = null;
 
     // DOM Ref
-    this.visualizerWrap = null;
+    this.iconWrap = null;
     this.messageEle = null;
 
     this.build();
@@ -51,11 +51,11 @@
       className: 'asyncRequestVisualizer',
     });
 
-    this.visualizerWrap = _DOM.createElement('div');
-    this.dialog.dialog.appendChild(this.visualizerWrap);
+    this.iconWrap = _DOM.createElement('div', { class: 'iconWrap' });
+    this.dialog.dialog.appendChild(this.iconWrap);
 
     this.spinner = new Spinner();
-    this.spinner.renderTo(this.visualizerWrap);
+    this.spinner.renderTo(this.iconWrap);
 
     this.messageEle = _DOM.createElement('p');
     this.dialog.dialog.appendChild(this.messageEle);
@@ -80,8 +80,8 @@
    */
   AsyncRequestVisualizer.prototype.showPending = function (message) {
     this.messageEle.innerText = message;
-    this.visualizerWrap.childNodes[0].remove();
-    this.visualizerWrap.appendChild(this.spinner.spinnerWrap);
+    this.iconWrap.childNodes[0].remove();
+    this.iconWrap.appendChild(this.spinner.spinnerWrap);
   };
 
   /**
@@ -93,6 +93,8 @@
   AsyncRequestVisualizer.prototype.showSuccess = async function (message, duration = 2000) {
     this.messageEle.innerText = message;
     this.spinner.replaceWith(Icon.getIcon('checkmark'));
+
+    this.iconWrap.classList.remove('error');
 
     await _UTIL.asyncSetTimeout(() => {}, duration);
   };
@@ -106,6 +108,7 @@
   AsyncRequestVisualizer.prototype.showError = function (message) {
     this.messageEle.innerText = message;
     this.spinner.replaceWith(Icon.getIcon('error'));
+    this.iconWrap.classList.add('error');
   };
 
   /**

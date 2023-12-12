@@ -1,6 +1,22 @@
 [data-ui] {
   dialog.modal.asyncRequestVisualizer {
     border: none;
+    padding: 10px;
+
+    .iconWrap {
+      display: flex;
+      justify-content: center;
+
+      &.error {
+        .svgIcon {
+          color: $error;
+        }
+      }
+    }
+
+    .svgIcon {
+      color: $secondary;
+    }
 
     p {
       font-size: $px22;
