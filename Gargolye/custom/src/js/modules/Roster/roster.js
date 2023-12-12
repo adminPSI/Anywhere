@@ -1039,13 +1039,6 @@ const roster2 = (function () {
   }
   async function getConsumerGroupsData() {
     try {
-      loadingRosterWrap = document.createElement('div');
-      DOM.ACTIONCENTER.appendChild(loadingRosterWrap);
-
-      loadRosterSpinner = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
-
-      loadingRosterWrap.appendChild(loadRosterSpinner);
-
       const data = (await customGroupsAjax.getConsumerGroups(selectedLocationId)).getConsumerGroupsJSONResult;
       return data;
     } catch (error) {
@@ -1055,7 +1048,6 @@ const roster2 = (function () {
   async function getLocationsWithUnreadNotesData() {
     try {
       const data = (await locationNotesAjax.getLocationsWithUnreadNotes()).getLocationsWithUnreadNotesResult;
-      DOM.ACTIONCENTER.removeChild(loadingRosterWrap);
       return JSON.parse(data);
     } catch (error) {
       console.log(error);
