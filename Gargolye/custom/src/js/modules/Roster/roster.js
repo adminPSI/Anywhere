@@ -507,11 +507,6 @@ const roster2 = (function () {
     APPLY_BTN.addEventListener('click', async () => {
       POPUP.hide(FILTER_POPUP);
 
-      ROSTER_WRAP.removeChild(LOAD_MORE_BTN);
-
-      ROSTER_SPINNER = PROGRESS.SPINNER.get('Please wait while we gather everyone up...');
-      ROSTER_WRAP.appendChild(ROSTER_SPINNER);
-      
       customGroups.init(rosterGroups);
 
       if (locationHasUnreadNote) {
