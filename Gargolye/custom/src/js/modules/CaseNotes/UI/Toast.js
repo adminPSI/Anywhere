@@ -50,10 +50,10 @@
       class: 'toast__message',
     });
 
-    this.closeToastButton = new Button({ icon: 'cancel', style: 'secondary', styleType: 'outlined' });
+    this.closeToastButton = new Button({ icon: 'close', style: 'secondary', styleType: 'text' });
 
-    this.closeToastButton.renderTo(this.dialog.dialog);
     this.dialog.dialog.appendChild(this.messageEle);
+    this.closeToastButton.renderTo(this.dialog.dialog);
   };
 
   /**
