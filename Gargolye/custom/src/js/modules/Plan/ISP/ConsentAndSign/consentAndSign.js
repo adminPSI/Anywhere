@@ -208,6 +208,7 @@ const planConsentAndSign = (() => {
       vendorId: selectedMemberData.vendorId,
       // for clearing signature
       clear: clearSignature ? 't' : 'f',
+      email: selectedMemberData.email,
     };
 
     // Gets the connection between the selected vendor name and the correct vendorId
