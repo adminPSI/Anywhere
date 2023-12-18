@@ -1368,7 +1368,7 @@ const roster2 = (function () {
     hideDateFilter = otherOpts.hideDateFilter;
 
     // This is only needed since the page is currently taking longer than usual to load the 3 procedures in getRosterData(). Can be removed if it goes back to normal
-    PROGRESS.SPINNER.show('Please wait while we gather everyone up...');
+    //PROGRESS.SPINNER.show('Please wait while we gather everyone up...');
 
     await getRosterData();
 
