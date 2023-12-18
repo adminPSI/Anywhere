@@ -111,6 +111,17 @@ const csTeamMember = (() => {
     return age;
   }
 
+  function isDateBefore1900(dateString) {
+    // Parse the date string into a Date object
+    const date = new Date(dateString);
+  
+    // Get the year from the Date object
+    const year = date.getFullYear();
+  
+    // Compare the year with 1900
+    return year < 1900;
+  }
+
   async function applySelectedRelationship(relData) {
     importedFromRelationship = true;
 
@@ -965,7 +976,8 @@ const csTeamMember = (() => {
       //* Required Fields
       //*------------------------------
       if ($.session.planInsertNewTeamMember) {
-        if (selectedMemberData.dateOfBirth !== '') {
+        const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
+        if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
           dateOfBirthInput.classList.remove('error');
         } else {
           dateOfBirthInput.classList.add('error');
@@ -1177,7 +1189,8 @@ const csTeamMember = (() => {
       readonly: isSigned || readOnly,
       callback: event => {
         selectedMemberData.dateOfBirth = event.target.value;
-        if (selectedMemberData.dateOfBirth !== '') {
+        const checkIfDateBefore1900 = isDateBefore1900(event.target.value);
+        if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
           dateOfBirthInput.classList.remove('error');
         } else {
           dateOfBirthInput.classList.add('error');
@@ -1212,8 +1225,9 @@ const csTeamMember = (() => {
           selectedMemberData.email = event.target.value;
           emailInput.classList.remove('error');
         } else {
-          selectedMemberData.email = '';
-          emailInput.classList.add('error');
+          // email input is not required currently
+          // selectedMemberData.email = '';
+          // emailInput.classList.add('error');
         }
 
         checkTeamMemberPopupForErrors();
@@ -1316,11 +1330,12 @@ const csTeamMember = (() => {
     //* Required Fields
     //*------------------------------
     if ($.session.planInsertNewTeamMember) {
-      if (selectedMemberData.dateOfBirth !== '') {
-        dateOfBirthInput.classList.remove('error');
-      } else {
-        dateOfBirthInput.classList.add('error');
-      }
+      const checkIfDateBefore1900 = isDateBefore1900(dateOfBirthInput.value);
+        if (selectedMemberData.dateOfBirth !== '' && !checkIfDateBefore1900) {
+          dateOfBirthInput.classList.remove('error');
+        } else {
+          dateOfBirthInput.classList.add('error');
+        }
       // email input is not currently required
       // if (selectedMemberData.email) {
       //   emailInput.classList.remove('error');
