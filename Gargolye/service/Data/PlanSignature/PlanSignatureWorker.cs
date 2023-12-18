@@ -413,8 +413,8 @@ namespace Anywhere.service.Data.PlanSignature
             public string Email { get; set; }
         }
 
-        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
-                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear)
+        public string updateTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string peopleId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
+                                        bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear, string email)
         {
             //Runs this section if we are updating the vendors and not the team member
             if (vendorId != null)
@@ -456,7 +456,7 @@ namespace Anywhere.service.Data.PlanSignature
                 //    dateSigned = DateTime.Now.ToString("yyyy-MM-dd");
                 //}
 
-                return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, vendorId, clear);
+                return psdg.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, peopleId, buildingNumber, dateOfBirth, salesForceId, signatureType, dateSigned, vendorId, clear, email);
             }
 
 

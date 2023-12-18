@@ -2595,11 +2595,11 @@ namespace Anywhere
                                 csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, consumerId, createRelationship, salesforceId,
                                 hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType, vendorId, relationship, email, parentOfMinor);
         }
-        public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
-                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear)
+        public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string peopleId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
+                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear, string email)
         {
-            return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, consumerId,
-                                         hasWetSignature, description, attachmentType, attachment, section, questionId, assessmentId, signatureType, dateSigned, vendorId, clear);
+            return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, peopleId, buildingNumber, dateOfBirth, salesForceId, consumerId,
+                                         hasWetSignature, description, attachmentType, attachment, section, questionId, assessmentId, signatureType, dateSigned, vendorId, clear, email);
         }
         public string updatePlanSignatureOrder(long assessmentId, long signatureId, int newPos)
         {

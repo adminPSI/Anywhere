@@ -1321,10 +1321,7 @@ const csTeamMember = (() => {
       // radioDiv.classList.remove('error');
       signatureTypeDropdown.classList.add('disabled');
       saveTeamMemberBtn.classList.add('disabled');
-
-      if (!$.session.updateEmail) {
-        emailInput.classList.add('disabled');
-      }
+      emailInput.classList.add('disabled');
     }
 
     //* Required Fields
@@ -1369,6 +1366,10 @@ const csTeamMember = (() => {
         parentOfMinorYesRadio.classList.remove('disabled');
         parentOfMinorNoRadio.classList.remove('disabled');
         signatureTypeDropdown.classList.remove('disabled');
+      }
+
+      if (!$.session.updateEmail) {
+        emailInput.classList.add('disabled');
       }
     }
 
