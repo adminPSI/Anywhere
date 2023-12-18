@@ -1367,6 +1367,8 @@ const roster2 = (function () {
     rosterListSelectable = selectable;
     hideDateFilter = otherOpts.hideDateFilter;
 
+    PROGRESS.SPINNER.show('Loading Roster...');
+
     await getRosterData();
 
     // roster
