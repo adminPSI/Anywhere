@@ -60,7 +60,10 @@ const CaseNotes = (() => {
     selectedServiceCode;
     updatedInputs = {};
   }
-  function resetModule() {}
+  function resetModule() {
+    resetModuleData();
+    resetNoteData();
+  }
 
   // UTILS
   //--------------------------------------------------
@@ -726,7 +729,9 @@ const CaseNotes = (() => {
     //const continueSave = overlaps.length ? await overlapPopup.show() : null;
 
     if (overlaps.length) {
-      const continueSave = await overlapPopup.show();
+      const continueSave = await overlapPopup.show(
+        `The times you have selected overlap with these consumer(s) note(s), ${overlaps.joing(',')}`,
+      );
       console.log(continueSave);
       if (continueSave) {
         overlapPopup.close();
@@ -828,6 +833,7 @@ const CaseNotes = (() => {
 
     //TODO-ASH: Add entered by (caseNoteEditData.originaluserfullname, caseNoteEditData.originaluserid)
     //TODO-ASH: Add last edit on (caseNoteEditData.lastupdate)
+    //cnFormWrap
 
     toggleFormButtonShowHide();
     checkRequiredFields();
