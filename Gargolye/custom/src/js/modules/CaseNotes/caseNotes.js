@@ -60,6 +60,7 @@ const CaseNotes = (() => {
     selectedServiceCode;
     updatedInputs = {};
   }
+  function resetModule() {}
 
   // UTILS
   //--------------------------------------------------
@@ -181,19 +182,20 @@ const CaseNotes = (() => {
     return startTime < endTime ? true : false;
   }
   async function timeOverlapCheck(startTime, endTime) {
-    const overlap = await cnData
-      .fetchTimeOverlapData({
-        caseManagerId,
-        consumerId: selectedConsumers[0],
-        endTime: endTime,
-        groupNoteId: 0,
-        noteId: 0,
-        serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-        startTime: startTime,
-      })
-      .getOverlapData();
+    await cnData.fetchTimeOverlapData({
+      caseManagerId,
+      consumerId: selectedConsumers[0],
+      endTime: endTime,
+      groupNoteId: 0,
+      noteId: 0,
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      startTime: startTime,
+    });
 
-    return overlap ? 'success' : overlap;
+    const overlap = cnData.getOverlapData();
+    console.log(overlap);
+
+    return overlap;
   }
 
   // CRUD
@@ -330,7 +332,7 @@ const CaseNotes = (() => {
       if ($.session.applicationName === 'Gatekeeper' && attachments.length > 0) {
         const attachSaveResponse = saveAttachments(attachments);
         if (attachSaveResponse === 'error') {
-          reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
+          reqVisualizer.fullfill('error', 'Error Saving Attachments', 2000);
           return;
         }
       }
@@ -379,7 +381,7 @@ const CaseNotes = (() => {
     }
 
     if (Object.keys(updatedInputs).length) {
-      cnFormToast.show('Unsaved changes detected');
+      cnFormToast.show(`You have unsaved changes. Click 'Update' to keep them or 'Cancel' to discard.`);
     } else {
       cnFormToast.close();
     }
@@ -560,14 +562,14 @@ const CaseNotes = (() => {
     let name = event.target.name;
     const input = cnForm.inputs[name];
 
-    if (!onChangeCallbacks[name]) return;
-
-    onChangeCallbacks[name]({
-      event,
-      value,
-      name,
-      input,
-    });
+    if (onChangeCallbacks[name]) {
+      onChangeCallbacks[name]({
+        event,
+        value,
+        name,
+        input,
+      });
+    }
 
     checkRequiredFields();
 
@@ -656,14 +658,14 @@ const CaseNotes = (() => {
     let name = event.target.name;
     const input = cnForm.inputs[name];
 
-    if (!onKeyupCallbacks[name]) return;
-
-    onKeyupCallbacks[name]({
-      event,
-      value,
-      name,
-      input,
-    });
+    if (onKeyupCallbacks[name]) {
+      onKeyupCallbacks[name]({
+        event,
+        value,
+        name,
+        input,
+      });
+    }
 
     checkRequiredFields();
   }
@@ -721,6 +723,16 @@ const CaseNotes = (() => {
     };
 
     const overlaps = await timeOverlapCheck(saveData.startTime, saveData.endTime);
+    //const continueSave = overlaps.length ? await overlapPopup.show() : null;
+
+    if (overlaps.length) {
+      const continueSave = await overlapPopup.show();
+      console.log(continueSave);
+      if (continueSave) {
+        overlapPopup.close();
+        return;
+      }
+    }
 
     await saveNote(saveData, attachmentsForSave);
 
@@ -776,14 +788,8 @@ const CaseNotes = (() => {
     _DOM.scrollToTop();
 
     let data = await _UTIL.fetchData('getCaseNoteEditJSON', {
-      noteId: caseNoteId,
+      noteId: noteId,
     });
-    if (!data.getCaseNoteEditJSONResult[0]) {
-      console.log('I failed on the first run for some reason????');
-      data = await _UTIL.fetchData('getCaseNoteEditJSON', {
-        noteId: caseNoteId,
-      });
-    }
     caseNoteEditData = data.getCaseNoteEditJSONResult[0];
     console.log(caseNoteEditData);
 
@@ -802,6 +808,7 @@ const CaseNotes = (() => {
       serviceCode: caseNoteEditData.mainbillingorservicecodeid,
       location: caseNoteEditData.locationcode,
       serviceLocation: caseNoteEditData.servicelocationid,
+      service: caseNoteEditData.servicecode,
       need: caseNoteEditData.serviceneedcode,
       vendor: caseNoteEditData.vendorid,
       contact: caseNoteEditData.contactcode,
@@ -819,11 +826,10 @@ const CaseNotes = (() => {
       cnForm.inputs['attachment'].addAttachments(caseNoteAttachmentsEditData);
     }
 
-    //TODO-ASH: do something with buttons, add cancel button?
-    toggleFormButtonShowHide();
     //TODO-ASH: Add entered by (caseNoteEditData.originaluserfullname, caseNoteEditData.originaluserid)
     //TODO-ASH: Add last edit on (caseNoteEditData.lastupdate)
 
+    toggleFormButtonShowHide();
     checkRequiredFields();
   }
 
@@ -902,11 +908,13 @@ const CaseNotes = (() => {
       selectedDate: selectedDate,
       allowFutureDate: false,
     });
+
     // Roster Picker
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
       consumerRequired: true,
     });
+
     // Form
     cnForm = new Form({
       elements: [
@@ -1030,8 +1038,8 @@ const CaseNotes = (() => {
           text: 'Update',
           icon: 'save',
           name: 'update',
-          style: 'primary',
-          styleType: 'outlined',
+          // style: 'primary',
+          // styleType: 'outlined',
           hidden: true,
         },
         {
@@ -1046,18 +1054,26 @@ const CaseNotes = (() => {
       ],
     });
     cnFormToast = new Toast();
+
     // Overview Cards
     cnOverview = new CaseNotesOverview(cnData);
+
     // Phrases
     cnPhrases = new CaseNotesPhrases();
+
     // Documentation Timer
     if ($.session.applicationName === 'Gatekeeper') {
       cnDocTimer = new CaseNotesTimer();
       cnDocTimer.renderTo(cnFormWrap);
     }
+
     // Req Visualizer
     reqVisualizer = new AsyncRequestVisualizer();
     reqVisualizer.renderTo(_DOM.ACTIONCENTER);
+
+    // Overlap Popup
+    overlapPopup = new ConfirmationPopup({});
+    overlapPopup.renderTo(_DOM.ACTIONCENTER);
   }
   async function init() {
     selectedDate = dates.getTodaysDateObj();
@@ -1082,6 +1098,6 @@ const CaseNotes = (() => {
 
   return {
     init,
-    resetModuleData,
+    resetModule,
   };
 })();

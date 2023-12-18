@@ -55,7 +55,7 @@
   Select.prototype._build = function () {
     const classArray = ['inputGroup', 'select', `${this.options.attributes.id}`];
     this.rootElement = _DOM.createElement('div', {
-      class: this.options.hidden ? [...classArray, 'hidden'] : classArray,
+      class: this.options.hidden ? [...classArray, 'inputGroup--hidden'] : classArray,
     });
 
     this.inputWrap = _DOM.createElement('div', { class: 'inputGroup__inputWrap' });

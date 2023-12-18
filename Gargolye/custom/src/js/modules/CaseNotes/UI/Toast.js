@@ -44,11 +44,10 @@
    * @function
    */
   Toast.prototype._build = function () {
-    this.dialog = new Dialog({ className: 'toast' });
+    this.dialog = new Dialog({ className: 'toast', isModal: false });
 
     this.messageEle = _DOM.createElement('p', {
       class: 'toast__message',
-      text: this.options.message,
     });
 
     this.closeToastButton = new Button({ icon: 'cancel', style: 'secondary', styleType: 'outlined' });

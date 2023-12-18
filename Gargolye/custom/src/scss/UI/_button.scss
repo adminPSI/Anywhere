@@ -25,10 +25,9 @@
       align-items: center;
       column-gap: 4px;
 
-      // span:last-child {
-      //   position: relative;
-      //   top: 2px;
-      // }
+      * {
+        pointer-events: none;
+      }
     }
 
     &--icon-only {

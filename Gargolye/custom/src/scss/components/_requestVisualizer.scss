@@ -12,10 +12,12 @@
           color: $error;
         }
       }
-    }
 
-    .svgIcon {
-      color: $secondary;
+      .svgIcon {
+        color: $secondary;
+        height: auto;
+        width: 140px;
+      }
     }
 
     p {

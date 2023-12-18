@@ -140,18 +140,12 @@
         body: JSON.stringify({ token: $.session.Token, ...retrieveData }),
       });
 
-      if (service === 'getCaseNoteEditJSON') {
-        console.log('from fetch UTIL', response);
-      }
-
       if (!response.ok) {
         throw new Error('Issue with network, response was not OK');
       }
 
       let data = await response.json();
-      if (service === 'getCaseNoteEditJSON') {
-        console.log('from fetch UTIL', data);
-      }
+
       return data;
     } catch (error) {
       console.log(`There was a problem with ${service}`, error.message);

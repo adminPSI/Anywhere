@@ -14,6 +14,12 @@
     mostRecentUpdate = `${mostRecentUpdate[0].substring(0, 3)}, ${mostRecentUpdate[1]} at ${mostRecentUpdate[2]}`;
     return _DOM.createElement('p', { class: 'noteText', text: mostRecentUpdate });
   }
+  function buildEnteredByElement(enteredBy, originalUserFullName) {
+    return _DOM.createElement('div', {
+      class: 'withLabelWrap',
+      html: `<p class="enteredBy withLabel">${enteredBy} (${originalUserFullName})</p>`,
+    });
+  }
   function buildStartTimeElement(dirtyStart) {
     const time = UTIL.convertFromMilitary(dirtyStart);
     return _DOM.createElement('div', {
@@ -66,12 +72,6 @@
   function buildNoteElement(noteText) {
     const note = noteText.length > 100 ? `${noteText.replace(/(\r\n|\n|\r)/gm, '').slice(0, 100)}...` : noteText;
     return _DOM.createElement('p', { class: 'noteText', text: note });
-  }
-  function buildEnteredByElement(enteredBy, originalUserFullName) {
-    return _DOM.createElement('div', {
-      class: 'withLabelWrap',
-      html: `<p class="enteredBy withLabel">${enteredBy} (${originalUserFullName})</p>`,
-    });
   }
 
   //=======================================
@@ -196,10 +196,6 @@
         // Overview Card
         //---------------------------------
         const overviewCard = _DOM.createElement('div', { class: 'caseNotesOverview__overviewCard' });
-        const overviewCardTop = _DOM.createElement('div', { class: 'caseNotesOverview__overviewCardTop' });
-        const overviewCardMain = _DOM.createElement('div', { class: 'caseNotesOverview__overviewCardMain' });
-        // overviewCard.appendChild(overviewCardTop);
-        // overviewCard.appendChild(overviewCardMain);
 
         // IDK YET??
         const mostRecentUpdateEle = buildMostRecentUpdateElement(rd.mostrecentupdate);

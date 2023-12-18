@@ -238,7 +238,7 @@
    */
   CaseNotesData.prototype.fetchTimeOverlapData = async function (retrieveData) {
     const data = await _UTIL.fetchData('caseNoteOverlapCheck', { ...retrieveData });
-    this.overlapData = data.caseNoteOverlapCheckResult;
+    this.overlapData = JSON.parse(data.caseNoteOverlapCheckResult);
 
     return this;
   };
@@ -507,7 +507,7 @@
    * @function
    * @returns {Array}
    */
-  CaseNotesData.prototype.getOvlerapData = function () {
+  CaseNotesData.prototype.getOverlapData = function () {
     if (this.overlapData && this.overlapData.length > 0) {
       return this.overlapData.map(d => d.consumername);
     }

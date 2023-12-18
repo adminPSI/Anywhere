@@ -106,7 +106,7 @@
    * @param {Boolean} isHidden
    */
   Button.prototype.toggleVisibility = function (isHidden) {
-    this.button.classList.toggle('hidden', isHidden);
+    this.button.classList.toggle('button--hidden', isHidden);
   };
 
   Button.prototype.updateText = function (newText) {
