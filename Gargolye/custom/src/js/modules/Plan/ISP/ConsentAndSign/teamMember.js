@@ -965,12 +965,15 @@ const csTeamMember = (() => {
         lNameInput.classList.remove('disabled');
         dateOfBirthInput.classList.remove('disabled');
         buildingNumberInput.classList.remove('disabled'); //
-        emailInput.classList.remove('disabled');
         participatedYesRadio.classList.remove('disabled');
         participatedNoRadio.classList.remove('disabled');
         parentOfMinorYesRadio.classList.remove('disabled');
         parentOfMinorNoRadio.classList.remove('disabled');
         signatureTypeDropdown.classList.remove('disabled');
+      }
+
+      if ($.session.updateEmail) {
+        emailInput.classList.remove('disabled');
       }
 
       //* Required Fields
