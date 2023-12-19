@@ -152,13 +152,12 @@
     &__overviewCard {
       align-items: center;
       display: grid;
-      grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) auto auto;
+      grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) 1fr 2fr 2fr;
       grid-template-rows: auto;
       grid-template-areas:
         'starttime endtime duration location buttons'
-        'consumer consumer consumer consumer consumer'
-        'serviceInfo serviceInfo serviceInfo serviceInfo serviceInfo'
-        'note note note note note';
+        'consumer consumer note note note'
+        'serviceInfo serviceInfo note note note';
       row-gap: 10px;
 
       box-shadow: $shadow-m2;
