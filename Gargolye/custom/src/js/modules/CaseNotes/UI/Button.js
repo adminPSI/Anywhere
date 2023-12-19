@@ -64,8 +64,6 @@
       if (this.options.text) {
         const textNode = document.createTextNode(this.options.text);
         this.button.append(Icon.getIcon(this.options.icon), textNode);
-        // this.button.innerHTML = `<span>${this.options.text}</span>`;
-        // this.button.insertBefore(Icon.getIcon(this.options.icon), this.button.firstChild);
         this.button.classList.add('button--icon');
       } else {
         this.button.appendChild(Icon.getIcon(this.options.icon));

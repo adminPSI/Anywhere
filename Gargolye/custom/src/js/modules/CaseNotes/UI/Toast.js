@@ -30,10 +30,8 @@
     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
     this.displayStatus = null;
 
-    // Instance Ref
-    this.dialog = null;
-
     // DOM Ref
+    this.dialog = null;
     this.closeToastButton = null;
     this.messageEle = null;
 

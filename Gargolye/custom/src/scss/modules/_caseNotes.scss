@@ -102,6 +102,13 @@
       text-align: center;
     }
   }
+  dialog.modal.overlapWarning {
+    padding: 14px 10px;
+
+    p {
+      margin-bottom: 20px;
+    }
+  }
 
   // DOC TIMER
   .caseNotesTimer {
