@@ -128,6 +128,8 @@
 
     await _UTIL.asyncSetTimeout(() => {
       this.dialog.close();
+      this.iconWrap.childNodes[0].remove();
+      this.iconWrap.appendChild(this.spinner.spinnerWrap);
     }, duration);
   };
 

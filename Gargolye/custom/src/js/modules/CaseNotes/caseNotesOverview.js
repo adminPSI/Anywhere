@@ -20,6 +20,12 @@
       html: `<p class="enteredBy withLabel">${enteredBy} (${originalUserFullName})</p>`,
     });
   }
+  function buildLocationElement(location) {
+    return _DOM.createElement('div', {
+      class: 'withLabelWrap',
+      html: `<p class="location withLabel">${location}</p>`,
+    });
+  }
   function buildStartTimeElement(dirtyStart) {
     const time = UTIL.convertFromMilitary(dirtyStart);
     return _DOM.createElement('div', {
@@ -63,10 +69,10 @@
 
     return consumerNameEle;
   }
-  function buildServiceInfoElement(mainService, service, location) {
+  function buildServiceInfoElement(mainService, service) {
     return _DOM.createElement('p', {
       class: 'serviceInfo',
-      text: `${mainService} - ${service} ${location ? `| ${location}` : ''}`,
+      text: `${mainService} - ${service}`,
     });
   }
   function buildNoteElement(noteText) {
@@ -195,7 +201,10 @@
 
         // Overview Card
         //---------------------------------
-        const overviewCard = _DOM.createElement('div', { class: 'caseNotesOverview__overviewCard' });
+        const overviewCard = _DOM.createElement('div', {
+          class: 'caseNotesOverview__overviewCard',
+          'data-noteid': caseNoteId,
+        });
 
         // IDK YET??
         const mostRecentUpdateEle = buildMostRecentUpdateElement(rd.mostrecentupdate);
@@ -238,9 +247,11 @@
         const startTimeEle = buildStartTimeElement(rd.starttime);
         const endTimeEle = buildEndTimeElement(rd.endtime);
         const timeDurationEle = buildTimeDiffElement(rd.starttime, rd.endtime);
+        const locationEle = buildLocationElement(rd.locationName);
         overviewCard.appendChild(startTimeEle);
         overviewCard.appendChild(endTimeEle);
         overviewCard.appendChild(timeDurationEle);
+        overviewCard.appendChild(locationEle);
         overviewCard.appendChild(btnWrap);
 
         // MAIN
