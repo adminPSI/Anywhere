@@ -189,8 +189,8 @@ const CaseNotes = (() => {
       caseManagerId,
       consumerId: selectedConsumers[0],
       endTime: endTime,
-      groupNoteId: 0,
-      noteId: 0,
+      groupNoteId: caseNoteGroupId ?? 0,
+      noteId: caseNoteId ?? 0,
       serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
       startTime: startTime,
     });
@@ -328,7 +328,7 @@ const CaseNotes = (() => {
     if (selectedConsumers.length === 1 && !caseNoteGroupId) {
       // NEW NOTE or EDIT NON GROUP NOTE
       const response = (await _UTIL.fetchData('saveCaseNote', data)).saveCaseNoteResult;
-      caseNoteId = extractCaseNoteId(response);
+      caseNoteId = caseNoteId ? caseNoteId : extractCaseNoteId(response);
       saveResponse = caseNoteId ? 'success' : 'error';
 
       // SAVE ATTACHMENTS
@@ -576,9 +576,9 @@ const CaseNotes = (() => {
 
     checkRequiredFields();
 
-    if (caseNoteId) {
-      checkFormForUnsavedChanges(name, value);
-    }
+    // if (caseNoteId) {
+    //   checkFormForUnsavedChanges(name, value);
+    // }
   }
   const onKeyupCallbacks = {
     travelTime: ({ event, value, name, input }) => {
