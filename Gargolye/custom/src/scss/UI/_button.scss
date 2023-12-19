@@ -4,6 +4,7 @@
 [data-ui] {
   .button-wrap {
     display: flex;
+    justify-content: space-between;
 
     .button {
       width: calc(50% - 5px);

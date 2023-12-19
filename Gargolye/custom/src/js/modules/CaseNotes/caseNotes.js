@@ -726,15 +726,14 @@ const CaseNotes = (() => {
     };
 
     const overlaps = await timeOverlapCheck(saveData.startTime, saveData.endTime);
-    //const continueSave = overlaps.length ? await overlapPopup.show() : null;
 
     if (overlaps.length) {
       const continueSave = await overlapPopup.show(
-        `The times you have selected overlap with these consumer(s) note(s), ${overlaps.joing(',')}`,
+        `The times you have entered for this note overlap with the following consumer(s),
+        ${overlaps.join(',')}. Click OK to continue with save or CANCEL to go back to note.`,
       );
-      console.log(continueSave);
-      if (continueSave) {
-        overlapPopup.close();
+
+      if (continueSave === 'cancel') {
         return;
       }
     }
@@ -1078,7 +1077,7 @@ const CaseNotes = (() => {
     reqVisualizer.renderTo(_DOM.ACTIONCENTER);
 
     // Overlap Popup
-    overlapPopup = new ConfirmationPopup({});
+    overlapPopup = new ConfirmationPopup({ className: 'overlapWarning' });
     overlapPopup.renderTo(_DOM.ACTIONCENTER);
   }
   async function init() {

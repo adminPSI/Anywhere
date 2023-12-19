@@ -14,22 +14,24 @@
   }
 
   ConfirmationPopup.prototype._build = function () {
-    this.dialog = new Dialog();
+    this.dialog = new Dialog({ className: this.options.className });
 
     this.messageEle = _DOM.createElement('p', {
       class: 'confirmation__message',
       //text: this.options.message,
     });
 
-    const btnWrap = _DOM.createElement('div', { class: 'formButtons' });
+    const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
     this.confirmButton = new Button({
       text: 'Ok',
-      icon: 'save',
+      //icon: 'save',
+      name: 'confirm',
     });
     this.cancelButton = new Button({
-      text: 'cancel',
-      icon: 'cancel',
+      text: 'Cancel',
+      //icon: 'cancel',
       styleType: 'outlined',
+      name: 'cancel',
     });
 
     this.confirmButton.renderTo(btnWrap);
@@ -63,7 +65,8 @@
       const callbackFunction = e => {
         // e.target is confirm or cancel?
         this.dialog.dialog.removeEventListener('click', callbackFunction);
-        resolve(e.target.textContext);
+        this.close();
+        resolve(e.target.name);
       };
 
       this.dialog.dialog.addEventListener('click', callbackFunction);
