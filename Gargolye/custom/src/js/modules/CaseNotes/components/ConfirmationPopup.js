@@ -1,7 +1,17 @@
 (function (global, factory) {
   global.ConfirmationPopup = factory();
 })(this, function () {
-  function ConfirmationPopup() {
+  /**
+   * Default configuration
+   * @type {Object}
+   */
+  const DEFAULT_OPTIONS = {
+    className: null,
+  };
+
+  function ConfirmationPopup(options) {
+    // Data Init
+    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
     this.displayStatus = null;
 
     // DOM Ref
@@ -18,18 +28,15 @@
 
     this.messageEle = _DOM.createElement('p', {
       class: 'confirmation__message',
-      //text: this.options.message,
     });
 
     const btnWrap = _DOM.createElement('div', { class: 'button-wrap' });
     this.confirmButton = new Button({
       text: 'Ok',
-      //icon: 'save',
       name: 'confirm',
     });
     this.cancelButton = new Button({
       text: 'Cancel',
-      //icon: 'cancel',
       styleType: 'outlined',
       name: 'cancel',
     });

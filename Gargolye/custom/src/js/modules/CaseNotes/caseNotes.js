@@ -729,8 +729,8 @@ const CaseNotes = (() => {
 
     if (overlaps.length) {
       const continueSave = await overlapPopup.show(
-        `The times you have entered for this note overlap with the following consumer(s),
-        ${overlaps.join(',')}. Click OK to continue with save or CANCEL to go back to note.`,
+        `The times you have entered for this note overlap with the following consumer(s), ${overlaps.join(',')}. 
+        Click OK to continue with save or CANCEL to go back to note.`,
       );
 
       if (continueSave === 'cancel') {
