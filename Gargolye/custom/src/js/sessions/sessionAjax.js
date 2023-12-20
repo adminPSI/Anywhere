@@ -776,38 +776,18 @@ function getUserPermissions(callback) {
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
-      var res = JSON.stringify(response);
-      $.session.permissionString = res;
+        $.session.permissionString = response.getUserPermissionsResult;
 
-      //checks if any role of employee has 'y' for viewing casenotes
-      if (
-        res.indexOf('<window_name>EnableCaseNotes</window_name><permission>Y</permission>') > -1
-      ) {
-        $.session.CaseNotesTablePermissionView = true;
-      }
-      //Check if user is supervisor and can see Admin Single Entry Module
-      if (res.indexOf('<window_name>Supervisor</window_name><permission>Y</permission>') > -1) {
-        $.session.ViewAdminSingleEntry = true;
-      }
-      //Update doc time editable
-      if (
-        res.indexOf(
-          '<window_name>UpdateDocTime</window_name><permission>Update Doc Time</permission>',
-        ) > -1 ||
-        res.indexOf(
-          '<window_name>Anywhere Case Notes</window_name><permission>Update Doc Time</permission>',
-        ) > -1
-      ) {
-        $.session.UpdateCaseNotesDocTime = true;
-      } else {
-        $.session.UpdateCaseNotesDocTime = false;
-      }
-      //View Admin Single Entry Widget
-      if (
-        res.indexOf('<window_name>SESupervisorApprove</window_name><permission>Y</permission>') > -1
-      ) {
-        $.session.SEViewAdminWidget = true;
-      }
+        const caseNotesPerm = $.session.permissionString.find(obj => obj.window_name === 'EnableCaseNotes');
+        const supervisorPerm = $.session.permissionString.find(obj => obj.window_name === 'Supervisor');
+        const docTimePerm = $.session.permissionString.find(obj => obj.window_name === 'UpdateDocTime');
+        const caseNoteDocTimePerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
+        const adminSEPerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
+
+        $.session.CaseNotesTablePermissionView = (caseNotesPerm && caseNotesPerm.permission === 'Y') ? true : false;
+        $.session.ViewAdminSingleEntry = (supervisorPerm && supervisorPerm.permission === 'Y') ? true : false;
+        $.session.UpdateCaseNotesDocTime = (docTimePerm && caseNoteDocTimePerm && docTimePerm.permission === 'Y' && caseNoteDocTimePerm.permission) ? true : false;
+        $.session.SEViewAdminWidget = (adminSEPerm && adminSEPerm.permission === 'Y') ? true : false;
       setSessionVariables();
       //check to see which modules should be disabled
       checkModulePermissions();

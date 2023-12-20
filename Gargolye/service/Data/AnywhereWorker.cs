@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.IncidentTrackingWorker;
+using static Anywhere.service.Data.PlanSignature.PlanSignatureWorker;
 
 namespace Anywhere.service.Data
 {
@@ -235,6 +236,20 @@ namespace Anywhere.service.Data
         public bool ValidateToken(string token)
         {
             return dg.validateToken(token);
+        }
+
+        public PermissionObject[] getUserPermissions(string token)
+        {
+            string permissionString = dg.getUserPermissions(token);
+            PermissionObject[] permissionObj = js.Deserialize<PermissionObject[]>(permissionString);
+            return permissionObj;
+        }
+
+        public class PermissionObject
+        {
+            public string window_name { get; set; }
+            public string permission { get; set; }
+            public string special_data { get; set; }
         }
 
         public class StartAndEndWeek

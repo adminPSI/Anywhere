@@ -1061,15 +1061,18 @@ namespace Anywhere.Data
         public string getUserPermissions(string token)
         {
             if (tokenValidator(token) == false) return null;
-            logger.debug("getUserPermissions" + token);
+            logger.debug("getUserPermissions " + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_User_Permissions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
-                return executeDataBaseCall("CALL DBA.ANYW_User_Permissions('" + token + "');", "results", "result");
+                return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("540", ex.Message + " ANYW_User_Permissions('" + token + "')");
-                return "540: Error getting user permissions";
+                logger.error("653", ex.Message + "ANYW_User_Permissions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "653: error ANYW_User_Permissions";
             }
         }
 

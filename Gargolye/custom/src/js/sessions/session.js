@@ -381,10 +381,10 @@ function eraseCookie(name) {
 function setSessionVariables() {
   var cookieInnards = $.session.permissionString;
 
-  $('result', cookieInnards).each(function () {
-    tmpWindow = $('window_name', this).text();
-    tmpPerm = $('permission', this).text();
-    tmpSpec = $('special_data', this).text();
+    cookieInnards.forEach(cookie => {
+        tmpWindow = cookie.window_name;
+        tmpPerm = cookie.permission;
+        tmpSpec = cookie.special_data;
 
     if (tmpWindow == 'IsAnAdmin') {
       if (tmpPerm == 'Y') $.session.isAdmin = true;

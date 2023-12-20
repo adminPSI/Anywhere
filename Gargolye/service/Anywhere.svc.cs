@@ -35,6 +35,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAssessmentWorker;
+using static Anywhere.service.Data.AnywhereWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
@@ -493,9 +494,9 @@ namespace Anywhere
             return dg.updatePortrait(token, employeeUserName, imageFile, id, portraitPath);
         }
 
-        public string getUserPermissions(string token)
+        public AnywhereWorker.PermissionObject[] getUserPermissions(string token)
         {
-            return dg.getUserPermissions(token);
+            return anywhereWorker.getUserPermissions(token);
         }
 
         public string featureLogging(string token, string featureDescription)
@@ -1327,7 +1328,7 @@ namespace Anywhere
 
         public IncidentTrackingWorker.IncidentTrackingReviewTableData[] getITReviewTableData(string token, string locationId, string consumerId, string employeeId, string supervisorId, string subcategoryId, string fromDate, string toDate, string viewCaseLoad)
         {
-            return null;// iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
+            return iTW.GetITReviewTableData(token, locationId, consumerId, employeeId, supervisorId, subcategoryId, fromDate, toDate, viewCaseLoad);
         }
 
         public string updateIncidentTrackingDaysBack(string token, string updatedReviewDays)
