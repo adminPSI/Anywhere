@@ -45,9 +45,9 @@ namespace Anywhere.service.Data
             sb.Append("select cn.case_note_id as casenoteid,cn.Service_Date as servicedate,cn.Start_Time as starttime,cn.End_Time as endtime,cn.Case_Manager_ID as casemanagerid,cn.ID,cn.Original_Update as originalupdate, ");
             sb.Append("cn.last_update  as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,p.first_name as firstname,CN.service_id as mainbillingorservicecodeid, ");
             sb.Append("p.last_name as lastname,p.consumer_id as consumerid,cn.confidential as confidential,cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby,cn.service as serviceCode, cn.notes as caseNote, ");
-            sb.Append("ANYW_CaseNotes_GetService(cn.service) as serviceName,ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
+            sb.Append("dba.ANYW_CaseNotes_GetService(cn.service) as serviceName,dba.ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
             sb.Append("from dba.case_notes as cn join dba.people as p on cn.id = p.Consumer_ID join dba.consumers as c on c.consumer_id = p.consumer_id ");
-            sb.Append("join Users_Groups as ug on ug.User_ID = cn.Original_User_ID  ");
+            sb.Append("join dba.Users_Groups as ug on ug.User_ID = cn.Original_User_ID  ");
             sb.AppendFormat("where service_date between '{0}' and '{1}' ", serviceStartDate, serviceEndDate);
             sb.AppendFormat("and cast(original_update as date) between '{0}' and '{1}' ", dateEnteredStart, dateEnteredEnd);
             if (billerId.Equals("%"))
@@ -165,11 +165,11 @@ namespace Anywhere.service.Data
             sb.Append("select distinct cn.case_note_id as casenoteid,cn.Service_Date as servicedate,cn.Start_Time as starttime,cn.End_Time as endtime,cn.Case_Manager_ID as casemanagerid,cn.ID,cn.Original_Update as originalupdate, ");
             sb.Append("cn.last_update as mostrecentupdate,cn.Case_Note_Group_ID as groupnoteid,cn.User_ID as lastupdatedby,CN.service_id as mainbillingorservicecodeid,p.first_name as firstname, ");
             sb.Append("p.last_name as lastname,p.id as consumerid,cn.confidential as confidential, cn.corrected as corrected, cn.Ratio_Consumers as numberInGroup,cn.Original_User_ID as enteredby, ncr.Any_SSA_Note as isSSANote, Count(cna.Case_Note_ID) as attachcount,cn.service as serviceCode, cn.notes as caseNote, ");
-            sb.Append("ANYW_CaseNotes_GetService(cn.service) as serviceName,ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
+            sb.Append("dba.ANYW_CaseNotes_GetService(cn.service) as serviceName,dba.ANYW_CaseNotes_GetLocation(cn.Location) as locationName,ug.First_Name+' '+ug.Last_Name as originalUserFullName ");
             sb.Append("from dba.case_notes as cn join dba.people as p on cn.id = p.id ");
             sb.Append("LEFT OUTER join dba.Note_Codes_Required as ncr on ncr.Service_ID = cn.Service_ID  ");
             sb.Append("LEFT OUTER join dba.Case_Notes_Attachments as cna on cna.Case_Note_ID = cn.Case_Note_ID  ");
-            sb.Append("join Users_Groups as ug on ug.User_ID = cn.Original_User_ID  ");
+            sb.Append("join dba.Users_Groups as ug on ug.User_ID = cn.Original_User_ID  ");
             sb.AppendFormat("where service_date between '{0}' and '{1}' ", serviceStartDate, serviceEndDate);
             sb.AppendFormat("and cast(original_update as date) between '{0}' and '{1}' ", dateEnteredStart, dateEnteredEnd);
             if (billerId.Equals("%"))
