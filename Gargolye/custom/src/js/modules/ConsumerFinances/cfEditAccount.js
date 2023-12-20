@@ -359,7 +359,7 @@ const CFEditAccount = (() => {
         drWrap2.appendChild(lastReconciledDate);
         inputBal.classList.add('width50Per');
         drWrap2.appendChild(inputBal);
-        addNewCardBody.appendChild(drWrap2);
+        //addNewCardBody.appendChild(drWrap2);  //Due to new requirenment hide reconciled and opening balance 
 
         var drWrap3 = document.createElement('div');
         drWrap3.classList.add('editAccountDTWrap');
