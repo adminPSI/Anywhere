@@ -182,7 +182,7 @@
       consumerId,
       serviceDate,
     });
-    this.serviceLocationDropdownData = data.getServiceLocationsForCaseNoteDropdownResult;
+    this.serviceLocationDropdownData = data.getServiceLocationsForCaseNoteDropDownResult;
 
     return this;
   };
