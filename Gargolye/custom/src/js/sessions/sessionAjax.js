@@ -758,7 +758,7 @@ function getUserPermissions(callback) {
       const supervisorPerm = $.session.permissionString.find(obj => obj.window_name === 'Supervisor');
       const docTimePerm = $.session.permissionString.find(obj => obj.window_name === 'UpdateDocTime');
       const caseNoteDocTimePerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
-      const adminSEPerm = $.session.permissionString.find(obj => obj.window_name === 'Anywhere Case Notes');
+      const adminSEPerm = $.session.permissionString.find(obj => obj.window_name === 'SESupervisorApprove');
 
       $.session.CaseNotesTablePermissionView = caseNotesPerm && caseNotesPerm.permission === 'Y' ? true : false;
       $.session.ViewAdminSingleEntry = supervisorPerm && supervisorPerm.permission === 'Y' ? true : false;
