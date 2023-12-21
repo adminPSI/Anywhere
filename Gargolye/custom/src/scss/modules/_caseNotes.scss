@@ -10,7 +10,7 @@
   .caseNotesModule {
     display: grid;
     grid-template-columns: auto 340px;
-    grid-template-rows: auto auto minmax(900px, 1300px) auto;
+    grid-template-rows: auto auto minmax(900px, 1100px) auto;
     grid-template-areas:
       'header header'
       'nav nav'
@@ -24,7 +24,10 @@
     display: flex;
     flex-flow: row wrap;
     grid-area: header;
-    padding: 10px 10px 0px;
+    padding: 0px 10px;
+    position: relative;
+    top: 14px;
+    z-index: 100;
 
     h1 {
       color: $primary;
@@ -149,9 +152,10 @@
       grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) 1fr 2fr 2fr;
       grid-template-rows: auto;
       grid-template-areas:
-        'starttime endtime duration location buttons'
-        'consumer consumer note note note'
-        'serviceInfo serviceInfo note note note';
+        'starttime endtime duration nothing buttons'
+        'consumer consumer consumer consumer consumer'
+        'serviceInfo serviceInfo serviceInfo serviceInfo serviceInfo'
+        'note note note note note';
       row-gap: 10px;
 
       box-shadow: $shadow-m2;

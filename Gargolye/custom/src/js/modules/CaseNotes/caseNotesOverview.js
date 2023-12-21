@@ -72,7 +72,7 @@
   function buildServiceInfoElement(mainService, service) {
     return _DOM.createElement('p', {
       class: 'serviceInfo',
-      text: `${mainService} - ${service}`,
+      text: `${mainService}${service ? ` - ${service}` : ''}`,
     });
   }
   function buildNoteElement(noteText) {
@@ -251,7 +251,7 @@
         overviewCard.appendChild(startTimeEle);
         overviewCard.appendChild(endTimeEle);
         overviewCard.appendChild(timeDurationEle);
-        overviewCard.appendChild(locationEle);
+        //overviewCard.appendChild(locationEle);
         overviewCard.appendChild(btnWrap);
 
         // MAIN

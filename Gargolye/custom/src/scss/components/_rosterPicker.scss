@@ -40,7 +40,7 @@
         transition: grid-template-rows 0.1s ease-in;
         padding: 4px 6px;
         position: relative;
-        order: 2;
+        order: 3;
 
         &.isClosed:not(.selected) {
           grid-template-rows: 0fr;
@@ -50,17 +50,18 @@
 
         &.locked {
           pointer-events: none;
+          order: 0;
         }
 
         &.selected {
           background: rgba(129, 185, 65, 0.9);
           color: $white;
-          order: 0;
+          order: 1;
           margin: 0 0 6px;
         }
 
         &.pinned {
-          order: 1;
+          order: 2;
 
           .svgIcon {
             color: $secondary;
@@ -69,6 +70,8 @@
         }
 
         &.selected.pinned {
+          order: 2;
+
           .svgIcon {
             color: $white;
           }

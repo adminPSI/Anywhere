@@ -110,9 +110,15 @@ const CaseNotes = (() => {
     // else - enable dropdown, make required
   }
   function checkGroupNotesPermission() {
-    const allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
-    const allowMultiSelect = allowGroupNotes === 'Y' ? true : false;
-    rosterPicker.toggleMultiSelectOption(allowMultiSelect);
+    let allowGroupNotes;
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
+    } else {
+      allowGroupNotes = true;
+    }
+
+    rosterPicker.toggleMultiSelectOption(allowGroupNotes);
   }
   function extractCaseNoteId(xmlString) {
     const match = xmlString.match(/<caseNoteId>(\d+)<\/caseNoteId>/);
@@ -246,7 +252,10 @@ const CaseNotes = (() => {
 
     if (!caseNoteGroupId) {
       deleteNote(caseNoteId);
-      newGroupId = await _UTIL.fetchData('getGroupNoteId');
+      caseNoteId = null;
+      const response = await _UTIL.fetchData('getGroupNoteId');
+      newGroupId = JSON.parse(response.getGroupNoteIdResult);
+      newGroupId = newGroupId[0].groupNoteId;
       consumerGroupCount = selectedConsumers.length;
     }
 
@@ -259,6 +268,7 @@ const CaseNotes = (() => {
               consumerId,
               consumerGroupCount,
               groupNoteId: newGroupId,
+              noteId: 0,
             })
             .then(result => ({ status: 'fulfilled', value: result }))
             .catch(error => ({ status: 'rejected', reason: error })),
