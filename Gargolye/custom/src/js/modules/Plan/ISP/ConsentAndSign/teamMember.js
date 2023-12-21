@@ -963,8 +963,6 @@ const csTeamMember = (() => {
         linkToRelationshipBtn.classList.remove('disabled');
         nameInput.classList.remove('disabled');
         lNameInput.classList.remove('disabled');
-        dateOfBirthInput.classList.remove('disabled');
-        buildingNumberInput.classList.remove('disabled'); //
         participatedYesRadio.classList.remove('disabled');
         participatedNoRadio.classList.remove('disabled');
         parentOfMinorYesRadio.classList.remove('disabled');
@@ -972,6 +970,12 @@ const csTeamMember = (() => {
         signatureTypeDropdown.classList.remove('disabled');
       }
 
+      if ($.session.planSignatureUpdateDOB) {
+        dateOfBirthInput.classList.remove('disabled');
+      }
+      if ($.session.planSignatureUpdateBuildingNumber) {
+        buildingNumberInput.classList.remove('disabled');
+      }
       if ($.session.updateEmail) {
         emailInput.classList.remove('disabled');
       }
