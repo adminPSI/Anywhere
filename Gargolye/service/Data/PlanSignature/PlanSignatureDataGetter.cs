@@ -278,7 +278,7 @@ namespace Anywhere.service.Data.PlanSignature
             }
         }
 
-        public string newPersonToPeopleTable(string token, string name, string lastName, string buildingNumber, string dateOfBirth, string consumerId, string email)
+        public string newPersonToPeopleTable(string token, string name, string lastName, string buildingNumber, string dateOfBirth, string consumerId)
         {
             logger.debug("checkPeopleExist ");
             List<string> list = new List<string>();
@@ -288,7 +288,6 @@ namespace Anywhere.service.Data.PlanSignature
             list.Add(buildingNumber.ToString());
             list.Add(dateOfBirth.ToString());
             list.Add(consumerId);
-            list.Add(email);
             string text = "CALL DBA.ANYW_ISP_TeamMemberInsertNoSalesForceId(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
