@@ -117,7 +117,7 @@
 
       // update target attachment
       this.inputs[targetID].rootElement.classList.add('hasFile');
-      this.inputs[targetID].labelEle.innerText = _UTIL.truncateFilename(e.target.files[0].name);
+      this.inputs[targetID].labelEle.innerText = _UTIL.truncateFilename(e.target.files[0].name, 10);
       const deleteIcon = Icon.getIcon('delete');
       this.inputs[targetID].labelEle.insertBefore(deleteIcon, this.inputs[targetID].labelEle.firstChild);
       deleteIcon.addEventListener('click', e => {

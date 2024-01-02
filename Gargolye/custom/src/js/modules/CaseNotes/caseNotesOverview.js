@@ -20,12 +20,6 @@
       html: `<p class="enteredBy withLabel">${enteredBy} (${originalUserFullName})</p>`,
     });
   }
-  function buildLocationElement(location) {
-    return _DOM.createElement('div', {
-      class: 'withLabelWrap',
-      html: `<p class="location withLabel">${location}</p>`,
-    });
-  }
   function buildStartTimeElement(dirtyStart) {
     const time = UTIL.convertFromMilitary(dirtyStart);
     return _DOM.createElement('div', {
@@ -97,6 +91,7 @@
     this.reviewGroups = {};
     this.reviewConsumers = [];
     this.showAllNotes = false;
+    this.selectedDate = null;
 
     this.caseLoadRestrictions = null;
     this.caseLoadReviewData = [];
@@ -171,6 +166,45 @@
 
       this.populate();
     });
+
+    this.overviewSearch.onKeyup(
+      _UTIL.debounce(e => {
+        this._filterOverviewOnSearch(e);
+      }, 500),
+    );
+  };
+
+  /**
+   * Filters overview on search
+   *
+   * @function
+   * @param {Event} e
+   */
+  CaseNotesOverview.prototype._filterOverviewOnSearch = function (e) {
+    this.caseLoadReviewData.forEach(rd => {
+      const caseNoteId = rd.casenoteid.split('.')[0];
+
+      const firstName = rd.firstname.toLowerCase().trim();
+      const lastName = rd.lastname.toLowerCase().trim();
+      const enteredBy = rd.enteredby.toLowerCase().trim();
+      const serviceName = rd.serviceName.toLowerCase().trim();
+
+      const searchFields = [
+        `${firstName} ${lastName}`,
+        `${lastName} ${firstName}`,
+        firstName,
+        lastName,
+        enteredBy,
+        serviceName,
+      ];
+
+      const isMatch = searchFields.some(combo => combo.indexOf(e.target.value.toLowerCase()) !== -1);
+      if (isMatch) {
+        this.overviewCards[caseNoteId].classList.remove('closed');
+      } else {
+        this.overviewCards[caseNoteId].classList.add('closed');
+      }
+    });
   };
 
   /**
@@ -190,7 +224,7 @@
         return 0;
       })
       .forEach(rd => {
-        //console.table(rd);
+        console.table(rd);
         // Review Data
         //---------------------------------
         const caseNoteId = rd.casenoteid.split('.')[0];
@@ -201,10 +235,14 @@
 
         // Overview Card
         //---------------------------------
-        const overviewCard = _DOM.createElement('div', {
+        const overviewCardWrap = _DOM.createElement('div', {
           class: 'caseNotesOverview__overviewCard',
           'data-noteid': caseNoteId,
         });
+        const overviewCard = _DOM.createElement('div', {
+          class: 'overviewCardInner',
+        });
+        overviewCardWrap.appendChild(overviewCard);
 
         // IDK YET??
         const mostRecentUpdateEle = buildMostRecentUpdateElement(rd.mostrecentupdate);
@@ -247,16 +285,14 @@
         const startTimeEle = buildStartTimeElement(rd.starttime);
         const endTimeEle = buildEndTimeElement(rd.endtime);
         const timeDurationEle = buildTimeDiffElement(rd.starttime, rd.endtime);
-        const locationEle = buildLocationElement(rd.locationName);
         overviewCard.appendChild(startTimeEle);
         overviewCard.appendChild(endTimeEle);
         overviewCard.appendChild(timeDurationEle);
-        //overviewCard.appendChild(locationEle);
         overviewCard.appendChild(btnWrap);
 
         // MAIN
         const consumerNameEle = buildConsumerElement(consumerId, rd.firstname, rd.lastname);
-        const serviceInfoEle = buildServiceInfoElement(mainService, rd.serviceName, rd.locationName);
+        const serviceInfoEle = buildServiceInfoElement(mainService, rd.serviceName);
         const noteTextEle = buildNoteElement(rd.caseNote);
         overviewCard.appendChild(consumerNameEle);
         overviewCard.appendChild(serviceInfoEle);
@@ -265,8 +301,8 @@
         // overviewCard.appendChild(mostRecentUpdateEle);
 
         //---------------------------------
-        this.overviewCards[caseNoteId] = overviewCard;
-        this.overviewCardsWrap.appendChild(overviewCard);
+        this.overviewCards[caseNoteId] = overviewCardWrap;
+        this.overviewCardsWrap.appendChild(overviewCardWrap);
       });
   };
 
@@ -274,6 +310,10 @@
    * @function
    */
   CaseNotesOverview.prototype.fetchData = async function (selectedDate) {
+    if (selectedDate) {
+      this.selectedDate = selectedDate;
+    }
+
     if (this.caseLoadOnly) {
       const restrictionsResponse = await _UTIL.fetchData('getCaseLoadRestriction');
       this.caseLoadRestrictions = restrictionsResponse.getCaseLoadRestrictionResult;
@@ -297,8 +337,8 @@
       overlaps: 'N',
       reviewStatus: '%',
       service: '%',
-      serviceStartDate: dates.formatISO(selectedDate, { representation: 'date' }),
-      serviceEndDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      serviceStartDate: dates.formatISO(this.selectedDate, { representation: 'date' }),
+      serviceEndDate: dates.formatISO(this.selectedDate, { representation: 'date' }),
     });
 
     this.caseLoadReviewData = filteredSearchResponse.caseNotesFilteredSearchJSONResult.filter(data => {

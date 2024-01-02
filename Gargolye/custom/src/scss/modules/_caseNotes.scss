@@ -3,6 +3,7 @@
 }
 
 [data-active-module='casenotes2.0'] {
+  container: actioncenter / inline-size;
   background: $white;
   padding: 0 0 20px;
   width: 100%;
@@ -10,13 +11,23 @@
   .caseNotesModule {
     display: grid;
     grid-template-columns: auto 340px;
-    grid-template-rows: auto auto minmax(900px, 1100px) auto;
+    grid-template-rows: auto auto minmax(900px, 1300px) auto;
     grid-template-areas:
       'header header'
       'nav nav'
       'form roster'
       'cards cards';
     justify-items: stretch;
+  }
+  @container actioncenter (max-width: 768px) {
+    .caseNotesModule {
+      grid-template-rows: auto auto minmax(auto, 1400px) auto;
+    }
+  }
+  @container actioncenter (min-width: 1000px) {
+    .caseNotesModule {
+      grid-template-rows: auto auto minmax(auto, 1150px) auto;
+    }
   }
 
   // HEADER
@@ -64,6 +75,8 @@
 
   // FORM
   .caseNotesForm {
+    container-type: inline-size;
+    container-name: casenoteform;
     border-radius: 6px;
     box-shadow: $shadow-m2;
     display: flex;
@@ -71,6 +84,15 @@
     grid-area: form;
     margin: 0 10px 0 20px;
     position: relative;
+
+    @container casenoteform (max-width: 400px) {
+      form {
+        .inputGroup.time,
+        .inputGroup.number {
+          width: 100%;
+        }
+      }
+    }
 
     form {
       padding: 6px 10px 10px 10px;
@@ -147,22 +169,35 @@
     padding: 20px;
 
     &__overviewCard {
-      align-items: center;
       display: grid;
-      grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) 1fr 2fr 2fr;
-      grid-template-rows: auto;
-      grid-template-areas:
-        'starttime endtime duration nothing buttons'
-        'consumer consumer consumer consumer consumer'
-        'serviceInfo serviceInfo serviceInfo serviceInfo serviceInfo'
-        'note note note note note';
-      row-gap: 10px;
-
       box-shadow: $shadow-m2;
       border-radius: 6px;
       position: relative;
       padding: 10px;
       margin: 0 0 8px;
+
+      .overviewCardInner {
+        align-items: center;
+        display: grid;
+        grid-template-columns: minmax(90px, 100px) minmax(90px, 100px) 1fr 2fr 2fr;
+        grid-template-rows: auto;
+        grid-template-areas:
+          'starttime endtime duration nothing buttons'
+          'consumer consumer consumer consumer consumer'
+          'serviceInfo serviceInfo serviceInfo serviceInfo serviceInfo'
+          'note note note note note';
+        row-gap: 10px;
+      }
+
+      &.closed {
+        grid-template-rows: 0fr;
+        padding: 0px;
+        margin: 0px;
+
+        .overviewCardInner {
+          overflow: hidden;
+        }
+      }
 
       .startTime {
         grid-area: starttime;

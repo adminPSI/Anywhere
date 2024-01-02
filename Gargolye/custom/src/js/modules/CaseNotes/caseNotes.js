@@ -342,7 +342,7 @@ const CaseNotes = (() => {
       saveResponse = caseNoteId ? 'success' : 'error';
 
       // SAVE ATTACHMENTS
-      if ($.session.applicationName === 'Gatekeeper' && attachments.length > 0) {
+      if ($.session.applicationName === 'Gatekeeper' && Object.keys(attachments).length > 0) {
         const attachSaveResponse = saveAttachments(attachments);
         if (attachSaveResponse === 'error') {
           reqVisualizer.fullfill('error', 'Error Saving Attachments', 2000);

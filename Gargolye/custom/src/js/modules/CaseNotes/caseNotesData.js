@@ -519,7 +519,13 @@
    * @returns {Array}
    */
   CaseNotesData.prototype.getAttachmentsList = function () {
-    return this.attachmentList;
+    return this.attachmentList.map(att => {
+      return {
+        description: att.description,
+        type: att.attachmentType,
+        attachment: att.attachment,
+      };
+    });
   };
   /**
    * @function
