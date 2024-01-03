@@ -328,10 +328,15 @@ const CaseNotes = (() => {
       caseNoteGroupId = newGroupId;
     }
 
-    return failedSaves.length === 0 ? 'success' : 'error';
+    const success = failedSaves.length === 0 ? 'success' : 'error';
+    return {
+      success,
+      newGroup: newGroupId ? true : false,
+    };
   }
   async function saveNote(data, attachments) {
-    let saveResponse;
+    let saveResponse,
+      isNewGroup = false;
 
     reqVisualizer.show('Saving Case Note...');
 
@@ -340,6 +345,7 @@ const CaseNotes = (() => {
       const response = (await _UTIL.fetchData('saveCaseNote', data)).saveCaseNoteResult;
       caseNoteId = caseNoteId ? caseNoteId : extractCaseNoteId(response);
       saveResponse = caseNoteId ? 'success' : 'error';
+      isNewGroup = false;
 
       // SAVE ATTACHMENTS
       if ($.session.applicationName === 'Gatekeeper' && Object.keys(attachments).length > 0) {
@@ -350,7 +356,9 @@ const CaseNotes = (() => {
         }
       }
     } else {
-      saveResponse = await saveGroup(data);
+      const resp = await saveGroup(data);
+      saveResponse = resp.success;
+      isNewGroup = resp.newGroup;
     }
 
     if (saveResponse === 'success') {
@@ -358,6 +366,8 @@ const CaseNotes = (() => {
     } else {
       reqVisualizer.fullfill('error', 'Error Saving Case Note', 2000);
     }
+
+    return { saveResponse, isNewGroup };
   }
 
   // FORM
@@ -445,6 +455,7 @@ const CaseNotes = (() => {
     console.log('File delete from form', e.detail);
 
     attachmentsForDelete.push(e.detail);
+    console.log(attachmentsForDelete);
   }
   // CHANGE \ KEYUP
   function onTimeChange(target) {
@@ -452,11 +463,25 @@ const CaseNotes = (() => {
     const startTimeVal = cnForm.inputs['startTime'].getValue();
     const endTimeVal = cnForm.inputs['endTime'].getValue();
 
-    const isTimeFuture = isFutureTime(target === 'start' ? startTimeVal : endTimeVal);
-    if (isTimeFuture) {
-      cnForm.inputs[inputKey].setValidtyError('error');
-      cnForm.inputs[inputKey].showError('Time can not be in future.');
-      return;
+    if (target) {
+      const isTimeFuture = isFutureTime(target === 'start' ? startTimeVal : endTimeVal);
+      if (isTimeFuture) {
+        cnForm.inputs[inputKey].setValidtyError('error');
+        cnForm.inputs[inputKey].showError('Time can not be in future.');
+        return;
+      }
+    } else {
+      const isStartTimeFuture = isFutureTime(startTimeVal);
+      const isEndTimeFuture = isFutureTime(endTimeVal);
+      if (isStartTimeFuture) {
+        cnForm.inputs['startTime'].setValidtyError('error');
+        cnForm.inputs['startTime'].showError('Time can not be in future.');
+      }
+      if (isEndTimeFuture) {
+        cnForm.inputs['endTime'].setValidtyError('error');
+        cnForm.inputs['endTime'].showError('Time can not be in future.');
+      }
+      if (isStartTimeFuture || isEndTimeFuture) return;
     }
 
     const isStartBeforeEnd = isStartTimeBeforeEndTime(startTimeVal, endTimeVal);
@@ -749,14 +774,14 @@ const CaseNotes = (() => {
       }
     }
 
-    await saveNote(saveData, attachmentsForSave);
+    const { saveResponse, isNewGroup } = await saveNote(saveData, attachmentsForSave);
 
     cnFormToast.close();
 
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
 
-    if (buttonName === 'saveandnew') {
+    if (buttonName === 'saveandnew' || isNewGroup) {
       resetNoteData();
       cnForm.clear();
       rosterPicker.setSelectedConsumers([]);
@@ -786,7 +811,7 @@ const CaseNotes = (() => {
   async function onDateChange(newDate) {
     selectedDate = newDate;
 
-    //TODO-ASH: re validate times when date change
+    onTimeChange(target);
 
     //re populate overview section when date change
     await cnOverview.fetchData(selectedDate);

@@ -70,6 +70,7 @@
     this.options = options;
     this.options.type = 'file';
     this.inputs = {};
+    this.filenamelength = 14;
 
     // DOM Ref
     this.rootElement = null;
@@ -92,8 +93,6 @@
   };
 
   /**
-   *
-   *
    * @function
    */
   Attachments.prototype._setupEvents = function (cbFunc) {
@@ -117,17 +116,50 @@
 
       // update target attachment
       this.inputs[targetID].rootElement.classList.add('hasFile');
-      this.inputs[targetID].labelEle.innerText = _UTIL.truncateFilename(e.target.files[0].name, 10);
+      this.inputs[targetID].labelEle.innerText = _UTIL.truncateFilename(e.target.files[0].name, this.filenamelength);
       const deleteIcon = Icon.getIcon('delete');
       this.inputs[targetID].labelEle.insertBefore(deleteIcon, this.inputs[targetID].labelEle.firstChild);
       deleteIcon.addEventListener('click', e => {
         e.stopPropagation();
         this.inputs[targetID].rootElement.remove();
         delete this.inputs[targetID];
-        const customEvent = new CustomEvent('fileDelete', { bubbles: true });
-        this.rootElement.dispatchEvent(customEvent);
+        // const customEvent = new CustomEvent('fileDelete', { bubbles: true });
+        // this.rootElement.dispatchEvent(customEvent);
       });
     });
+  };
+
+  /**
+   * @function
+   */
+  Attachments.prototype._viewAttachment = function (attachmentId) {
+    const action = `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/viewCaseNoteAttachment/`;
+
+    const form = document.createElement('form');
+    form.setAttribute('action', action);
+    form.setAttribute('method', 'POST');
+    form.setAttribute('target', '_blank');
+    form.setAttribute('enctype', 'application/json');
+    form.setAttribute('success', res => JSON.stringify(res));
+
+    const tokenInput = document.createElement('input');
+    tokenInput.setAttribute('name', 'token');
+    tokenInput.setAttribute('value', $.session.Token);
+    tokenInput.id = 'token';
+
+    const attachmentInput = document.createElement('input');
+    attachmentInput.setAttribute('name', 'attachmentId');
+    attachmentInput.setAttribute('value', attachmentId);
+    attachmentInput.id = 'attachmentId';
+
+    form.appendChild(tokenInput);
+    form.appendChild(attachmentInput);
+    form.style.position = 'absolute';
+    form.style.opacity = '0';
+
+    document.body.appendChild(form);
+
+    form.submit();
   };
 
   /**
@@ -142,20 +174,27 @@
 
       const label = _DOM.createElement('div', {
         class: 'fakelabel',
-        text: _UTIL.truncateFilename(newAttachment.description),
+        text: _UTIL.truncateFilename(newAttachment.description, this.filenamelength),
       });
 
       const deleteIcon = Icon.getIcon('delete');
-      deleteIcon.addEventListener('click', e => {
-        const customEvent = new CustomEvent('fileDelete', {
-          bubbles: true,
-          detail: newAttachment.attachmentId,
-        });
-        this.rootElement.dispatchEvent(customEvent);
-      });
 
       label.insertBefore(deleteIcon, label.firstChild);
       inputGroup.append(label);
+
+      inputGroup.addEventListener('click', e => {
+        if (e.target === deleteIcon) {
+          const customEvent = new CustomEvent('fileDelete', {
+            bubbles: true,
+            detail: newAttachment.attachmentId,
+          });
+          this.rootElement.dispatchEvent(customEvent);
+          return;
+        } else {
+          //this._viewAttachment(newAttachment.attachmentId);
+          caseNotesAjax.viewCaseNoteAttachment(newAttachment.attachmentId);
+        }
+      });
 
       this.rootElement.append(inputGroup);
     });

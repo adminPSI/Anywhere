@@ -524,6 +524,7 @@
         description: att.description,
         type: att.attachmentType,
         attachment: att.attachment,
+        attachmentId: att.attachmentId,
       };
     });
   };
