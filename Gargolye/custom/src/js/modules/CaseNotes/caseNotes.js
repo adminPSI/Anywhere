@@ -463,6 +463,10 @@ const CaseNotes = (() => {
     const startTimeVal = cnForm.inputs['startTime'].getValue();
     const endTimeVal = cnForm.inputs['endTime'].getValue();
 
+    if (startTimeVal === '' && endTimeVal === '') {
+      return;
+    }
+
     if (target) {
       const isTimeFuture = isFutureTime(target === 'start' ? startTimeVal : endTimeVal);
       if (isTimeFuture) {
@@ -833,7 +837,7 @@ const CaseNotes = (() => {
   async function onDateChange(newDate) {
     selectedDate = newDate;
 
-    onTimeChange(target);
+    onTimeChange();
 
     //re populate overview section when date change
     await cnOverview.fetchData(selectedDate);
