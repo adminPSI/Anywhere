@@ -301,10 +301,10 @@ const CaseNotes = (() => {
           .fetchData('updateGroupNoteValues', {
             groupNoteId: caseNoteGroupId,
             noteId: caseNoteId,
-            serviceOrBillingCodeId: saveData.serviceOrBillingCodeId,
-            serviceDate: saveData.serviceDate,
-            startTime: saveData.startTime,
-            endTime: saveData.endTime,
+            serviceOrBillingCodeId: data.serviceOrBillingCodeId,
+            serviceDate: data.serviceDate,
+            startTime: data.startTime,
+            endTime: data.endTime,
           })
           .then(result => ({ status: 'fulfilled', value: result }))
           .catch(error => ({ status: 'rejected', reason: error })),
@@ -515,7 +515,7 @@ const CaseNotes = (() => {
       cnForm.inputs['endTime'].clearErrorOrWarning();
     }
   }
-  function onServiceCodeChange() {
+  function onServiceCodeChange(documentationTime = 0) {
     if (caseNoteId) {
       checkGroupNotesPermission();
     }
@@ -526,7 +526,7 @@ const CaseNotes = (() => {
       const isDocTimeRequired = cnData.isDocTimeRequired(selectedServiceCode);
 
       if (isDocTimeRequired) {
-        cnDocTimer.showAutoStartPopup();
+        cnDocTimer.showAutoStartPopup(parseInt(documentationTime));
       }
 
       cnForm.inputs['mileage'].toggleDisabled(!mileageRequired);
@@ -728,40 +728,31 @@ const CaseNotes = (() => {
     if (buttonName === 'delete') {
       resetNoteData();
       cnForm.clear();
+      cnFormToast.close();
       rosterPicker.setSelectedConsumers([]);
 
       await deleteNote(caseNoteId);
 
+      if ($.session.applicationName === 'Gatekeeper') {
+        cnDocTimer.clear();
+      }
+
+      return;
+    }
+    if (buttonName === 'cancel') {
+      resetNoteData();
+      cnForm.clear();
+      cnFormToast.close();
+      rosterPicker.setSelectedConsumers([]);
+
+      if ($.session.applicationName === 'Gatekeeper') {
+        cnDocTimer.clear();
+      }
+
       return;
     }
 
-    const attachmentsForSave = await processAttachmentsForSave(data);
-
-    const saveData = {
-      caseManagerId,
-      caseNote: data.noteText ? _UTIL.removeUnsavableNoteText(data.noteText) : '',
-      casenotemileage: data.mileage ?? '0',
-      casenotetraveltime: data.travelTime ?? '',
-      consumerId: selectedConsumers[0],
-      confidential: data.confidential === 'on' ? 'Y' : 'N',
-      contactCode: data.contact ?? '',
-      corrected: 'N',
-      documentationTime: $.session.applicationName === 'Gatekeeper' ? cnDocTimer.getTime() : '',
-      endTime: data.endTime ? data.endTime.substring(0, 5) : '',
-      locationCode: data.location ?? '',
-      noteId: caseNoteId ?? 0,
-      needCode: data.need ?? '',
-      reviewRequired: '',
-      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
-      serviceCode: data.service ?? '',
-      serviceLocationCode: data.serviceLocation ?? '',
-      serviceOrBillingCodeId: data.serviceCode ?? '',
-      startTime: data.startTime ? data.startTime.substring(0, 5) : '',
-      vendorId: data.vendor ?? '',
-    };
-
-    const overlaps = await timeOverlapCheck(saveData.startTime, saveData.endTime);
-
+    const overlaps = await timeOverlapCheck(data.startTime, data.endTime);
     if (overlaps.length) {
       const continueSave = await overlapPopup.show(
         `The times you have entered for this note overlap with the following consumer(s), ${overlaps.join(
@@ -774,17 +765,48 @@ const CaseNotes = (() => {
       }
     }
 
-    const { saveResponse, isNewGroup } = await saveNote(saveData, attachmentsForSave);
+    const saveData = {
+      caseManagerId,
+      caseNote: data.noteText ? _UTIL.removeUnsavableNoteText(data.noteText) : '',
+      casenotemileage: data.mileage ?? '0',
+      casenotetraveltime: data.travelTime ?? '',
+      consumerId: selectedConsumers[0],
+      confidential: data.confidential === 'on' ? 'Y' : 'N',
+      contactCode: data.contact ?? '',
+      corrected: 'N',
+      documentationTime: $.session.applicationName === 'Gatekeeper' ? cnDocTimer.stop().getTime() : '',
+      endTime: data.endTime.substring(0, 5),
+      locationCode: data.location ?? '',
+      noteId: caseNoteId ?? 0,
+      needCode: data.need ?? '',
+      reviewRequired: '',
+      serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
+      serviceCode: data.service ?? '',
+      serviceLocationCode: data.serviceLocation ?? '',
+      serviceOrBillingCodeId: data.serviceCode ?? '',
+      startTime: data.startTime.substring(0, 5),
+      vendorId: data.vendor ?? '',
+    };
+    const attachmentsForSave = await processAttachmentsForSave(data);
 
-    cnFormToast.close();
+    const { isNewGroup } = await saveNote(saveData, attachmentsForSave);
 
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
+    cnFormToast.close();
 
     if (buttonName === 'saveandnew' || isNewGroup) {
       resetNoteData();
       cnForm.clear();
       rosterPicker.setSelectedConsumers([]);
+
+      if ($.session.applicationName === 'Gatekeeper') {
+        cnDocTimer.clear();
+      }
+    } else {
+      if ($.session.applicationName === 'Gatekeeper') {
+        cnDocTimer.start(saveData.documentationTime);
+      }
     }
   }
 
@@ -842,7 +864,7 @@ const CaseNotes = (() => {
 
     rosterPicker.setSelectedConsumers(selectedConsumers, true);
     setConsumerRelatedDropdowns();
-    onServiceCodeChange();
+    onServiceCodeChange(caseNoteEditData.documentationTime);
 
     cnForm.populate({
       serviceCode: caseNoteEditData.mainbillingorservicecodeid,
@@ -901,23 +923,6 @@ const CaseNotes = (() => {
     cnForm.renderTo(cnFormWrap);
     cnOverview.renderTo(moduleWrap);
     cnPhrases.renderTo(_DOM.ACTIONCENTER);
-
-    //*------------------------------------------
-    //* CASE NOTES REVIEW BUTTON
-    // const caseNotesReviewButton = new Button({
-    //   type: 'submit',
-    //   text: 'Review',
-    //   name: 'cnreview',
-    // }).renderTo(cnHeader);
-    // caseNotesReviewButton.onClick(e => {
-    //   cnReviewTable = new CaseNotesReviewTable();
-
-    //   moduleWrap.innerHTML = '';
-
-    //   cnReviewTable.renderTo(moduleWrap);
-    // });
-    //* CASE NOTES REVIEW BUTTON
-    //*------------------------------------------
 
     attachEvents();
   }
@@ -1091,6 +1096,11 @@ const CaseNotes = (() => {
           style: 'danger',
           styleType: 'outlined',
           hidden: true,
+        },
+        {
+          type: 'submit',
+          text: 'Cancel',
+          name: 'cancel',
         },
       ],
     });

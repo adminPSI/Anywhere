@@ -84,6 +84,7 @@
    * @constructor
    */
   function TimerAutoStartPopup() {
+    this.prevDocumentationTime = 0;
     this.dialog = null;
 
     this.yesButton = null;
@@ -119,7 +120,8 @@
    *
    * @function
    */
-  TimerAutoStartPopup.prototype.show = function () {
+  TimerAutoStartPopup.prototype.show = function (prevDocumentationTime) {
+    this.prevDocumentationTime = prevDocumentationTime;
     this.dialog.show();
   };
 
@@ -128,12 +130,14 @@
    */
   TimerAutoStartPopup.prototype.onClick = function (cbFunc) {
     this.yesButton.onClick(e => {
-      cbFunc(true);
+      cbFunc(true, this.prevDocumentationTime);
       this.dialog.close();
+      this.prevDocumentationTime = 0;
     });
     this.noButton.onClick(e => {
       cbFunc(false);
       this.dialog.close();
+      this.prevDocumentationTime = 0;
     });
   };
 
@@ -233,9 +237,9 @@
         this.start(this.elapsedTimeInSeconds);
       }
     });
-    this.timerAutoStartPopup.onClick(autoStart => {
+    this.timerAutoStartPopup.onClick((autoStart, prevDocTime) => {
       if (autoStart) {
-        this.start();
+        this.start(prevDocTime);
       }
     });
   };
@@ -319,10 +323,10 @@
   /**
    * @function
    */
-  CaseNotesTimer.prototype.showAutoStartPopup = function () {
+  CaseNotesTimer.prototype.showAutoStartPopup = function (prevDocumentationTime) {
     if (this.intervalId) return;
 
-    this.timerAutoStartPopup.show();
+    this.timerAutoStartPopup.show(prevDocumentationTime);
   };
 
   /**
