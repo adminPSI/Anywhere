@@ -86,8 +86,8 @@
       this.inputs[ele.id] = inputInstance;
     });
 
-    // Add default save button for all forms
     const btnWrap = _DOM.createElement('div', { class: 'formButtons' });
+    // Add default save button for all forms
     const submitButton = new Button({
       type: 'submit',
       text: 'Save',
@@ -106,6 +106,28 @@
       });
     }
 
+    // Add default delete button for all forms (hidden by default)
+    const deleteButton = new Button({
+      type: 'button',
+      text: 'Delete',
+      name: 'delete',
+      icon: 'delete',
+      style: 'danger',
+      styleType: 'outlined',
+      hidden: true,
+    }).renderTo(btnWrap);
+    this.buttons['delete'] = deleteButton;
+
+    // Add default cancel button for all forms
+    const cancelButton = new Button({
+      type: 'reset',
+      text: 'Cancel',
+      name: 'cancel',
+      style: 'primary',
+      styleType: 'outlined',
+    }).renderTo(btnWrap);
+    this.buttons['cancel'] = cancelButton;
+
     this.form.appendChild(btnWrap);
   };
 
@@ -122,6 +144,11 @@
         this.form.dispatchEvent(customEvent);
       }, 100),
     );
+
+    this.buttons['delete'].onClick(e => {
+      const customEvent = new CustomEvent('onDelete', { detail: e });
+      this.form.dispatchEvent(customEvent);
+    });
   };
 
   /**
@@ -137,6 +164,38 @@
       const formData = new FormData(this.form);
       const entries = formData.entries();
       const data = Object.fromEntries(entries);
+
+      cbFunc(data, e.submitter);
+    });
+  };
+
+  /**
+   * Handles reset event on form
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Form.prototype.onReset = function (cbFunc) {
+    this.form.addEventListener('reset', e => {
+      e.preventDefault();
+
+      this.clear();
+
+      cbFunc(data, e.submitter);
+    });
+  };
+
+  /**
+   * Handles delete event
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Form.prototype.onDelete = function (cbFunc) {
+    this.form.addEventListener('onDelete', e => {
+      e.preventDefault();
+
+      this.clear();
 
       cbFunc(data, e.submitter);
     });

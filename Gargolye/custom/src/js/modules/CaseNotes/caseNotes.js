@@ -726,35 +726,29 @@ const CaseNotes = (() => {
 
     return attachmentsForSave;
   }
+  function onFormReset() {
+    resetNoteData();
+    cnFormToast.close();
+    rosterPicker.setSelectedConsumers([]);
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      cnDocTimer.clear();
+    }
+  }
+  async function onFormDelete() {
+    resetNoteData();
+    cnForm.clear();
+    cnFormToast.close();
+    rosterPicker.setSelectedConsumers([]);
+
+    await deleteNote(caseNoteId);
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      cnDocTimer.clear();
+    }
+  }
   async function onFormSubmit(data, submitter) {
     const buttonName = submitter.name.toLowerCase();
-
-    if (buttonName === 'delete') {
-      resetNoteData();
-      cnForm.clear();
-      cnFormToast.close();
-      rosterPicker.setSelectedConsumers([]);
-
-      await deleteNote(caseNoteId);
-
-      if ($.session.applicationName === 'Gatekeeper') {
-        cnDocTimer.clear();
-      }
-
-      return;
-    }
-    if (buttonName === 'cancel') {
-      resetNoteData();
-      cnForm.clear();
-      cnFormToast.close();
-      rosterPicker.setSelectedConsumers([]);
-
-      if ($.session.applicationName === 'Gatekeeper') {
-        cnDocTimer.clear();
-      }
-
-      return;
-    }
 
     const overlaps = await timeOverlapCheck(data.startTime, data.endTime);
     if (overlaps.length) {
@@ -907,7 +901,9 @@ const CaseNotes = (() => {
     rosterPicker.onConsumerSelect(onConsumerSelect);
     cnForm.onChange(onFormChange);
     cnForm.onKeyup(onFormKeyup);
+    cnForm.onDelete(onFormDelete);
     cnForm.onSubmit(onFormSubmit);
+    cnForm.onReset(onFormReset);
     cnForm.onFileDelete(onFileDelete);
     cnOverview.onCardEdit(onOverviewCardEdit);
     cnOverview.onCardDelete(onOverviewCardDelete);
@@ -1088,23 +1084,7 @@ const CaseNotes = (() => {
           text: 'Update',
           icon: 'save',
           name: 'update',
-          // style: 'primary',
-          // styleType: 'outlined',
           hidden: true,
-        },
-        {
-          type: 'submit',
-          text: 'Delete',
-          name: 'delete',
-          icon: 'delete',
-          style: 'danger',
-          styleType: 'outlined',
-          hidden: true,
-        },
-        {
-          type: 'submit',
-          text: 'Cancel',
-          name: 'cancel',
         },
       ],
     });
