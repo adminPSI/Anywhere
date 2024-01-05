@@ -13,6 +13,10 @@ const CaseNotes = (() => {
   let selectedServiceCode;
   let updatedInputs = {};
   //--------------------------
+  // PERMISSIONS
+  //--------------------------
+  let isReadOnly;
+  //--------------------------
   // DOM
   //--------------------------
   let moduleWrap;
@@ -67,19 +71,10 @@ const CaseNotes = (() => {
 
   // UTILS
   //--------------------------------------------------
-  function isReadOnly(credit) {
-    // isReadyonly does same thing as checkIfCredit
-    // credit comes from review data
-    return credit === 'Y' || credit === '-1' ? true : false;
-  }
   function isNoteConfidential() {
     // old function = checkConfidential
   }
   function setPermissions() {
-    const viewOnly = $.session.CaseNotesUpdate ? false : true;
-
-    let isReadOnly;
-
     //TODO-ASH: check if case note is batched | *ONLY FOR REVIEW*
     // batched notes are readonly, if batched status === '' it is NOT BATCHED
 
@@ -801,10 +796,6 @@ const CaseNotes = (() => {
       if ($.session.applicationName === 'Gatekeeper') {
         cnDocTimer.clear();
       }
-    } else {
-      if ($.session.applicationName === 'Gatekeeper') {
-        cnDocTimer.start(saveData.documentationTime);
-      }
     }
   }
 
@@ -861,8 +852,9 @@ const CaseNotes = (() => {
     attachmentsForDelete = [];
 
     rosterPicker.setSelectedConsumers(selectedConsumers, true);
+    //rosterPicker.toggleRosterDisabled(true, isReadOnly);
     setConsumerRelatedDropdowns();
-    onServiceCodeChange(caseNoteEditData.documentationTime);
+    onServiceCodeChange(caseNoteEditData.totaldoctime);
 
     cnForm.populate({
       serviceCode: caseNoteEditData.mainbillingorservicecodeid,
@@ -889,6 +881,11 @@ const CaseNotes = (() => {
     //TODO-ASH: Add entered by (caseNoteEditData.originaluserfullname, caseNoteEditData.originaluserid)
     //TODO-ASH: Add last edit on (caseNoteEditData.lastupdate)
     //cnFormWrap
+
+    //TODO-ASH:
+    // isReadyonly does same thing as checkIfCredit
+    // credit comes from review data
+    // return credit === 'Y' || credit === '-1' ? true : false;
 
     toggleFormButtonShowHide();
     checkRequiredFields();
@@ -959,10 +956,12 @@ const CaseNotes = (() => {
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
       consumerRequired: true,
+      isReadOnly,
     });
 
     // Form
     cnForm = new Form({
+      isReadOnly,
       elements: [
         //confidential
         {
@@ -1111,6 +1110,8 @@ const CaseNotes = (() => {
     overlapPopup.renderTo(_DOM.ACTIONCENTER);
   }
   async function init() {
+    setPermissions();
+
     selectedDate = dates.getTodaysDateObj();
     caseManagerId = $.session.PeopleId;
 

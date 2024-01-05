@@ -199,6 +199,36 @@
   };
 
   /**
+   * Fetches consumers data by date, group and location
+   *
+   * @function
+   * @param {Object} retrieveData
+   */
+  RosterPicker.prototype.fetchConsumers = async function () {
+    try {
+      const todaysDate = dates.getTodaysDateObj();
+      todaysDate.setHours(0, 0, 0, 0);
+
+      let daysBackDate = dates.subDays(todaysDate, $.session.defaultProgressNoteReviewDays);
+
+      const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
+        groupCode: this.groupCode,
+        retrieveId: '0',
+        serviceDate: dates.formatISO(todaysDate, { representation: 'date' }),
+        daysBackDate: daysBackDate,
+      });
+      this.consumers = data.getConsumersByGroupJSONResult.reduce((acc, cv) => {
+        acc[cv.id] = cv;
+        return acc;
+      }, {});
+    } catch (error) {
+      console.log('uh oh something went horribly wrong :(', error.message);
+    }
+
+    return this;
+  };
+
+  /**
    * Populate consumer roster cards
    *
    * @function
@@ -237,7 +267,7 @@
         this.rosterWrapEle.appendChild(gridAnimationWrapper);
 
         // SET REFERENCE TO DOM NODE ON DATA OBJ
-        console.log(this.consumers[consumer.id] === consumer);
+        // console.log(this.consumers[consumer.id] === consumer);
         consumer.cardEle = rosterCard.rootElement;
       });
   };
@@ -255,33 +285,30 @@
   };
 
   /**
-   * Fetches consumers data by date, group and location
    *
    * @function
-   * @param {Object} retrieveData
+   * @param {Boolean} isDisabled
+   * @param {Boolean} [forceAll]
    */
-  RosterPicker.prototype.fetchConsumers = async function () {
-    try {
-      const todaysDate = dates.getTodaysDateObj();
-      todaysDate.setHours(0, 0, 0, 0);
+  RosterPicker.prototype.toggleRosterDisabled = function (isDisabled, forceAll = false) {
+    for (consumers in this.consumers) {
+      if (!isDisabled) {
+        this.consumers[consumers].cardEle.parentNode.classList.remove('disabled');
+        continue;
+      }
 
-      let daysBackDate = dates.subDays(todaysDate, $.session.defaultProgressNoteReviewDays);
+      if (forceAll) {
+        this.consumers[consumers].cardEle.parentNode.classList.add('disabled');
+        continue;
+      }
 
-      const data = await _UTIL.fetchData('getConsumersByGroupJSON', {
-        groupCode: this.groupCode,
-        retrieveId: '0',
-        serviceDate: dates.formatISO(todaysDate, { representation: 'date' }),
-        daysBackDate: daysBackDate,
-      });
-      this.consumers = data.getConsumersByGroupJSONResult.reduce((acc, cv) => {
-        acc[cv.id] = cv;
-        return acc;
-      }, {});
-    } catch (error) {
-      console.log('uh oh something went horribly wrong :(', error.message);
+      const isSelected = this.consumers[consumers].cardEle.parentNode.classList.contains('selected');
+      const isLocked = this.consumers[consumers].cardEle.parentNode.classList.contains('locked');
+
+      if (!isSelected && !isLocked) {
+        this.consumers[consumers].cardEle.parentNode.classList.add('disabled');
+      }
     }
-
-    return this;
   };
 
   /**
@@ -312,6 +339,8 @@
   RosterPicker.prototype.clearSelectedConsumers = function () {
     for (consumerID in this.selectedConsumers) {
       this.selectedConsumers[consumerID].parentNode.classList.remove('selected');
+      this.selectedConsumers[consumerID].parentNode.classList.remove('locked');
+      this.selectedConsumers[consumerID].parentNode.classList.remove('disabled');
       delete this.selectedConsumers[consumerID];
     }
   };
