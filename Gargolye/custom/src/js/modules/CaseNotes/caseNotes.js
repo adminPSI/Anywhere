@@ -885,14 +885,15 @@ const CaseNotes = (() => {
       cnForm.inputs['attachment'].addAttachments(caseNoteAttachmentsEditData);
     }
 
+    if (caseNoteEditData.credit === 'Y' || caseNoteEditData.credit === '-1') {
+      cnForm.disableFormInputs();
+      toggleFormButtonsDisabled();
+      rosterPicker.toggleRosterDisabled(true, true);
+    }
+
     //TODO-ASH: Add entered by (caseNoteEditData.originaluserfullname, caseNoteEditData.originaluserid)
     //TODO-ASH: Add last edit on (caseNoteEditData.lastupdate)
     //cnFormWrap
-
-    //TODO-ASH:
-    // isReadyonly does same thing as checkIfCredit
-    // credit comes from review data
-    // return credit === 'Y' || credit === '-1' ? true : false;
 
     toggleFormButtonShowHide();
     checkRequiredFields();
@@ -1138,12 +1139,12 @@ const CaseNotes = (() => {
     await loadPage();
     await populatePage();
 
-    if (isReadOnly) {
-      cnForm.disableFormInputs();
-      toggleFormButtonsDisabled();
-      rosterPicker.toggleRosterDisabled(true, true);
-      return;
-    }
+    // if (isReadOnly) {
+    //   cnForm.disableFormInputs();
+    //   toggleFormButtonsDisabled();
+    //   rosterPicker.toggleRosterDisabled(true, true);
+    //   return;
+    // }
 
     checkRequiredFields();
   }
