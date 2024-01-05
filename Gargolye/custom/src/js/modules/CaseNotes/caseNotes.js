@@ -410,6 +410,13 @@ const CaseNotes = (() => {
     cnForm.buttons['update'].toggleVisibility(caseNoteId ? false : true);
     cnForm.buttons['delete'].toggleVisibility(caseNoteId ? false : true);
   }
+  function toggleFormButtonsDisabled(isDisabled) {
+    cnForm.buttons['submit'].toggleDisabled(isDisabled);
+    cnForm.buttons['saveAndNew'].toggleDisabled(isDisabled);
+    cnForm.buttons['update'].toggleDisabled(isDisabled);
+    cnForm.buttons['delete'].toggleDisabled(isDisabled);
+    cnForm.buttons['cancel'].toggleDisabled(isDisabled);
+  }
   // DROPDOWNS
   async function updateVendorDropdownByConsumer() {
     await cnData.fetchVendorDropdownData({
@@ -852,7 +859,7 @@ const CaseNotes = (() => {
     attachmentsForDelete = [];
 
     rosterPicker.setSelectedConsumers(selectedConsumers, true);
-    //rosterPicker.toggleRosterDisabled(true, isReadOnly);
+    rosterPicker.toggleRosterDisabled(true, isReadOnly);
     setConsumerRelatedDropdowns();
     onServiceCodeChange(caseNoteEditData.totaldoctime);
 
@@ -956,12 +963,10 @@ const CaseNotes = (() => {
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
       consumerRequired: true,
-      isReadOnly,
     });
 
     // Form
     cnForm = new Form({
-      isReadOnly,
       elements: [
         //confidential
         {
@@ -1132,6 +1137,13 @@ const CaseNotes = (() => {
     initComponents();
     await loadPage();
     await populatePage();
+
+    if (isReadOnly) {
+      cnForm.disableFormInputs();
+      toggleFormButtonsDisabled();
+      rosterPicker.toggleRosterDisabled(true, true);
+      return;
+    }
 
     checkRequiredFields();
   }

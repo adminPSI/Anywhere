@@ -11,6 +11,7 @@
   const DEFAULT_OPTIONS = {
     allowMultiSelect: false,
     consumerRequired: false,
+    isReadOnly: false,
   };
 
   /**
