@@ -999,6 +999,7 @@ const CaseNotes = (() => {
           label: 'Location',
           id: 'location',
           disabled: true,
+          includeBlankOption: true,
         },
         //service
         {
@@ -1006,6 +1007,7 @@ const CaseNotes = (() => {
           label: 'Service',
           id: 'service',
           disabled: true,
+          includeBlankOption: true,
         },
         //need
         {
@@ -1013,6 +1015,7 @@ const CaseNotes = (() => {
           label: 'Need',
           id: 'need',
           disabled: true,
+          includeBlankOption: true,
         },
         //contact
         {
@@ -1020,6 +1023,7 @@ const CaseNotes = (() => {
           label: 'Contact',
           id: 'contact',
           disabled: true,
+          includeBlankOption: true,
         },
         //vendor
         {
