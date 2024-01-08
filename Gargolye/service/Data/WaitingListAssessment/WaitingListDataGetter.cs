@@ -1,0 +1,170 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Text.RegularExpressions;
+using System.Data;
+using System.Data.Odbc;
+using System.IO;
+using System.Linq;
+using System.Web.Script.Serialization;
+using Anywhere.Log;
+using System.Configuration;
+
+namespace Anywhere.service.Data.WaitingListAssessment
+{
+    public class WaitingListDataGetter
+    {
+        private static Loger logger = new Loger();
+        //private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(typeof(DataGetter));
+        private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+
+        public string getLandingPageForConsumer(string token, double consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getLandingPageForConsumer " + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId.ToString());
+            string text = "CALL DBA.ANYW_WaitingList_ConsumerLandingPage(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1WL", ex.Message + "ANYW_WaitingList_ConsumerLandingPage(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1WL: error ANYW_WaitingList_ConsumerLandingPage";
+            }
+        }
+
+        public string removeUnsavableNoteText(string note)
+        {
+            if (note == "" || note is null)
+            {
+                return note;
+            }
+            if (note.Contains("'"))
+            {
+                note = note.Replace("'", "''");
+            }
+            if (note.Contains("\\"))
+            {
+                note = note.Replace("\\", "");
+            }
+            //if (note.Contains("\""))
+            //{
+            //    note = note.Replace("\"", "\"");
+            //}
+            return note;
+        }
+
+        public bool tokenValidator(string token)
+        {
+            if (token.Contains(" "))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public bool consumerIdStringValidator(string consumerIdString)
+        {
+            var regex = new Regex(@"^[0 - 9,| ] *$");
+            //var regex = @"^[0 - 9, ] *$";
+            //RegexStringValidator regexStringValidator = new RegexStringValidator(regex);
+            try
+            {
+                // regexStringValidator.Validate(consumerIdString);
+                regex.Matches(consumerIdString);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool stringInjectionValidator(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom)))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+        public string executeDataBaseCallJSON(string storedProdCall)
+        {
+            OdbcConnection conn = null;
+            OdbcCommand cmd;
+            OdbcDataReader rdr = null;
+            string result = "[";
+
+            List<string> arr = new List<string>();
+
+            try
+            {
+                if (connectString.ToUpper().IndexOf("UID") == -1)
+                {
+                    connectString = connectString + "UID=anywhereuser;PWD=anywhere4u;";
+                }
+
+                conn = new OdbcConnection(connectString);
+
+                cmd = new OdbcCommand(storedProdCall);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Connection = conn;
+
+                conn.Open();
+                rdr = cmd.ExecuteReader();
+
+                // iterate through results
+                while (rdr.Read())
+                {
+                    Dictionary<string, string> holder = new Dictionary<string, string>();
+                    for (int ordinal = 0; ordinal < rdr.FieldCount; ordinal++)
+                    {
+
+                        var val = rdr.GetValue(ordinal);
+                        string str = val.ToString();
+                        holder[rdr.GetName(ordinal)] = str;
+                    }
+                    arr.Add((new JavaScriptSerializer()).Serialize(holder));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //change now, calling method must catch this error, it helps make better logging 
+                //more of a pain debugging
+                throw ex;
+            }
+
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
+                if (rdr != null)
+                {
+                    rdr.Close();
+                    rdr.Dispose();
+                }
+            }
+
+            return result + String.Join(",", arr) + "]";
+        }
+    }
+}
