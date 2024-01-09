@@ -1,0 +1,310 @@
+//===========================================
+// INPUT, TEXTAREA, SELECT, CHECKBOX, RADIO
+//-------------------------------------------
+$input_border: 2px solid #606060;
+$input_borderRadius: 4px;
+$input_fontSize: $px16;
+$label_fontSize: $px14;
+
+[data-ui] {
+  //===========================================
+  // GLOBAL
+  //-------------------------------------------
+  .inputGroup {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-grow: 1;
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+
+    &--hidden {
+      display: none !important;
+    }
+    &--top-icons {
+      margin-top: 20px;
+    }
+
+    &__inputWrap {
+      position: relative;
+      flex-grow: 1;
+    }
+    &__note {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    &__charCount {
+      font-size: 11px;
+      position: absolute;
+      right: 0px;
+      bottom: -18px;
+
+      span {
+        padding: 0 1px;
+      }
+    }
+
+    input,
+    select,
+    textarea {
+      display: block;
+      background: $whitesmoke;
+      border: $input_border;
+      border-radius: $input_borderRadius;
+      color: $black;
+      font-size: $input_fontSize;
+      padding: 10px 10px 10px 5px;
+      width: 100%;
+
+      &.active {
+        border-color: $primary;
+      }
+      &:invalid {
+        border-color: $error;
+      }
+      &:disabled,
+      &[readonly] {
+        background: $gray;
+      }
+    }
+
+    label {
+      color: #272727;
+      font-size: 0.875rem;
+      font-weight: 400;
+      margin: 0 0 4px;
+    }
+  }
+
+  //===========================================
+  // TEXTAREAS
+  //-------------------------------------------
+  .textarea {
+    textarea {
+      height: 100%;
+    }
+
+    .speechToTextBtn,
+    .fullscreenToggleBtn {
+      position: absolute;
+      top: -22px;
+    }
+
+    .speechToTextBtn {
+      color: $white;
+      background-color: $secondary;
+      right: 50px;
+
+      &.off {
+        color: $font-dark;
+        background-color: $gray;
+      }
+    }
+    .fullscreenToggleBtn {
+      background-color: $whitesmoke;
+      right: 8px;
+    }
+  }
+
+  //===========================================
+  // CHECKBOXES & RADIOS
+  //-------------------------------------------
+  .checkbox,
+  .radio {
+    input[type='checkbox'],
+    input[type='radio'] {
+      opacity: 0;
+      position: absolute;
+
+      &:checked ~ label::before {
+        content: '\002714';
+        background-color: $primary;
+        color: $white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      &.active ~ label::before {
+        border-color: $primary;
+      }
+      &:invalid ~ label::before {
+        border-color: $error;
+      }
+
+      & ~ label {
+        display: flex;
+        align-items: center;
+        margin: 0;
+
+        &::before {
+          content: '';
+          background-color: $white;
+          border: $input_border;
+          border-radius: 4px;
+          height: 20px;
+          margin: 0 6px 0 0;
+          width: 20px;
+
+          position: relative;
+          top: 0px;
+        }
+      }
+    }
+  }
+
+  .radio {
+    input[type='radio'] {
+      margin: 0 0 10px;
+
+      label {
+        &::before {
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+
+  //===========================================
+  // CUSTOM CHECKBOX TOGGLE
+  //-------------------------------------------
+  .checkbox_toggle {
+    input[type='checkbox'] {
+      opacity: 0;
+      position: absolute;
+      left: -9999px;
+      top: 0px;
+    }
+
+    input[type='checkbox'] ~ label {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      position: relative;
+      font-size: 1rem;
+    }
+
+    input[type='checkbox'] ~ label::before {
+      content: '';
+      background-color: $red;
+      border-radius: 16px;
+      border: none;
+      height: 20px;
+      width: 40px;
+      margin-right: 0.25em;
+      opacity: 0.3;
+      transition: background-color 200ms ease-in-out;
+    }
+
+    input[type='checkbox'] ~ label::after {
+      content: '';
+      align-items: center;
+      background-color: $red;
+      border-radius: 16px;
+      color: $white;
+      display: flex;
+      height: 14px;
+      justify-content: center;
+      left: 4px;
+      position: absolute;
+      width: 14px;
+      transition: background-color 200ms ease-in-out, transform 200ms ease-in-out;
+    }
+
+    input[type='checkbox']:focus ~ label::before {
+      outline: none;
+    }
+    input[type='checkbox']:checked ~ label::before {
+      background-color: $secondary;
+      opacity: 0.3;
+    }
+    input[type='checkbox']:checked ~ label::after {
+      transform: translateX(130%);
+      background-color: $secondary;
+    }
+
+    input[type='checkbox']:disabled ~ label {
+      color: $gray;
+    }
+    input[type='checkbox']:disabled ~ label::before {
+      background-color: rgba(211, 211, 211, 0.8);
+    }
+    input[type='checkbox']:disabled ~ label::after {
+      background-color: $gray;
+    }
+  }
+
+  //===========================================
+  // SELECT / DROPDOWNS
+  //-------------------------------------------
+  .select {
+    select {
+      background: none;
+      padding-right: 30px;
+    }
+
+    .svgIcon {
+      pointer-events: none;
+      position: absolute;
+      right: 6px;
+      top: 10px;
+    }
+  }
+
+  //===========================================
+  // FILES / ATTACHMENTS
+  //-------------------------------------------
+  .attachments {
+    column-gap: 6px;
+    display: flex;
+    flex-flow: row wrap;
+    margin-bottom: 20px;
+    width: 100%;
+
+    .file {
+      display: flex;
+      flex-flow: column nowrap;
+      position: relative;
+      margin: 0;
+      width: 100%;
+      flex-grow: 0 !important;
+      width: auto;
+      cursor: pointer;
+
+      input {
+        position: absolute;
+        right: 100px;
+        top: 10px;
+        visibility: hidden;
+      }
+      label,
+      .fakelabel {
+        align-items: center;
+        border: 2px solid $primary;
+        border-radius: 20px;
+        color: #272727;
+        display: flex;
+        height: 40px;
+        flex-flow: row nowrap;
+        padding: 10px 14px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin: 0 0 4px;
+      }
+
+      &.hasFile {
+        label,
+        .fakelabel {
+          border: 2px solid $secondary;
+          pointer-events: none;
+
+          .svgIcon {
+            color: $error;
+            pointer-events: all;
+          }
+        }
+      }
+    }
+  }
+}

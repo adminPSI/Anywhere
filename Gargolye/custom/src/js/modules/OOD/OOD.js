@@ -6,6 +6,7 @@ const OOD = (() => {
 
   let newFilterBtn;
   let editEmployersBtn;
+  let createFormsBtn;
   let filterRow;
   let newEntryBtn;
   let newSummaryBtn;
@@ -38,6 +39,7 @@ const OOD = (() => {
   let selectedConsumerServiceId;
   let selectedConsumerReferenceNumber;
   let selectedConsumerServiceType;
+  let selectedConsumerFormNumber;
   let selectedConsumerServiceName;
   let summaryServicesDropdown;
   let summaryServicesDoneBtn;
@@ -166,7 +168,7 @@ const OOD = (() => {
         { key: 'consumerId', value: entry.consumerId },
         { key: 'Id', value: entry.ID },
         { key: 'userId', value: entry.userUpdated },
-        { key: 'serviceType', value: entry.serviceType },
+        { key: 'formNumber', value: Math.round(entry.formNumber) },
       ],
       onClick: e => {
         var rowConsumer = selectedConsumers.filter(function (x) {
@@ -178,7 +180,7 @@ const OOD = (() => {
         if (
           rowConsumer[0] &&
           e.target.attributes.OODReportType.value === 'newEntry' &&
-          e.target.attributes.serviceType.value === 'T1'
+          e.target.attributes.formNumber.value === '4'
         ) {
           OODAjax.getForm4MonthlyPlacementEditData(
             e.target.attributes.Id.value,
@@ -197,7 +199,7 @@ const OOD = (() => {
         if (
           rowConsumer[0] &&
           e.target.attributes.OODReportType.value === 'monthlySummary' &&
-          e.target.attributes.serviceType.value === 'T1'
+          e.target.attributes.formNumber.value === '4'
         ) {
           OODAjax.getForm4MonthlySummary(e.target.attributes.Id.value, function (results) {
             OODForm4MonthlySummary.init(
@@ -211,7 +213,7 @@ const OOD = (() => {
         if (
           rowConsumer[0] &&
           e.target.attributes.OODReportType.value === 'newEntry' &&
-          e.target.attributes.serviceType.value === 'T2'
+          e.target.attributes.formNumber.value === '8'
         ) {
           OODAjax.getForm8CommunityBasedAssessment(
             e.target.attributes.Id.value,
@@ -231,7 +233,7 @@ const OOD = (() => {
         if (
           rowConsumer[0] &&
           e.target.attributes.OODReportType.value === 'monthlySummary' &&
-          e.target.attributes.serviceType.value === 'T2'
+          e.target.attributes.formNumber.value === '8'
         ) {
           OODAjax.getForm8MonthlySummary(e.target.attributes.Id.value, function (results) {
             communityBasedAssessmentSummaryForm.init(
@@ -241,6 +243,25 @@ const OOD = (() => {
               e.target.attributes.userId.value,
             );
           });
+        }
+        if (
+          rowConsumer[0] &&
+          e.target.attributes.OODReportType.value === 'newEntry' &&
+          e.target.attributes.formNumber.value === '10'
+        ) {
+          OODAjax.getForm10TransportationData(
+            e.target.attributes.Id.value,
+            function (results) {
+              OODFormTransportation.init(
+                results,
+                rowConsumer[0],
+                undefined,
+                undefined,
+                e.target.attributes.userId.value,
+                undefined,
+              );
+            },
+          );
         }
       },
     }));
@@ -327,6 +348,7 @@ const OOD = (() => {
         ),
     });
     editEmployersBtn = buildEditEmployersBtn();
+    //createFormsBtn = buildCreateFormsBtn();
     newFilterBtn = buildNewFilterBtn();
 
     const oodBtnsWrap = document.createElement('div');
@@ -334,6 +356,7 @@ const OOD = (() => {
     oodBtnsWrap.appendChild(entryBtn);
     oodBtnsWrap.appendChild(summaryBtn);
     oodBtnsWrap.appendChild(editEmployersBtn);
+    //oodBtnsWrap.appendChild(createFormsBtn);
 
     buttonBar.appendChild(newFilterBtn);
     buttonBar.appendChild(oodBtnsWrap);
@@ -375,7 +398,8 @@ const OOD = (() => {
         if (serviceDate === '') {
           serviceDate = CLEAREDSERVICEDATE;
           selectedConsumerServiceId = '';
-          selectedConsumerServiceType = '';
+         // selectedConsumerServiceType = '';
+          selectedConsumerFormNumber = '';
           selectedConsumerServiceName = '';
           selectedConsumerReferenceNumber = '';
           await populateConsumerServiceCodeDropdown(consumerId, serviceDate);
@@ -440,13 +464,15 @@ const OOD = (() => {
 
         if (selectedOption.value == 'SELECT') {
           selectedConsumerServiceId = '';
-          selectedConsumerServiceType = '';
+         // selectedConsumerServiceType = '';
+          selectedConsumerFormNumber = '';
           selectedConsumerServiceName = '';
           selectedConsumerReferenceNumber = '';
         } else {
           // TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
           selectedConsumerServiceId = selectedOption.value;
-          selectedConsumerServiceType = selectedOption.id;
+         // selectedConsumerServiceType = selectedOption.id;
+         selectedConsumerFormNumber = selectedOption.id;
           selectedConsumerServiceName = selectedOption.text;
           selectedConsumerReferenceNumber = selectedOption.text.split('# ')[1];
         }
@@ -563,7 +589,8 @@ const OOD = (() => {
 
     summaryServicesDropdown.addEventListener('change', event => {
       selectedConsumerServiceId = event.target.value;
-      selectedConsumerServiceType = event.target.id;
+      // selectedConsumerServiceType = event.target.id;
+      selectedConsumerFormNumber = event.target.id;
       selectedConsumerServiceName = event.target.text;
     });
 
@@ -572,12 +599,14 @@ const OOD = (() => {
 
       if (selectedOption.value == 'SELECT') {
         selectedConsumerServiceId = '';
-        selectedConsumerServiceType = '';
+       // selectedConsumerServiceType = '';
+        selectedConsumerFormNumber = '';
         selectedConsumerServiceName = '';
       } else {
         // TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
         selectedConsumerServiceId = selectedOption.value;
-        selectedConsumerServiceType = selectedOption.id;
+       // selectedConsumerServiceType = selectedOption.id;
+        selectedConsumerFormNumber = selectedOption.id;
         selectedConsumerServiceName = selectedOption.text;
       }
       summaryServicesDropDownRequired();
@@ -613,13 +642,15 @@ const OOD = (() => {
     var thisselectedConsumerServiceId = selectedConsumerServiceId;
     var thisselectedConsumerReferenceNumber = selectedConsumerReferenceNumber;
     var thisselectedConsumerServiceType = selectedConsumerServiceType;
+    var thisselectedConsumerFormNumber = selectedConsumerFormNumber;
     var thisselectedConsumerServiceName = selectedConsumerServiceName.substr(4).split('- Ref #')[0];
     selectedConsumerServiceId = '';
-    selectedConsumerServiceType = '';
+    //selectedConsumerServiceType = '';
+    selectedConsumerFormNumber = '';
     // TODO JOE: selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
     // TODO JOE: Need to add to the two ifs below to include selectedConsumerServiceType
     // TODO JOE: Need to add two more if statements to call init() for the two Form 8 Forms
-    if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerServiceType === 'T1')
+    if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerFormNumber === '4')
       OODForm4MonthlyPlacement.init(
         {},
         thisConsumer[0],
@@ -629,7 +660,8 @@ const OOD = (() => {
         serviceDate,
         btnType,
       );
-    if (thisConsumer && btnType === 'monthlySummary' && thisselectedConsumerServiceType === 'T1')
+      
+    if (thisConsumer && btnType === 'monthlySummary' && thisselectedConsumerFormNumber === '4')
       OODForm4MonthlySummary.init(
         {},
         thisConsumer[0],
@@ -637,7 +669,7 @@ const OOD = (() => {
         $.session.UserId,
         btnType,
       );
-    if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerServiceType === 'T2')
+    if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerFormNumber === '8')
       communityBasedAssessmentForm.init(
         {},
         thisConsumer[0],
@@ -648,12 +680,22 @@ const OOD = (() => {
         serviceDate,
         btnType,
       );
-    if (thisConsumer && btnType === 'monthlySummary' && thisselectedConsumerServiceType === 'T2')
+    if (thisConsumer && btnType === 'monthlySummary' && thisselectedConsumerFormNumber === '8')
       communityBasedAssessmentSummaryForm.init(
         {},
         thisConsumer[0],
         thisselectedConsumerServiceId,
         $.session.UserId,
+        btnType,
+      );
+      if (thisConsumer && btnType === 'newEntry' && thisselectedConsumerFormNumber === '10')
+      OODFormTransportation.init(
+        {},
+        thisConsumer[0],
+        thisselectedConsumerServiceId,
+        thisselectedConsumerReferenceNumber,
+        $.session.UserId,
+        serviceDate,
         btnType,
       );
     // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
@@ -672,6 +714,65 @@ const OOD = (() => {
     }
     // OODForm4MonthlyPlacement.init();
     // forms.displayFormPopup(formId, documentEdited, consumerId, isRefresh, isTemplate);
+  }
+
+  async function generateAndTrackFormProgress(formNumber) {
+    // Hide createOODFormPopup and show the "Generating Form..." message
+    //createOODFormPopup.style.display = 'none';
+    pendingSave.show('Generating Form...');
+  
+    // Prepare data for form generation
+    let data = {
+      referenceNumber: filterValues.referenceNumber,
+      peopleId: selectedConsumerIds[0],
+      serviceCodeId: filterValues.serviceId,
+      startDate: filterValues.serviceDateStart,
+      endDate: filterValues.serviceDateEnd,
+      userId: filterValues.userId
+    };
+  
+    // Generate the form based on the formNumber
+    let sentStatus = '';
+    let success = false;
+  
+    switch (formNumber) {
+      case 4:
+        sentStatus = await OODAjax.generateForm4(data);
+        //success = sentStatus.generateForm4Result === 'Success' ? true : false;
+        break;
+  
+      case 8:
+        sentStatus = await OODAjax.generateForm8(data);
+        //success = sentStatus.generateForm8Result === 'Success' ? true : false;
+        break;
+  
+      case 10:
+        sentStatus = await OODAjax.generateForm10(data);
+        //success = sentStatus.generateForm10Result === 'Success' ? true : false;
+        success = true;
+        break;
+    }
+  
+    // Hide the pendingSavePopup
+    const pendingSavePopup = document.querySelector('.pendingSavePopup');
+    pendingSavePopup.style.display = 'none';
+  
+    // Handle popup actions based on success
+    // if (success) {
+    //   pendingSave.fulfill('All Done!');
+    //   setTimeout(() => {
+    //     const savePopup = document.querySelector('.successfulSavePopup');
+    //     DOM.ACTIONCENTER.removeChild(savePopup);
+    //     //POPUP.hide(createOODFormPopup);
+    //   }, 700);
+    // } else {
+    //   pendingSave.reject('Failed to Generate, please try again.');
+    //   setTimeout(() => {
+    //     const failPopup = document.querySelector('.failSavePopup');
+    //     DOM.ACTIONCENTER.removeChild(failPopup);
+    //     //createOODFormPopup.style.removeProperty('display');
+    //   }, 2000);
+    // }
   }
 
   // build Filter button, which filters the data displayed on the OOD Entries Table
@@ -714,6 +815,66 @@ const OOD = (() => {
         OODEmployers.init();
       },
     });
+  }
+
+  // build Each Form Button button,
+  function buildIndividualFormBtn(formText, formNumber) {
+    return button.build({
+      text: formText,
+      style: 'secondary',
+      type: 'contained',
+      id: `OODForm${formNumber}Btn`,
+      classNames: `OODForm${formNumber}Btn`,
+      callback: async () => {
+        generateAndTrackFormProgress(formNumber);
+      },
+    });
+  }
+
+  // build Create Forms button,
+  function buildCreateFormsBtn() {
+    return button.build({
+      text: 'Create OOD Forms',
+      style: 'secondary',
+      type: 'contained',
+      id: createFormsBtn,
+      classNames: 'createFormsBtn',
+      callback: () => {
+        showCreateFormsPopup();
+      },
+    });
+  }
+
+  function showCreateFormsPopup() {
+    // Popup
+    const popup = POPUP.build({
+      id: `createOODFormsPopup`,
+      hideX: true,
+      classNames: [
+        'popup',
+        'visible',
+        'popup--filter',
+        'createOODFormsPopup']
+    });
+
+    popup.setAttribute('data-popup', 'true');
+
+    // Header
+    // const header = document.createElement('h5');
+    // header.innerHTML = 'Select A Form To Generate';
+
+    const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
+    const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);
+    const form10Btn = buildIndividualFormBtn('Form 10 - Transportation', 10);
+
+    popup.appendChild(form4Btn);
+    popup.appendChild(form8Btn);
+    popup.appendChild(form10Btn);
+
+    // Append to DOM
+    bodyScrollLock.disableBodyScroll(popup);
+    overlay.show();
+    actioncenter.appendChild(popup);
   }
 
   // build the display of the current Filter Settings (next to the Filter button)
@@ -876,7 +1037,8 @@ const OOD = (() => {
 
     //TODO JOE: id: should use selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
     let data = services.map(service => ({
-      id: service.serviceType, // replace with selectedConsumerServiceType to get T1 and T2 info
+     // id: (service.serviceType === '') ? 'T10' : service.serviceType, // replace with selectedConsumerServiceType to get T1 and T2 info
+      id: service.formNumber,
       value: service.serviceId,
       text: service.serviceName + ' - Ref # ' + service.referenceNumber,
     }));
@@ -896,7 +1058,8 @@ const OOD = (() => {
     // const templates = WorkflowViewerComponent.getTemplates();
     //TODO JOE: id: should use selectedConsumerServiceType -- T1 and T2 -- need this new variable to determine whether the Form 4 (T1) or Form 8 (T2) is opened
     let data = services.map(service => ({
-      id: service.serviceType, // replace with selectedConsumerServiceType to get T1 and T2 info
+      //id: service.serviceType, // replace with selectedConsumerServiceType to get T1 and T2 info
+      id: service.formNumber,
       value: service.serviceId,
       text: service.serviceName,
     }));

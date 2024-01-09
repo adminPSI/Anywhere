@@ -7,6 +7,7 @@ using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 
 namespace Anywhere.service.Data
 {
@@ -14,6 +15,7 @@ namespace Anywhere.service.Data
     {
         private static Loger logger = new Loger();
         private string connectString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+        Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
 
         public string authorizationGetPageData(string token)
         {
@@ -615,6 +617,246 @@ namespace Anywhere.service.Data
             }
             logger.debug("Attachment done");
             return memorystream;
+        }
+
+        public string getAssessmentEntries(string token, string consumerIds, string methodology, string score, string startDateFrom, string startDateTo, string endDateFrom, string endDateTo, string priorAuthApplFrom, string priorAuthApplTo, string priorAuthRecFrom, string priorAuthRecTo, string priorAuthAmtFrom, string priorAuthAmtTo, DistributedTransaction transaction)
+        {
+            try
+            {
+                priorAuthAmtTo = priorAuthAmtTo.Length > 7 ? priorAuthAmtTo.Remove(7) : priorAuthAmtTo;
+                priorAuthAmtFrom = priorAuthAmtFrom.Length > 7 ? priorAuthAmtFrom.Remove(7) : priorAuthAmtFrom;
+                logger.debug("getAssessmentEntries");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[13];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerIds", DbType.String, consumerIds);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@methodology", DbType.String, methodology);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@score", DbType.String, score);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDateFrom", DbType.String, startDateFrom);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDateTo", DbType.String, startDateTo);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDateFrom", DbType.String, endDateFrom);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDateTo", DbType.String, endDateTo);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthApplFrom", DbType.String, priorAuthApplFrom);
+                args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthApplTo", DbType.String, priorAuthApplTo);
+                args[9] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthRecFrom", DbType.String, priorAuthRecFrom);
+                args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthRecTo", DbType.String, priorAuthRecTo);
+                args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthAmtFrom", DbType.String, priorAuthAmtFrom);
+                args[12] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@priorAuthAmtTo", DbType.String, priorAuthAmtTo);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_GetAssessmentEntries(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_GetAssessmentEntries(" + consumerIds + ")");
+                throw ex;
+            }
+        }
+
+        public string getScore(DistributedTransaction transaction, string methodologyID)
+        {
+            List<string> list = new List<string>();
+            list.Add(methodologyID);
+            try
+            {
+                logger.debug("getScore");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getScore(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getScore()");
+                throw ex;
+            }
+
+        }
+
+        public string getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getVendorInfo");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[9];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@vendor", DbType.String, vendor);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@DDNumber", DbType.String, DDNumber);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@localNumber", DbType.String, localNumber);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@goodStanding", DbType.String, goodStanding);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@homeServices", DbType.String, homeServices);
+                args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@takingNewReferrals", DbType.String, takingNewReferrals);
+                args[7] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@fundingSource", DbType.String, fundingSource);
+                args[8] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@serviceCode", DbType.String, serviceCode);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getVendorInfo(?,?,?,?,?,?,?,?,?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getVendorInfo()");
+                throw ex;
+            }
+
+        }
+
+        public string getVendor(DistributedTransaction transaction, string token)
+        {
+            try
+            {
+                logger.debug("getVendor");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getVendor(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getVendor()");
+                throw ex;
+            }
+
+        }
+
+        public string getFundingSource(DistributedTransaction transaction, string token)
+        {
+            try
+            {
+                logger.debug("getFundingSource");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getFundingSource(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getFundingSource()");
+                throw ex;
+            }
+        }
+
+        public string getServiceCode(DistributedTransaction transaction, string token)
+        {
+            try
+            {
+                logger.debug("getServiceCode");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@token", DbType.String, token);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getServiceCode(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getServiceCode()");
+                throw ex;
+            }
+        }
+
+        public string getVendorEntriesById(string token, string vendorID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getVendorEntriesById");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@vendorID", DbType.String, vendorID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getVendorEntriesById(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getVendorEntriesById()");
+                throw ex;
+            }
+        }
+
+        public string getVenderServicesEntries(string token, string vendorID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getVenderServicesEntries");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@vendorID", DbType.String, vendorID);
+                 
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getVenderServicesEntries(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getVenderServicesEntries()");
+                throw ex;
+            }
+        }
+
+        public string getVenderUCREntries(string token, string vendorID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getVenderUCREntries");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@vendorID", DbType.String, vendorID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getVenderUCREntries(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getVenderUCREntries()");
+                throw ex;
+            }
+        }
+
+        public string getProviderTypeEntries(string token, string vendorID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getProviderTypeEntries");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@vendorID", DbType.String, vendorID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getProviderTypeEntries(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getProviderTypeEntries()");
+                throw ex;
+            }
+        }
+
+        public string getVenderCertificationEntries(string token, string vendorID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getVenderCertificationEntries");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@vendorID", DbType.String, vendorID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getVenderCertificationEntries(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getVenderCertificationEntries()");
+                throw ex;
+            }
+        }
+
+        public string getVenderLocationReviewEntries(string token, string vendorID, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getVenderLocationReviewEntries");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@vendorID", DbType.String, vendorID);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_Authorization_getVenderLocationReviewEntries(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_Authorization_getVenderLocationReviewEntries()");
+                throw ex;
+            }
         }
 
     }

@@ -573,10 +573,28 @@
         }
     }
 
+    .dateWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        margin: 0;
+
+        > div {
+            flex-grow: 1;
+            margin: 0 5px 20px;
+            width: 45%;
+        }
+    }
 
     #singleEntryAdminReviewTable {
 
         .table__row {
+            &[data-plan-active='true'] {
+                > div:nth-child(5) {
+                    color: red;
+                }
+            }
+
             > div {
                 margin-top: 10px;
             }
@@ -627,7 +645,7 @@
                 }
 
                 > div:nth-child(4) {
-                    width: 13%; 
+                    width: 13%;
                 }
 
                 > div:nth-child(7) {
@@ -745,7 +763,7 @@
         .width20Per, .width30Per, .width32Per {
             margin-left: 1.5%;
             width: 97%;
-        } 
+        }
 
 
         @media screen and (min-width: 560px) {
@@ -785,6 +803,19 @@
     .employmentBtnWrap {
         display: flex;
         justify-content: space-between;
+    }
+
+    .dateWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        margin: 0;
+
+        > div {
+            flex-grow: 1;
+            margin: 0 5px 20px;
+            width: 45%;
+        }
     }
 
 
@@ -859,7 +890,7 @@
 
             > div:nth-child(7) {
                 display: none;
-                width: 17%; 
+                width: 17%;
             }
 
             > div:nth-child(8) {
@@ -933,6 +964,72 @@
 
             > div:nth-child(5) {
                 width: 52px;
+            }
+        }
+    }
+}
+
+[data-active-module="CFEditAccount"] {
+    .borderLine {
+        border-bottom: 2px solid $secondary;
+        display: flex;
+        flex-flow: row wrap;
+        padding: 0 0 5px 0;
+        position: relative;
+        margin: 10px 0;
+        max-width: 100%;
+    }
+
+    .editAccountBtnWrap {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .width50Per {
+        width: 100%;
+
+        @media screen and (min-width: 560px) {
+            width: 50%;
+        }
+    }
+
+    .width33Per {
+        width: 100%;
+
+        @media screen and (min-width: 560px) {
+            width: 33%;
+        }
+    }
+
+    .editAccountDTWrap {
+        display: flow;
+
+        .width10Per, .width16Per, .width23Per, .width50Per, .width32Per {
+            width: 97%;
+        }
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .width10Per {
+                width: 10%;
+            }
+
+            .width23Per {
+                width: 23%;
+            }
+
+            .width16Per {
+                width: 16%;
+            }
+
+            .width32Per {
+                width: 32%;
+            }
+
+            .width50Per {
+                width: 48.5%;
             }
         }
     }

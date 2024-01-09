@@ -14,9 +14,6 @@ const Employment = (() => {
     //filter
     let filterValues;
 
-    //service filter options
-    let selectedConsumerIds;
-
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
         var targetAction = target.dataset.actionNav;
@@ -46,10 +43,10 @@ const Employment = (() => {
         landingPage = document.createElement('div');
         var LineBr = document.createElement('br');
 
-        selectedConsumersId = selectedConsumers[0].id;
+        selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
         $.session.consumerId = selectedConsumersId;
         const name = (
-            await ConsumerFinancesAjax.getConsumerNameByID({ 
+            await ConsumerFinancesAjax.getConsumerNameByID({
                 token: $.session.Token,
                 consumerId: selectedConsumersId,
             })
@@ -88,15 +85,13 @@ const Employment = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            headline: 'Consumer: ' + selectedConsumersName,
+            headline: selectedConsumersName, 
             columnHeadings: ['Employer', 'Position', 'Position Start Date', 'Position End Date', 'Job Standing'],
             endIcon: false, //ToDo   //$.session.OODView == true ? true : false, 
         };
 
-        selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
-
         let EmploymentsEntries = await EmploymentAjax.getEmploymentEntriesAsync(
-            selectedConsumerIds.join(", "),
+            selectedConsumersId,
             filterValues.employer,
             filterValues.position,
             filterValues.positionStartDate,
@@ -139,7 +134,7 @@ const Employment = (() => {
             style: 'secondary',
             type: 'contained',
         });
-    } 
+    }
 
     // build display of Account and button
     function buildHeaderButton(consumer) {

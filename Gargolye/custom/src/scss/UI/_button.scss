@@ -1,0 +1,107 @@
+//===========================================
+// BUTTON
+//-------------------------------------------
+[data-ui] {
+  .button-wrap {
+    display: flex;
+    justify-content: space-between;
+
+    .button {
+      width: calc(50% - 5px);
+    }
+  }
+
+  .button {
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    font-weight: $_bold;
+    min-height: 36px;
+    padding: 0 10px;
+    text-transform: uppercase;
+
+    &--icon {
+      display: flex;
+      align-items: center;
+      column-gap: 2px;
+      padding: 0 10px 0 8px;
+
+      * {
+        pointer-events: none;
+      }
+    }
+
+    &--icon-only {
+      box-shadow: $shadow-m1;
+      min-height: auto;
+      min-width: auto;
+    }
+
+    &--hidden {
+      display: none !important;
+    }
+
+    //states
+    &:disabled {
+      background: $gray;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    // styles
+    &.contained {
+      color: $white;
+
+      &.primary {
+        background: $primary;
+      }
+      &.secondary {
+        background: $secondary;
+      }
+      &.danger {
+        background: $error;
+      }
+      &.warning {
+        color: $black;
+        background: $warning;
+      }
+    }
+    &.outlined {
+      background: none;
+      border-width: 2px;
+      border-style: solid;
+      color: $black;
+
+      &.primary {
+        border-color: $primary;
+        color: $primary;
+
+        .svgIcon {
+          color: $primary;
+        }
+      }
+      &.secondary {
+        border-color: $secondary;
+
+        .svgIcon {
+          color: $secondary;
+        }
+      }
+      &.danger {
+        border-color: $error;
+
+        .svgIcon {
+          color: $error;
+        }
+      }
+      &.warning {
+        border-color: $warning;
+      }
+    }
+    &.text {
+      background: none;
+      border: none;
+      color: $black;
+    }
+  }
+}

@@ -52,7 +52,7 @@ const ConsumerFinances = (() => {
         landingPage = document.createElement('div');
         var LineBr = document.createElement('br');
 
-        selectedConsumersId = selectedConsumers[0].id;
+        selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
         $.session.consumerId = selectedConsumersId;
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
@@ -85,7 +85,7 @@ const ConsumerFinances = (() => {
         const tableOptions = {
             plain: false,
             tableId: 'singleEntryAdminReviewTable',
-            headline: 'Consumer: ' + selectedConsumersName,
+            headline: selectedConsumersName,
             columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By'],
             endIcon: true,
         };
@@ -101,25 +101,26 @@ const ConsumerFinances = (() => {
             filterValues.minamount,
             filterValues.maxamount,
             filterValues.checkNo,
-            filterValues.Balance, 
+            filterValues.Balance,
             filterValues.enteredBy,
             filterValues.isattachment,
+            filterValues.transectionType,
         );
 
         ConsumerFinancesEntries.getAccountTransectionEntriesResult.forEach(function (entry) {
             let newDate = new Date(entry.activityDate);
             let theMonth = newDate.getMonth() + 1;
             let formatActivityDate = UTIL.leadingZero(theMonth) + '/' + UTIL.leadingZero(newDate.getDate()) + '/' + newDate.getFullYear();
-            entry.activityDate = formatActivityDate; 
+            entry.activityDate = formatActivityDate;
         });
-       
+
         let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
             values: [entry.activityDate, entry.account, entry.payee, entry.category, '$' + entry.amount, entry.checkno, '$' + entry.balance, entry.enteredby],
-            attributes: [{ key: 'registerId', value: entry.ID }],
+            attributes: [{ key: 'registerId', value: entry.ID }, { key: 'data-plan-active', value: entry.isExpance }],
             onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.registerId.value)
             },
-            endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`, 
+            endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`,
         }));
         const oTable = table.build(tableOptions);
         table.populate(oTable, tableData);
@@ -215,6 +216,7 @@ const ConsumerFinances = (() => {
             Balance: '',
             enteredBy: '%',
             isattachment: '%',
+            transectionType: '%',
         }
 
         return button.build({
@@ -233,7 +235,7 @@ const ConsumerFinances = (() => {
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
-            text: account.accountName
+            text: account.accountName + ' - $' + (account.totalBalance == '' ? '0.00' : account.totalBalance)
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
         dropdown.populate("accountDropdown", data, filterValues.accountName);
@@ -258,11 +260,12 @@ const ConsumerFinances = (() => {
 			    <span>To date:</span> ${endDate}&nbsp;&nbsp;
                 <span>Min Amount:</span>$ ${filterValues.minamount}&nbsp;&nbsp;
                 <span>Max Amount:</span>$ ${filterValues.maxamount}&nbsp;&nbsp;
+                <span>Transaction Type:</span> ${(filterValues.transectionType == '%') ? 'ALL' : filterValues.transectionType == 'true' ? 'Expense' : 'Deposit'}&nbsp;&nbsp;   
                 <span>Account:</span> ${(filterValues.accountName == '%') ? 'ALL' : filterValues.accountName}&nbsp;&nbsp;
 			    <span>Payee:</span> ${(filterValues.payee == '%') ? 'ALL' : filterValues.payee}&nbsp;&nbsp;
 			    <span>Category:</span> ${(filterValues.category == '%') ? 'ALL' : filterValues.category} &nbsp;&nbsp;
                 <span>Last Updated By:</span> ${(filterValues.enteredBy == '%') ? 'ALL' : filterValues.userName} &nbsp;
-                <span>Has Attachment:</span>${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment} 
+                <span>Has Attachment:</span> ${(filterValues.isattachment == '%') ? 'ALL' : filterValues.isattachment}                
             </p>
 		  </div>`;
 
@@ -277,6 +280,7 @@ const ConsumerFinances = (() => {
             hideX: true,
         });
 
+        // dropdowns & inputs
         fromDateInput = input.build({
             id: 'fromDateInput',
             type: 'date',
@@ -310,7 +314,11 @@ const ConsumerFinances = (() => {
             value: '$' + ((filterValues.maxamount) ? filterValues.maxamount : ''),
         });
 
-        // dropdowns & inputs
+        transectionTypeFilterDropdown = dropdown.build({
+            label: "Transaction Type",
+            dropdownId: "transectionTypeFilterDropdown",
+        });
+
         accountFilterDropdown = dropdown.build({
             label: "Account",
             dropdownId: "accountFilterDropdown",
@@ -352,13 +360,6 @@ const ConsumerFinances = (() => {
             type: 'outlined',
             callback: () => filterPopupCancelBtn()
         });
-        fromDateInput.style.width = '170px';
-        toDateInput.style.width = '170px';
-        minAmountInput.style.width = '170px';
-        maxAmountInput.style.width = '170px';
-        toDateInput.style.marginLeft = '12px';
-        maxAmountInput.style.marginLeft = '12px';
-
 
         var btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
@@ -366,18 +367,19 @@ const ConsumerFinances = (() => {
         btnWrap.appendChild(CANCEL_BTN);
 
         var dateWrap = document.createElement('div');
-        dateWrap.classList.add('dropdownWrap');
+        dateWrap.classList.add('dateWrap');
         dateWrap.appendChild(fromDateInput);
         dateWrap.appendChild(toDateInput);
 
         var amountWrap = document.createElement('div');
-        amountWrap.classList.add('dropdownWrap');
+        amountWrap.classList.add('dateWrap');
         amountWrap.appendChild(minAmountInput);
         amountWrap.appendChild(maxAmountInput);
 
         // build popup
         filterPopup.appendChild(dateWrap);
         filterPopup.appendChild(amountWrap);
+        filterPopup.appendChild(transectionTypeFilterDropdown);
         filterPopup.appendChild(accountFilterDropdown);
 
         filterPopup.appendChild(payeeDropdown);
@@ -403,6 +405,7 @@ const ConsumerFinances = (() => {
         var tmppayee;
         var tmpcategory;
         var tmpisattachment;
+        var tmptransectionType;
 
         fromDateInput.addEventListener('change', event => {
             tmpactivityStartDate = event.target.value;
@@ -441,10 +444,13 @@ const ConsumerFinances = (() => {
             tmpmaxAmount = maxAmount.replace('$', '');
         });
 
+        transectionTypeFilterDropdown.addEventListener('change', event => {
+            tmptransectionType = event.target.value;
+        });
         accountFilterDropdown.addEventListener('change', event => {
             tmpaccountName = event.target.value;
         });
-        lastUpdateDropdown.addEventListener('change', event => { 
+        lastUpdateDropdown.addEventListener('change', event => {
             tmpenteredBy = event.target.options[event.target.selectedIndex].innerHTML == 'ALL' ? '%' : event.target.options[event.target.selectedIndex].id; //event.target.options[event.target.selectedIndex].innerHTML;
             filterValues.userName = event.target.options[event.target.selectedIndex].innerHTML;
         });
@@ -459,7 +465,7 @@ const ConsumerFinances = (() => {
         });
 
         APPLY_BTN.addEventListener('click', () => {
-            if (!APPLY_BTN.classList.contains('disabled')) { 
+            if (!APPLY_BTN.classList.contains('disabled')) {
                 updateFilterData({
                     tmpactivityStartDate,
                     tmpactivityEndDate,
@@ -469,7 +475,8 @@ const ConsumerFinances = (() => {
                     tmpenteredBy,
                     tmppayee,
                     tmpcategory,
-                    tmpisattachment
+                    tmpisattachment,
+                    tmptransectionType
                 });
                 POPUP.hide(filterPopup);
                 loadConsumerFinanceLanding();
@@ -478,7 +485,7 @@ const ConsumerFinances = (() => {
 
     }
 
-    function updateFilterData(data) { 
+    function updateFilterData(data) {
         if (data.tmpactivityStartDate) filterValues.activityStartDate = data.tmpactivityStartDate;
         if (data.tmpactivityEndDate) filterValues.activityEndDate = data.tmpactivityEndDate;
         if (data.tmpminAmount) filterValues.minamount = data.tmpminAmount;
@@ -488,13 +495,14 @@ const ConsumerFinances = (() => {
         if (data.tmppayee) filterValues.payee = data.tmppayee;
         if (data.tmpcategory) filterValues.category = data.tmpcategory;
         if (data.tmpisattachment) filterValues.isattachment = data.tmpisattachment;
+        if (data.tmptransectionType) filterValues.transectionType = data.tmptransectionType;
     }
 
     function checkValidationOfFilter() {
         var fromDate = fromDateInput.querySelector('#fromDateInput');
         var toDate = toDateInput.querySelector('#toDateInput');
 
-        if (fromDate.value > toDate.value ) {
+        if (fromDate.value > toDate.value) {
             toDateInput.classList.add('errorPopup');
         } else {
             toDateInput.classList.remove('errorPopup');
@@ -526,7 +534,7 @@ const ConsumerFinances = (() => {
 
         const {
             getPayeesResult: Payees,
-        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);  
+        } = await ConsumerFinancesAjax.getPayeesAsync($.session.consumerId);
         let payeeData = Payees.map((payees) => ({
             id: payees.CategoryID,
             value: payees.Description,
@@ -551,7 +559,7 @@ const ConsumerFinances = (() => {
         } = await ConsumerFinancesAjax.getActiveEmployeesAsync();
         let data = employees.map((employee) => ({
             id: employee.userId,
-            value: employee.userId, 
+            value: employee.userId,
             text: employee.userName
         }));
         data.unshift({ id: null, value: '%', text: 'ALL' });
@@ -563,6 +571,13 @@ const ConsumerFinances = (() => {
         ]);
         condfidentialDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
         dropdown.populate("isAttachedDropdown", condfidentialDropdownData, filterValues.isattachment);
+
+        const TransectionTypeDropdownData = ([
+            { text: 'Deposit', value: 'false' },
+            { text: 'Expense', value: 'true' },
+        ]);
+        TransectionTypeDropdownData.unshift({ id: null, value: '%', text: 'ALL' });
+        dropdown.populate("transectionTypeFilterDropdown", TransectionTypeDropdownData, filterValues.transectionType);
     }
 
     function filterPopupCancelBtn() {

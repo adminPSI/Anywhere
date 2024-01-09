@@ -28,18 +28,23 @@ using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
 using Bytescout.PDF;
+using OODForms;
+using PDFGenerator;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Management.Automation.Language;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAssessmentWorker;
 using static Anywhere.service.Data.AnywhereWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
+using static Anywhere.service.Data.CaseNotesWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.Employment.EmploymentWorker;
+using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
 
@@ -50,6 +55,7 @@ namespace Anywhere
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(typeof(AnywhereService));
         private static Loger logger2 = new Loger();
+        JavaScriptSerializer js = new JavaScriptSerializer();
         DataGetter dg = new DataGetter();
         OODDataGetter Odg = new OODDataGetter();
         IntelliviewDataGetter idg = new IntelliviewDataGetter();
@@ -103,6 +109,7 @@ namespace Anywhere
         AssessmentDataGetter assDG = new AssessmentDataGetter();
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
+        OODFormWorker OODfw = new OODFormWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -495,6 +502,7 @@ namespace Anywhere
         }
 
         public AnywhereWorker.PermissionObject[] getUserPermissions(string token)
+
         {
             return anywhereWorker.getUserPermissions(token);
         }
@@ -1917,9 +1925,9 @@ namespace Anywhere
             return wfw.isWorkflowAutoCreated(token, workflowName);
         }
 
-        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions)
+        public string insertWorkflow(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds)
         {
-            return wfw.insertWorkflow(token, templateId, peopleId, referenceId, wantedFormDescriptions);
+            return wfw.insertWorkflow(token, templateId, peopleId, referenceId, wantedFormAttachmentIds);
         }
         public string insertWorkflowStep(string token, WorkflowWorker.WorkflowStep step)
         {
@@ -1969,12 +1977,12 @@ namespace Anywhere
             return wfw.processWorkflowStepEvent(token, thisEvent);
         }
 
-        //public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormDescriptions, string priorConsumerPlanId)
-        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId)
+        public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId)
+        //public string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId)
 
         {
-            //return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormDescriptions, priorConsumerPlanId);
-            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
+            return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId, wantedFormAttachmentIds, priorConsumerPlanId);
+           // return wfw.preInsertWorkflowFromTemplate(token, templateId, peopleId, referenceId);
         }
         #endregion
 
@@ -2062,6 +2070,11 @@ namespace Anywhere
         public CaseNotesWorker.AttachmentList[] getCaseNoteAttachmentsList(string token, string caseNoteId)
         {
             return caseNotesWorker.getCaseNoteAttachmentsList(token, caseNoteId);
+        }
+
+        public CaseNotesWorker.AttachmentListForGroup[] getCaseNoteAttachmentsListForGroupNote(string caseNoteId)
+        {
+            return caseNotesWorker.getCaseNoteAttachmentsListForGroupNote(caseNoteId);
         }
 
         public string setTestValue(string val)
@@ -2569,7 +2582,7 @@ namespace Anywhere
             return psw.GetSalesForceId(consumerId, peopleId);
         }
 
-        public string uploadPlanToDODD(string consumerId, string planId)
+        public string[] uploadPlanToDODD(string consumerId, string planId)
         {
             return psw.uploadPlanToDODD(consumerId, planId);
         }
@@ -2577,18 +2590,18 @@ namespace Anywhere
         public PlanSignatureWorker.SigId[] insertPlanTeamMember(string token, string assessmentId, string teamMember, string name, string lastName, string participated, string signature, string contactId, string planYearStart, string planYearEnd, string dissentAreaDisagree, string dissentHowToAddress,
                string csChangeMind, string csChangeMindSSAPeopleId, string csContact, string csContactProviderVendorId, string csContactInput, string csRightsReviewed, string csAgreeToPlan, string csFCOPExplained, string csDueProcess,
                string csResidentialOptions, string csSupportsHealthNeeds, string csTechnology, string buildingNumber, string dateOfBirth, string peopleId, string useExisting, string relationshipImport, string consumerId, string createRelationship, string salesforceId,
-               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId, string relationship)
+               bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string signatureType, string vendorId, string relationship, string email, string parentOfMinor)
         {
             return psw.insertPlanTeamMember(token, assessmentId, teamMember, name, lastName, participated, signature, contactId, planYearStart, planYearEnd, dissentAreaDisagree, dissentHowToAddress, csChangeMind, csChangeMindSSAPeopleId, csContact,
                                 csContactProviderVendorId, csContactInput, csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess,
                                 csResidentialOptions, csSupportsHealthNeeds, csTechnology, buildingNumber, dateOfBirth, peopleId, useExisting, relationshipImport, consumerId, createRelationship, salesforceId,
-                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType, vendorId, relationship);
+                                hasWetSignature, description, attachmentType, attachment, section, questionId, signatureType, vendorId, relationship, email, parentOfMinor);
         }
-        public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
-                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear)
+        public string updatePlanTeamMember(string token, string signatureId, string teamMember, string name, string lastName, string participated, string dissentAreaDisagree, string dissentHowToAddress, string signature, string contactId, string peopleId, string buildingNumber, string dateOfBirth, string salesForceId, string consumerId,
+                                            bool hasWetSignature, string description, string attachmentType, string attachment, string section, string questionId, string assessmentId, string signatureType, string dateSigned, string vendorId, string clear, string email)
         {
-            return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, buildingNumber, dateOfBirth, salesForceId, consumerId,
-                                         hasWetSignature, description, attachmentType, attachment, section, questionId, assessmentId, signatureType, dateSigned, vendorId, clear);
+            return psw.updateTeamMember(token, signatureId, teamMember, name, lastName, participated, dissentAreaDisagree, dissentHowToAddress, signature, contactId, peopleId, buildingNumber, dateOfBirth, salesForceId, consumerId,
+                                         hasWetSignature, description, attachmentType, attachment, section, questionId, assessmentId, signatureType, dateSigned, vendorId, clear, email);
         }
         public string updatePlanSignatureOrder(long assessmentId, long signatureId, int newPos)
         {
@@ -2780,6 +2793,98 @@ namespace Anywhere
 
         //OOD Module
 
+        public string generateForm4(System.IO.Stream testInput)
+        {
+            //(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+
+            if (serviceCodeId == "%25")
+            {
+                serviceCodeId = "%";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "%";
+            }
+
+            return OODfw.generateForm4(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
+        }
+
+        public string generateForm8(System.IO.Stream testInput)
+        {
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+
+            if ( serviceCodeId == "%25")
+            {
+                serviceCodeId = "All";
+            }
+
+            if (referenceNumber == "%25")
+            {
+                referenceNumber = "All";
+            }
+
+            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
+        }
+
+        public string generateForm10(System.IO.Stream testInput)
+        {
+
+            string token;
+            string referenceNumber;
+            string peopleId;
+            string serviceCodeId;
+            string startDate;
+            string endDate;
+            string userId;
+
+            StreamReader reader = new StreamReader(testInput);
+            string fullInput = reader.ReadToEnd();
+            token = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[0], "=")[1];
+            userId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[1], "=")[1];
+            referenceNumber = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[2], "=")[1];
+            peopleId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[3], "=")[1];
+            serviceCodeId = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[4], "=")[1];
+            startDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[5], "=")[1];
+            endDate = System.Text.RegularExpressions.Regex.Split(System.Text.RegularExpressions.Regex.Split(fullInput, "&")[6], "=")[1];
+
+            return OODfw.generateForm10(token, referenceNumber, 22, peopleId, startDate, endDate, userId);
+
+        }
+
         public Anywhere.service.Data.OODWorker.OODEntry[] getOODEntries(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber)
         {
             return Ow.getOODEntries(token, consumerIds, serviceStartDate, serviceEndDate, userId, serviceCode, referenceNumber);
@@ -2825,9 +2930,9 @@ namespace Anywhere
             return Ow.getActiveServiceCodes(token, serviceCodeType);
         }
 
-        public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string serviceType)
+        public OODWorker.ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string formNumber)
         {
-            return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate, serviceType);
+            return Ow.getConsumerReferenceNumbers(token, consumerIds, startDate, endDate, formNumber);
         }
 
         public OODWorker.ServiceCode[] getConsumerServiceCodes(string consumerId, string serviceDate, string token)
@@ -2931,6 +3036,25 @@ namespace Anywhere
             return Odg.insertForm8MonthlySummary(token, consumerId, emReviewDate, emReferenceNumber, emNextScheduledReview, emSummaryIndivSelfAssessment, emSummaryIndivEmployerAssessment, emSummaryIndivProviderAssessment, emSupportandTransition, emReviewVTS, userId, serviceId);
         }
 
+        public OODWorker.Form10TransportationData[] getForm10TransportationData(string token, string OODTransportationId)
+        {
+            return Ow.getForm10TransportationData(token, OODTransportationId);
+        }
+
+        public string updateForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation, string userId)
+        {
+            return Odg.updateForm10TransportationData(token, consumerId, OODTransportationId, serviceDate, startTime, endTime, numberInVehicle, startLocation, endLocation, userId);
+        }
+
+        public string insertForm10TransportationData(string token, string consumerId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation, string userId, string referenceNumber)
+        {
+            return Odg.insertForm10TransportationData(token, consumerId, serviceDate, startTime, endTime, numberInVehicle, startLocation, endLocation, userId, referenceNumber);
+        }
+
+        public string deleteOODForm10TransportationEntry(string token, string OODTransportationId)
+        {
+            return Ow.deleteOODForm10TransportationEntry(token, OODTransportationId);
+        }
 
         //Case note reporting
         public CaseNoteReportBuilderWorker.ReportScheduleId[] generateCNDetailReport(string token, string userId, string billerId, string consumerId, string consumerName, string serviceStartDate, string serviceEndDate,
@@ -2956,7 +3080,7 @@ namespace Anywhere
             return dpra.getPlanAndWorkFlowAttachments(token, assessmentId);
         }
 
-        public string sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
+        public string[] sendSelectedAttachmentsToDODD(string token, string[] planAttachmentIds, string[] wfAttachmentIds, string[] sigAttachmentIds, string planId, string consumerId)
         {
             return dpra.sendSelectedAttachmentsToDODD(token, planAttachmentIds, wfAttachmentIds, sigAttachmentIds, planId, consumerId);
         }
@@ -3242,9 +3366,9 @@ namespace Anywhere
             return dg.resetPassword(userId, hash, newPassword, changingToHashPassword);
         }
 
-        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment)
+        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType)
         {
-            return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment);
+            return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType);
         }
 
         public ActiveAccount[] getActiveAccount(string token, string consumerId)
@@ -3468,7 +3592,99 @@ namespace Anywhere
         {
             return emp.deletePostionTask(token, jobTaskID, PositionID);
         }
+        public AuthorizationWorker.AssessmentEntries[] getAssessmentEntries(string token, string consumerIds, string methodology, string score, string startDateFrom, string startDateTo, string endDateFrom, string endDateTo, string priorAuthApplFrom, string priorAuthApplTo, string priorAuthRecFrom, string priorAuthRecTo, string priorAuthAmtFrom, string priorAuthAmtTo)
+        {
+            return authWorker.getAssessmentEntries(token, consumerIds, methodology, score, startDateFrom, startDateTo, endDateFrom, endDateTo, priorAuthApplFrom, priorAuthApplTo, priorAuthRecFrom, priorAuthRecTo, priorAuthAmtFrom, priorAuthAmtTo);
+        }
 
+        public AuthorizationWorker.Score[] getScore(string token, string methodologyID)
+        {
+            return authWorker.getScore(token, methodologyID);
+        }
+        public string verifyDefaultEmailClient()
+        {
+            return cdw.verifyDefaultEmailClient();
+        }
+        public AuthorizationWorker.VendorInfo[] getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode)
+        {
+            return authWorker.getVendorInfo(token, vendor, DDNumber, localNumber, goodStanding, homeServices, takingNewReferrals, fundingSource, serviceCode);
+        }
+        public AuthorizationWorker.DropdownValue[] getVendor(string token)
+        {
+            return authWorker.getVendor(token);
+        }
+        public AuthorizationWorker.DropdownValue[] getFundingSource(string token)
+        {
+            return authWorker.getFundingSource(token);
+        }
+        public AuthorizationWorker.DropdownValue[] getServiceCode(string token)
+        {
+            return authWorker.getServiceCode(token);
+        }
+        public AuthorizationWorker.VendorGeneralEntry[] getVendorEntriesById(string token, string vendorID)
+        {
+            return authWorker.getVendorEntriesById(token, vendorID);
+        }
 
+        public AuthorizationWorker.vendorService[] getVenderServicesEntries(string token, string vendorID)
+        {
+            return authWorker.getVenderServicesEntries(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorUCR[] getVenderUCREntries(string token, string vendorID)
+        {
+            return authWorker.getVenderUCREntries(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorProviderType[] getProviderTypeEntries(string token, string vendorID)
+        {
+            return authWorker.getProviderTypeEntries(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorCertifiction[] getVenderCertificationEntries(string token, string vendorID)
+        {
+            return authWorker.getVenderCertificationEntries(token, vendorID);
+        }
+
+        public AuthorizationWorker.vendorLocationReviews[] getVenderLocationReviewEntries(string token, string vendorID)
+        {
+            return authWorker.getVenderLocationReviewEntries(token, vendorID);
+        }
+
+        public ConsumerFinancesWorker.EditAccountInfo[] getEditAccountInfoById(string token, string accountId)
+        {
+            return cf.getEditAccountInfoById(token, accountId);
+        }
+
+        public ConsumerFinancesWorker.AccountClass[] getAccountClass(string token)
+        {
+            return cf.getAccountClass(token);
+        }
+
+        public ConsumerFinancesWorker.EditAccountInfo insertEditRegisterAccount(string token, string selectedConsumersId, string accountId, string name, string number, string type, string status, string classofAccount, string dateOpened, string dateClosed, string openingBalance, string description, string userId)
+        {
+            return cf.insertEditRegisterAccount(token, selectedConsumersId, accountId, name, number, type, status, classofAccount, dateOpened, dateClosed, openingBalance, description, userId);
+        }
+
+        public ActiveAccount[] getEditAccount(string token, string consumerId)
+        {
+            return cf.getEditAccount(token, consumerId);
+        }
+
+        public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
+        {
+            return cf.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName);
+        }
+
+        public ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token)
+        {
+            if (token == null)
+            {
+                logger.Error("token was null :" + token);
+                return null;
+            }
+
+            return cf.getCFWidgetConsumers(token);
+        }
     }
 }

@@ -336,12 +336,12 @@ const consentAndSignAjax = (() => {
     //* NO NEED TO REMOVE UNSAVABLE NOTE TEXT, THIS IS DONE IN BACKEND
     //*--------------------------------------------------------------------
     // token, assessmentId
-    // teamMember, name, lastName, relationship, participated,
+    // teamMember, name, lastName, relationship, participated, parentOfMinor
     // signature, dateSigned, dissentAreaDisagree, dissentHowToAddress, dissentDate
     // contactId, peopleId, buildingNumber, dateOfBirth, planYearStart, planYearEnd
     // csChangeMind, csChangeMindSSAPeopleId, csContact, csContactProviderVendorId, csContactInput
     // csRightsReviewed, csAgreeToPlan, csFCOPExplained, csDueProcess, csResidentialOptions, csSupportsHealthNeeds, csTechnology,
-    // useExisting, relationshipImport, consumerId, createRelationship, isVeendor(bool)
+    // useExisting, relationshipImport, consumerId, createRelationship, isVeendor(bool), email, parentOfMinor
     try {
       const data = await $.ajax({
         type: 'POST',

@@ -34,6 +34,8 @@ namespace Anywhere.service.Data
             public string employerName { get; set; }
             [DataMember(Order = 8)]
             public string serviceType { get; set; }
+            [DataMember(Order = 9)]
+            public string formNumber { get; set; }
 
         }
 
@@ -83,6 +85,8 @@ namespace Anywhere.service.Data
             public string referenceNumber { get; set; }
             [DataMember(Order = 4)]
             public string serviceType { get; set; }
+            [DataMember(Order = 5)]
+            public string formNumber { get; set; }
         }
 
         [DataContract]
@@ -259,6 +263,34 @@ namespace Anywhere.service.Data
             public string emReviewVTS { get; set; }
 
 
+        }
+
+
+        [DataContract]
+        public class Form10TransportationData
+        {
+            [DataMember(Order = 0)]
+            public string consumerId { get; set; }
+            [DataMember(Order = 1)]
+            public string OODTransportationId { get; set; }
+            [DataMember(Order = 2)]
+            public string serviceDate { get; set; }
+            [DataMember(Order = 3)]
+            public string startTime { get; set; }
+            [DataMember(Order = 4)]
+            public string endTime { get; set; }
+            [DataMember(Order = 5)]
+            public string contactType { get; set; }
+            [DataMember(Order = 6)]
+            public string startLocation { get; set; }
+            [DataMember(Order = 7)]
+            public string endLocation { get; set; }
+            [DataMember(Order = 8)]
+            public string numberInVehicle { get; set; }
+            [DataMember(Order = 9)]
+            public string userId { get; set; }
+            [DataMember(Order = 10)]
+            public string serviceId { get; set; }
         }
 
 
@@ -457,7 +489,7 @@ namespace Anywhere.service.Data
             }
         }
 
-        public ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string serviceType)
+        public ReferenceNumber[] getConsumerReferenceNumbers(string token, string consumerIds, string startDate, string endDate, string formNumber)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -465,7 +497,7 @@ namespace Anywhere.service.Data
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    ReferenceNumber[] referenceNumbers = js.Deserialize<ReferenceNumber[]>(Odg.getConsumerReferenceNumbers(consumerIds, startDate, endDate, serviceType, transaction));
+                    ReferenceNumber[] referenceNumbers = js.Deserialize<ReferenceNumber[]>(Odg.getConsumerReferenceNumbers(consumerIds, startDate, endDate, formNumber, transaction));
                     return referenceNumbers;
                 }
                 catch (Exception ex)
@@ -674,6 +706,29 @@ namespace Anywhere.service.Data
             return editDataObj;
         }
 
+        // Form 10 Transportation
+        public Form10TransportationData[] getForm10TransportationData(string token, string OODTransportationId)
+        {
+            string editDataString = Odg.getForm10TransportationData(token, OODTransportationId);
+            Form10TransportationData[] editDataObj = js.Deserialize<Form10TransportationData[]>(editDataString);
+            return editDataObj;
+        }
+
+        public string deleteOODForm10TransportationEntry(string token, string OODTransportationId)
+        {
+                 try
+                {
+                    if (OODTransportationId == null) throw new Exception("formId is required");
+                    String rowsDeleted = Odg.deleteOODForm10TransportationEntry(OODTransportationId);
+
+                    return rowsDeleted;
+                }
+                catch (Exception ex)
+                {
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            
+        }
 
     }
 }

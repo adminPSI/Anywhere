@@ -1,6 +1,18 @@
 const dates = (function () {
   // PRIVATE
   //------------------------------------
+  function toDate(argument) {
+    const argStr = Object.prototype.toString.call(argument);
+
+    // Clone the date
+    if (argument instanceof Date || (typeof argument === 'object' && argStr === '[object Date]')) {
+      return new argument.constructor(argument.getTime());
+    } else if (typeof argument === 'number' || argStr === '[object Number]') {
+      return new Date(argument);
+    } else {
+      return new Date(NaN);
+    }
+  }
   function toInteger(dirtyNumber) {
     if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
       return NaN;
@@ -15,16 +27,30 @@ const dates = (function () {
     return number < 0 ? Math.ceil(number) : Math.floor(number);
   }
   function cloneDate(argument) {
-    if (arguments.length < 1) {
-      throw new TypeError(`1 argument required, only ${arguments.length} present`);
-    }
+    // if (arguments.length < 1) {
+    //   throw new TypeError(`1 argument required, only ${arguments.length} present`);
+    // }
 
+    // const argStr = Object.prototype.toString.call(argument);
+
+    // if (argument instanceof Date || (typeof argument === 'object' && argStr === ['object Date'])) {
+    //   return new Date(argument.getTime());
+    // } else if (typeof argument === 'number' || argStr === ['object Number']) {
+    //   return new Date(argument);
+    // }
     const argStr = Object.prototype.toString.call(argument);
 
-    if (argument instanceof Date || (typeof argument === 'object' && argStr === ['object Date'])) {
-      return new Date(argument.getTime());
-    } else if (typeof argument === 'number' || argStr === ['object Number']) {
+    // Clone the date
+    if (argument instanceof Date || (typeof argument === 'object' && argStr === '[object Date]')) {
+      // Prevent the date to lose the milliseconds when passed to new Date() in IE10
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore: TODO find a way to make TypeScript happy about this code
+      return new argument.constructor(argument.getTime());
+      // return new Date(argument.getTime())
+    } else if (typeof argument === 'number' || argStr === '[object Number]') {
       return new Date(argument);
+    } else {
+      return new Date(NaN);
     }
   }
 
@@ -35,6 +61,20 @@ const dates = (function () {
 
   // PUBLIC
   //------------------------------------
+  // GET
+  function getTodaysDateObj() {
+    const todaysDate = new Date();
+    todaysDate.setHours(0, 0, 0, 0);
+    return todaysDate;
+  }
+  function getTodaysDateISOString() {
+    const todaysDate = new Date();
+    todaysDate.setHours(0, 0, 0, 0);
+    const dd = todaysDate.getDate();
+    const mm = todaysDate.getMonth() + 1;
+    const yyyy = todaysDate.getFullYear();
+    return `${yyyy}-${mm}-${dd}`;
+  }
   function getDaysInMonth(dirtyDate) {
     var date = cloneDate(dirtyDate);
     var year = date.getFullYear();
@@ -44,12 +84,16 @@ const dates = (function () {
     lastDayOfMonth.setHours(0, 0, 0, 0);
     return lastDayOfMonth.getDate();
   }
-
+  // ADD
   function addDays(dirtyDate, dirtyAmount) {
     var date = cloneDate(dirtyDate);
     var amount = toInteger(dirtyAmount);
     date.setDate(date.getDate() + amount);
     return date;
+  }
+  function addWeeks(date, amount) {
+    const days = amount * 7;
+    return addDays(date, days);
   }
   function addMonths(dirtyDate, dirtyAmount) {
     var date = cloneDate(dirtyDate);
@@ -68,16 +112,19 @@ const dates = (function () {
     var amount = toInteger(dirtyAmount);
     return addMonths(dirtyDate, amount * 12);
   }
-
+  // SUB
   function subDays(dirtyDate, dirtyAmount) {
     var amount = toInteger(dirtyAmount);
     return addDays(dirtyDate, -amount);
+  }
+  function subWeeks(date, amount) {
+    return addWeeks(date, -amount);
   }
   function subYears(dirtyDate, dirtyAmount) {
     var amount = toInteger(dirtyAmount);
     return addYears(dirtyDate, -amount);
   }
-
+  // WEEKS
   function endOfWeek(dirtyDate, dirtyOptions) {
     //Get the end of the week for given date
     /**
@@ -94,9 +141,7 @@ const dates = (function () {
     let options = dirtyOptions || {};
 
     const weekStartsOn =
-      options.weekStartsOn === null || options.weekStartsOn === undefined
-        ? 0
-        : UTIL.toInteger(options.weekStartsOn);
+      options.weekStartsOn === null || options.weekStartsOn === undefined ? 0 : UTIL.toInteger(options.weekStartsOn);
 
     if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
       throw new RangeError(`weekStartsOn must be between 0 and 6 inclusively`);
@@ -126,9 +171,7 @@ const dates = (function () {
     let options = dirtyOptions || {};
 
     const weekStartsOn =
-      options.weekStartsOn === null || options.weekStartsOn === undefined
-        ? 0
-        : util.toInteger(options.weekStartsOn);
+      options.weekStartsOn === null || options.weekStartsOn === undefined ? 0 : util.toInteger(options.weekStartsOn);
 
     if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
       throw new RangeError(`weekStartsOn must be between 0 and 6 inclusively`);
@@ -141,7 +184,7 @@ const dates = (function () {
     date.setHours(0, 0, 0, 0);
     return date;
   }
-
+  // COMPARE
   function isAfter(dirtyDate, dirtyDateToCompare) {
     if (arguments.length < 2) {
       throw new TypeError('2 arguments required, but only ' + arguments.length + ' present');
@@ -169,7 +212,34 @@ const dates = (function () {
     var dateRight = cloneDate(dirtyRightDate);
     return dateLeft.getTime() === dateRight.getTime();
   }
+  function isDateInCurrentWeek(dirtyDate) {
+    const date = cloneDate(dirtyDate);
+    date.setHours(0, 0, 0, 0);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
 
+    const curentWeekStart = startDayOfWeek(currentDate);
+    const curentWeekEnd = endOfWeek(currentDate);
+
+    if (isAfter(date, curentWeekStart) && isBefore(date, curentWeekEnd)) {
+      return true;
+    }
+
+    return false;
+  }
+  function isDateInFuture(dirtyDate) {
+    const date = cloneDate(dirtyDate);
+    date.setHours(0, 0, 0, 0);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (isAfter(date, currentDate)) {
+      return true;
+    }
+
+    return false;
+  }
+  // FORMAT
   function formatISO(dirtyDate, dirtyOptions) {
     if (arguments.length < 1) {
       throw new TypeError(`1 argument required, but only ${arguments.length} present`);
@@ -183,8 +253,7 @@ const dates = (function () {
 
     const options = dirtyOptions || {};
     const format = options.format == null ? 'extended' : String(options.format);
-    const representation =
-      options.representation == null ? 'complete' : String(options.representation);
+    const representation = options.representation == null ? 'complete' : String(options.representation);
 
     if (format !== 'extended' && format !== 'basic') {
       throw new RangeError("format must be 'extended' or 'basic'");
@@ -243,25 +312,177 @@ const dates = (function () {
 
     return result;
   }
+  // INTERVALS
+  function eachDayOfInterval(interval, options) {
+    const startDate = toDate(interval.start);
+    const endDate = toDate(interval.end);
 
+    const endTime = endDate.getTime();
+
+    // Throw an exception if start date is after end date or if any date is `Invalid Date`
+    if (!(startDate.getTime() <= endTime)) {
+      throw new RangeError('Invalid interval');
+    }
+
+    const dates = [];
+
+    const currentDate = startDate;
+    currentDate.setHours(0, 0, 0, 0);
+
+    const step = options?.step ?? 1;
+    if (step < 1 || isNaN(step)) throw new RangeError('`options.step` must be a number greater than 1');
+
+    while (currentDate.getTime() <= endTime) {
+      dates.push(toDate(currentDate));
+      currentDate.setDate(currentDate.getDate() + step);
+      currentDate.setHours(0, 0, 0, 0);
+    }
+
+    return dates;
+  }
+
+  // TIME
+  //----------------------------------------------------------------
+  /**
+   * Converts a 24hr time to 12hr standard time.
+   *
+   * @function
+   * @param {string} time Time you would like to convert
+   * @returns {string} Converted time
+   */
+  function convertFromMilitary(time) {
+    if (!time || time === '') return '';
+
+    time = time.split(':');
+    var hh = parseInt(time[0]);
+    var mm = parseInt(time[1]);
+    var amPm = hh <= 11 ? 'AM' : 'PM';
+
+    if (hh === 0) hh = 12;
+    if (amPm === 'PM' && hh !== 12) hh -= 12;
+
+    return `${hh}:${leadingZero(mm)} ${amPm}`;
+  }
+  /**
+   * Converts a 12hr time to 24hr military time.
+   *
+   * @function
+   * @param {string} time Time you would like to convert
+   * @returns {string} Converted time
+   */
+  function convertToMilitary(time) {
+    // time format must be hh:mm am/pm
+    if (!time || time === '') return '';
+
+    time = time.split(' ');
+    timeString = time[0].split(':');
+
+    var amPM = time[1].toLowerCase();
+    var hh = parseInt(timeString[0]);
+    var mm = parseInt(timeString[1]);
+
+    if (amPM === 'pm' && hh !== 12) hh += 12;
+    if (amPM === 'am' && hh === 12) hh = 0;
+
+    return `${leadingZero(hh)}:${leadingZero(mm)}:00`;
+  }
+  /**
+   * Formats the time as HH:MM:SS from a given number of seconds.
+   *
+   * @param {number} totalSeconds - The total number of seconds to format.
+   * @return {string} - The formatted time string.
+   */
+  function formatSecondsToFullTime(totalSeconds) {
+    if (!totalSeconds) return '00:00:00';
+    var hours = Math.floor(totalSeconds / 3600);
+    var minutes = Math.floor((totalSeconds - hours * 3600) / 60);
+    var seconds = totalSeconds % 60;
+
+    return [_UTIL.padNumberWithZero(hours), _UTIL.padNumberWithZero(minutes), _UTIL.padNumberWithZero(seconds)].join(
+      ':',
+    );
+  }
+  /**
+   * Calculates the time difference between two military time values.
+   *
+   * @param {string} startTime - The start time in military format (e.g., "14:00").
+   * @param {string} endTime - The end time in military format (e.g., "16:30").
+   * @param {boolean} [format=true] - If true, returns the time difference formatted as a string with hours and minutes.
+   *                                 If false, returns only the total minutes as a formatted string.
+   * @returns {string} The time difference as a formatted string. If `format` is true, the difference is returned
+   *                   in terms of hours and minutes (e.g., "2 hrs 30 mins"). If `format` is false, the difference
+   *                   is returned as total minutes (e.g., "150 mins").
+   *
+   * @example
+   * // Returns "2 hrs 30 mins"
+   * getMilitaryTimeDifference("14:00", "16:30", true);
+   *
+   * @example
+   * // Returns "150 mins"
+   * getMilitaryTimeDifference("14:00", "16:30", false);
+   */
+  function getMilitaryTimeDifference(startTime, endTime, format = true) {
+    const startDate = new Date(`1970-01-01T${startTime}`);
+    const endDate = new Date(`1970-01-01T${endTime}`);
+
+    const timeDifference = endDate - startDate;
+
+    // Calculate total time in minutes
+    const totalMinutes = Math.floor(timeDifference / 60000);
+
+    if (format) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      const formattedTime = [];
+      if (hours > 0) {
+        formattedTime.push(`${hours} ${hours === 1 ? 'hr' : 'hrs'}`);
+      }
+      if (minutes > 0) {
+        formattedTime.push(`${minutes} ${minutes === 1 ? 'min' : 'mins'}`);
+      }
+
+      return formattedTime.join(' ');
+    } else {
+      // Return total minutes in formatted string
+      return `${totalMinutes} ${totalMinutes === 1 ? 'min' : 'mins'}`;
+    }
+  }
+  /**
+   *
+   * @param {*} date
+   * @returns
+   */
   function removeTimestamp(date) {
     const splitDate = date.split(' ');
     return `${splitDate[0]}`;
   }
 
   return {
+    getTodaysDateObj,
+    getTodaysDateISOString,
     getDaysInMonth,
     addDays,
+    addWeeks,
     addMonths,
     addYears,
     subDays,
+    subWeeks,
     subYears,
     endOfWeek,
     startDayOfWeek,
     isAfter,
     isBefore,
     isEqual,
+    isDateInCurrentWeek,
+    isDateInFuture,
     formatISO,
+    eachDayOfInterval,
+    // TIME
+    convertFromMilitary,
+    convertToMilitary,
+    formatSecondsToFullTime,
+    getMilitaryTimeDifference,
     removeTimestamp,
   };
 })();

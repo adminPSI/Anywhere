@@ -1,0 +1,92 @@
+[data-ui] {
+  .rosterPicker {
+    display: flex;
+    flex-flow: column nowrap;
+    overflow: hidden;
+    padding: 10px 0;
+
+    &__message {
+      align-items: center;
+      display: flex;
+      column-gap: 4px;
+      color: $secondary;
+      flex-grow: 0;
+      font-weight: $_bold;
+      line-height: 1;
+      padding: 4px 10px;
+
+      &.error {
+        color: $error;
+      }
+    }
+
+    .inputGroup.search,
+    .inputGroup.checkbox {
+      flex-grow: 0;
+      margin: 0 0 20px;
+      padding: 0 10px;
+    }
+
+    &__cardsWrap {
+      display: flex;
+      flex-flow: column nowrap;
+      overflow-y: scroll;
+      padding: 0 10px;
+
+      .rosterCardWrap {
+        border-radius: 4px;
+        display: grid;
+        grid-template-rows: 1fr;
+        transition: grid-template-rows 0.1s ease-in;
+        padding: 4px 6px;
+        position: relative;
+        order: 3;
+
+        &.isClosed:not(.selected) {
+          grid-template-rows: 0fr;
+          margin: 0;
+          padding: 0;
+        }
+
+        &.locked {
+          pointer-events: none;
+          order: 0;
+        }
+
+        &.selected {
+          background: rgba(129, 185, 65, 0.9);
+          color: $white;
+          order: 1;
+          margin: 0 0 6px;
+        }
+
+        &.pinned {
+          order: 2;
+
+          .svgIcon {
+            color: $secondary;
+            rotate: 45deg;
+          }
+        }
+
+        &.selected.pinned {
+          order: 2;
+
+          .svgIcon {
+            color: $white;
+          }
+        }
+
+        .svgIcon {
+          color: $black;
+          pointer-events: all;
+          position: absolute;
+          top: 4px;
+          right: 6px;
+          rotate: 0deg;
+          transition: rotate 0.3s ease-in;
+        }
+      }
+    }
+  }
+}

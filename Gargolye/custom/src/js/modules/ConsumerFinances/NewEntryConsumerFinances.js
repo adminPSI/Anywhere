@@ -237,7 +237,13 @@ const NewEntryCF = (() => {
         if (registerId) {
             btnWrap.appendChild(NEW_SAVE_BTN);
             btnWrap.appendChild(NEW_DELETE_BTN);
-            enableDisabledInputs();
+
+            if (payee == 'Opening Balance') {
+                DisabledAllInputs();
+            }
+            else {
+                enableDisabledInputs(); 
+            }          
         }
         else {
             btnWrap.appendChild(NEW_SAVE_BTN);
@@ -357,7 +363,6 @@ const NewEntryCF = (() => {
         else {
             DisabledAllInputs();
         }
-
     }
 
     function DisabledAllInputs() {
@@ -421,7 +426,7 @@ const NewEntryCF = (() => {
             newAccountDropdown.classList.remove('error');
         }
 
-        if (payee.value === '') {
+        if (payee.value === '' || payee.value === 'Opening Balance') {  
             newPayeeDropdown.classList.add('error');
         } else {
             newPayeeDropdown.classList.remove('error');
@@ -486,7 +491,7 @@ const NewEntryCF = (() => {
         });
         NEW_DELETE_BTN.addEventListener('click', event => {
             if (IsDeleteDisable) {
-                deleteAccount();
+                deleteAccountPOPUP();
             }
             IsDeleteDisable = true;
         });
@@ -600,9 +605,49 @@ const NewEntryCF = (() => {
         }
     }
 
-    async function deleteAccount() {
+    function deleteAccountPOPUP() {
+        const confirmPopup = POPUP.build({
+            hideX: true,
+            classNames: ['warning'],  
+        });
+
+        YES_BTN = button.build({
+            text: 'YES',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                deleteAccount(confirmPopup);
+            },
+        });
+
+        NO_BTN = button.build({
+            text: 'NO',
+            style: 'secondary',
+            type: 'outlined',
+            callback: () => {
+                POPUP.hide(confirmPopup);
+            },
+        });
+
+        const message = document.createElement('p');
+
+        message.innerText = 'Are you sure you would like to delete this record?';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        confirmPopup.appendChild(message);
+        var popupbtnWrap = document.createElement('div');
+        popupbtnWrap.classList.add('btnWrap');
+        popupbtnWrap.appendChild(YES_BTN);
+        popupbtnWrap.appendChild(NO_BTN);
+        confirmPopup.appendChild(popupbtnWrap);
+        YES_BTN.focus();
+        POPUP.show(confirmPopup);
+    }
+
+    async function deleteAccount(confirmPopup) {
         await ConsumerFinancesAjax.deleteConsumerFinanceAccountAsync(regId);
-        ConsumerFinances.loadConsumerFinanceLanding();
+        POPUP.hide(confirmPopup);
+        ConsumerFinances.loadConsumerFinanceLanding();  
     }
 
     async function getCategorySubCategorybyPayee(categoryID) {
@@ -627,11 +672,14 @@ const NewEntryCF = (() => {
             id: account.accountId,
             value: account.accountName,
             text: account.accountName
-        }));
+        })); 
+        if (data.length == 1) {           
+            account = data[0].value;
+            accountID = data[0].id; 
+        } 
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
         checkRequiredFieldsOfNewEntry();
-
     }
 
     async function populatePayeeDropdown() {
@@ -643,8 +691,11 @@ const NewEntryCF = (() => {
             value: payees.Description,
             text: payees.Description
         }));
-        data.unshift({ id: null, value: '', text: '' });
-        dropdown.populate("newPayeeDropdown", data, payee);
+        data.unshift({ id: null, value: 'Opening Balance', text: 'Opening Balance' });   
+        data.unshift({ id: null, value: '', text: '' });      
+         
+        dropdown.populate("newPayeeDropdown", data, payee); 
+       
         checkRequiredFieldsOfNewEntry();
 
     }
@@ -694,7 +745,7 @@ const NewEntryCF = (() => {
 
         let addPayeePopup = POPUP.build({
             header: "Add payee",
-            hideX: true,
+            hideX: true,           
             id: "addPayeePopup"
         });
 
@@ -887,16 +938,17 @@ const NewEntryCF = (() => {
         var messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertPayeeResult.RegionID == '-1') {
-            messagetext.innerHTML = 'Payee name is already exists.'; 
-            messagetext.classList.add('password-error'); 
+            messagetext.innerHTML = 'Payee name already exists.';
+            messagetext.classList.add('password-error');
+            saveBtn.classList.add('disabled');
         }
         else {
             POPUP.hide(addPayeePopup);
             payee = payeeName;
             document.getElementById('newCategoryDropdown').value = '';
-            document.getElementById('newSubCategoryDropdown').value = '';  
+            document.getElementById('newSubCategoryDropdown').value = '';
             temppayee = 'ChangedValue';
-            populatePayeeDropdown();         
+            populatePayeeDropdown();
         }
 
     }

@@ -118,10 +118,12 @@ namespace Anywhere.service.Data
 
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-
+            //ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Removed on 10/18/2023
+            var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Added on 10/18/2023
+            ios.CopyTo(ms);
             cr.Close();
             cr.Dispose();
+            ios.Dispose();
             return ms;
             //byte[] msa = StreamExtensions.ToByteArray(ms);
             //return msa;
@@ -211,11 +213,12 @@ namespace Anywhere.service.Data
             crViewer.Dispose();
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-
+            //ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Removed on 10/18/2023
+            var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Added on 10/18/2023
+            ios.CopyTo(ms);
             cr.Close();
             cr.Dispose();
-
+            ios.Dispose();
             return ms;
             //byte[] msa2 = StreamExtensions.ToByteArray(ms);
             //return msa2;
@@ -303,11 +306,12 @@ namespace Anywhere.service.Data
             crViewer.Dispose();
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-
+            //ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Removed on 10/18/2023
+            var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Added on 10/18/2023
+            ios.CopyTo(ms);
             cr.Close();
             cr.Dispose();
-
+            ios.Dispose();
             return ms;
 
             //byte[] msa3 = StreamExtensions.ToByteArray(ms);
@@ -394,8 +398,9 @@ namespace Anywhere.service.Data
 
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-            cr.Close();
+            //ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Removed on 10/18/2023
+            var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Added on 10/18/2023
+            ios.CopyTo(ms); cr.Close();
             cr.Dispose();
             return ms;
 
@@ -473,7 +478,9 @@ namespace Anywhere.service.Data
             }
 
             MemoryStream ms = new MemoryStream();
-            ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+            //ms = (System.IO.MemoryStream)cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Removed on 10/18/2023
+            var ios = cr.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat); //Added on 10/18/2023
+            ios.CopyTo(ms);
             //cr.Close();
             //cr.Dispose();
             return ms;

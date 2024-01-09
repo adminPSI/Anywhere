@@ -362,7 +362,7 @@ const communityBasedAssessmentForm = (() => {
   }
 
   async function populatePositionDropdown() {
-    const { getPositionsResult: positions } = await OODAjax.getPositionsAsync(consumerId);
+    const { getOODPositionsResult: positions } = await OODAjax.getPositionsAsync(consumerId);
     // const templates = WorkflowViewerComponent.getTemplates();
     let data = positions.map(position => ({
       id: position.code,

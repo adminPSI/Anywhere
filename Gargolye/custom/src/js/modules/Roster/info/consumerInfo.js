@@ -1092,5 +1092,6 @@ var consumerInfo = (function () {
         showCard,
         showCardSubSection,
         toggleHideShowAbsentMenuSection,
+        closeCard,
     };
 })();

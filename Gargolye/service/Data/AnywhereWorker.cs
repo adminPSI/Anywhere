@@ -233,6 +233,20 @@ namespace Anywhere.service.Data
             return strBuilder.ToString();
         }
 
+        public UserPermissions[] getUserPermissions(string token)
+        {
+            string permissionString = dg.getUserPermissions(token);
+            UserPermissions[] dropdownObj = js.Deserialize<UserPermissions[]>(permissionString);
+            return dropdownObj;
+        }
+
+        public class UserPermissions
+        {
+            public string window_name { get; set; }
+            public string permission { get; set; }
+            public string special_data { get; set; }
+        }
+
         public bool ValidateToken(string token)
         {
             return dg.validateToken(token);
@@ -457,6 +471,7 @@ namespace Anywhere.service.Data
             public string id { get; set; }
             public string FN { get; set; }
             public string LN { get; set; }
+            public string dob { get; set; }
             public string LId { get; set; }
             public string IDa { get; set; }
             public string SD { get; set; }
@@ -560,6 +575,7 @@ namespace Anywhere.service.Data
             public string appendITImmediateAction { get; set; }
             public string appendITPreventionPlan { get; set; }
             public string appendITCause { get; set; }
+            public string planFormCarryover { get; set; }
 
         }
 
@@ -608,6 +624,7 @@ namespace Anywhere.service.Data
         public PlanInformedConsentWorker.InformedConsentSSAs[] getConsumerswithSaleforceIds(string token)
         {
             string consumersString = dg.getConsumerswithSaleforceIds(token);
+            js.MaxJsonLength = Int32.MaxValue;
             PlanInformedConsentWorker.InformedConsentSSAs[] consumersObj = js.Deserialize<PlanInformedConsentWorker.InformedConsentSSAs[]>(consumersString);
             return consumersObj;
         }

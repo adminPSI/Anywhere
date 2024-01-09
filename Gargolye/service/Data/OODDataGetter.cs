@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Web.Security;
 
 namespace Anywhere.service.Data
 {
@@ -196,7 +197,7 @@ namespace Anywhere.service.Data
         }
 
         // Reference Numbers for the selected Consumers data for OOD Entries Listing Filter
-        public string getConsumerReferenceNumbers(string consumerIds, string startDate, string endDate, string serviceType, DistributedTransaction transaction)
+        public string getConsumerReferenceNumbers(string consumerIds, string startDate, string endDate, string formNumber, DistributedTransaction transaction)
         {
 
             try
@@ -207,7 +208,7 @@ namespace Anywhere.service.Data
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerIds", DbType.String, consumerIds);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@startDate", DbType.String, startDate);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@endDate", DbType.String, endDate);
-                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@serviceType", DbType.String, serviceType);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@formNumber", DbType.String, formNumber);
                 //args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@hasAssignedFormTypes", DbType.String, hasAssignedFormTypes);
                 System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_getConsumerReferenceNumbers(?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
@@ -732,6 +733,106 @@ namespace Anywhere.service.Data
             }
 
         }
+
+        // Form 10 Transportation
+        public string getForm10TransportationData(string token, string OODTransportationId)
+        {
+            if (tokenValidator(token) == false) return null;
+
+            logger.debug("getForm10TransportationData" + token);
+            try
+            {
+                return dg.executeDataBaseCallJSON("CALL DBA.ANYW_OOD_getForm10TransportationData('" + token + "', '" + OODTransportationId + "');");
+            }
+            catch (Exception ex)
+            {
+                logger.error("537", ex.Message + " ANYW_OOD_getForm10TransportationData('" + token + "', '" + OODTransportationId + "')");
+                return "537: Error getting case note to edit";
+            }
+        }
+
+        public string updateForm10TransportationData(string token, string consumerId, string OODTransportationId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation,  string userId)
+        {
+            if (tokenValidator(token) == false) return null;
+            //if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("updateForm10TransportationData" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(OODTransportationId);
+            list.Add(serviceDate);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(numberInVehicle);
+            list.Add(startLocation);
+            list.Add(endLocation);   
+            list.Add(userId);
+
+            string text = "CALL DBA.ANYW_OOD_updateForm10TransportationData(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_updateForm10TransportationData('" + token + "', '" + consumerId + "', '" + OODTransportationId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + startLocation + "', '" + endLocation + "', '" + numberInVehicle+ "', '" + userId + "')");
+                return "536: Error saving case note";
+            }
+        }
+
+        public string insertForm10TransportationData(string token, string consumerId, string serviceDate, string startTime, string endTime, string numberInVehicle, string startLocation, string endLocation,  string userId, string referenceNumber)
+        {
+            if (tokenValidator(token) == false) return null;
+            //  if (stringInjectionValidator(caseNote) == false) return null;
+            logger.debug("insertForm10TransportationData" + token);
+
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(consumerId);
+            list.Add(serviceDate);
+            list.Add(startTime);
+            list.Add(endTime);
+            list.Add(numberInVehicle);
+            list.Add(startLocation);
+            list.Add(endLocation);
+            list.Add(userId);
+            list.Add(referenceNumber);
+            //list.Add("1234");
+
+            string text = "CALL DBA.ANYW_OOD_insertForm10TransportationData(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+
+            try
+            {
+                // return dg.executeDataBaseCall("CALL DBA.ANYW_OOD_insertForm10TransportationData('" + token + "', '" + consumerId + "', '" + caseNoteId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + SAMLevel + "', '" + employer + "', '" + contactType + "', '" + jobSeekerPresent + "', '" + outcome + "', '" + TSCNotified + "', '" + bilingualSupplement + "', '" + notes + "', '" + caseManagerId + "', '" + userId + "', '" + serviceId + "');", "results", "results");
+                return dg.executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("536", ex.Message + " ANYW_OOD_insertForm10TransportationData('" + token + "', '" + consumerId + "', '" + serviceDate + "', '" + startTime + "', '" + endTime + "', '" + startLocation + "', '" + endLocation + "', '" + numberInVehicle + "', '" + userId + "', '" + referenceNumber + "')");
+                return "536: Error saving case note";
+            }
+        }
+
+        public string deleteOODForm10TransportationEntry(string OODTransportationId)
+        {
+            try
+            {
+                logger.debug("deleteOODForm10TransportationEntry ");
+
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@OODTransportationId", DbType.String, OODTransportationId);
+                // returns the number of rows deleted
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_OOD_deleteForm10TransportationData(?)", args).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("ODG", ex.Message + "deleteOODForm10TransportationEntry(" + OODTransportationId + ")");
+                throw ex;
+            }
+        }
+
 
         public bool tokenValidator(string token)
         {

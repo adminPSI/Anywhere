@@ -1,6 +1,7 @@
 ﻿using Anywhere.Data;
 using System;
 using System.Collections.Generic;
+using System.Management.Automation.Language;
 using System.Web.Script.Serialization;
 
 namespace Anywhere.service.Data
@@ -15,6 +16,7 @@ namespace Anywhere.service.Data
         {
             return dg.addCaseNoteAttachment(token, caseNoteId, description, attachmentType, attachment);
         }
+        // message
 
         public ConsumersThatCanHaveMileage[] getConsumersThatCanHaveMileageJSON(string token)
         {
@@ -107,6 +109,13 @@ namespace Anywhere.service.Data
             return attachmentsObj;
         }
 
+        public AttachmentListForGroup[] getCaseNoteAttachmentsListForGroupNote(string caseNoteId)
+        {
+            string attachmentsString = dg.getCaseNoteAttachmentsListForGroupNote(caseNoteId);
+            AttachmentListForGroup[] attachmentsObj = js.Deserialize<AttachmentListForGroup[]>(attachmentsString);
+            return attachmentsObj;
+        }
+
         public ConsumersForFilter[] getConsumersForCNFilter(string token, string caseLoadOnly)
         {
             string consumersString = dg.getConsumersForCNFilter(token, caseLoadOnly);
@@ -139,6 +148,14 @@ namespace Anywhere.service.Data
         {
             public string attachmentId { get; set; }
             public string description { get; set; }
+        }
+
+        public class AttachmentListForGroup
+        {
+            public string attachmentId { get; set; }
+            public string description { get; set; }
+            public string attachment { get; set; }
+            public string attachmentType { get; set; }
         }
 
         public class CustomPhrases
@@ -188,6 +205,7 @@ namespace Anywhere.service.Data
             public string casemanagerid { get; set; }
             public string originalupdate { get; set; }
             public string mostrecentupdate { get; set; }
+            public string mainbillingorservicecodeid { get; set; }
             public string groupnoteid { get; set; }
             public string lastupdatedby { get; set; }
             public string firstname { get; set; }
@@ -198,6 +216,12 @@ namespace Anywhere.service.Data
             public string enteredby { get; set; }
             public string isSSANote { get; set; }
             public string attachcount { get; set; }
+            public string serviceCode { get; set; }
+            public string caseNote { get; set; }
+            public string serviceName { get; set; }
+            public string locationName { get; set; }
+            public string originalUserFullName { get; set; }
+            
 
             public List<string> overlaps { get; set; }
         }

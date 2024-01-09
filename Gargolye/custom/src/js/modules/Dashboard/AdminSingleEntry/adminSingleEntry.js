@@ -140,10 +140,10 @@
       overlay.hide();
       bodyScrollLock.enableBodyScroll(filterPopup);
 
-      selectedConsumerId = oldSelectedConsumerId;
-      selectedConsumerName = oldSelectedConsumerName;
-      selectedLocationId = oldSelectedLocationId;
-      selectedLocationDescription = oldSelectedLocationDescription;
+      // selectedConsumerId = oldSelectedConsumerId;
+      // selectedConsumerName = oldSelectedConsumerName;
+      // selectedLocationId = oldSelectedLocationId;
+      // selectedLocationDescription = oldSelectedLocationDescription;
     });
   }
   function displayFilteredBy() {

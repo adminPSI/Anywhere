@@ -89,6 +89,7 @@ $.session.UpdateCaseNotesDocTime = false;
 $.session.batchedNoteEdit = false;
 $.session.groupNoteAttemptWithDocTime = false;
 $.session.sendToDODD = false;
+$.session.dobString = '';
 //remove section when ready for testing.  Forcing all features on.
 //$.session.CaseNotesView = true;
 //$.session.CaseNotesTablePermissionView = true;
@@ -179,6 +180,7 @@ $.session.planPeopleId = '';
 $.session.showDynamic = true;
 $.session.singleEntryUseServiceLocations = false;
 $.session.editCaseNoteId = '';
+$.session.updateEmail = false;
 //$.session.groupCaseNoteId = '';
 $.session.tempServiceFunding = 'N';
 $.session.usePersonalPrefernces = 'N';
@@ -253,6 +255,7 @@ $.session.schedRequestOpenShifts = 'N';
 $.session.hideAllScheduleButton = false;
 // Authorizations
 $.session.authorizationsView = false;
+$.session.authorizationsVendorInfoView = false;
 //Plan
 $.session.planUpdate = false;
 $.session.planDelete = false;
@@ -291,8 +294,11 @@ $.session.CFDelete = false;
 $.session.CFInsert = false;
 $.session.CFUpdate = false;
 $.session.CFView = false;
-$.session.CFADDPayee = false;//
-$.session.CFEditAccountEntries = false; //
+$.session.CFADDPayee = false; //
+$.session.CFEditAccountEntries = false;
+$.session.CFInsertAccounts = false;
+$.session.CFUpdateEditAccounts = false;
+$.session.CFViewEditAccounts = false;
 
 // Reset Password
 $.session.ResetPasswordView = false;
@@ -307,7 +313,7 @@ $.session.consumerId = '';
 // $.session.sttCaseNotesEnabled = false; Will be a system setting, setting true for now for dev
 
 //Needs updated for every release.
-$.session.version = '2023.4';
+$.session.version = '2023.5';
 //State Abbreviation
 $.session.stateAbbreviation = '';
 // temp holder for the device GUID when logging in
@@ -340,10 +346,7 @@ function setDefaultLoc(type, value) {
   }
 
   if (type == 3) {
-    if (
-      $.session.defaultDayServiceLocationFlag == 'true' ||
-      $.session.defaultDayServiceLocationFlag == null
-    ) {
+    if ($.session.defaultDayServiceLocationFlag == 'true' || $.session.defaultDayServiceLocationFlag == null) {
       //createCookie('defaultDayServiceLocationNameValue', value, 7);
       saveDefaultLocationValueAjax('3', value);
     }
@@ -380,6 +383,7 @@ function eraseCookie(name) {
 
 function setSessionVariables() {
   var cookieInnards = $.session.permissionString;
+
 
     cookieInnards.forEach(cookie => {
         tmpWindow = cookie.window_name;
@@ -620,10 +624,16 @@ function setSessionVariables() {
       if (tmpPerm == 'Download Plans' || $.session.isPSI == true) {
         $.session.downloadPlans = true;
       }
+      if (tmpPerm == 'Update Email' || $.session.isPSI == true) {
+        $.session.updateEmail = true;
+      }
     }
     if (tmpWindow == 'Anywhere Authorizations' || $.session.isPSI == true) {
       if (tmpPerm == 'View' || $.session.isPSI == true) {
         $.session.authorizationsView = true;
+      }
+      if (tmpPerm == 'View Vendor Info' || $.session.isPSI == true) {
+        $.session.authorizationsVendorInfoView = true;
       }
     }
     //AeMAR
@@ -713,6 +723,7 @@ function setSessionVariables() {
         $.session.CFDelete = true;
       }
       if (tmpPerm == 'View' || $.session.isPSI == true) {
+        $('#cfAccountDiv').removeClass('disabledModule');
         $('#consumerfinancessettingsdiv').removeClass('disabledModule');
         $.session.CFView = true;
       }
@@ -724,6 +735,17 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'Edit Account Entries' || $.session.isPSI == true) {
         $.session.CFEditAccountEntries = true;
+      }
+      if (tmpPerm == 'Insert Accounts' || $.session.isPSI == true) {
+        $.session.CFInsertAccounts = true;
+      }
+      if (tmpPerm == 'Update Edit Accounts' || $.session.isPSI == true) {
+        $.session.CFUpdateEditAccounts = true;
+      }
+      if (tmpPerm == 'View Edit Accounts' || $.session.isPSI == true) {
+        $('#cfEditAccountDiv').removeClass('disabledModule');
+        $('#consumerfinancessettingsdiv').removeClass('disabledModule');
+        $.session.CFViewEditAccounts = true;
       }
     }
 
@@ -1000,9 +1022,7 @@ function customPasswordChange(reset) {
   $('#backToLogin').css('display', 'flex');
 
   if ($.session.changePasswordLinkSelected === '') {
-    $('#confirmMessage').text(
-      'Your password has expired.  Please enter and confirm a new password.',
-    );
+    $('#confirmMessage').text('Your password has expired.  Please enter and confirm a new password.');
   } else if (reset) {
     $('#confirmMessage').text('Your message has been sent.  Please reset password.');
   } else {
@@ -1014,9 +1034,7 @@ var BrowserDetect = {
   init: function () {
     this.browser = this.searchString(this.dataBrowser) || 'An unknown browser';
     this.version =
-      this.searchVersion(navigator.userAgent) ||
-      this.searchVersion(navigator.appVersion) ||
-      'an unknown version';
+      this.searchVersion(navigator.userAgent) || this.searchVersion(navigator.appVersion) || 'an unknown version';
     this.OS = this.searchString(this.dataOS) || 'an unknown OS';
   },
   searchString: function (data) {
@@ -1293,11 +1311,7 @@ function checkPass() {
     }
   } else {
     //if both are null
-    if (
-      pass1.value.length === 0 &&
-      pass2.value.length === 0 &&
-      $.session.changePasswordLinkSelected === ''
-    ) {
+    if (pass1.value.length === 0 && pass2.value.length === 0 && $.session.changePasswordLinkSelected === '') {
       message.innerHTML = 'Your password has expired, please enter and confirm a new password.';
       document.getElementById('changebutton').classList.add('disabled');
       return 0;
@@ -1626,6 +1640,13 @@ function checkModulePermissions() {
     $('#Employmentsettingsdiv').addClass('disabledModule');
   }
   if ($.session.CFView == false) {
+    $('#cfAccountDiv').addClass('disabledModule');
+  }
+  if ($.session.CFViewEditAccounts == false) {
+    $('#cfEditAccountDiv').addClass('disabledModule');
+  }
+
+  if ($.session.CFView == false && $.session.CFViewEditAccounts == false) {
     $('#consumerfinancessettingsdiv').addClass('disabledModule');
   }
 

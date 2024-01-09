@@ -1,5 +1,5 @@
 ﻿var incidentTrackingAjax = (function () {
-  'use-strict';
+  //'use-strict';
   //Incident Save
   //Send incident notification
   function sendNotification(notificationType, employeeId, data) {

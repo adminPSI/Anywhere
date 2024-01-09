@@ -20,6 +20,8 @@ const roster2 = (function () {
   let DESELECT_ALL_BTN;
   let LOCATION_NOTES_BTN;
   let MASS_ABSENT_BTN;
+  let loadingRosterWrap;
+  let loadRosterSpinner;
   // DOM - MINI ROSTER
   let MINI_ROSTER_BTN;
   let MINI_ROSTER_POPUP;
@@ -70,11 +72,11 @@ const roster2 = (function () {
     return [...selectedConsumerCache];
   }
   /*
-		I created selected consumers miniroster to have a function
-		that gives you only the consumers that were selected in the mini roster
-		GetActiveConsumers gives you the active consumers on the roster, even if they
-		werent just selected
-	*/
+          I created selected consumers miniroster to have a function
+          that gives you only the consumers that were selected in the mini roster
+          GetActiveConsumers gives you the active consumers on the roster, even if they
+          werent just selected
+      */
   function getSelectedConsumersMiniRoster() {
     return [...selectedConsumerCache];
   }
@@ -242,7 +244,7 @@ const roster2 = (function () {
     const consumers = rosterConsumers.filter(rc => {
       var firstName = rc.FN.toLowerCase();
       var lastName = rc.LN.toLowerCase();
-      var middleName = rc.MN.toLowerCase();
+      var middleName = rc.MN.toLowerCase();//
       var fullName = `${firstName} ${middleName} ${lastName}`;
       var fullNameReversed = `${lastName} ${firstName} ${middleName}`;
       var matchesName = fullName.indexOf(searchValue);
@@ -273,9 +275,10 @@ const roster2 = (function () {
     }
 
     var splitDate = selectedDate.split('-');
-    var filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(
-      splitDate[2],
-    )}/${splitDate[0].slice(2, 4)}`;
+    var filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(splitDate[2])}/${splitDate[0].slice(
+      2,
+      4,
+    )}`;
 
     filteredBy.innerHTML = `
       <div class="filteredByData">
@@ -503,6 +506,7 @@ const roster2 = (function () {
     });
     APPLY_BTN.addEventListener('click', async () => {
       POPUP.hide(FILTER_POPUP);
+
       customGroups.init(rosterGroups);
 
       if (locationHasUnreadNote) {
@@ -514,7 +518,7 @@ const roster2 = (function () {
       const rosterlists = [...ROSTER_WRAP.querySelectorAll('.roster__list')];
       rosterlists && rosterlists.forEach(rl => ROSTER_WRAP.removeChild(rl));
       totalConsumerCount = 0;
-      await getRosterConsumersData();
+      await getRosterConsumersData(true);
       //Ugly... should be re-done to be able to pass a custom apply action for the filter if needed
       // but I'm running out of thime for this release. THis is needed to reset the set allowed consumers
       //when filtering on a location or group.
@@ -524,9 +528,10 @@ const roster2 = (function () {
       populateRoster();
 
       var splitDate = selectedDate.split('-');
-      var filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(
-        splitDate[2],
-      )}/${splitDate[0].slice(2, 4)}`;
+      var filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(splitDate[2])}/${splitDate[0].slice(
+        2,
+        4,
+      )}`;
       var filteredBy = document.querySelector('.widgetFilteredBy');
       filteredBy.innerHTML = `<div class="filteredByData">
         <p><span>Date:</span> ${filteredDate}</p>
@@ -540,8 +545,7 @@ const roster2 = (function () {
       }
 
       if (selectedLocationId !== '000') {
-        if (defaults.rememberLastLocation('roster'))
-          defaults.setLocation('roster', selectedLocationId);
+        if (defaults.rememberLastLocation('roster')) defaults.setLocation('roster', selectedLocationId);
       }
     });
     CANCEL_BTN.addEventListener('click', () => {
@@ -559,11 +563,7 @@ const roster2 = (function () {
   // Top Nav
   //---------------------------------------------
   function toggleLocationNotesBtn() {
-    if (
-      selectedLocationId === '0' ||
-      selectedLocationName === 'All' ||
-      $.session.useProgressNotes === 'N'
-    ) {
+    if (selectedLocationId === '0' || selectedLocationName === 'All' || $.session.useProgressNotes === 'N') {
       LOCATION_NOTES_BTN.classList.add('disabled');
       LOCATION_NOTES_BTN.classList.remove('attention');
     } else {
@@ -589,7 +589,7 @@ const roster2 = (function () {
     });
   }
   function buildSearchBtn() {
-      return button.build({
+    return button.build({
       id: 'searchBtn',
       text: 'Search',
       icon: 'search',
@@ -616,17 +616,12 @@ const roster2 = (function () {
   }
   function buildLocationNotesBtn() {
     var hasUnreadLocationNote =
-      locationsWithUnreadNotes &&
-      locationsWithUnreadNotes.filter(loc => loc.loc_id === selectedLocationId);
+      locationsWithUnreadNotes && locationsWithUnreadNotes.filter(loc => loc.loc_id === selectedLocationId);
     hasUnreadLocationNote = hasUnreadLocationNote.length > 0 ? true : false;
 
     const locationNotesBtnClassNames = ['locationNotesBtn'];
 
-    if (
-      selectedLocationId === '0' ||
-      selectedLocationName === 'All' ||
-      $.session.useProgressNotes === 'N'
-    ) {
+    if (selectedLocationId === '0' || selectedLocationName === 'All' || $.session.useProgressNotes === 'N') {
       locationNotesBtnClassNames.push('disabled');
     }
     if (hasUnreadLocationNote && $.session.useProgressNotes === 'Y') {
@@ -683,8 +678,8 @@ const roster2 = (function () {
     SEARCH_INPUT = document.createElement('input');
     SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
     SEARCH_WRAP.appendChild(SEARCH_BTN);
-    SEARCH_WRAP.appendChild(SEARCH_INPUT); 
-       
+    SEARCH_WRAP.appendChild(SEARCH_INPUT);
+
     if (rosterListSelectable) {
       var wrap1 = document.createElement('div');
       var wrap2 = document.createElement('div');
@@ -713,9 +708,9 @@ const roster2 = (function () {
       wrap2.appendChild(MANAGE_GROUPS_BTN);
 
       btnWrap.appendChild(wrap1);
-      btnWrap.appendChild(wrap2);      
-      }
-     
+      btnWrap.appendChild(wrap2);
+    }
+
     return btnWrap;
   }
 
@@ -740,15 +735,13 @@ const roster2 = (function () {
     const id = consumerData.id;
     const serviceLocations = consumerData.LId;
     const primaryLocation = consumerData.conL;
-    const hasUnreadNote =
-      consumersWithUnreadNotes && consumersWithUnreadNotes[consumerData.id] ? true : false;
+    const hasUnreadNote = consumersWithUnreadNotes && consumersWithUnreadNotes[consumerData.id] ? true : false;
     const isAbsent = absentConsumers && absentConsumers[consumerData.id] ? true : false;
     const isActive = activeConsumers && activeConsumers.filter(ac => ac.id === consumerData.id);
-    const isSelected =
-      selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
-    const hasAlert =
-      consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
+    const isSelected = selectedConsumers && selectedConsumers.filter(sc => sc.id === consumerData.id);
+    const hasAlert = consumersWithAlerts && consumersWithAlerts.filter(cwa => cwa === consumerData.id);
     const showAlert = hasAlert && hasAlert.length !== 0 ? true : false;
+    const dateOfBirth = consumerData.dob ? consumerData.dob.split(' ')[0] : '';
     let isAllowed;
     if (!allowedConsumerIds) {
       isAllowed = true;
@@ -762,6 +755,7 @@ const roster2 = (function () {
     const consumerCard = document.createElement('div');
     consumerCard.classList.add('consumerCard');
     consumerCard.setAttribute('data-consumer-id', id);
+    consumerCard.setAttribute('data-dob', dateOfBirth);
 
     if (serviceLocations) {
       consumerCard.setAttribute('data-service-locations', serviceLocations);
@@ -806,13 +800,7 @@ const roster2 = (function () {
       <div>`;
     alertIcons.innerHTML = `
       ${isAbsent ? `<span class="absentIcon">A</span>` : ''}
-      ${
-        !rosterListSelectable
-          ? hasUnreadNote
-            ? `<span class="alert">${icons['bell']}</span>`
-            : ''
-          : ''
-      }
+      ${!rosterListSelectable ? (hasUnreadNote ? `<span class="alert">${icons['bell']}</span>` : '') : ''}
 		`;
 
     consumerCard.appendChild(portrait);
@@ -934,9 +922,11 @@ const roster2 = (function () {
       $.loadedApp === 'outcomes' ||
       $.loadedApp === 'plan' ||
       $.loadedApp === 'ConsumerFinances' ||
+      $.loadedApp === 'CFEditAccount' ||
       $.loadedApp === 'employment' ||
       $.loadedApp === 'covid' ||
       $.loadedApp === 'forms' ||
+      $.loadedApp === 'assessmentHistory' ||
       activeSection === 'caseNotesSSA-new' ||
       activeSection === 'caseNotes-new'
     ) {
@@ -992,7 +982,12 @@ const roster2 = (function () {
       // classNames: ['floatingActionBtn', 'consumerListBtn', 'disabled'],
       classNames: ['floatingActionBtn', 'consumerListBtn'],
       callback: async () => {
-        if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'employment') {
+        if (
+          $.loadedApp === 'ConsumerFinances' ||
+          $.loadedApp === 'CFEditAccount' ||
+          $.loadedApp === 'employment' ||
+          $.loadedApp === 'assessmentHistory'
+        ) {
           clearSelectedConsumers();
           clearActiveConsumers();
         }
@@ -1018,8 +1013,8 @@ const roster2 = (function () {
     showMiniRosterPopup(rosterMarkup);
     totalConsumerCount = 0;
     await getRosterConsumersData();
-      populateRoster();
-      document.getElementById('searchBtn').click();         
+    populateRoster();
+    document.getElementById('searchBtn').click();
   }
   /**
    * Enables or disables the mini roster button.
@@ -1044,8 +1039,7 @@ const roster2 = (function () {
   }
   async function getConsumerGroupsData() {
     try {
-      const data = (await customGroupsAjax.getConsumerGroups(selectedLocationId))
-        .getConsumerGroupsJSONResult;
+      const data = (await customGroupsAjax.getConsumerGroups(selectedLocationId)).getConsumerGroupsJSONResult;
       return data;
     } catch (error) {
       console.log(error);
@@ -1053,8 +1047,7 @@ const roster2 = (function () {
   }
   async function getLocationsWithUnreadNotesData() {
     try {
-      const data = (await locationNotesAjax.getLocationsWithUnreadNotes())
-        .getLocationsWithUnreadNotesResult;
+      const data = (await locationNotesAjax.getLocationsWithUnreadNotes()).getLocationsWithUnreadNotesResult;
       return JSON.parse(data);
     } catch (error) {
       console.log(error);
@@ -1062,8 +1055,7 @@ const roster2 = (function () {
   }
   async function getConsumersByGroupData(getConsumerByGroupData) {
     try {
-      const data = (await rosterAjax.getConsumersByGroup(getConsumerByGroupData))
-        .getConsumersByGroupJSONResult;
+      const data = (await rosterAjax.getConsumersByGroup(getConsumerByGroupData)).getConsumersByGroupJSONResult;
       return data;
     } catch (error) {
       console.log(error);
@@ -1071,15 +1063,14 @@ const roster2 = (function () {
   }
   async function getConsumersWithUnreadNotesByEmployeeAndLocationData(selectedLocationId) {
     try {
-      const data = (
-        await progressNotesAjax.getConsumersWithUnreadNotesByEmployeeAndLocation(selectedLocationId)
-      ).getConsumersWithUnreadNotesByEmployeeAndLocationResult;
+      const data = (await progressNotesAjax.getConsumersWithUnreadNotesByEmployeeAndLocation(selectedLocationId))
+        .getConsumersWithUnreadNotesByEmployeeAndLocationResult;
       return JSON.parse(data);
     } catch (error) {
       console.log(error);
     }
   }
-  async function getRosterConsumersData() {
+  async function getRosterConsumersData(forceGroupFilter) {
     if ($.session.formsCaseload == true && $.loadedApp === 'forms') selectedGroupCode = 'CAS';
     const getConsumerByGroupData = {
       selectedGroupCode,
@@ -1087,7 +1078,11 @@ const roster2 = (function () {
       selectedLocationId,
       selectedDate,
     };
+
+    if (!rosterConsumers || rosterConsumers.length === 0 || forceGroupFilter) {
     rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
+    }
+
     // I am not sure why consumer location was being set to the selected location ID?
     const seenIds = {};
 
@@ -1102,11 +1097,10 @@ const roster2 = (function () {
     groupRosterConsumers();
 
     if (selectedLocationId !== '0') {
-      const consumersWithUnreadNotesResults =
-        await getConsumersWithUnreadNotesByEmployeeAndLocationData(selectedLocationId);
-      consumersWithUnreadNotes = progressNotes.createConsumersWithUnreadNotesObj(
-        consumersWithUnreadNotesResults,
+      const consumersWithUnreadNotesResults = await getConsumersWithUnreadNotesByEmployeeAndLocationData(
+        selectedLocationId,
       );
+      consumersWithUnreadNotes = progressNotes.createConsumersWithUnreadNotesObj(consumersWithUnreadNotesResults);
     } else {
       consumersWithUnreadNotes = {};
     }
@@ -1117,16 +1111,12 @@ const roster2 = (function () {
     if (!selectedDate) selectedDate = UTIL.getTodaysDate();
 
     rosterLocations = await getRosterLocationsData();
-    if (
-      !selectedLocationId ||
-      rosterLocations.filter(loc => loc.ID === selectedLocationId).length === 0
-    ) {
+    if (!selectedLocationId || rosterLocations.filter(loc => loc.ID === selectedLocationId).length === 0) {
       if (selectedLocationId !== '0') setSelectedLocationData();
     }
 
     rosterGroups = await getConsumerGroupsData(selectedLocationId);
-    if (!selectedGroupName || ($.session.formsCaseload == true && $.loadedApp === 'forms'))
-      setSelectedGroupData();
+    if (!selectedGroupName || ($.session.formsCaseload == true && $.loadedApp === 'forms')) setSelectedGroupData();
 
     locationsWithUnreadNotes = await getLocationsWithUnreadNotesData();
   }
@@ -1167,7 +1157,7 @@ const roster2 = (function () {
     totalConsumerCount = 0;
 
     await getRosterData();
-    await getRosterConsumersData();
+    await getRosterConsumersData(true);
     populateRoster();
   }
   function rosterEventSetup() {
@@ -1194,9 +1184,11 @@ const roster2 = (function () {
         $.loadedApp === 'plan' ||
         $.loadedApp === 'authorizations' ||
         $.loadedApp === 'ConsumerFinances' ||
+        $.loadedApp === 'CFEditAccount' ||
         $.loadedApp === 'employment' ||
         $.loadedApp === 'covid' ||
         $.loadedApp === 'forms' ||
+        $.loadedApp === 'assessmentHistory' ||
         // $.loadedApp === 'OOD' ||
         activeSection === 'caseNotesSSA-new' ||
         activeSection === 'caseNotes-new'
@@ -1248,9 +1240,7 @@ const roster2 = (function () {
     });
 
     SELECT_ALL_BTN.addEventListener('click', event => {
-      var consumers = [].slice.call(
-        ROSTER_WRAP.querySelectorAll('.consumerCard:not(.highlighted)'),
-      );
+      var consumers = [].slice.call(ROSTER_WRAP.querySelectorAll('.consumerCard:not(.highlighted)'));
       consumers.forEach(c => {
         if (c.classList.contains('disabled')) return;
         var consumer = c.cloneNode(true);
@@ -1338,9 +1328,7 @@ const roster2 = (function () {
     ROSTER_LIST.classList.add('roster__list');
 
     if (groupedRosterConsumers[activeGroup]) {
-      groupedRosterConsumers[activeGroup].forEach(c =>
-        ROSTER_LIST.appendChild(buildConsumerCard(c)),
-      );
+      groupedRosterConsumers[activeGroup].forEach(c => ROSTER_LIST.appendChild(buildConsumerCard(c)));
       totalConsumerCount = rosterConsumers.length;
     }
 
@@ -1361,9 +1349,7 @@ const roster2 = (function () {
   }
   function groupRosterConsumers(consumers) {
     const chunkBy = 50;
-    const chunkedArray = consumers
-      ? UTIL.chunkArray(consumers, chunkBy)
-      : UTIL.chunkArray(rosterConsumers, chunkBy);
+    const chunkedArray = consumers ? UTIL.chunkArray(consumers, chunkBy) : UTIL.chunkArray(rosterConsumers, chunkBy);
     groupedRosterConsumers = {};
     chunkedArray.forEach((a, index) => (groupedRosterConsumers[index] = a));
 
@@ -1381,6 +1367,9 @@ const roster2 = (function () {
     rosterListSelectable = selectable;
     hideDateFilter = otherOpts.hideDateFilter;
 
+    // This is only needed since the page is currently taking longer than usual to load the 3 procedures in getRosterData(). Can be removed if it goes back to normal
+    //PROGRESS.SPINNER.show('Please wait while we gather everyone up...');
+
     await getRosterData();
 
     // roster
@@ -1396,7 +1385,7 @@ const roster2 = (function () {
     ROSTER_WRAP.appendChild(ROSTER_SPINNER);
     // setup event listener
     rosterEventSetup();
-     
+
     return ROSTER_WRAP;
   }
 
@@ -1431,8 +1420,8 @@ const roster2 = (function () {
 
     totalConsumerCount = 0;
     await getRosterConsumersData();
-      populateRoster();
-      document.getElementById('searchBtn').click();
+    populateRoster();
+    document.getElementById('searchBtn').click();
   }
 
   return {

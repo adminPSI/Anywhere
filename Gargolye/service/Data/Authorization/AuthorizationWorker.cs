@@ -16,6 +16,13 @@ using System.Management.Automation.Language;
 using CrystalDecisions.Shared;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 using System.Security.Cryptography;
+using static Anywhere.service.Data.Employment.EmploymentWorker;
+using System.ServiceModel.Web;
+using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
+using static Anywhere.service.Data.ResetPassword.ResetPasswordWorker;
+using OneSpanSign.Sdk;
+using System.Reflection.Emit;
+using System.IO;
 
 namespace Anywhere.service.Data.Authorization
 {
@@ -53,10 +60,10 @@ namespace Anywhere.service.Data.Authorization
             public string service_code { get; set; }
             public string MaxUnits { get; set; }
             public string authCostFY1 { get; set; }
-            public string authCostFY2 { get; set; }    
-                
-            
-            
+            public string authCostFY2 { get; set; }
+
+
+
         }
 
         public class PageData
@@ -64,13 +71,137 @@ namespace Anywhere.service.Data.Authorization
             public PDParent[] pageDataParent { get; set; }
             public PDChild[] pageDataChild { get; set; }
         }
+
+        public class AssessmentEntries
+        {
+            public string ID { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string methodology { get; set; }
+            public string score { get; set; }
+            public string behaviorMod { get; set; }
+            public string medicalMod { get; set; }
+            public string DCMod { get; set; }
+            public string CCMod { get; set; }
+            public string priorAuthApplied { get; set; }
+            public string priorAuthReceived { get; set; }
+            public string priorAuthAmount { get; set; }
+        }
+
+        public class Score
+        {
+            public string scoreID { get; set; }
+            public string scoreDescription { get; set; }
+        }
+
+        public class VendorInfo
+        {
+            public string vendorID { get; set; }
+            public string name { get; set; }
+            public string DDNumber { get; set; }
+            public string localNumber { get; set; }
+            public string contact { get; set; }
+            public string phone { get; set; }
+            public string goodStanding { get; set; }        
+            public string takingNewReferrals { get; set; }
+            public string homeServices { get; set; }           
+            public string fundingSource { get; set; }
+            public string serviceCode { get; set; }
+        }
+
+        public class VendorGeneralEntry
+        {
+            public string vendorID { get; set; }
+            public string name { get; set; }      
+            public string contactName { get; set; }
+            public string contactPhone { get; set; }
+            public string contactEmail { get; set; }
+            public string address1 { get; set; }
+            public string address2 { get; set; }
+            public string city { get; set; }
+            public string state { get; set; }
+            public string zipCode { get; set; }
+            public string primaryPhone { get; set; }
+            public string providerFirstName { get; set; }
+            public string providerLastName { get; set; }
+            public string providerBirthDate { get; set; }
+            public string providerBuildingNumber { get; set; }
+            public string salesforceId { get; set; }
+            public string DDStateNumber { get; set; }
+            public string ein { get; set; }
+            public string submitterId { get; set; }
+            public string LocalNumber { get; set; }
+            public string ssn { get; set; }
+            public string sender { get; set; }
+            public string MHStateNumber { get; set; }
+            public string TDDStateNumber { get; set; }
+            public string NPI { get; set; }
+            public string MHNPI { get; set; }
+            public string goodStanding { get; set; }
+            public string takingNewReferrals { get; set; }
+            public string FSSVendor { get; set; }
+            public string sanctionsAdministered { get; set; }
+            public string homeServices { get; set; }
+        }
+
+        public class DropdownValue
+        {
+            public string ID { get; set; } 
+            public string Code { get; set; }
+            public string Description { get; set; }
+
+        }
+
+        public class vendorService
+        {
+            public string fundingSource { get; set; } 
+            public string serviceCode { get; set; }
+            public string serviceDescription { get; set; }
+        }
+
+        public class vendorUCR
+        {
+            public string service { get; set; }
+            public string groupSize { get; set; }
+            public string serviceLocation { get; set; }
+            public string CDBCategory { get; set; }
+            public string assessmentAcuityScore { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string UCR { get; set; }           
+        }
+
+        public class vendorProviderType
+        {
+            public string ProviderType { get; set; }       
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+            public string Notes { get; set; }
+        }
+
+        public class vendorCertifiction
+        { 
+            public string Certifiction { get; set; }
+            public string startDate { get; set; }
+            public string endDate { get; set; }
+        }
+
+        public class vendorLocationReviews
+        {
+            public string location { get; set; }
+            public string reviewType { get; set; }
+            public string dueDate { get; set; }
+            public string completedDate { get; set; }
+            public string responsibleStaff { get; set; }
+        }
+
         public PageData getAuthorizationPageData(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
             PageData pageData = new PageData();
             js.MaxJsonLength = Int32.MaxValue;
-            string parentString = getAuthorizationPageDataParent( code,  matchSource,  vendorId,  planType,  planYearStartStart,  planYearStartEnd,
-                                 planYearEndStart,  planYearEndEnd,  completedDateStart,  completedDateEnd,  selectedConsumerId);
+            string parentString = getAuthorizationPageDataParent(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
+                                 planYearEndStart, planYearEndEnd, completedDateStart, completedDateEnd, selectedConsumerId);
             PDParent[] parentObj = js.Deserialize<PDParent[]>(parentString);
 
             string childString = getAuthorizationPageDataChildren(code, matchSource, vendorId, planType, planYearStartStart, planYearStartEnd,
@@ -84,7 +215,7 @@ namespace Anywhere.service.Data.Authorization
         }
 
 
-            //Parent
+        //Parent
         public string getAuthorizationPageDataParent(string code, string matchSource, string vendorId, string planType, string planYearStartStart, string planYearStartEnd,
                                 string planYearEndStart, string planYearEndEnd, string completedDateStart, string completedDateEnd, string selectedConsumerId)
         {
@@ -101,8 +232,8 @@ namespace Anywhere.service.Data.Authorization
                 string jsonResult = "";
                 string fieldId = "Match Source";
                 sb.Clear();
-  
-                sb.Append("select p.CompletionDate,p.plan_year_start,p.plan_year_end,p.plantype,p.match_source + ' ' + ct.caption as sourceAndCaption, p.ID, p.PL_Vendor_ID as plVendorId, v.name, p.pas_id, p.RevisionNum as revisionNum "); 
+
+                sb.Append("select p.CompletionDate,p.plan_year_start,p.plan_year_end,p.plantype,p.match_source + ' ' + ct.caption as sourceAndCaption, p.ID, p.PL_Vendor_ID as plVendorId, v.name, p.pas_id, p.RevisionNum as revisionNum ");
                 sb.Append("from dba.pas as p ");
                 sb.Append("left outer join dba.code_table as ct on ct.code = p.Match_Source ");
                 sb.Append("left outer join dba.vendor as v on v.Vendor_ID = p.PL_Vendor_ID ");
@@ -112,7 +243,7 @@ namespace Anywhere.service.Data.Authorization
                 sb.AppendFormat("and (p.Match_Source like '{0}' or p.Match_Source is null) ", matchSource);
                 sb.AppendFormat("and p.planType like '{0}' ", planType);
                 sb.AppendFormat("and p.plan_year_start between '{0}' and '{1}' ", planYearStartStart, planYearStartEnd);
-                if(planYearEndStart != "" && planYearEndEnd != "")
+                if (planYearEndStart != "" && planYearEndEnd != "")
                 {
                     sb.AppendFormat("and p.plan_year_end between '{0}' and '{1}' ", planYearEndStart, planYearEndEnd);
                 }
@@ -126,7 +257,7 @@ namespace Anywhere.service.Data.Authorization
                 }
                 sb.AppendFormat("and p.CompletionDate between '{0}' and '{1}' ", completedDateStart, completedDateEnd);
                 sb.AppendFormat("and p.Id = '{0}' and p.permanent = 'Y' ", selectedConsumerId);
-                if(vendorId.Equals("%"))
+                if (vendorId.Equals("%"))
                 {
                     sb.AppendFormat("and (p.PL_Vendor_ID like '{0}' or p.PL_Vendor_ID is null) ", vendorId);
                 }
@@ -134,7 +265,7 @@ namespace Anywhere.service.Data.Authorization
                 {
                     sb.AppendFormat("and p.PL_Vendor_ID like '{0}' ", vendorId);
                 }
-                
+
                 sb.Append("order by p.CompletionDate desc ");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
@@ -147,7 +278,7 @@ namespace Anywhere.service.Data.Authorization
             catch (Exception ex)
             {
 
-                
+
             }
             return String.Empty;
         }
@@ -216,7 +347,7 @@ namespace Anywhere.service.Data.Authorization
         }
 
 
-            public string DataTableToJSONWithJSONNet(DataTable table)
+        public string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
@@ -269,7 +400,7 @@ namespace Anywhere.service.Data.Authorization
                 sb.Append("from dba.pas as p ");
                 sb.Append("left outer join dba.vendor as v on v.Vendor_ID = p.PL_Vendor_ID where active = 'Y' ");
                 sb.Append("order by vendorName");
-                
+
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
                 //FilterResults[] filterResultssObj = js.Deserialize<FilterResults[]>(jsonResult.ToString());
@@ -294,7 +425,7 @@ namespace Anywhere.service.Data.Authorization
             public MatchSources[] matchSources { get; set; }
         }
 
-        
+
         public class PlanVendors
         {
             public string vendorId { get; set; }
@@ -307,6 +438,212 @@ namespace Anywhere.service.Data.Authorization
             public string caption { get; set; }
         }
 
-        
+        public AssessmentEntries[] getAssessmentEntries(string token, string consumerIds, string methodology, string score, string startDateFrom, string startDateTo, string endDateFrom, string endDateTo, string priorAuthApplFrom, string priorAuthApplTo, string priorAuthRecFrom, string priorAuthRecTo, string priorAuthAmtFrom, string priorAuthAmtTo)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    AssessmentEntries[] entries = js.Deserialize<AssessmentEntries[]>(adg.getAssessmentEntries(token, consumerIds, methodology, score, startDateFrom, startDateTo, endDateFrom, endDateTo, priorAuthApplFrom, priorAuthApplTo, priorAuthRecFrom, priorAuthRecTo, priorAuthAmtFrom, priorAuthAmtTo, transaction));
+
+                    return entries;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+
+        }
+
+        public Score[] getScore(string token, string methodologyID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    Score[] score = js.Deserialize<Score[]>(adg.getScore(transaction, methodologyID));
+                    return score;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public VendorInfo[] getVendorInfo(string token, string vendor, string DDNumber, string localNumber, string goodStanding, string homeServices, string takingNewReferrals, string fundingSource, string serviceCode)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    VendorInfo[] vendorInfo = js.Deserialize<VendorInfo[]>(adg.getVendorInfo(token, vendor, DDNumber, localNumber, goodStanding, homeServices, takingNewReferrals, fundingSource, serviceCode, transaction));
+                    return vendorInfo;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public DropdownValue[] getVendor(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    DropdownValue[] Info = js.Deserialize<DropdownValue[]>(adg.getVendor(transaction, token));
+                    return Info;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+        public DropdownValue[] getFundingSource(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    DropdownValue[] Info = js.Deserialize<DropdownValue[]>(adg.getFundingSource(transaction, token));
+                    return Info;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public DropdownValue[] getServiceCode(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    DropdownValue[] Info = js.Deserialize<DropdownValue[]>(adg.getServiceCode(transaction, token));
+                    return Info;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public VendorGeneralEntry[] getVendorEntriesById(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    VendorGeneralEntry[] generalEntry = js.Deserialize<VendorGeneralEntry[]>(adg.getVendorEntriesById(token, vendorID, transaction));
+                    return generalEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+
+        }
+
+        public vendorService[] getVenderServicesEntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorService[] servicesEntry = js.Deserialize<vendorService[]>(adg.getVenderServicesEntries(token, vendorID, transaction));
+                    return servicesEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public vendorUCR[] getVenderUCREntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorUCR[] vendorUCR = js.Deserialize<vendorUCR[]>(adg.getVenderUCREntries(token, vendorID, transaction));
+                    return vendorUCR;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public vendorProviderType[] getProviderTypeEntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorProviderType[] vendorProviderTypeEntry = js.Deserialize<vendorProviderType[]>(adg.getProviderTypeEntries(token, vendorID, transaction));
+                    return vendorProviderTypeEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public vendorCertifiction[] getVenderCertificationEntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorCertifiction[] vendorCertifictionEntry = js.Deserialize<vendorCertifiction[]>(adg.getVenderCertificationEntries(token, vendorID, transaction));
+                    return vendorCertifictionEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public vendorLocationReviews[] getVenderLocationReviewEntries(string token, string vendorID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    vendorLocationReviews[] vendorLocationReviewsEntry = js.Deserialize<vendorLocationReviews[]>(adg.getVenderLocationReviewEntries(token, vendorID, transaction));
+                    return vendorLocationReviewsEntry;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
     }
 }

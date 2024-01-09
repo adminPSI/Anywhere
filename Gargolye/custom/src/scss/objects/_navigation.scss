@@ -102,6 +102,7 @@
   align-items: flex-start;
   padding: 0 0 0 8px;
   transition: width 500ms;
+  z-index: 100;
 
   &.toggleClosed {
     width: 75px;

@@ -84,7 +84,9 @@ const WorkSchedule = (() => {
             values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : 'Saturday', UTIL.convertFromMilitary(entry.startTime), UTIL.convertFromMilitary(entry.endTime)],
             attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }],
             onClick: (e) => {
-                handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)
+                if ($.session.EmploymentUpdate) {
+                    handleAccountTableEvents(e.target.attributes.WorkScheduleId.value) 
+                }                                
             },
             endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',
             endIconCallback: (e) => {

@@ -235,9 +235,7 @@ var notesOverview = (function () {
       currentFilterDisplay.innerHTML = `
       <p><span>Biller: </span> ${billerName} </P>
       <p><span>Consumer: </span> ${displayConsumerName} </P>
-      <p><span>${
-        $.session.applicationName === 'Gatekeeper' ? 'Billing Code: ' : 'Service Code: '
-      }</span> All </P>
+      <p><span>${$.session.applicationName === 'Gatekeeper' ? 'Billing Code: ' : 'Service Code: '}</span> All </P>
       <p><span>Review Status: </span> All </P>
       <p><span>Service Dates:</span> ${dispalyServiceDateStart} - ${dispalyServiceDateEnd} </p>
       <p><span>Created Dates:</span> ${displayDateEnteredStart} - ${dispalyDatesEnteredEnd} </p>
@@ -255,19 +253,19 @@ var notesOverview = (function () {
   }
   function buildTopBtns() {
     // custom search stuff
-      SEARCH_BTN = button.build({
-          id:'searchBtn',  
-          text: 'Search',
-          icon: 'search',
-          style: 'secondary',
-          type: 'contained',
+    SEARCH_BTN = button.build({
+      id: 'searchBtn',
+      text: 'Search',
+      icon: 'search',
+      style: 'secondary',
+      type: 'contained',
     });
 
     SEARCH_WRAP = document.createElement('div');
     SEARCH_WRAP.classList.add('consumerSearch');
     SEARCH_INPUT = document.createElement('input');
     SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
-    SEARCH_WRAP.appendChild(SEARCH_BTN);     
+    SEARCH_WRAP.appendChild(SEARCH_BTN);
     SEARCH_WRAP.appendChild(SEARCH_INPUT);
     filterBtn = button.build({
       text: 'Filter',
@@ -301,12 +299,12 @@ var notesOverview = (function () {
         showCNReportsPopup();
       },
     });
-    
+
     cnADVReportBtn = generateReports.createMainReportButton([{ text: 'Detailed Case Notes By Biller', filterValues }]);
 
     var btnWrap = document.createElement('div');
     btnWrap.classList.add('cnbtnWrap');
-    btnWrap.appendChild(filterBtn);    
+    btnWrap.appendChild(filterBtn);
     //PERMISSION// caseNoteUpdate === True means they have they
     //Can create new notes or update/delete notes.
     if ($.session.CaseNotesUpdate) btnWrap.appendChild(newNoteBtn);
@@ -316,8 +314,8 @@ var notesOverview = (function () {
     DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
     currentFilterDisplay.classList.add('filteredByData');
     DOM.ACTIONCENTER.appendChild(currentFilterDisplay);
-   
-    initFilterDisplay();     
+
+    initFilterDisplay();
   }
 
   // Table
@@ -342,6 +340,27 @@ var notesOverview = (function () {
   }
 
   function getTableData() {
+    // const cnData = await fetchData('getConsumersThatCanHaveMileageJSON', {
+    //   applicationName: 'Advisor',
+    //   attachments: '%',
+    //   billed: '%',
+    //   billerId: '7369',
+    //   billingCode: '%',
+    //   confidential: '%',
+    //   consumerId: '%',
+    //   contact: '%',
+    //   corrected: '%',
+    //   dateEnteredEnd: '2023-10-03',
+    //   dateEnteredStart: '1900-01-01',
+    //   location: '%',
+    //   need: '%',
+    //   noteText: '%%%',
+    //   overlaps: 'N',
+    //   reviewStatus: '%',
+    //   service: '%',
+    //   serviceEndDate: '2023-10-03',
+    //   serviceStartDate: '2020-09-26',
+    // });
     // var tableFilterData = {
     //   billerId,
     //   selectedRosterUserId: selectedRosterId,
@@ -439,7 +458,6 @@ var notesOverview = (function () {
           { key: 'data-consumer-id', value: consumerId },
           { key: 'data-isssanote', value: isSSANote },
         ],
-        // endIcon : (!attachcount || attachcount === '  ' || attachcount === '0') ? `<p style="display:none;">XXX</p>` : `${icons['attachment']}`,
         endIcon: thisendIcon,
         endIconCallback: e => {
           e.stopPropagation();
@@ -454,14 +472,6 @@ var notesOverview = (function () {
 
             //cnAttachment.init([], results, '', caseNoteId);
           });
-          //alert('Attach!');
-          // try {
-          //   let tableRow = document.getElementById(employer.employerId)
-          //   deleteConfirmation(employer.employerId, tableRow);
-          //   return;
-          // } catch(err) {
-          //   console.error("error: ", err);
-          // }
         },
         onClick: handleTableEvents,
       };
@@ -482,15 +492,7 @@ var notesOverview = (function () {
       'Group',
       'Attach',
     ];
-    var ADVcolumnheadings = [
-      'Service Date',
-      'Start Time',
-      'End Time',
-      'Name',
-      'Date Created',
-      'User Updated',
-      'Group',
-    ];
+    var ADVcolumnheadings = ['Service Date', 'Start Time', 'End Time', 'Name', 'Date Created', 'User Updated', 'Group'];
     $.session.applicationName === 'Gatekeeper'
       ? (thiscolumnheadings = GKcolumnheadings)
       : (thiscolumnheadings = ADVcolumnheadings);
@@ -568,8 +570,7 @@ var notesOverview = (function () {
       for (let tDi = 0; tDi < tableData.length; tDi++) {
         for (let cIdx = 0; cIdx < caseLoadRestriction.length; cIdx++) {
           if (
-            caseLoadRestriction[cIdx].id.toUpperCase() ===
-              tableData[tDi].consumerid.split('.')[0].toUpperCase() ||
+            caseLoadRestriction[cIdx].id.toUpperCase() === tableData[tDi].consumerid.split('.')[0].toUpperCase() ||
             tableData[tDi].enteredby.toUpperCase() === $.session.UserId.toUpperCase()
           ) {
             newTable.push(tableData[tDi]);
@@ -625,7 +626,7 @@ var notesOverview = (function () {
     buildMutationObserver();
     disableMiniRosterBtn();
     mainEventListeners();
-    document.getElementById('searchBtn').click();  
+    document.getElementById('searchBtn').click();
   }
 
   function initialData(callback) {
@@ -862,5 +863,6 @@ var notesOverview = (function () {
     init,
     dashHandeler,
     setFilterValFromPopup,
+    permissions_Table,
   };
 })();

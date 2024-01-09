@@ -1,0 +1,36 @@
+//===========================================
+// ICONS
+//-------------------------------------------
+[data-ui] {
+  .svgIcon {
+    display: block;
+    height: 24px;
+    width: 24px;
+
+    svg {
+      display: block;
+      fill: currentColor;
+      height: 100%;
+      width: 100%;
+    }
+
+    svg,
+    path {
+      pointer-events: none;
+    }
+  }
+
+  .iconButton {
+    cursor: pointer;
+    background-color: $whitesmoke;
+    border-radius: 2px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    outline: 1px solid $black;
+    padding: 4px;
+    z-index: 1;
+
+    .svgIcon {
+      pointer-events: none;
+    }
+  }
+}
