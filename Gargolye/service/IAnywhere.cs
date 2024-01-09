@@ -534,7 +534,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getUserPermissions/")]
-        AnywhereWorker.UserPermissions[] getUserPermissions(string token);
+        AnywhereWorker.PermissionObject[] getUserPermissions(string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

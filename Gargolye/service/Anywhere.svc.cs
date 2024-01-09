@@ -38,6 +38,7 @@ using System.Management.Automation.Language;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAssessmentWorker;
+using static Anywhere.service.Data.AnywhereWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 using static Anywhere.service.Data.CaseNotesWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
@@ -500,7 +501,8 @@ namespace Anywhere
             return dg.updatePortrait(token, employeeUserName, imageFile, id, portraitPath);
         }
 
-        public AnywhereWorker.UserPermissions[] getUserPermissions(string token)
+        public AnywhereWorker.PermissionObject[] getUserPermissions(string token)
+
         {
             return anywhereWorker.getUserPermissions(token);
         }

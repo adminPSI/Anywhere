@@ -1092,7 +1092,8 @@ namespace Anywhere.Data
         public string getUserPermissions(string token)
         {
             if (tokenValidator(token) == false) return null;
-            logger.debug("getCurrentUserApprovedShifts ");
+            logger.debug("getUserPermissions " + token);
+
             List<string> list = new List<string>();
             list.Add(token);
             string text = "CALL DBA.ANYW_User_Permissions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
@@ -1102,8 +1103,10 @@ namespace Anywhere.Data
             }
             catch (Exception ex)
             {
-                logger.error("698", ex.Message + "ANYW_User_Permissions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "698: error ANYW_User_Permissions";
+
+                logger.error("653", ex.Message + "ANYW_User_Permissions(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "653: error ANYW_User_Permissions";
+
             }
         }
 
