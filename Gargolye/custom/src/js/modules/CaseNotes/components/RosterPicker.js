@@ -268,7 +268,6 @@
         this.rosterWrapEle.appendChild(gridAnimationWrapper);
 
         // SET REFERENCE TO DOM NODE ON DATA OBJ
-        // console.log(this.consumers[consumer.id] === consumer);
         consumer.cardEle = rosterCard.rootElement;
       });
   };

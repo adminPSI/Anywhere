@@ -12,6 +12,7 @@ const CaseNotes = (() => {
   let selectedDate = null;
   let selectedServiceCode;
   let updatedInputs = {};
+  let allowGroupNotes = false;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -105,7 +106,7 @@ const CaseNotes = (() => {
     // else - enable dropdown, make required
   }
   function checkGroupNotesPermission() {
-    let allowGroupNotes;
+    allowGroupNotes;
 
     if ($.session.applicationName === 'Gatekeeper') {
       allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
@@ -197,7 +198,6 @@ const CaseNotes = (() => {
     });
 
     const overlap = cnData.getOverlapData();
-    console.log(overlap);
 
     return overlap;
   }
@@ -453,11 +453,11 @@ const CaseNotes = (() => {
   }
   // ATTACHMENT DELETE
   async function onFileDelete(e) {
-    console.log(e.target);
-    console.log('File delete from form', e.detail);
+    // console.log(e.target);
+    // console.log('File delete from form', e.detail);
 
     attachmentsForDelete.push(e.detail);
-    console.log(attachmentsForDelete);
+    // console.log(attachmentsForDelete);
   }
   // CHANGE \ KEYUP
   function onTimeChange(target) {
@@ -839,7 +839,6 @@ const CaseNotes = (() => {
   // OVERVIEW CARDS
   //--------------------------------------------------
   async function onOverviewCardDelete(caseNoteId) {
-    console.log('delete', caseNoteId);
     deleteNote(caseNoteId);
   }
   async function onOverviewCardEdit(noteId) {
@@ -849,7 +848,6 @@ const CaseNotes = (() => {
       noteId: noteId,
     });
     caseNoteEditData = data.getCaseNoteEditJSONResult[0];
-    console.log(caseNoteEditData);
 
     caseNoteId = noteId;
     caseNoteGroupId = caseNoteEditData.groupid;
@@ -859,9 +857,12 @@ const CaseNotes = (() => {
     attachmentsForDelete = [];
 
     rosterPicker.setSelectedConsumers(selectedConsumers, true);
-    rosterPicker.toggleRosterDisabled(true, isReadOnly);
     setConsumerRelatedDropdowns();
     onServiceCodeChange(caseNoteEditData.totaldoctime);
+
+    if (!allowGroupNotes) {
+      rosterPicker.toggleRosterDisabled(true, isReadOnly);
+    }
 
     cnForm.populate({
       serviceCode: caseNoteEditData.mainbillingorservicecodeid,

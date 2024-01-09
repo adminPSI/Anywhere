@@ -320,7 +320,6 @@
    * @example
    * const original = 'reallyLongfilename.png';
    * const truncated = truncateFilename(original, 15);
-   * console.log(truncated);  // Output will be "real...ame.png"
    */
   function truncateFilename(filename, maxLength = 20) {
     const fileExtension = filename.split('.').pop();
