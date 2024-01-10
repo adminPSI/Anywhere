@@ -27,6 +27,7 @@ using System.ServiceModel.Web;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
 using static Anywhere.service.Data.DocumentConversion.DisplayPlanReportAndAttachments;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere
 {
@@ -4041,6 +4042,21 @@ namespace Anywhere
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/getconsumerForms/")]
         Anywhere.service.Data.FormWorker.consumerForm[] getconsumerForms(string token, string userId, string consumerId, string hasAssignedFormTypes);
+
+        //Waiting List Module
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getLandingPageForConsumer/")]
+        LandingPageInfo[] getLandingPageForConsumer(string token, double consumerId);
+
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getWaitingListAssessment/")]
+        WaitingList[] getWaitingListAssessment(int waitingListAssessmentId);
 
         //OOD Module
 

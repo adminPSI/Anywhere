@@ -27,6 +27,7 @@ using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
 using Anywhere.service.Data.Transportation;
+using Anywhere.service.Data.WaitingListAssessment;
 using Bytescout.PDF;
 using OODForms;
 using PDFGenerator;
@@ -46,6 +47,7 @@ using static Anywhere.service.Data.Employment.EmploymentWorker;
 using static Anywhere.service.Data.OODWorker;
 using static Anywhere.service.Data.PlanServicesAndSupports.ServicesAndSupportsWorker;
 using static Anywhere.service.Data.ReportBuilder.ReportBuilderWorker;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere
 {
@@ -109,6 +111,7 @@ namespace Anywhere
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
         OODFormWorker OODfw = new OODFormWorker();
+        WaitingListWorker wlw = new WaitingListWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -2788,6 +2791,18 @@ namespace Anywhere
         {
             fw.removeFormsLock(formId, userId);
         }
+
+        //Waiting List Module
+        public LandingPageInfo[] getLandingPageForConsumer(string token, double consumerId)
+        {
+            return wlw.getLandingPageForConsumer(token, consumerId);
+        }
+
+        public WaitingList[] getWaitingListAssessment(int waitingListAssessmentId)
+        {
+            return wlw.getWaitingListAssessment(waitingListAssessmentId);
+        }
+
 
         //OOD Module
 

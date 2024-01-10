@@ -38,6 +38,22 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
+        public string getWaitingListAssessment(int waitingListAssessmentId)
+        {            
+            List<string> list = new List<string>();
+            list.Add(waitingListAssessmentId.ToString());
+            string text = "CALL DBA.ANYW_WaitingList_GetAssessment(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_WaitingList_GetAssessment(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_WaitingList_GetAssessment";
+            }
+        }
+
         public string removeUnsavableNoteText(string note)
         {
             if (note == "" || note is null)
