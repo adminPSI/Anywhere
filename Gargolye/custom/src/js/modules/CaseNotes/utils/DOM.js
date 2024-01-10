@@ -193,10 +193,6 @@
    *
    * @param {String} str - The string to be checked for HTML tags.
    * @returns {Boolean} - True if the string contains HTML tags, false otherwise.
-   *
-   * @example
-   * console.log(containsHTML("Hello, World!"));  // Output: false
-   * console.log(containsHTML("<b>Hello, World!</b>"));  // Output: true
    */
   function stringContainsHTML(str) {
     const regExp = /<[^>]*>/g;
