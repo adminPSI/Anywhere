@@ -23,6 +23,7 @@ using Anywhere.service.Data.PlanIntroduction;
 using Anywhere.service.Data.PlanOutcomes;
 using Anywhere.service.Data.PlanServicesAndSupports;
 using Anywhere.service.Data.PlanSignature;
+using Anywhere.service.Data.PlanValidation;
 using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
@@ -110,6 +111,7 @@ namespace Anywhere
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
         OODFormWorker OODfw = new OODFormWorker();
+        PlanValidationWorker pv = new PlanValidationWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -3685,6 +3687,12 @@ namespace Anywhere
             }
 
             return cf.getCFWidgetConsumers(token);
+        }
+
+        //Plan Validation
+        public PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId)
+        {
+            return pv.getContactValidationData(token, planId);
         }
     }
 }

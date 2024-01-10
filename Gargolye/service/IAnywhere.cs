@@ -16,6 +16,7 @@ using Anywhere.service.Data.PlanIntroduction;
 using Anywhere.service.Data.PlanOutcomes;
 using Anywhere.service.Data.PlanServicesAndSupports;
 using Anywhere.service.Data.PlanSignature;
+using Anywhere.service.Data.PlanValidation;
 using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.Transportation;
@@ -4927,6 +4928,15 @@ namespace Anywhere
                RequestFormat = WebMessageFormat.Json,
                UriTemplate = "/getCFWidgetConsumers/")]
         ConsumerFinancesWorker.ConsumerName[] getCFWidgetConsumers(string token);
+
+        // Plan Validation
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/getContactValidationData/")]
+        PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId);
     }
 
 

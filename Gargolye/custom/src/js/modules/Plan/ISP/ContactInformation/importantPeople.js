@@ -206,6 +206,10 @@ const isp_ci_importantPeople = (() => {
         );
       } else {
         //Update
+        let thisPhone = (extVal !== '') ? UTIL.formatPhoneNumber(phoneVal) + '  ext. ' + extVal : UTIL.formatPhoneNumber(phoneVal);
+        let thisPhone2 = (phoneVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  : '';
+         thisPhone2 = (extVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  + '  ext. ' + extVal2 : UTIL.formatPhoneNumber(phoneVal2);
+
         const data = {
           token: $.session.Token,
           importantPersonId: popupData.importantPersonId,
@@ -225,8 +229,10 @@ const isp_ci_importantPeople = (() => {
         table.updateRows(
           'isp_ci_importantPeopleTable',
           [
+            
             {
-              values: [typeVal, nameVal, addressVal, emailVal, UTIL.formatPhoneNumber(phoneVal)],
+              
+              values: [typeVal, nameVal, addressVal, emailVal, thisPhone + '\n' + thisPhone2],
               id: `ci-impPeople-${popupData.importantPersonId}`,
               onClick: () => {
                 tablePopup(data, false);
@@ -598,8 +604,11 @@ const isp_ci_importantPeople = (() => {
 
     if (rawPeopleTableData) {
       const tableData = rawPeopleTableData.map(d => {
+        let thisPhone = (d.phoneExt !== '') ? UTIL.formatPhoneNumber(d.phone) + '  ext. ' + d.phoneExt : UTIL.formatPhoneNumber(d.phone);
+        let thisPhone2 = (d.phone2 !== '') ? UTIL.formatPhoneNumber(d.phone2)  : '';
+         thisPhone2 = (d.phone2Ext !== '') ? UTIL.formatPhoneNumber(d.phone2)  + '  ext. ' + d.phone2Ext : UTIL.formatPhoneNumber(d.phone2);
         return {
-          values: [d.type, d.name, d.address, d.email, UTIL.formatPhoneNumber(d.phone)],
+          values: [d.type, d.name, d.address, d.email, thisPhone + '\n' + thisPhone2],
           id: `ci-impPeople-${d.importantPersonId}`,
           onClick: () => {
             tablePopup(d, false);

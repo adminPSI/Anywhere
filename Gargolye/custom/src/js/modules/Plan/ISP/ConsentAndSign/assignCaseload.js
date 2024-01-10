@@ -158,8 +158,13 @@ const csAssignCaseload = (() => {
     });
     const popupMessage = document.createElement('p');
     popupMessage.classList.add('popupMessage');
-    popupMessage.innerText =
-      '*Must select a Case Manager and at least one consumer before clicking Assign button.';
+    
+    if ($.session.applicationName === 'Gatekeeper') {
+      popupMessage.innerText ='*Must select a Case Manager and at least one consumer before clicking Assign button.';
+    } else {
+      popupMessage.innerText ='*Must select a QIDP and at least one consumer before clicking Assign button.';
+    }
+    
 
     const innerWrap = document.createElement('div');
     innerWrap.classList.add('peopleListWrap');
@@ -169,7 +174,38 @@ const csAssignCaseload = (() => {
     caseManagersContainer.classList.add('assignCaseLoadPeopleList');
 
     const cmHeading = document.createElement('p');
-    cmHeading.innerText = 'Select a Case Manager';
+
+    if ($.session.applicationName === 'Gatekeeper') {
+      cmHeading.innerText = 'Select a Case Manager';
+    } else {
+      cmHeading.innerText = 'Select a QIDP';
+    }
+
+    CM_SEARCH_BTN = button.build({
+      id: 'searchBtn',
+      text: 'Search',
+      icon: 'search',
+      style: 'secondary',
+      type: 'contained',
+    });
+
+    CM_SEARCH_WRAP = document.createElement('div');
+    CM_SEARCH_WRAP.classList.add('consumerSearch');
+    CM_SEARCH_INPUT = document.createElement('input');
+    ($.session.applicationName === 'Gatekeeper') ? CM_SEARCH_INPUT.setAttribute('placeholder', 'search case managers') : CM_SEARCH_INPUT.setAttribute('placeholder', 'search QIDPs');
+    CM_SEARCH_WRAP.appendChild(CM_SEARCH_BTN);
+    CM_SEARCH_WRAP.appendChild(CM_SEARCH_INPUT);
+    CM_filterBtn = button.build({
+      text: 'Filter',
+      icon: 'filter',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'filterBtn',
+      // callback: showFilterPopup
+      callback: () => {
+        cnFilters.init(filterValues);
+      },
+    });
 
     const multiSelectBodyCM = document.createElement('div');
     caseManagersfromOptionsTable.forEach(person => {
@@ -200,6 +236,24 @@ const csAssignCaseload = (() => {
     });
 
     caseManagersContainer.appendChild(cmHeading);
+  
+    var CM_btnWrap = document.createElement('div');
+    CM_btnWrap.classList.add('cnbtnWrap');
+    CM_btnWrap.appendChild(CM_filterBtn);
+
+    caseManagersContainer.appendChild(CM_SEARCH_WRAP);
+
+    CM_SEARCH_BTN.addEventListener('click', event => {
+      CM_SEARCH_WRAP.classList.toggle('searchOpen');
+      CM_SEARCH_INPUT.value = '';
+      CM_SEARCH_INPUT.focus();
+    });
+    CM_SEARCH_INPUT.addEventListener('keyup', event => {
+      if (event.keyCode === 13) {
+        caseManagerSearch(event.target.value);
+      }
+    });
+   
     caseManagersContainer.appendChild(multiSelectBodyCM);
 
     // Consumers
@@ -208,6 +262,32 @@ const csAssignCaseload = (() => {
 
     const cHeading = document.createElement('p');
     cHeading.innerText = 'Select one (or multiple) consumers';
+
+    C_SEARCH_BTN = button.build({
+      id: 'searchBtn',
+      text: 'Search',
+      icon: 'search',
+      style: 'secondary',
+      type: 'contained',
+    });
+  
+    C_SEARCH_WRAP = document.createElement('div');
+    C_SEARCH_WRAP.classList.add('consumerSearch');
+    C_SEARCH_INPUT = document.createElement('input');
+    C_SEARCH_INPUT.setAttribute('placeholder', 'search consumers');
+    C_SEARCH_WRAP.appendChild(C_SEARCH_BTN);
+    C_SEARCH_WRAP.appendChild(C_SEARCH_INPUT);
+    C_filterBtn = button.build({
+      text: 'Filter',
+      icon: 'filter',
+      style: 'secondary',
+      type: 'contained',
+      classNames: 'filterBtn',
+      // callback: showFilterPopup
+      callback: () => {
+        cnFilters.init(filterValues);
+      },
+    });  
 
     const multiSelectBodyC = document.createElement('div');
     consumerswithSaleforceIds.forEach(person => {
@@ -233,8 +313,26 @@ const csAssignCaseload = (() => {
     });
 
     consumersContainer.appendChild(cHeading);
+  
+    var C_btnWrap = document.createElement('div');
+    C_btnWrap.classList.add('cnbtnWrap');
+    C_btnWrap.appendChild(C_filterBtn);
+
+    consumersContainer.appendChild(C_SEARCH_WRAP);
+
     consumersContainer.appendChild(multiSelectBodyC);
 
+      C_SEARCH_BTN.addEventListener('click', event => {
+      C_SEARCH_WRAP.classList.toggle('searchOpen');
+      C_SEARCH_INPUT.value = '';
+      C_SEARCH_INPUT.focus();
+    });
+    C_SEARCH_INPUT.addEventListener('keyup', event => {
+      if (event.keyCode === 13) {
+        consumerSearch(event.target.value);
+      }
+    });
+ 
     // Action Buttons
     assignBtn = button.build({
       text: 'ASSIGN',
@@ -270,6 +368,54 @@ const csAssignCaseload = (() => {
     assignCaseLoadPopup.appendChild(btnWrap);
 
     POPUP.show(assignCaseLoadPopup);
+  }
+
+  function caseManagerSearch(searchValue) {
+    searchValue = searchValue.toLowerCase();
+    // gather all names shown
+    //reset the array containing list of consumers that are being displayed
+    displayedCaseManagers = [searchValue];
+    caseManagersfromOptionsTable.forEach(caseManager => {
+      var fullName = caseManager.name.toLowerCase();
+     // var fullNameReversed = `${lastName} ${firstName}`;
+      var matchesName = fullName.indexOf(searchValue);
+    //  var matchesNameReverse = fullNameReversed.indexOf(searchValue);
+     // var consumer = document.getElementById(consumer.id);
+      var thisCaseManager = document.querySelector(`[data-personid="${caseManager.id}"]`);
+
+      if (matchesName !== -1 ) {
+        thisCaseManager.classList.remove('hidden');
+        displayedCaseManagers.push(caseManager.id);
+      } else {
+        thisCaseManager.classList.add('hidden');
+        var index = displayedCaseManagers.indexOf(caseManager.id);
+        if (index > -1) displayedCaseManagers.splice(index, 1);
+      }
+    });
+  }
+
+  function consumerSearch(searchValue) {
+    searchValue = searchValue.toLowerCase();
+    // gather all names shown
+    //reset the array containing list of consumers that are being displayed
+    displayedConsumers = [searchValue];
+    consumerswithSaleforceIds.forEach(consumer => {
+      var fullName = consumer.name.toLowerCase();
+     // var fullNameReversed = `${lastName} ${firstName}`;
+      var matchesName = fullName.indexOf(searchValue);
+    //  var matchesNameReverse = fullNameReversed.indexOf(searchValue);
+     // var consumer = document.getElementById(consumer.id);
+      var thisConsumer = document.querySelector(`[data-personid="${consumer.id}"]`);
+
+      if (matchesName !== -1 ) {
+        thisConsumer.classList.remove('hidden');
+        displayedConsumers.push(consumer.id);
+      } else {
+        thisConsumer.classList.add('hidden');
+        var index = displayedConsumers.indexOf(consumer.id);
+        if (index > -1) displayedConsumers.splice(index, 1);
+      }
+    });
   }
 
   return {
