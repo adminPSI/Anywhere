@@ -884,7 +884,7 @@ const servicesSupports = (() => {
     servicesDropdownSelectedText = serviceName;
 
     // check for matching funding source and service names
-    const matchingRows = checkForMatchingFundingSourceAndSeriviceNames(selectedPaidSupportRows);
+    //const matchingRows = checkForMatchingFundingSourceAndSeriviceNames(selectedPaidSupportRows);
 
     const providerNameDropdown = dropdown.build({
       dropdownId: 'providerNameDropdownPS',
@@ -896,9 +896,9 @@ const servicesSupports = (() => {
         toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn);
       },
     });
-    if (!matchingRows) {
-      input.disableInputField(providerNameDropdown);
-    }
+    // if (!matchingRows) {
+    //   input.disableInputField(providerNameDropdown);
+    // }
 
     const beginDateInput = input.build({
       label: 'Begin Date',
