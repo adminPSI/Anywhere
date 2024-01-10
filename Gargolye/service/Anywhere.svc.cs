@@ -23,6 +23,7 @@ using Anywhere.service.Data.PlanIntroduction;
 using Anywhere.service.Data.PlanOutcomes;
 using Anywhere.service.Data.PlanServicesAndSupports;
 using Anywhere.service.Data.PlanSignature;
+using Anywhere.service.Data.PlanValidation;
 using Anywhere.service.Data.ReportBuilder;
 using Anywhere.service.Data.ResetPassword;
 using Anywhere.service.Data.SimpleMar;
@@ -38,6 +39,7 @@ using System.Management.Automation.Language;
 using System.Text;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.AnywhereAssessmentWorker;
+using static Anywhere.service.Data.AnywhereWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 using static Anywhere.service.Data.CaseNotesWorker;
 using static Anywhere.service.Data.ConsumerFinances.ConsumerFinancesWorker;
@@ -109,6 +111,7 @@ namespace Anywhere
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
         OODFormWorker OODfw = new OODFormWorker();
+        PlanValidationWorker pv = new PlanValidationWorker();
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -500,7 +503,8 @@ namespace Anywhere
             return dg.updatePortrait(token, employeeUserName, imageFile, id, portraitPath);
         }
 
-        public AnywhereWorker.UserPermissions[] getUserPermissions(string token)
+        public AnywhereWorker.PermissionObject[] getUserPermissions(string token)
+
         {
             return anywhereWorker.getUserPermissions(token);
         }
@@ -3683,6 +3687,12 @@ namespace Anywhere
             }
 
             return cf.getCFWidgetConsumers(token);
+        }
+
+        //Plan Validation
+        public PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId)
+        {
+            return pv.getContactValidationData(token, planId);
         }
     }
 }

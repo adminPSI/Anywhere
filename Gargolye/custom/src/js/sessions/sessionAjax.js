@@ -752,6 +752,7 @@ function getUserPermissions(callback) {
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
     success: function (response, status, xhr) {
+
       $.session.permissionString = response.getUserPermissionsResult;
 
       const caseNotesPerm = $.session.permissionString.find(obj => obj.window_name === 'EnableCaseNotes');

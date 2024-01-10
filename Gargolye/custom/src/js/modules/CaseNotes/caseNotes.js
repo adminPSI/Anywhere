@@ -12,6 +12,11 @@ const CaseNotes = (() => {
   let selectedDate = null;
   let selectedServiceCode;
   let updatedInputs = {};
+  let allowGroupNotes = false;
+  //--------------------------
+  // PERMISSIONS
+  //--------------------------
+  let isReadOnly;
   //--------------------------
   // DOM
   //--------------------------
@@ -67,19 +72,10 @@ const CaseNotes = (() => {
 
   // UTILS
   //--------------------------------------------------
-  function isReadOnly(credit) {
-    // isReadyonly does same thing as checkIfCredit
-    // credit comes from review data
-    return credit === 'Y' || credit === '-1' ? true : false;
-  }
   function isNoteConfidential() {
     // old function = checkConfidential
   }
   function setPermissions() {
-    const viewOnly = $.session.CaseNotesUpdate ? false : true;
-
-    let isReadOnly;
-
     //TODO-ASH: check if case note is batched | *ONLY FOR REVIEW*
     // batched notes are readonly, if batched status === '' it is NOT BATCHED
 
@@ -110,7 +106,7 @@ const CaseNotes = (() => {
     // else - enable dropdown, make required
   }
   function checkGroupNotesPermission() {
-    let allowGroupNotes;
+    allowGroupNotes;
 
     if ($.session.applicationName === 'Gatekeeper') {
       allowGroupNotes = cnData.allowGroupNotes(selectedServiceCode);
@@ -202,7 +198,6 @@ const CaseNotes = (() => {
     });
 
     const overlap = cnData.getOverlapData();
-    console.log(overlap);
 
     return overlap;
   }
@@ -415,6 +410,13 @@ const CaseNotes = (() => {
     cnForm.buttons['update'].toggleVisibility(caseNoteId ? false : true);
     cnForm.buttons['delete'].toggleVisibility(caseNoteId ? false : true);
   }
+  function toggleFormButtonsDisabled(isDisabled) {
+    cnForm.buttons['submit'].toggleDisabled(isDisabled);
+    cnForm.buttons['saveAndNew'].toggleDisabled(isDisabled);
+    cnForm.buttons['update'].toggleDisabled(isDisabled);
+    cnForm.buttons['delete'].toggleDisabled(isDisabled);
+    cnForm.buttons['cancel'].toggleDisabled(isDisabled);
+  }
   // DROPDOWNS
   async function updateVendorDropdownByConsumer() {
     await cnData.fetchVendorDropdownData({
@@ -451,11 +453,11 @@ const CaseNotes = (() => {
   }
   // ATTACHMENT DELETE
   async function onFileDelete(e) {
-    console.log(e.target);
-    console.log('File delete from form', e.detail);
+    // console.log(e.target);
+    // console.log('File delete from form', e.detail);
 
     attachmentsForDelete.push(e.detail);
-    console.log(attachmentsForDelete);
+    // console.log(attachmentsForDelete);
   }
   // CHANGE \ KEYUP
   function onTimeChange(target) {
@@ -801,10 +803,6 @@ const CaseNotes = (() => {
       if ($.session.applicationName === 'Gatekeeper') {
         cnDocTimer.clear();
       }
-    } else {
-      if ($.session.applicationName === 'Gatekeeper') {
-        cnDocTimer.start(saveData.documentationTime);
-      }
     }
   }
 
@@ -841,7 +839,6 @@ const CaseNotes = (() => {
   // OVERVIEW CARDS
   //--------------------------------------------------
   async function onOverviewCardDelete(caseNoteId) {
-    console.log('delete', caseNoteId);
     deleteNote(caseNoteId);
   }
   async function onOverviewCardEdit(noteId) {
@@ -851,7 +848,6 @@ const CaseNotes = (() => {
       noteId: noteId,
     });
     caseNoteEditData = data.getCaseNoteEditJSONResult[0];
-    console.log(caseNoteEditData);
 
     caseNoteId = noteId;
     caseNoteGroupId = caseNoteEditData.groupid;
@@ -862,7 +858,11 @@ const CaseNotes = (() => {
 
     rosterPicker.setSelectedConsumers(selectedConsumers, true);
     setConsumerRelatedDropdowns();
-    onServiceCodeChange(caseNoteEditData.documentationTime);
+    onServiceCodeChange(caseNoteEditData.totaldoctime);
+
+    if (!allowGroupNotes) {
+      rosterPicker.toggleRosterDisabled(true, isReadOnly);
+    }
 
     cnForm.populate({
       serviceCode: caseNoteEditData.mainbillingorservicecodeid,
@@ -884,6 +884,12 @@ const CaseNotes = (() => {
       await cnData.fetchAttachmentsGK(caseNoteId);
       caseNoteAttachmentsEditData = cnData.getAttachmentsList();
       cnForm.inputs['attachment'].addAttachments(caseNoteAttachmentsEditData);
+    }
+
+    if (caseNoteEditData.credit === 'Y' || caseNoteEditData.credit === '-1') {
+      cnForm.disableFormInputs();
+      toggleFormButtonsDisabled();
+      rosterPicker.toggleRosterDisabled(true, true);
     }
 
     //TODO-ASH: Add entered by (caseNoteEditData.originaluserfullname, caseNoteEditData.originaluserid)
@@ -1000,6 +1006,7 @@ const CaseNotes = (() => {
           label: 'Location',
           id: 'location',
           disabled: true,
+          includeBlankOption: true,
         },
         //service
         {
@@ -1007,6 +1014,7 @@ const CaseNotes = (() => {
           label: 'Service',
           id: 'service',
           disabled: true,
+          includeBlankOption: true,
         },
         //need
         {
@@ -1014,6 +1022,7 @@ const CaseNotes = (() => {
           label: 'Need',
           id: 'need',
           disabled: true,
+          includeBlankOption: true,
         },
         //contact
         {
@@ -1021,6 +1030,7 @@ const CaseNotes = (() => {
           label: 'Contact',
           id: 'contact',
           disabled: true,
+          includeBlankOption: true,
         },
         //vendor
         {
@@ -1111,6 +1121,8 @@ const CaseNotes = (() => {
     overlapPopup.renderTo(_DOM.ACTIONCENTER);
   }
   async function init() {
+    setPermissions();
+
     selectedDate = dates.getTodaysDateObj();
     caseManagerId = $.session.PeopleId;
 
@@ -1127,6 +1139,13 @@ const CaseNotes = (() => {
     initComponents();
     await loadPage();
     await populatePage();
+
+    // if (isReadOnly) {
+    //   cnForm.disableFormInputs();
+    //   toggleFormButtonsDisabled();
+    //   rosterPicker.toggleRosterDisabled(true, true);
+    //   return;
+    // }
 
     checkRequiredFields();
   }

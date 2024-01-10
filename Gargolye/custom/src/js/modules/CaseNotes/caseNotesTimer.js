@@ -265,7 +265,7 @@
       const currentTime = Date.now();
       this.elapsedTimeInSeconds = Math.floor((currentTime - this.startTime) / 1000) + this.timeOffset;
       this.timeDisplay.innerText = dates.formatSecondsToFullTime(this.elapsedTimeInSeconds);
-      console.log(`Elapsed Time: ${this.elapsedTimeInSeconds} seconds`);
+      //console.log(`Elapsed Time: ${this.elapsedTimeInSeconds} seconds`);
     }, 1000);
 
     // clear existing inactivity interval
@@ -290,7 +290,6 @@
     clearTimeout(this.inactivityTimeoutId);
     this.intervalId = null;
     this.inactivityTimeoutId = null;
-    console.log('Timer has stopped.');
 
     return this;
   };

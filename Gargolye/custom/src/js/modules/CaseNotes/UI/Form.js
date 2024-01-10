@@ -8,7 +8,9 @@
    * Default configuration
    * @type {Object}
    */
-  const DEFAULT_OPTIONS = {};
+  const DEFAULT_OPTIONS = {
+    isReadOnly: false,
+  };
 
   /**
    * Constructor function for creating a Form component.
@@ -129,6 +131,10 @@
     this.buttons['cancel'] = cancelButton;
 
     this.form.appendChild(btnWrap);
+
+    // if (this.options.isReadOnly) {
+    //   this.disableFormInputs();
+    // }
   };
 
   Form.prototype._setupEvents = function () {
@@ -249,6 +255,17 @@
     // clear all values from form inputs
     for (inputName in this.inputs) {
       this.inputs[inputName].clear();
+    }
+  };
+
+  /**
+   * Disables all inputs within form
+   *
+   * @function
+   */
+  Form.prototype.disableFormInputs = function () {
+    for (inputName in this.inputs) {
+      this.inputs[inputName].toggleDisabled(true);
     }
   };
 
