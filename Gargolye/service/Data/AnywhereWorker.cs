@@ -233,12 +233,12 @@ namespace Anywhere.service.Data
             return strBuilder.ToString();
         }
 
-        public UserPermissions[] getUserPermissions(string token)
-        {
-            string permissionString = dg.getUserPermissions(token);
-            UserPermissions[] dropdownObj = js.Deserialize<UserPermissions[]>(permissionString);
-            return dropdownObj;
-        }
+        //public UserPermissions[] getUserPermissions(string token)
+        //{
+        //    string permissionString = dg.getUserPermissions(token);
+        //    UserPermissions[] dropdownObj = js.Deserialize<UserPermissions[]>(permissionString);
+        //    return dropdownObj;
+        //}
 
         public class UserPermissions
         {

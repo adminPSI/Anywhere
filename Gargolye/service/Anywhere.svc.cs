@@ -113,6 +113,9 @@ namespace Anywhere
         ReportBuilderWorker rbw = new ReportBuilderWorker();
         AuthorizationWorker authWorker = new AuthorizationWorker();
         OODFormWorker OODfw = new OODFormWorker();
+        PlanValidationWorker pv = new PlanValidationWorker();
+        WaitingListWorker wlw = new WaitingListWorker();
+
         public AnywhereService()
         {
             log4net.Config.XmlConfigurator.Configure();
