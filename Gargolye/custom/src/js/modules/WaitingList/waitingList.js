@@ -26,7 +26,10 @@ const WaitingList = (() => {
   //--------------------------------------------------
   function attachEvents() {}
   async function populatePage() {}
-  async function loadPage() {}
+  async function loadPage() {
+    rosterPicker.renderTo(moduleWrap);
+    wlReviewTable.renderTo(moduleWrap);
+  }
   function loadPageSkeleton() {
     // prep actioncenter
     _DOM.ACTIONCENTER.innerHTML = '';
@@ -48,10 +51,35 @@ const WaitingList = (() => {
       consumerRequired: true,
     });
 
-    wlForms = {};
+    wlReviewTable = new Table({
+      headings: [
+        {
+          text: 'Interview',
+          type: 'date',
+        },
+        {
+          text: 'Conclusion',
+          type: 'string',
+        },
+        {
+          text: 'Conclusion',
+          type: 'date',
+        },
+        {
+          text: 'Snet To DODD',
+          type: 'date',
+        },
+      ],
+    });
   }
 
-  function init() {}
+  async function init() {
+    loadPageSkeleton();
+
+    initComponents();
+    await loadPage();
+    await populatePage();
+  }
 
   return {
     init,

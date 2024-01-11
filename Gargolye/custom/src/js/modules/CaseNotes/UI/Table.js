@@ -79,8 +79,6 @@
    * Builds & Populates Table
    */
   Table.prototype._build = function () {
-    const data = this.options.data;
-
     //* create table
     this.rootElement = _DOM.createElement('div', { class: 'ui_table' });
     const tableNav = _DOM.createElement('div', { class: 'ui-table__nav' });
@@ -95,7 +93,7 @@
     this.rootElement.appendChild(this.table);
 
     //* populate table header
-    data.headings.forEach(heading => {
+    this.options.headings.forEach(heading => {
       const cell = _DOM.createElement('th', {
         text: heading.text,
         class: 'sortable',
