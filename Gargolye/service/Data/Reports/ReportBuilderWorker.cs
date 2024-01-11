@@ -61,6 +61,28 @@ namespace Anywhere.service.Data.ReportBuilder
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
+
+                    // GK only
+                case "Detail Report":
+                    result = generateGKDetailedCaseNotesReport(token, reportType, reportData);
+
+                    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+
+                    break;
+
+                case "Time Analysis Report":
+                    result = generateTimeAnalysisCaseNotesReport(token, reportType, reportData);
+
+                    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+
+                    break;
+
+                case "TXX Case Notes":
+                    result = generateTXXCaseNotesReport(token, reportType, reportData);
+
+                    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
+
+                    break;
                 //Workshop
                 case "Job Activity Detail Report by Employee and Job":
                     result = generatejobActivityReport(token, reportType, reportData);
@@ -144,6 +166,43 @@ namespace Anywhere.service.Data.ReportBuilder
 
             result = rbdg.generateDetailedCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
                 reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billingCode, reportData.service, reportData.need, reportData.contact);
+
+            return result;
+        }
+
+        public string generateGKDetailedCaseNotesReport(string token, string reportType, ReportData reportData)
+        {
+            string category = "Case Notes";
+            string title = "Detailed Case Notes";
+            string reportServerList = "Primary";
+            string result = "";
+
+            result = rbdg.generateDetailedCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
+                reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billingCode, reportData.service, reportData.need, reportData.contact);
+
+            return result;
+        }
+
+        public string generateTimeAnalysisCaseNotesReport(string token, string reportType, ReportData reportData)
+        {
+            string category = "Case Notes";
+            string title = "Case Notes Time Analysis with Doc and Travel Time ANYWTEST";
+            string reportServerList = "Primary";
+            string result = "";
+
+            result = rbdg.generateCaseNoteTimeReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.billingCode, reportData.serviceDateStart, reportData.serviceDateEnd);
+
+            return result;
+        }
+
+        public string generateTXXCaseNotesReport(string token, string reportType, ReportData reportData)
+        {
+            string category = "Case Notes";
+            string title = "TXX Case Notes";
+            string reportServerList = "Primary";
+            string result = "";
+
+            result = rbdg.generateTXXCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.billingCode, reportData.serviceDateStart, reportData.serviceDateEnd);
 
             return result;
         }

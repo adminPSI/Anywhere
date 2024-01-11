@@ -301,6 +301,66 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
+        public string generateCaseNoteTimeReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string billingCode, string serviceStartDate, string serviceEndDate)
+        {
+            if (tokenValidator(token) == false) return null;
+            string source = "";
+            string filterSyntax = "";
+            logger.debug("generateCaseNoteReport ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(source);
+            //list.Add(userId);
+            list.Add(billerId);
+            list.Add(consumerId);
+            list.Add(billingCode);
+            list.Add(filterSyntax);
+            list.Add(serviceStartDate);
+            list.Add(serviceEndDate);
+            string text = "CALL DBA.ANYW_CaseNotes_GenerateTimeReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1CNR", ex.Message + "ANYW_CaseNotes_GenerateReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1CNR: error ANYW_CaseNotes_GenerateDetailReport";
+            }
+        }
+
+        public string generateTXXCaseNotesReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string billingCode, string serviceStartDate, string serviceEndDate)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("generateTXXCaseNotesReport ");
+            string source = "";
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(category);
+            list.Add(title);
+            list.Add(reportServerList);
+            list.Add(source);
+            //list.Add(userId);
+            list.Add(billerId);
+            list.Add(consumerId);
+            list.Add(billingCode);
+            list.Add(serviceStartDate);
+            list.Add(serviceEndDate);
+            string text = "CALL DBA.ANYW_GenerateTXXCaseNotesReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1CNR", ex.Message + "ANYW_GenerateTXXCaseNotesReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1CNR: error ANYW_GenerateTXXCaseNotesReport";
+            }
+        }
+
         public string generateOutcomeDocumentationReport(string token, string category, string title, string reportServerList, string outcomesDate, string outcomesConsumer, string outcomesType)
         {
             if (tokenValidator(token) == false) return null;

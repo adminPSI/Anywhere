@@ -101,75 +101,75 @@ var notesOverview = (function () {
       <ul>
       </ul>
     `;
-    var detailBtn = button.build({
-      text: 'Detail Report',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        reportRunning = true;
-        const notesReportWarningPopup = POPUP.build({
-          id: 'notesReportWarningPopup1',
-          hideX: false,
-          classNames: 'warning',
-        });
-        const warningMessage = document.createElement('p');
-        warningMessage.innerHTML =
-          'Your report is being generated and will be downloaded when finished, in the meantime you may continue with your work.';
-        const acceptBtn = button.build({
-          text: 'Ok',
-          style: 'secondary',
-          type: 'contained',
-          callback: function () {
-            POPUP.hide(notesReportWarningPopup);
-            overlay.hide();
-            bodyScrollLock.enableBodyScroll(popup);
-            actioncenter.removeChild(popup);
-            const IDs = noteIds.join(',');
-            passFilterValuesForDetailReport(filterValues);
-          },
-        });
-        const btnWrap = document.createElement('div');
-        btnWrap.classList.add('btnWrap');
-        btnWrap.appendChild(acceptBtn);
-        notesReportWarningPopup.appendChild(warningMessage);
-        notesReportWarningPopup.appendChild(btnWrap);
-        POPUP.show(notesReportWarningPopup);
-      },
-    });
-    var timeEntryBtn = button.build({
-      text: 'Time Analysis Report',
-      style: 'secondary',
-      type: 'contained',
-      callback: function () {
-        reportRunning = true;
-        const notesReportWarningPopup = POPUP.build({
-          id: 'notesReportWarningPopup2',
-          hideX: false,
-          classNames: 'warning',
-        });
-        const warningMessage = document.createElement('p');
-        warningMessage.innerHTML =
-          'Your report is being generated and will be downloaded when finished, in the meantime you may continue with your work.';
-        const acceptBtn = button.build({
-          text: 'Ok',
-          style: 'secondary',
-          type: 'contained',
-          callback: function () {
-            POPUP.hide(notesReportWarningPopup);
-            overlay.hide();
-            bodyScrollLock.enableBodyScroll(popup);
-            actioncenter.removeChild(popup);
-            passFilterValuesForTimeEntryReport(filterValues);
-          },
-        });
-        const btnWrap = document.createElement('div');
-        btnWrap.classList.add('btnWrap');
-        btnWrap.appendChild(acceptBtn);
-        notesReportWarningPopup.appendChild(warningMessage);
-        notesReportWarningPopup.appendChild(btnWrap);
-        POPUP.show(notesReportWarningPopup);
-      },
-    });
+    // var detailBtn = button.build({
+    //   text: 'Detail Report',
+    //   style: 'secondary',
+    //   type: 'contained',
+    //   callback: function () {
+    //     reportRunning = true;
+    //     const notesReportWarningPopup = POPUP.build({
+    //       id: 'notesReportWarningPopup1',
+    //       hideX: false,
+    //       classNames: 'warning',
+    //     });
+    //     const warningMessage = document.createElement('p');
+    //     warningMessage.innerHTML =
+    //       'Your report is being generated and will be downloaded when finished, in the meantime you may continue with your work.';
+    //     const acceptBtn = button.build({
+    //       text: 'Ok',
+    //       style: 'secondary',
+    //       type: 'contained',
+    //       callback: function () {
+    //         POPUP.hide(notesReportWarningPopup);
+    //         overlay.hide();
+    //         bodyScrollLock.enableBodyScroll(popup);
+    //         actioncenter.removeChild(popup);
+    //         const IDs = noteIds.join(',');
+    //         passFilterValuesForDetailReport(filterValues);
+    //       },
+    //     });
+    //     const btnWrap = document.createElement('div');
+    //     btnWrap.classList.add('btnWrap');
+    //     btnWrap.appendChild(acceptBtn);
+    //     notesReportWarningPopup.appendChild(warningMessage);
+    //     notesReportWarningPopup.appendChild(btnWrap);
+    //     POPUP.show(notesReportWarningPopup);
+    //   },
+    // });
+    // var timeEntryBtn = button.build({
+    //   text: 'Time Analysis Report',
+    //   style: 'secondary',
+    //   type: 'contained',
+    //   callback: function () {
+    //     reportRunning = true;
+    //     const notesReportWarningPopup = POPUP.build({
+    //       id: 'notesReportWarningPopup2',
+    //       hideX: false,
+    //       classNames: 'warning',
+    //     });
+    //     const warningMessage = document.createElement('p');
+    //     warningMessage.innerHTML =
+    //       'Your report is being generated and will be downloaded when finished, in the meantime you may continue with your work.';
+    //     const acceptBtn = button.build({
+    //       text: 'Ok',
+    //       style: 'secondary',
+    //       type: 'contained',
+    //       callback: function () {
+    //         POPUP.hide(notesReportWarningPopup);
+    //         overlay.hide();
+    //         bodyScrollLock.enableBodyScroll(popup);
+    //         actioncenter.removeChild(popup);
+    //         passFilterValuesForTimeEntryReport(filterValues);
+    //       },
+    //     });
+    //     const btnWrap = document.createElement('div');
+    //     btnWrap.classList.add('btnWrap');
+    //     btnWrap.appendChild(acceptBtn);
+    //     notesReportWarningPopup.appendChild(warningMessage);
+    //     notesReportWarningPopup.appendChild(btnWrap);
+    //     POPUP.show(notesReportWarningPopup);
+    //   },
+    // });
 
     if (reportRunning) {
       detailBtn.disabled = true;
@@ -289,16 +289,18 @@ var notesOverview = (function () {
         $.session.CaseNotesSSANotes && isSSANote ? noteSSA.init('new') : note.init('new');
       },
     });
-    var cnReportBtn = button.build({
-      text: 'Reports',
-      style: 'secondary',
-      type: 'contained',
-      modal: true,
-      icon: 'add',
-      callback: function () {
-        showCNReportsPopup();
-      },
-    });
+    // var cnReportBtn = button.build({
+    //   text: 'Reports',
+    //   style: 'secondary',
+    //   type: 'contained',
+    //   modal: true,
+    //   icon: 'add',
+    //   callback: function () {
+    //     showCNReportsPopup();
+    //   },
+    // });
+
+    var cnReportBtn = generateReports.createMainReportButton([ { text: 'Detail Report', filterValues}, { text: 'Time Analysis Report', filterValues}, { text: 'TXX Case Notes', filterValues}])
 
     cnADVReportBtn = generateReports.createMainReportButton([{ text: 'Detailed Case Notes By Biller', filterValues }]);
 
