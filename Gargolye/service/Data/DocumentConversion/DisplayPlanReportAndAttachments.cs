@@ -1540,7 +1540,7 @@ namespace Anywhere.service.Data.DocumentConversion
             {
                 using (var doc = new Document())
                 {
-                    using (var copy = new PdfSmartCopy(doc, ms))
+                    using (var copy = new PdfCopy(doc, ms))
                     {
                         doc.Open();
 
