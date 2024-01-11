@@ -3710,5 +3710,10 @@ namespace Anywhere
         {
             return pv.getContactValidationData(token, planId);
         }
+
+        public PlanValidationWorker.ServicesAndSupports getAssessmentValidationData(string token, string planId)
+        {
+            return pv.getAssessmentValidationData(token, planId);
+        }
     }
 }

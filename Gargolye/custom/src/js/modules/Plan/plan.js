@@ -191,9 +191,6 @@ const plan = (function () {
   function getISPValidation() {
     return ISPValidationCheck;
   }
-  function getAssessmentValidation() {
-    return assessmentValidationCheck;
-  }
   //-- set
   function setSelectedConsumer(consumer) {
     selectedConsumer = consumer;
@@ -2125,8 +2122,9 @@ const plan = (function () {
     // init data for tab sections
     await planData.init(planId);
     await planAttachment.getAttachments(planId);
-    // ISPValidationCheck = await planValidation.ISPValidation(planId);
-    // assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+
+    // plan validation data 
+    await planValidation.init(planId);
 
     // build tab section wraps
     const assessmentWrap = document.createElement('div');
@@ -2999,7 +2997,6 @@ const plan = (function () {
     setSelectedConsumer,
     setRevisionNumber,
     getISPValidation,
-    getAssessmentValidation,
     setPlanType,
     setPlanId,
     setPlanStatus,

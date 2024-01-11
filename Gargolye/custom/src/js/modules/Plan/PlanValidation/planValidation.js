@@ -1,4 +1,6 @@
 const planValidation = (function () {
+  let planId;
+
     let assessmentValidationCheck = {
       workingNotWorking: [],
       sectionsApplicable: [],
@@ -73,6 +75,13 @@ const planValidation = (function () {
       servicesAndSupportsError: false,
       complete: false
     };
+
+    let contactsValidation = {
+      importantPeople: true,
+      importantPlaces: true,
+      bestWayToConnect: true
+    }
+
     const servicesAndSupportsQuestionIds = {
       noSupportQuestionIds: ['509', '526', '84', '95', '162', '500', '575'],
       paidSupportQuestionIds: [
@@ -195,12 +204,13 @@ const planValidation = (function () {
     }
   
     //* ASSESSMENT INITIAL CHECK
+    function returnAssessmentValidationData() {
+      return assessmentValidationCheck;
+    }
+
     async function getAssessmentValidation(planId) {
       // Gathers the data from the database
-      servicesAndSupportsData = await servicesSupportsAjax.getServicesAndSupports({
-        token: $.session.Token,
-        anywAssessmentId: planId,
-      });
+      servicesAndSupportsData = await planValidationAjax.getAssessmentValidationData(planId);
   
       // WORKING/NOT WORKING
       assessmentValidationCheck.workingNotWorking = servicesAndSupportsData.workingNotWorking;
@@ -527,7 +537,7 @@ const planValidation = (function () {
 
     //* ISP
     async function ISPValidation(planId) {
-      // Set state of check to neutral before running check to remove chached data
+      // Set state of check to neutral before running check to remove cached data
       let validationCheck = {
         complete: true,
         details: [],
@@ -539,7 +549,6 @@ const planValidation = (function () {
         paidSupportsProviders: [],
         invalidProviders: []
       };
-  
 
       outcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
         token: $.session.Token,
@@ -640,7 +649,7 @@ const planValidation = (function () {
         validationCheck.missingReviews.length === 0 &&
         validationCheck.planProgressSummary &&
         validationCheck.outcome.length === 0 &&
-        outcomesData.planOutcome.length > 0 &&
+        //outcomesData.planOutcome.length > 0 &&
         validationCheck.invalidProviders.length === 0;
 
       return validationCheck;
@@ -703,6 +712,84 @@ const planValidation = (function () {
       //validationCheck.invalidProviders.length > 0
     }
 
+    //ISP CONTACTS
+    async function contactsValidationCheck() {
+      const contactData = await planValidationAjax.getContactValidationData(planId);
+
+      const bestWayToConnect = contactData[0]?.bestWayToConnect || '';
+      const importantPeopleData = contactData[0] ? [{ type: contactData[0].importantPeopleType, typeOther: contactData[0].importantPeopleTypeOther }] : [];
+      const importantPlacesData = contactData[0] ? [{ type: contactData[0].importantPeopleType, typeOther: contactData[0].importantPeopleTypeOther }] : [];
+
+      checkImportantPeople(importantPeopleData);
+      checkImportantPlaces(importantPlacesData);
+      checkBestWayToConnect(bestWayToConnect);
+
+      checkContactsValidation();
+    }
+
+    function checkImportantPeople(importantPeopleData) {
+      // Loop through each item in the array
+      for (const contact of importantPeopleData) {
+        if (contact.type === 'Other' && contact.typeOther === '') {
+          contactsValidation.importantPeople = false;
+          return;
+        }
+      }
+
+      contactsValidation.importantPeople = true;
+    }
+
+    function checkImportantPlaces(importantPlacesData) {
+      // Loop through each item in the array
+      for (const place of importantPlacesData) {
+        if (place.type === 'Other' && place.typeOther === '') {
+          contactsValidation.importantPlaces = false;
+          return;
+        }
+      }
+
+      contactsValidation.importantPlaces = true;
+    }
+
+    function checkBestWayToConnect(bestWayToConnect) {
+      if (bestWayToConnect === '') {
+        contactsValidation.bestWayToConnect = false;
+        return;
+      }
+
+      contactsValidation.bestWayToConnect = true;
+    }
+
+    function getContactValidation() {
+      return contactsValidation;
+    }
+
+    function checkContactsValidation() {
+      const alertDiv = document.querySelector('.contactsAlertDiv');
+      const importantPeopleAlertDiv = document.querySelector('.importantPeopleAlert');
+      const importantPlacesAlertDiv = document.querySelector('.importantPlacesAlert');
+
+      // Check if the alertDiv exists and if any validation condition is false
+      if (alertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect)) {
+          alertDiv.style.display = 'flex';
+      } else if (alertDiv) {
+          alertDiv.style.display = 'none';
+      }
+
+      if (importantPeopleAlertDiv && !contactsValidation.importantPeople) {
+        importantPeopleAlertDiv.style.display = 'flex';
+      } else if (importantPeopleAlertDiv) {
+        importantPeopleAlertDiv.style.display = 'none';
+      }
+
+      if (importantPlacesAlertDiv && !contactsValidation.importantPlaces) {
+        importantPlacesAlertDiv.style.display = 'flex';
+      } else if (importantPlacesAlertDiv) {
+        importantPlacesAlertDiv.style.display = 'none';
+      }
+
+    }
+
     // checks if the provider selected for the experience is also in the paid supports
     function checkExperienceProviders(validationCheck) {
       // Extract the first values from the second array objects
@@ -733,14 +820,18 @@ const planValidation = (function () {
       }
     }
   
-    async function init(planId) {
-      ISPValidation(planId);
+    async function init(newPlanId) {
+      planId = newPlanId;
+
+      await contactsValidationCheck(planId);
+      //ISPValidation(planId);
   
-      assessmentValidation(planId);
+      getAssessmentValidation(planId);
     }
   
     return {
       createTooltip,
+      returnAssessmentValidationData,
       getAssessmentValidation,
       updateTocSectionHeaders,
       updatedAssessmenteValidation,
@@ -758,6 +849,8 @@ const planValidation = (function () {
       updateOutcomeDetails,
       checkExperienceProviders,
       checkExperiencesAfterAddingNewPaidSupport,
+      contactsValidationCheck,
+      getContactValidation,
       init,
     };
   })();

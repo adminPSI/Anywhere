@@ -181,6 +181,31 @@ const ISP = (function () {
         }
       }
 
+      // if the section is 'Outcomes' run an initial validation check on the section
+      if (section.title === 'Contacts') {
+        const contactsAlertDiv = document.createElement('div');
+        contactsAlertDiv.classList.add('contactsAlertDiv');
+        contactsAlertDiv.id = 'contactsAlert';
+        contactsAlertDiv.innerHTML = `${icons.error}`;
+        navItem.appendChild(contactsAlertDiv);
+        contactsAlertDiv.style.display = 'none';
+
+        // creates and shows a tip when hovering over the visible alert div
+        planValidation.createTooltip(
+          'There is data missing on this tab that is required by DODD',
+          contactsAlertDiv,
+        );
+
+        let contactValidationCheck = planValidation.getContactValidation();
+
+        if (!contactValidationCheck.importantPeople || !contactValidationCheck.importantPlaces || !contactValidationCheck.bestWayToConnect)
+        {
+          contactsAlertDiv.style.display = 'flex';
+        } else {
+          contactsAlertDiv.style.display = 'none';
+        }
+      }
+
       if (index === 0) {
         navItem.classList.add('active');
       }

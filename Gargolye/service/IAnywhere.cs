@@ -4953,6 +4953,14 @@ namespace Anywhere
                RequestFormat = WebMessageFormat.Json,
                UriTemplate = "/getContactValidationData/")]
         PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/getAssessmentValidationData/")]
+        PlanValidationWorker.ServicesAndSupports getAssessmentValidationData(string token, string planId);
     }
 
 
