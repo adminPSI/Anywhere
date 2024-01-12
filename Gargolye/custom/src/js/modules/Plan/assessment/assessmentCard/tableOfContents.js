@@ -220,7 +220,7 @@
     tocInner = document.createElement('div');
     tocInner.classList.add('tableOfContents__inner');
 
-    let assessmentValidationCheck = plan.getAssessmentValidation();
+    let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
     const tocHeader = document.createElement('h2');
     tocHeader.classList.add('tableOfContents__heading');
@@ -233,14 +233,14 @@
     tocAlertDiv.innerHTML = `${icons.error}`;
 
     // creates and shows a tip when hovering over the visible alert div
-    // planValidation.createTooltip(
-    //   'At least one section of the Assessment must be selected',
-    //   tocAlertDiv,
-    // );
+    planValidation.createTooltip(
+      'At least one section of the Assessment must be selected',
+      tocAlertDiv,
+    );
 
-    //if (assessmentValidationCheck.hasASectionApplicable === true) {
-    //  tocAlertDiv.style.display = 'none';
-    //}
+    if (assessmentValidationCheck.hasASectionApplicable === true) {
+     tocAlertDiv.style.display = 'none';
+    }
 
     const tocMain = document.createElement('div');
     tocMain.classList.add('tableOfContents__main');

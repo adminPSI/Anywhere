@@ -16,7 +16,9 @@ const WorkSchedule = (() => {
         positionName = PositionName;
         selectedConsumersName = SelectedConsumersName;
         if (PositionId != undefined) {
-            ScheduleEntries = await EmploymentAjax.getWorkScheduleEntriesAsync(PositionId);
+            ScheduleEntries = await EmploymentAjax.getWorkScheduleEntriesAsync(PositionId);   
+            if (ScheduleEntries.getWorkScheduleEntriesResult.length > 0)
+                ScheduleEntries.getWorkScheduleEntriesResult.push({ dayOfWeek: '', startTime: '', endTime: '', positionId: null, WorkScheduleId: '', timeInHours: ScheduleEntries.getWorkScheduleEntriesResult[0].totalHours, totalHours: '' });
         }
     }
 
@@ -75,20 +77,20 @@ const WorkSchedule = (() => {
     function buildworkScheduleEntriesTable() {
         const tableOptions = {
             plain: false,
-            tableId: 'employmentCommonTable',  
-            columnHeadings: ['Day Of Week', 'Start Time', 'End Time'],
+            tableId: 'employmentCommonTable',
+            columnHeadings: ['Day Of Week', 'Start Time', 'End Time', 'Hours'],
             endIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
         let tableData = ScheduleEntries.getWorkScheduleEntriesResult.map((entry) => ({
-            values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : 'Saturday', UTIL.convertFromMilitary(entry.startTime), UTIL.convertFromMilitary(entry.endTime)],
-            attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }],
+            values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : entry.dayOfWeek == 7 ? 'Saturday' : '', UTIL.convertFromMilitary(entry.startTime), UTIL.convertFromMilitary(entry.endTime), entry.timeInHours],
+            attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }, { key: 'data-plan-active', value: entry.startTime == '' ? 'true' : 'false' }], 
             onClick: (e) => {
                 if ($.session.EmploymentUpdate) {
-                    handleAccountTableEvents(e.target.attributes.WorkScheduleId.value) 
-                }                                
+                    handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)
+                }
             },
-            endIcon: $.session.EmploymentDelete == true ? `${icons['delete']}` : '',
+            endIcon: $.session.EmploymentDelete == true && entry.dayOfWeek != '' ? `${icons['delete']}` : `${icons['Empty']}`,
             endIconCallback: (e) => {
                 deleteWorkSchedulePOPUP(entry.WorkScheduleId);
             },

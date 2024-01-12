@@ -3424,9 +3424,9 @@ namespace Anywhere
             return cf.insertPayee(token, payeeName, address1, address2, city, state, zipcode, userId, consumerId);
         }
 
-        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId)
+         public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount, string categoryID) 
         {
-            return cf.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, userId, eventType, regId);
+            return cf.insertAccount(token, date, amount, amountType, account, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, userId, eventType, regId, splitAmount, categoryID);
         }
 
         public ConsumerFinancesEntry[] getAccountEntriesById(string token, string registerId)
@@ -3709,6 +3709,29 @@ namespace Anywhere
         public PlanValidationWorker.ContactValidationData[] getContactValidationData(string token, string planId)
         {
             return pv.getContactValidationData(token, planId);
+        }
+
+        public PlanValidationWorker.ServicesAndSupports getAssessmentValidationData(string token, string planId)
+        {
+            return pv.getAssessmentValidationData(token, planId);
+        }
+        public EmploymentStatus[] getEmployeeStatusDropDown(string token)
+        {
+            return emp.getEmployeeStatusDropDown(token);
+        }
+        public EmploymentPath createNewEmploymentPath(string token, string currentStatus, string pathToEmployment, string pathToStartDate, string peopleID, string userID)
+        {
+            return emp.createNewEmploymentPath(token, currentStatus, pathToEmployment, pathToStartDate, peopleID, userID);
+        }
+
+        public SplitAmountData[] getSplitRegisterAccountEntriesByID(string token, string registerId)
+        {
+            return cf.getSplitRegisterAccountEntriesByID(token, registerId);
+        }
+
+        public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
+        {
+            return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
         }
     }
 }

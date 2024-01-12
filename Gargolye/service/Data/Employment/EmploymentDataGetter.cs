@@ -561,5 +561,42 @@ namespace Anywhere.service.Data.Employment
 
         }
 
+        public string getEmployeeStatusDropDown(DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getEmployeeStatusDropDown");
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getEmployeeStatusDropDown", ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getEmployeeStatusDropDown()");
+                throw ex;
+            }
+        }
+
+        public string createNewEmploymentPath(string token, string currentStatus, string pathToEmployment, string pathToStartDate, string peopleID, string userID, DistributedTransaction transaction)
+        {         
+            try
+            {
+                logger.debug("createNewEmploymentPath");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[5];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@currentStatus", DbType.String, currentStatus);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@pathToEmployment", DbType.String, pathToEmployment);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@pathToStartDate", DbType.String, pathToStartDate);           
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@peopleID", DbType.Double, peopleID);
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userID", DbType.String, userID);
+    
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_createNewEmploymentPath(?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_createNewEmploymentPath(" + currentStatus + "," + pathToEmployment + "," + pathToStartDate + ")");
+                throw ex;
+            }
+
+        }
+
     }
 }

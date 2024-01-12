@@ -1,4 +1,6 @@
 const planValidation = (function () {
+  let planId;
+
     let assessmentValidationCheck = {
       workingNotWorking: [],
       sectionsApplicable: [],
@@ -73,6 +75,13 @@ const planValidation = (function () {
       servicesAndSupportsError: false,
       complete: false
     };
+
+    let contactsValidation = {
+      importantPeople: true,
+      importantPlaces: true,
+      bestWayToConnect: true
+    }
+
     const servicesAndSupportsQuestionIds = {
       noSupportQuestionIds: ['509', '526', '84', '95', '162', '500', '575'],
       paidSupportQuestionIds: [
@@ -174,6 +183,10 @@ const planValidation = (function () {
         ],
       },
     };
+
+    function setPlanId(newPlanId) {
+      planId = newPlanId;
+    }
   
     //* TOOLTIPS
     function createTooltip(message, attachedDiv) {
@@ -195,12 +208,13 @@ const planValidation = (function () {
     }
   
     //* ASSESSMENT INITIAL CHECK
+    function returnAssessmentValidationData() {
+      return assessmentValidationCheck;
+    }
+
     async function getAssessmentValidation(planId) {
       // Gathers the data from the database
-      servicesAndSupportsData = await servicesSupportsAjax.getServicesAndSupports({
-        token: $.session.Token,
-        anywAssessmentId: planId,
-      });
+      servicesAndSupportsData = await planValidationAjax.getAssessmentValidationData(planId);
   
       // WORKING/NOT WORKING
       assessmentValidationCheck.workingNotWorking = servicesAndSupportsData.workingNotWorking;
@@ -242,7 +256,7 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT DATA UPDATE CHECK
-    function updatedAssessmenteValidation(assessmentValidationCheck) {
+    function updatedAssessmenteValidation() {
       const workingAlertDiv = document.getElementById('workingAlert');
       const tocAlertDiv = document.getElementById('tocAlert');
       const tocMobileAlertDiv = document.getElementById('tocAlertMobile');
@@ -332,7 +346,7 @@ const planValidation = (function () {
       return assessmentValidationCheck;
     }
   
-    function updateAnswerWorkingSection(assessmentValidationCheck, answer, answerId) {
+    function updateAnswerWorkingSection(answer, answerId) {
       for (let i = 0; i < assessmentValidationCheck.workingNotWorking.length; i++) {
         if (assessmentValidationCheck.workingNotWorking[i].answerid === answerId) {
           assessmentValidationCheck.workingNotWorking[i].answer = answer;
@@ -340,7 +354,9 @@ const planValidation = (function () {
         }
       }
   
-      return assessmentValidationCheck;
+      // checks entire assessments for validation errors
+      planValidation.updatedAssessmenteValidation();
+      //return assessmentValidationCheck;
     }
   
     // ASSESSMENT TABLE OF CONTENTS
@@ -386,7 +402,7 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT SERVICES AND SUPPORTS
-    function servicesAndSupportsBtnCheck(assessmentValidationCheck) {
+    function servicesAndSupportsBtnCheck() {
       const idsToCheck = [34, 35, 36, 37, 38, 39, 40];
 
       idsToCheck.forEach(id => {
@@ -525,9 +541,39 @@ const planValidation = (function () {
       return counts;
     }
 
+    function updateSectionApplicability(sectionID, applied) {
+      // Find the object with matching sectionId and obtain the index
+      const matchingIndex = assessmentValidationCheck.sectionsApplicable.findIndex(
+        obj => obj.sectionId === sectionID,
+      );
+  
+      // Update the value if a match is found
+      if (matchingIndex !== -1) {
+        assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
+        // Toggle the value between 'Y' and 'N'
+        assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
+        (assessmentValidationCheck.sectionsApplicable[matchingIndex]).applicable === 'Y' ? 'N' : 'Y';
+      }
+  
+      // checks entire assessments for validation errors
+      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+    }
+
+    function updateAssessmentValidationSection(key, value) {
+      assessmentValidationCheck[key] = value;
+
+      updatedAssessmenteValidation();
+    }
+
+    function updateAssessmentValidationProperty(sectionId, questionIdCategory, value) {
+      assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] = value;
+
+      updatedAssessmenteValidation();
+    }
+
     //* ISP
     async function ISPValidation(planId) {
-      // Set state of check to neutral before running check to remove chached data
+      // Set state of check to neutral before running check to remove cached data
       let validationCheck = {
         complete: true,
         details: [],
@@ -539,7 +585,6 @@ const planValidation = (function () {
         paidSupportsProviders: [],
         invalidProviders: []
       };
-  
 
       outcomesData = await planOutcomesAjax.getPlanSpecificOutcomes({
         token: $.session.Token,
@@ -640,7 +685,7 @@ const planValidation = (function () {
         validationCheck.missingReviews.length === 0 &&
         validationCheck.planProgressSummary &&
         validationCheck.outcome.length === 0 &&
-        outcomesData.planOutcome.length > 0 &&
+        //outcomesData.planOutcome.length > 0 &&
         validationCheck.invalidProviders.length === 0;
 
       return validationCheck;
@@ -703,6 +748,92 @@ const planValidation = (function () {
       //validationCheck.invalidProviders.length > 0
     }
 
+    //ISP CONTACTS
+    async function contactsValidationCheck() {
+      const contactData = await planValidationAjax.getContactValidationData(planId);
+
+      const bestWayToConnect = contactData[0]?.bestWayToConnect || '';
+      
+      const importantPeopleData = contactData.map(item => ({
+        type: item.importantPeopleType,
+        typeOther: item.importantPeopleTypeOther,
+      }));
+      
+      const importantPlacesData = contactData.map(item => ({
+        type: item.importantPlacesType,
+        typeOther: item.importantPlacesTypeOther,
+      }));
+
+      checkImportantPeople(importantPeopleData);
+      checkImportantPlaces(importantPlacesData);
+      checkBestWayToConnect(bestWayToConnect);
+
+      checkContactsValidation();
+    }
+
+    function checkImportantPeople(importantPeopleData) {
+      // Loop through each item in the array
+      for (const contact of importantPeopleData) {
+        if (contact.type === 'Other' && contact.typeOther === '') {
+          contactsValidation.importantPeople = false;
+          return;
+        }
+      }
+
+      contactsValidation.importantPeople = true;
+    }
+
+    function checkImportantPlaces(importantPlacesData) {
+      // Loop through each item in the array
+      for (const place of importantPlacesData) {
+        if (place.type === 'Other' && place.typeOther === '') {
+          contactsValidation.importantPlaces = false;
+          return;
+        }
+      }
+
+      contactsValidation.importantPlaces = true;
+    }
+
+    function checkBestWayToConnect(bestWayToConnect) {
+      if (bestWayToConnect === '') {
+        contactsValidation.bestWayToConnect = false;
+        return;
+      }
+
+      contactsValidation.bestWayToConnect = true;
+    }
+
+    function getContactValidation() {
+      return contactsValidation;
+    }
+
+    function checkContactsValidation() {
+      const alertDiv = document.querySelector('.contactsAlertDiv');
+      const importantPeopleAlertDiv = document.querySelector('.importantPeopleAlert');
+      const importantPlacesAlertDiv = document.querySelector('.importantPlacesAlert');
+
+      // Check if the alertDiv exists and if any validation condition is false
+      if (alertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect)) {
+          alertDiv.style.display = 'flex';
+      } else if (alertDiv) {
+          alertDiv.style.display = 'none';
+      }
+
+      if (importantPeopleAlertDiv && !contactsValidation.importantPeople) {
+        importantPeopleAlertDiv.style.display = 'flex';
+      } else if (importantPeopleAlertDiv) {
+        importantPeopleAlertDiv.style.display = 'none';
+      }
+
+      if (importantPlacesAlertDiv && !contactsValidation.importantPlaces) {
+        importantPlacesAlertDiv.style.display = 'flex';
+      } else if (importantPlacesAlertDiv) {
+        importantPlacesAlertDiv.style.display = 'none';
+      }
+
+    }
+
     // checks if the provider selected for the experience is also in the paid supports
     function checkExperienceProviders(validationCheck) {
       // Extract the first values from the second array objects
@@ -733,17 +864,25 @@ const planValidation = (function () {
       }
     }
   
-    async function init(planId) {
-      ISPValidation(planId);
+    async function init(newPlanId) {
+      planId = newPlanId;
+
+      await contactsValidationCheck(planId);
+      //ISPValidation(planId);
   
-      assessmentValidation(planId);
+      await getAssessmentValidation(planId);
     }
   
     return {
+      setPlanId,
       createTooltip,
+      returnAssessmentValidationData,
       getAssessmentValidation,
       updateTocSectionHeaders,
       updatedAssessmenteValidation,
+      updateSectionApplicability,
+      updateAssessmentValidationSection,
+      updateAssessmentValidationProperty,
       ISPValidation,
       checkAllOutcomesComplete,
       updatedIspOutcomesSetAlerts,
@@ -758,6 +897,8 @@ const planValidation = (function () {
       updateOutcomeDetails,
       checkExperienceProviders,
       checkExperiencesAfterAddingNewPaidSupport,
+      contactsValidationCheck,
+      getContactValidation,
       init,
     };
   })();

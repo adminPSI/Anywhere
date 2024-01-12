@@ -27,6 +27,15 @@ const NewEntryCF = (() => {
     let IsAddNewPayDisable = true;
     let IsSaveDisable = true;
     let IsDeleteDisable = true;
+    let splitAmountInputN = [];
+    let splitCategoryDropdownN = [];
+    let splitDescriptionInputN = [];
+    let categoryOldVal;
+    let totalAmount;
+    let regTotalAmount;
+    let numberOfRows;
+    let splitAmount = [];
+    let splitTransPopup;
 
     async function init() {
         buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined);
@@ -34,6 +43,8 @@ const NewEntryCF = (() => {
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
         prevAttachmentArray = [];
+        splitAmount = [];
+        numberOfRows = 5;
         if (registerId) {
             prevAttachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
             BtnName = 'UPDATE'
@@ -53,6 +64,16 @@ const NewEntryCF = (() => {
             accountType = getAccountEntriesByIdResult[0].accountType;
             IsReconciled = getAccountEntriesByIdResult[0].reconciled;
             lastUpdateBy = getAccountEntriesByIdResult[0].lastUpdateBy;
+            categoryOldVal = category;
+            const SplitDataresult = await ConsumerFinancesAjax.getSplitRegisterAccountEntriesByIDAsync(registerId);
+            const { getSplitRegisterAccountEntriesByIDResult } = SplitDataresult;
+            splitAmount = getSplitRegisterAccountEntriesByIDResult;
+            var sum = 0;  
+            for (var i = 0; i < splitAmount.length; i++) {
+                if (splitAmount[i].amount != '')
+                    sum += parseInt(splitAmount[i].amount);
+            }
+            totalAmount = sum;   
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
@@ -75,6 +96,7 @@ const NewEntryCF = (() => {
             accountType = 'E';
             IsReconciled = 'N';
             IsDisabledBtn = false;
+            categoryOldVal = ''; 
         }
 
         tempdate = '';
@@ -157,6 +179,13 @@ const NewEntryCF = (() => {
             label: "Category",
             dropdownId: "newCategoryDropdown",
             value: (category) ? category : '',
+        });
+
+        SPLIT_BTN = button.build({
+            id: 'SPLIT_BTN',
+            text: 'Split',
+            style: 'secondary',
+            type: 'contained',
         });
 
         newSubCategoryDropdown = dropdown.build({
@@ -242,8 +271,8 @@ const NewEntryCF = (() => {
                 DisabledAllInputs();
             }
             else {
-                enableDisabledInputs(); 
-            }          
+                enableDisabledInputs();
+            }
         }
         else {
             btnWrap.appendChild(NEW_SAVE_BTN);
@@ -283,6 +312,7 @@ const NewEntryCF = (() => {
         addNewCardBody.appendChild(newPayeeDropdown);
         addNewCardBody.appendChild(ADD_NEW_PAYEE_BTN);
         addNewCardBody.appendChild(newCategoryDropdown);
+        addNewCardBody.appendChild(SPLIT_BTN);
         addNewCardBody.appendChild(newSubCategoryDropdown);
         addNewCardBody.appendChild(newCheckNoInput);
 
@@ -320,6 +350,13 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
+
+        if (category == '--Split--') {
+            document.getElementById('SPLIT_BTN').style.display = 'block';
+        }
+        else {
+            document.getElementById('SPLIT_BTN').style.display = 'none';
+        }
     }
 
     function enableDisabledInputs() {
@@ -426,7 +463,7 @@ const NewEntryCF = (() => {
             newAccountDropdown.classList.remove('error');
         }
 
-        if (payee.value === '' || payee.value === 'Opening Balance') {  
+        if (payee.value === '' || payee.value === 'Opening Balance') {
             newPayeeDropdown.classList.add('error');
         } else {
             newPayeeDropdown.classList.remove('error');
@@ -455,7 +492,6 @@ const NewEntryCF = (() => {
             else {
                 NEW_SAVE_BTN.classList.add('disabled');
             }
-
         }
     }
 
@@ -470,6 +506,9 @@ const NewEntryCF = (() => {
                 buildNewPayeePopUp();
             }
             IsAddNewPayDisable = true;
+        });
+        SPLIT_BTN.addEventListener('click', event => {
+            buildSplitTransectionPopUp();
         });
         NEW_SAVE_BTN.addEventListener('keypress', event => {
             if (event.keyCode === 13 && NEW_SAVE_BTN.classList.contains('disabled')) {
@@ -514,6 +553,12 @@ const NewEntryCF = (() => {
                 checkRequiredFieldsOfNewEntry();
             }
         });
+
+        newAmountInput.addEventListener('keyup', event => {
+            if (totalAmount > 0 && totalAmount != event.target.value) {
+                errorPopup(2); 
+            }
+        });
         newPayeeDropdown.addEventListener('change', event => {
             if (!newPayeeDropdown.classList.contains('disabled')) {
                 categoryID = event.target.options[event.target.selectedIndex].id;
@@ -535,6 +580,12 @@ const NewEntryCF = (() => {
             if (!newCategoryDropdown.classList.contains('disabled')) {
                 categoryID = event.target.options[event.target.selectedIndex].id;
                 category = event.target.options[event.target.selectedIndex].text;
+                if (category == '--Split--') {
+                    buildSplitTransectionPopUp();
+                }
+                else {
+                    document.getElementById('SPLIT_BTN').style.display = 'none';
+                }
                 tempcategory = 'ChangedValue';
                 subCategory = '';
                 populateSubCategoryDropdown(category);
@@ -587,19 +638,23 @@ const NewEntryCF = (() => {
     }
 
     async function saveNewAccount() {
+        if (document.getElementById('newCategoryDropdown').value != '--Split--') {
+            splitAmount = [];
+        }
         const amountType = document.getElementById("expenseRadio").checked ? "E" : "D";
         if (attachmentArray == undefined || attachmentArray.length == 0) {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, null, null, receipt, BtnName, regId);
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, null, null, receipt, BtnName, regId, splitAmount, categoryID);
             const { insertAccountResult } = result;
             if (insertAccountResult.registerId != null) {
                 ConsumerFinances.loadConsumerFinanceLanding();
             }
         }
         else {
-            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId);
+            const result = await ConsumerFinancesAjax.insertAccountAsync(date, amount, amountType, accountID, payee, category, subCategory, checkNo, description, attachmentId, attachmentDesc, receipt, BtnName, regId, splitAmount, categoryID);
             const { insertAccountResult } = result;
 
             if (insertAccountResult.registerId != null) {
+                splitAmount = [];
                 ConsumerFinances.loadConsumerFinanceLanding();
             }
         }
@@ -608,7 +663,7 @@ const NewEntryCF = (() => {
     function deleteAccountPOPUP() {
         const confirmPopup = POPUP.build({
             hideX: true,
-            classNames: ['warning'],  
+            classNames: ['warning'],
         });
 
         YES_BTN = button.build({
@@ -647,7 +702,7 @@ const NewEntryCF = (() => {
     async function deleteAccount(confirmPopup) {
         await ConsumerFinancesAjax.deleteConsumerFinanceAccountAsync(regId);
         POPUP.hide(confirmPopup);
-        ConsumerFinances.loadConsumerFinanceLanding();  
+        ConsumerFinances.loadConsumerFinanceLanding();
     }
 
     async function getCategorySubCategorybyPayee(categoryID) {
@@ -660,7 +715,6 @@ const NewEntryCF = (() => {
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
         checkRequiredFieldsOfNewEntry();
-
     }
 
     // Populate the Account DDL 
@@ -672,11 +726,11 @@ const NewEntryCF = (() => {
             id: account.accountId,
             value: account.accountName,
             text: account.accountName
-        })); 
-        if (data.length == 1) {           
+        }));
+        if (data.length == 1) {
             account = data[0].value;
-            accountID = data[0].id; 
-        } 
+            accountID = data[0].id;
+        }
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newAccountDropdown", data, account);
         checkRequiredFieldsOfNewEntry();
@@ -691,13 +745,10 @@ const NewEntryCF = (() => {
             value: payees.Description,
             text: payees.Description
         }));
-        data.unshift({ id: null, value: 'Opening Balance', text: 'Opening Balance' });   
-        data.unshift({ id: null, value: '', text: '' });      
-         
-        dropdown.populate("newPayeeDropdown", data, payee); 
-       
+        data.unshift({ id: null, value: 'Opening Balance', text: 'Opening Balance' });
+        data.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("newPayeeDropdown", data, payee);
         checkRequiredFieldsOfNewEntry();
-
     }
 
     async function populateCategoryDropdown(categoryID) {
@@ -709,10 +760,14 @@ const NewEntryCF = (() => {
             value: category.CategoryDescription,
             text: category.CategoryDescription
         }));
+
+        data.unshift({ id: null, value: '--Split--', text: '--Split--' });
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
+        if (category == '--Split--' && document.getElementById('SPLIT_BTN').style.display == 'none') {
+            buildSplitTransectionPopUp();
+        }  
         checkRequiredFieldsOfNewEntry();
-
     }
 
     async function populateSubCategoryDropdown(category) {
@@ -730,10 +785,8 @@ const NewEntryCF = (() => {
 
     }
 
-
     // build payee pop-up used for adding payee information
     async function buildNewPayeePopUp() {
-
         payeeId = '';
         payeeName = '';
         payeeaddress1 = '';
@@ -745,7 +798,7 @@ const NewEntryCF = (() => {
 
         let addPayeePopup = POPUP.build({
             header: "Add payee",
-            hideX: true,           
+            hideX: true,
             id: "addPayeePopup"
         });
 
@@ -759,7 +812,6 @@ const NewEntryCF = (() => {
             id: 'address1Input',
             label: 'Address 1',
             value: (payeeaddress1) ? payeeaddress1 : '',
-
         });
 
         address2Input = input.build({
@@ -778,7 +830,6 @@ const NewEntryCF = (() => {
             label: 'State',
             attributes: [{ key: 'maxlength', value: '2' }],
             value: (payeestate) ? payeestate : '',
-
         });
 
         zipcodeInput = input.build({
@@ -825,11 +876,8 @@ const NewEntryCF = (() => {
         addPayeePopup.appendChild(confirmMessage);
 
         addPayeePopup.appendChild(btnWrap);
-
         popUpEventHandlers();
-
         POPUP.show(addPayeePopup);
-
         checkRequiredFields();
 
     }
@@ -839,7 +887,6 @@ const NewEntryCF = (() => {
         payeeInput.addEventListener('input', event => {
             payeeName = event.target.value;
             checkRequiredFields();
-
         });
 
         address1Input.addEventListener('input', event => {
@@ -880,7 +927,6 @@ const NewEntryCF = (() => {
     }
 
     function checkRequiredFields() {
-
         var payee = payeeInput.querySelector('#payeeInput');
         var address1 = address1Input.querySelector('#address1Input');
         var city = cityInput.querySelector('#cityInput');
@@ -916,7 +962,6 @@ const NewEntryCF = (() => {
         } else {
             zipcodeInput.classList.remove('errorPopup');
         }
-
         setBtnStatus();
     }
 
@@ -928,7 +973,6 @@ const NewEntryCF = (() => {
         } else {
             saveBtn.classList.remove('disabled');
         }
-
     }
 
     async function addPayeePopupDoneBtn() {
@@ -938,9 +982,8 @@ const NewEntryCF = (() => {
         var messagetext = document.getElementById('confirmMessage');
         messagetext.innerHTML = ``;
         if (insertPayeeResult.RegionID == '-1') {
-            messagetext.innerHTML = 'Payee name already exists.';
-            messagetext.classList.add('password-error');
-            saveBtn.classList.add('disabled');
+            duplicatePayeErrorPopup();
+
         }
         else {
             POPUP.hide(addPayeePopup);
@@ -951,6 +994,302 @@ const NewEntryCF = (() => {
             populatePayeeDropdown();
         }
 
+    }
+
+    function duplicatePayeErrorPopup() {
+        const duplicatePayeErrorConfPOPUP = POPUP.build({
+            hideX: true,
+            classNames: ['warning'],
+        });
+        const okBtn = button.build({
+            text: 'OK',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                POPUP.hide(duplicatePayeErrorConfPOPUP);
+                loadReviewPage(isChecked);
+            },
+        });
+        okBtn.style.width = '100%';
+        const message = document.createElement('p');
+        message.innerText = 'You are trying to add a payee that already exists, please select the existing payee or enter a new payee with a different name.';
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        duplicatePayeErrorConfPOPUP.appendChild(message);
+        duplicatePayeErrorConfPOPUP.appendChild(okBtn);
+        okBtn.focus();
+        POPUP.show(duplicatePayeErrorConfPOPUP);
+    }
+
+    async function buildSplitTransectionPopUp() {
+        if (splitAmount.length > 3) {
+            numberOfRows = splitAmount.length + 2;
+        }
+
+        regTotalAmount = parseInt(document.getElementById('newAmountInput').value);
+        splitTransPopup = POPUP.build({
+            header: "Split Transaction",
+            hideX: true,
+            id: "splitTransPopup"
+        });
+
+        splitTransPopup.style.maxWidth = '900px';
+
+        for (let i = 0; i < numberOfRows; i++) {
+            splitCategoryDropdownN[i] = dropdown.build({
+                id: 'splitCategoryDropdownN' + i,
+                label: "Category",
+                dropdownId: "splitCategoryDropdownN" + i,
+            });
+
+            splitDescriptionInputN[i] = input.build({
+                id: 'splitDescriptionInputN' + i,
+                type: 'text',
+                label: 'Description',
+                style: 'secondary',
+                classNames: 'autosize',
+                value: splitAmount[i] != undefined ? splitAmount[i].description : '',
+            });
+
+            splitAmountInputN[i] = input.build({
+                id: 'splitAmountInputN' + i,
+                type: 'number',
+                label: 'Amount',
+                style: 'secondary',
+                value: splitAmount[i] != undefined ? splitAmount[i].amount : '',
+            });
+
+            btnWrapInputsN = document.createElement("div");
+            btnWrapInputsN.classList.add("cFInputWrap");
+            splitCategoryDropdownN[i].classList.add('width37Per');
+            btnWrapInputsN.appendChild(splitCategoryDropdownN[i]);
+            splitDescriptionInputN[i].classList.add('width37Per');
+            btnWrapInputsN.appendChild(splitDescriptionInputN[i]);
+            splitAmountInputN[i].classList.add('width21Per');
+            btnWrapInputsN.appendChild(splitAmountInputN[i]);
+            splitTransPopup.appendChild(btnWrapInputsN);
+        }
+
+
+        regAmountTotalInput = input.build({
+            id: 'regAmountTotalInput',
+            type: 'number',
+            label: 'Register Total',
+            style: 'secondary',
+            readonly: true,
+            value: regTotalAmount,
+        });
+
+        amountTotalInput = input.build({
+            id: 'amountTotalInput',
+            type: 'number',
+            label: 'Total',
+            style: 'secondary',
+            readonly: true,
+            value: totalAmount,
+        });
+
+        let totalBtnWrapInputs = document.createElement("div");
+        totalBtnWrapInputs.classList.add("cFInputWrap");
+        regAmountTotalInput.classList.add('width21Per');
+        regAmountTotalInput.classList.add('marginLeft50Per');
+        totalBtnWrapInputs.appendChild(regAmountTotalInput);
+        amountTotalInput.classList.add('width21Per');
+        totalBtnWrapInputs.appendChild(amountTotalInput);
+        splitTransPopup.appendChild(totalBtnWrapInputs);
+
+        saveSplitBtn = button.build({
+            id: "saveSplitBtn",
+            text: "save",
+            type: "contained",
+            style: "secondary",
+            classNames: 'disabled',
+            callback: () => splitTransPopupSaveBtn()
+        });
+
+        cancelSplitBtn = button.build({
+            id: "cancelSplitBtn",
+            text: "cancel",
+            type: "outlined",
+            style: "secondary",
+            callback: () => { 
+                document.getElementById('newCategoryDropdown').value = categoryOldVal;   
+                POPUP.hide(splitTransPopup);
+                checkRequiredFieldsOfNewEntry(); 
+            },
+        });
+
+        let btnWrap = document.createElement("div");
+        btnWrap.classList.add("btnWrap");
+        btnWrap.appendChild(saveSplitBtn);
+        btnWrap.appendChild(cancelSplitBtn);
+        splitTransPopup.appendChild(btnWrap);
+        popUpSplitTransectionEventHandlers();
+        POPUP.show(splitTransPopup);
+        populateSplitCategoryDropdown('');
+        splitAmountTotal();
+    }
+
+    function popUpSplitTransectionEventHandlers() {
+        for (let i = 0; i < numberOfRows; i++) {
+            splitAmountInputN[i].addEventListener('input', event => {
+                checkRequiredFieldsSplitTransection();
+                splitAmountTotal();
+            });
+
+            splitDescriptionInputN[i].addEventListener('input', event => {
+                checkRequiredFieldsSplitTransection();
+            });
+
+            splitCategoryDropdownN[i].addEventListener('change', event => {
+                checkRequiredFieldsSplitTransection();
+            });
+        }
+    }
+
+    function checkRequiredFieldsSplitTransection() {
+        for (let i = 0; i < 2; i++) {
+            var SplitCategory = splitCategoryDropdownN[i].querySelector('#splitCategoryDropdownN' + i);
+            var splitAmt = splitAmountInputN[i].querySelector('#splitAmountInputN' + i);
+            if (SplitCategory.value === '') {
+                splitCategoryDropdownN[i].classList.add('errorPopup');
+            } else {
+                splitCategoryDropdownN[i].classList.remove('errorPopup');
+            }
+
+            if (splitAmt.value === '') {
+                splitAmountInputN[i].classList.add('errorPopup');
+            } else {
+                splitAmountInputN[i].classList.remove('errorPopup');
+            }
+        }
+
+        for (let i = 2; i < numberOfRows; i++) {
+            var SplitCategory = splitCategoryDropdownN[i].querySelector('#splitCategoryDropdownN' + i);
+            var splitAmt = splitAmountInputN[i].querySelector('#splitAmountInputN' + i);
+            if (SplitCategory.value !== '' && splitAmt.value === '') {
+                splitAmountInputN[i].classList.add('errorPopup');
+            } else {
+                splitAmountInputN[i].classList.remove('errorPopup');
+            }
+        }
+
+        setBtnStatusSplitTransection();
+    }
+
+    function setBtnStatusSplitTransection() {
+        var hasErrors = [].slice.call(document.querySelectorAll('.errorPopup'));
+        if (hasErrors.length !== 0) {
+            saveSplitBtn.classList.add('disabled');
+            return;
+        } else {
+            saveSplitBtn.classList.remove('disabled');
+        }
+    }
+
+    async function populateSplitCategoryDropdown(categoryID) {
+        const {
+            getCatogoriesResult: Category,
+        } = await ConsumerFinancesAjax.getCategoriesAsync(categoryID);
+        let data = Category.map((category) => ({
+            id: category.CategoryID,
+            value: category.CategoryDescription,
+            text: category.CategoryDescription
+        }));
+        data.unshift({ id: null, value: '', text: '' });
+        for (let i = 0; i < numberOfRows; i++) {
+            dropdown.populate("splitCategoryDropdownN" + i, data, splitAmount[i] != undefined ? splitAmount[i].category : '');
+        }
+        checkRequiredFieldsSplitTransection();
+    }
+
+    function splitAmountTotal() {
+        var sum = 0;
+        for (var i = 0; i < numberOfRows; i++) {
+            if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
+                sum += parseInt(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value);
+        }
+        totalAmount = sum;
+        document.getElementById('amountTotalInput').value = sum;
+        if (document.getElementById('newAmountInput').value == '') {
+            document.getElementById('newAmountInput').value = sum;
+            document.getElementById('regAmountTotalInput').value = sum;
+            amount = sum;
+        }
+    }
+
+    async function splitTransPopupSaveBtn() {
+        if (regTotalAmount != totalAmount) {
+            errorPopup(1);
+        }
+        else {
+            splitTransSaveData();
+            POPUP.hide(splitTransPopup);
+        }
+    }
+
+    function errorPopup(errorCode) {
+        const errorConfPOPUP = POPUP.build({
+            hideX: true,
+            classNames: ['warning', 'popupSize'],
+        });
+        const yesBtn = button.build({
+            text: 'Yes',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                if (errorCode == 1) {
+                    POPUP.hide(errorConfPOPUP);
+                    POPUP.hide(splitTransPopup);
+                    document.getElementById('newAmountInput').value = totalAmount;
+                    amount = totalAmount;
+                    splitTransSaveData();
+                }             
+            },
+        });
+        const noBtn = button.build({
+            text: 'No',
+            style: 'secondary',
+            type: 'contained',
+            callback: () => {
+                POPUP.hide(errorConfPOPUP);
+            },
+        });
+
+        const message = document.createElement('p');
+        if (errorCode = 1)
+            message.innerText = 'The total of this split transaction dose not match the total entered on the New Entry form. Would you like to change the total on the New Entry form.';
+        else
+            message.innerText = 'The Amount entered does not equal the total amount for this split transaction. Would you like to edit the split transaction?';
+
+        let btnWrap = document.createElement("div");
+        btnWrap.classList.add("btnWrap");
+        btnWrap.appendChild(yesBtn);
+        btnWrap.appendChild(noBtn);
+        message.style.textAlign = 'center';
+        message.style.marginBottom = '15px';
+        errorConfPOPUP.appendChild(message);
+        errorConfPOPUP.appendChild(btnWrap);
+        POPUP.show(errorConfPOPUP);
+    }
+
+    async function splitTransSaveData() {
+        splitAmount = [];
+        for (let i = 0; i < numberOfRows; i++) {
+            var SplitCategory = splitCategoryDropdownN[i].querySelector('#splitCategoryDropdownN' + i);
+            var desc = splitDescriptionInputN[i].querySelector('#splitDescriptionInputN' + i);
+            var splitAmt = splitAmountInputN[i].querySelector('#splitAmountInputN' + i);
+            if (SplitCategory.value !== '') {
+                splitAmount.push({
+                    "itemNumber": i + 1,
+                    "categoryId": SplitCategory.options[SplitCategory.selectedIndex].id,
+                    "category": SplitCategory.options[SplitCategory.selectedIndex].value,
+                    "description": desc.value,
+                    "amount": splitAmt.value
+                });
+            }
+        }
+        document.getElementById('SPLIT_BTN').style.display = 'block';
     }
 
     return {

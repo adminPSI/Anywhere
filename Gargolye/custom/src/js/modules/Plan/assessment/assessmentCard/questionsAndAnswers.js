@@ -310,19 +310,7 @@
       let sectionID = target.match(/\d+/)[0];
       let applied = e.target.checked ? 'Y' : 'N';
 
-      // Find the object with matching sectionId and obtain the index
-      // const matchingIndex = assessmentValidationCheck.sectionsApplicable.findIndex(
-      //   obj => obj.sectionId === sectionID,
-      // );
-
-      // Update the value if a match is found
-      // if (matchingIndex !== -1) {
-      //   assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
-      //   //(assessmentValidationCheck.sectionsApplicable[matchingIndex]).applicable === 'Y' ? 'N' : 'Y';
-      // }
-
-      // checks entire assessments for validation errors
-      // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+      planValidation.updateSectionApplicability(sectionID, applied);
 
       return;
     }
@@ -414,34 +402,32 @@
         sectionQuestionCount[sectionId][setId][questionId].answered =
           e.target.checked === true ? true : false;
 
-        //const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
+        const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
-        // if (
-        //   questionIdCategory !== 'Variable not found in the object' &&
-        //   questionIdCategory !== 'noSupport'
-        // ) {
-        //   assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] =
-        //     e.target.checked;
-        // }
+        let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
-        // if (questionIdCategory === 'noSupport') {
-        //   assessmentValidationCheck.servicesAndSupportsChecked[sectionId] = {
-        //     ...assessmentValidationCheck.servicesAndSupportsChecked[sectionId], // Preserve existing properties
-        //     noSupport: true, // Set noSupport to true
-        //   };
+        if (
+          questionIdCategory !== 'Variable not found in the object' &&
+          questionIdCategory !== 'noSupport'
+        ) {
+          planValidation.updateAssessmentValidationProperty(sectionId, questionIdCategory, e.target.checked);
+        }
 
-        //   for (const key in assessmentValidationCheck.servicesAndSupportsChecked[sectionId]) {
-        //     if (key !== 'noSupport') {
-        //       assessmentValidationCheck.servicesAndSupportsChecked[sectionId][key] = false;
-        //     }
-        //   }
-        // }
+        if (questionIdCategory === 'noSupport') {
+          planValidation.updateAssessmentValidationProperty(sectionId, "noSupport", true);
 
-        // // checks the status of the buttons and adds/removes error class if needed for specific section
-        // planValidation.servicesAndSupportsBtnCheck(assessmentValidationCheck, sectionId);
+          for (const key in assessmentValidationCheck.servicesAndSupportsChecked[sectionId]) {
+            if (key !== 'noSupport') {
+              planValidation.updateAssessmentValidationProperty(sectionId, key, false);
+            }
+          }
+        }
 
-        // // checks entire assessments for validation errors
-        // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+        // checks the status of the buttons and adds/removes error class if needed for specific section
+        planValidation.servicesAndSupportsBtnCheck(sectionId);
+
+        // checks entire assessments for validation errors
+        planValidation.updatedAssessmenteValidation();
       }
       if (type === 'radio') {
         const radioLabelText = e.target.nextSibling.innerHTML;
@@ -460,13 +446,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
 
             if (sectionId === '41') {
-              // assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-              //   assessmentValidationCheck,
-              //   answer,
-              //   answerId,
-              // );
-              // // checks entire assessments for validation errors
-              // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+              planValidation.updateAnswerWorkingSection(answer, answerId);
             }
           }
         } else {
@@ -477,13 +457,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          // assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //   assessmentValidationCheck,
-          //   answer,
-          //   answerId,
-          // );
-          // // checks entire assessments for validation errors
-          // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+          planValidation.updateAnswerWorkingSection(answer,answerId);
         }
       }
       if (type === 'select-one') {
@@ -499,13 +473,11 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
           }
 
-          // assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //   assessmentValidationCheck,
-          //   answer,
-          //   answerId,
-          // );
-          // // checks entire assessments for validation errors
-          // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+          planValidation.updateAnswerWorkingSection(
+            answer,
+            answerId,
+          );
+          
         } else {
           addAnswer(answerId);
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
@@ -513,13 +485,10 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          // assessmentValidationCheck = planValidation.updateAnswerWorkingSection(
-          //   assessmentValidationCheck,
-          //   answer,
-          //   answerId,
-          // );
-          // // checks entire assessments for validation errors
-          // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+          planValidation.updateAnswerWorkingSection(
+            answer,
+            answerId,
+          );
         }
       }
       if (type === 'date') {
@@ -644,25 +613,27 @@
       readOnly = true;
     }
 
-    // number of paid supports attached to this section
-    // let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
-    // let additionalSupportCount =
-    //   assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
-    // let professionalReferralCounts =
-    //   assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
-    // let potentialOutcomeCount =
-    //   assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
+    //number of paid supports attached to this section
+    let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
+    
+    let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
+    let additionalSupportCount =
+      assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
+    let professionalReferralCounts =
+      assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
+    let potentialOutcomeCount =
+      assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
 
-    // // returns true if the section has been checked
-    // let paidSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport;
-    // let additionalSupportChecked =
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport ||
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].technology ||
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
-    // let professionalReferralChecked =
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
-    // let potentialOutcomeChecked =
-    //   assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
+    // returns true if the section has been checked
+    let paidSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport;
+    let additionalSupportChecked =
+      assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport ||
+      assessmentValidationCheck.servicesAndSupportsChecked[id].technology ||
+      assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
+    let professionalReferralChecked =
+      assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
+    let potentialOutcomeChecked =
+      assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
 
     const outcomesBtn = button.build({
       //text: `Add Outcome (${potentialOutcomeCount})`,
@@ -727,26 +698,26 @@
       profRefBtn.classList.add('disabled');
     }
 
-    // Add error class to buttons that are checked and have 0 outcomes attached to them
-    //if (paidSupportChecked && paidSupportCount === 0) {
-    //  paidSupportBtn.classList.add('error');
-      // assessmentValidationCheck.complete = false;
-      // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
-    //}
+    //Add error class to buttons that are checked and have 0 outcomes attached to them
+    if (paidSupportChecked && paidSupportCount === 0) {
+     paidSupportBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection("complete", false);
+    }
 
-    // if (additionalSupportChecked && additionalSupportCount === 0) {
-    //   additionalSupportBtn.classList.add('error');
-    //   assessmentValidationCheck.complete = false;
-    // }
+    if (additionalSupportChecked && additionalSupportCount === 0) {
+      additionalSupportBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection("complete", false);
+    }
 
-    // if (professionalReferralChecked && professionalReferralCounts === 0) {
-    //   profRefBtn.classList.add('error');
-    //   assessmentValidationCheck.complete = false;
-    // }
+    if (professionalReferralChecked && professionalReferralCounts === 0) {
+      profRefBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection("complete", false);
+    }
 
-    //if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
-    //  outcomesBtn.classList.add('error');
-    //}
+    if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
+     outcomesBtn.classList.add('error');
+     planValidation.updateAssessmentValidationSection("complete", false);
+    }
 
     const btnWrap = document.createElement('div');
     btnWrap.classList.add('btnWrap');
@@ -1518,15 +1489,14 @@
 
     const isChecked = answerText && answerText === '1' ? true : false;
 
-    // const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
+    const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
-    // if (
-    //   questionIdCategory !== 'Variable not found in the object' &&
-    //   questionIdCategory !== 'noSupport'
-    // ) {
-    //   assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] =
-    //     isChecked;
-    // }
+    if (
+      questionIdCategory !== 'Variable not found in the object' &&
+      questionIdCategory !== 'noSupport'
+    ) {
+      planValidation.updateAssessmentValidationProperty(sectionId, questionIdCategory, isChecked);
+    }
 
     const questionInputMarkup = input.buildNativeCheckbox({
       id: answerId,
@@ -1947,7 +1917,7 @@
     subSectionsWithAttachments = [];
     charLimits = planData.getAllISPcharacterLimts();
     readonly = readOnly;
-    // assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
+    assessmentValidationCheck = await planValidation.returnAssessmentValidationData();
 
     if (!$.session.planUpdate) {
       isSortable = false;
