@@ -2785,7 +2785,7 @@ namespace Anywhere
            RequestFormat = WebMessageFormat.Json,
            UriTemplate = "/copyWorkflowtemplateToRecord/")]
         string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId, string wantedFormAttachmentIds, string priorConsumerPlanId);
-       // string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId);
+        // string copyWorkflowtemplateToRecord(string token, string templateId, string peopleId, string referenceId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4485,7 +4485,7 @@ namespace Anywhere
                  ResponseFormat = WebMessageFormat.Json,
         RequestFormat = WebMessageFormat.Json,
         UriTemplate = "/insertAccount/")]
-        ConsumerFinancesWorker.AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId);
+          ConsumerFinancesWorker.AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount, string categoryID); 
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4961,8 +4961,39 @@ namespace Anywhere
                RequestFormat = WebMessageFormat.Json,
                UriTemplate = "/getAssessmentValidationData/")]
         PlanValidationWorker.ServicesAndSupports getAssessmentValidationData(string token, string planId);
-    }
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+         BodyStyle = WebMessageBodyStyle.Wrapped,
+         ResponseFormat = WebMessageFormat.Json,
+         RequestFormat = WebMessageFormat.Json,
+         UriTemplate = "/getEmployeeStatusDropDown/")]
+        EmploymentWorker.EmploymentStatus[] getEmployeeStatusDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+      RequestFormat = WebMessageFormat.Json,
+      UriTemplate = "/createNewEmploymentPath/")]
+        EmploymentWorker.EmploymentPath createNewEmploymentPath(string token, string currentStatus, string pathToEmployment, string pathToStartDate, string peopleID, string userID);
+
+		[OperationContract]
+        [WebInvoke(Method = "POST",
+               BodyStyle = WebMessageBodyStyle.Wrapped,
+               ResponseFormat = WebMessageFormat.Json,
+               RequestFormat = WebMessageFormat.Json,
+               UriTemplate = "/getSplitRegisterAccountEntriesByID/")]
+        ConsumerFinancesWorker.SplitAmountData[] getSplitRegisterAccountEntriesByID(string token, string registerId);
+
+        [WebInvoke(Method = "POST",
+              BodyStyle = WebMessageBodyStyle.Wrapped,
+              ResponseFormat = WebMessageFormat.Json,
+              RequestFormat = WebMessageFormat.Json,
+              UriTemplate = "/getOutcomeServicsPageData/")]
+        OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId);
+    }
+    
 
     // Use a data contract as illustrated in the sample below to add composite types to service operations.
     [DataContract]
