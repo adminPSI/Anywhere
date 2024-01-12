@@ -213,7 +213,7 @@ const isp_ci_importantPlaces = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        saveData();
+        await saveData();
         await planValidation.contactsValidationCheck();
       },
     });
@@ -236,7 +236,7 @@ const isp_ci_importantPlaces = (() => {
           accept: {
             text: 'Yes',
             callback: async () => {
-              deleteData();
+              await deleteData();
               POPUP.hide(popup);
               await planValidation.contactsValidationCheck();
             },

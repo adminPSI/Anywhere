@@ -419,7 +419,7 @@ const isp_ci_importantPeople = (() => {
       style: 'secondary',
       type: 'contained',
       callback: async () => {
-        saveData();
+        await saveData();
         await planValidation.contactsValidationCheck();
       },
     });
@@ -442,7 +442,7 @@ const isp_ci_importantPeople = (() => {
           accept: {
             text: 'Yes',
             callback: async () => {
-              deleteData();
+              await deleteData();
               POPUP.hide(popup);
               await planValidation.contactsValidationCheck();
             },
