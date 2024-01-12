@@ -16,7 +16,7 @@ const dayServices = (function () {
     let multiSelectAllNoneArea;
     let dsCardArea = document.createElement('div');
     dsCardArea.classList.add('dsCardArea');
-    let currentFilterDisplay = document.createElement('div');
+
     let SEARCH_WRAP;
     let SEARCH_BTN;
     let SEARCH_INPUT;
@@ -38,6 +38,10 @@ const dayServices = (function () {
     let temp__groupID;
     let temp__retrieveID;
     let temp__serviceDate;
+    let btnWrap;
+    let locationBtnWrap;
+    let serviceDateBtnWrap;
+    let selectedGroupNameBtnWrap;
 
     // DATA
     let displayedConsumers = [];
@@ -314,9 +318,106 @@ const dayServices = (function () {
     }
 
     function updateCurrentFilterDisplay() {
-        currentFilterDisplay.innerHTML = `
-    <p><span>Location: </span>${locationCache[locationID].locationName} </p>
-    <p><span>Date: </span>${UTIL.formatDateFromIso(serviceDate)}</p>`;
+
+        var currentFilterDisplay = document.querySelector('.filteredByData');
+
+        if (!currentFilterDisplay) {
+            currentFilterDisplay = document.createElement('div');
+            currentFilterDisplay.classList.add('filteredByData');
+            filterButtonSet();
+            currentFilterDisplay.appendChild(btnWrap);
+        }
+
+        currentFilterDisplay.style.maxWidth = '100%';
+
+        if (document.getElementById('locationBtn') != null)
+            document.getElementById('locationBtn').innerHTML = 'Location: ' + locationCache[locationID].locationName;
+
+        if (document.getElementById('serviceDateBtn') != null)
+            document.getElementById('serviceDateBtn').innerHTML = 'Date: ' + UTIL.formatDateFromIso(serviceDate);
+
+        if (selectedGroupName === 'Everyone') {
+            selectedGroupNameBtnWrap.style.display = 'none';
+        } else {
+            if (document.getElementById('selectedGroupNameBtn') != null)
+                document.getElementById('selectedGroupNameBtn').innerHTML = 'Group: ' + selectedGroupName;
+            selectedGroupNameBtnWrap.style.display = 'inherit';
+        }
+        return currentFilterDisplay;
+    }
+
+    function filterButtonSet() {
+        filterBtn = button.build({
+            text: 'Filter',
+            icon: 'filter',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'filterBtnNew',
+            callback: () => { dayServicesFilterPopup('ALL') },
+        });
+
+        locationBtn = button.build({
+            id: 'locationBtn',
+            text: 'Location: ' + locationCache[locationID].locationName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { dayServicesFilterPopup('locationBtn') },
+        });
+
+        serviceDateBtn = button.build({
+            id: 'serviceDateBtn',
+            text: 'Date: ' + UTIL.formatDateFromIso(serviceDate),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { dayServicesFilterPopup('serviceDateBtn') },
+        });
+
+        selectedGroupNameBtn = button.build({
+            id: 'selectedGroupNameBtn',
+            text: 'Group: ' + selectedGroupName,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { dayServicesFilterPopup('selectedGroupNameBtn') },
+        });
+        selectedGroupNameCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('selectedGroupNameBtn') },
+        });
+
+        btnWrap = document.createElement('div');
+        btnWrap.classList.add('filterBtnWrap');
+        btnWrap.appendChild(filterBtn);
+
+        locationBtnWrap = document.createElement('div');
+        locationBtnWrap.classList.add('filterSelectionBtnWrap');
+        locationBtnWrap.appendChild(locationBtn);
+        btnWrap.appendChild(locationBtnWrap);
+
+        serviceDateBtnWrap = document.createElement('div');
+        serviceDateBtnWrap.classList.add('filterSelectionBtnWrap');
+        serviceDateBtnWrap.appendChild(serviceDateBtn);
+        btnWrap.appendChild(serviceDateBtnWrap);
+
+        selectedGroupNameBtnWrap = document.createElement('div');
+        selectedGroupNameBtnWrap.classList.add('filterSelectionBtnWrap');
+        selectedGroupNameBtnWrap.appendChild(selectedGroupNameBtn);
+        selectedGroupNameBtnWrap.appendChild(selectedGroupNameCloseBtn);
+        selectedGroupNameBtnWrap.setAttribute("id", "GroupNameCloseBtn");
+        btnWrap.appendChild(selectedGroupNameBtnWrap);
+    }
+
+    function closeFilter(closeFilter) {
+        if (closeFilter == 'selectedGroupNameBtn') {
+            selectedGroupName = 'Everyone';
+            temp__groupID = 'ALL'; 
+        }
+        filterApplyAction(filterPopup);
     }
 
     // Action Nav
@@ -452,7 +553,7 @@ const dayServices = (function () {
         defaultVal = !filterGroupID || filterGroupID === '%' ? 'ALL' : filterGroupID;
         dropdown.populate(filterGroupDropdown, data, defaultVal);
     }
-    function dayServicesFilterPopup() {
+    function dayServicesFilterPopup(IsShow) {
         filterPopup = POPUP.build({
             classNames: 'dayServiceFilterPopup',
             header: 'Filter',
@@ -463,9 +564,12 @@ const dayServices = (function () {
         btnWrap.classList.add('btnWrap');
         btnWrap.appendChild(fitlerApplyBtn);
 
-        filterPopup.appendChild(filterDateInput);
-        filterPopup.appendChild(filterLocationDropdown);
-        filterPopup.appendChild(filterGroupDropdown);
+        if (IsShow == 'ALL' || IsShow == 'serviceDateBtn')
+            filterPopup.appendChild(filterDateInput);
+        if (IsShow == 'ALL' || IsShow == 'locationBtn')
+            filterPopup.appendChild(filterLocationDropdown);
+        if (IsShow == 'ALL' || IsShow == 'selectedGroupNameBtn')
+            filterPopup.appendChild(filterGroupDropdown);
         filterPopup.appendChild(btnWrap);
         POPUP.show(filterPopup);
 
@@ -475,7 +579,7 @@ const dayServices = (function () {
     function filterApplyAction(popup) {
         //I need to close the filter popup after clicking apply and not in the callback of an AJAX call.
         //Issue is if there is a slow connection the apply button can be clicked multiple times.
-
+ 
         if (temp__serviceDate) {
             serviceDate = temp__serviceDate;
             roster2.updateSelectedDate(serviceDate);
@@ -486,9 +590,9 @@ const dayServices = (function () {
         }
 
         //MAT
-        let locDropdown = document.getElementById('dsLocationDropdown');
-        locationName = locDropdown.options[locDropdown.selectedIndex].text;
-        locationID = locDropdown.options[locDropdown.selectedIndex].value;
+        locationName = filterLocationDropdown.firstElementChild.options[filterLocationDropdown.firstElementChild.selectedIndex].innerText;
+        locationID = filterLocationDropdown.firstElementChild.options[filterLocationDropdown.firstElementChild.selectedIndex].value;
+
         roster2.updateSelectedLocationId(locationID, locationName);
         noLocationSet = locationID === '' ? true : false;
         checkForNoLocation();
@@ -503,7 +607,6 @@ const dayServices = (function () {
         try {
             dayServiceAjax.getDayServiceGetEnabledConsumers(serviceDate, locationID, res => {
                 fitlerApplyBtn.disabled = false;
-                POPUP.hide(popup);
 
                 const allowedConsumers = [];
                 res.forEach(r => {
@@ -1014,7 +1117,7 @@ const dayServices = (function () {
         } else {
             saveBtn.classList.remove('disabled');
         }
-    } 
+    }
 
     //====== POPUP DISPLAYING OPTION TO CLOCKIN OR CLOCK OUT =========================
     function clockInOutChoicePopup() {
@@ -1536,16 +1639,6 @@ const dayServices = (function () {
         SEARCH_WRAP.appendChild(SEARCH_BTN);
         SEARCH_WRAP.appendChild(SEARCH_INPUT);
 
-        filterBtn = button.build({
-            id: 'dayServicesFilter',
-            text: 'filter',
-            icon: 'filter',
-            style: 'secondary',
-            type: 'contained',
-            callback: function () {
-                dayServicesFilterPopup();
-            },
-        });
 
         mulitSelectBtn = button.build({
             text: 'Multi Select',
@@ -1639,6 +1732,7 @@ const dayServices = (function () {
             callback: function () {
                 fitlerApplyBtn.disabled = true;
                 filterApplyAction(filterPopup);
+                POPUP.hide(filterPopup);  
             },
         });
 
@@ -1646,8 +1740,6 @@ const dayServices = (function () {
 
         //Disable multi-select button where there are 0 consumers displayed:
         // if (displayedConsumers.length === 0) multiSelectBtn.classList.add('disabled');
-
-        currentFilterDisplay.classList.add('filteredByData');
 
         multiSelectAllNoneArea = document.createElement('div');
         multiSelectAllNoneArea.classList.add('btnWrap');
@@ -1657,28 +1749,28 @@ const dayServices = (function () {
         multiSelectAllNoneArea.classList.add('hidden');
 
         function getFilterValues() {
-          return (filterValues = {
-            dayServiceLocation: locationID,
-            dayServiceServiceDate: serviceDate,
-          });
+            return (filterValues = {
+                dayServiceLocation: locationID,
+                dayServiceServiceDate: serviceDate,
+            });
         }
         // Helper function to create the main reports button on the module page
         function createMainReportButton(buttonsData) {
-          return button.build({
-            text: 'Reports',
-            icon: 'add',
-            style: 'secondary',
-            type: 'contained',
-            classNames: 'reportBtn',
-            callback: function () {
-              // Iterate through each item in the buttonsData array
-              buttonsData.forEach(function (buttonData) {
-                buttonData.filterValues = getFilterValues();
-              });
+            return button.build({
+                text: 'Reports',
+                icon: 'add',
+                style: 'secondary',
+                type: 'contained',
+                classNames: 'reportBtn',
+                callback: function () {
+                    // Iterate through each item in the buttonsData array
+                    buttonsData.forEach(function (buttonData) {
+                        buttonData.filterValues = getFilterValues();
+                    });
 
-              generateReports.showReportsPopup(buttonsData);
-            },
-          });
+                    generateReports.showReportsPopup(buttonsData);
+                },
+            });
         }
         reportsBtn = createMainReportButton([{ text: 'Individual Day Service Activity Report' }]);
 
@@ -1687,14 +1779,16 @@ const dayServices = (function () {
         batchedMessageDisplay.classList.add('hidden');
 
         let filterSelectReportBtnWrap = document.createElement('div');
-        filterSelectReportBtnWrap.classList.add('btnWrap', 'filterSelectReportBtnWrap');
-        filterSelectReportBtnWrap.appendChild(filterBtn);
+        filterSelectReportBtnWrap.classList.add('btnWrap', 'filterSelectReportBtnWrap');       
         if ($.session.DayServiceUpdate) filterSelectReportBtnWrap.appendChild(mulitSelectBtn); //No need to multi select for view only
         filterSelectReportBtnWrap.appendChild(reportsBtn);
         DOM.ACTIONCENTER.appendChild(filterSelectReportBtnWrap);
         if ($.session.DayServiceUpdate) DOM.ACTIONCENTER.appendChild(multiSelectAllNoneArea); //no need to multi select for view only
         DOM.ACTIONCENTER.appendChild(SEARCH_WRAP);
-        DOM.ACTIONCENTER.appendChild(currentFilterDisplay);
+
+        const filteredBy = updateCurrentFilterDisplay();
+        DOM.ACTIONCENTER.appendChild(filteredBy);
+
         DOM.ACTIONCENTER.appendChild(batchedMessageDisplay);
         //if (dsCardArea.outerHTML.indexOf('style=\"display: none;\"') != -1) {
         //    dsCardArea.outerHTML = dsCardArea.outerHTML.replace('"style=\"display: none;\"', '');
@@ -1750,6 +1844,7 @@ const dayServices = (function () {
             var selectedOption = event.target.options[event.target.selectedIndex];
             temp__groupID = selectedOption.value;
             temp__retrieveID = selectedOption.dataset.retrieveid;
+            selectedGroupName = selectedOption.innerHTML;
         });
 
         filterDateInput.addEventListener('change', event => {
@@ -1926,6 +2021,7 @@ const dayServices = (function () {
         locationID = defaults.getLocation('dayServices');
         noLocationSet = locationID === '' ? true : false;
         serviceDate = UTIL.getTodaysDate();
+        selectedGroupName = 'Everyone';
 
         //get locations and cache them
         dayServiceAjax.getDayServiceLocations(serviceDate, loc => {
