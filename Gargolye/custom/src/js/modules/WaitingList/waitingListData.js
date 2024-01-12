@@ -27,8 +27,14 @@
 
   // DATA GETTERS
   //---------------------------------------
-  WaitingListData.prototype.getReviewDataByConsumer = async function (consumerId) {
-    return this.reviewData;
+  WaitingListData.prototype.getReviewDataByConsumer = async function () {
+    // this.reviewData = [{ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }]
+    // TODO-ASH: replace conclusionResult id with name, get from dropdown data
+    return this.reviewData.map(rd => {
+      return {
+        ...rd,
+      };
+    });
   };
 
   return WaitingListData;

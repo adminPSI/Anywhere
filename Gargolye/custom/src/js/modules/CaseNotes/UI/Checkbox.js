@@ -23,7 +23,7 @@
    * @param {String} [options.note] Text for input note/message, displayed underneath input field
    * @param {Boolean} [options.hidden] Whether to show or hide the input
    * @param {Boolean} [options.toggle] *Checkbox only (instead of checkbox you will get a toggle button)
-   * @returns {Input}
+   * @returns {Checkbox}
    *
    * @example
    * const fnInput = new Checkbox({

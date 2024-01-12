@@ -969,7 +969,7 @@ const CaseNotes = (() => {
 
     // Form
     cnForm = new Form({
-      elements: [
+      fields: [
         //confidential
         {
           type: 'checkbox',

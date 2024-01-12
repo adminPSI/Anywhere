@@ -65,6 +65,7 @@
     this.table = null;
 
     this._build();
+    this._setupEvents();
 
     // this.table = table ref
     // this.table.tHead = table header
@@ -84,7 +85,7 @@
     const tableNav = _DOM.createElement('div', { class: 'ui-table__nav' });
     this.table = _DOM.createElement('table');
     const tableBody = _DOM.createElement('tbody');
-    const tableHeader = _DOM.createElement('thead', { html: '<tr></tr>' });
+    const tableHeader = _DOM.createElement('thead', { node: _DOM.createElement('tr') });
 
     this.table.appendChild(tableHeader);
     this.table.appendChild(tableBody);
@@ -106,9 +107,15 @@
   /**
    * @function
    */
-  Table.prototype.populate = function () {
+  Table.prototype._setupEvents = function () {};
+
+  /**
+   * @function
+   * @param {Array} data
+   */
+  Table.prototype.populate = function (data) {
     //* populate table body
-    data.rows.forEach((row, i) => {
+    data.forEach((row, i) => {
       const rowEle = _DOM.createElement('tr', { ...row.attributes, id: row.id });
 
       this.rows[row.id] = rowEle;
