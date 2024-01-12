@@ -69,7 +69,6 @@ const plan = (function () {
   let includeCheckbox; //
   // plan validation
   let ISPValidationCheck;
-  let assessmentValidationCheck;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -2123,9 +2122,6 @@ const plan = (function () {
     await planData.init(planId);
     await planAttachment.getAttachments(planId);
 
-    // plan validation data 
-    await planValidation.init(planId);
-
     // build tab section wraps
     const assessmentWrap = document.createElement('div');
     const ispWrap = document.createElement('div');
@@ -2242,8 +2238,6 @@ const plan = (function () {
     }
 
     DOM.autosizeTextarea();
-
-    // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
     //sentToOnet = await assessmentAjax.getSentToONETDate({
     //  token: $.session.Token,

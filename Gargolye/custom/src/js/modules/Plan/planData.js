@@ -516,6 +516,7 @@ const planData = (() => {
   async function init(planID) {
     planId = planID;
     await setDropdownData();
+    await planValidation.init(planId);
   }
 
   return {

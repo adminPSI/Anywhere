@@ -76,8 +76,8 @@ const TABS = (function () {
     return tabsBody;
   };
   const buildNavItem = (navText, isActive, index) => {
-    let ISPValidationCheck = plan.getISPValidation();
-    let assessmentValidtaionCheck = plan.getAssessmentValidation();
+    //let ISPValidationCheck = plan.getISPValidation();
+    let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
     const navItem = document.createElement('div');
     navItem.classList.add('tabsNav__item');
@@ -91,24 +91,24 @@ const TABS = (function () {
     navAlertDiv.innerHTML = `${icons.error}`;
     navItem.appendChild(navAlertDiv);
 
-    //planValidation.createTooltip(
-    //   'There is data missing on this tab that is required by DODD',
-    //   navAlertDiv,
-    // );
+    planValidation.createTooltip(
+      'There is data missing on this tab that is required by DODD',
+      navAlertDiv,
+    );
 
     navAlertDiv.style.display = 'none';
 
     if (isActive) navItem.classList.add('active');
 
-    // DIsplay Assessment Nav Validation if their are validation errors
-    //if (navText === 'Assessment' && assessmentValidtaionCheck.complete === false) {
-    //  navAlertDiv.style.display = 'flex';
-    //}
+    // Display Assessment Nav Validation if their are validation errors
+    if (navText === 'Assessment' && assessmentValidationCheck.complete === false) {
+     navAlertDiv.style.display = 'flex';
+    }
 
-    //// DIsplay ISP Nav Validation if their are validation errors
-    //if (navText === 'ISP' && ISPValidationCheck.complete === false) {
+    // // DIsplay ISP Nav Validation if their are validation errors
+    // if (navText === 'ISP' && ISPValidationCheck.complete === false) {
     //  navAlertDiv.style.display = 'flex';
-    //}
+    // }
 
     return navItem;
   };

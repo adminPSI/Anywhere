@@ -183,6 +183,10 @@ const planValidation = (function () {
         ],
       },
     };
+
+    function setPlanId(newPlanId) {
+      planId = newPlanId;
+    }
   
     //* TOOLTIPS
     function createTooltip(message, attachedDiv) {
@@ -252,7 +256,7 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT DATA UPDATE CHECK
-    function updatedAssessmenteValidation(assessmentValidationCheck) {
+    function updatedAssessmenteValidation() {
       const workingAlertDiv = document.getElementById('workingAlert');
       const tocAlertDiv = document.getElementById('tocAlert');
       const tocMobileAlertDiv = document.getElementById('tocAlertMobile');
@@ -342,7 +346,7 @@ const planValidation = (function () {
       return assessmentValidationCheck;
     }
   
-    function updateAnswerWorkingSection(assessmentValidationCheck, answer, answerId) {
+    function updateAnswerWorkingSection(answer, answerId) {
       for (let i = 0; i < assessmentValidationCheck.workingNotWorking.length; i++) {
         if (assessmentValidationCheck.workingNotWorking[i].answerid === answerId) {
           assessmentValidationCheck.workingNotWorking[i].answer = answer;
@@ -350,7 +354,9 @@ const planValidation = (function () {
         }
       }
   
-      return assessmentValidationCheck;
+      // checks entire assessments for validation errors
+      planValidation.updatedAssessmenteValidation();
+      //return assessmentValidationCheck;
     }
   
     // ASSESSMENT TABLE OF CONTENTS
@@ -396,7 +402,7 @@ const planValidation = (function () {
     }
   
     // ASSESSMENT SERVICES AND SUPPORTS
-    function servicesAndSupportsBtnCheck(assessmentValidationCheck) {
+    function servicesAndSupportsBtnCheck() {
       const idsToCheck = [34, 35, 36, 37, 38, 39, 40];
 
       idsToCheck.forEach(id => {
@@ -533,6 +539,36 @@ const planValidation = (function () {
         counts[assessmentAreaId] = (counts[assessmentAreaId] || 0) + 1;
       });
       return counts;
+    }
+
+    function updateSectionApplicability(sectionID, applied) {
+      // Find the object with matching sectionId and obtain the index
+      const matchingIndex = assessmentValidationCheck.sectionsApplicable.findIndex(
+        obj => obj.sectionId === sectionID,
+      );
+  
+      // Update the value if a match is found
+      if (matchingIndex !== -1) {
+        assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
+        // Toggle the value between 'Y' and 'N'
+        assessmentValidationCheck.sectionsApplicable[matchingIndex].applicable = applied;
+        (assessmentValidationCheck.sectionsApplicable[matchingIndex]).applicable === 'Y' ? 'N' : 'Y';
+      }
+  
+      // checks entire assessments for validation errors
+      planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
+    }
+
+    function updateAssessmentValidationSection(key, value) {
+      assessmentValidationCheck[key] = value;
+
+      updatedAssessmenteValidation();
+    }
+
+    function updateAssessmentValidationProperty(sectionId, questionIdCategory, value) {
+      assessmentValidationCheck.servicesAndSupportsChecked[sectionId][questionIdCategory] = value;
+
+      updatedAssessmenteValidation();
     }
 
     //* ISP
@@ -717,8 +753,16 @@ const planValidation = (function () {
       const contactData = await planValidationAjax.getContactValidationData(planId);
 
       const bestWayToConnect = contactData[0]?.bestWayToConnect || '';
-      const importantPeopleData = contactData[0] ? [{ type: contactData[0].importantPeopleType, typeOther: contactData[0].importantPeopleTypeOther }] : [];
-      const importantPlacesData = contactData[0] ? [{ type: contactData[0].importantPeopleType, typeOther: contactData[0].importantPeopleTypeOther }] : [];
+      
+      const importantPeopleData = contactData.map(item => ({
+        type: item.importantPeopleType,
+        typeOther: item.importantPeopleTypeOther,
+      }));
+      
+      const importantPlacesData = contactData.map(item => ({
+        type: item.importantPlacesType,
+        typeOther: item.importantPlacesTypeOther,
+      }));
 
       checkImportantPeople(importantPeopleData);
       checkImportantPlaces(importantPlacesData);
@@ -826,15 +870,19 @@ const planValidation = (function () {
       await contactsValidationCheck(planId);
       //ISPValidation(planId);
   
-      getAssessmentValidation(planId);
+      await getAssessmentValidation(planId);
     }
   
     return {
+      setPlanId,
       createTooltip,
       returnAssessmentValidationData,
       getAssessmentValidation,
       updateTocSectionHeaders,
       updatedAssessmenteValidation,
+      updateSectionApplicability,
+      updateAssessmentValidationSection,
+      updateAssessmentValidationProperty,
       ISPValidation,
       checkAllOutcomesComplete,
       updatedIspOutcomesSetAlerts,

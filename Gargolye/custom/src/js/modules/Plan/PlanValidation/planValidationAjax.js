@@ -48,8 +48,6 @@ const planValidationAjax = (function () {
           } catch (error) {
             console.log(error);
           }
-
-        //planValidation.contactsValidationCheck(importantPeopleData, importantPlacesData, AdditionalSummaryData[0].bestWayToConnect);
     }
       
     return {
