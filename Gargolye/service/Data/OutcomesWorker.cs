@@ -1,5 +1,12 @@
 using Anywhere.Data;
+using Anywhere.Log;
+using Newtonsoft.Json;
+using System;
+using System.Configuration;
+using System.Data;
+using System.Text;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.Authorization.AuthorizationWorker;
 
 namespace Anywhere.service.Data
 {
@@ -7,6 +14,10 @@ namespace Anywhere.service.Data
     {
         DataGetter dg = new DataGetter();
         JavaScriptSerializer js = new JavaScriptSerializer();
+        private static Loger logger = new Loger();
+        private string gSAConnString = ConfigurationManager.ConnectionStrings["connection"].ToString();
+        StringBuilder sb = new StringBuilder();
+        Sybase di = new Data.Sybase();
 
         public GoalSpecificLocationInfo[] getGoalSpecificLocationInfoJSON(string token, string activityId)
         {
@@ -247,6 +258,107 @@ namespace Anywhere.service.Data
         {
             public string goal_type_description { get; set; }
             public string Goal_Type_ID { get; set; }
+        }
+
+        public class PDParentOutcome
+        {
+            public string outcomeType { get; set; }
+            public string outcomeStatement { get; set; }
+            public string effectiveDateStart { get; set; }
+            public string effectiveDateEnd { get; set; }
+            public string goal_id { get; set; }
+
+        }
+
+        public class PDChildOutcome
+        {
+            public string goal_id { get; set; }
+            public string frequency { get; set; }
+            public string itemnum { get; set; }
+            public string serviceType { get; set; }
+            public string serviceStatement { get; set; }
+            public string serviceStartDate { get; set; }
+            public string serviceEndDate { get; set; }
+        }
+
+        public class OutComePageData
+        {
+            public PDParentOutcome[] pageDataParent { get; set; }
+            public PDChildOutcome[] pageDataChild { get; set; }
+        }
+
+        public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
+        {
+            OutComePageData pageData = new OutComePageData();
+            js.MaxJsonLength = Int32.MaxValue;
+            string parentString = getOutcomeServicsPageDataParent(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
+            PDParentOutcome[] parentObj = js.Deserialize<PDParentOutcome[]>(parentString);
+
+            string childString = getOutcomeServicsPageDataChildren(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
+            PDChildOutcome[] childObj = js.Deserialize<PDChildOutcome[]>(childString);
+
+            pageData.pageDataParent = parentObj;
+            pageData.pageDataChild = childObj;
+
+            return pageData;
+        }
+
+        //Parent
+        public string getOutcomeServicsPageDataParent(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
+        {
+            try
+            {
+
+                string jsonResult = "";
+                sb.Clear();
+
+                sb.Append("select Goal_ID as goal_id , gt.Goal_Type_Description as outcomeType, gs.Goal_Statement as outcomeStatement , gs.Start_Date as effectiveDateStart, gs.End_Date as effectiveDateEnd ");
+                sb.Append("from dba.goals gs ");
+                sb.Append("left outer join dba.Goal_Types gt on gs.Goal_Type_ID = gt.Goal_Type_ID ");           
+
+                DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+                jsonResult = DataTableToJSONWithJSONNet(dt);
+
+                return jsonResult;
+
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+            return String.Empty;
+        }
+
+        //Child
+        public string getOutcomeServicsPageDataChildren(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
+        {           
+            try
+            {               
+                string jsonResult = "";
+                sb.Clear();
+
+                sb.Append("select  ROW_NUMBER() OVER(ORDER BY obj.Objective_id) AS itemnum,  obj.goal_id as goal_id , case when obj.Objective_recurrance = 'M' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per month' when obj.Objective_recurrance = 'D' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per day' when obj.Objective_recurrance = 'W' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per week'  ");
+                sb.Append(" when obj.Objective_recurrance = 'H' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per hour' when obj.Objective_recurrance = 'Y' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per year' end as frequency, ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.Start_Date as serviceStartDate, obj.End_Date as serviceEndDate");
+                sb.Append(" from Objectives  obj ");
+                sb.Append(" left outer join Code_Table ct on obj.Objective_Type =  ct.Code and Field_ID = 'Objective_Type' and Table_ID = 'Objectives'  ");
+               
+                DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
+                jsonResult = DataTableToJSONWithJSONNet(dt);
+
+                return jsonResult;
+            }
+            catch (Exception ex)
+            {
+            }
+            return String.Empty;
+        }
+
+        public string DataTableToJSONWithJSONNet(DataTable table)
+        {
+            string JSONString = string.Empty;
+            JSONString = JsonConvert.SerializeObject(table);
+            return JSONString;
         }
 
     }
