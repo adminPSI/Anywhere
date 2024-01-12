@@ -381,14 +381,13 @@ button.evv-highlight {
 .actionButtonWrap {
   display: flex;
   flex-flow: row wrap;
-  margin: 0 0 10px;
 
   button {
-    box-shadow: $shadow-m1;
-    margin: 0 10px 0 10px;
+    box-shadow: $shadow-m1; 
   }
   .selectAllBtn {
     margin-top: 10px;
+    margin-left:10px;  
     @media screen and (min-width: 500px) {
       margin-top: inherit;
     }
