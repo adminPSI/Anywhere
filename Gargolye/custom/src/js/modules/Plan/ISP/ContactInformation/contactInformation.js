@@ -551,6 +551,8 @@ const contactInformation = (() => {
       importantPlacesDataProm,
       fundingSourceProm,
     ]);
+
+    planValidation.contactsValidationCheck();
   }
 
   return {
