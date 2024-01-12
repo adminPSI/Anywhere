@@ -646,6 +646,10 @@ const planValidation = (function () {
         validationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
       }
 
+      if (validationCheck.outcomesData.planOutcome.length < 1) {
+        validationCheck.planProgressSummary = true;
+      }
+
       // if there are invalid providers, return false on the validaton check
       if (validationCheck.invalidProviders.length > 0) {
         validationCheck.complete = false;
@@ -679,6 +683,10 @@ const planValidation = (function () {
   
     // Checks if all fields on the ISP outcomes are completed
     function checkAllOutcomesComplete(validationCheck) {
+      if (validationCheck.outcomesData.planOutcome.length < 1) {
+        validationCheck.planProgressSummary = true;
+      }
+
       validationCheck.complete =
         validationCheck.details.length === 0 &&
         validationCheck.missingExperiences.length === 0 &&
