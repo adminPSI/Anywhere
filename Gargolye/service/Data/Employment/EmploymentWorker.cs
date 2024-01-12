@@ -4,6 +4,7 @@ using OneSpanSign.Sdk;
 using pdftron.PDF;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization;
 using System.ServiceModel.Web;
@@ -94,7 +95,7 @@ namespace Anywhere.service.Data.Employment
             [DataMember(Order = 15)]
             public string existingStartDate { get; set; }
             [DataMember(Order = 16)]
-            public string existingPathID { get; set; }           
+            public string existingPathID { get; set; }
         }
 
 
@@ -241,6 +242,11 @@ namespace Anywhere.service.Data.Employment
             public string positionId { get; set; }
             [DataMember(Order = 4)]
             public string WorkScheduleId { get; set; }
+            [DataMember(Order = 5)]
+            public string timeInHours { get; set; }
+            [DataMember(Order = 6)]
+            public string totalHours { get; set; }
+
         }
 
         [DataContract]
@@ -248,6 +254,16 @@ namespace Anywhere.service.Data.Employment
         {
             [DataMember(Order = 0)]
             public string IsEmployeeEnable { get; set; }
+
+        }
+
+        [DataContract]
+        public class EmploymentStatus
+        {
+            [DataMember(Order = 0)]
+            public string empStatusId { get; set; }
+            [DataMember(Order = 1)]
+            public string empStatusName { get; set; }
 
         }
 
@@ -625,8 +641,10 @@ namespace Anywhere.service.Data.Employment
                 try
                 {
                     WorkScheduleEntries[] entries = js.Deserialize<WorkScheduleEntries[]>(Odg.getWorkScheduleEntries(token, positionID, transaction));
+                    decimal total = entries.Sum(x => System.Convert.ToDecimal(x.timeInHours));
+                    if (entries.Length > 0)
+                        entries[0].totalHours = total.ToString();
                     return entries;
-
                 }
                 catch (Exception ex)
                 {
@@ -818,6 +836,48 @@ namespace Anywhere.service.Data.Employment
                 {
                     transaction.Rollback();
                     return "failed";
+                }
+            }
+        }
+
+        public EmploymentStatus[] getEmployeeStatusDropDown(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    EmploymentStatus[] getEmpStatus = js.Deserialize<EmploymentStatus[]>(Odg.getEmployeeStatusDropDown(transaction));
+                    return getEmpStatus;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public EmploymentPath createNewEmploymentPath(string token, string currentStatus, string pathToEmployment, string pathToStartDate, string peopleID, string userID)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    String PathID;
+                    EmploymentPath employeePath = new EmploymentPath();
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+
+                    PathID = Odg.createNewEmploymentPath(token, currentStatus, pathToEmployment, pathToStartDate, peopleID, userID, transaction);
+
+                    employeePath.pathId = PathID;
+                    return employeePath;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
                 }
             }
         }
