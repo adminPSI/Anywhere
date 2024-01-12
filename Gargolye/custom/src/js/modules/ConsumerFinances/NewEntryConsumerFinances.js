@@ -30,7 +30,7 @@ const NewEntryCF = (() => {
     let splitAmountInputN = [];
     let splitCategoryDropdownN = [];
     let splitDescriptionInputN = [];
-
+    let categoryOldVal;
     let totalAmount;
     let regTotalAmount;
     let numberOfRows;
@@ -64,10 +64,16 @@ const NewEntryCF = (() => {
             accountType = getAccountEntriesByIdResult[0].accountType;
             IsReconciled = getAccountEntriesByIdResult[0].reconciled;
             lastUpdateBy = getAccountEntriesByIdResult[0].lastUpdateBy;
-
+            categoryOldVal = category;
             const SplitDataresult = await ConsumerFinancesAjax.getSplitRegisterAccountEntriesByIDAsync(registerId);
             const { getSplitRegisterAccountEntriesByIDResult } = SplitDataresult;
             splitAmount = getSplitRegisterAccountEntriesByIDResult;
+            var sum = 0;  
+            for (var i = 0; i < splitAmount.length; i++) {
+                if (splitAmount[i].amount != '')
+                    sum += parseInt(splitAmount[i].amount);
+            }
+            totalAmount = sum;   
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
@@ -90,6 +96,7 @@ const NewEntryCF = (() => {
             accountType = 'E';
             IsReconciled = 'N';
             IsDisabledBtn = false;
+            categoryOldVal = ''; 
         }
 
         tempdate = '';
@@ -546,6 +553,12 @@ const NewEntryCF = (() => {
                 checkRequiredFieldsOfNewEntry();
             }
         });
+
+        newAmountInput.addEventListener('keyup', event => {
+            if (totalAmount > 0 && totalAmount != event.target.value) {
+                errorPopup(2); 
+            }
+        });
         newPayeeDropdown.addEventListener('change', event => {
             if (!newPayeeDropdown.classList.contains('disabled')) {
                 categoryID = event.target.options[event.target.selectedIndex].id;
@@ -751,6 +764,9 @@ const NewEntryCF = (() => {
         data.unshift({ id: null, value: '--Split--', text: '--Split--' });
         data.unshift({ id: null, value: '', text: '' });
         dropdown.populate("newCategoryDropdown", data, category);
+        if (category == '--Split--' && document.getElementById('SPLIT_BTN').style.display == 'none') {
+            buildSplitTransectionPopUp();
+        }  
         checkRequiredFieldsOfNewEntry();
     }
 
@@ -1017,6 +1033,8 @@ const NewEntryCF = (() => {
             id: "splitTransPopup"
         });
 
+        splitTransPopup.style.maxWidth = '900px';
+
         for (let i = 0; i < numberOfRows; i++) {
             splitCategoryDropdownN[i] = dropdown.build({
                 id: 'splitCategoryDropdownN' + i,
@@ -1094,7 +1112,11 @@ const NewEntryCF = (() => {
             text: "cancel",
             type: "outlined",
             style: "secondary",
-            callback: () => POPUP.hide(splitTransPopup)
+            callback: () => { 
+                document.getElementById('newCategoryDropdown').value = categoryOldVal;   
+                POPUP.hide(splitTransPopup);
+                checkRequiredFieldsOfNewEntry(); 
+            },
         });
 
         let btnWrap = document.createElement("div");
@@ -1216,11 +1238,13 @@ const NewEntryCF = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                POPUP.hide(errorConfPOPUP);
-                POPUP.hide(splitTransPopup);
-                document.getElementById('newAmountInput').value = totalAmount;
-                amount = totalAmount;
-                splitTransSaveData();
+                if (errorCode == 1) {
+                    POPUP.hide(errorConfPOPUP);
+                    POPUP.hide(splitTransPopup);
+                    document.getElementById('newAmountInput').value = totalAmount;
+                    amount = totalAmount;
+                    splitTransSaveData();
+                }             
             },
         });
         const noBtn = button.build({

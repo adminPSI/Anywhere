@@ -27,7 +27,7 @@ const roster2 = (function () {
     let MINI_ROSTER_BTN;
     let MINI_ROSTER_POPUP;
     let MINI_ROSTER_DONE;
-    let MINI_ROSTER_CANCEL;     
+    let MINI_ROSTER_CANCEL;
     // filtering
     let selectedDate;
     let selectedLocationName;
@@ -54,7 +54,7 @@ const roster2 = (function () {
     // Roster Groups/Pagination
     let rosterGroupCount;
     let activeGroup;
-    
+
 
     var locationHasUnreadNote;
     // Selected & Active Consumers
@@ -298,6 +298,10 @@ const roster2 = (function () {
         if (document.getElementById('filteredDateBtn') != null)
             document.getElementById('filteredDateBtn').innerHTML = 'Date: ' + filteredDate;
 
+        if (hideDateFilter) {
+            btnWrap.removeChild(filteredDateBtnWrap);
+        }
+         
         if (selectedLocationName === '%' || selectedLocationName === 'All') {
             btnWrap.appendChild(selectedLocationNameBtnWrap);
             btnWrap.removeChild(selectedLocationNameBtnWrap);
@@ -405,17 +409,17 @@ const roster2 = (function () {
             selectedLocationName = 'All';
             selectedLocationId = '0';
             selectedGroupName = 'Everyone';
-            selectedGroupCode = 'ALL';  
-            btnWrap.removeChild(selectedLocationNameBtnWrap); 
-            const groupResults = await getConsumerGroupsData(selectedLocationId);  
-            rosterGroups = groupResults; 
-            $.session.selectedLocation = [selectedLocationId, selectedLocationName]; 
+            selectedGroupCode = 'ALL';
+            btnWrap.removeChild(selectedLocationNameBtnWrap);
+            const groupResults = await getConsumerGroupsData(selectedLocationId);
+            rosterGroups = groupResults;
+            $.session.selectedLocation = [selectedLocationId, selectedLocationName];
         }
         if (closeFilter == 'selectedGroupNameBtn') {
-            selectedGroupName = 'Everyone';  
-            selectedGroupCode = 'ALL';   
+            selectedGroupName = 'Everyone';
+            selectedGroupCode = 'ALL';
             btnWrap.removeChild(selectedGroupNameBtnWrap);
-        }    
+        }
         filterApply();
     }
 
@@ -489,9 +493,9 @@ const roster2 = (function () {
 
         setupFilterEvent();
 
-        POPUP.show(FILTER_POPUP); 
+        POPUP.show(FILTER_POPUP);
 
-        populateLocationDropdown(); 
+        populateLocationDropdown();
         populateGroupDropdown();
     }
     // filter dropdowns
@@ -593,7 +597,7 @@ const roster2 = (function () {
         var oldGroupName;
         var oldRosterGroups;
 
-    var locationHasUnreadNote;
+        var locationHasUnreadNote;
 
         DATE_INPUT.addEventListener('change', event => {
             oldDate = selectedDate;
@@ -601,7 +605,7 @@ const roster2 = (function () {
         });
         LOCATION_DROPDOWN.addEventListener('change', event => locationDropdownEvent(event));
         async function locationDropdownEvent(event) {
-            const selectedOption = event.target.options[event.target.selectedIndex]; 
+            const selectedOption = event.target.options[event.target.selectedIndex];
             oldLocationId = selectedLocationId;
             oldLocationName = selectedLocationName;
             selectedLocationId = selectedOption.value;
@@ -669,7 +673,7 @@ const roster2 = (function () {
         const rosterlists = [...ROSTER_WRAP.querySelectorAll('.roster__list')];
         rosterlists && rosterlists.forEach(rl => ROSTER_WRAP.removeChild(rl));
         totalConsumerCount = 0;
-      await getRosterConsumersData(true);
+        await getRosterConsumersData(true);
         //Ugly... should be re-done to be able to pass a custom apply action for the filter if needed
         // but I'm running out of thime for this release. THis is needed to reset the set allowed consumers
         //when filtering on a location or group.
@@ -712,11 +716,11 @@ const roster2 = (function () {
         if (selectedLocationId !== '000') {
             if (defaults.rememberLastLocation('roster')) defaults.setLocation('roster', selectedLocationId);
         }
-		
-		
-         if ($.loadedApp === 'ConsumerFinances') {
-             if (defaults.rememberLastLocation('moneyManagement')) defaults.setLocation('moneyManagement', selectedLocationId);
-        } 
+
+
+        if ($.loadedApp === 'ConsumerFinances') {
+            if (defaults.rememberLastLocation('moneyManagement')) defaults.setLocation('moneyManagement', selectedLocationId);
+        }
 
     }
     // Top Nav
@@ -1229,7 +1233,7 @@ const roster2 = (function () {
             console.log(error);
         }
     }
-  async function getRosterConsumersData(forceGroupFilter) {
+    async function getRosterConsumersData(forceGroupFilter) {
         if ($.session.formsCaseload == true && $.loadedApp === 'forms') selectedGroupCode = 'CAS';
         const getConsumerByGroupData = {
             selectedGroupCode,
@@ -1238,9 +1242,9 @@ const roster2 = (function () {
             selectedDate,
         };
 
-    if (!rosterConsumers || rosterConsumers.length === 0 || forceGroupFilter) {
-        rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
-    }
+        if (!rosterConsumers || rosterConsumers.length === 0 || forceGroupFilter) {
+            rosterConsumers = await getConsumersByGroupData(getConsumerByGroupData);
+        }
 
         // I am not sure why consumer location was being set to the selected location ID?
         const seenIds = {};
