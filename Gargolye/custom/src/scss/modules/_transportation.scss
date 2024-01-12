@@ -658,6 +658,52 @@
             cursor: pointer;
         }
     }
+
+    .cFInputWrap {
+        display: flow;
+
+        .width37Per, .width21Per {
+            width: 97%;
+        }
+
+        @media screen and (min-width: 560px) {
+            display: flex;
+            justify-content: space-between;
+
+            .width37Per {
+                width: 37%;
+            }
+
+            .width21Per {
+                width: 21%;
+            }
+
+            .marginLeft50Per {
+                margin-left: 55.5%;
+            }
+        }
+    }
+
+    .cFTotalWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        margin: 0;
+
+        > div {
+            flex-grow: 1;
+            margin: 0 5px 20px;
+            width: 45%;
+        }
+    }
+
+    .popup {
+        max-width: 900px;
+    }
+
+    .popupSize {
+        max-width: 400px !important;  
+    }
 }
 
 [data-active-module="resetPassword"] {
@@ -818,6 +864,9 @@
         }
     }
 
+    .boldfont {
+        font: bold;
+    }
 
     .employmentMsgWrap {
         display: flex;
@@ -938,6 +987,12 @@
         }
 
         .table__row {
+            &[data-plan-active='true'] {
+                > div:nth-child(4) {
+                    font-weight: bold;
+                }
+            }
+
             &.selected {
                 background: $secondary;
             }
