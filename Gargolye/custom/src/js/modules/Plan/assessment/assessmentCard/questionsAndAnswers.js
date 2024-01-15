@@ -212,7 +212,7 @@
         const questionKeys = Object.keys(sectionQuestionCount[sectionKey][questionSetKey]);
 
         questionKeys.forEach(questionKey => {
-          const { answered, required, rowOrder } =
+          const { answered, required, rowOrder, leaveblank } =
             sectionQuestionCount[sectionKey][questionSetKey][questionKey];
           let questionDiv;
 
@@ -222,6 +222,8 @@
             if (!questionDiv) return;
             if (answered && required) questionDiv.classList.remove('unawnsered');
             if (!answered && required) questionDiv.classList.add('unawnsered');
+            if (!answered && required && !leaveblank) questionDiv.classList.remove('unawnsered');
+          
             if (!required) questionDiv.classList.remove('unawnsered');
           } else {
             // Table Questions
@@ -933,6 +935,7 @@
             answered: answerText && answerText !== '' ? true : false,
             required: false,
             rowOrder: rowKey,
+            leaveblank: skipped === 'N' ? false : true,
           };
         }
 
@@ -1041,6 +1044,7 @@
             answered: false,
             required: false,
             rowOrder: rok,
+            leaveblank: skipped === 'N' ? false : true,
           };
 
           if (answerText && answerText !== '') {
@@ -1177,6 +1181,7 @@
             sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
               answered: false,
               rowOrder: rowOrderKeys.length + 1,
+              leaveblank: skipped === 'N' ? false : true,
             };
 
             const colName = COL_NAME_MAP[index];
@@ -1632,6 +1637,7 @@
     sectionQuestionCount[sectionId][setId][questionId] = {
       answered: null,
       required: null,
+      leaveblank: skipped === 'N' ? false : true,
     };
 
     const question = document.createElement('div');
