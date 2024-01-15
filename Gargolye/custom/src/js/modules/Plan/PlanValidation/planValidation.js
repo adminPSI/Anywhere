@@ -320,28 +320,20 @@ const planValidation = (function () {
   
     // ASSESSMENT WORKING/NOT WORKING
     function workingSectionCheck(assessmentValidationCheck) {
-      // Group objects by answerRow
-        var groups = {};
-        (assessmentValidationCheck.workingNotWorking).forEach(function(obj) {
-            var answerRow = obj.answerRow;
-            if (!groups[answerRow]) {
-                groups[answerRow] = [];
-            }
-            groups[answerRow].push(obj);
-        });
+      const isFirstRowAnswerFilled = assessmentValidationCheck.workingNotWorking.some(obj => obj.answerRow === "1" && obj.answer !== "");
 
-        // Check if any group has all three objects with non-empty answer values
-        var hasGroupWithNonEmptyAnswers = Object.values(groups).some(function(group) {
-            return group.length === 3 && group.every(function(obj) {
-                return obj.answer !== "";
-            });
-        });
-
-        if (hasGroupWithNonEmptyAnswers) {
-            assessmentValidationCheck.workingSectionComplete = true;
+      if (isFirstRowAnswerFilled) {
+        // Now, check if any object has an empty string for the key "606" in questionNumber
+        const isFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 605" && obj.answer !== "");
+      
+        if (isFilledOut) {
+          assessmentValidationCheck.workingSectionComplete = true;
         } else {
-            assessmentValidationCheck.workingSectionComplete = false;
+          assessmentValidationCheck.workingSectionComplete = false;
         }
+      } else {
+        assessmentValidationCheck.workingSectionComplete = false;
+      }
   
       return assessmentValidationCheck;
     }
