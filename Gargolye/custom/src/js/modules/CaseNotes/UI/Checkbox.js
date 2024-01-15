@@ -60,7 +60,7 @@
     });
 
     // CHECKBOX & LABEL
-    this.input = _DOM.createElement('input', { ...this.options.attributes, type: 'checkbox' });
+    this.input = _DOM.createElement('input', { ...this.options.attributes });
     this.labelEle = _DOM.createElement('label', {
       text: this.options.label,
       for: this.options.attributes.id,

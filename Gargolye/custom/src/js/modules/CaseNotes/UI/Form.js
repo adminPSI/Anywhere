@@ -54,7 +54,7 @@
 
       switch (fieldType) {
         case 'radiogroup': {
-          inputInstance = new Radio({ ...ele });
+          inputInstance = new RadioGroup({ ...ele });
           break;
         }
         case 'checkbox': {

@@ -8,15 +8,13 @@
     display: flex;
     flex-flow: row wrap;
 
-    // .cols {
-    //   display: flex;
-    //   flex-flow: row nowrap;
-    //   column-gap: 10px;
+    fieldset {
+      margin: 0 0 20px 0;
+    }
 
-    //   > * {
-    //     flex-grow: 1;
-    //   }
-    // }
+    legend {
+      margin-bottom: 8px;
+    }
   }
 
   .formButtons {
