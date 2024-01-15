@@ -2875,7 +2875,7 @@ namespace Anywhere
                 referenceNumber = "All";
             }
 
-            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId);
+            return OODfw.generateForm8(token, referenceNumber, peopleId, startDate, endDate, serviceCodeId, userId);
         }
 
         public string generateForm10(System.IO.Stream testInput)
