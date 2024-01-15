@@ -1,6 +1,34 @@
-// let reviewRequired;
-// reviewRequired = cnData.isReviewRequired();
+// const checkboxGroup = {
+//   type: 'checkboxgroup',
+//   id: 'undefined',
+//   groupLabel: ' (Check all that apply)',
+//   fields: [
+//     { type: 'checkbox', label: 'Other', id: 'other' },
+//     { type: 'checkbox', label: 'Other', id: 'other' },
+//     { type: 'checkbox', label: 'Other', id: 'other' },
+//   ],
+// };
 
-//TODO-ASH: NO GROUP NOTES IF DOC TIME IS ALLOWED
-//TODO-ASH: crete checkbox for corrected (review only)
-//TODO-ASH: You have selected a bill code that does not allow group notes. Please select only one consumer.
+// const radioGroup = {
+//   type: 'radiogroup',
+//   id: 'actionRequired',
+//   groupLabel: 'asdfasdfasdf',
+//   fields: [
+//     { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+//     { type: 'radio', label: 'No', value: 'no', id: 'no' },
+//   ],
+// };
+
+// const textarea = {
+//   label: 'asdfasdf',
+//   id: 'describeIncident',
+//   fullscreen: true,
+//   type: 'textarea',
+// };
+
+// a.  Lives Alone
+// b.  Lives With Family or Other Caregivers
+// c.  Lives With Others Who Are Not Caregivers
+// d.  Lives in an Intermediate Care Facility
+// e.  Lives in a Nursing Facility
+// f.  Other

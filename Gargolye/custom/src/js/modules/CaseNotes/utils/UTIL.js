@@ -59,6 +59,24 @@
   }
 
   /**
+   * Converts a camelCase string to a title case string with spaces.
+   *
+   * @param {string} camelCaseStr - The camelCase string to be converted.
+   * @returns {string} The converted string in title case with spaces.
+   *
+   * @example
+   * // returns 'Hello There World'
+   * convertCamelCaseToTitle('helloThereWorld');
+   */
+  function convertCamelCaseToTitle(camelCaseStr) {
+    // Add a space before each uppercase letter and trim the result
+    let spacedStr = camelCaseStr.replace(/([A-Z])/g, ' $1').trim();
+
+    // Capitalize the first letter and concatenate with the rest of the string
+    return spacedStr.charAt(0).toUpperCase() + spacedStr.slice(1);
+  }
+
+  /**
    * Debounces a function, ensuring that it's not called until after the specified
    * amount of time has passed since the last time it was invoked.
    *
@@ -391,6 +409,7 @@
   return {
     autoIncrementId,
     asyncSetTimeout,
+    convertCamelCaseToTitle,
     debounce,
     fetchData,
     localStorageHandler,
