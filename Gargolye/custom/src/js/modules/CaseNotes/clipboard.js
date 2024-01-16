@@ -8,7 +8,6 @@
 //     { type: 'checkbox', label: 'Other', id: 'other' },
 //   ],
 // };
-
 // const radioGroup = {
 //   type: 'radiogroup',
 //   id: 'actionRequired',
@@ -18,15 +17,12 @@
 //     { type: 'radio', label: 'No', value: 'no', id: 'no' },
 //   ],
 // };
-
 // const textarea = {
 //   label: 'asdfasdf',
 //   id: 'describeIncident',
 //   fullscreen: true,
 //   type: 'textarea',
 // };
-
 //-----------------------------
 // Risk Mitigation
 //-----------------------------
-rMIsSupportNeeded;
