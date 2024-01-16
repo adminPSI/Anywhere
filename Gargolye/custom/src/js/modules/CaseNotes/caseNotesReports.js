@@ -28,7 +28,7 @@
 
     //TODO-ASH: build form to allow user to select criteria for report
     this.detailReportForm = new Form({
-      elements: [
+      fields: [
         {
           type: 'time',
           label: 'Start Time',
@@ -39,7 +39,7 @@
     });
 
     this.timeAnalysisReportForm = new Form({
-      elements: [
+      fields: [
         {
           type: 'time',
           label: 'Start Time',

@@ -69,7 +69,6 @@ const plan = (function () {
   let includeCheckbox; //
   // plan validation
   let ISPValidationCheck;
-  let assessmentValidationCheck;
 
   async function launchWorkflowViewer() {
     let processId =
@@ -190,9 +189,6 @@ const plan = (function () {
   }
   function getISPValidation() {
     return ISPValidationCheck;
-  }
-  function getAssessmentValidation() {
-    return assessmentValidationCheck;
   }
   //-- set
   function setSelectedConsumer(consumer) {
@@ -2125,8 +2121,6 @@ const plan = (function () {
     // init data for tab sections
     await planData.init(planId);
     await planAttachment.getAttachments(planId);
-    // ISPValidationCheck = await planValidation.ISPValidation(planId);
-    // assessmentValidationCheck = await planValidation.getAssessmentValidation(planId);
 
     // build tab section wraps
     const assessmentWrap = document.createElement('div');
@@ -2244,8 +2238,6 @@ const plan = (function () {
     }
 
     DOM.autosizeTextarea();
-
-    // planValidation.updatedAssessmenteValidation(assessmentValidationCheck);
 
     //sentToOnet = await assessmentAjax.getSentToONETDate({
     //  token: $.session.Token,
@@ -2999,7 +2991,6 @@ const plan = (function () {
     setSelectedConsumer,
     setRevisionNumber,
     getISPValidation,
-    getAssessmentValidation,
     setPlanType,
     setPlanId,
     setPlanStatus,

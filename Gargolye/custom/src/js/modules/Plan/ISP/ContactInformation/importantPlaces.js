@@ -212,8 +212,9 @@ const isp_ci_importantPlaces = (() => {
       text: 'save',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        saveData();
+      callback: async () => {
+        await saveData();
+        await planValidation.contactsValidationCheck();
       },
     });
     const cancelBtn = button.build({
@@ -234,9 +235,10 @@ const isp_ci_importantPlaces = (() => {
           message: 'Are you sure you would like to delete this entry?',
           accept: {
             text: 'Yes',
-            callback: () => {
-              deleteData();
+            callback: async () => {
+              await deleteData();
               POPUP.hide(popup);
+              await planValidation.contactsValidationCheck();
             },
           },
           reject: {
@@ -399,9 +401,35 @@ const isp_ci_importantPlaces = (() => {
     });
     if (readOnly) addPlaceBtn.classList.add('disabled');
 
+    // create wrapper div for button and alert
+    const importantPlacesBtnAlertDiv = document.createElement('div');
+    importantPlacesBtnAlertDiv.classList.add('btnAlertContainer');
+
+    // create div for the alert
+    const importantPlacesAlertDiv = document.createElement('div');
+    importantPlacesAlertDiv.innerHTML = `${icons.error}`;
+    importantPlacesAlertDiv.classList.add(`importantPlacesAlert`);
+    importantPlacesAlertDiv.style.display = 'none';
+
+    // creates and shows a tip when hovering over the visible alert div
+    planValidation.createTooltip(
+      'Important places with type "Other" must have a description in "Type Other" text area',
+      importantPlacesAlertDiv,
+    );
+
+    importantPlacesBtnAlertDiv.appendChild(addPlaceBtn);
+    importantPlacesBtnAlertDiv.appendChild(importantPlacesAlertDiv);
+
+    let contactsValidation = planValidation.getContactValidation();
+
+    if (contactsValidation.importantPlaces === false) {
+      importantPlacesAlertDiv.style.display = 'flex';
+    }
+
+
     const table = buildTableMarkup();
     ipSection.appendChild(table);
-    ipSection.appendChild(addPlaceBtn);
+    ipSection.appendChild(importantPlacesBtnAlertDiv)
 
     return ipSection;
   }

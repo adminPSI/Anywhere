@@ -141,6 +141,21 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
+        [DataContract]
+        public class SplitAmountData
+        {
+            [DataMember(Order = 0)]
+            public string itemNumber { get; set; }
+            [DataMember(Order = 1)]
+            public string category { get; set; }
+            [DataMember(Order = 2)]
+            public string description { get; set; }
+            [DataMember(Order = 3)]
+            public string amount { get; set; }
+            [DataMember(Order = 4)]
+            public string categoryId { get; set; }
+        }
+
         public class CFAttachmentsList
         {
             [DataMember(Order = 0)]
@@ -394,7 +409,7 @@ namespace Anywhere.service.Data.ConsumerFinances
         }
 
 
-        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId)
+        public AccountRegister insertAccount(string token, string date, string amount, string amountType, string account, string payee, string category, string subCategory, string checkNo, string description, string[] attachmentId, string[] attachmentDesc, string receipt, string userId, string eventType, string regId, SplitAmountData[] splitAmount,string categoryID)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -408,8 +423,6 @@ namespace Anywhere.service.Data.ConsumerFinances
                     if (payee == null) throw new Exception("payee is required");
                     if (category == null) throw new Exception("category is required");
                     if (userId == null) throw new Exception("userId is required");
-
-
 
                     string runningBalance = amount;
 
@@ -435,6 +448,20 @@ namespace Anywhere.service.Data.ConsumerFinances
                             Odg.insertAccountRegisterAttachments(token, RegisterID, AttachId, attachmentDesc[counter], userId, transaction);
                             counter++;
                         }
+                    }
+                     
+                    if (splitAmount.Length > 0)
+                    {
+                        Odg.deleteSplitRegisterData(token, RegisterID, transaction);
+                        foreach (SplitAmountData objSplitData in splitAmount)
+                        {
+                            Odg.insertSplitRegisterAccount(token, RegisterID, objSplitData.itemNumber, objSplitData.category, objSplitData.description, objSplitData.amount, objSplitData.categoryId, userId, transaction);
+                        }
+                    }
+                    else
+                    {
+                        Odg.deleteSplitRegisterData(token, RegisterID, transaction);
+                        Odg.insertSplitRegisterAccount(token, RegisterID, "1", category, description, amount, categoryID, userId, transaction);
                     }
                     acountRegister.registerId = RegisterID;
                     return acountRegister;
@@ -543,7 +570,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                     String AccountID;
 
                     AccountID = Odg.insertEditRegisterAccount(token, selectedConsumersId, accountId, name, number, type, status, classofAccount, dateOpened, dateClosed, openingBalance, description, userId, transaction);
-                    if(accountId != "0")
+                    if (accountId != "0")
                     {
                         ConsumerFinancesEntry[] updateRunningBal = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getEditAccountRunningBalance(openingBalance, accountId, transaction));
                         updateAccountBalance(updateRunningBal[0].activityDate, accountId, transaction, updateRunningBal[0].balance);
@@ -677,7 +704,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             {
                 try
                 {
-                    ConsumerFinanceEntriesWidget[] entries = js.Deserialize<ConsumerFinanceEntriesWidget[]>(Odg.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName,  transaction));
+                    ConsumerFinanceEntriesWidget[] entries = js.Deserialize<ConsumerFinanceEntriesWidget[]>(Odg.getConsumerFinanceWidgetEntriesData(token, consumerName, locationName, sortOrderName, transaction));
 
                     return entries;
 
@@ -708,7 +735,26 @@ namespace Anywhere.service.Data.ConsumerFinances
                     throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
                 }
             }
-           
+
+        }
+
+        public SplitAmountData[] getSplitRegisterAccountEntriesByID(string token, string registerId)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    SplitAmountData[] accountSplitEntries = js.Deserialize<SplitAmountData[]>(Odg.getSplitRegisterAccountEntriesByID(token, registerId, transaction));
+
+                    return accountSplitEntries;
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
         }
 
     }

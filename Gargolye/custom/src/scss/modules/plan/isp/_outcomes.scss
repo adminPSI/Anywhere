@@ -302,7 +302,7 @@
   }
 }
 
-.experiencesAlert, .reviewsAlert {
+.experiencesAlert, .reviewsAlert, .importantPeopleAlert, .importantPlacesAlert, .bestWaytoConnectAlert {
   svg {
     height: 30px;
     color: red;
@@ -313,6 +313,15 @@
 
 .btnAlertContainer {
  display: flex;
+}
+
+.connectBtnAlertContainer {
+  display: flex;
+  width: 100%;
+
+  .dropdown {
+    flex-grow: 1;
+  }
 }
 
 .tooltip {

@@ -1,9 +1,6 @@
 (function (global, factory) {
-  global.Radio = factory();
+  global.RadioGroup = factory();
 })(this, function () {
-  //=========================
-  // MAIN LIB
-  //-------------------------
   /**
    * Default configuration
    * @typ {Object}
@@ -13,42 +10,44 @@
   /**
    * @constructor
    * @param {Object} options
-   * @param {Array}  options.radios - Radio inputs
-   * @param {String} options.id - Id for input, use to link it with label. Also used for name attribute.
-   * @param {String} options.label - Text for label input
-   * @param {String} options.groupLabel - Radio group label text
-   * @param {String} [options.note] - Text for input note/message, displayed underneath input field
+   * @param {String} options.id - Id for inputs
+   * @param {String} options.groupLabel - Text for label input
+   * @param {Array}  options.fields - Radio inputs
+   * @param {String} fields.id
+   * @param {String} fields.type
+   * @param {String} fields.label Text for label input
    */
   function Radio(options) {
-    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS, options);
-    this.inputs = {};
+    // Data Init
+    this.options = _DOM.separateHTMLAttribrutes(_UTIL.mergeObjects(DEFAULT_OPTIONS, options));
+    this.options.attributes.type = 'radio';
+
+    // DOM Ref
+    this.rootElement = null;
+
+    this._build();
   }
 
   /**
    * Builds the Radio element structure
    *
    * @function
-   * @returns {Radio} - Returns the current instances for chaining
    */
-  Radio.prototype.build = function () {
-    this.inputGroup = _DOM.createElement('div', { class: 'inputGroup' });
-
-    const groupLabel = _DOM.createElement('div', {
-      class: 'inputGroup__label',
-      text: this.options.groupLabel,
+  Radio.prototype._build = function () {
+    // RADIO WRAP
+    const classArray = ['inputGroup', 'radio', `${this.options.attributes.id}`];
+    this.rootElement = _DOM.createElement('div', {
+      class: classArray,
     });
 
-    this.inputGroup.appendChild(groupLabel);
-
-    this.options.radios.forEach(radio => {
-      const newInput = new Input({ ...radio });
-      const input = newInput.rootElement;
-      this.inputGroup.appendChild(input);
-
-      this.inputs[radio.id] = input;
+    // RADIO & LABEL
+    this.input = _DOM.createElement('input', { ...this.options.attributes });
+    this.labelEle = _DOM.createElement('label', {
+      text: this.options.label,
+      for: this.options.attributes.id,
     });
-
-    return this;
+    this.rootElement.appendChild(this.input);
+    this.rootElement.appendChild(this.labelEle);
   };
 
   /**
@@ -67,11 +66,50 @@
    */
   Radio.prototype.renderTo = function (node) {
     if (node instanceof Node) {
-      node.appendChild(this.inputGroup);
+      node.appendChild(this.rootElement);
     }
 
     return this;
   };
 
-  return Radio;
+  //=========================
+  // MAIN LIB
+  //-------------------------
+  /**
+   * Default configuration
+   * @typ {Object}
+   */
+  const DEFAULT_OPTIONS_2 = {};
+
+  /**
+   * @constructor
+   */
+  function RadioGroup(options) {
+    // Data Init
+    this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS_2, options);
+
+    // DOM Ref
+    this.rootElement = null;
+    this.groupLabelEle = null;
+
+    this._build();
+  }
+
+  /**
+   * Builds the Radio element structure
+   *
+   * @function
+   */
+  RadioGroup.prototype._build = function () {
+    this.rootElement = _DOM.createElement('fieldset');
+    this.groupLabelEle = _DOM.createElement('legend', { text: this.options.groupLabel });
+    this.rootElement.appendChild(this.groupLabelEle);
+
+    this.options.fields.forEach(field => {
+      const inputInstance = new Radio({ ...field, name: this.options.id });
+      this.rootElement.appendChild(inputInstance.rootElement);
+    });
+  };
+
+  return RadioGroup;
 });

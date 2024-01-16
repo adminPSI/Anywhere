@@ -173,7 +173,7 @@ namespace OODForms
 
             return Tasks;
         }
-        public DataSet OODForm8GetNotes(string AuthorizationNumber, string StartDate, string EndDate)
+        public DataSet OODForm8GetNotes(string AuthorizationNumber, string StartDate, string EndDate, string userId)
         {
             sb.Clear();
             sb.Append("SELECT   dba.EM_Job_Task.Position_ID ");
@@ -210,6 +210,7 @@ namespace OODForms
             sb.Append("AND dba.Code_Table.Table_ID = 'Employment_Code' ");
             sb.Append("AND Field_ID = 'ContactMethod' ");
             sb.AppendFormat("AND Service_Date BETWEEN '{0}' AND '{1}' ", DateTime.Parse(StartDate).ToString("yyyy-MM-dd"), DateTime.Parse(EndDate).ToString("yyyy-MM-dd"));
+            sb.AppendFormat(" AND dba.Case_Notes.Original_User_ID LIKE '{0}'", userId);
             sb.Append("AND Last_Name > '' ");
             ds = di.SelectRowsDS(sb.ToString());
 

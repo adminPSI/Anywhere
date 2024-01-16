@@ -751,7 +751,7 @@ function getUserPermissions(callback) {
     data: '{"token":"' + $.session.Token + '"}',
     contentType: 'application/json; charset=utf-8',
     dataType: 'json',
-    success: function (response, status, xhr) {
+      success: function (response, status, xhr) {
 
       $.session.permissionString = response.getUserPermissionsResult;
 
@@ -909,6 +909,8 @@ function getDefaultAnywhereSettings() {
       $.session.defaultDSTimeClockName = res.defaulttimeclocklocationName;
       $.session.defaultWorkshopLocationValue = res.defaultworkshoplocation;
       $.session.defaultWorkshopLocation = res.defaultworkshoplocationname;
+      $.session.defaultMoneyManagementLocationValue = res.defaultMoneyManagementLocation;
+      $.session.defaultMoneyManagementLocation = res.defaultMoneyManagementLocationName; 
       //$.session.defaultDSTimeClockName = res.defaulttimeclocklocationname;
       //database state - Indiana or Ohio
       $.session.stateAbbreviation = res.stateAbbreviation;

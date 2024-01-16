@@ -20,6 +20,16 @@ const authorizations = (function () {
     let yearEndEnd;
     let applyFilterBtn;
 
+    let btnWrap;
+    let plantypeBtnWrap;
+    let vendorBtnWrap;
+    let matchSourceBtnWrap;
+    let completedDateBtnWrap;
+    let yearStartBtnWrap;
+    let yearEndBtnWrap;
+
+    let newFilterValues;
+
     function handleActionNavEvent(target) {
         const targetAction = target.dataset.actionNav;
 
@@ -125,27 +135,237 @@ const authorizations = (function () {
         };
     }
     function buildFilteredByData() {
-        const currentFilterDisplay = document.createElement('div');
-        currentFilterDisplay.classList.add('filteredByData');
+        var currentFilterDisplay = document.querySelector('.filteredByData');
 
-        const completedDateStart = `${formatDate(filterValues.completedDateStart)}`;
-        const completedDateEnd = `${formatDate(filterValues.completedDateEnd)}`;
-        const yearStartStart = `${formatDate(filterValues.yearStartStart)}`;
-        const yearStartEnd = `${formatDate(filterValues.yearStartEnd)}`;
-        const yearEndStart = `${formatDate(filterValues.yearEndStart)}`;
-        const yearEndEnd = `${formatDate(filterValues.yearEndEnd)}`;
+        completedDateStart = `${formatDate(filterValues.completedDateStart)}`;
+        completedDateEnd = `${formatDate(filterValues.completedDateEnd)}`;
+        yearStartStart = `${formatDate(filterValues.yearStartStart)}`;
+        yearStartEnd = `${formatDate(filterValues.yearStartEnd)}`;
+        yearEndStart = `${formatDate(filterValues.yearEndStart)}`;
+        yearEndEnd = `${formatDate(filterValues.yearEndEnd)}`;
 
-        currentFilterDisplay.innerHTML = `
-      <p><span>Plan Type: </span> ${getPlanTypeFullName(filterValues.plantype)}</P>
-      <p><span>PL Vendor: </span> ${getVendorFullName(filterValues.vendor)}</P>
-      <p><span>Match Source: </span> ${getMatchSourceName(filterValues.matchSource)}</P>
-      <p><span>Completed Dates: </span>${completedDateStart} - ${completedDateEnd}</p>
-      <p><span>Year Start: </span>${yearStartStart} - ${yearStartEnd}</p>
-      <p><span>Year End: </span>${yearEndStart} - ${yearEndEnd}</p>
-    `;
+        if (!currentFilterDisplay) {
+            currentFilterDisplay = document.createElement('div');
+            currentFilterDisplay.classList.add('filteredByData');
+            filterButtonSet();
+            currentFilterDisplay.appendChild(btnWrap);
+        }
+
+        if (getPlanTypeFullName(filterValues.planType) === 'All') {
+            btnWrap.appendChild(plantypeBtnWrap);
+            btnWrap.removeChild(plantypeBtnWrap);
+        } else {
+            btnWrap.appendChild(plantypeBtnWrap);
+            if (document.getElementById('plantypeBtn') != null)
+                document.getElementById('plantypeBtn').innerHTML = 'Plan Type: ' + getPlanTypeFullName(filterValues.planType);
+        }
+
+        if (getVendorFullName(filterValues.vendor) === 'All') {
+            btnWrap.appendChild(vendorBtnWrap);
+            btnWrap.removeChild(vendorBtnWrap);
+        } else {
+            btnWrap.appendChild(vendorBtnWrap);
+            if (document.getElementById('vendorBtn') != null)
+                document.getElementById('vendorBtn').innerHTML = 'PL Vendor: ' + getVendorFullName(filterValues.vendor);
+        }
+
+        if (getMatchSourceName(filterValues.matchSource) === 'All') {
+            btnWrap.appendChild(matchSourceBtnWrap);
+            btnWrap.removeChild(matchSourceBtnWrap);
+        } else {
+            btnWrap.appendChild(matchSourceBtnWrap);
+            if (document.getElementById('matchSourceBtn') != null)
+                document.getElementById('matchSourceBtn').innerHTML = 'Match Source: ' + getMatchSourceName(filterValues.matchSource);
+        }
+
+        if (completedDateStart == '' && completedDateEnd == '') {
+            btnWrap.appendChild(completedDateBtnWrap);
+            btnWrap.removeChild(completedDateBtnWrap);
+        } else {
+            btnWrap.appendChild(completedDateBtnWrap);
+            if (document.getElementById('completedDateBtn') != null)
+                document.getElementById('completedDateBtn').innerHTML = 'Completed Dates: ' + completedDateStart + '-' + completedDateEnd;
+        }
+
+        if (yearStartStart === '' && yearStartEnd === '') {
+            btnWrap.appendChild(yearStartBtnWrap);
+            btnWrap.removeChild(yearStartBtnWrap);
+        } else {
+            btnWrap.appendChild(yearStartBtnWrap);
+            if (document.getElementById('yearStartBtn') != null)
+                document.getElementById('yearStartBtn').innerHTML = 'Year Start: ' + yearStartStart + '-' + yearStartEnd;
+        }
+
+        if (yearEndStart === '' && yearEndEnd === '') {
+            btnWrap.appendChild(yearEndBtnWrap);
+            btnWrap.removeChild(yearEndBtnWrap);
+        } else {
+            btnWrap.appendChild(yearEndBtnWrap);
+            if (document.getElementById('yearEndBtn') != null)
+                document.getElementById('yearEndBtn').innerHTML = 'Year End: ' + yearEndStart + '-' + yearEndEnd;
+        }
 
         return currentFilterDisplay;
     }
+
+    function filterButtonSet() {
+        filterBtn = button.build({
+            text: 'Filter',
+            icon: 'filter',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'filterBtnNew',
+            callback: () => { showFilterPopup('ALL') },
+        });
+
+        plantypeBtn = button.build({
+            id: 'plantypeBtn',
+            text: 'Plan Type: ' + getPlanTypeFullName(filterValues.planType),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('plantypeBtn') },
+        });
+        plantypeCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('plantypeBtn') },
+        });
+
+        vendorBtn = button.build({
+            id: 'vendorBtn',
+            text: 'PL Vendor: ' + getVendorFullName(filterValues.vendor),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('vendorBtn') },
+        });
+        vendorCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('vendorBtn') },
+        });
+
+        matchSourceBtn = button.build({
+            id: 'matchSourceBtn',
+            text: 'Match Source: ' + getMatchSourceName(filterValues.matchSource),
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('matchSourceBtn') },
+        });
+        matchSourceCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('matchSourceBtn') },
+        });
+
+        completedDateBtn = button.build({
+            id: 'completedDateBtn',
+            text: 'Completed Dates: ' + completedDateStart + '-' + completedDateEnd,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('completedDateBtn') },
+        });
+
+        yearStartBtn = button.build({
+            id: 'yearStartBtn',
+            text: 'Year start: ' + yearStartStart + '-' + yearStartEnd,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('yearStartBtn') },
+        });
+
+        yearEndBtn = button.build({
+            id: 'yearEndBtn',
+            text: 'Year End: ' + yearEndStart + '-' + yearEndEnd,
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtn',
+            callback: () => { showFilterPopup('yearEndBtn') },
+        });
+        yearEndCloseBtn = button.build({
+            icon: 'Delete',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { closeFilter('yearEndBtn') },
+        });
+
+        btnWrap = document.createElement('div');
+        btnWrap.classList.add('filterBtnWrap');
+        btnWrap.appendChild(filterBtn);
+
+        plantypeBtnWrap = document.createElement('div');
+        plantypeBtnWrap.classList.add('filterSelectionBtnWrap');
+        plantypeBtnWrap.appendChild(plantypeBtn);
+        plantypeBtnWrap.appendChild(plantypeCloseBtn);
+        btnWrap.appendChild(plantypeBtnWrap);
+
+        vendorBtnWrap = document.createElement('div');
+        vendorBtnWrap.classList.add('filterSelectionBtnWrap');
+        vendorBtnWrap.appendChild(vendorBtn);
+        vendorBtnWrap.appendChild(vendorCloseBtn);
+        btnWrap.appendChild(vendorBtnWrap);
+
+        matchSourceBtnWrap = document.createElement('div');
+        matchSourceBtnWrap.classList.add('filterSelectionBtnWrap');
+        matchSourceBtnWrap.appendChild(matchSourceBtn);
+        matchSourceBtnWrap.appendChild(matchSourceCloseBtn);
+        btnWrap.appendChild(matchSourceBtnWrap);
+
+        completedDateBtnWrap = document.createElement('div');
+        completedDateBtnWrap.classList.add('filterSelectionBtnWrap');
+        completedDateBtnWrap.appendChild(completedDateBtn);
+        btnWrap.appendChild(completedDateBtnWrap);
+
+        yearStartBtnWrap = document.createElement('div');
+        yearStartBtnWrap.classList.add('filterSelectionBtnWrap');
+        yearStartBtnWrap.appendChild(yearStartBtn);
+        btnWrap.appendChild(yearStartBtnWrap);
+
+        yearEndBtnWrap = document.createElement('div');
+        yearEndBtnWrap.classList.add('filterSelectionBtnWrap');
+        yearEndBtnWrap.appendChild(yearEndBtn);
+        yearEndBtnWrap.appendChild(yearEndCloseBtn);
+        btnWrap.appendChild(yearEndBtnWrap);
+
+    }
+
+    function closeFilter(closeFilter) {
+        if (closeFilter == 'plantypeBtn') {
+            filterValues.planType = '%';
+            newFilterValues.planType = '%';
+        }
+        if (closeFilter == 'vendorBtn') {
+            filterValues.vendor = '%';
+            newFilterValues.vendor = '%';
+        }
+
+        if (closeFilter == 'matchSourceBtn') {
+            filterValues.matchSource = '%';
+            newFilterValues.matchSource = '%';
+        }
+
+        if (closeFilter == 'yearEndBtn') {
+            filterValues.yearEndStart = '';
+            filterValues.yearEndEnd = '';
+            newFilterValues.yearEndStart = '';
+            newFilterValues.yearEndEnd = '';
+        }
+
+        applyFilter();
+
+    }
+
     function checkFilterPopForErrors() {
         const errors = [...filterPopup.querySelectorAll('.error')];
         const hasErrors = errors.legnth > 0 ? true : false;
@@ -246,7 +466,7 @@ const authorizations = (function () {
             return filteredMatch[0].caption;
         }
     }
-    function showFilterPopup() {
+    function showFilterPopup(IsShow) {
         filterPopup = POPUP.build({
             classNames: 'authorizationsReviewFilterPopup',
         });
@@ -306,12 +526,18 @@ const authorizations = (function () {
             style: 'secondary',
             value: filterValues.yearEndEnd,
         });
-        dateWrap.appendChild(completedDateStartInput);
-        dateWrap.appendChild(completedDateEndInput);
-        dateWrap.appendChild(yearStartStartInput);
-        dateWrap.appendChild(yearStartEndInput);
-        dateWrap.appendChild(yearEndStartInput);
-        dateWrap.appendChild(yearEndEndInput);
+        if (IsShow == 'ALL' || IsShow == 'completedDateBtn') {
+            dateWrap.appendChild(completedDateStartInput);
+            dateWrap.appendChild(completedDateEndInput);
+        }
+        if (IsShow == 'ALL' || IsShow == 'yearStartBtn') {
+            dateWrap.appendChild(yearStartStartInput);
+            dateWrap.appendChild(yearStartEndInput);
+        }
+        if (IsShow == 'ALL' || IsShow == 'yearEndBtn') {
+            dateWrap.appendChild(yearEndStartInput);
+            dateWrap.appendChild(yearEndEndInput);
+        }
 
         const btnWrap = document.createElement('div');
         btnWrap.classList.add('btnWrap');
@@ -331,9 +557,12 @@ const authorizations = (function () {
         btnWrap.appendChild(applyFilterBtn);
         btnWrap.appendChild(cancelFilterBtn);
 
-        filterPopup.appendChild(planTypeDropdown);
-        filterPopup.appendChild(vendorDropdown);
-        filterPopup.appendChild(matchSourceDropdown);
+        if (IsShow == 'ALL' || IsShow == 'plantypeBtn')
+            filterPopup.appendChild(planTypeDropdown);
+        if (IsShow == 'ALL' || IsShow == 'vendorBtn')
+            filterPopup.appendChild(vendorDropdown);
+        if (IsShow == 'ALL' || IsShow == 'matchSourceBtn')
+            filterPopup.appendChild(matchSourceDropdown);
         filterPopup.appendChild(dateWrap);
         filterPopup.appendChild(btnWrap);
 
@@ -346,7 +575,7 @@ const authorizations = (function () {
         setupFilterEvents();
     }
     function setupFilterEvents() {
-        const newFilterValues = {};
+        newFilterValues = {};
 
         planTypeDropdown.addEventListener('change', e => {
             var selectedOption = e.target.options[e.target.selectedIndex];
@@ -404,39 +633,42 @@ const authorizations = (function () {
         });
         applyFilterBtn.addEventListener('click', async e => {
             POPUP.hide(filterPopup);
-            filterValues = { ...filterValues, ...newFilterValues };
-
-            const spinner = PROGRESS.SPINNER.get('Gathering Data...');
-            pageWrap.removeChild(overviewTable);
-            pageWrap.appendChild(spinner);
-
-            authData = await authorizationsAjax.getPageData({
-                token: $.session.Token,
-                selectedConsumerId: selectedConsumer.id,
-                code: '%',
-                matchSource: filterValues.matchSource,
-                vendorId: filterValues.vendor,
-                planType: filterValues.planType,
-                planYearStartStart: UTIL.formatDateToIso(filterValues.yearStartStart),
-                planYearStartEnd: UTIL.formatDateToIso(filterValues.yearStartEnd),
-                planYearEndStart: filterValues.yearEndStart
-                    ? UTIL.formatDateToIso(filterValues.yearEndStart)
-                    : '',
-                planYearEndEnd: filterValues.yearEndEnd
-                    ? UTIL.formatDateToIso(filterValues.yearEndEnd)
-                    : '',
-                completedDateStart: UTIL.formatDateToIso(filterValues.completedDateStart),
-                completedDateEnd: UTIL.formatDateToIso(filterValues.completedDateEnd),
-            });
-            pageWrap.removeChild(spinner);
-
-            buildOverviewTable();
-            const newfilteredByData = buildFilteredByData();
-            pageWrap.replaceChild(newfilteredByData, filteredByData);
-            filteredByData = newfilteredByData;
+            applyFilter();
         });
     }
 
+    async function applyFilter() {
+        filterValues = { ...filterValues, ...newFilterValues };
+
+        const spinner = PROGRESS.SPINNER.get('Gathering Data...');
+        pageWrap.removeChild(overviewTable);
+        pageWrap.appendChild(spinner);
+
+        authData = await authorizationsAjax.getPageData({
+            token: $.session.Token,
+            selectedConsumerId: selectedConsumer.id,
+            code: '%',
+            matchSource: filterValues.matchSource,
+            vendorId: filterValues.vendor,
+            planType: filterValues.planType,
+            planYearStartStart: UTIL.formatDateToIso(filterValues.yearStartStart),
+            planYearStartEnd: UTIL.formatDateToIso(filterValues.yearStartEnd),
+            planYearEndStart: filterValues.yearEndStart
+                ? UTIL.formatDateToIso(filterValues.yearEndStart)
+                : '',
+            planYearEndEnd: filterValues.yearEndEnd
+                ? UTIL.formatDateToIso(filterValues.yearEndEnd)
+                : '',
+            completedDateStart: UTIL.formatDateToIso(filterValues.completedDateStart),
+            completedDateEnd: UTIL.formatDateToIso(filterValues.completedDateEnd),
+        });
+        pageWrap.removeChild(spinner);
+
+        buildOverviewTable();
+        const newfilteredByData = buildFilteredByData();
+        pageWrap.replaceChild(newfilteredByData, filteredByData);
+        filteredByData = newfilteredByData;
+    }
     //----------------------------------------
     function buildConsumerCard() {
         selectedConsumer.card.classList.remove('highlighted');
@@ -574,19 +806,9 @@ const authorizations = (function () {
         pageWrap = document.createElement('div');
         const consumerCard = buildConsumerCard();
 
-        filterBtn = button.build({
-            text: 'Filter',
-            icon: 'filter',
-            style: 'secondary',
-            type: 'contained',
-            classNames: 'filterBtn',
-            callback: showFilterPopup,
-        });
-
         filteredByData = buildFilteredByData();
 
         pageWrap.appendChild(consumerCard);
-        pageWrap.appendChild(filterBtn);
         pageWrap.appendChild(filteredByData);
         DOM.ACTIONCENTER.appendChild(pageWrap);
 

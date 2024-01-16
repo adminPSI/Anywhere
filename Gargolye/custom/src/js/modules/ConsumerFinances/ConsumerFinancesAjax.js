@@ -223,7 +223,7 @@ var ConsumerFinancesAjax = (function () {
     }
 
     async function insertAccountAsync(
-        date, amount, amountType, AccountID, payee, CategoryID, subCategory, checkNo, description, attachmentID, attachmentDesc, receipt, BtnName, regId
+        date, amount, amountType, AccountID, payee, CategoryID, subCategory, checkNo, description, attachmentID, attachmentDesc, receipt, BtnName, regId, splitAmount, categoryID
     ) {
         try {
             const result = await $.ajax({
@@ -253,7 +253,9 @@ var ConsumerFinancesAjax = (function () {
                     receipt: receipt,
                     userId: $.session.UserId,
                     eventType: BtnName,
-                    regId: regId
+                    regId: regId,
+                    splitAmount: splitAmount,
+                    categoryID: categoryID
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -632,6 +634,34 @@ var ConsumerFinancesAjax = (function () {
         }
     }
 
+    async function getSplitRegisterAccountEntriesByIDAsync(registerId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getSplitRegisterAccountEntriesByID/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "registerId":"' +
+                    registerId +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     return {
         getAccountTransectionEntriesAsync,
         getActiveAccountAsync,
@@ -653,6 +683,7 @@ var ConsumerFinancesAjax = (function () {
         getEditAccountInfoByIdAsync,
         getAccountClassAsync,
         insertEditRegisterAccountAsync,
-        getEditAccountAsync
+        getEditAccountAsync,
+        getSplitRegisterAccountEntriesByIDAsync
     };
 })();

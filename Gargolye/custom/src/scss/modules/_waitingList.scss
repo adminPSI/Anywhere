@@ -1,0 +1,15 @@
+[data-active-module='waitingList'] {
+  .waitingListModule {
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    form {
+      flex-flow: column nowrap;
+    }
+  }
+
+  .rosterPicker {
+    max-height: 400px;
+  }
+}

@@ -418,8 +418,9 @@ const isp_ci_importantPeople = (() => {
       text: 'save',
       style: 'secondary',
       type: 'contained',
-      callback: () => {
-        saveData();
+      callback: async () => {
+        await saveData();
+        await planValidation.contactsValidationCheck();
       },
     });
     const cancelBtn = button.build({
@@ -440,9 +441,10 @@ const isp_ci_importantPeople = (() => {
           message: 'Are you sure you would like to delete this entry?',
           accept: {
             text: 'Yes',
-            callback: () => {
-              deleteData();
+            callback: async () => {
+              await deleteData();
               POPUP.hide(popup);
+              await planValidation.contactsValidationCheck();
             },
           },
           reject: {
@@ -634,11 +636,37 @@ const isp_ci_importantPeople = (() => {
       type: 'contained',
       callback: () => tablePopup(null, true),
     });
+
+    // create wrapper div for button and alert
+    const importantPeopleBtnAlertDiv = document.createElement('div');
+    importantPeopleBtnAlertDiv.classList.add('btnAlertContainer');
+
+    // create div for the alert
+    const importantPeopleAlertDiv = document.createElement('div');
+    importantPeopleAlertDiv.innerHTML = `${icons.error}`;
+    importantPeopleAlertDiv.classList.add(`importantPeopleAlert`);
+    importantPeopleAlertDiv.style.display = 'none';
+
+    // creates and shows a tip when hovering over the visible alert div
+    planValidation.createTooltip(
+      'Important people with type "Other" must have a description in "Type Other" text area',
+      importantPeopleAlertDiv,
+    );
+
+    importantPeopleBtnAlertDiv.appendChild(addPersonBtn);
+    importantPeopleBtnAlertDiv.appendChild(importantPeopleAlertDiv);
+
+    let contactsValidation = planValidation.getContactValidation();
+
+    if (contactsValidation.importantPeople === false) {
+      importantPeopleAlertDiv.style.display = 'flex';
+    }
+
     if (readOnly) addPersonBtn.classList.add('disabled');
 
     const table = buildTableMarkup();
     ipSection.appendChild(table);
-    ipSection.appendChild(addPersonBtn);
+    ipSection.appendChild(importantPeopleBtnAlertDiv);
 
     return ipSection;
   }

@@ -27,7 +27,7 @@
     this.dialog = new Dialog({ className: 'addPhrases' });
 
     this.addPhraseForm = new Form({
-      elements: [
+      fields: [
         {
           type: 'checkbox',
           label: 'Publicly Available',

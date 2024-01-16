@@ -10,6 +10,7 @@
    */
   const DEFAULT_OPTIONS = {
     isReadOnly: false,
+    hideAllButtons: false,
   };
 
   /**
@@ -46,17 +47,22 @@
   Form.prototype._build = function () {
     this.form = _DOM.createElement('form');
 
-    // Build form input elements
-    this.options.elements.forEach(ele => {
+    // Build form input fields
+    this.options.fields.forEach(ele => {
+      const fieldType = ele.type.toLowerCase();
       let inputInstance;
 
-      switch (ele.type.toLowerCase()) {
-        case 'radio': {
-          inputInstance = new Radio({ ...ele });
+      switch (fieldType) {
+        case 'radiogroup': {
+          inputInstance = new RadioGroup({ ...ele });
           break;
         }
         case 'checkbox': {
           inputInstance = new Checkbox({ ...ele });
+          break;
+        }
+        case 'checkboxgroup': {
+          inputInstance = new CheckboxGroup({ ...ele });
           break;
         }
         case 'select': {
@@ -85,52 +91,59 @@
       }
 
       this.form.appendChild(inputInstance.rootElement);
-      this.inputs[ele.id] = inputInstance;
+
+      if (fieldType === 'checkboxgroup') {
+        this.inputs = { ...this.inputs, ...inputInstance.inputs };
+      } else {
+        this.inputs[ele.id] = inputInstance;
+      }
     });
 
-    const btnWrap = _DOM.createElement('div', { class: 'formButtons' });
-    // Add default save button for all forms
-    const submitButton = new Button({
-      type: 'submit',
-      text: 'Save',
-      name: 'save',
-      icon: 'save',
-    }).renderTo(btnWrap);
-    this.buttons['submit'] = submitButton;
+    if (!this.options.hideAllButtons) {
+      const btnWrap = _DOM.createElement('div', { class: 'formButtons' });
+      // Add default save button for all forms
+      const submitButton = new Button({
+        type: 'submit',
+        text: 'Save',
+        name: 'save',
+        icon: 'save',
+      }).renderTo(btnWrap);
+      this.buttons['submit'] = submitButton;
 
-    // Add additional form buttons
-    if (this.options.buttons) {
-      this.options.buttons.forEach(button => {
-        const newButton = new Button({ ...button }).renderTo(btnWrap);
-        if (button.name) {
-          this.buttons[button.name] = newButton;
-        }
-      });
+      // Add additional form buttons
+      if (this.options.buttons) {
+        this.options.buttons.forEach(button => {
+          const newButton = new Button({ ...button }).renderTo(btnWrap);
+          if (button.name) {
+            this.buttons[button.name] = newButton;
+          }
+        });
+      }
+
+      // Add default delete button for all forms (hidden by default)
+      const deleteButton = new Button({
+        type: 'button',
+        text: 'Delete',
+        name: 'delete',
+        icon: 'delete',
+        style: 'danger',
+        styleType: 'outlined',
+        hidden: true,
+      }).renderTo(btnWrap);
+      this.buttons['delete'] = deleteButton;
+
+      // Add default cancel button for all forms
+      const cancelButton = new Button({
+        type: 'reset',
+        text: 'Cancel',
+        name: 'cancel',
+        style: 'primary',
+        styleType: 'outlined',
+      }).renderTo(btnWrap);
+      this.buttons['cancel'] = cancelButton;
+
+      this.form.appendChild(btnWrap);
     }
-
-    // Add default delete button for all forms (hidden by default)
-    const deleteButton = new Button({
-      type: 'button',
-      text: 'Delete',
-      name: 'delete',
-      icon: 'delete',
-      style: 'danger',
-      styleType: 'outlined',
-      hidden: true,
-    }).renderTo(btnWrap);
-    this.buttons['delete'] = deleteButton;
-
-    // Add default cancel button for all forms
-    const cancelButton = new Button({
-      type: 'reset',
-      text: 'Cancel',
-      name: 'cancel',
-      style: 'primary',
-      styleType: 'outlined',
-    }).renderTo(btnWrap);
-    this.buttons['cancel'] = cancelButton;
-
-    this.form.appendChild(btnWrap);
 
     // if (this.options.isReadOnly) {
     //   this.disableFormInputs();
@@ -151,10 +164,12 @@
       }, 100),
     );
 
-    this.buttons['delete'].onClick(e => {
-      const customEvent = new CustomEvent('onDelete', { detail: e });
-      this.form.dispatchEvent(customEvent);
-    });
+    if (this.buttons['delete']) {
+      this.buttons['delete'].onClick(e => {
+        const customEvent = new CustomEvent('onDelete', { detail: e });
+        this.form.dispatchEvent(customEvent);
+      });
+    }
   };
 
   /**

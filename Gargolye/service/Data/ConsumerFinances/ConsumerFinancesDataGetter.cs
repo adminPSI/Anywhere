@@ -306,16 +306,16 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public string insertEditRegisterAccount(string token, string selectedConsumersId, string accountId, string name, string number, string type, string status, string classofAccount, string dateOpened, string dateClosed, string openingBalance, string description, string userId , DistributedTransaction transaction)
+        public string insertEditRegisterAccount(string token, string selectedConsumersId, string accountId, string name, string number, string type, string status, string classofAccount, string dateOpened, string dateClosed, string openingBalance, string description, string userId, DistributedTransaction transaction)
         {
             try
             {
                 logger.debug("insertEditRegisterAccount");
                 System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[12];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@selectedConsumersId", DbType.String, selectedConsumersId);
-                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@accountId", DbType.Double, accountId); 
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@accountId", DbType.Double, accountId);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@name", DbType.String, name);
-                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@number", DbType.String, number); 
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@number", DbType.String, number);
                 args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@type", DbType.String, type);
                 args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@status", DbType.String, status);
                 args[6] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@classofAccount", DbType.String, classofAccount);
@@ -520,7 +520,7 @@ namespace Anywhere.service.Data.ConsumerFinances
         }
 
         public string getCFWidgetConsumers(string token, DistributedTransaction transaction)
-        {          
+        {
             try
             {
                 logger.debug("getCFWidgetConsumers");
@@ -552,6 +552,65 @@ namespace Anywhere.service.Data.ConsumerFinances
                 throw ex;
             }
 
+        }
+
+        public string insertSplitRegisterAccount(string token, string registerID, string itemNumber, string category, string description, string amount,string categoryId, string userId, DistributedTransaction transaction)
+        {
+            try
+            { 
+                logger.debug("insertSplitRegisterAccount");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[6];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerID", DbType.Double, registerID);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@itemNumber", DbType.Double, itemNumber);
+                args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@category", DbType.Double, categoryId);
+                args[3] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@amount", DbType.Double, amount); 
+                args[4] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@description", DbType.String, description);
+                args[5] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@userId", DbType.String, userId);
+
+                return DbHelper.ExecuteScalar(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_insertSplitRegisterAccount(?, ?, ?, ?, ?, ?)", args, ref transaction).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_insertSplitRegisterAccount(" + registerID + "," + category + "," + userId + ")");
+                throw ex;
+            }
+
+        }
+
+        public string deleteSplitRegisterData(string token, string registerId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("deleteSplitRegisterData ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerId", DbType.String, registerId);
+
+                return DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_deleteSplitRegisterData(?)", args, ref transaction).ToString();
+
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_deleteSplitRegisterData(" + registerId + ")");
+                throw ex;
+            }
+        }
+
+        public string getSplitRegisterAccountEntriesByID(string token, string registerId, DistributedTransaction transaction)
+        {
+            try
+            {
+                logger.debug("getSplitRegisterAccountEntriesByID ");
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@registerId", DbType.String, registerId);
+
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getSplitRegisterAccountEntriesByID(?)", args, ref transaction);
+                return wfdg.convertToJSON(returnMsg);
+            }
+            catch (Exception ex)
+            {
+                logger.error("WFDG", ex.Message + "ANYW_getSplitRegisterAccountEntriesByID(" + registerId + ")");
+                throw ex;
+            }
         }
 
     }

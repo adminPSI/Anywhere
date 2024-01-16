@@ -191,11 +191,36 @@ const contactInformation = (() => {
       },
     });
 
+    // create wrapper div for button and alert
+    const bestWayToConnectBtnAlertDiv = document.createElement('div');
+    bestWayToConnectBtnAlertDiv.classList.add('connectBtnAlertContainer');
+
+    // create div for the alert
+    const bestWaytoConnectAlertDiv = document.createElement('div');
+    bestWaytoConnectAlertDiv.innerHTML = `${icons.error}`;
+    bestWaytoConnectAlertDiv.classList.add(`bestWaytoConnectAlert`);
+    bestWaytoConnectAlertDiv.style.display = 'none';
+
+    // creates and shows a tip when hovering over the visible alert div
+    planValidation.createTooltip(
+      'This field cannot be empty. Please select an option from the dropdown menu',
+      bestWaytoConnectAlertDiv,
+    );
+
+    bestWayToConnectBtnAlertDiv.appendChild(bestWaytoConnectAlertDiv);
+    bestWayToConnectBtnAlertDiv.appendChild(bestWayToConnectDropdown);
+
+    let contactsValidation = planValidation.getContactValidation();
+
+    if (contactsValidation.bestWayToConnect === false) {
+      bestWaytoConnectAlertDiv.style.display = 'flex';
+    }
+
     inputSection.appendChild(nameInput);
     inputSection.appendChild(prefNameInput);
     inputSection.appendChild(inputContainer1);
     inputSection.appendChild(inputContainer2);
-    inputSection.appendChild(bestWayToConnectDropdown);
+    inputSection.appendChild(bestWayToConnectBtnAlertDiv);
     inputSection.appendChild(otherTextInput);
     inputSection.appendChild(dateFundingSoureContainer);
 
@@ -526,6 +551,8 @@ const contactInformation = (() => {
       importantPlacesDataProm,
       fundingSourceProm,
     ]);
+
+    planValidation.contactsValidationCheck();
   }
 
   return {
