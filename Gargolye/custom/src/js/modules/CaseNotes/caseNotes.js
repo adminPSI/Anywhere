@@ -791,8 +791,8 @@ const CaseNotes = (() => {
 
     const { isNewGroup } = await saveNote(saveData, attachmentsForSave);
 
-    await cnOverview.fetchData(selectedDate);
-    cnOverview.populate();
+    //await cnOverview.fetchData(selectedDate);
+    //cnOverview.populate();
     cnFormToast.close();
 
     if (buttonName === 'saveandnew' || isNewGroup) {
@@ -832,8 +832,8 @@ const CaseNotes = (() => {
     onTimeChange();
 
     //re populate overview section when date change
-    await cnOverview.fetchData(selectedDate);
-    cnOverview.populate();
+    // await cnOverview.fetchData(selectedDate);
+    // cnOverview.populate();
   }
 
   // OVERVIEW CARDS
@@ -910,23 +910,23 @@ const CaseNotes = (() => {
     cnForm.onSubmit(onFormSubmit);
     cnForm.onReset(onFormReset);
     cnForm.onFileDelete(onFileDelete);
-    cnOverview.onCardEdit(onOverviewCardEdit);
-    cnOverview.onCardDelete(onOverviewCardDelete);
+    // cnOverview.onCardEdit(onOverviewCardEdit);
+    // cnOverview.onCardDelete(onOverviewCardDelete);
   }
   async function populatePage() {
     await cnPhrases.InsertPhrases.fetchData();
     cnPhrases.InsertPhrases.populate();
     await rosterPicker.fetchConsumers();
     rosterPicker.populate();
-    await cnOverview.fetchData(selectedDate);
-    cnOverview.populate();
+    // await cnOverview.fetchData(selectedDate);
+    // cnOverview.populate();
   }
   async function loadPage() {
     dateNavigation.renderTo(cnDateNavWrap);
     rosterPicker.renderTo(cnRosterWrap);
     cnFormToast.renderTo(cnFormWrap);
     cnForm.renderTo(cnFormWrap);
-    cnOverview.renderTo(moduleWrap);
+    // cnOverview.renderTo(moduleWrap);
     cnPhrases.renderTo(_DOM.ACTIONCENTER);
 
     attachEvents();
@@ -1100,7 +1100,7 @@ const CaseNotes = (() => {
     cnFormToast = new Toast();
 
     // Overview Cards
-    cnOverview = new CaseNotesOverview(cnData);
+    //cnOverview = new CaseNotesOverview(cnData);
 
     // Phrases
     cnPhrases = new CaseNotesPhrases();
