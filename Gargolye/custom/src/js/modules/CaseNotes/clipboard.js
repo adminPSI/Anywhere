@@ -25,10 +25,3 @@
 //   fullscreen: true,
 //   type: 'textarea',
 // };
-
-// a.  Lives Alone
-// b.  Lives With Family or Other Caregivers
-// c.  Lives With Others Who Are Not Caregivers
-// d.  Lives in an Intermediate Care Facility
-// e.  Lives in a Nursing Facility
-// f.  Other

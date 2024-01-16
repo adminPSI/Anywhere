@@ -314,9 +314,22 @@ const WaitingList = (() => {
       },
     ],
     needs: [
+      // BEHAVIRAL NEEDS
+      {
+        disabled: true,
+        type: 'radiogroup',
+        id: 'behavioral',
+        groupLabel:
+          'Is the individual a child / adult currently engaging in a pattern of behavior that creates a substantial risk to self / others?',
+        note: 'This field is filled out by AI',
+        fields: [
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+        ],
+      },
       {
         type: 'checkboxgroup',
-        id: 'behaviorlaNeedsRisk',
+        id: 'behavioral',
         groupLabel: 'Check all that apply:',
         fields: [
           {
@@ -334,13 +347,13 @@ const WaitingList = (() => {
       },
       {
         label: 'Describe type, frequency, and intensity of behavioral needs:',
-        id: 'describeBehavioralNeeds',
+        id: 'behavioral',
         fullscreen: true,
         type: 'textarea',
       },
       {
         type: 'checkboxgroup',
-        id: 'behaviorlaNeedsDocs',
+        id: 'behavioral',
         groupLabel: 'Documentation available (Select at least one):',
         fields: [
           {
@@ -357,73 +370,107 @@ const WaitingList = (() => {
       },
       {
         label: 'Other:',
-        id: 'documentationAvailableOther',
+        id: 'behavioral',
         fullscreen: true,
         type: 'textarea',
       },
+      // PHYSICAL NEEDS
+      {
+        disabled: true,
+        type: 'radiogroup',
+        id: 'physical',
+        groupLabel: 'Is the individual a child / adult with significant physical care needs?',
+        note: 'This field is filled out by AI',
+        fields: [
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+        ],
+      },
       {
         type: 'checkboxgroup',
-        id: 'physicalNeeds',
+        id: 'physical',
         groupLabel: 'Check all that apply:',
         fields: [
           {
             type: 'checkbox',
             label: 'Not applicable; there are no significant physical care needs',
-            id: 'notApplicable',
+            id: 'physicalNeedsIsNone',
           },
           {
             type: 'checkbox',
             label: 'Frequent hands-on support required with activities of daily living throughout the day and night',
-            id: 'handsOnSupport',
+            id: 'physicalNeedsIs',
           },
           {
             type: 'checkbox',
             label: 'Size / Condition of the individual creates a risk of injury during physical care',
-            id: 'bigBoy',
+            id: 'physicalNeedsIs',
           },
-          { type: 'checkbox', label: 'Other', id: 'other' },
+          { type: 'checkbox', label: 'Other', id: 'physicalNeedsIsOther' },
         ],
       },
       {
         label: 'Describe type, frequency, and intensity of physical care needs:',
-        id: 'describeCareNeeds',
+        id: 'physical',
         fullscreen: true,
         type: 'textarea',
       },
+      // MEDICAL NEEDS
+      {
+        disabled: true,
+        type: 'radiogroup',
+        id: 'medicalNeedsIsLifeThreatening',
+        groupLabel: 'Is the individual a child / adult with significant or life-threatening medical needs?',
+        note: 'This field is filled out by AI',
+        fields: [
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+        ],
+      },
       {
         type: 'checkboxgroup',
-        id: 'medicalNeeds',
+        id: 'medicalNeedsCheckboxes',
         groupLabel: ' (Check all that apply)',
         fields: [
           {
             type: 'checkbox',
             label: 'Not applicable; there are no significant or life-threatening medical needs',
-            id: 'notApplicable',
+            id: 'medicalNeedsIsNone',
           },
           {
             type: 'checkbox',
             label: 'Frequent hospitalizations or emergency room visits for life-sustaining treatment',
-            id: 'lifeSustainingTreatment',
+            id: 'medicalNeedsIsFrequentEmergencyVisit',
           },
           {
             type: 'checkbox',
             label:
               'Ongoing medical care provided by caregivers to prevent hospitalization or emergency room intervention',
-            id: 'erIntervention',
+            id: 'medicalNeedsIsOngoingMedicalCare',
           },
           {
             type: 'checkbox',
             label: 'Need for specialized training of caregivers to prevent emergency medical intervention',
-            id: 'specializedTraining',
+            id: 'medicalNeedsIsSpecializedCareGiveNeeded',
           },
-          { type: 'checkbox', label: 'Other', id: 'other' },
+          { type: 'checkbox', label: 'Other', id: 'medicalNeedsIsOther' },
         ],
       },
       {
         label: 'Describe type, frequency, and intensity of medical needs:',
-        id: 'describeCareNeeds',
+        id: 'medicalNeedsDescription',
         fullscreen: true,
         type: 'textarea',
+      },
+      // OTHER
+      {
+        type: 'radiogroup',
+        id: 'needsIsActionRequiredRequiredIn30Days',
+        groupLabel: 'Is the individual a child / adult with significant physical care needs?',
+        fields: [
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+        ],
       },
     ],
     riskMitigation: [
@@ -457,8 +504,20 @@ const WaitingList = (() => {
     ],
     icfDischarge: [
       {
+        disabled: true,
         type: 'radiogroup',
-        id: 'icfDischarge1',
+        id: 'icfDetermination',
+        groupLabel:
+          'Is the individual a resident of an ICFIID or Nursing Facility who has either been issued a 30-day notice of intent to discharge or received an adverse Resident Review determination?',
+        note: 'This field is filled out by AI',
+        fields: [
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+        ],
+      },
+      {
+        type: 'radiogroup',
+        id: 'icfIsICFResident',
         groupLabel: 'Is the individual currently a resident of an ICFIID or Nursing Facility?',
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
@@ -467,7 +526,7 @@ const WaitingList = (() => {
       },
       {
         type: 'radiogroup',
-        id: 'icfDischarge2',
+        id: 'icfIsNoticeIssued',
         groupLabel:
           'Has the individual been issued a 30-day notice of intent to discharge or received an adverse Resident Review determination?',
         fields: [
@@ -477,7 +536,7 @@ const WaitingList = (() => {
       },
       {
         type: 'radiogroup',
-        id: 'icfDischarge3',
+        id: 'icfIsActionRequiredIn30Days',
         groupLabel: 'Is action required with the next 30 days to reduce the risk?',
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
@@ -487,8 +546,20 @@ const WaitingList = (() => {
     ],
     intermittentSupports: [
       {
+        disabled: true,
         type: 'radiogroup',
-        id: 'intermittentSupports1',
+        id: 'intSupDetermination',
+        groupLabel:
+          'Does the individual have an ongoing need for limited / intermittent supports to address behavioral, physical, or medical needs in order to sustain existing caregivers and remain in the current living with.',
+        note: 'This field is filled out by AI',
+        fields: [
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+        ],
+      },
+      {
+        type: 'radiogroup',
+        id: 'intSupIsSupportNeededIn12Months',
         groupLabel: 'Does the individual have a need for limited or intermittent supports within the next 12 months?',
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
@@ -497,7 +568,7 @@ const WaitingList = (() => {
       },
       {
         type: 'radiogroup',
-        id: 'intermittentSupports2',
+        id: 'intSupIsStayingLivingArrangement',
         groupLabel: 'Does the individual desire to remain in the current living environment?',
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
@@ -506,7 +577,7 @@ const WaitingList = (() => {
       },
       {
         type: 'radiogroup',
-        id: 'intermittentSupports3',
+        id: 'TODO-MIKE3',
         groupLabel:
           'Are existing caregivers willing AND able to continue to provide supports, if some relief were provided?',
         fields: [
@@ -517,8 +588,20 @@ const WaitingList = (() => {
     ],
     childProtectionAgency: [
       {
+        disabled: true,
         type: 'radiogroup',
-        id: 'childProtectionAgency1',
+        id: 'cpaDetermination',
+        groupLabel:
+          'Is the individual reaching the age of majority and being released from the custody of a child protective agency within the next 12 months and has needs that cannot be addressed through alternative services?',
+        note: 'This field is filled out by AI',
+        fields: [
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+        ],
+      },
+      {
+        type: 'radiogroup',
+        id: 'cpaIsReleasedNext12Months',
         groupLabel:
           'Is the individual being rleased from the custody of a child protective agency within the next 12 months? ',
         fields: [
@@ -527,13 +610,13 @@ const WaitingList = (() => {
         ],
       },
       {
-        id: 'anticipatedDate',
+        id: 'cpaAnticipatedDate',
         type: 'date',
         label: 'Anticipated Date',
       },
       {
         type: 'radiogroup',
-        id: 'childProtectionAgency2',
+        id: 'cpaHadUnaddressableNeeds',
         groupLabel: 'Does the individual have needs that cannot be addressed through alternative services?',
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
@@ -575,8 +658,20 @@ const WaitingList = (() => {
     ],
     dischargePlan: [
       {
+        disabled: true,
         type: 'radiogroup',
-        id: 'dischargePlan1',
+        id: 'dischargeDetermination',
+        groupLabel:
+          'Does the individual have a viable discharge plan from the current facility in which he / she resides?',
+        note: 'This field is filled out by AI',
+        fields: [
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+        ],
+      },
+      {
+        type: 'radiogroup',
+        id: 'dischargeIsICFResident',
         groupLabel: 'Is the individual currently a resident of an ICFIID or Nursing Facility?',
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
@@ -585,7 +680,7 @@ const WaitingList = (() => {
       },
       {
         type: 'radiogroup',
-        id: 'dischargePlan2',
+        id: 'dischargeIsInterestedInMoving',
         groupLabel:
           'Has the individual / guardian expressed an interest in moving to a community-based setting within the next 12 months?',
         fields: [
@@ -595,7 +690,7 @@ const WaitingList = (() => {
       },
       {
         type: 'radiogroup',
-        id: 'dischargePlan3',
+        id: 'dischargeHasDischargePlan',
         groupLabel: `Is the individual's team developing a discharge plan that addresses barries to community living, such as housing and availability of providers?`,
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
@@ -606,7 +701,7 @@ const WaitingList = (() => {
     immediateNeeds: [
       {
         type: 'radiogroup',
-        id: 'immediateNeeds',
+        id: 'immNeedsRequired',
         groupLabel: `Is there an immediate need identified that requires an action plan with 30 days to reduce the risk?`,
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
@@ -615,7 +710,7 @@ const WaitingList = (() => {
       },
       {
         label: `if "Yes", describe the immediate need:`,
-        id: 'immediateNeedsNote',
+        id: 'immNeedsDescription',
         fullscreen: true,
         type: 'textarea',
       },
