@@ -4059,6 +4059,12 @@ namespace Anywhere
           UriTemplate = "/getWaitingListAssessment/")]
         WaitingList[] getWaitingListAssessment(int waitingListAssessmentId);
 
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/insertUpdateWaitingListValue/")]
+        void insertUpdateWaitingListValue(int id, string propertyName, string value, char insertOrDelete);
         //OOD Module
 
         [WebInvoke(Method = "POST",

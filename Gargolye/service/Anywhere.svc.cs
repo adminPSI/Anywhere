@@ -2808,6 +2808,11 @@ namespace Anywhere
             return wlw.getWaitingListAssessment(waitingListAssessmentId);
         }
 
+        public void insertUpdateWaitingListValue(int id, string propertyName, string value, char insertOrDelete)
+        {
+            wlw.insertUpdateWaitingListValue(id, propertyName, value, insertOrDelete);
+        }
+
 
         //OOD Module
 
