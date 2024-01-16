@@ -371,7 +371,7 @@ const roster2 = (function () {
 
         totalConsumerCountBtn = button.build({
             id: 'totalConsumerCountBtn',
-            text: 'Total Route Count: ' + totalConsumerCount,
+            text: 'Total Consumer Count: ' + totalConsumerCount,
             style: 'secondary',
             type: 'text',
             classNames: 'filterSelectionBtn',
