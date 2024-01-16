@@ -63,10 +63,10 @@
         const questionKeys = Object.keys(questionCountObj[sectionKey][questionSetKey]);
 
         questionKeys.forEach(questionKey => {
-          const { answered, required, rowOrder } =
+          const { answered, required, rowOrder, leaveblank } =
             questionCountObj[sectionKey][questionSetKey][questionKey];
           if (!rowOrder) {
-            if (!answered && required) {
+            if (!answered && required && !leaveblank) {
               numOfQuestionsUnawnsered++;
               sectionUnawnseredQuestions[sectionKey]++;
             }

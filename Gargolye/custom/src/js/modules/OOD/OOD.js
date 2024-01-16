@@ -715,10 +715,8 @@ const OOD = (() => {
     }
 
     async function generateAndTrackFormProgress(formNumber) {
-        // Hide createOODFormPopup and show the "Generating Form..." message
-        //createOODFormPopup.style.display = 'none';
         pendingSave.show('Generating Form...');
-
+    
         // Prepare data for form generation
         let data = {
             referenceNumber: filterValues.referenceNumber,
@@ -728,50 +726,32 @@ const OOD = (() => {
             endDate: filterValues.serviceDateEnd,
             userId: filterValues.userId
         };
-
-        // Generate the form based on the formNumber
-        let sentStatus = '';
-        let success = false;
-
-        switch (formNumber) {
-            case 4:
-                sentStatus = await OODAjax.generateForm4(data);
-                //success = sentStatus.generateForm4Result === 'Success' ? true : false;
-                break;
-
-            case 8:
-                sentStatus = await OODAjax.generateForm8(data);
-                //success = sentStatus.generateForm8Result === 'Success' ? true : false;
-                break;
-
-            case 10:
-                sentStatus = await OODAjax.generateForm10(data);
-                //success = sentStatus.generateForm10Result === 'Success' ? true : false;
-                success = true;
-                break;
+    
+        try {
+            switch (formNumber) {
+                case 4:
+                    sentStatus = await OODAjax.generateForm4(data);
+                    break;
+    
+                case 8:
+                    sentStatus = await OODAjax.generateForm8(data);
+                    break;
+    
+                case 10:
+                    sentStatus = await OODAjax.generateForm10(data);
+                    success = true;
+                    break;
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            // Hide the pendingSavePopup
+            const pendingSavePopup = document.querySelector('.pendingSavePopup');
+            pendingSave.hide();
+            pendingSavePopup.style.display = 'none';
         }
-
-        // Hide the pendingSavePopup
-        const pendingSavePopup = document.querySelector('.pendingSavePopup');
-        pendingSavePopup.style.display = 'none';
-
-        // Handle popup actions based on success
-        // if (success) {
-        //   pendingSave.fulfill('All Done!');
-        //   setTimeout(() => {
-        //     const savePopup = document.querySelector('.successfulSavePopup');
-        //     DOM.ACTIONCENTER.removeChild(savePopup);
-        //     //POPUP.hide(createOODFormPopup);
-        //   }, 700);
-        // } else {
-        //   pendingSave.reject('Failed to Generate, please try again.');
-        //   setTimeout(() => {
-        //     const failPopup = document.querySelector('.failSavePopup');
-        //     DOM.ACTIONCENTER.removeChild(failPopup);
-        //     //createOODFormPopup.style.removeProperty('display');
-        //   }, 2000);
-        // }
     }
+    
 
     // build Filter button, which filters the data displayed on the OOD Entries Table
     function buildNewFilterBtn() {
