@@ -784,6 +784,10 @@ const EmploymentInformation = (() => {
 
 
     function createEmploymentPathPopupBtn() {
+        pathToStartDate = '';
+        pathToEmployment = '';
+        currentStatus = '';  
+
         createPathPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
             hideX: true,
@@ -852,8 +856,8 @@ const EmploymentInformation = (() => {
             pathToEmployment = event.target.value;
             if (pathToEmployment == '') {
                 pathToEmploymentStartDate.classList.add('disabled');
-                pathToStartDate = '';  
-                document.getElementById('pathToEmploymentStartDate').value = '';  
+                pathToStartDate = '';
+                document.getElementById('pathToEmploymentStartDate').value = '';
             }
             else {
                 pathToEmploymentStartDate.classList.remove('disabled');

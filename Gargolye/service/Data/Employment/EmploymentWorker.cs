@@ -869,7 +869,7 @@ namespace Anywhere.service.Data.Employment
                     EmploymentPath employeePath = new EmploymentPath();
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
 
-                    PathID = Odg.createNewEmploymentPath(token, currentStatus, pathToEmployment, pathToStartDate, peopleID, userID, transaction);
+                    PathID = Odg.createNewEmploymentPath(token, currentStatus, pathToEmployment, pathToStartDate == "" ? null : pathToStartDate, peopleID, userID, transaction);
 
                     employeePath.pathId = PathID;
                     return employeePath;
