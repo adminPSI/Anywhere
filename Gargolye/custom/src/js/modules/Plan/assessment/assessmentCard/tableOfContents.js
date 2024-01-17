@@ -75,12 +75,19 @@
           } else {
             if (!tableQuestionSets) tableQuestionSets = {};
             if (!tableQuestionSets[questionSetKey]) tableQuestionSets[questionSetKey] = {};
-            if (!tableQuestionSets[questionSetKey][rowOrder])
+            if (!tableQuestionSets[questionSetKey][rowOrder]) {
               tableQuestionSets[questionSetKey][rowOrder] = {
                 atLeastOneColumnAnswered: false,
-              };
+              }
+              if (leaveblank !== null && !leaveblank) {
+                numOfQuestionsUnawnsered++;
+                sectionUnawnseredQuestions[sectionKey]++;
+                }
+              }
+           // };
             if (answered)
               tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
+
           }
         });
       });
