@@ -54,6 +54,27 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
+        public string insertUpdateWaitingListValue(int id, string tableName, string columnName, string propertyValue, char insertOrDelete)
+        {
+            if (stringInjectionValidator(propertyValue) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(id.ToString());
+            list.Add(tableName);
+            list.Add(columnName);
+            list.Add(propertyValue);
+            list.Add(insertOrDelete.ToString());
+            string text = "CALL DBA.ANYW_WaitingList_InsertUpdateWaitingListValue(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_WaitingList_InsertUpdateWaitingListValue(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_WaitingList_InsertUpdateWaitingListValue";
+            }
+        }
+
         public string removeUnsavableNoteText(string note)
         {
             if (note == "" || note is null)

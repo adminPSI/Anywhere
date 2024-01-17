@@ -922,7 +922,7 @@
       }
 
       Object.entries(rowQuestions).forEach(([questionKey, questionData], index) => {
-        const { id: questionId, text, answerText, answerId, answerStyle } = questionData;
+        const { id: questionId, text, answerText, answerId, answerStyle, skipped } = questionData;
         const questionRowId = `${questionId}${rowKey}`;
 
         if (rowIndex === 0) {
@@ -1035,6 +1035,7 @@
           answerId,
           answerStyle,
           prompt,
+          skipped,
         } = questions[rok][qok];
 
         const questionRowId = `${questionId}${rok}`;
@@ -1172,7 +1173,7 @@
           }
 
           newRowData.forEach((nrd, index) => {
-            let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment } =
+            let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment, skipped } =
               nrd;
             const isAnswered = answerText && answerText !== '' ? true : false;
             const questionRowId = `${questionId}${rowOrderKeys.length + 1}`;

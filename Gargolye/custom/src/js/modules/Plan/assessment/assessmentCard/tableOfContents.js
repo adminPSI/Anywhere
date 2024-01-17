@@ -66,9 +66,11 @@
           const { answered, required, rowOrder, leaveblank } =
             questionCountObj[sectionKey][questionSetKey][questionKey];
           if (!rowOrder) {
-            if (!answered && required && !leaveblank) {
+            if (!answered && required) {
+              if (leaveblank !== null && !leaveblank) {
               numOfQuestionsUnawnsered++;
               sectionUnawnseredQuestions[sectionKey]++;
+              }
             }
           } else {
             if (!tableQuestionSets) tableQuestionSets = {};
