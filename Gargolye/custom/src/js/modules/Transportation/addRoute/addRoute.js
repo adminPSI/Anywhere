@@ -98,7 +98,9 @@ const TRANS_addRoute = (function () {
             type: 'contained',
             icon: 'save',
             callback: () => {
-                saveRoute()
+                if (!saveBtn.classList.contains('disabled')) {
+                    saveRoute();
+                }
             }
         });
         const cancelBtn = button.build({
@@ -157,7 +159,7 @@ const TRANS_addRoute = (function () {
     }
 
     function checkRequiredFieldsOfAddRoute() {
-        var date = dateInput.querySelector('input');  
+        var date = dateInput.querySelector('input');
         var routeName = routeNameInput.querySelector('#routeNameInput');
         var driver = driverDropdown.querySelector('#driverDropdown');
         var vehicle = vehicleDropdown.querySelector('#vehicleDropdown');
@@ -345,7 +347,7 @@ const TRANS_addRoute = (function () {
                     if (consumersOnRecord.size > 0) {
                         noConsumerWarning.style.display = 'none';
                     } else noConsumerWarning.style.display = 'block';
-                    checkRequiredFieldsOfAddRoute();  
+                    checkRequiredFieldsOfAddRoute();
                 })
                 break;
             }
