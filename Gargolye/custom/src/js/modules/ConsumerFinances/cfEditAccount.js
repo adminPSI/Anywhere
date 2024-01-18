@@ -594,7 +594,19 @@ const CFEditAccount = (() => {
     function init() {
         setActiveModuleAttribute('CFEditAccount');
         DOM.clearActionCenter();
-        roster2.showMiniRoster();
+        let defaultCFLocation = defaults.getLocation('moneyManagement');
+        if (defaultCFLocation === '') {
+            defaults.setLocation('moneyManagement', 0);
+            defaultCFLocation = "0";
+        }
+        roster2.miniRosterinit({
+            locationId: defaultCFLocation,
+            locationName: '',
+        }, {
+            hideDate: true,
+        });
+
+        roster2.showMiniRoster();  
     }
 
     return {
