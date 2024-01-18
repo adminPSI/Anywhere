@@ -554,11 +554,12 @@ const NewEntryCF = (() => {
             }
         });
 
-        newAmountInput.addEventListener('keyup', event => {
+        newAmountInput.addEventListener('focusout', event => {
             if (totalAmount > 0 && totalAmount != event.target.value) {
                 errorPopup(2); 
             }
         });
+
         newPayeeDropdown.addEventListener('change', event => {
             if (!newPayeeDropdown.classList.contains('disabled')) {
                 categoryID = event.target.options[event.target.selectedIndex].id;
@@ -1005,9 +1006,9 @@ const NewEntryCF = (() => {
             text: 'OK',
             style: 'secondary',
             type: 'contained',
-            callback: () => {
+            callback: () => { 
                 POPUP.hide(duplicatePayeErrorConfPOPUP);
-                loadReviewPage(isChecked);
+                POPUP.show(addPayeePopup);    
             },
         });
         okBtn.style.width = '100%';
@@ -1244,7 +1245,11 @@ const NewEntryCF = (() => {
                     document.getElementById('newAmountInput').value = totalAmount;
                     amount = totalAmount;
                     splitTransSaveData();
-                }             
+                }
+                else {
+                    POPUP.hide(errorConfPOPUP);  
+                    buildSplitTransectionPopUp();  
+                } 
             },
         });
         const noBtn = button.build({
@@ -1252,12 +1257,18 @@ const NewEntryCF = (() => {
             style: 'secondary',
             type: 'contained',
             callback: () => {
-                POPUP.hide(errorConfPOPUP);
+                if (errorCode == 1) {
+                    POPUP.hide(errorConfPOPUP);
+                    POPUP.show(splitTransPopup);
+                } else {
+                    document.getElementById('newAmountInput').value = totalAmount; 
+                    POPUP.hide(errorConfPOPUP);
+                }
             },
         });
 
         const message = document.createElement('p');
-        if (errorCode = 1)
+        if (errorCode == 1)
             message.innerText = 'The total of this split transaction dose not match the total entered on the New Entry form. Would you like to change the total on the New Entry form.';
         else
             message.innerText = 'The Amount entered does not equal the total amount for this split transaction. Would you like to edit the split transaction?';
