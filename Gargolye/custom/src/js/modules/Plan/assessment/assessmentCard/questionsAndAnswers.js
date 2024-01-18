@@ -29,6 +29,21 @@
   let isSortable;
   let readonly;
 
+  function checkArrayConsistency(arr) {
+    if (arr.length === 0) {
+      return 'noMatch'; // or you can return null or undefined based on your use case
+    }
+
+    const firstElement = arr[0];
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] !== firstElement) {
+        return 'noMatch';
+      }
+    }
+
+    return firstElement;
+  }
+
   //* TEMP FUNCTION FOR RE-ORDERING ROWS ON DELETE
   function updateRowOrderAfterDelete(grid, questionSetId) {
     // grab all rows inside grid after delete
@@ -223,7 +238,7 @@
             if (answered && required) questionDiv.classList.remove('unawnsered');
             if (!answered && required) questionDiv.classList.add('unawnsered');
             if (!answered && required && !leaveblank) questionDiv.classList.remove('unawnsered');
-          
+
             if (!required) questionDiv.classList.remove('unawnsered');
           } else {
             // Table Questions
@@ -239,8 +254,7 @@
                 rowElement,
               };
             }
-            if (answered)
-              tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
+            if (answered) tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
           }
         });
 
@@ -336,9 +350,7 @@
         }
       } else {
         const questionSet = document.getElementById(`set${setId}`);
-        const questionSetGridRows = [
-          ...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)'),
-        ];
+        const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)')];
         const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
         questionSetGridRows.forEach(row => {
           const rowCells = row.querySelectorAll('.grid__cell');
@@ -401,22 +413,18 @@
       if (type === 'checkbox') {
         answer = e.target.checked === true ? '1' : '0';
         addAnswer(answerId, answer);
-        sectionQuestionCount[sectionId][setId][questionId].answered =
-          e.target.checked === true ? true : false;
+        sectionQuestionCount[sectionId][setId][questionId].answered = e.target.checked === true ? true : false;
 
         const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
         let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
-        if (
-          questionIdCategory !== 'Variable not found in the object' &&
-          questionIdCategory !== 'noSupport'
-        ) {
+        if (questionIdCategory !== 'Variable not found in the object' && questionIdCategory !== 'noSupport') {
           planValidation.updateAssessmentValidationProperty(sectionId, questionIdCategory, e.target.checked);
         }
 
         if (questionIdCategory === 'noSupport') {
-          planValidation.updateAssessmentValidationProperty(sectionId, "noSupport", true);
+          planValidation.updateAssessmentValidationProperty(sectionId, 'noSupport', true);
 
           for (const key in assessmentValidationCheck.servicesAndSupportsChecked[sectionId]) {
             if (key !== 'noSupport') {
@@ -459,7 +467,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          planValidation.updateAnswerWorkingSection(answer,answerId);
+          planValidation.updateAnswerWorkingSection(answer, answerId);
         }
       }
       if (type === 'select-one') {
@@ -475,11 +483,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
           }
 
-          planValidation.updateAnswerWorkingSection(
-            answer,
-            answerId,
-          );
-          
+          planValidation.updateAnswerWorkingSection(answer, answerId);
         } else {
           addAnswer(answerId);
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
@@ -487,10 +491,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          planValidation.updateAnswerWorkingSection(
-            answer,
-            answerId,
-          );
+          planValidation.updateAnswerWorkingSection(answer, answerId);
         }
       }
       if (type === 'date') {
@@ -617,14 +618,11 @@
 
     //number of paid supports attached to this section
     let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
-    
+
     let paidSupportCount = assessmentValidationCheck.servicesAndSupports.paidSupportCounts[id] || 0;
-    let additionalSupportCount =
-      assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
-    let professionalReferralCounts =
-      assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
-    let potentialOutcomeCount =
-      assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
+    let additionalSupportCount = assessmentValidationCheck.servicesAndSupports.additionalSupportCounts[id] || 0;
+    let professionalReferralCounts = assessmentValidationCheck.servicesAndSupports.professionalReferralCounts[id] || 0;
+    let potentialOutcomeCount = assessmentValidationCheck.servicesAndSupports.potentialOutcomeCounts[id] || 0;
 
     // returns true if the section has been checked
     let paidSupportChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].paidSupport;
@@ -632,10 +630,8 @@
       assessmentValidationCheck.servicesAndSupportsChecked[id].naturalSupport ||
       assessmentValidationCheck.servicesAndSupportsChecked[id].technology ||
       assessmentValidationCheck.servicesAndSupportsChecked[id].communityResource;
-    let professionalReferralChecked =
-      assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
-    let potentialOutcomeChecked =
-      assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
+    let professionalReferralChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].professionalReferral;
+    let potentialOutcomeChecked = assessmentValidationCheck.servicesAndSupportsChecked[id].potentialOutcome;
 
     const outcomesBtn = button.build({
       //text: `Add Outcome (${potentialOutcomeCount})`,
@@ -648,7 +644,7 @@
       },
     });
     const paidSupportBtn = button.build({
-        //text: `Add Paid Support (${paidSupportCount})`,
+      //text: `Add Paid Support (${paidSupportCount})`,
       text: 'Add Paid Support',
       style: 'secondary',
       type: 'contained',
@@ -663,8 +659,8 @@
       },
     });
     const additionalSupportBtn = button.build({
-        /*text: `Add Additional Support (${additionalSupportCount})`,*/
-        text: 'Add Additional Support',
+      /*text: `Add Additional Support (${additionalSupportCount})`,*/
+      text: 'Add Additional Support',
       style: 'secondary',
       type: 'contained',
       id: `additionalSupportBtn${id}`,
@@ -678,8 +674,8 @@
       },
     });
     const profRefBtn = button.build({
-        /*text: `Add Professional Referral (${professionalReferralCounts})`,*/
-        text: 'Add Professional Referral',
+      /*text: `Add Professional Referral (${professionalReferralCounts})`,*/
+      text: 'Add Professional Referral',
       style: 'secondary',
       type: 'contained',
       id: `profRefBtn${id}`,
@@ -702,23 +698,23 @@
 
     //Add error class to buttons that are checked and have 0 outcomes attached to them
     if (paidSupportChecked && paidSupportCount === 0) {
-     paidSupportBtn.classList.add('error');
-      planValidation.updateAssessmentValidationSection("complete", false);
+      paidSupportBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection('complete', false);
     }
 
     if (additionalSupportChecked && additionalSupportCount === 0) {
       additionalSupportBtn.classList.add('error');
-      planValidation.updateAssessmentValidationSection("complete", false);
+      planValidation.updateAssessmentValidationSection('complete', false);
     }
 
     if (professionalReferralChecked && professionalReferralCounts === 0) {
       profRefBtn.classList.add('error');
-      planValidation.updateAssessmentValidationSection("complete", false);
+      planValidation.updateAssessmentValidationSection('complete', false);
     }
 
     if (potentialOutcomeChecked && potentialOutcomeCount === 0) {
-     outcomesBtn.classList.add('error');
-     planValidation.updateAssessmentValidationSection("complete", false);
+      outcomesBtn.classList.add('error');
+      planValidation.updateAssessmentValidationSection('complete', false);
     }
 
     const btnWrap = document.createElement('div');
@@ -763,9 +759,7 @@
   //---------
   async function deleteSelectedRows(grid, gridBody, questionSetId) {
     const planId = plan.getCurrentPlanId();
-    const successfulDelete = await assessment.deleteGridRows(planId, questionSetId, [
-      selectedRow.id,
-    ]);
+    const successfulDelete = await assessment.deleteGridRows(planId, questionSetId, [selectedRow.id]);
     gridBody.removeChild(selectedRow.target);
     addAnswer(selectedRow.id);
 
@@ -1021,6 +1015,7 @@
       grid.classList.add('sortableTable');
     }
 
+    let isLeftBlankCheckboxChecked = [];
     const rowOrderKeys = Object.keys(questions);
     rowOrderKeys.forEach((rok, rowIndex) => {
       const gridHeaderRow = buildGridHeaderRow();
@@ -1028,17 +1023,11 @@
 
       const questionOrderKeys = Object.keys(questions[rok]);
       questionOrderKeys.forEach((qok, questionIndex) => {
-        const {
-          id: questionId,
-          text,
-          answerText,
-          answerId,
-          answerStyle,
-          prompt,
-          skipped,
-        } = questions[rok][qok];
+        const { id: questionId, text, answerText, answerId, answerStyle, prompt, skipped } = questions[rok][qok];
 
         const questionRowId = `${questionId}${rok}`;
+
+        isLeftBlankCheckboxChecked.push(skipped);
 
         if (answerStyle !== 'STATICTEXT') {
           sectionQuestionCount[sectionId][questionSetId][questionRowId] = {
@@ -1173,8 +1162,7 @@
           }
 
           newRowData.forEach((nrd, index) => {
-            let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment, skipped } =
-              nrd;
+            let { answerId, answerRow, answerText, answerStyle, questionId, hideOnAssessment, skipped } = nrd;
             const isAnswered = answerText && answerText !== '' ? true : false;
             const questionRowId = `${questionId}${rowOrderKeys.length + 1}`;
             if (hideOnAssessment === '1') return;
@@ -1359,11 +1347,13 @@
 
     if (questionSetId !== '182') {
       // intentionally blank checkbox
+      console.log(isLeftBlankCheckboxChecked);
+      const isChecked = checkArrayConsistency(isLeftBlankCheckboxChecked);
       const intentionallyBlankCheckbox = input.buildCheckbox({
         text: 'Intentionally left blank',
         id: `intentionallyBlankCheckbox${questionSetId}`,
         className: 'intentionallyBlankCheckbox',
-        isChecked: false, //skipped === 'Y' ? true : false,
+        isChecked: isChecked === 'Y' ? true : false,
         isDisabled: readonly,
         attributes: [
           { key: 'data-setid', value: questionSetId },
@@ -1383,15 +1373,7 @@
   // Text, checkboxes, radio
   //---------
   function buildTextInput(data) {
-    const {
-      answerId,
-      answerText,
-      conditionalQuestionId,
-      conditionalAnswerText,
-      sectionId,
-      setId,
-      questionId,
-    } = data;
+    const { answerId, answerText, conditionalQuestionId, conditionalAnswerText, sectionId, setId, questionId } = data;
 
     const questionInputMarkup = input.build({
       type: 'text',
@@ -1415,13 +1397,11 @@
         if (readonly || !$.session.planUpdate) {
           input.disableInputField(questionInputMarkup);
         }
-        sectionQuestionCount[sectionId][setId][questionId].answered =
-          answerText === '' ? false : true;
+        sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
       }
     } else {
-      sectionQuestionCount[sectionId][setId][questionId].answered =
-        answerText === '' ? false : true;
+      sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
       sectionQuestionCount[sectionId][setId][questionId].required = true;
       if (readonly || !$.session.planUpdate) {
         input.disableInputField(questionInputMarkup);
@@ -1431,15 +1411,7 @@
     return questionInputMarkup;
   }
   function buildTextareaInput(data) {
-    const {
-      answerId,
-      answerText,
-      conditionalQuestionId,
-      conditionalAnswerText,
-      sectionId,
-      setId,
-      questionId,
-    } = data;
+    const { answerId, answerText, conditionalQuestionId, conditionalAnswerText, sectionId, setId, questionId } = data;
 
     let charLimit = 10000;
 
@@ -1466,13 +1438,11 @@
         if (readonly || !$.session.planUpdate) {
           input.disableInputField(questionInputMarkup);
         }
-        sectionQuestionCount[sectionId][setId][questionId].answered =
-          answerText === '' ? false : true;
+        sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
         sectionQuestionCount[sectionId][setId][questionId].required = true;
       }
     } else {
-      sectionQuestionCount[sectionId][setId][questionId].answered =
-        answerText === '' ? false : true;
+      sectionQuestionCount[sectionId][setId][questionId].answered = answerText === '' ? false : true;
       sectionQuestionCount[sectionId][setId][questionId].required = true;
       if (readonly || !$.session.planUpdate) {
         input.disableInputField(questionInputMarkup);
@@ -1497,10 +1467,7 @@
 
     const questionIdCategory = planValidation.findQuestionIdCategory(questionId);
 
-    if (
-      questionIdCategory !== 'Variable not found in the object' &&
-      questionIdCategory !== 'noSupport'
-    ) {
+    if (questionIdCategory !== 'Variable not found in the object' && questionIdCategory !== 'noSupport') {
       planValidation.updateAssessmentValidationProperty(sectionId, questionIdCategory, isChecked);
     }
 
@@ -1632,8 +1599,7 @@
 
     let addAttachmentButton = false;
 
-    if (subSectionId && subSectionsWithAttachments.includes(subSectionId))
-      addAttachmentButton = true;
+    if (subSectionId && subSectionsWithAttachments.includes(subSectionId)) addAttachmentButton = true;
 
     sectionQuestionCount[sectionId][setId][questionId] = {
       answered: null,
@@ -1786,13 +1752,7 @@
     if (setType !== 'GRID') {
       const questionOrderKeys = Object.keys(questions);
       questionOrderKeys.forEach(qoKey => {
-        const questionWrap = buildQuestionMarkup(
-          setId,
-          questions[qoKey],
-          sectionId,
-          readOnly,
-          subsectionId,
-        );
+        const questionWrap = buildQuestionMarkup(setId, questions[qoKey], sectionId, readOnly, subsectionId);
         questionSetWrap.appendChild(questionWrap);
       });
     } else {
