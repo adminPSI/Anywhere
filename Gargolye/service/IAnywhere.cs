@@ -4065,6 +4065,13 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/insertUpdateWaitingListValue/")]
         string insertUpdateWaitingListValue(int id, string propertyName, string value, char insertOrUpdate);
+
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/addWLSupportingDocument/")]
+        SupportingDocument[] addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment);
         //OOD Module
 
         [WebInvoke(Method = "POST",

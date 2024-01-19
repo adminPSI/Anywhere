@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.Plan.AnywherePlanWorker;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
 
 namespace Anywhere.service.Data.WaitingListAssessment
@@ -15,7 +16,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
         public LandingPageInfo[] getLandingPageForConsumer(string token, double consumerId)
         {
             string landingPageInfo = "";
-            landingPageInfo = return dg.getLandingPageForConsumer(token, consumerId);
+            landingPageInfo = dg.getLandingPageForConsumer(token, consumerId);
             LandingPageInfo[] landingPageObj = js.Deserialize<LandingPageInfo[]>(landingPageInfo);
 
             return landingPageObj;
@@ -24,7 +25,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
         public WaitingList[] getWaitingListAssessment(int waitingListAssessmentId)
         {
             string assessmentString = "";
-            assessmentString = return dg.getWaitingListAssessment(waitingListAssessmentId);
+            assessmentString = dg.getWaitingListAssessment(waitingListAssessmentId);
             WaitingList[] waitingLists = js.Deserialize<WaitingList[]>(assessmentString);
 
             return waitingLists;
@@ -837,6 +838,13 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
+        public SupportingDocument[] addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment)
+        {
+            string attachmentsString = dg.addWLSupportingDocument(token, waitingListInformationId, description, includeOnEmail, attachmentType, attachment);
+            SupportingDocument[] attachmentsObj = js.Deserialize<SupportingDocument[]>(attachmentsString);
+            return attachmentsObj;
+        }
+
         public class LandingPageInfo
         {
             public string wlInfoId { get; set; }
@@ -846,6 +854,10 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string sentToDODD { get; set; }
         }
 
+        public class SupportingDocument
+        {
+            public string supportingDocumentId { get; set; }
+        }
 
         public class WaitingList
         {
