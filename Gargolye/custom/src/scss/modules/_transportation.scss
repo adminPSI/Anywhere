@@ -1018,6 +1018,58 @@
             }
         }
     }
+
+    #employmentWorkScheduleTable {
+        .endIcon {
+            margin-left: 2px;
+            max-width: 25px !important;
+        }
+
+        .table__row {
+            &.selected {
+                background: $secondary;
+            }
+
+            > div {
+                flex-grow: 1;
+            }
+
+            > div:nth-child(1) {
+                width: 70px;
+            }
+
+            > div:nth-child(2) {
+                width: 68px;
+            }
+
+            > div:nth-child(3) {
+                width: 86px;
+            }
+
+            > div:nth-child(4) {
+                display: none;
+                width: 86px;
+            }
+
+            > div:nth-child(5) {
+                width: 86px;
+            }
+
+
+
+            @media screen and (min-width: 560px) {
+                > div:nth-child(4) {
+                    display: block;  
+                }               
+            }
+        }
+
+        .multiSelectBtn {
+            &.enabled {
+                background: pink;
+            }
+        }
+    }
 }
 
 [data-active-module="CFEditAccount"] {

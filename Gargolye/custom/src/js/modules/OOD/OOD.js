@@ -715,8 +715,6 @@ const OOD = (() => {
     }
 
     async function generateAndTrackFormProgress(formNumber) {
-        pendingSave.show('Generating Form...');
-    
         // Prepare data for form generation
         let data = {
             referenceNumber: filterValues.referenceNumber,
@@ -744,12 +742,10 @@ const OOD = (() => {
             }
         } catch (error) {
             console.error(error);
-        } finally {
-            // Hide the pendingSavePopup
-            const pendingSavePopup = document.querySelector('.pendingSavePopup');
-            pendingSave.hide();
-            pendingSavePopup.style.display = 'none';
         }
+
+        const formsPopup = document.getElementById('createOODFormsPopup');
+        formsPopup.style.display = 'none';
     }
     
 
@@ -827,10 +823,6 @@ const OOD = (() => {
         });
 
         popup.setAttribute('data-popup', 'true');
-
-        // Header
-        // const header = document.createElement('h5');
-        // header.innerHTML = 'Select A Form To Generate';
 
         const form4Btn = buildIndividualFormBtn('Form 4 - Monthly Job & Site Development', 4);
         const form8Btn = buildIndividualFormBtn('Form 8 - Work Activities and Assessment', 8);

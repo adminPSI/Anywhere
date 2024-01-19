@@ -38,7 +38,7 @@ var defaults = (function () {
     var timeClockDropdownData;
     var rosterLocDropdownData;
     var rosterGroupDropdownData;
-    
+
     function getLocation(module) {
         // module ex.. 'roster', 'dayServices'
         switch (module) {
@@ -58,7 +58,7 @@ var defaults = (function () {
                 break;
             }
             case 'timeClock': {
-                return $.session.defaultDSTimeClockValue; 
+                return $.session.defaultDSTimeClockValue;
                 break;
             }
             case 'workshop': {
@@ -177,7 +177,7 @@ var defaults = (function () {
                 if (moneyManagementRLL) {
                     defaultsAjax.saveDefaultLocationName('7', 'Remember Last Location');
                     $.session.defaultMoneyManagementLocation = 'Remember Last Location';
-                } else { 
+                } else {
                     defaultsAjax.saveDefaultLocationName('7', '');
                     $.session.defaultMoneyManagementLocation = '';
                 }
@@ -187,7 +187,7 @@ var defaults = (function () {
                 return null;
                 break;
             }
-        } 
+        }
     }
 
     // function updateRememberLastLocation() {
@@ -215,7 +215,7 @@ var defaults = (function () {
         defaultsAjax.setDefaultValue();
     }
 
-    function dropdownData() {  
+    function dropdownData() {
         var dayServiceLocationPromise = new Promise(function (resolve, reject) {
             dayServiceAjax.getDayServiceLocations(todaysDate, loc => {
                 dayServiceDropdownData = loc.map(loc => {
@@ -326,7 +326,7 @@ var defaults = (function () {
             );
         });
 
-        var moneyManagementLocationPromise =  new Promise(function (resolve, reject) {
+        var moneyManagementLocationPromise = new Promise(function (resolve, reject) {
             defaultsAjax.getRosterLocations(loc => {
                 moneyManagementDropdownData = loc.map(loc => {
                     var id = `ros-${loc.ID}`;
@@ -341,9 +341,8 @@ var defaults = (function () {
                 //If they don't have any defaults set, add a blank record to the dropdown.
                 //This will force an update on change and NOT make it look like the have a default set, when they really don't.
                 //Once they set a default, they can only set a new one, they can't change to no default. No default might break things.
-                if (getLocation('moneyManagement') === '')
-                    moneyManagementDropdownData.unshift({ id: 'ros-0', value: null, text: 'ALL' });
-                resolve('success');
+                moneyManagementDropdownData.unshift({ id: 'ros-0', value: '0', text: 'ALL' });
+                resolve('success');  
             });
         });
 
@@ -910,7 +909,7 @@ var defaults = (function () {
                     setLocation('workshop', '');
                     break;
                 case 'Default MoneyManagement Location':
-                    setLocation('moneyManagement', ''); 
+                    setLocation('moneyManagement', '');
                     break;
                 default:
                     console.warn(`couldn't reset a default location`);

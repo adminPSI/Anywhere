@@ -66,19 +66,28 @@
           const { answered, required, rowOrder, leaveblank } =
             questionCountObj[sectionKey][questionSetKey][questionKey];
           if (!rowOrder) {
-            if (!answered && required && !leaveblank) {
+            if (!answered && required) {
+              if (leaveblank !== null && !leaveblank) {
               numOfQuestionsUnawnsered++;
               sectionUnawnseredQuestions[sectionKey]++;
+              }
             }
           } else {
             if (!tableQuestionSets) tableQuestionSets = {};
             if (!tableQuestionSets[questionSetKey]) tableQuestionSets[questionSetKey] = {};
-            if (!tableQuestionSets[questionSetKey][rowOrder])
+            if (!tableQuestionSets[questionSetKey][rowOrder]) {
               tableQuestionSets[questionSetKey][rowOrder] = {
                 atLeastOneColumnAnswered: false,
-              };
+              }
+              if (leaveblank !== null && !leaveblank) {
+                numOfQuestionsUnawnsered++;
+                sectionUnawnseredQuestions[sectionKey]++;
+                }
+              }
+           // };
             if (answered)
               tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
+
           }
         });
       });
@@ -144,16 +153,16 @@
       workingAlertDiv.innerHTML = `${icons.error}`;
       sectionHeading.appendChild(workingAlertDiv);
 
-      // planValidation.createTooltip(
-      //   "There must be at least one record for What's Working/What's Not Working",
-      //   workingAlertDiv,
-      // );
+      planValidation.createTooltip(
+        "There must be at least one record for What's Working/What's Not Working",
+        workingAlertDiv,
+      );
 
       workingAlertDiv.style.display = 'none';
 
-      //if (assessmentValidationCheck.workingSectionComplete === false) {
-      //  workingAlertDiv.style.display = 'inline-block';
-      //}
+      if (assessmentValidationCheck.workingSectionComplete === false) {
+       workingAlertDiv.style.display = 'inline-block';
+      }
     }
 
     section.appendChild(sectionHeading);

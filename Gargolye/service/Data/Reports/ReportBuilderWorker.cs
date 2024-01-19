@@ -29,34 +29,34 @@ namespace Anywhere.service.Data.ReportBuilder
             {
                 //Day Service
                 case "Individual Day Service Activity Report":
-                    string result = generateIndividualDayServiceActivityReport(token, reportType, reportData);
+                    string result = generateIndividualDayServiceActivityReport(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
                     break;
                 //Forms
                 case "Form Listing - By Consumer":
-                    result = generateformListingReport(token, reportType, reportData);
+                    result = generateformListingReport(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
                 //Outcomes
                 case "Documentation - Completed With Percentages":
-                    result = generateOutcomeDocumentationReport(token, reportType, reportData);
+                    result = generateOutcomeDocumentationReport(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
 
                 case "Outcome Activity - With Community Integration by Employee, Consumer, Date":
-                    result = generateOutcomeActivityReport(token, reportType, reportData);
+                    result = generateOutcomeActivityReport(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
                 //Case Notes
                 case "Detailed Case Notes By Biller":
-                    result = generateDetailedCaseNotesReport(token, reportType, reportData);
+                    result = generateDetailedCaseNotesReport(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
@@ -64,35 +64,35 @@ namespace Anywhere.service.Data.ReportBuilder
 
                     // GK only
                 case "Detail Report":
-                    result = generateGKDetailedCaseNotesReport(token, reportType, reportData);
+                    result = generateDetailedCaseNotesReportGK(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
 
                 case "Time Analysis Report":
-                    result = generateTimeAnalysisCaseNotesReport(token, reportType, reportData);
+                    result = generateTimeAnalysisCaseNotesReport(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
 
                 case "TXX Case Notes":
-                    result = generateTXXCaseNotesReport(token, reportType, reportData);
+                    result = generateTXXCaseNotesReport(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
                 //Workshop
                 case "Job Activity Detail Report by Employee and Job":
-                    result = generatejobActivityReport(token, reportType, reportData);
+                    result = generatejobActivityReport(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
                 //Incident Tracking
                 case "Incident Reporting Log":
-                    result = generateIncidentReportingLog(token, reportType, reportData);
+                    result = generateIncidentReportingLog(token, reportData);
 
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
@@ -109,7 +109,7 @@ namespace Anywhere.service.Data.ReportBuilder
             return reportScheduleId;
         }
 
-        public string generateIndividualDayServiceActivityReport(string token, string reportType, ReportData reportData)
+        public string generateIndividualDayServiceActivityReport(string token, ReportData reportData)
         {
             string category = "Day Services";
             string title = "Consumer Day Service Activity - By Location and Date of Service";
@@ -121,7 +121,7 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
-        public string generateformListingReport(string token, string reportType, ReportData reportData)
+        public string generateformListingReport(string token, ReportData reportData)
         {
             string category = "Forms";
             string title = "Form Listing - By Consumer";
@@ -133,7 +133,7 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
-        public string generateOutcomeDocumentationReport(string token, string reportType, ReportData reportData)
+        public string generateOutcomeDocumentationReport(string token, ReportData reportData)
         {
             string category = "Outcomes and Services";
             string title = "Habilitation Documentation - Completed with Percentages";
@@ -145,7 +145,7 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
-        public string generateOutcomeActivityReport(string token, string reportType, ReportData reportData)
+        public string generateOutcomeActivityReport(string token, ReportData reportData)
         {
             string category = "Outcomes and Services";
             string title = "Outcome Activity - With Community Integration by Employee, Consumer, Date";
@@ -157,7 +157,7 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
-        public string generateDetailedCaseNotesReport(string token, string reportType, ReportData reportData)
+        public string generateDetailedCaseNotesReport(string token, ReportData reportData)
         {
             string category = "Case Notes";
             string title = "Detailed Case Notes By Biller";
@@ -170,7 +170,7 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
-        public string generateGKDetailedCaseNotesReport(string token, string reportType, ReportData reportData)
+        public string generateDetailedCaseNotesReportGK(string token, ReportData reportData)
         {
             string category = "Case Notes";
             string title = "Detailed Case Notes";
@@ -178,36 +178,41 @@ namespace Anywhere.service.Data.ReportBuilder
             string result = "";
 
             result = rbdg.generateDetailedCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.consumerName, reportData.serviceDateStart, reportData.serviceDateEnd, reportData.location,
-                reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billingCode, reportData.service, reportData.need, reportData.contact);
+                reportData.enteredDateStart, reportData.enteredDateEnd, reportData.billCodeText, reportData.service, reportData.need, reportData.contact);
 
             return result;
         }
 
-        public string generateTimeAnalysisCaseNotesReport(string token, string reportType, ReportData reportData)
+        public string generateTimeAnalysisCaseNotesReport(string token, ReportData reportData)
         {
             string category = "Case Notes";
             string title = "Case Notes Time Analysis with Doc and Travel Time ANYWTEST";
             string reportServerList = "Primary";
             string result = "";
 
-            result = rbdg.generateCaseNoteTimeReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.billingCode, reportData.serviceDateStart, reportData.serviceDateEnd);
+            result = rbdg.generateCaseNoteTimeReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.billCodeText, reportData.serviceDateStart, reportData.serviceDateEnd);
 
             return result;
         }
 
-        public string generateTXXCaseNotesReport(string token, string reportType, ReportData reportData)
+        public string generateTXXCaseNotesReport(string token, ReportData reportData)
         {
             string category = "Case Notes";
             string title = "TXX Case Notes";
             string reportServerList = "Primary";
             string result = "";
 
-            result = rbdg.generateTXXCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.billingCode, reportData.serviceDateStart, reportData.serviceDateEnd);
+            DateTime startDate = DateTime.Parse(reportData.serviceDateStart);
+            string formattedStartDateString = startDate.ToString("MM/dd/yyyy");
+            DateTime endDate = DateTime.Parse(reportData.serviceDateEnd);
+            string formattedEndDateString = endDate.ToString("MM/dd/yyyy");
+
+            result = rbdg.generateTXXCaseNotesReport(token, category, title, reportServerList, reportData.billerId, reportData.consumer, reportData.billingCode, formattedStartDateString, formattedEndDateString);
 
             return result;
         }
 
-        public string generatejobActivityReport(string token, string reportType, ReportData reportData)
+        public string generatejobActivityReport(string token, ReportData reportData)
         {
             string category = "Workshop";
             string title = "Job Activity Detail Report by Employee and Job";
@@ -218,7 +223,7 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
-        public string generateIncidentReportingLog(string token, string reportType, ReportData reportData)
+        public string generateIncidentReportingLog(string token, ReportData reportData)
         {
             string category = "Incident Tracking";
             string title = "Incident Reporting Log";
@@ -320,6 +325,7 @@ namespace Anywhere.service.Data.ReportBuilder
             public string billerId { get; set; }
             public string consumer { get; set; }
             public string consumerName { get; set; }
+            public string billCodeText { get; set; }
             public string billingCode { get; set; }
             public string reviewStatus { get; set; }
             public string serviceDateStart { get; set; }

@@ -36,6 +36,8 @@ const NewEntryCF = (() => {
     let numberOfRows;
     let splitAmount = [];
     let splitTransPopup;
+    let tempAmountval;
+    let tempSplit;
 
     async function init() {
         buildNewEntryForm(registerId = undefined, attachment = undefined, attachmentID = undefined);
@@ -53,6 +55,7 @@ const NewEntryCF = (() => {
             const { getAccountEntriesByIdResult } = result;
             date = moment(getAccountEntriesByIdResult[0].activityDate).format('YYYY-MM-DD');
             amount = getAccountEntriesByIdResult[0].amount;
+            tempAmountval = getAccountEntriesByIdResult[0].amount;
             account = getAccountEntriesByIdResult[0].account;
             payee = getAccountEntriesByIdResult[0].payee;
             category = getAccountEntriesByIdResult[0].category;
@@ -68,16 +71,18 @@ const NewEntryCF = (() => {
             const SplitDataresult = await ConsumerFinancesAjax.getSplitRegisterAccountEntriesByIDAsync(registerId);
             const { getSplitRegisterAccountEntriesByIDResult } = SplitDataresult;
             splitAmount = getSplitRegisterAccountEntriesByIDResult;
-            var sum = 0;  
+            var sum = 0;
             for (var i = 0; i < splitAmount.length; i++) {
                 if (splitAmount[i].amount != '')
                     sum += parseInt(splitAmount[i].amount);
             }
-            totalAmount = sum;   
+            totalAmount = sum;
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
             BtnName = 'SAVE';
+            totalAmount = 0;
+            categoryOldVal = '';
         }
         else {
             regId = 0;
@@ -96,7 +101,8 @@ const NewEntryCF = (() => {
             accountType = 'E';
             IsReconciled = 'N';
             IsDisabledBtn = false;
-            categoryOldVal = ''; 
+            categoryOldVal = '';
+            totalAmount = 0;  
         }
 
         tempdate = '';
@@ -110,7 +116,7 @@ const NewEntryCF = (() => {
         tempdescription = '';
         tempattachment = '';
         tempreceipt = '';
-
+        tempSplit = '';
         if (attachment) {
             attachmentArray = attachment;
             attachmentId = attachmentID;
@@ -486,7 +492,7 @@ const NewEntryCF = (() => {
             NEW_SAVE_BTN.classList.add('disabled');
             return;
         } else {
-            if (tempdate != '' || tempamount != '' || tempaccount != '' || tempaccountType != '' || temppayee != '' || tempcategory != '' || tempsubCategory != '' || tempcheckNo != '' || tempdescription != '' || tempattachment != '' || tempreceipt != '') {
+            if (tempdate != '' || tempamount != '' || tempaccount != '' || tempaccountType != '' || temppayee != '' || tempcategory != '' || tempsubCategory != '' || tempcheckNo != '' || tempdescription != '' || tempattachment != '' || tempreceipt != '' || tempSplit != '') {
                 NEW_SAVE_BTN.classList.remove('disabled');
             }
             else {
@@ -554,11 +560,12 @@ const NewEntryCF = (() => {
             }
         });
 
-        newAmountInput.addEventListener('keyup', event => {
+        newAmountInput.addEventListener('focusout', event => {
             if (totalAmount > 0 && totalAmount != event.target.value) {
-                errorPopup(2); 
+                errorPopup(2);
             }
         });
+
         newPayeeDropdown.addEventListener('change', event => {
             if (!newPayeeDropdown.classList.contains('disabled')) {
                 categoryID = event.target.options[event.target.selectedIndex].id;
@@ -709,8 +716,12 @@ const NewEntryCF = (() => {
         const {
             getCategoriesSubCategoriesByPayeeResult: CategoriesSubCategory,
         } = await ConsumerFinancesAjax.getCategoriesSubCategoriesByPayeeAsync(categoryID);
-
-        category = CategoriesSubCategory[0].CategoryDescription;
+    
+        if (payee == 'Opening Balance') {
+            category = '';
+        } else {
+            category = CategoriesSubCategory[0].CategoryDescription;
+        }
         subCategory = CategoriesSubCategory[0].SubCategoryDescription;
         populateCategoryDropdown(categoryID);
         populateSubCategoryDropdown(category);
@@ -762,11 +773,11 @@ const NewEntryCF = (() => {
         }));
 
         data.unshift({ id: null, value: '--Split--', text: '--Split--' });
-        data.unshift({ id: null, value: '', text: '' });
+        data.unshift({ id: null, value: '', text: '' });        
         dropdown.populate("newCategoryDropdown", data, category);
-        if (category == '--Split--' && document.getElementById('SPLIT_BTN').style.display == 'none') {
+        if (category == '--Split--' && document.getElementById('SPLIT_BTN').style.display == 'none' && payee != 'Opening Balance') {
             buildSplitTransectionPopUp();
-        }  
+        }
         checkRequiredFieldsOfNewEntry();
     }
 
@@ -1007,7 +1018,7 @@ const NewEntryCF = (() => {
             type: 'contained',
             callback: () => {
                 POPUP.hide(duplicatePayeErrorConfPOPUP);
-                loadReviewPage(isChecked);
+                POPUP.show(addPayeePopup);
             },
         });
         okBtn.style.width = '100%';
@@ -1112,10 +1123,12 @@ const NewEntryCF = (() => {
             text: "cancel",
             type: "outlined",
             style: "secondary",
-            callback: () => { 
-                document.getElementById('newCategoryDropdown').value = categoryOldVal;   
+            callback: () => {
+                document.getElementById('newCategoryDropdown').value = categoryOldVal;
+                document.getElementById('newAmountInput').value = tempAmountval;
+                amount = tempAmountval;
                 POPUP.hide(splitTransPopup);
-                checkRequiredFieldsOfNewEntry(); 
+                checkRequiredFieldsOfNewEntry();
             },
         });
 
@@ -1171,6 +1184,11 @@ const NewEntryCF = (() => {
                 splitAmountInputN[i].classList.add('errorPopup');
             } else {
                 splitAmountInputN[i].classList.remove('errorPopup');
+            }
+            if (SplitCategory.value === '' && splitAmt.value !== '') {
+                splitCategoryDropdownN[i].classList.add('errorPopup');
+            } else {
+                splitCategoryDropdownN[i].classList.remove('errorPopup');
             }
         }
 
@@ -1244,20 +1262,31 @@ const NewEntryCF = (() => {
                     document.getElementById('newAmountInput').value = totalAmount;
                     amount = totalAmount;
                     splitTransSaveData();
-                }             
+                }
+                else {
+                    POPUP.hide(errorConfPOPUP);
+                    buildSplitTransectionPopUp();
+                }
             },
         });
         const noBtn = button.build({
             text: 'No',
             style: 'secondary',
-            type: 'contained',
+            type: 'outlined',
             callback: () => {
-                POPUP.hide(errorConfPOPUP);
+                if (errorCode == 1) {
+                    POPUP.hide(errorConfPOPUP);
+                    POPUP.show(splitTransPopup);
+                } else {
+                    document.getElementById('newAmountInput').value = totalAmount;
+                    amount = totalAmount;
+                    POPUP.hide(errorConfPOPUP);
+                }
             },
         });
 
         const message = document.createElement('p');
-        if (errorCode = 1)
+        if (errorCode == 1)
             message.innerText = 'The total of this split transaction dose not match the total entered on the New Entry form. Would you like to change the total on the New Entry form.';
         else
             message.innerText = 'The Amount entered does not equal the total amount for this split transaction. Would you like to edit the split transaction?';
@@ -1290,6 +1319,10 @@ const NewEntryCF = (() => {
             }
         }
         document.getElementById('SPLIT_BTN').style.display = 'block';
+        tempSplit = 'ChangedValue';
+        tempAmountval = totalAmount;  
+        categoryOldVal = document.getElementById('newCategoryDropdown').value;  
+        checkRequiredFieldsOfNewEntry();
     }
 
     return {

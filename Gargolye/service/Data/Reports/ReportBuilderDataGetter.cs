@@ -262,10 +262,14 @@ namespace Anywhere.service.Data.ReportBuilder
         }
 
         public string generateDetailedCaseNotesReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string consumerName,
-                                              string serviceStartDate, string serviceEndDate, string location, string originallyEnteredStart, string originallyEnteredEnd, string billingCode, string service,
+                                              string serviceStartDate, string serviceEndDate, string location, string originallyEnteredStart, string originallyEnteredEnd, string billCodeText, string service,
                                               string need, string contact)
         {
             if (tokenValidator(token) == false) return null;
+            if (billCodeText == null)
+            {
+                billCodeText = "All";
+            }
             logger.debug("generateDetailedCaseNotesReport ");
             string source = "";
             string filterSyntax = "";
@@ -275,7 +279,6 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(title);
             list.Add(reportServerList);
             list.Add(source);
-            //list.Add(userId);
             list.Add(billerId);
             list.Add(consumerId);
             list.Add(consumerName);
@@ -284,7 +287,7 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(location);
             list.Add(originallyEnteredStart);
             list.Add(originallyEnteredEnd);
-            list.Add(billingCode);
+            list.Add(billCodeText);
             list.Add(service);
             list.Add(need);
             list.Add(contact);
@@ -301,9 +304,13 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateCaseNoteTimeReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string billingCode, string serviceStartDate, string serviceEndDate)
+        public string generateCaseNoteTimeReport(string token, string category, string title, string reportServerList, string billerId, string consumerId, string billCodeText, string serviceStartDate, string serviceEndDate)
         {
             if (tokenValidator(token) == false) return null;
+            if (billCodeText == null)
+            {
+                billCodeText = "All";
+            }
             string source = "";
             string filterSyntax = "";
             logger.debug("generateCaseNoteReport ");
@@ -313,10 +320,9 @@ namespace Anywhere.service.Data.ReportBuilder
             list.Add(title);
             list.Add(reportServerList);
             list.Add(source);
-            //list.Add(userId);
             list.Add(billerId);
             list.Add(consumerId);
-            list.Add(billingCode);
+            list.Add(billCodeText);
             list.Add(filterSyntax);
             list.Add(serviceStartDate);
             list.Add(serviceEndDate);
