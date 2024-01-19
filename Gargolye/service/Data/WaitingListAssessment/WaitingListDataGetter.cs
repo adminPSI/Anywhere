@@ -54,15 +54,16 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string insertUpdateWaitingListValue(int id, string tableName, string columnName, string propertyValue, char insertOrDelete)
+        public string insertUpdateWaitingListValue(int id, string tableName, string columnName, string idNameForWhere, string propertyValue, char insertOrUpdate)
         {
             if (stringInjectionValidator(propertyValue) == false) return null;
             List<string> list = new List<string>();
             list.Add(id.ToString());
             list.Add(tableName);
             list.Add(columnName);
+            list.Add(idNameForWhere);
             list.Add(propertyValue);
-            list.Add(insertOrDelete.ToString());
+            list.Add(insertOrUpdate.ToString());
             string text = "CALL DBA.ANYW_WaitingList_InsertUpdateWaitingListValue(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
