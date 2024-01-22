@@ -2,6 +2,7 @@ const WaitingList = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
+  let selectedConsumer = null;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -19,26 +20,39 @@ const WaitingList = (() => {
   let rosterPicker;
   let wlForms = {};
 
-  // ROSTER
+  // EVENTS
   //--------------------------------------------------
   async function onConsumerSelect(data) {
-    selectedConsumer = data;
-    await wlData.fetchReviewDataByConsumer(selectedConsumer[0]);
-    const tableData = wlData.getReviewDataByConsumer();
-    wlReviewTable.populate(tableData);
+    selectedConsumer = data[0];
+    // await wlData.fetchReviewDataByConsumer(selectedConsumer);
+    // const tableData = wlData.getReviewDataForConsumer();
+    // wlReviewTable.populate(tableData);
+  }
+  function onNewAssessmentBtnClick(e) {
+    if (!selectedConsumer) return;
+
+    WaitingListAssessment.load(selectedConsumer, wlData);
   }
 
   // MAIN
   //--------------------------------------------------
   function attachEvents() {
     rosterPicker.onConsumerSelect(onConsumerSelect);
-    newAssessmentBtn.onClick();
+    newAssessmentBtn.onClick(onNewAssessmentBtnClick);
   }
   async function populatePage() {
     await rosterPicker.fetchConsumers();
     rosterPicker.populate();
+
+    if (selectedConsumer) {
+      rosterPicker.setSelectedConsumers(selectedConsumer);
+      await wlData.fetchReviewDataByConsumer(selectedConsumer);
+      const tableData = wlData.getReviewDataByConsumer();
+      wlReviewTable.populate(tableData);
+    }
   }
   async function loadPage() {
+    newAssessmentBtn.renderTo(wlOverviewWrap);
     wlReviewTable.renderTo(wlOverviewWrap);
     rosterPicker.renderTo(wlRosterWrap);
   }
@@ -58,6 +72,23 @@ const WaitingList = (() => {
 
     _DOM.ACTIONCENTER.appendChild(moduleWrap);
   }
+  async function reloadPage() {
+    _DOM.ACTIONCENTER.innerHTML = '';
+
+    // build DOM skeleton
+    moduleWrap = _DOM.createElement('div', { class: 'waitingListModule' });
+    wlRosterWrap = _DOM.createElement('div', { class: 'waitingListRosterPicker' });
+    wlOverviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
+
+    moduleWrap.appendChild(wlOverviewWrap);
+    moduleWrap.appendChild(wlRosterWrap);
+
+    _DOM.ACTIONCENTER.appendChild(moduleWrap);
+
+    await loadPage();
+    await populatePage();
+    attachEvents();
+  }
 
   // INIT (data & defaults)
   //--------------------------------------------------
@@ -74,7 +105,6 @@ const WaitingList = (() => {
       style: 'primary',
       styleType: 'contained',
     });
-
     wlReviewTable = new Table({
       columnSortable: true,
       headings: [
@@ -98,10 +128,11 @@ const WaitingList = (() => {
     });
   }
 
-  async function init() {
+  async function init(consumerId) {
     loadPageSkeleton();
 
     // init data
+    selectedConsumer = consumerId;
     wlData = new WaitingListData();
 
     initComponents();

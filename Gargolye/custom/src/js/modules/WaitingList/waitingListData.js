@@ -10,27 +10,44 @@
    * @constructor
    * @returns {WaitingListData}
    */
-  function WaitingListData() {
-    this.reviewData = null;
-  }
+  function WaitingListData() {}
 
-  // FETCH DATA
-  //---------------------------------------
-  WaitingListData.prototype.fetchReviewDataByConsumer = async function (consumerId) {
+  WaitingListData.prototype.insertNewAssessmentInitial = async function (consumerId) {
+    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
+      id: 0,
+      propertyName: 'consumerId',
+      value: consumerId,
+      insertOrUpdate: 'I',
+    });
+
+    return data.getLandingPageForConsumerResult;
+  };
+
+  WaitingListData.prototype.insertUpdateAssessmentData = async function ({ id, propertyName, value, insertOrUpdate }) {
+    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
+      id,
+      propertyName,
+      value,
+      insertOrUpdate,
+    });
+
+    return data.getLandingPageForConsumerResult;
+  };
+
+  WaitingListData.prototype.getReviewDataByConsumer = async function (consumerId) {
     const data = await _UTIL.fetchData('getLandingPageForConsumer', {
       consumerId,
     });
-    this.reviewData = data.getLandingPageForConsumerResult;
 
-    return this;
-  };
+    // this.reviewData =
+    // string wlInfoId
+    // string interviewDate
+    // string conclusionResult
+    // string conclusionDate
+    // string sentToDODD
 
-  // DATA GETTERS
-  //---------------------------------------
-  WaitingListData.prototype.getReviewDataByConsumer = async function () {
-    // this.reviewData = [{ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }]
     // TODO-ASH: replace conclusionResult id with name, get from dropdown data
-    return this.reviewData.map(rd => {
+    return data.getLandingPageForConsumerResult.map(rd => {
       return {
         ...rd,
       };
