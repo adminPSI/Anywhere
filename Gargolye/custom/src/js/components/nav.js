@@ -214,11 +214,11 @@ const UTIL_MENU = (function () {
                     document.querySelector('.submenu.menu-visible').classList.remove('menu-visible');
                     return;
                 }
-                if (event.target.dataset.action === 'trainingVideos') {
+                if (event.target.dataset.action === 'trainingVideos') { 
                     const url =
                         $.session.applicationName === 'Advisor'
-                            ? 'http://www.primarysolutions.net/customercare/65465489432134874230-2/'
-                            : 'http://www.primarysolutions.net/customercare/6546541321877453120-14861520/';
+                            ? 'https://primarysolutions.net/technology/advisor-support/'
+                            : 'https://primarysolutions.net/technology/gatekeeper-support/';
 
                     const win = window.open(url, '_blank');
                     win.focus();

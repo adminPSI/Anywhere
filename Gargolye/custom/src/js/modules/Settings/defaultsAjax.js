@@ -89,7 +89,6 @@ var defaultsAjax = (function () {
                 break;
             case 7:
                 typeName = "Default MoneyManagement Location";
-                debugger; 
                 if (value != 0 && name != null) {
                     createCookie("defaultMoneyManagementLocationName", name, 7);
                     createCookie("defaultMoneyManagementLocationValue", value, 7);

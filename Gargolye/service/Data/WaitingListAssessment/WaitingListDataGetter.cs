@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web.Script.Serialization;
 using Anywhere.Log;
 using System.Configuration;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Anywhere.service.Data.WaitingListAssessment
 {
@@ -54,15 +55,16 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string insertUpdateWaitingListValue(int id, string tableName, string columnName, string propertyValue, char insertOrDelete)
+        public string insertUpdateWaitingListValue(int id, string tableName, string columnName, string idNameForWhere, string propertyValue, char insertOrUpdate)
         {
             if (stringInjectionValidator(propertyValue) == false) return null;
             List<string> list = new List<string>();
             list.Add(id.ToString());
             list.Add(tableName);
             list.Add(columnName);
+            list.Add(idNameForWhere);
             list.Add(propertyValue);
-            list.Add(insertOrDelete.ToString());
+            list.Add(insertOrUpdate.ToString());
             string text = "CALL DBA.ANYW_WaitingList_InsertUpdateWaitingListValue(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -72,6 +74,29 @@ namespace Anywhere.service.Data.WaitingListAssessment
             {
                 logger.error("2WL", ex.Message + "ANYW_WaitingList_InsertUpdateWaitingListValue(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "2WL: error ANYW_WaitingList_InsertUpdateWaitingListValue";
+            }
+        }
+
+        public string addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment)
+        {
+            if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(description) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(waitingListInformationId.ToString());
+            list.Add(description);
+            list.Add(includeOnEmail.ToString());
+            list.Add(attachmentType);
+            list.Add(attachment);
+            string text = "CALL DBA.ANYW_WaitingList_AddSupportingDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3WL", ex.Message + "ANYW_WaitingList_AddSupportingDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3WL: error ANYW_WaitingList_AddSupportingDocument";
             }
         }
 

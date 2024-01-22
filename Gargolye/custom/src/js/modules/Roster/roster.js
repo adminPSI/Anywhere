@@ -718,7 +718,7 @@ const roster2 = (function () {
         }
 
 
-        if ($.loadedApp === 'ConsumerFinances') {
+        if ($.loadedApp === 'ConsumerFinances' || $.loadedApp === 'CFEditAccount') {
             if (defaults.rememberLastLocation('moneyManagement')) defaults.setLocation('moneyManagement', selectedLocationId);
         }
 
