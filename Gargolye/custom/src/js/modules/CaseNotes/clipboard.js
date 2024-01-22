@@ -23,9 +23,3 @@
 //   fullscreen: true,
 //   type: 'textarea',
 // };
-
-// string wlInfoId
-// string interviewDate
-// string conclusionResult
-// string conclusionDate
-// string sentToDODD
