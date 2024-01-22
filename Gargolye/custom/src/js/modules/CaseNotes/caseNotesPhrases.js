@@ -48,15 +48,15 @@
           required: true,
         },
       ],
-      buttons: [
-        {
-          text: 'Cancel',
-          icon: 'cancel',
-          style: 'primary',
-          styleType: 'outlined',
-          name: 'cancel',
-        },
-      ],
+      // buttons: [
+      //   {
+      //     text: 'Cancel',
+      //     icon: 'cancel',
+      //     style: 'primary',
+      //     styleType: 'outlined',
+      //     name: 'cancel',
+      //   },
+      // ],
     });
 
     this.addPhraseForm.renderTo(this.dialog.dialog);
