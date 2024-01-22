@@ -10,7 +10,6 @@ using System.Linq;
 using System.Web.Script.Serialization;
 using Anywhere.Log;
 using System.Configuration;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere.service.Data.WaitingListAssessment
