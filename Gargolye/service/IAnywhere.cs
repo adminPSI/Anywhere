@@ -4072,6 +4072,13 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/addWLSupportingDocument/")]
         SupportingDocument[] addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment);
+
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getWLSupportingDocumentList/")]
+        SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId);
         //OOD Module
 
         [WebInvoke(Method = "POST",

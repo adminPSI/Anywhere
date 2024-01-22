@@ -2818,10 +2818,14 @@ namespace Anywhere
             return wlw.addWLSupportingDocument(token, waitingListInformationId, description, includeOnEmail, attachmentType, attachment);
         }
 
+        public SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId)
+        { 
+            return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
+        }
 
-        //OOD Module
+            //OOD Module
 
-        public string generateForm4(System.IO.Stream testInput)
+            public string generateForm4(System.IO.Stream testInput)
         {
             //(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber
             string token;

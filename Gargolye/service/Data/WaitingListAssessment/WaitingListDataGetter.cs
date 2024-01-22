@@ -11,6 +11,7 @@ using System.Web.Script.Serialization;
 using Anywhere.Log;
 using System.Configuration;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere.service.Data.WaitingListAssessment
 {
@@ -97,6 +98,23 @@ namespace Anywhere.service.Data.WaitingListAssessment
             {
                 logger.error("3WL", ex.Message + "ANYW_WaitingList_AddSupportingDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "3WL: error ANYW_WaitingList_AddSupportingDocument";
+            }
+        }
+        public string getWLSupportingDocumentList(string token, long waitingListInformationId)
+        {
+            if (tokenValidator(token) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(waitingListInformationId.ToString());
+            string text = "CALL DBA.ANYW_WaitingList_GetSupportingDocumentList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4WL", ex.Message + "ANYW_WaitingList_GetSupportingDocumentList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4WL: error ANYW_WaitingList_GetSupportingDocumentList";
             }
         }
 

@@ -845,6 +845,20 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return attachmentsObj;
         }
 
+        public SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId)
+        {
+            string docList = dg.getWLSupportingDocumentList(token, waitingListInformationId);
+            SupportingDocumentList[] docObj = js.Deserialize<SupportingDocumentList[]>(docList);
+            return docObj;
+        }
+         
+        public class SupportingDocumentList
+        {
+            public string supportingDocumentId { get; set; }
+            public string description { get; set; }
+            public string documentType { get; set; }
+            public string includeOnEmail { get; set; }
+        }
         public class LandingPageInfo
         {
             public string wlInfoId { get; set; }
