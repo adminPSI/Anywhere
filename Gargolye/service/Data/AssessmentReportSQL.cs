@@ -758,7 +758,8 @@ namespace Anywhere.service.Data
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Name, DBA.ANYW_ISP_Consumer_Contact_Important_People.Relationship, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Address, DBA.ANYW_ISP_Consumer_Contact_Important_People.Phone, ");
             sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Row_Order, DBA.ANYW_ISP_Consumer_Contact_Important_People.Email, ");
-            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.People_Type_Other  ");
+            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.People_Type_Other, DBA.ANYW_ISP_Consumer_Contact_Important_People.Phone2, ");
+            sb.Append("DBA.ANYW_ISP_Consumer_Contact_Important_People.Phone_ext, DBA.ANYW_ISP_Consumer_Contact_Important_People.Phone2_ext ");
             sb.Append("FROM     DBA.ANYW_ISP_Consumer_Contact_Important_People ");
             sb.Append("LEFT OUTER JOIN DBA.ANYW_ISP_Consumer_Contact ON DBA.ANYW_ISP_Consumer_Contact_Important_People.ISP_Consumer_Contact_Id = DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Contact_Id ");
             sb.AppendFormat("WHERE DBA.ANYW_ISP_Consumer_Contact.ISP_Consumer_Plan_ID = {0} ", AssesmentID);
