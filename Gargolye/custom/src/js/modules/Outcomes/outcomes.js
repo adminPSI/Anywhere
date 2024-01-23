@@ -1739,6 +1739,15 @@ var outcomes = (function () {
         var description = document.createElement("h3");
         description.classList.add("description");
         description.innerHTML = typeDescription;
+
+        var editIconBtn = button.build({
+            icon: 'edit',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterCloseBtn',
+            callback: () => { addServicesForm.init(selectedConsume, outcome.Objective_id) },  
+        });
+
         var statement = document.createElement("p");
         statement.classList.add("statement");
         statement.innerHTML = goalStatement;
@@ -1818,7 +1827,12 @@ var outcomes = (function () {
         wrap1.appendChild(activityTracker);
         wrap1.appendChild(newBtn);
 
-        overviewCard.appendChild(description);
+        var wrapEdit = document.createElement("div");
+        wrapEdit.classList.add("editBtnWrap");  
+        wrapEdit.appendChild(description);
+        wrapEdit.appendChild(editIconBtn);    
+
+        overviewCard.appendChild(wrapEdit);
         overviewCard.appendChild(wrap1);
         overviewCard.appendChild(statement);
         overviewCard.appendChild(successMethodWrap);
@@ -2100,8 +2114,8 @@ var outcomes = (function () {
                 showAlertIcon: showAlert
             };
         });
-
-        roster2.setAllowedConsumers(consumerIds);
+ 
+        roster2.setAllowedConsumers(consumerIds); 
         if (initLoad) {
             roster2.miniRosterinit(null, {
                 hideDate: true

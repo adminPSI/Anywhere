@@ -3747,5 +3747,40 @@ namespace Anywhere
         {
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
         }
+
+        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        {
+            return outcomesWorker.getOutcomeTypeDropDown(token);
+        }
+
+        public OutcomesWorker.PDParentOutcome[] getGoalEntriesById(string token, string goalId)
+        {
+            return outcomesWorker.getGoalEntriesById(token, goalId);
+        }
+
+        public OutcomesWorker.PDChildOutcome[] getObjectiveEntriesById(string token, string objectiveId)
+        {
+            return outcomesWorker.getObjectiveEntriesById(token, objectiveId);
+        }
+
+        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token)
+        {
+            return outcomesWorker.getOutcomeServiceDropDown(token);
+        }
+
+        public OutcomesWorker.ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type)
+        {
+            return outcomesWorker.getServiceFrequencyTypeDropDown(token, type);
+        }
+
+        public OutcomesWorker.PDParentOutcome[] insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId)
+        {
+            return outcomesWorker.insertOutcomeInfo(token, startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId);
+        }
+
+        public OutcomesWorker.PDChildOutcome[] insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId)
+        {
+            return outcomesWorker.insertOutcomeServiceInfo(token,startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId);
+        }
     }
 }
