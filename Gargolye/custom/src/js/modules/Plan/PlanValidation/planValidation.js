@@ -76,6 +76,18 @@ const planValidation = (function () {
       complete: false
     };
 
+    let IspValidationCheck = {
+      complete: true,
+      details: [],
+      missingExperiences: [],
+      missingReviews: [],
+      planProgressSummary: false,
+      outcome: [],
+      selectedProviders: [],
+      paidSupportsProviders: [],
+      invalidProviders: []
+    };
+
     let contactsValidation = {
       importantPeople: true,
       importantPlaces: true,
@@ -647,12 +659,16 @@ const planValidation = (function () {
         validationCheck.complete = false;
       }
   
-     // checks if all required data on the page has been filled out
-     checkAllOutcomesComplete(validationCheck);
+      // checks if all required data on the page has been filled out
+      checkAllOutcomesComplete(validationCheck);
   
+      IspValidationCheck = validationCheck;
       return validationCheck;
     }
 
+    function returnIspValidation() {
+      return IspValidationCheck;
+    }
     // sets the alerts status based on the completion of the ISP outcomes data
     function updatedIspOutcomesSetAlerts(validationCheck) {
       //checkExperienceProviders(validationCheck);
@@ -868,7 +884,8 @@ const planValidation = (function () {
       planId = newPlanId;
 
       await contactsValidationCheck(planId);
-      //ISPValidation(planId);
+      
+      await ISPValidation(planId);
   
       await getAssessmentValidation(planId);
     }
@@ -884,6 +901,7 @@ const planValidation = (function () {
       updateAssessmentValidationSection,
       updateAssessmentValidationProperty,
       ISPValidation,
+      returnIspValidation,
       checkAllOutcomesComplete,
       updatedIspOutcomesSetAlerts,
       reviewsValidationCheck,

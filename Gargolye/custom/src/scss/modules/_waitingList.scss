@@ -1,5 +1,20 @@
+.grid-container {
+  display: flex;
+  flex-flow: column;
+}
+
+.actioncenter {
+  flex-grow: 1;
+}
+
 [data-active-module='waitingList'] {
+  display: flex;
+
   .waitingListModule {
+    display: flex;
+    flex-flow: row;
+    flex-grow: 1;
+
     h2 {
       margin-bottom: 10px;
     }
@@ -9,7 +24,19 @@
     }
   }
 
-  .rosterPicker {
-    max-height: 400px;
+  .waitingListOverview {
+    flex-grow: 1;
+
+    .button {
+      margin: 10px 0 0 0;
+    }
+  }
+
+  .waitingListRosterPicker {
+    min-width: 330px;
+
+    .rosterPicker {
+      max-height: calc(100vh - 95px);
+    }
   }
 }

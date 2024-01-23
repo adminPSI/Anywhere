@@ -463,6 +463,214 @@ var outcomesAjax = (function () {
         }
     }
 
+    async function getOutcomeTypeDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getOutcomeTypeDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getOutcomeServiceDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getOutcomeServiceDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getGoalEntriesByIdAsync(goalId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getGoalEntriesById/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "goalId":"' +
+                    goalId +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getObjectiveEntriesByIdAsync(objectiveId) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getObjectiveEntriesById/',
+                data:
+                    '{"token":"' +
+                    $.session.Token +
+                    '", "objectiveId":"' +
+                    objectiveId +
+                    '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getServiceFrequencyTypeDropDownAsync(Type) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getServiceFrequencyTypeDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    type: Type,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function insertOutcomeInfoAsync(
+        startDate, endDate, outcomeType, outcomeStatement, userID, goalId,consumerId
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertOutcomeInfo/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    startDate: startDate,
+                    endDate: endDate,
+                    outcomeType: outcomeType,
+                    outcomeStatement: outcomeStatement,                  
+                    userID: userID,
+                    goalId: goalId,
+                    consumerId: consumerId,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function insertOutcomeServiceInfoAsync(
+        startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId
+    ) {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/insertOutcomeServiceInfo/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+                    startDate: startDate,
+                    endDate: endDate,
+                    outcomeType: outcomeType,
+                    servicesStatement: servicesStatement,
+                    ServiceType: ServiceType,                    
+                    method: method,
+                    success: success,
+                    frequencyModifier: frequencyModifier,
+                    frequency: frequency,
+                    frequencyPeriod: frequencyPeriod,
+                    userID: userID,
+                    objectiveId: objectiveId,
+                    consumerId: consumerId,
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
     return {
         deleteGoal,
         getGoals,
@@ -483,5 +691,12 @@ var outcomesAjax = (function () {
         getOutcomesPrimaryAndSecondaryLocations,
         getSuccessSymbols,
         getOutcomeServicsPageData,
+        getOutcomeTypeDropDownAsync,
+        getGoalEntriesByIdAsync,
+        getObjectiveEntriesByIdAsync,
+        getOutcomeServiceDropDownAsync,
+        getServiceFrequencyTypeDropDownAsync,
+        insertOutcomeInfoAsync,
+        insertOutcomeServiceInfoAsync,
     };
 })();

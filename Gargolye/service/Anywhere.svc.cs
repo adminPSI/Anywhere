@@ -2808,15 +2808,29 @@ namespace Anywhere
             return wlw.getWaitingListAssessment(waitingListAssessmentId);
         }
 
-        public void insertUpdateWaitingListValue(int id, string propertyName, string value, char insertOrDelete)
+        public string insertUpdateWaitingListValue(int id, string propertyName, string value, char insertOrUpdate)
         {
-            wlw.insertUpdateWaitingListValue(id, propertyName, value, insertOrDelete);
+            return wlw.insertUpdateWaitingListValue(id, propertyName, value, insertOrUpdate);
         }
 
+        public SupportingDocument[] addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment)
+        {
+            return wlw.addWLSupportingDocument(token, waitingListInformationId, description, includeOnEmail, attachmentType, attachment);
+        }
 
-        //OOD Module
+        public SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId)
+        { 
+            return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
+        }
 
-        public string generateForm4(System.IO.Stream testInput)
+        public MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId)
+        {
+            return wlw.viewSupportingDocInBrowser(token, supportingDocumentId);
+        }
+
+            //OOD Module
+
+            public string generateForm4(System.IO.Stream testInput)
         {
             //(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber
             string token;
@@ -3737,6 +3751,41 @@ namespace Anywhere
         public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
         {
             return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
+        }
+
+        public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)
+        {
+            return outcomesWorker.getOutcomeTypeDropDown(token);
+        }
+
+        public OutcomesWorker.PDParentOutcome[] getGoalEntriesById(string token, string goalId)
+        {
+            return outcomesWorker.getGoalEntriesById(token, goalId);
+        }
+
+        public OutcomesWorker.PDChildOutcome[] getObjectiveEntriesById(string token, string objectiveId)
+        {
+            return outcomesWorker.getObjectiveEntriesById(token, objectiveId);
+        }
+
+        public OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token)
+        {
+            return outcomesWorker.getOutcomeServiceDropDown(token);
+        }
+
+        public OutcomesWorker.ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type)
+        {
+            return outcomesWorker.getServiceFrequencyTypeDropDown(token, type);
+        }
+
+        public OutcomesWorker.PDParentOutcome[] insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId)
+        {
+            return outcomesWorker.insertOutcomeInfo(token, startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId);
+        }
+
+        public OutcomesWorker.PDChildOutcome[] insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId)
+        {
+            return outcomesWorker.insertOutcomeServiceInfo(token,startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId);
         }
     }
 }

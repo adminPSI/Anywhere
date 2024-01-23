@@ -79,7 +79,7 @@
               tableQuestionSets[questionSetKey][rowOrder] = {
                 atLeastOneColumnAnswered: false,
               }
-              if (leaveblank !== null && !leaveblank) {
+              if (leaveblank !== null && !leaveblank && !answered) {
                 numOfQuestionsUnawnsered++;
                 sectionUnawnseredQuestions[sectionKey]++;
                 }

@@ -936,11 +936,16 @@ const roster2 = (function () {
             consumerCard.classList.add('highlighted', 'consumer-selected');
         }
 
-        if ((isActive && isActive.length >= 1) || !isAllowed) {
-            consumerCard.classList.add('disabled');
-        } else {
+        if ($.loadedApp === 'outcomes') {
             consumerCard.classList.remove('disabled');
         }
+        else {
+            if ((isActive && isActive.length >= 1) || !isAllowed) {
+                consumerCard.classList.add('disabled');
+            } else {
+                consumerCard.classList.remove('disabled');
+            }
+        } 
 
         const portrait = document.createElement('div');
         const details = document.createElement('div');

@@ -4064,7 +4064,29 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/insertUpdateWaitingListValue/")]
-        void insertUpdateWaitingListValue(int id, string propertyName, string value, char insertOrDelete);
+        string insertUpdateWaitingListValue(int id, string propertyName, string value, char insertOrUpdate);
+
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/addWLSupportingDocument/")]
+        SupportingDocument[] addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment);
+
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getWLSupportingDocumentList/")]
+        SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/viewSupportingDocInBrowser/")]
+        System.IO.MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId);
         //OOD Module
 
         [WebInvoke(Method = "POST",
@@ -4998,8 +5020,65 @@ namespace Anywhere
               RequestFormat = WebMessageFormat.Json,
               UriTemplate = "/getOutcomeServicsPageData/")]
         OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getOutcomeTypeDropDown/")]
+        OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+                BodyStyle = WebMessageBodyStyle.Wrapped,
+                ResponseFormat = WebMessageFormat.Json,
+                RequestFormat = WebMessageFormat.Json,
+                UriTemplate = "/getGoalEntriesById/")]
+        OutcomesWorker.PDParentOutcome[] getGoalEntriesById(string token, string goalId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+              BodyStyle = WebMessageBodyStyle.Wrapped,
+              ResponseFormat = WebMessageFormat.Json,
+              RequestFormat = WebMessageFormat.Json,
+              UriTemplate = "/getObjectiveEntriesById/")]
+        OutcomesWorker.PDChildOutcome[] getObjectiveEntriesById(string token, string objectiveId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getOutcomeServiceDropDown/")]
+        OutcomesWorker.OutcomeService[] getOutcomeServiceDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/getServiceFrequencyTypeDropDown/")]
+        OutcomesWorker.ServiceFrequencyType[] getServiceFrequencyTypeDropDown(string token, string type);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/insertOutcomeInfo/")]
+        OutcomesWorker.PDParentOutcome[] insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+        BodyStyle = WebMessageBodyStyle.Wrapped,
+        ResponseFormat = WebMessageFormat.Json,
+        RequestFormat = WebMessageFormat.Json,
+        UriTemplate = "/insertOutcomeServiceInfo/")]
+        OutcomesWorker.PDChildOutcome[] insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId);
+
     }
-    
+
 
     // Use a data contract as illustrated in the sample below to add composite types to service operations.
     [DataContract]

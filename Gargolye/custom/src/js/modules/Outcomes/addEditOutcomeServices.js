@@ -51,7 +51,6 @@ const addEditOutcomeServices = (() => {
         });
 
         pageWrap.removeChild(spinner);
-
         buildOverviewTable();
     }
 
@@ -61,7 +60,7 @@ const addEditOutcomeServices = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'reportBtn',
-            callback: async () => { addOutcomes.init(selectedConsumer) },    
+            callback: async () => { addOutcomes.init(selectedConsumer,0) },       
         });
     }
 
@@ -72,7 +71,7 @@ const addEditOutcomeServices = (() => {
                 .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 10))
                 .slice(0, 10),
             effectiveDateEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
-
+            outcomeTypeName:'',
         };
     }
 
@@ -99,15 +98,15 @@ const addEditOutcomeServices = (() => {
             filterButtonSet();
             currentFilterDisplay.appendChild(btnWrap);
         }
-
+        
         if (filterValues.outcomeType === '%') {
             btnWrap.appendChild(outcomeTypeBtnWrap);
             btnWrap.removeChild(outcomeTypeBtnWrap);
         } else {
             btnWrap.appendChild(outcomeTypeBtnWrap);
             if (document.getElementById('outcomeTypeBtn') != null)
-                document.getElementById('outcomeTypeBtn').innerHTML = 'Outecome Type: ' + getoutcomeTypeFullName(filterValues.outcomeType);
-        }
+                document.getElementById('outcomeTypeBtn').innerHTML = 'Outecome Type: ' + filterValues.outcomeTypeName;
+        } 
 
 
         if (effectiveDateStart == '' && effectiveDateEnd == '') {
@@ -176,6 +175,9 @@ const addEditOutcomeServices = (() => {
     function closeFilter(closeFilter) {
         if (closeFilter == 'outcomeTypeBtn') {
             filterValues.outcomeType = '%';
+            filterValues.outcomeTypeName = '';
+            newFilterValues.outcomeType = '%'; 
+            newFilterValues.outcomeTypeName = ''; 
         }
         applyFilter();
     }
@@ -186,8 +188,9 @@ const addEditOutcomeServices = (() => {
         // Dropdowns
         outcomeTypeDropdown = dropdown.build({
             dropdownId: 'outcomeTypeDropdown',
-            label: 'Plan Type',
+            label: 'Outcome Type',
             style: 'secondary',
+            value: filterValues.outcomeType,  
         });
 
         // Date Inputs
@@ -228,7 +231,7 @@ const addEditOutcomeServices = (() => {
         btnFilterWrap.appendChild(applyFilterBtn);
         btnFilterWrap.appendChild(cancelFilterBtn);
 
-        if (IsShow == 'ALL' || IsShow == 'plantypeBtn')
+        if (IsShow == 'ALL' || IsShow == 'outcomeTypeBtn')
             filterPopup.appendChild(outcomeTypeDropdown);
 
         filterPopup.appendChild(dateWrap);
@@ -243,7 +246,8 @@ const addEditOutcomeServices = (() => {
 
         outcomeTypeDropdown.addEventListener('change', e => {
             var selectedOption = e.target.options[e.target.selectedIndex];
-            newFilterValues.planType = selectedOption.value;
+            newFilterValues.outcomeType = selectedOption.value;
+            newFilterValues.outcomeTypeName = selectedOption.text;
         });
 
         effectiveDateStartInput.addEventListener('change', e => {
@@ -270,6 +274,19 @@ const addEditOutcomeServices = (() => {
         });
     }
 
+    async function populateOutcomeTypeDropdown() {
+        const {
+            getOutcomeTypeDropDownResult: OutcomeType,
+        } = await outcomesAjax.getOutcomeTypeDropDownAsync();
+        let outcomeTypeData = OutcomeType.map((outcomeTypes) => ({
+            id: outcomeTypes.Goal_Type_ID,
+            value: outcomeTypes.Goal_Type_ID,
+            text: outcomeTypes.goal_type_description
+        }));
+        outcomeTypeData.unshift({ id: '%', value: '%', text: 'ALL' });  
+        dropdown.populate("outcomeTypeDropdown", outcomeTypeData, filterValues.outcomeType);
+    }
+
     function checkFilterPopForErrors() {
         const errors = [...filterPopup.querySelectorAll('.error')];
         const hasErrors = errors.legnth > 0 ? true : false;
@@ -287,7 +304,7 @@ const addEditOutcomeServices = (() => {
         const spinner = PROGRESS.SPINNER.get('Gathering Data...');
         pageWrap.removeChild(overviewTable);
         pageWrap.appendChild(spinner);
-
+  
         outcomeServicesData = await outcomesAjax.getOutcomeServicsPageData({
             token: $.session.Token,
             selectedConsumerId: selectedConsumer.id,
@@ -324,7 +341,7 @@ const addEditOutcomeServices = (() => {
 
         outcomeServicesData.pageDataParent.forEach(parent => {
             const goalID = parent.goal_id;
-
+            var eventName; 
             var startDate = parent.effectiveDateStart == null || '' ? '' : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(parent.effectiveDateStart.split('T')[0]),);
             var endDate = parent.effectiveDateEnd == null || '' ? '' : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(parent.effectiveDateEnd.split('T')[0]),)
             const rowWrap = document.createElement('div');
@@ -332,16 +349,25 @@ const addEditOutcomeServices = (() => {
 
             // TOP LEVEL ROW
             //---------------------------------
-            const mainDataRow = document.createElement('div');
+            const mainDataRow = document.createElement('div');           
             mainDataRow.classList.add('outcomeTable__mainDataRow', 'outcomeTable__dataRow');
-            mainDataRow.innerHTML = `
-        <div id="authToggle">${icons.keyArrowRight}</div>
+            mainDataRow.value = parent.goal_id;
+            const endIcon = document.createElement('div');             
+            endIcon.classList.add('outcomeTable__endIcon');  
+            endIcon.innerHTML = icons['add'];    
+
+            const toggleIcon = document.createElement('div');  
+            toggleIcon.id = 'authToggle';   
+            toggleIcon.classList.add('outcomeTable__endIcon');
+            toggleIcon.innerHTML = icons['keyArrowRight'];    
+            mainDataRow.innerHTML = `       
         <div>${parent.outcomeType}</div>
         <div>${parent.outcomeStatement}</div>
         <div>${startDate}</div>
-        <div>${endDate}</div> 
-        <div id="addOutComes">${icons.add}</div>    
+        <div>${endDate}</div>               
       `;
+            mainDataRow.prepend(toggleIcon);  
+            mainDataRow.appendChild(endIcon);
             rowWrap.appendChild(mainDataRow);
 
             // SUB ROWS
@@ -365,7 +391,7 @@ const addEditOutcomeServices = (() => {
                 outcomeServicesData.pageDataChild[goalID].sort((a, b) => {
                     return parseInt(a.itemnum) - parseInt(b.itemnum);
                 });
-
+                 
                 outcomeServicesData.pageDataChild[goalID].forEach(child => {
                     const subDataRow = document.createElement('div');
                     var startDate = child.serviceStartDate == null || '' ? '' : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.serviceStartDate.split('T')[0]),);
@@ -380,14 +406,29 @@ const addEditOutcomeServices = (() => {
             <div>${endDate}</div>            
           `;
                     subRowWrap.appendChild(subDataRow);
+
+                    subDataRow.addEventListener('click', e => {
+                        addServicesForm.init(selectedConsumer, child.objective_Id);
+                    });    
                 });
             }
 
             // EVENT
             //---------------------------------
             mainDataRow.addEventListener('click', e => {
-                const toggle = e.target.querySelector('#authToggle');
+                var goalID = e.currentTarget.value; 
+                if (eventName != 'toggle' && eventName != 'add') {
+                    addOutcomes.init(selectedConsumer, goalID);
+                }
+                eventName == ''; 
+            }); 
 
+              
+             
+
+            toggleIcon.addEventListener('click', e => {
+                const toggle = document.querySelector('#authToggle')
+                eventName = 'toggle';
                 if (subRowWrap.classList.contains('active')) {
                     // close it
                     subRowWrap.classList.remove('active');
@@ -397,7 +438,13 @@ const addEditOutcomeServices = (() => {
                     subRowWrap.classList.add('active');
                     toggle.innerHTML = icons.keyArrowDown;
                 }
+            });  
+
+            endIcon.addEventListener('click', e => {
+                eventName = 'add';   
+                addServicesForm.init(selectedConsumer,0);
             });
+
 
             // ASSEMBLY
             //---------------------------------
@@ -407,6 +454,8 @@ const addEditOutcomeServices = (() => {
 
         pageWrap.appendChild(overviewTable);
     }
+
+    
 
     function groupChildData() {
         if (!outcomeServicesData.pageDataChild) {

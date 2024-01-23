@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web.Script.Serialization;
 using Anywhere.Log;
 using System.Configuration;
+using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
 
 namespace Anywhere.service.Data.WaitingListAssessment
 {
@@ -54,15 +55,16 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string insertUpdateWaitingListValue(int id, string tableName, string columnName, string propertyValue, char insertOrDelete)
+        public string insertUpdateWaitingListValue(int id, string tableName, string columnName, string idNameForWhere, string propertyValue, char insertOrUpdate)
         {
             if (stringInjectionValidator(propertyValue) == false) return null;
             List<string> list = new List<string>();
             list.Add(id.ToString());
             list.Add(tableName);
             list.Add(columnName);
+            list.Add(idNameForWhere);
             list.Add(propertyValue);
-            list.Add(insertOrDelete.ToString());
+            list.Add(insertOrUpdate.ToString());
             string text = "CALL DBA.ANYW_WaitingList_InsertUpdateWaitingListValue(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
@@ -72,6 +74,67 @@ namespace Anywhere.service.Data.WaitingListAssessment
             {
                 logger.error("2WL", ex.Message + "ANYW_WaitingList_InsertUpdateWaitingListValue(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return "2WL: error ANYW_WaitingList_InsertUpdateWaitingListValue";
+            }
+        }
+
+        public string addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment)
+        {
+            if (tokenValidator(token) == false) return null;
+            if (stringInjectionValidator(description) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(waitingListInformationId.ToString());
+            list.Add(description);
+            list.Add(includeOnEmail.ToString());
+            list.Add(attachmentType);
+            list.Add(attachment);
+            string text = "CALL DBA.ANYW_WaitingList_AddSupportingDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("3WL", ex.Message + "ANYW_WaitingList_AddSupportingDocument(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "3WL: error ANYW_WaitingList_AddSupportingDocument";
+            }
+        }
+        public string getWLSupportingDocumentList(string token, long waitingListInformationId)
+        {
+            if (tokenValidator(token) == false) return null;
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(waitingListInformationId.ToString());
+            string text = "CALL DBA.ANYW_WaitingList_GetSupportingDocumentList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("4WL", ex.Message + "ANYW_WaitingList_GetSupportingDocumentList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "4WL: error ANYW_WaitingList_GetSupportingDocumentList";
+            }
+        }
+
+        public MemoryStream viewSupportingDocInBrowser(string token, long attachmentId)
+        {
+            logger.debug("viewSupportingDocInBrowser " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(attachmentId.ToString());
+            string text = "CALL DBA.ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                //MemoryStream temp = new MemoryStream();
+                //temp = executeSQLReturnMemoryStream("SELECT Attachment from Attachments where Attachment_ID = " + attachmentId);
+                //temp = executeSQLReturnMemoryStream(text);
+                return executeSQLReturnMemoryStream(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
             }
         }
 
@@ -202,6 +265,92 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
 
             return result + String.Join(",", arr) + "]";
+        }
+        public MemoryStream executeSQLReturnMemoryStream(string storedProdCall)
+        {
+            logger.debug("Attachment start");
+            MemoryStream memorystream = new MemoryStream();
+            OdbcConnection conn = null;
+            OdbcCommand cmd;
+            OdbcDataReader rdr = null;
+
+            try
+            {
+                if (connectString.ToUpper().IndexOf("UID") == -1)
+                {
+                    connectString = connectString + "UID=anywhereuser;PWD=anywhere4u;";
+                }
+                conn = new OdbcConnection(connectString);
+
+                cmd = new OdbcCommand(storedProdCall);
+                cmd.CommandType = CommandType.Text;
+                cmd.Connection = conn;
+
+                conn.Open();
+                logger.debug("Attachment connection open");
+                var result = cmd.ExecuteReader();
+                logger.debug("Attachment ExecuteReader done; entering result");
+                if (result != null)
+                {
+                    logger.debug("Attachment result not null");
+                    result.Read();
+                    logger.debug("Attachment result.read done");
+                    byte[] fileData = (byte[])result[0];
+                    logger.debug("Attachment byte array made");
+                    memorystream.Write(fileData, 0, fileData.Length);
+                    logger.debug("Attachment data sent to memorystream");
+                    //int bufferSize = 1000;
+                    //byte[] outByte = new Byte[bufferSize];
+                    //long retval;
+                    //long startIndex = 0;
+
+                    //// Reset the starting byte for the new BLOB.  
+                    //startIndex = 0;
+
+                    //// Read bytes into outByte[] and retain the number of bytes returned.  
+                    //retval = result.GetBytes(1, startIndex, outByte, 0, bufferSize);
+                    //while (retval == bufferSize)
+                    //{
+                    //    memorystream.Write(outByte);
+
+                    //}
+
+                    /*
+                    logger.debug("Attachment result.Read done");
+                    var fileLength = result.GetBytes(0, 0, null, 0, int.MaxValue);
+                    logger.debug("Attachment quick test");
+                    var blob = new Byte[fileLength];
+                    logger.debug("Attachment new Blob");
+                    result.GetBytes(0, 0, blob, 0, blob.Length);
+                    logger.debug("Attachment get Bytes");
+                    memorystream.Write(blob, 0, blob.Length);
+                    logger.debug("Attachment memory stream write");
+                    */
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //change now, calling method must catch this error, it helps make better logging 
+                //more of a pain debugging
+                throw ex;
+            }
+
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
+                if (rdr != null)
+                {
+                    rdr.Close();
+                    rdr.Dispose();
+                }
+            }
+            logger.debug("Attachment done");
+            return memorystream;
         }
     }
 }
