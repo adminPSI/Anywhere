@@ -921,8 +921,8 @@ const servicesSupports = (() => {
   //-- Markup ---------
   function toggleMultiEditUpdateBtn(multiSaveUpdateData, updateBtn) {
     if (
-      multiSaveUpdateData.beginDate !== '' &&
-      multiSaveUpdateData.endDate !== '' &&
+      multiSaveUpdateData.beginDate !== '' ||
+      multiSaveUpdateData.endDate !== '' ||
       multiSaveUpdateData.providerId !== ''
     ) {
       updateBtn.classList.remove('disabled');
