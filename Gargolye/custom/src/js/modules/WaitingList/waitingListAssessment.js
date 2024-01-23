@@ -236,6 +236,7 @@ const WaitingListAssessment = (() => {
         id: 'otherDescription',
         fullscreen: true,
         type: 'textarea',
+        disabled: true,
       },
     ],
     contributingCircumstances: [
@@ -258,6 +259,7 @@ const WaitingListAssessment = (() => {
         id: 'unavailableDocumentation',
         fullscreen: true,
         type: 'textarea',
+        disabled: true,
       },
       {
         type: 'radiogroup',
@@ -267,12 +269,14 @@ const WaitingListAssessment = (() => {
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
           { type: 'radio', label: 'No', value: 'no', id: 'no' },
         ],
+        disabled: true,
       },
       {
         label: 'Describe the action required:',
         id: 'actionRequiredDescription',
         fullscreen: true,
         type: 'textarea',
+        disabled: true,
       },
       {
         type: 'radiogroup',
@@ -282,24 +286,28 @@ const WaitingListAssessment = (() => {
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
           { type: 'radio', label: 'No', value: 'no', id: 'no' },
         ],
+        disabled: true,
       },
       {
         label: `List documentation used to verify presence of caregiver's condition,if not already described above: `,
         id: 'declinedSkillsDocumentation',
         fullscreen: true,
         type: 'textarea',
+        disabled: true,
       },
       {
         label: 'Describe decline:',
         id: 'declinedSkillsDescription',
         fullscreen: true,
         type: 'textarea',
+        disabled: true,
       },
       {
         label: 'Additional comments:',
         id: 'additionalCommentsForUnavailable',
         fullscreen: true,
         type: 'textarea',
+        disabled: true,
       },
     ],
     needs: [
@@ -502,6 +510,7 @@ const WaitingListAssessment = (() => {
         id: 'rMdescription',
         fullscreen: true,
         type: 'textarea',
+        disabled: true,
       },
       {
         type: 'radiogroup',
@@ -511,6 +520,7 @@ const WaitingListAssessment = (() => {
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
           { type: 'radio', label: 'No', value: 'no', id: 'no' },
         ],
+        disabled: true,
       },
     ],
     icfDischarge: [
@@ -785,24 +795,93 @@ const WaitingListAssessment = (() => {
     ],
   };
 
+  // EVENTS
+  //--------------------------------------------------
+  const onChangeCallbacks = {
+    //* currentAvailableServices
+    isOtherService: ({ name, value, formName }) => {
+      // (ENABLE) [otherDescription] the text field under "Other" only (IF) [isOtherService] the answer is "Yes" to Other
+    },
+    //* primaryCaregiver
+    isPrimaryCaregiverUnavailable: ({ name, value, formName }) => {
+      // (ENABLE) [unavailableDocumentation] "List documentation used to verify presence of declining..." textbox   (IF) [isPrimaryCaregiverUnavailable] question above it is "Yes"
+      // (ENABLE) [isActionRequiredIn30Days] "Is action required..." radio buttons                                  (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." question is "Yes"
+      // (ENABLE) [isIndividualSkillsDeclined] "Is there evidence of declining..."                                  (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." answer is "No".
+    },
+    isActionRequiredIn30Days: ({ name, value, formName }) => {
+      // (ENABLE) [actionRequiredDescription] "Describe action required." textbox                                   (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
+    },
+    isIndividualSkillsDeclined: ({ name, value, formName }) => {
+      // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox             (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
+      // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox                                           (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
+    },
+    //* riskMitigation
+    rMIsActionRequiredIn3oDays: ({ name, value, formName }) => {
+      // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES" (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".  Otherwise, set to "NO"
+    },
+    openInvestigation: ({ name, value, formName }) => {
+      // (ENABLE) [rMdescription] the "Describe incident under..." textbox               (IF) [openInvestigation] any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
+      // (ENABLE) [rMIsActionRequiredIn3oDays] the "Is action required..." radio buttons (IF) [openInvestigation] any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
+    },
+    //TODO-ASH: icfDischarge
+    TODO: ({ name, value, formName }) => {
+      // (SET) [icfDetermination] "Is the individual a resident..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+    },
+    //TODO-ASH: intermittentSupports
+    TODO2: ({ name, value, formName }) => {
+      // (SET) [intSupDetermination] "Does the individual have an..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+    },
+    //TODO-ASH: childProtectionAgency
+    TODO3: ({ name, value, formName }) => {
+      // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+    },
+    TODO4: ({ name, value, formName }) => {
+      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only (IF) [] "Is individual being released..." is answered "Yes".
+    },
+    //TODO-ASH: adultDayEmployment
+    TODO5: ({ name, value, formName }) => {
+      // (SET) [rwfWaiverFundingRequired] "Does the individual require..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+    },
+    //TODO-ASH: dischargePlan
+    TODO6: ({ name, value, formName }) => {
+      // (SET) [dischargeDetermination] "Does the individual have a viable..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+    },
+    //TODO-ASH: immediateNeeds
+    TODO6: ({ name, value, formName }) => {
+      // (SET) [immNeedsRequired] "Is there an immediate need..." to YES only when the page is enabled.  Otherwise, set it to NO
+    },
+    //* waiverEnrollment
+    waivEnrollWaiverEnrollmentIsRequired: ({ name, value, formName }) => {
+      // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only (IF) [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
+    },
+  };
+
   function onFormChange(form) {
     const formName = form;
 
     return function inputChange(event) {
-      console.log(formName);
       const value = event.target.value;
       const name = event.target.name;
-      const input = wlForms[formName].inputs[name];
-      debugger;
+
+      if (onChangeCallbacks[name]) {
+        console.log(value, name, formName);
+
+        onChangeCallbacks[name]({
+          value,
+          name,
+          formName,
+        });
+      }
     };
   }
 
+  // MAIN
+  //--------------------------------------------------
   function populateForms() {
     for (form in wlForms) {
       wlForms[form].populate({});
     }
   }
-
   function loadForms() {
     // build
     for (formElement in formElements) {
@@ -823,9 +902,6 @@ const WaitingListAssessment = (() => {
       wlForms[form].renderTo(formWrap);
     }
   }
-
-  // MAIN
-  //--------------------------------------------------
   function loadPageSkeleton() {
     // prep actioncenter
     _DOM.ACTIONCENTER.innerHTML = '';
