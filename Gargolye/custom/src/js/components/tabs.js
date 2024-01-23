@@ -76,7 +76,7 @@ const TABS = (function () {
     return tabsBody;
   };
   const buildNavItem = (navText, isActive, index) => {
-    //let ISPValidationCheck = plan.getISPValidation();
+    let ISPValidationCheck = planValidation.returnIspValidation();
     let assessmentValidationCheck = planValidation.returnAssessmentValidationData();
 
     const navItem = document.createElement('div');
@@ -105,10 +105,10 @@ const TABS = (function () {
      navAlertDiv.style.display = 'flex';
     }
 
-    // // DIsplay ISP Nav Validation if their are validation errors
-    // if (navText === 'ISP' && ISPValidationCheck.complete === false) {
-    //  navAlertDiv.style.display = 'flex';
-    // }
+    // DIsplay ISP Nav Validation if their are validation errors
+    if (navText === 'ISP' && ISPValidationCheck.complete === false) {
+     navAlertDiv.style.display = 'flex';
+    }
 
     return navItem;
   };

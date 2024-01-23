@@ -6495,6 +6495,155 @@ namespace Anywhere.Data
             }
         }
 
+        public string getOutcomeTypeDropDown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getOutcomeTypeDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeTypeDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_getOutcomeTypeDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_getOutcomeTypeDropDown";
+            }
+        }
+
+        public string getGoalEntriesById(string token, string goalId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getGoalEntriesById");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(goalId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getGoalEntriesById(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_getGoalEntriesById");
+                return "734: error ANYW_GoalsAndServices_getGoalEntriesById";
+            }
+        }
+
+        public string getObjectiveEntriesById(string token, string objectiveId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getObjectiveEntriesById");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(objectiveId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getObjectiveEntriesById(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("734", ex.Message + "ANYW_GoalsAndServices_getObjectiveEntriesById");
+                return "734: error ANYW_GoalsAndServices_getObjectiveEntriesById";
+            }
+        }
+
+        public string getOutcomeServiceDropDown(string token)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getOutcomeServiceDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getOutcomeServiceDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_getOutcomeServiceDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_getOutcomeServiceDropDown";
+            }
+        }
+
+        public string getServiceFrequencyTypeDropDown(string token, string type)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("getServiceFrequencyTypeDropDown" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(type);
+            string text = "CALL DBA.ANYW_GoalsAndServices_getServiceFrequencyTypeDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_getServiceFrequencyTypeDropDown(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_getServiceFrequencyTypeDropDown";
+            }
+        }
+
+        public string insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertOutcomeInfo" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(startDate);
+            list.Add(endDate);
+            list.Add(outcomeType);
+            list.Add(outcomeStatement);
+            list.Add(userID);
+            list.Add(goalId);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_insertOutcomeInfo(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_insertOutcomeInfo(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_insertOutcomeInfo";
+            }
+        }
+
+        public string insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("insertOutcomeServiceInfo" + token);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(startDate);
+            list.Add(endDate);
+            list.Add(outcomeType);
+            list.Add(servicesStatement);
+            list.Add(ServiceType);
+            list.Add(method);
+            list.Add(success);
+            list.Add(frequencyModifier);
+            list.Add(frequency);
+            list.Add(frequencyPeriod);
+            list.Add(userID);
+            list.Add(objectiveId);
+            list.Add(consumerId);
+            string text = "CALL DBA.ANYW_GoalsAndServices_insertOutcomeServiceInfo(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("636", ex.Message + "ANYW_GoalsAndServices_insertOutcomeServiceInfo(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "636: error ANYW_GoalsAndServices_insertOutcomeServiceInfo";
+            }
+        }
+
     }
 
 }

@@ -26,6 +26,10 @@
 
   .waitingListOverview {
     flex-grow: 1;
+
+    .button {
+      margin: 10px 0 0 0;
+    }
   }
 
   .waitingListRosterPicker {

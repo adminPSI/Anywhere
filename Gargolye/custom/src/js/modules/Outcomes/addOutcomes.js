@@ -7,10 +7,12 @@ const addOutcomes = (() => {
     let outcomeType;
     let outcomeTypeName;
     let outcomeStatement;
-    let currDate;
+    let goalId;
+    let BtnName;
 
-    async function init(selectedConsume) {
+    async function init(selectedConsume, goalID) {
         selectedConsumers = selectedConsume;
+        goalId = goalID;
         buildNewOutcomes();
     }
 
@@ -19,21 +21,33 @@ const addOutcomes = (() => {
         DOM.clearActionCenter();
         DOM.scrollToTopOfPage();
         landingPage = document.createElement('div');
-        selectedConsumerId = selectedConsumers.id; 
-        currDate = "2010-03-30";
+        selectedConsumerId = selectedConsumers.id;
         const importantOutcomeForm = await buildOutComeForm();
         landingPage.appendChild(importantOutcomeForm);
-        DOM.ACTIONCENTER.appendChild(landingPage);  
+        DOM.ACTIONCENTER.appendChild(landingPage);
     }
 
     async function buildOutComeForm() {
         const employeeInfoDiv = document.createElement('div');
         employeeInfoDiv.classList.add('additionalQuestionWrap');
 
-        startDate = UTIL.getTodaysDate();
-        endDate = '';
-        outcomeType = '';
-        outcomeStatement = '';
+        if (goalId > 0) {
+            const result = await outcomesAjax.getGoalEntriesByIdAsync(goalId);
+            const { getGoalEntriesByIdResult } = result;
+
+            startDate = getGoalEntriesByIdResult[0].effectiveDateStart == '' ? '' : moment(getGoalEntriesByIdResult[0].effectiveDateStart).format('YYYY-MM-DD');
+            endDate = getGoalEntriesByIdResult[0].effectiveDateEnd == '' ? '' : moment(getGoalEntriesByIdResult[0].effectiveDateEnd).format('YYYY-MM-DD');
+            outcomeType = getGoalEntriesByIdResult[0].outcomeType;
+            outcomeStatement = getGoalEntriesByIdResult[0].outcomeStatement;
+            BtnName = 'UPDATE';
+        }
+        else {
+            startDate = UTIL.getTodaysDate();
+            endDate = '';
+            outcomeType = '';
+            outcomeStatement = '';
+            BtnName = 'SAVE';
+        }
 
         outcomeDropdown = dropdown.build({
             id: 'outcomeDropdown',
@@ -43,10 +57,10 @@ const addOutcomes = (() => {
         });
         outcomeStatementInput = input.build({
             id: 'outcomeStatementInput',
-            type: 'text',
+            type: 'textarea',
             label: 'Outcome Statement',
             style: 'secondary',
-            classNames: 'autosize', 
+            classNames: 'autosize',
             value: outcomeStatement,
         });
         dateStart = input.build({
@@ -66,14 +80,12 @@ const addOutcomes = (() => {
 
         // button
         SAVE_BTN = button.build({
-            text: 'Save',
+            text: BtnName,
             style: 'secondary',
             type: 'contained',
-            icon: 'save',
             callback: async () => {
                 if (!SAVE_BTN.classList.contains('disabled')) {
-                    SAVE_BTN.classList.add('disabled');
-                    await saveUpdateAccount();
+                    await saveUpdateOutcomes();
                 }
             },
         });
@@ -82,7 +94,7 @@ const addOutcomes = (() => {
             style: 'secondary',
             type: 'outlined',
             callback: async () => { addEditOutcomeServices.init(selectedConsumers) },
-        }); 
+        });
 
         const column1 = document.createElement('div')
         column1.classList.add('col-1')
@@ -98,8 +110,9 @@ const addOutcomes = (() => {
         addNewCardBody.appendChild(outcomeStatementInput);
 
         var dateWrap = document.createElement('div');
-        dateWrap.classList.add('addOutcomeBtnWrap');
+        dateWrap.classList.add('addOutcomedateWrap');
         dateWrap.appendChild(dateStart);
+        dateEnd.style.marginLeft = '2%';
         dateWrap.appendChild(dateEnd);
         addNewCardBody.appendChild(dateWrap);
 
@@ -117,32 +130,24 @@ const addOutcomes = (() => {
         addNewCardBody.appendChild(btnWrap);
 
         employeeInfoDiv.appendChild(column1);
-        populateDropdown();
+        populateOutcomeTypesDropdown();
         eventListeners();
-
-        checkRequiredFieldsOfAddOutcome(outcomeType, outcomeStatement, startDate, endDate);
+        requiredFieldsOfAddOutcome(startDate, endDate, outcomeType, outcomeStatement);
         return employeeInfoDiv;
     }
 
-    function populateDropdown() {
-        outcomesAjax.getOutcomeTypeForFilter(
-            {
-                consumerId: selectedConsumerId,
-                selectedDate: currDate, 
-                token: $.session.Token
-            },
-            populateOutcomeTypesDropdown
-        );
-    }
 
-    function populateOutcomeTypesDropdown(results) {
-        var data = results.map(res => {
-            return {
-                value: res.Goal_Type_ID,
-                text: res.goal_type_description
-            };
-        });
-        dropdown.populate(outcomeDropdown, data);
+    async function populateOutcomeTypesDropdown() {
+        const {
+            getOutcomeTypeDropDownResult: OutcomeType,
+        } = await outcomesAjax.getOutcomeTypeDropDownAsync();
+        let outcomeTypeData = OutcomeType.map((outcomeTypes) => ({
+            id: outcomeTypes.Goal_Type_ID,
+            value: outcomeTypes.Goal_Type_ID,
+            text: outcomeTypes.goal_type_description
+        }));
+        outcomeTypeData.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("outcomeDropdown", outcomeTypeData, outcomeType);
     }
 
     function eventListeners() {
@@ -150,34 +155,48 @@ const addOutcomes = (() => {
             var selectedOption = event.target.options[event.target.selectedIndex];
             outcomeType = selectedOption.value;
             outcomeTypeName = selectedOption.innerHTML;
-            getRequiredFieldsOfAddOutcome();
+            checkRequiredFieldsOfAddOutcome();
         });
 
         outcomeStatementInput.addEventListener('input', event => {
             outcomeStatement = event.target.value.trim();
-            getRequiredFieldsOfAddOutcome();
+            checkRequiredFieldsOfAddOutcome();
         });
         dateStart.addEventListener('input', event => {
             startDate = event.target.value;
-            getRequiredFieldsOfAddOutcome();
+            checkRequiredFieldsOfAddOutcome();
         });
         dateEnd.addEventListener('input', event => {
             endDate = event.target.value;
-            getRequiredFieldsOfAddOutcome();
+            checkRequiredFieldsOfAddOutcome();
         });
     }
 
 
-    function getRequiredFieldsOfAddOutcome() {
+    function checkRequiredFieldsOfAddOutcome() {
         var startDateVal = dateStart.querySelector('#dateStart');
         var endDateVal = dateEnd.querySelector('#dateEnd');
         var outcomeStatementVal = outcomeStatementInput.querySelector('#outcomeStatementInput');
         var outComeVal = outcomeDropdown.querySelector('#outcomeDropdown');
-        checkRequiredFieldsOfAddOutcome(outComeVal.value, outcomeStatementVal.value, startDateVal.value, endDateVal.value)
+
+        requiredFieldsOfAddOutcome(startDateVal.value, endDateVal.value, outComeVal.value, outcomeStatementVal.value)
     }
 
-    function checkRequiredFieldsOfAddOutcome(outcomeTypeVal, outcomeStatementVal, startDateVal, endDateVal) {
-        if (outcomeTypeVal.trim() === '') {
+    function requiredFieldsOfAddOutcome(startDateVal, endDateVal, outComeVal, outcomeStatementVal) {
+        if (startDateVal === '') {
+            dateStart.classList.add('error');
+        } else {
+            dateStart.classList.remove('error');
+        }
+
+        if (endDateVal != null && endDateVal != '' && startDateVal > endDateVal) {
+            dateEnd.classList.add('error');
+        }
+        else {
+            dateEnd.classList.remove('error');
+        }
+
+        if (outComeVal === '') {
             outcomeDropdown.classList.add('error');
         } else {
             outcomeDropdown.classList.remove('error');
@@ -189,18 +208,6 @@ const addOutcomes = (() => {
             outcomeStatementInput.classList.remove('error');
         }
 
-        if (startDateVal === '') {
-            dateStart.classList.add('error'); 
-        } else {
-            dateStart.classList.remove('error');
-        }
-
-        if (endDateVal != null && endDateVal != '' && startDateVal > endDateVal) {
-            dateEnd.classList.add('error');
-        }
-        else {
-            dateEnd.classList.remove('error');
-        }
         setBtnStatusOfAddOutcome();
     }
 
@@ -214,8 +221,12 @@ const addOutcomes = (() => {
         }
     }
 
-    async function saveUpdateAccount() {
-
+    async function saveUpdateOutcomes() {
+        const result = await outcomesAjax.insertOutcomeInfoAsync(startDate, endDate, outcomeType, outcomeStatement, $.session.UserId, goalId, selectedConsumerId);
+        const { insertOutcomeInfoResult } = result;
+        if (insertOutcomeInfoResult[0].goal_id != '0') {
+            addEditOutcomeServices.init(selectedConsumers)
+        }
     }
 
 
