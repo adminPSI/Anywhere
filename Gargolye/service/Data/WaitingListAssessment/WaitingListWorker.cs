@@ -1,10 +1,15 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using System.Web;
 using System.Web.Script.Serialization;
 using static Anywhere.service.Data.Plan.AnywherePlanWorker;
 using static Anywhere.service.Data.PlanOutcomes.PlanOutcomesWorker;
+using static Anywhere.service.Data.SimpleMar.SignInUser;
 
 namespace Anywhere.service.Data.WaitingListAssessment
 {
@@ -850,6 +855,25 @@ namespace Anywhere.service.Data.WaitingListAssessment
             string docList = dg.getWLSupportingDocumentList(token, waitingListInformationId);
             SupportingDocumentList[] docObj = js.Deserialize<SupportingDocumentList[]>(docList);
             return docObj;
+        }
+
+        public MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId)
+        {
+            MemoryStream ms = null;
+            try
+            {
+                ms = dg.viewSupportingDocInBrowser(token, supportingDocumentId);
+            }
+            catch (Exception ex)
+            {
+                string exception = ex.Message;
+            }
+            if (ms != null)
+            {
+                ms.Close();
+            }
+
+            return ms;
         }
          
         public class SupportingDocumentList

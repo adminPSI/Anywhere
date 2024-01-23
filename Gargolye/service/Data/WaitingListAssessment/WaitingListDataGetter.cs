@@ -117,6 +117,27 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
+        public MemoryStream viewSupportingDocInBrowser(string token, long attachmentId)
+        {
+            logger.debug("viewSupportingDocInBrowser " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(attachmentId.ToString());
+            string text = "CALL DBA.ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                //MemoryStream temp = new MemoryStream();
+                //temp = executeSQLReturnMemoryStream("SELECT Attachment from Attachments where Attachment_ID = " + attachmentId);
+                //temp = executeSQLReturnMemoryStream(text);
+                return executeSQLReturnMemoryStream(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return null;
+            }
+        }
+
         public string removeUnsavableNoteText(string note)
         {
             if (note == "" || note is null)
@@ -244,6 +265,92 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
 
             return result + String.Join(",", arr) + "]";
+        }
+        public MemoryStream executeSQLReturnMemoryStream(string storedProdCall)
+        {
+            logger.debug("Attachment start");
+            MemoryStream memorystream = new MemoryStream();
+            OdbcConnection conn = null;
+            OdbcCommand cmd;
+            OdbcDataReader rdr = null;
+
+            try
+            {
+                if (connectString.ToUpper().IndexOf("UID") == -1)
+                {
+                    connectString = connectString + "UID=anywhereuser;PWD=anywhere4u;";
+                }
+                conn = new OdbcConnection(connectString);
+
+                cmd = new OdbcCommand(storedProdCall);
+                cmd.CommandType = CommandType.Text;
+                cmd.Connection = conn;
+
+                conn.Open();
+                logger.debug("Attachment connection open");
+                var result = cmd.ExecuteReader();
+                logger.debug("Attachment ExecuteReader done; entering result");
+                if (result != null)
+                {
+                    logger.debug("Attachment result not null");
+                    result.Read();
+                    logger.debug("Attachment result.read done");
+                    byte[] fileData = (byte[])result[0];
+                    logger.debug("Attachment byte array made");
+                    memorystream.Write(fileData, 0, fileData.Length);
+                    logger.debug("Attachment data sent to memorystream");
+                    //int bufferSize = 1000;
+                    //byte[] outByte = new Byte[bufferSize];
+                    //long retval;
+                    //long startIndex = 0;
+
+                    //// Reset the starting byte for the new BLOB.  
+                    //startIndex = 0;
+
+                    //// Read bytes into outByte[] and retain the number of bytes returned.  
+                    //retval = result.GetBytes(1, startIndex, outByte, 0, bufferSize);
+                    //while (retval == bufferSize)
+                    //{
+                    //    memorystream.Write(outByte);
+
+                    //}
+
+                    /*
+                    logger.debug("Attachment result.Read done");
+                    var fileLength = result.GetBytes(0, 0, null, 0, int.MaxValue);
+                    logger.debug("Attachment quick test");
+                    var blob = new Byte[fileLength];
+                    logger.debug("Attachment new Blob");
+                    result.GetBytes(0, 0, blob, 0, blob.Length);
+                    logger.debug("Attachment get Bytes");
+                    memorystream.Write(blob, 0, blob.Length);
+                    logger.debug("Attachment memory stream write");
+                    */
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //change now, calling method must catch this error, it helps make better logging 
+                //more of a pain debugging
+                throw ex;
+            }
+
+            finally
+            {
+                if (conn != null)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
+                if (rdr != null)
+                {
+                    rdr.Close();
+                    rdr.Dispose();
+                }
+            }
+            logger.debug("Attachment done");
+            return memorystream;
         }
     }
 }

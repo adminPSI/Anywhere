@@ -2823,6 +2823,11 @@ namespace Anywhere
             return wlw.getWLSupportingDocumentList(token, waitingListInformationId);
         }
 
+        public MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId)
+        {
+            return wlw.viewSupportingDocInBrowser(token, supportingDocumentId);
+        }
+
             //OOD Module
 
             public string generateForm4(System.IO.Stream testInput)

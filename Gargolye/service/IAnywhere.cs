@@ -4079,6 +4079,14 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getWLSupportingDocumentList/")]
         SupportingDocumentList[] getWLSupportingDocumentList(string token, long waitingListInformationId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/viewSupportingDocInBrowser/")]
+        System.IO.MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId);
         //OOD Module
 
         [WebInvoke(Method = "POST",
