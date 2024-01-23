@@ -291,7 +291,7 @@
    */
   function CaseNotesPhrases() {
     // Data Init
-    this.AddPhrases = new CaseNotesAddPhrases();
+    this.AddPhrases = new CaseNotesAddPhrases(this);
     this.InsertPhrases = new CaseNotesInsertPhrases(this);
 
     this._build();
