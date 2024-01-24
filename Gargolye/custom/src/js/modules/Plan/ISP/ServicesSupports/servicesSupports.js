@@ -392,9 +392,9 @@ const servicesSupports = (() => {
    var test7 = {vendorId: "7500001", vendorName: "IHS Services"};
    var test8 = {vendorId: "7500002", vendorName: "XX"};
    var test9 = {vendorId: "7500001", vendorName: "XXXX"};
-  // completeVendorList.push(test6);
  //  completeVendorList.push(test6);
-  // completeVendorList.push(test7);
+  // completeVendorList.push(test6);
+ //  completeVendorList.push(test7);
    //completeVendorList.push(test7);
   // completeVendorList.push(test8);
   // completeVendorList.push(test9);
@@ -413,28 +413,97 @@ const servicesSupports = (() => {
           minOccurancePaidSupports = duplicateVendors;
        }
        
+       // this is the list of Common Providers from the Selected Paid Supports 
        let minOccurancePaidSupportsFiltered = removeDuplicateObjects(minOccurancePaidSupports, 'vendorId')
 
-      let vendorArray = [];
-       // vendorArray contains the duplicate vendors data in Dropdown data formnat
-       minOccurancePaidSupportsFiltered.forEach(row => {
-        let thisVendorObject = {value: row.vendorId, text: row.vendorName }
-        vendorArray.push(thisVendorObject);
-       });
+       // Guard Clause -- if there are no common Providers 
+       if (minOccurancePaidSupportsFiltered.length === 0) {
+        let vendorArray = [];
+        vendorArray.unshift({ value: '', text: 'No Common Provider' });
+        dropdown.populate(dropdownEle, vendorArray);
+        return;
+       }
 
-       vendorArray.sort((a, b) => {
+      // FROM HERE DOWN IS COPIED FROM function populateServiceVendorsDropdown() --  format the drop down with sections
+      const { getPaidSupportsVendorsResult: vendorNumbers } =
+      await servicesSupportsAjax.getPaidSupportsVendors(
+        fundingSourceDropdownSelectedText,
+        servicesDropdownSelectedText,
+      );
+
+     // const selectedVendorIds = getSelectedVendorIds();
+
+     // const nonPaidSupportData = vendorNumbers.filter(
+      //  provider => vendorArray.indexOf(provider.vendorId) < 0,
+      //);
+
+      const nonPaidSupportData = vendorNumbers.filter(o => minOccurancePaidSupportsFiltered.some(({vendorId}) => o.vendorId === vendorId));
+
+      // const paidSupportData = vendorNumbers.filter(
+      //   provider => vendorArray.indexOf(provider.vendorId) >= 0,
+      // );
+
+      const paidSupportData = vendorNumbers.filter(o => minOccurancePaidSupportsFiltered.some(({vendorId}) => o.vendorId === vendorId));
+
+      const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
+        return {
+          value: dd.vendorId,
+          text: dd.vendorName,
+        };
+      });
+      const paidSupportDropdownData = paidSupportData.map(dd => {
+        return {
+          value: dd.vendorId,
+          text: dd.vendorName,
+        };
+      });
+
+      nonPaidSupportDropdownData.sort((a, b) => {
+        const textA = a.text.toUpperCase();
+        const textB = b.text.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+      paidSupportDropdownData.sort((a, b) => {
         const textA = a.text.toUpperCase();
         const textB = b.text.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
 
-      if (vendorArray.length > 0) {
-        vendorArray.unshift({ value: '', text: '[SELECT A PROVIDER]' });
-      } else {
-        vendorArray.unshift({ value: '', text: 'No Common Provider' });
+      const nonGroupedDropdownData = [{ value: '', text: '[SELECT A PROVIDER]' }];
+    const paidSupportGroup = {
+      groupLabel: 'Paid Support Providers',
+      groupId: 'isp_ss_providerDropdown_paidSupportProviders',
+      dropdownValues: paidSupportDropdownData,
+    };
+    const nonPaidSupportGroup = {
+      groupLabel: 'Other Providers',
+      groupId: 'isp_ss_providerDropdown_nonPaidSupportProviders',
+      dropdownValues: nonPaidSupportDropdownData,
+    };
+
+    const groupDropdownData = [];
+    if (paidSupportDropdownData.length > 0) {
+      groupDropdownData.push(paidSupportGroup);
+    }
+
+    //if there's no default value, and only one option, make that option the default
+   // if (!defaultValue) {
+      const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
+      if (tempData.length === 1) {
+        defaultValue = tempData[0].value;
+        saveUpdateProvider = defaultValue;
+        dropdownEle.classList.remove('error');
       }
-       
-      dropdown.populate(dropdownEle, vendorArray);
+   // }
+
+    groupDropdownData.push(nonPaidSupportGroup);
+
+    dropdown.groupingPopulate({
+      dropdown: dropdownEle,
+      data: groupDropdownData,
+      nonGroupedData: nonGroupedDropdownData,
+      defaultVal: null,
+    });
 
         return;
   }
