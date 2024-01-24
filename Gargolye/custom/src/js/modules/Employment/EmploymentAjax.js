@@ -180,7 +180,7 @@ var EmploymentAjax = (function () {
     }
 
     async function insertEmploymentInfoAsync(
-        startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId
+        startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId, typeOfEmployment
     ) {
         try {
             const result = await $.ajax({
@@ -210,6 +210,7 @@ var EmploymentAjax = (function () {
                     peopleID: peopleID,
                     userID: userID,
                     PositionId: PositionId,
+                    typeOfEmployment: typeOfEmployment,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -337,6 +338,32 @@ var EmploymentAjax = (function () {
                     '/' +
                     $.webServer.serviceName +
                     '/getTypeOfWorkDropDown/',
+                data: JSON.stringify({
+                    token: $.session.Token,
+
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.responseText);
+        }
+    }
+
+    async function getTypeOfEmploymentDropDownAsync() {
+        try {
+            const result = await $.ajax({
+                type: 'POST',
+                url:
+                    $.webServer.protocol +
+                    '://' +
+                    $.webServer.address +
+                    ':' +
+                    $.webServer.port +
+                    '/' +
+                    $.webServer.serviceName +
+                    '/getTypeOfEmploymentDropDown/',
                 data: JSON.stringify({
                     token: $.session.Token,
 
@@ -859,5 +886,6 @@ var EmploymentAjax = (function () {
         deletePostionTask,
         getEmployeeStatusDropDownAsync,
         createNewEmploymentPathAsync,
+        getTypeOfEmploymentDropDownAsync,
     };
 })();

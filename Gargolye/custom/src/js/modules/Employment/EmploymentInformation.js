@@ -25,6 +25,7 @@ const EmploymentInformation = (() => {
     let currentStatus;
     let pathToEmployment;
     let pathToStartDate;
+    let temptypeOfEmployment = '';
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -75,6 +76,7 @@ const EmploymentInformation = (() => {
             phone = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].phone;
             email = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].email;
             peopleID = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].peopleId;
+            typeOfEmployment = getEmployeeInfoByID.getEmployeeInfoByIDResult[0].typeOfEmployment;
         }
         else {
             BtnName = 'SAVE';
@@ -91,6 +93,7 @@ const EmploymentInformation = (() => {
             phone = '';
             email = '';
             peopleID = consumersID;
+            typeOfEmployment = '';
         }
 
         employmentPath = getEmployeepath.getEmployeementPathResult.length > 0 ? getEmployeepath.getEmployeementPathResult[0].employmentPath : '';
@@ -108,6 +111,7 @@ const EmploymentInformation = (() => {
         tempname = '';
         tempphone = '';
         tempemail = '';
+        temptypeOfEmployment = '';
 
         positionStartDate = input.build({
             id: 'positionStartDate',
@@ -158,6 +162,13 @@ const EmploymentInformation = (() => {
             label: "Type Of Work",
             dropdownId: "typeOfWorkDropdown",
             value: (typeOfWork) ? typeOfWork : '',
+        });
+
+        typeOfEmploymentDropdown = dropdown.build({
+            id: 'typeOfEmploymentDropdown',
+            label: "Type Of Work",
+            dropdownId: "typeOfEmploymentDropdown",
+            value: (typeOfEmployment) ? typeOfEmployment : '',
         });
 
         isSelfEmployed = input.buildCheckbox({
@@ -276,11 +287,12 @@ const EmploymentInformation = (() => {
 
         var drWrap = document.createElement('div');
         drWrap.classList.add('employmentDTWrap');
-        typeOfWorkDropdown.classList.add('width35Per');
+        typeOfWorkDropdown.classList.add('width39Per');
         drWrap.appendChild(typeOfWorkDropdown);
-        isSelfEmployed.classList.add('width27Per');
-        isSelfEmployed.style.marginRight = '35%';
+        isSelfEmployed.classList.add('width22Per'); 
         drWrap.appendChild(isSelfEmployed);
+        typeOfEmploymentDropdown.classList.add('width38Per'); 
+        drWrap.appendChild(typeOfEmploymentDropdown);
         addNewCardBody.appendChild(drWrap);
 
         const consumerNameDisplay = document.createElement("p");
@@ -334,6 +346,7 @@ const EmploymentInformation = (() => {
             employerDropdown.classList.remove('disabled');
             transportationDropdown.classList.remove('disabled');
             typeOfWorkDropdown.classList.remove('disabled');
+            typeOfEmploymentDropdown.classList.remove('disabled');
             isSelfEmployed.classList.remove('disabled');
             nameInput.classList.remove('disabled');
             phoneInput.classList.remove('disabled');
@@ -349,6 +362,7 @@ const EmploymentInformation = (() => {
             employerDropdown.classList.add('disabled');
             transportationDropdown.classList.add('disabled');
             typeOfWorkDropdown.classList.add('disabled');
+            typeOfEmploymentDropdown.classList.add('disabled');
             isSelfEmployed.classList.add('disabled');
             nameInput.classList.add('disabled');
             phoneInput.classList.add('disabled');
@@ -402,7 +416,7 @@ const EmploymentInformation = (() => {
             BACK_BTN.classList.remove('disabled');
             return;
         } else {
-            if (tempstartDatePosition != '' || tempendDatePosition != '' || tempposition != '' || tempjobStanding != '' || tempemployer != '' || temptransportation != '' || temptypeOfWork != '' || tempselfEmployed != '' || tempname != '' || tempphone != '' || tempemail != '') {
+            if (tempstartDatePosition != '' || tempendDatePosition != '' || tempposition != '' || tempjobStanding != '' || tempemployer != '' || temptransportation != '' || temptypeOfWork != '' || tempselfEmployed != '' || tempname != '' || tempphone != '' || tempemail != '' || temptypeOfEmployment != '') {
                 SAVE_BTN.classList.remove('disabled');
                 BACK_BTN.classList.add('disabled');
             }
@@ -455,6 +469,12 @@ const EmploymentInformation = (() => {
             typeOfWork = selectedConsumerOption.id;
             temptypeOfWork = 'ChangeValue';
             getRequiredFieldsOfEmployeeInfo();
+        });
+        typeOfEmploymentDropdown.addEventListener('change', event => {
+            var selectedConsumerOption = event.target.options[event.target.selectedIndex];
+            typeOfEmployment = selectedConsumerOption.id;
+            temptypeOfEmployment = 'ChangeValue';
+            getRequiredFieldsOfEmployeeInfo(); 
         });
         isSelfEmployed.addEventListener('change', event => {
             selfEmployed = event.target.checked == true ? 'Y' : 'N';
@@ -533,6 +553,19 @@ const EmploymentInformation = (() => {
         }));
         typeOfWorkData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("typeOfWorkDropdown", typeOfWorkData, typeOfWork);
+
+        const {
+            getTypeOfEmploymentDropDownResult: TypeOfEmployment,
+        } = await EmploymentAjax.getTypeOfEmploymentDropDownAsync();
+        let typeOfEmploymentData = TypeOfEmployment.map((typeOfEmployments) => ({
+            id: typeOfEmployments.typeOfWorkId,
+            value: typeOfEmployments.typeOfWorkId,
+            text: typeOfEmployments.typeOfWorkName
+        }));
+        typeOfEmploymentData.unshift({ id: null, value: '', text: '' });
+        dropdown.populate("typeOfEmploymentDropdown", typeOfEmploymentData, typeOfEmployment);
+
+        
     }
 
 
@@ -717,7 +750,7 @@ const EmploymentInformation = (() => {
     }
 
     async function saveEmployeeInfo() {
-        const result = await EmploymentAjax.insertEmploymentInfoAsync(startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, consumersID, $.session.UserId, PositionId);
+        const result = await EmploymentAjax.insertEmploymentInfoAsync(startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, consumersID, $.session.UserId, PositionId, typeOfEmployment);
         const { insertEmploymentInfoResult } = result;
         if (insertEmploymentInfoResult.positionID != null) {
             NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, employerName, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);
@@ -735,7 +768,8 @@ const EmploymentInformation = (() => {
             || tempselfEmployed != ''
             || tempname != ''
             || tempphone != ''
-            || tempemail != '') {
+            || tempemail != ''
+            || temptypeOfEmployment != '') {
             CancleEmploymentInfoPopup();
         }
         else {

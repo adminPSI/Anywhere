@@ -798,11 +798,11 @@
     .employmentDTWrap {
         display: flow;
 
-        .width25Per, .width27Per, .width35Per {
+        .width25Per, .width27Per, .width35Per, .width39Per {
             width: 97%;
         }
 
-        .width20Per, .width30Per, .width32Per {
+        .width20Per, .width30Per, .width32Per, .width38Per, .width22Per {
             margin-left: 1.5%;
             width: 97%;
         }
@@ -839,6 +839,18 @@
             .width35Per {
                 width: 35%;
             }
+
+            .width38Per {
+                width: 38%;
+            }
+
+            .width39Per {
+                width: 39%;
+            }
+
+            .width22Per {
+                width: 22%;
+            } 
         }
     }
 
@@ -1026,6 +1038,12 @@
         }
 
         .table__row {
+            &[data-plan-active='true'] {
+                > div:nth-child(4) {
+                    margin-right: 116px !important;
+                }
+            }
+
             &.selected {
                 background: $secondary;
             }
@@ -1059,8 +1077,8 @@
 
             @media screen and (min-width: 560px) {
                 > div:nth-child(4) {
-                    display: block;  
-                }               
+                    display: block;
+                }
             }
         }
 

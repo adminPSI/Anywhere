@@ -96,6 +96,8 @@ namespace Anywhere.service.Data.Employment
             public string existingStartDate { get; set; }
             [DataMember(Order = 16)]
             public string existingPathID { get; set; }
+            [DataMember(Order = 17)]
+            public string typeOfEmployment { get; set; }            
         }
 
 
@@ -392,7 +394,7 @@ namespace Anywhere.service.Data.Employment
             }
         }
 
-        public EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId)
+        public EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId, string typeOfEmployment)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -413,7 +415,7 @@ namespace Anywhere.service.Data.Employment
                     else
                         positionID = PositionId;
 
-                    positionId = Odg.insertEmploymentInfo(token, startDatePosition, endDate, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, positionID, transaction);
+                    positionId = Odg.insertEmploymentInfo(token, startDatePosition, endDate, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, positionID, transaction, typeOfEmployment);
 
                     employeeInfo.positionID = positionId;
                     return employeeInfo;
@@ -534,6 +536,25 @@ namespace Anywhere.service.Data.Employment
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
                     TypeOfWork[] getTypeofWork = js.Deserialize<TypeOfWork[]>(Odg.getTypeOfWorkDropDown(transaction));
                     return getTypeofWork;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new WebFaultException<string>(ex.Message, System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+        }
+
+        public TypeOfWork[] getTypeOfEmploymentDropDown(string token)
+        {
+            using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
+            {
+                try
+                {
+                    js.MaxJsonLength = Int32.MaxValue;
+                    if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
+                    TypeOfWork[] getTypeofEmployment = js.Deserialize<TypeOfWork[]>(Odg.getTypeOfEmploymentDropDown(transaction));
+                    return getTypeofEmployment;
                 }
                 catch (Exception ex)
                 {
