@@ -254,6 +254,12 @@ const csAssignCaseload = (() => {
       }
     });
    
+    CM_SEARCH_INPUT.addEventListener('input', event => {
+      if (event.target.value === '') {
+        caseManagerSearch(event.target.value);
+      }
+    });
+
     caseManagersContainer.appendChild(multiSelectBodyCM);
 
     // Consumers
@@ -333,6 +339,12 @@ const csAssignCaseload = (() => {
       }
     });
  
+    C_SEARCH_INPUT.addEventListener('input', event => {
+      if (event.target.value === '') {
+        consumerSearch(event.target.value);
+      }
+    });
+
     // Action Buttons
     assignBtn = button.build({
       text: 'ASSIGN',
