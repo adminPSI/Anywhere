@@ -237,7 +237,7 @@
             if (!questionDiv) return;
             if (answered && required) questionDiv.classList.remove('unawnsered');
             if (!answered && required) questionDiv.classList.add('unawnsered');
-            if (!answered && required && !leaveblank) questionDiv.classList.remove('unawnsered');
+            if (!answered && required && !leaveblank) questionDiv.classList.add('unawnsered');
 
             if (!required) questionDiv.classList.remove('unawnsered');
           } else {
