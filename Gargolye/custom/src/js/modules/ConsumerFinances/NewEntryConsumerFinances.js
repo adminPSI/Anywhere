@@ -569,7 +569,9 @@ const NewEntryCF = (() => {
         newPayeeDropdown.addEventListener('change', event => {
             if (!newPayeeDropdown.classList.contains('disabled')) {
                 categoryID = event.target.options[event.target.selectedIndex].id;
-                getCategorySubCategorybyPayee(categoryID);
+                if (categoryID != '') {
+                    getCategorySubCategorybyPayee(categoryID);
+                }                
                 payee = event.target.options[event.target.selectedIndex].text;
                 temppayee = 'ChangedValue';
                 checkRequiredFieldsOfNewEntry();
