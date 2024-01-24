@@ -624,7 +624,7 @@ const WaitingListAssessment = (() => {
         type: 'radiogroup',
         id: 'cpaIsReleasedNext12Months',
         groupLabel:
-          'Is the individual being rleased from the custody of a child protective agency within the next 12 months? ',
+          'Is the individual being released from the custody of a child protective agency within the next 12 months? ',
         fields: [
           { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
           { type: 'radio', label: 'No', value: 'no', id: 'no' },
@@ -836,7 +836,7 @@ const WaitingListAssessment = (() => {
       // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
     },
     TODO4: ({ name, value, formName }) => {
-      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only (IF) [] "Is individual being released..." is answered "Yes".
+      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
     },
     //TODO-ASH: adultDayEmployment
     TODO5: ({ name, value, formName }) => {
