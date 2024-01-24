@@ -292,7 +292,7 @@ const roster2 = (function () {
             filteredBy1.classList.add('filteredByData');
             filterButtonSet();
             filteredBy1.appendChild(btnWrap);
-            filteredBy.appendChild(filteredBy1);
+            filteredBy.appendChild(filteredBy1);  
         }
 
         if (document.getElementById('filteredDateBtn') != null)
@@ -1183,6 +1183,7 @@ const roster2 = (function () {
         await getRosterConsumersData();
         populateRoster();
         document.getElementById('searchBtn').click();
+        filterApply();  
     }
     /**
      * Enables or disables the mini roster button.
@@ -1583,6 +1584,7 @@ const roster2 = (function () {
         await getRosterConsumersData();
         populateRoster();
         document.getElementById('searchBtn').click();
+        filterApply(); 
     }
 
     return {
