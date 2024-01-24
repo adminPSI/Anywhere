@@ -158,6 +158,8 @@ const contactInformation = (() => {
           anywAssessmentId: assessmentId,
           bestWayId: selectedOption.value,
         });
+
+        await planValidation.contactsValidationCheck();
       },
     });
     populateBestWayToConnectDropdown(
