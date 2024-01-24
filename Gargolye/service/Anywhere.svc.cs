@@ -3531,9 +3531,9 @@ namespace Anywhere
             return emp.insertEmploymentPath(token, employmentPath, newStartDate, newEndDate, currentEndDate, peopleID, userID, existingPathID);
         }
 
-        public EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId)
+        public EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId, string typeOfEmployment)
         {
-            return emp.insertEmploymentInfo(token, startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId);
+            return emp.insertEmploymentInfo(token, startDatePosition, endDatePosition, position, jobStanding, employer, transportation, typeOfWork, selfEmployed, name, phone, email, peopleID, userID, PositionId, typeOfEmployment);
         }
 
         public JobStanding[] getJobStandingsDropDown(string token)
@@ -3559,6 +3559,11 @@ namespace Anywhere
         public TypeOfWork[] getTypeOfWorkDropDown(string token)
         {
             return emp.getTypeOfWorkDropDown(token);
+        }
+
+        public TypeOfWork[] getTypeOfEmploymentDropDown(string token)
+        {
+            return emp.getTypeOfEmploymentDropDown(token);
         }
 
         public WagesEntries insertWages(string token, string hoursWeek, string hoursWages, string startDate, string endDate, string PositionId, string wagesID, string userID)

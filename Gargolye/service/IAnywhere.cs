@@ -4642,7 +4642,7 @@ namespace Anywhere
                ResponseFormat = WebMessageFormat.Json,
       RequestFormat = WebMessageFormat.Json,
       UriTemplate = "/insertEmploymentInfo/")]
-        EmploymentWorker.EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId);
+        EmploymentWorker.EmploymentEntriesByID insertEmploymentInfo(string token, string startDatePosition, string endDatePosition, string position, string jobStanding, string employer, string transportation, string typeOfWork, string selfEmployed, string name, string phone, string email, string peopleID, string userID, string PositionId, string typeOfEmployment);
 
 
         [OperationContract]
@@ -4684,6 +4684,14 @@ namespace Anywhere
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getTypeOfWorkDropDown/")]
         EmploymentWorker.TypeOfWork[] getTypeOfWorkDropDown(string token);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getTypeOfEmploymentDropDown/")]
+        EmploymentWorker.TypeOfWork[] getTypeOfEmploymentDropDown(string token);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
