@@ -166,7 +166,7 @@ const EmploymentInformation = (() => {
 
         typeOfEmploymentDropdown = dropdown.build({
             id: 'typeOfEmploymentDropdown',
-            label: "Type Of Work",
+            label: "Employment Type",
             dropdownId: "typeOfEmploymentDropdown",
             value: (typeOfEmployment) ? typeOfEmployment : '',
         });
