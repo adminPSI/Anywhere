@@ -792,19 +792,24 @@
 [data-active-module="Employment"] {
 
     .dropdown {
-        margin: 0px 5px 20px;
+        margin: 0px 0px 20px;
     }
 
     .employmentDTWrap {
         display: flow;
 
-        .width25Per, .width27Per, .width35Per, .width39Per {
-            width: 97%;
+        .width25Per, .width27Per, .width35Per, .width39Per, .width30Per {
+            width: 100%;
         }
 
-        .width20Per, .width30Per, .width32Per, .width38Per, .width22Per {
+        .width20Per, .width32Per, .width38Per {
+            width: 100%;
+        }
+
+        .width22Per {
             margin-left: 1.5%;
-            width: 97%;
+            width: 100%;
+            margin-bottom: 5%;
         }
 
 
@@ -850,7 +855,8 @@
 
             .width22Per {
                 width: 22%;
-            } 
+                margin-bottom: 0%;
+            }
         }
     }
 
