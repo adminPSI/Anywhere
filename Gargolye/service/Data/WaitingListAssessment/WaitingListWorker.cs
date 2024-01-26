@@ -903,6 +903,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string personCompleting { get; set; }
             public string personCompletingTitle { get; set; }
             public string currentLivingArrangement { get; set; }
+            public string livingArrangementOther { get; set; }
             public string areasPersonNeedsHelp { get; set; }
             public string participants { get; set; }
             public string otherThanMentalHealth { get; set; }
