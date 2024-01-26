@@ -209,6 +209,14 @@ const isp_ci_importantPeople = (() => {
         let thisPhone = (extVal !== '') ? UTIL.formatPhoneNumber(phoneVal) + '  ext. ' + extVal : UTIL.formatPhoneNumber(phoneVal);
         let thisPhone2 = (phoneVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  : '';
          thisPhone2 = (extVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  + '  ext. ' + extVal2 : UTIL.formatPhoneNumber(phoneVal2);
+         
+         // Validation check for rows with type other. places red '!' in row if no value is typeOther
+         if (typeVal === 'Other' && typeOtherVal === '') {
+          typeValValidated = 
+            `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${typeVal}`;
+         }  else {
+          typeValValidated = typeVal;
+         }
 
         const data = {
           token: $.session.Token,
@@ -232,7 +240,7 @@ const isp_ci_importantPeople = (() => {
             
             {
               
-              values: [typeVal, nameVal, addressVal, emailVal, thisPhone + '\n' + thisPhone2],
+              values: [typeValValidated, nameVal, addressVal, emailVal, thisPhone + '\n' + thisPhone2],
               id: `ci-impPeople-${popupData.importantPersonId}`,
               onClick: () => {
                 tablePopup(data, false);
@@ -609,8 +617,16 @@ const isp_ci_importantPeople = (() => {
         let thisPhone = (d.phoneExt !== '') ? UTIL.formatPhoneNumber(d.phone) + '  ext. ' + d.phoneExt : UTIL.formatPhoneNumber(d.phone);
         let thisPhone2 = (d.phone2 !== '') ? UTIL.formatPhoneNumber(d.phone2)  : '';
          thisPhone2 = (d.phone2Ext !== '') ? UTIL.formatPhoneNumber(d.phone2)  + '  ext. ' + d.phone2Ext : UTIL.formatPhoneNumber(d.phone2);
+
+         // Validation check for rows with type other. places red '!' in row if no value is typeOther
+         if (d.type === 'Other' && d.typeOther === '') {
+          d.typeValidated = 
+            `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${d.type}`;
+         }  else {
+          d.typeValidated = d.type;
+         }
         return {
-          values: [d.type, d.name, d.address, d.email, thisPhone + '\n' + thisPhone2],
+          values: [d.typeValidated, d.name, d.address, d.email, thisPhone + '\n' + thisPhone2],
           id: `ci-impPeople-${d.importantPersonId}`,
           onClick: () => {
             tablePopup(d, false);
@@ -637,36 +653,11 @@ const isp_ci_importantPeople = (() => {
       callback: () => tablePopup(null, true),
     });
 
-    // create wrapper div for button and alert
-    const importantPeopleBtnAlertDiv = document.createElement('div');
-    importantPeopleBtnAlertDiv.classList.add('btnAlertContainer');
-
-    // create div for the alert
-    const importantPeopleAlertDiv = document.createElement('div');
-    importantPeopleAlertDiv.innerHTML = `${icons.error}`;
-    importantPeopleAlertDiv.classList.add(`importantPeopleAlert`);
-    importantPeopleAlertDiv.style.display = 'none';
-
-    // creates and shows a tip when hovering over the visible alert div
-    planValidation.createTooltip(
-      'Important people with type "Other" must have a description in "Type Other" text area',
-      importantPeopleAlertDiv,
-    );
-
-    importantPeopleBtnAlertDiv.appendChild(addPersonBtn);
-    importantPeopleBtnAlertDiv.appendChild(importantPeopleAlertDiv);
-
-    let contactsValidation = planValidation.getContactValidation();
-
-    if (contactsValidation.importantPeople === false) {
-      importantPeopleAlertDiv.style.display = 'flex';
-    }
-
     if (readOnly) addPersonBtn.classList.add('disabled');
 
     const table = buildTableMarkup();
     ipSection.appendChild(table);
-    ipSection.appendChild(importantPeopleBtnAlertDiv);
+    ipSection.appendChild(addPersonBtn);
 
     return ipSection;
   }
