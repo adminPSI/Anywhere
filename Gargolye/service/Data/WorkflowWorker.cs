@@ -1453,6 +1453,26 @@ namespace Anywhere.service.Data
                                 // return "Notification sent.";
                                 break;
                             case 3:
+                                // 'set plan status'
+                                string[] planStatusParameter3 = new string[] { };
+                                if (!string.IsNullOrEmpty(thisAction.WF_Action_Parameters))
+                                {
+                                    planStatusParameter3 = thisAction.WF_Action_Parameters.Split('=');
+                                }
+
+                                string returnPlan3 = wfdg.getPlanfromWorkFlowId(thisAction.WF_ID, transaction);
+
+                                PlanInfo[] thesePlans3 = js.Deserialize<PlanInfo[]>(returnPlan3);
+
+                                if (planStatusParameter3.Length > 1)
+                                {
+                                    foreach (PlanInfo thisPlan in thesePlans3)
+                                    {
+                                        int returnPlanStatus = pdg.updateConsumerPlanSetStatus(thisPlan.consumerPlanId, planStatusParameter3[1], transaction);
+                                    }
+                                }
+
+                                break;
                             case 4:
                                 // 'set plan status'
                                 string[] planStatusParameter = new string[] { };

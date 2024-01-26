@@ -44,7 +44,6 @@ namespace Anywhere.service.Data.WaitingListAssessment
             switch (propertyName)
             {
                 //case "wlInfoId":
-
                 //    // Handle wlInfoId
                 //    break;
                 case "consumerId":
