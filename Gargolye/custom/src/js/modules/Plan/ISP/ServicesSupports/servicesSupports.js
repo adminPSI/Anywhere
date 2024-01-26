@@ -367,6 +367,7 @@ const servicesSupports = (() => {
 
     dropdown.populate(dropdownEle, data, defaultValue);
   }
+  
   async function populateMultiSelectServiceVendorsDropdown(dropdownEle, thisSelectedArray) {
    var test =  dropdownEle;
    let thisfundingSourceSelectedText;
@@ -433,17 +434,17 @@ const servicesSupports = (() => {
 
      // const selectedVendorIds = getSelectedVendorIds();
 
-     // const nonPaidSupportData = vendorNumbers.filter(
-      //  provider => vendorArray.indexOf(provider.vendorId) < 0,
-      //);
+    //  const nonPaidSupportData = vendorNumbers.filter(
+    //    provider => minOccurancePaidSupportsFiltered.indexOf(provider.vendorId) < 0,
+    //   );
 
       const nonPaidSupportData = vendorNumbers.filter(o => minOccurancePaidSupportsFiltered.some(({vendorId}) => o.vendorId === vendorId));
 
       // const paidSupportData = vendorNumbers.filter(
-      //   provider => vendorArray.indexOf(provider.vendorId) >= 0,
+      //   provider => minOccurancePaidSupportsFiltered.indexOf(provider.vendorId) >= 0,
       // );
 
-      const paidSupportData = vendorNumbers.filter(o => minOccurancePaidSupportsFiltered.some(({vendorId}) => o.vendorId === vendorId));
+     const paidSupportData = vendorNumbers.filter(o => minOccurancePaidSupportsFiltered.some(({vendorId}) => o.vendorId === vendorId));
 
       const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
         return {
