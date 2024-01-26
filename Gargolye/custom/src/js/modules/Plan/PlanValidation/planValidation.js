@@ -826,8 +826,7 @@ const planValidation = (function () {
 
     function checkContactsValidation() {
       const alertDiv = document.querySelector('.contactsAlertDiv');
-      const importantPeopleAlertDiv = document.querySelector('.importantPeopleAlert');
-      const importantPlacesAlertDiv = document.querySelector('.importantPlacesAlert');
+      const bestWayToConnectAlertDiv = document.querySelector('.bestWaytoConnectAlert')
 
       // Check if the alertDiv exists and if any validation condition is false
       if (alertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect)) {
@@ -836,16 +835,10 @@ const planValidation = (function () {
           alertDiv.style.display = 'none';
       }
 
-      if (importantPeopleAlertDiv && !contactsValidation.importantPeople) {
-        importantPeopleAlertDiv.style.display = 'flex';
-      } else if (importantPeopleAlertDiv) {
-        importantPeopleAlertDiv.style.display = 'none';
-      }
-
-      if (importantPlacesAlertDiv && !contactsValidation.importantPlaces) {
-        importantPlacesAlertDiv.style.display = 'flex';
-      } else if (importantPlacesAlertDiv) {
-        importantPlacesAlertDiv.style.display = 'none';
+      if (bestWayToConnectAlertDiv && !contactsValidation.bestWayToConnect) {
+        bestWayToConnectAlertDiv.style.display = 'flex';
+      } else if (bestWayToConnectAlertDiv) {
+        bestWayToConnectAlertDiv.style.display = 'none';
       }
 
     }

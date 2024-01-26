@@ -237,7 +237,7 @@
             if (!questionDiv) return;
             if (answered && required) questionDiv.classList.remove('unawnsered');
             if (!answered && required) questionDiv.classList.add('unawnsered');
-            if (!answered && required && !leaveblank) questionDiv.classList.remove('unawnsered');
+            if (!answered && required && !leaveblank) questionDiv.classList.add('unawnsered');
 
             if (!required) questionDiv.classList.remove('unawnsered');
           } else {
@@ -354,6 +354,8 @@
         }
       } else {
         const questionSet = document.getElementById(`set${setId}`);
+        let sectionID = questionSet.parentElement.parentElement.id
+        sectionID = sectionID.replace(/\D/g, "");
         const questionSetGridRows = [...questionSet.querySelectorAll('.grid__row:not(.grid__rowHeader)')];
         const questionSetActionButtons = [...questionSet.querySelectorAll('.gridActionRow button')];
         let questionSetId = e.target.dataset.setid;
@@ -372,11 +374,11 @@
               cellInput.value = '';
               input.disableInputField(cellInput);
               //sectionQuestionCount[sectionID][setId][questionId].leaveblank = true;
-             // sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = true;
+             sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = true;
             } else {
               input.enableInputField(cellInput);
               //sectionQuestionCount[sectionID][setId][questionId].leaveblank = false;
-             // sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = false;
+             sectionQuestionCount[sectionID][questionSetId][questionRowId].leaveblank = false;
             }
           });
         });
