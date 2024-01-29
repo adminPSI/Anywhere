@@ -10,11 +10,14 @@
    * @constructor
    * @returns {WaitingListData}
    */
-  function WaitingListData() {}
+  function WaitingListData() {
+    this.linkId = 0;
+  }
 
-  WaitingListData.prototype.insertNewAssessmentInitial = async function (consumerId) {
+  WaitingListData.prototype.insertWaitingListAssessment = async function (consumerId) {
     const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
       id: 0,
+      linkId: 0,
       propertyName: 'consumerId',
       value: consumerId,
       insertOrUpdate: 'I',
@@ -23,12 +26,12 @@
     return data.insertUpdateWaitingListValueResult;
   };
 
-  WaitingListData.prototype.insertUpdateAssessmentData = async function ({ id, propertyName, value, insertOrUpdate }) {
+  WaitingListData.prototype.updateAssessmentData = async function ({ id, propertyName, value }) {
     const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
       id,
       propertyName,
       value,
-      insertOrUpdate,
+      insertOrUpdate: 'U',
     });
 
     return data.getLandingPageForConsumerResult;

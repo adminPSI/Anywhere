@@ -16,6 +16,7 @@ const WaitingListAssessment = (() => {
   // UI INSTANCES
   //--------------------------
   let wlForms = {};
+  let wlData;
   let rosterPicker;
   let reviewAssessmentBtn;
 
@@ -802,88 +803,109 @@ const WaitingListAssessment = (() => {
   //--------------------------------------------------
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
+
+    rosterPicker.toggleRosterDisabled(true, true);
+
+    const resp = await wlData.insertWaitingListAssessment(selectedConsumer);
+    console.log('MIKE LOOK HERE FOR RETURN DATA:', resp);
   }
   const onChangeCallbacks = {
     //* currentAvailableServices
     isOtherService: ({ name, value, formName }) => {
       // (ENABLE) [otherDescription] the text field under "Other" only (IF) [isOtherService] the answer is "Yes" to Other
-      wlForms[formName].inputs[inputname];
+      const data = wlForms[formName].inputs[isOtherService].getValue();
+
+      wlForms[formName].inputs[otherDescription].toggleDisabled(data ? true : false);
     },
     //* primaryCaregiver
     isPrimaryCaregiverUnavailable: ({ name, value, formName }) => {
       // (ENABLE) [unavailableDocumentation] "List documentation used to verify presence of declining..." textbox   (IF) [isPrimaryCaregiverUnavailable] question above it is "Yes"
       // (ENABLE) [isActionRequiredIn30Days] "Is action required..." radio buttons                                  (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." question is "Yes"
       // (ENABLE) [isIndividualSkillsDeclined] "Is there evidence of declining..."                                  (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." answer is "No".
-      wlForms[formName].inputs[inputname];
+      const data = wlForms[formName].inputs[isPrimaryCaregiverUnavailable].getValue();
+
+      wlForms[formName].inputs[unavailableDocumentation].toggleDisabled(data ? true : false);
+      wlForms[formName].inputs[isActionRequiredIn30Days].toggleDisabled(data ? true : false);
+      wlForms[formName].inputs[isIndividualSkillsDeclined].toggleDisabled(data ? true : false);
     },
     isActionRequiredIn30Days: ({ name, value, formName }) => {
-      // (ENABLE) [actionRequiredDescription] "Describe action required." textbox                                   (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
-      wlForms[formName].inputs[inputname];
+      // (ENABLE) [actionRequiredDescription] "Describe action required." textbox (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
+      const data = wlForms[formName].inputs[isActionRequiredIn30Days].getValue();
+
+      wlForms[formName].inputs[actionRequiredDescription].toggleDisabled(data ? true : false);
     },
     isIndividualSkillsDeclined: ({ name, value, formName }) => {
-      // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox             (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-      // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox                                           (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-      wlForms[formName].inputs[inputname];
+      // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox  (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
+      // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox                                (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
+      const data = wlForms[formName].inputs[isIndividualSkillsDeclined].getValue();
+
+      wlForms[formName].inputs[declinedSkillsDocumentation].toggleDisabled(data ? true : false);
+      wlForms[formName].inputs[declinedSkillsDescription].toggleDisabled(data ? true : false);
     },
     //* riskMitigation
     rMIsActionRequiredIn3oDays: ({ name, value, formName }) => {
       // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES" (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".  Otherwise, set to "NO"
-      wlForms[formName].inputs[inputname];
+      const data = wlForms[formName].inputs[rMIsActionRequiredIn3oDays].getValue();
+
+      wlForms[formName].inputs[rMIsSupportNeeded].toggleDisabled(data ? true : false);
     },
     openInvestigation: ({ name, value, formName }) => {
-      //! checkbox group need to do something about ids
-      // (ENABLE) [rMdescription] the "Describe incident under..." textbox               (IF) [openInvestigation] any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
-      // (ENABLE) [rMIsActionRequiredIn3oDays] the "Is action required..." radio buttons (IF) [openInvestigation] any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
-      wlForms[formName].inputs[inputname];
+      //TODO-ASH: checkbox group need to do something about ids
+      // (ENABLE) [rMdescription] the "Describe incident under..." textbox               (IF) [] any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
+      // (ENABLE) [rMIsActionRequiredIn3oDays] the "Is action required..." radio buttons (IF) [] any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
+      // wlForms[formName].inputs[rMdescription].toggleDisabled(data ? true : false);
+      // wlForms[formName].inputs[rMIsActionRequiredIn3oDays].toggleDisabled(data ? true : false);
     },
     //TODO-ASH: icfDischarge
     TODO: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [icfDetermination] "Is the individual a resident..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "icfDischarge" before setting below
-      wlForms[formName].inputs[inputname];
+      wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
     //TODO-ASH: intermittentSupports
     TODO2: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [intSupDetermination] "Does the individual have an..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "intermittentSupports" before setting below
-      wlForms[formName].inputs[inputname];
+      wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
     //TODO-ASH: childProtectionAgency
     TODO3: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "childProtectionAgency" before setting below
-      wlForms[formName].inputs[inputname];
+      wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
     cpaIsReleasedNext12Months: ({ name, value, formName }) => {
       // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
-      wlForms[formName].inputs[inputname];
+      const data = wlForms[formName].inputs[cpaIsReleasedNext12Months].getValue();
+      wlForms[formName].inputs[cpaAnticipatedDate].toggleDisabled(data ? true : false);
     },
     //TODO-ASH: adultDayEmployment
     TODO5: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [rwfWaiverFundingRequired] "Does the individual require..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "adultDayEmployment" before setting below
-      wlForms[formName].inputs[inputname];
+      wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
     //TODO-ASH: dischargePlan
     TODO6: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [dischargeDetermination] "Does the individual have a viable..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "dischargePlan" before setting below
-      wlForms[formName].inputs[inputname];
+      wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
     //TODO-ASH: immediateNeeds
     TODO6: ({ name, value, formName }) => {
       // (SET) [immNeedsRequired] "Is there an immediate need..." to YES only when the page is enabled.  Otherwise, set it to NO
-      wlForms[formName].inputs[inputname];
+      wlForms[formName].inputs[immNeedsRequired].toggleDisabled(data ? true : false);
     },
     //* waiverEnrollment
     waivEnrollWaiverEnrollmentIsRequired: ({ name, value, formName }) => {
       // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only (IF) [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
-      wlForms[formName].inputs[inputname];
+      const data = wlForms[formName].inputs[waivEnrollWaiverEnrollmentIsRequired].getValue();
+      wlForms[formName].inputs[waivEnrollWaiverEnrollmentDescription].toggleDisabled(data ? true : false);
     },
   };
   function onFormChange(form) {
@@ -894,9 +916,15 @@ const WaitingListAssessment = (() => {
       const name = event.target.name;
 
       if (onChangeCallbacks[name]) {
-        console.log(value, name, formName);
-
         onChangeCallbacks[name]({
+          value,
+          name,
+          formName,
+        });
+      }
+
+      if (onChangeCallbacks[formName]) {
+        onChangeCallbacks[formName]({
           value,
           name,
           formName,
@@ -964,10 +992,6 @@ const WaitingListAssessment = (() => {
       style: 'primary',
       styleType: 'contained',
     });
-  }
-
-  async function load() {
-    const test = await wlData.insertNewAssessmentInitial(selectedConsumer);
   }
 
   async function init(wlDataInstance) {
