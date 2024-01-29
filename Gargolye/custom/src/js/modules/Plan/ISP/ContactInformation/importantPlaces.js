@@ -385,7 +385,7 @@ const isp_ci_importantPlaces = (() => {
 
         return {
           values: [
-            d.type,
+            d.typeValidated,
             d.name,
             d.address,
             UTIL.formatPhoneNumber(d.phone),

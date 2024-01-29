@@ -85,7 +85,8 @@ const planValidation = (function () {
       outcome: [],
       selectedProviders: [],
       paidSupportsProviders: [],
-      invalidProviders: []
+      invalidProviders: [],
+      contactSectionComplete: true
     };
 
     let contactsValidation = {
@@ -577,8 +578,8 @@ const planValidation = (function () {
 
     //* ISP
     async function ISPValidation(planId) {
-      // Set state of check to neutral before running check to remove cached data
-      let validationCheck = {
+      // Set state of check to neutral before running to remove cached data
+      IspValidationCheck = {
         complete: true,
         details: [],
         missingExperiences: [],
@@ -595,20 +596,20 @@ const planValidation = (function () {
         assessmentId: planId,
       });
 
-      validationCheck.outcomesData = outcomesData;
+      IspValidationCheck.outcomesData = outcomesData;
 
       for (const item of outcomesData.planOutcomeExperiences) {
         for (const responsibility of item.planExperienceResponsibilities) {
           const responsibleProvider = responsibility.responsibleProvider;
-          (validationCheck.selectedProviders).push(responsibleProvider);
+          (IspValidationCheck.selectedProviders).push(responsibleProvider);
         }
       }
 
       const paidSupportsIds = outcomesData.paidSupports.map(obj => obj.providerId);
-      validationCheck.paidSupportsProviders = paidSupportsIds;
+      IspValidationCheck.paidSupportsProviders = paidSupportsIds;
 
-      const invalidProviders = (validationCheck.selectedProviders).filter(number => number !== "" && number !== "%" && !(validationCheck.paidSupportsProviders).includes(number));
-      validationCheck.invalidProviders = invalidProviders;
+      const invalidProviders = (IspValidationCheck.selectedProviders).filter(number => number !== "" && number !== "%" && !(IspValidationCheck.paidSupportsProviders).includes(number));
+      IspValidationCheck.invalidProviders = invalidProviders;
   
       // get a list of the unique outcomeIds
       var uniqueOutcomeIds = Array.from(new Set(outcomesData.planOutcome.map(obj => obj.outcomeId)));
@@ -616,10 +617,10 @@ const planValidation = (function () {
       // if any outcome is missing the 'Details to Know' or 'Outcome' section, return false on the validation check
       for (let i = 0; i < outcomesData.planOutcome.length; i++) {
         if (outcomesData.planOutcome[i].details === '') {
-          validationCheck.details.push(outcomesData.planOutcome[i].outcomeId);
+          IspValidationCheck.details.push(outcomesData.planOutcome[i].outcomeId);
         }
         if (outcomesData.planOutcome[i].outcome === '') {
-          validationCheck.outcome.push(outcomesData.planOutcome[i].outcomeId);
+          IspValidationCheck.outcome.push(outcomesData.planOutcome[i].outcomeId);
         }
       }
   
@@ -637,33 +638,35 @@ const planValidation = (function () {
         num => !outcomeReviewOutcomeIds.includes(num),
       );
   
-      validationCheck.missingExperiences = missingOutcomeExperiences;
-      validationCheck.missingReviews = missingOutcomeReviews;
+      IspValidationCheck.missingExperiences = missingOutcomeExperiences;
+      IspValidationCheck.missingReviews = missingOutcomeReviews;
   
       // if an outcome is missing a review or experience, return false on the validation check
       if (missingOutcomeReviews.length > 0 || missingOutcomeExperiences.length > 0) {
-        validationCheck.complete = false;
+        IspValidationCheck.complete = false;
       }
   
       // check the plan progress summary value
       if (outcomesData.planProgressSummary[0]) {
-        validationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
+        IspValidationCheck.planProgressSummary = (outcomesData.planProgressSummary[0].progressSummary !== '');
       }
 
-      if (validationCheck.outcomesData.planOutcome.length < 1) {
-        validationCheck.planProgressSummary = true;
+      if (IspValidationCheck.outcomesData.planOutcome.length < 1) {
+        IspValidationCheck.planProgressSummary = true;
       }
 
       // if there are invalid providers, return false on the validaton check
-      if (validationCheck.invalidProviders.length > 0) {
-        validationCheck.complete = false;
+      if (IspValidationCheck.invalidProviders.length > 0) {
+        IspValidationCheck.complete = false;
       }
   
       // checks if all required data on the page has been filled out
-      checkAllOutcomesComplete(validationCheck);
+      checkAllOutcomesComplete(IspValidationCheck);
+
+      ispValidationContactCheck();
   
-      IspValidationCheck = validationCheck;
-      return validationCheck;
+      //IspValidationCheck = validationCheck;
+      return IspValidationCheck;
     }
 
     function returnIspValidation() {
@@ -825,6 +828,7 @@ const planValidation = (function () {
     }
 
     function checkContactsValidation() {
+      const ISPAlertDiv = document.getElementById('navAlertISP');
       const alertDiv = document.querySelector('.contactsAlertDiv');
       const bestWayToConnectAlertDiv = document.querySelector('.bestWaytoConnectAlert')
 
@@ -841,6 +845,22 @@ const planValidation = (function () {
         bestWayToConnectAlertDiv.style.display = 'none';
       }
 
+      if (ISPAlertDiv && (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect)) {
+        ISPAlertDiv.style.display = 'flex';
+      } else if (ISPAlertDiv) {
+        ISPAlertDiv.style.display = 'none';
+      }
+
+      // sets isp validation check variable value regardless of UI
+      ispValidationContactCheck();
+    }
+
+    function ispValidationContactCheck() {
+      if (!contactsValidation.importantPeople || !contactsValidation.importantPlaces || !contactsValidation.bestWayToConnect) {
+        IspValidationCheck.contactSectionComplete = false;
+      } else {
+        IspValidationCheck.contactSectionComplete = true;
+      }
     }
 
     // checks if the provider selected for the experience is also in the paid supports
