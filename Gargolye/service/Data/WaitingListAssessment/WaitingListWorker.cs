@@ -36,10 +36,11 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return waitingLists;
         }
 
-        public string insertUpdateWaitingListValue(int id, string propertyName, string value, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, char insertOrUpdate)
         {
             string tableName = "";
             string columnName = "";
+            string linkColumnName = "";
             string idNameForWhere = "";
             switch (propertyName)
             {
@@ -50,7 +51,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "id";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle personCompleting
                     break;
@@ -58,7 +59,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "assessor";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id,tableName,columnName, idNameForWhere,value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle personCompleting
                     break;
@@ -66,7 +67,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "assessor_title";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle personCompletingTitle
                     break;
@@ -74,7 +75,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "living_arrangement";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle currentLivingArrangement
                     break;
@@ -82,7 +83,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "areas_needed_help";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle areasPersonNeedsHelp
                     break;
@@ -93,152 +94,171 @@ namespace Anywhere.service.Data.WaitingListAssessment
                 case "otherThanMentalHealth":
                     tableName = "WLA_Conditions";
                     columnName = "Is_Other_Than_Mental_Health";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Condition_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle otherThanMentalHealth
                     break;
                 case "before22":
                     tableName = "WLA_Conditions";
                     columnName = "is_it_before_22";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Condition_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle before22
                     break;
                 case "isConditionIndefinite":
                     tableName = "WLA_Conditions";
                     columnName = "is_condition_indefinite";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Condition_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isConditionIndefinite
                     break;
                 case "isCountyBoardFunding":
                     tableName = "WLA_Active_Services";
                     columnName = "is_county_board_funding";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isCountyBoardFunding
                     break;
                 case "isOhioEarlyInterventionService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_Ohio_early_intervention_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isOhioEarlyInterventionService
                     break;
                 case "isBCMHService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_BCMH_Service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isBCMHService
                     break;
                 case "isFCFCService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_FCFC_Service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isFCFCService
                     break;
                 case "isODEService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_ODE_Service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isODEService
                     break;
                 case "isOODService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_OOD_Service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isOODService
                     break;
                 case "isChildrenServices":
                     tableName = "WLA_Active_Services";
                     columnName = "is_children_services";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isChildrenServices
                     break;
                 case "isMedicaidStatePlanService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_medicaid_state_plan_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isMedicaidStatePlanService
                     break;
                 case "isOhioHomeCareWaiverservice":
                     tableName = "WLA_Active_Services";
                     columnName = "is_Ohio_home_care_waiver_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isOhioHomeCareWaiverservice
                     break;
                 case "isPassportWaiverService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_passport_waiver_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isPassportWaiverService
                     break;
                 case "isAssistedLivingWaiverService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_assisted_living_waiver_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isAssistedLivingWaiverService
                     break;
                 case "isMYCarewaiverService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_mycare_waiver_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isMYCarewaiverService
                     break;
                 case "isMedicaidStatePlanHomeHealthAideservice":
                     tableName = "WLA_Active_Services";
                     columnName = "is_medicaid_state_plan_home_health_aide_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isMedicaidStatePlanHomeHealthAideservice
                     break;
                 case "isMedicaidStatePlanHomeHealthNursingService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_medicaid_state_plan_home_health_nursing_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isMedicaidStatePlanHomeHealthNursingService
                     break;
                 case "isOtherService":
                     tableName = "WLA_Active_Services";
                     columnName = "is_other_service";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isOtherService
                     break;
                 case "otherDescription":
                     tableName = "WLA_Active_Services";
                     columnName = "other_description";
-                    idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle otherDescription
                     break;
@@ -248,591 +268,665 @@ namespace Anywhere.service.Data.WaitingListAssessment
                 case "isPrimaryCaregiverUnavailable":
                     tableName = "WLA_Primary_Caregivers";
                     columnName = "is_primary_caregiver_unavailable";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isPrimaryCaregiverUnavailable
                     break;
                 case "unavailableDocumentation":
                     tableName = "WLA_Primary_Caregivers";
                     columnName = "unavailable_documentation";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle unavailableDocumentation
                     break;
                 case "additionalCommentsForUnavailable":
                     tableName = "WLA_Primary_Caregivers";
                     columnName = "additional_comments_for_unavailable";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle additionalCommentsForUnavailable
                     break;
                 case "isActionRequiredIn30Days":
                     tableName = "WLA_Primary_Caregivers";
                     columnName = "is_action_required_in_30_days";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isActionRequiredIn30Days
                     break;
                 case "isIndividualSkillsDeclined":
                     tableName = "WLA_Primary_Caregivers";
                     columnName = "is_individual_skills_declined";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle isIndividualSkillsDeclined
                     break;
                 case "declinedSkillsDocumentation":
                     tableName = "WLA_Primary_Caregivers";
                     columnName = "declined_skills_documentation";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle declinedSkillsDocumentation
                     break;
                 case "declinedSkillsDescription":
                     tableName = "WLA_Primary_Caregivers";
                     columnName = "declined_skills_description";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle declinedSkillsDescription
                     break;
                 case "actionRequiredDescription":
                     tableName = "WLA_Primary_Caregivers";
                     columnName = "action_required_description";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle actionRequiredDescription
                     break;
                 case "needsIsActionRequiredRequiredIn30Days":
                     tableName = "WLA_Needs";
                     columnName = "is_action_required_in_30_days";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle needsIsActionRequiredRequiredIn30Days
                     break;
                 case "needsIsContinuousSupportRequired":
                     tableName = "WLA_Needs";
                     columnName = "is_continuous_support_required";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle needsIsContinuousSupportRequired
                     break;
                 case "medicalNeedsIsLifeThreatening":
                     tableName = "WLA_Medical_Needs";
                     columnName = "is_life_threatening";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle medicalNeedsIsLifeThreatening
                     break;
                 case "medicalNeedsIsFrequentEmergencyVisit":
                     tableName = "WLA_Medical_Needs";
                     columnName = "is_frequent_emergency_visit";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle medicalNeedsIsFrequentEmergencyVisit
                     break;
                 case "medicalNeedsIsOngoingMedicalCare":
                     tableName = "WLA_Medical_Needs";
                     columnName = "is_ongoing_medical_care";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle medicalNeedsIsOngoingMedicalCare
                     break;
                 case "medicalNeedsIsSpecializedCareGiveNeeded":
                     tableName = "WLA_Medical_Needs";
                     columnName = "is_specialized_care_give_needed";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle medicalNeedsIsSpecializedCareGiveNeeded
                     break;
                 case "medicalNeedsIsOther":
                     tableName = "WLA_Medical_Needs";
                     columnName = "is_other";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle medicalNeedsIsOther
                     break;
                 case "medicalNeedsIsNone":
                     tableName = "WLA_Medical_Needs";
                     columnName = "is_none";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle medicalNeedsIsNone
                     break;
                 case "medicalNeedsDescription":
                     tableName = "WLA_Medical_Needs";
                     columnName = "description";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle medicalNeedsIsNone
                     break;
                 case "physicalNeedsIsPhysicalCareNeeded":
                     tableName = "WLA_Physical_Needs";
                     columnName = "is_physical_care_needed";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle physicalNeedsIsPhysicalCareNeeded
                     break;
                 case "physicalNeedsIsPersonalCareNeeded":
                     tableName = "WLA_Physical_Needs";
                     columnName = "is_personal_care_needed";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle physicalNeedsIsPersonalCareNeeded
                     break;
                 case "physicalNeedsIsRiskDuringPhysicalCare":
                     tableName = "WLA_Physical_Needs";
                     columnName = "is_risk_during_physical_care";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle physicalNeedsIsRiskDuringPhysicalCare
                     break;
                 case "physicalNeedsIsOther":
                     tableName = "WLA_Physical_Needs";
                     columnName = "is_other";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle physicalNeedsIsOther
                     break;
                 case "physicalNeedsIsNone":
                     tableName = "WLA_Physical_Needs";
                     columnName = "is_none";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle physicalNeedsIsNone
                     break;
                 case "physicalNeedsDescription":
                     tableName = "WLA_Physical_Needs";
                     columnName = "description";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle physicalNeedsIsNone
                     break;
                 case "risksIsRiskToSelf":
                     tableName = "WLA_Risks";
                     columnName = "is_risk_to_self";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksIsRiskToSelf
                     break;
                 case "risksIsPhysicalAggression":
                     tableName = "WLA_Risks";
                     columnName = "is_physical_aggression";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksIsPhysicalAggression
                     break;
                 case "risksIsSelfInjury":
                     tableName = "WLA_Risks";
                     columnName = "is_self_injury";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksIsSelfInjury
                     break;
                 case "risksIsFireSetting":
                     tableName = "WLA_Risks";
                     columnName = "is_fire_setting";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksIsFireSetting
                     break;
                 case "risksIsElopement":
                     tableName = "WLA_Risks";
                     columnName = "is_elopement";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksIsElopement
                     break;
                 case "risksIsSexualOffending":
                     tableName = "WLA_Risks";
                     columnName = "is_sexual_offending";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksIsSexualOffending
                     break;
                 case "risksIsOther":
                     tableName = "WLA_Risks";
                     columnName = "is_other";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksIsOther
                     break;
                 case "risksIsNone":
                     tableName = "WLA_Risks";
                     columnName = "is_none";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksIsNone
                     break;
                 case "risksFrequencyDescription":
                     tableName = "WLA_Risks";
                     columnName = "Frequency_Description";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksFrequencyDescription
                     break;
                 case "risksHasPoliceReport":
                     tableName = "WLA_Risks";
                     columnName = "has_police_report";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksHasPoliceReport
                     break;
                 case "risksHasIncidentReport":
                     tableName = "WLA_Risks";
                     columnName = "has_incident_report";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksHasIncidentReport
                     break;
                 case "risksHasBehaviorTracking":
                     tableName = "WLA_Risks";
                     columnName = "has_behavior_tracking";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksHasBehaviorTracking
                     break;
                 case "risksHasPsychologicalAssessment":
                     tableName = "WLA_Risks";
                     columnName = "has_psychological_assessment";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksHasPsychologicalAssessment
                     break;
                 case "risksHasOtherDocument":
                     tableName = "WLA_Risks";
                     columnName = "has_other_document";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksHasOtherDocument
                     break;
                 case "risksOtherDocumentDescription":
                     tableName = "WLA_Risks";
                     columnName = "other_document_description";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksOtherDocumentDescription
                     break;
                 case "risksHasNoDocument":
                     tableName = "WLA_Risks";
                     columnName = "has_no_document";
+                    linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle risksHasNoDocument
                     break;
                 case "rMIsSupportNeeded":
                     tableName = "WLA_Risk_Mitigations";
                     columnName = "is_support_needed";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rMIsSupportNeeded
                     break;
                 case "rMIsCountyBoardInvestigation":
                     tableName = "WLA_Risk_Mitigations";
                     columnName = "is_county_board_investigation";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rMIsCountyBoardInvestigation
                     break;
                 case "rMIsLawEnforcementInvestigation":
                     tableName = "WLA_Risk_Mitigations";
                     columnName = "is_law_enforcement_investigation";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rMIsLawEnforcementInvestigation
                     break;
                 case "rMIsAdultProtectiveServiceInvestigation":
                     tableName = "WLA_Risk_Mitigations";
                     columnName = "is_adult_protective_service_investigation";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rMIsAdultProtectiveServiceInvestigation
                     break;
                 case "rMIsOtherInvestigation":
                     tableName = "WLA_Risk_Mitigations";
                     columnName = "is_other_investigation";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rMIsOtherInvestigation
                     break;
                 case "rMIsNone":
                     tableName = "WLA_Risk_Mitigations";
                     columnName = "is_none";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rMIsNone
                     break;
                 case "rMdescription":
                     tableName = "WLA_Risk_Mitigations";
                     columnName = "description";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rMdescription
                     break;
                 case "rMIsActionRequiredIn3oDays":
                     tableName = "WLA_Risk_Mitigations";
                     columnName = "is_action_required_in_30_days";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rMIsActionRequiredIn3oDays
                     break;
                 case "icfDetermination":
                     tableName = "WLA_ICF_Discharges";
                     columnName = "determination";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_ICF_Discharge_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle icfDetermination
                     break;
                 case "icfIsICFResident":
                     tableName = "WLA_ICF_Discharges";
                     columnName = "is_icf_resident";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_ICF_Discharge_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle icfIsICFResident
                     break;
                 case "icfIsNoticeIssued":
                     tableName = "WLA_ICF_Discharges";
                     columnName = "is_notice_issued";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_ICF_Discharge_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle icfIsNoticeIssued
                     break;
                 case "icfIsActionRequiredIn30Days":
                     tableName = "WLA_ICF_Discharges";
                     columnName = "is_action_required_in_30_days";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_ICF_Discharge_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle icfIsActionRequiredIn30Days
                     break;
                 case "intSupDetermination":
                     tableName = "WLA_Intermitent_Supports";
                     columnName = "determination";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Intermitent_Support_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle intSupDetermination
                     break;
                 case "intSupIsSupportNeededIn12Months":
                     tableName = "WLA_Intermitent_Supports";
                     columnName = "is_support_needed_in_12_months";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Intermitent_Support_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle intSupIsSupportNeededIn12Months
                     break;
                 case "intSupIsStayingLivingArrangement":
                     tableName = "WLA_Intermitent_Supports";
                     columnName = "is_staying_living_arrangement";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Intermitent_Support_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle intSupIsStayingLivingArrangement
                     break;
                 case "intSupIsActionRequiredIn30Days":
                     tableName = "WLA_Intermitent_Supports";
                     columnName = "is_action_required_in_30_days";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Intermitent_Support_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle intSupIsActionRequiredIn30Days
                     break;
                 case "cpaDetermination":
                     tableName = "WLA_Child_Protection_Agencies";
                     columnName = "determination";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Child_Protection_Agency_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle cpaDetermination
                     break;
                 case "cpaIsReleasedNext12Months":
                     tableName = "WLA_Child_Protection_Agencies";
                     columnName = "is_released_next_12_months";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Child_Protection_Agency_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle cpaIsReleasedNext12Months
                     break;
                 case "cpaAnticipateDate":
                     tableName = "WLA_Child_Protection_Agencies";
                     columnName = "anticipate_release_date";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Child_Protection_Agency_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle cpaAnticipateDate
                     break;
                 case "cpaHasUnaddressableNeeds":
                     tableName = "WLA_Child_Protection_Agencies";
                     columnName = "has_unaddressable_needs";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Child_Protection_Agency_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle cpaHadUnaddressableNeeds
                     break;
                 case "rwfWaiverFundingRequired":
                     tableName = "WLA_Require_Waiver_Fundings";
                     columnName = "waiver_funding_required";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Require_Waiver_funding_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rwfWaiverFundingRequired
                     break;
                 case "rwfNeedsMoreFrequency":
                     tableName = "WLA_Require_Waiver_Fundings";
                     columnName = "needs_more_frequency";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Require_Waiver_funding_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rwfNeedsMoreFrequency
                     break;
                 case "rwfNeedsServiceNotMetIDEA":
                     tableName = "WLA_Require_Waiver_Fundings";
                     columnName = "needs_services_not_met_idea";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Require_Waiver_funding_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rwfNeedsServiceNotMetIDEA
                     break;
                 case "rwfNeedsServicesNotMetOOD":
                     tableName = "WLA_Require_Waiver_Fundings";
                     columnName = "needs_services_not_met_ood";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Require_Waiver_funding_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle rwfNeedsServicesNotMetOOD
                     break;
                 case "dischargeDetermination":
                     tableName = "WLA_Discharge_Plans";
                     columnName = "determination";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Discharge_Plan_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle dischargeDetermination
                     break;
                 case "dischargeIsICFResident":
                     tableName = "WLA_Discharge_Plans";
                     columnName = "is_icf_resident";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Discharge_Plan_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle dischargeIsICFResident
                     break;
                 case "dischargeIsInterestedInMoving":
                     tableName = "WLA_Discharge_Plans";
                     columnName = "is_interested_in_moving";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Discharge_Plan_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle dischargeIsInterestedInMoving
                     break;
                 case "dischargeHasDischargePlan":
                     tableName = "WLA_Discharge_Plans";
                     columnName = "has_discharge_plan";
+                    linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Discharge_Plan_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     break;
                 case "immNeedsRequired":
                     tableName = "WLA_Immediate_Needs";
                     columnName = "required";
+                    linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Immediate_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle immNeedsRequired
                     break;
                 case "immNeedsDescription":
                     tableName = "WLA_Immediate_Needs";
                     columnName = "description";
+                    linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Immediate_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle immNeedsDescription
                     break;
                 case "waivEnrollWaiverEnrollmentIsRequired":
                     tableName = "WLA_Waiver_Enrollments";
                     columnName = "waiver_enrollment_is_required";
+                    linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Waiver_Enrollment_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle waivEnrollWaiverEnrollmentIsRequired
                     break;
                 case "waivEnrollWaiverEnrollmentDescription":
                     tableName = "WLA_Waiver_Enrollments";
                     columnName = "waiver_enrollment_description";
+                    linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Waiver_Enrollment_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle waivEnrollWaiverEnrollmentDescription
                     break;
                 case "unmetNeedsHas":
                     tableName = "WLA_Unmet_Needs";
                     columnName = "has_unmet_needs";
+                    linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Unmet_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle immNeedsDescription
                     break;
                 case "unmetNeedsSupports":
                     tableName = "WLA_Unmet_Needs";
                     columnName = "has_any_unmet_supports";
+                    linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Unmet_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle waivEnrollWaiverEnrollmentIsRequired
                     break;
                 case "unmetNeedsDescription":
                     tableName = "WLA_Unmet_Needs";
                     columnName = "description";
+                    linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Unmet_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, tableName, columnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     
                     // Handle waivEnrollWaiverEnrollmentDescription
                     break;

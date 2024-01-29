@@ -55,13 +55,15 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string insertUpdateWaitingListValue(int id, string tableName, string columnName, string idNameForWhere, string propertyValue, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(int id, int linkId, string tableName, string columnName, string linkColumnName, string idNameForWhere, string propertyValue, char insertOrUpdate)
         {
             if (stringInjectionValidator(propertyValue) == false) return null;
             List<string> list = new List<string>();
             list.Add(id.ToString());
+            list.Add(linkId.ToString());
             list.Add(tableName);
             list.Add(columnName);
+            list.Add(linkColumnName);
             list.Add(idNameForWhere);
             list.Add(propertyValue);
             list.Add(insertOrUpdate.ToString());
