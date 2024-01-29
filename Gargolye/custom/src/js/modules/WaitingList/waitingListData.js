@@ -26,9 +26,22 @@
     return data.insertUpdateWaitingListValueResult;
   };
 
-  WaitingListData.prototype.updateAssessmentData = async function ({ id, propertyName, value }) {
+  WaitingListData.prototype.insertAssessmentData = async function ({ id, linkId, propertyName, value }) {
     const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
       id,
+      linkId,
+      propertyName,
+      value,
+      insertOrUpdate: 'I',
+    });
+
+    return data.getLandingPageForConsumerResult;
+  };
+
+  WaitingListData.prototype.updateAssessmentData = async function ({ id, linkId = 0, propertyName, value }) {
+    const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
+      id,
+      linkId,
       propertyName,
       value,
       insertOrUpdate: 'U',

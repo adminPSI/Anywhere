@@ -2,8 +2,9 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
-  let selectedConsumer = null;
-  let lockdownRosterPicker = false;
+  let selectedConsumer;
+  let wlLinkID;
+  let wlFormIds;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -15,7 +16,7 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // UI INSTANCES
   //--------------------------
-  let wlForms = {};
+  let wlForms;
   let wlData;
   let rosterPicker;
   let reviewAssessmentBtn;
@@ -806,8 +807,8 @@ const WaitingListAssessment = (() => {
 
     rosterPicker.toggleRosterDisabled(true, true);
 
-    const resp = await wlData.insertWaitingListAssessment(selectedConsumer);
-    console.log('MIKE LOOK HERE FOR RETURN DATA:', resp);
+    wlLinkID = await wlData.insertWaitingListAssessment(selectedConsumer);
+    console.log('Waiting List Info ID:', wlLinkID);
   }
   const onChangeCallbacks = {
     //* currentAvailableServices
@@ -911,7 +912,7 @@ const WaitingListAssessment = (() => {
   function onFormChange(form) {
     const formName = form;
 
-    return function inputChange(event) {
+    return async function inputChange(event) {
       const value = event.target.value;
       const name = event.target.name;
 
@@ -930,6 +931,23 @@ const WaitingListAssessment = (() => {
           formName,
         });
       }
+
+      // Save/Update
+      if (wlFormIds[formName] === '') {
+        wlFormIds[formName] = await wlData.insertAssessmentData({
+          id: 0,
+          linkId: formName === 'waitingListInfo' ? 0 : wlLinkID,
+          propertyName: name,
+          value: value,
+        });
+      } else {
+        await wlData.updateAssessmentData({
+          id: wlFormIds[formName],
+          linkId: formName === 'waitingListInfo' ? 0 : wlLinkID,
+          propertyName: name,
+          value: value,
+        });
+      }
     };
   }
 
@@ -939,11 +957,6 @@ const WaitingListAssessment = (() => {
     rosterPicker.onConsumerSelect(onConsumerSelect);
     reviewAssessmentBtn.onClick(() => {});
   }
-  function populateForms() {
-    for (form in wlForms) {
-      wlForms[form].populate({});
-    }
-  }
   function loadPage() {
     // FORMS
     for (formElement in formElements) {
@@ -951,6 +964,7 @@ const WaitingListAssessment = (() => {
 
       const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
 
+      wlFormIds[formElement] = '';
       wlForms[formElement] = new Form({
         hideAllButtons: true,
         fields: formElements[formElement],
@@ -995,6 +1009,7 @@ const WaitingListAssessment = (() => {
   }
 
   async function init(wlDataInstance) {
+    wlForms = {};
     wlData = wlDataInstance;
 
     loadPageSkeleton();
