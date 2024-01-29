@@ -78,13 +78,22 @@ const isp_ci_importantPlaces = (() => {
           typeOther: UTIL.removeUnsavableNoteText(typeOtherVal),
         };
         await contactInformationAjax.updatePlanContactImportantPlaces(data);
+
+        // Validation check for rows with type other. places red '!' in row if no value is typeOther
+        if (typeVal === 'Other' && typeOtherVal === '') {
+          typeValValidated = 
+            `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${typeVal}`;
+        }  else {
+          typeValValidated = typeVal;
+        }
+
         data.token = null;
         table.updateRows(
           'isp_ci_importanPlacesTable',
           [
             {
               values: [
-                typeVal,
+                typeValValidated,
                 nameVal,
                 addressVal,
                 UTIL.formatPhoneNumber(phoneVal),
@@ -366,6 +375,14 @@ const isp_ci_importantPlaces = (() => {
 
     if (rawPlacesTableData) {
       const tableData = rawPlacesTableData.map(d => {
+      // Validation check for rows with type other. places red '!' in row if no value is typeOther
+      if (d.type === 'Other' && d.typeOther === '') {
+        d.typeValidated = 
+          `<span style="color: red; position: relative; top: 3px;"><span style="display: inline-block; width: 20px; height: 20px;">${icons.error}</span></span> ${d.type}`;
+      }  else {
+        d.typeValidated = d.type;
+      }
+
         return {
           values: [
             d.type,
@@ -401,35 +418,9 @@ const isp_ci_importantPlaces = (() => {
     });
     if (readOnly) addPlaceBtn.classList.add('disabled');
 
-    // create wrapper div for button and alert
-    const importantPlacesBtnAlertDiv = document.createElement('div');
-    importantPlacesBtnAlertDiv.classList.add('btnAlertContainer');
-
-    // create div for the alert
-    const importantPlacesAlertDiv = document.createElement('div');
-    importantPlacesAlertDiv.innerHTML = `${icons.error}`;
-    importantPlacesAlertDiv.classList.add(`importantPlacesAlert`);
-    importantPlacesAlertDiv.style.display = 'none';
-
-    // creates and shows a tip when hovering over the visible alert div
-    planValidation.createTooltip(
-      'Important places with type "Other" must have a description in "Type Other" text area',
-      importantPlacesAlertDiv,
-    );
-
-    importantPlacesBtnAlertDiv.appendChild(addPlaceBtn);
-    importantPlacesBtnAlertDiv.appendChild(importantPlacesAlertDiv);
-
-    let contactsValidation = planValidation.getContactValidation();
-
-    if (contactsValidation.importantPlaces === false) {
-      importantPlacesAlertDiv.style.display = 'flex';
-    }
-
-
     const table = buildTableMarkup();
     ipSection.appendChild(table);
-    ipSection.appendChild(importantPlacesBtnAlertDiv)
+    ipSection.appendChild(addPlaceBtn)
 
     return ipSection;
   }
