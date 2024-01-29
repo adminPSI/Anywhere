@@ -935,7 +935,7 @@ const WaitingListAssessment = (() => {
       // Save/Update
       if (wlFormIds[formName] === '') {
         wlFormIds[formName] = await wlData.insertAssessmentData({
-          id: 0,
+          id: formName === 'waitingListInfo' ? wlLinkID : 0,
           linkId: formName === 'waitingListInfo' ? 0 : wlLinkID,
           propertyName: name,
           value: value,
