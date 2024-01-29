@@ -20,7 +20,7 @@
       insertOrUpdate: 'I',
     });
 
-    return data.getLandingPageForConsumerResult;
+    return data.insertUpdateWaitingListValueResult;
   };
 
   WaitingListData.prototype.insertUpdateAssessmentData = async function ({ id, propertyName, value, insertOrUpdate }) {

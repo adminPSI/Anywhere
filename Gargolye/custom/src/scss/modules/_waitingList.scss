@@ -3,16 +3,14 @@
   flex-flow: column;
 }
 
-.actioncenter {
-  flex-grow: 1;
-}
-
 [data-active-module='waitingList'] {
   display: flex;
+  flex-grow: 1;
 
-  .waitingListModule {
+  // MAIN ASSESSMENT
+  .waitingListForm {
     display: flex;
-    flex-flow: row;
+    flex-flow: column;
     flex-grow: 1;
 
     h2 {
@@ -22,21 +20,24 @@
     form {
       flex-flow: column nowrap;
     }
-  }
 
-  .waitingListOverview {
-    flex-grow: 1;
-
-    .button {
-      margin: 10px 0 0 0;
+    &__roster {
+      // do stufff
     }
   }
 
-  .waitingListRosterPicker {
-    min-width: 330px;
+  // ASSESSMENT OVERVIEW
+  .waitingListOverview {
+    &__table {
+      flex-grow: 1;
+    }
 
-    .rosterPicker {
-      max-height: calc(100vh - 95px);
+    &__roster {
+      min-width: 330px;
+
+      .rosterPicker {
+        max-height: calc(100vh - 95px);
+      }
     }
   }
 }

@@ -3,6 +3,7 @@ const WaitingListAssessment = (() => {
   // SESSION DATA
   //--------------------------
   let selectedConsumer = null;
+  let lockdownRosterPicker = false;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -15,6 +16,8 @@ const WaitingListAssessment = (() => {
   // UI INSTANCES
   //--------------------------
   let wlForms = {};
+  let rosterPicker;
+  let reviewAssessmentBtn;
 
   const formElements = {
     waitingListInfo: [
@@ -54,8 +57,8 @@ const WaitingListAssessment = (() => {
         id: 'otherThanMentalHealth',
         groupLabel: `Does this person have a condition that is attributable to a mental or physical impairment or combination of mental and physical impairments, other than an impairment cuased solely by mental illness?`,
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'otherThanMentalHealthyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'otherThanMentalHealthno' },
         ],
       },
       {
@@ -63,8 +66,8 @@ const WaitingListAssessment = (() => {
         id: 'before22',
         groupLabel: `Was the condition present before age 22?`,
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'before22yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'before22no' },
         ],
       },
       {
@@ -72,8 +75,8 @@ const WaitingListAssessment = (() => {
         id: 'isConditionIndefinite',
         groupLabel: `Is the condition likely to continue indefinitely?`,
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isConditionIndefiniteyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isConditionIndefiniteno' },
         ],
       },
     ],
@@ -83,8 +86,8 @@ const WaitingListAssessment = (() => {
         id: 'isCountyBoardFunding',
         groupLabel: 'County Board services / funding',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isCountyBoardFundingyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isCountyBoardFundingno' },
         ],
       },
       {
@@ -92,8 +95,8 @@ const WaitingListAssessment = (() => {
         id: 'isOhioEarlyInterventionService',
         groupLabel: 'Help Me Grow / Ohio Early Intervention',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'radiogroupyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'radiogroupno' },
         ],
       },
       {
@@ -101,8 +104,8 @@ const WaitingListAssessment = (() => {
         id: 'isBCMHService',
         groupLabel: 'Bureau for Children with Medical Handicaps',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isBCMHServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isBCMHServiceno' },
         ],
       },
       {
@@ -110,8 +113,8 @@ const WaitingListAssessment = (() => {
         id: 'isFCFCService',
         groupLabel: 'Family and Children First Council',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isFCFCServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isFCFCServiceno' },
         ],
       },
       {
@@ -119,8 +122,8 @@ const WaitingListAssessment = (() => {
         id: 'isODEService',
         groupLabel: 'Ohio Department of Education',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isODEServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isODEServiceno' },
         ],
       },
       {
@@ -128,8 +131,8 @@ const WaitingListAssessment = (() => {
         id: 'isOODService',
         groupLabel: 'Vocational Rehabilitation / Opportunities for Ohioans with Disabilities',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isOODServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isOODServiceno' },
         ],
       },
       {
@@ -137,8 +140,8 @@ const WaitingListAssessment = (() => {
         id: 'isChildrenServices',
         groupLabel: 'Children Services',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isChildrenServicesyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isChildrenServicesno' },
         ],
       },
       {
@@ -146,8 +149,8 @@ const WaitingListAssessment = (() => {
         id: 'isMedicaidStatePlanHomeHealthAideservice',
         groupLabel: 'Medicaid State Plan Home Health Aide',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isMedicaidStatePlanHomeHealthAideserviceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isMedicaidStatePlanHomeHealthAideserviceno' },
         ],
       },
       {
@@ -155,8 +158,8 @@ const WaitingListAssessment = (() => {
         id: 'isMedicaidStatePlanHomeHealthNursingService',
         groupLabel: 'Medicaid State Plan Home Health Nursing',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isMedicaidStatePlanHomeHealthNursingServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isMedicaidStatePlanHomeHealthNursingServiceno' },
         ],
       },
       {
@@ -164,8 +167,8 @@ const WaitingListAssessment = (() => {
         id: 'isMedicaidStatePlanService',
         groupLabel: 'Medicaid State Plan Private Duty Nursing',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isMedicaidStatePlanServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isMedicaidStatePlanServiceno' },
         ],
       },
       {
@@ -173,8 +176,8 @@ const WaitingListAssessment = (() => {
         id: 'isOhioHomeCareWaiverservice',
         groupLabel: 'Ohio Home Care Waiver',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isOhioHomeCareWaiverserviceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isOhioHomeCareWaiverserviceno' },
         ],
       },
       {
@@ -182,8 +185,8 @@ const WaitingListAssessment = (() => {
         id: 'isPassportWaiverService',
         groupLabel: 'PASSPORT Waiver',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isPassportWaiverServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isPassportWaiverServiceno' },
         ],
       },
       {
@@ -191,8 +194,8 @@ const WaitingListAssessment = (() => {
         id: 'isAssistedLivingWaiverService',
         groupLabel: 'Assisted Living Waiver',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isAssistedLivingWaiverServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isAssistedLivingWaiverServiceno' },
         ],
       },
       {
@@ -200,8 +203,8 @@ const WaitingListAssessment = (() => {
         id: 'isMYCarewaiverService',
         groupLabel: 'MyCare Waiver',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isMYCarewaiverServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isMYCarewaiverServiceno' },
         ],
       },
       {
@@ -209,8 +212,8 @@ const WaitingListAssessment = (() => {
         id: 'unknownId1',
         groupLabel: 'Self-Empowered Life Funding Waiver',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'unknownId1yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'unknownId1no' },
         ],
       },
       {
@@ -218,8 +221,8 @@ const WaitingListAssessment = (() => {
         id: 'unknownId2',
         groupLabel: 'Level One Waiver',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'unknownId2yes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'unknownId2no' },
         ],
       },
       {
@@ -227,8 +230,8 @@ const WaitingListAssessment = (() => {
         id: 'isOtherService',
         groupLabel: 'Other',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isOtherServiceyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isOtherServiceno' },
         ],
       },
       {
@@ -249,8 +252,8 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'Is there evidence that the primary caregiver has a declining or chronic condition or is facing other unforseen circumstances that will limit his or her ability to care for the individual?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isPrimaryCaregiverUnavailableyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isPrimaryCaregiverUnavailableno' },
         ],
       },
       {
@@ -266,8 +269,8 @@ const WaitingListAssessment = (() => {
         id: 'isActionRequiredIn30Days',
         groupLabel: `Is action required within the next 30 days due to the caregiver's inability to care for the individual?`,
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isActionRequiredIn30Daysyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isActionRequiredIn30Daysno' },
         ],
         disabled: true,
       },
@@ -283,8 +286,8 @@ const WaitingListAssessment = (() => {
         id: 'isIndividualSkillsDeclined',
         groupLabel: `Is there evidence of declining skills the individual has experienced as a result of either the caregiver's condition or insufficient caregivers to meet the individual's current needs?`,
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'isIndividualSkillsDeclinedyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'isIndividualSkillsDeclinedno' },
         ],
         disabled: true,
       },
@@ -320,8 +323,8 @@ const WaitingListAssessment = (() => {
           'Is the individual a child / adult currently engaging in a pattern of behavior that creates a substantial risk to self / others?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'risksIsRiskToSelfyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'risksIsRiskToSelfno' },
         ],
       },
       {
@@ -379,8 +382,8 @@ const WaitingListAssessment = (() => {
         groupLabel: 'Is the individual a child / adult with significant physical care needs?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'physicalNeedsIsPhysicalCareNeededyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'physicalNeedsIsPhysicalCareNeededno' },
         ],
       },
       {
@@ -420,8 +423,8 @@ const WaitingListAssessment = (() => {
         groupLabel: 'Is the individual a child / adult with significant or life-threatening medical needs?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'medicalNeedsIsLifeThreateningyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'medicalNeedsIsLifeThreateningno' },
         ],
       },
       {
@@ -465,8 +468,8 @@ const WaitingListAssessment = (() => {
         id: 'needsIsActionRequiredRequiredIn30Days',
         groupLabel: 'Is the individual a child / adult with significant physical care needs?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'needsIsActionRequiredRequiredIn30Daysyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'needsIsActionRequiredRequiredIn30Daysno' },
         ],
       },
       {
@@ -475,8 +478,8 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'If No, do the significant behavioral, physical care, and / or medical needs identified require continuous support to reduce risk?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'needsIsContinuousSupportRequiredyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'needsIsContinuousSupportRequiredno' },
         ],
       },
     ],
@@ -489,8 +492,8 @@ const WaitingListAssessment = (() => {
           'Is the individual an adult who has been subjected to abuse, neglect, or exploitation and requires support to reduce risk?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'rMIsSupportNeededyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'rMIsSupportNeededno' },
         ],
       },
       {
@@ -517,8 +520,8 @@ const WaitingListAssessment = (() => {
         id: 'rMIsActionRequiredIn3oDays',
         groupLabel: 'Is action required within the next 30 days to reduce risk?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'rMIsActionRequiredIn3oDaysyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'rMIsActionRequiredIn3oDaysno' },
         ],
         disabled: true,
       },
@@ -532,8 +535,8 @@ const WaitingListAssessment = (() => {
           'Is the individual a resident of an ICFIID or Nursing Facility who has either been issued a 30-day notice of intent to discharge or received an adverse Resident Review determination?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'icfDeterminationyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'icfDeterminationno' },
         ],
       },
       {
@@ -541,8 +544,8 @@ const WaitingListAssessment = (() => {
         id: 'icfIsICFResident',
         groupLabel: 'Is the individual currently a resident of an ICFIID or Nursing Facility?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'icfIsICFResidentyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'icfIsICFResidentno' },
         ],
       },
       {
@@ -551,8 +554,8 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'Has the individual been issued a 30-day notice of intent to discharge or received an adverse Resident Review determination?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'icfIsNoticeIssuedyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'icfIsNoticeIssuedno' },
         ],
       },
       {
@@ -560,8 +563,8 @@ const WaitingListAssessment = (() => {
         id: 'icfIsActionRequiredIn30Days',
         groupLabel: 'Is action required with the next 30 days to reduce the risk?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'icfIsActionRequiredIn30Daysyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'icfIsActionRequiredIn30Daysno' },
         ],
       },
     ],
@@ -574,8 +577,8 @@ const WaitingListAssessment = (() => {
           'Does the individual have an ongoing need for limited / intermittent supports to address behavioral, physical, or medical needs in order to sustain existing caregivers and remain in the current living with.',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'intSupDeterminationyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'intSupDeterminationno' },
         ],
       },
       {
@@ -583,8 +586,8 @@ const WaitingListAssessment = (() => {
         id: 'intSupIsSupportNeededIn12Months',
         groupLabel: 'Does the individual have a need for limited or intermittent supports within the next 12 months?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'intSupIsSupportNeededIn12Monthsyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'intSupIsSupportNeededIn12Monthsno' },
         ],
       },
       {
@@ -592,8 +595,8 @@ const WaitingListAssessment = (() => {
         id: 'intSupIsStayingLivingArrangement',
         groupLabel: 'Does the individual desire to remain in the current living environment?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'intSupIsStayingLivingArrangementyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'intSupIsStayingLivingArrangementno' },
         ],
       },
       {
@@ -602,8 +605,8 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'Are existing caregivers willing AND able to continue to provide supports, if some relief were provided?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'intSupIsActionRequiredIn30Daysyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'intSupIsActionRequiredIn30Daysno' },
         ],
       },
     ],
@@ -616,8 +619,8 @@ const WaitingListAssessment = (() => {
           'Is the individual reaching the age of majority and being released from the custody of a child protective agency within the next 12 months and has needs that cannot be addressed through alternative services?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'cpaDeterminationyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'cpaDeterminationno' },
         ],
       },
       {
@@ -626,8 +629,8 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'Is the individual being released from the custody of a child protective agency within the next 12 months? ',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'cpaIsReleasedNext12Monthsyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'cpaIsReleasedNext12Monthsno' },
         ],
       },
       {
@@ -640,8 +643,8 @@ const WaitingListAssessment = (() => {
         id: 'cpaHadUnaddressableNeeds',
         groupLabel: 'Does the individual have needs that cannot be addressed through alternative services?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'cpaHadUnaddressableNeedsyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'cpaHadUnaddressableNeedsno' },
         ],
       },
     ],
@@ -653,8 +656,8 @@ const WaitingListAssessment = (() => {
         groupLabel: 'Does the individual require waiver funding for adult day or employment-related services?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'rwfWaiverFundingRequiredyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'rwfWaiverFundingRequiredno' },
         ],
       },
       {
@@ -663,8 +666,8 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'Are the needed services required at a level or frequency that exceeds what is able to be sustained through local County Board resources',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'rwfNeedsMoreFrequencyyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'rwfNeedsMoreFrequencyno' },
         ],
       },
       {
@@ -673,18 +676,18 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'Are thhe needed services beyond what is available to the individual through the local school district / Individuals with Disabilities Education Act?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'rwfNeedsServiceNotMetIDEAyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'rwfNeedsServiceNotMetIDEAno' },
         ],
       },
       {
-        type: 'rwfNeedsServiceNotMetOOD',
-        id: 'rwf',
+        type: 'radiogroup',
+        id: 'rwfNeedsServiceNotMetOOD',
         groupLabel:
           'Are the needed services beyond what is available to the individual through Vocational Rehabilitation / Opportunities for Ohioans with Disabilities or other resources?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'rwfNeedsServiceNotMetOODyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'rwfNeedsServiceNotMetOODno' },
         ],
       },
     ],
@@ -697,8 +700,8 @@ const WaitingListAssessment = (() => {
           'Does the individual have a viable discharge plan from the current facility in which he / she resides?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'dischargeDeterminationyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'dischargeDeterminationno' },
         ],
       },
       {
@@ -706,8 +709,8 @@ const WaitingListAssessment = (() => {
         id: 'dischargeIsICFResident',
         groupLabel: 'Is the individual currently a resident of an ICFIID or Nursing Facility?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'dischargeIsICFResidentyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'dischargeIsICFResidentno' },
         ],
       },
       {
@@ -716,8 +719,8 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'Has the individual / guardian expressed an interest in moving to a community-based setting within the next 12 months?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'dischargeIsInterestedInMovingyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'dischargeIsInterestedInMovingno' },
         ],
       },
       {
@@ -725,8 +728,8 @@ const WaitingListAssessment = (() => {
         id: 'dischargeHasDischargePlan',
         groupLabel: `Is the individual's team developing a discharge plan that addresses barries to community living, such as housing and availability of providers?`,
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'dischargeHasDischargePlanyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'dischargeHasDischargePlanno' },
         ],
       },
     ],
@@ -736,8 +739,8 @@ const WaitingListAssessment = (() => {
         id: 'immNeedsRequired',
         groupLabel: `Is there an immediate need identified that requires an action plan with 30 days to reduce the risk?`,
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'immNeedsRequiredyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'immNeedsRequiredno' },
         ],
       },
       {
@@ -755,8 +758,8 @@ const WaitingListAssessment = (() => {
         groupLabel: 'Does the individual have an identified need?',
         note: 'This field is filled out by AI',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'unmetNeedsHasyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'unmetNeedsHasno' },
         ],
       },
       {
@@ -764,8 +767,8 @@ const WaitingListAssessment = (() => {
         id: 'unmetNeedsSupports',
         groupLabel: `If "Yes", will any of those needs be unmet by existing supports / resources within the next 12 months?`,
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'unmetNeedsSupportsyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'unmetNeedsSupportsno' },
         ],
       },
       {
@@ -782,8 +785,8 @@ const WaitingListAssessment = (() => {
         groupLabel:
           'Will the unmet immediate need or unmet current need require enrollment in a waiver due to the lack of community-based alternative services to address the need?',
         fields: [
-          { type: 'radio', label: 'Yes', value: 'yes', id: 'yes' },
-          { type: 'radio', label: 'No', value: 'no', id: 'no' },
+          { type: 'radio', label: 'Yes', value: 'yes', id: 'waivEnrollWaiverEnrollmentIsRequiredyes' },
+          { type: 'radio', label: 'No', value: 'no', id: 'waivEnrollWaiverEnrollmentIsRequiredno' },
         ],
       },
       {
@@ -797,65 +800,92 @@ const WaitingListAssessment = (() => {
 
   // EVENTS
   //--------------------------------------------------
+  async function onConsumerSelect(data) {
+    selectedConsumer = data[0];
+  }
   const onChangeCallbacks = {
     //* currentAvailableServices
     isOtherService: ({ name, value, formName }) => {
       // (ENABLE) [otherDescription] the text field under "Other" only (IF) [isOtherService] the answer is "Yes" to Other
+      wlForms[formName].inputs[inputname];
     },
     //* primaryCaregiver
     isPrimaryCaregiverUnavailable: ({ name, value, formName }) => {
       // (ENABLE) [unavailableDocumentation] "List documentation used to verify presence of declining..." textbox   (IF) [isPrimaryCaregiverUnavailable] question above it is "Yes"
       // (ENABLE) [isActionRequiredIn30Days] "Is action required..." radio buttons                                  (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." question is "Yes"
       // (ENABLE) [isIndividualSkillsDeclined] "Is there evidence of declining..."                                  (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." answer is "No".
+      wlForms[formName].inputs[inputname];
     },
     isActionRequiredIn30Days: ({ name, value, formName }) => {
       // (ENABLE) [actionRequiredDescription] "Describe action required." textbox                                   (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
+      wlForms[formName].inputs[inputname];
     },
     isIndividualSkillsDeclined: ({ name, value, formName }) => {
       // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox             (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
       // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox                                           (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
+      wlForms[formName].inputs[inputname];
     },
     //* riskMitigation
     rMIsActionRequiredIn3oDays: ({ name, value, formName }) => {
       // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES" (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".  Otherwise, set to "NO"
+      wlForms[formName].inputs[inputname];
     },
     openInvestigation: ({ name, value, formName }) => {
+      //! checkbox group need to do something about ids
       // (ENABLE) [rMdescription] the "Describe incident under..." textbox               (IF) [openInvestigation] any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
       // (ENABLE) [rMIsActionRequiredIn3oDays] the "Is action required..." radio buttons (IF) [openInvestigation] any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
+      wlForms[formName].inputs[inputname];
     },
     //TODO-ASH: icfDischarge
     TODO: ({ name, value, formName }) => {
+      // AI FIELD
       // (SET) [icfDetermination] "Is the individual a resident..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+      //* going to have to check all inputs in form "icfDischarge" before setting below
+      wlForms[formName].inputs[inputname];
     },
     //TODO-ASH: intermittentSupports
     TODO2: ({ name, value, formName }) => {
+      // AI FIELD
       // (SET) [intSupDetermination] "Does the individual have an..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+      //* going to have to check all inputs in form "intermittentSupports" before setting below
+      wlForms[formName].inputs[inputname];
     },
     //TODO-ASH: childProtectionAgency
     TODO3: ({ name, value, formName }) => {
+      // AI FIELD
       // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+      //* going to have to check all inputs in form "childProtectionAgency" before setting below
+      wlForms[formName].inputs[inputname];
     },
-    TODO4: ({ name, value, formName }) => {
+    cpaIsReleasedNext12Months: ({ name, value, formName }) => {
       // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
+      wlForms[formName].inputs[inputname];
     },
     //TODO-ASH: adultDayEmployment
     TODO5: ({ name, value, formName }) => {
+      // AI FIELD
       // (SET) [rwfWaiverFundingRequired] "Does the individual require..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+      //* going to have to check all inputs in form "adultDayEmployment" before setting below
+      wlForms[formName].inputs[inputname];
     },
     //TODO-ASH: dischargePlan
     TODO6: ({ name, value, formName }) => {
+      // AI FIELD
       // (SET) [dischargeDetermination] "Does the individual have a viable..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+      //* going to have to check all inputs in form "dischargePlan" before setting below
+      wlForms[formName].inputs[inputname];
     },
     //TODO-ASH: immediateNeeds
     TODO6: ({ name, value, formName }) => {
       // (SET) [immNeedsRequired] "Is there an immediate need..." to YES only when the page is enabled.  Otherwise, set it to NO
+      wlForms[formName].inputs[inputname];
     },
     //* waiverEnrollment
     waivEnrollWaiverEnrollmentIsRequired: ({ name, value, formName }) => {
       // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only (IF) [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
+      wlForms[formName].inputs[inputname];
     },
   };
-
   function onFormChange(form) {
     const formName = form;
 
@@ -877,55 +907,81 @@ const WaitingListAssessment = (() => {
 
   // MAIN
   //--------------------------------------------------
+  function attachEvents() {
+    rosterPicker.onConsumerSelect(onConsumerSelect);
+    reviewAssessmentBtn.onClick(() => {});
+  }
   function populateForms() {
     for (form in wlForms) {
       wlForms[form].populate({});
     }
   }
-  function loadForms() {
-    // build
+  function loadPage() {
+    // FORMS
     for (formElement in formElements) {
       if (formElements[formElement].length === 0) continue;
+
+      const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
 
       wlForms[formElement] = new Form({
         hideAllButtons: true,
         fields: formElements[formElement],
+        formName: formElement,
       });
+
+      formWrap.appendChild(formHeader);
+      wlForms[formElement].renderTo(formWrap);
 
       wlForms[formElement].onChange(onFormChange(formElement));
     }
 
-    // render
-    for (form in wlForms) {
-      const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(form) });
-      formWrap.appendChild(formHeader);
-      wlForms[form].renderTo(formWrap);
-    }
+    // ROSTER PICKER
+    rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
     // prep actioncenter
     _DOM.ACTIONCENTER.innerHTML = '';
 
     // build DOM skeleton
-    formWrap = _DOM.createElement('div', { class: 'waitingListModule' });
+    formWrap = _DOM.createElement('div', { class: 'waitingListForm' });
+    rosterWrap = _DOM.createElement('div', { class: 'waitingListForm__roster' });
 
     _DOM.ACTIONCENTER.appendChild(formWrap);
+    _DOM.ACTIONCENTER.appendChild(rosterWrap);
   }
 
   // INIT (data & defaults)
   //--------------------------------------------------
-  async function init(selectedConsumerId, wlDataInstance) {
-    selectedConsumer = selectedConsumerId;
+  function initComponents() {
+    // Roster Picker
+    rosterPicker = new RosterPicker({
+      allowMultiSelect: false,
+      consumerRequired: true,
+    });
+
+    reviewAssessmentBtn = new Button({
+      text: 'Review Assessments',
+      style: 'primary',
+      styleType: 'contained',
+    });
+  }
+
+  async function load() {
+    const test = await wlData.insertNewAssessmentInitial(selectedConsumer);
+  }
+
+  async function init(wlDataInstance) {
     wlData = wlDataInstance;
 
     loadPageSkeleton();
+    initComponents();
+    loadPage();
 
-    // get ids
-    await wlData.insertNewAssessmentInitial(selectedConsumer);
+    await rosterPicker.fetchConsumers();
+    rosterPicker.populate();
 
-    // load form
-    loadForms();
+    attachEvents();
   }
 
-  return { load: init };
+  return { init };
 })();

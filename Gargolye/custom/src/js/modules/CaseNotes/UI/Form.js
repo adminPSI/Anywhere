@@ -45,7 +45,7 @@
    * @function
    */
   Form.prototype._build = function () {
-    this.form = _DOM.createElement('form');
+    this.form = _DOM.createElement('form', { name: this.options.formName ?? '' });
 
     // Build form input fields
     this.options.fields.forEach(ele => {
