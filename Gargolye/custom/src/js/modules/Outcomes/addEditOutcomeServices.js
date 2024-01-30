@@ -45,7 +45,7 @@ const addEditOutcomeServices = (() => {
         outcomeServicesData = await outcomesAjax.getOutcomeServicsPageData({
             token: $.session.Token,
             selectedConsumerId: selectedConsumer.id,
-            outcomeType: filterValues.outcomeType,
+            outcomeType: filterValues.outcomeTypeName, 
             effectiveDateStart: filterValues.effectiveDateStart,
             effectiveDateEnd: filterValues.effectiveDateEnd,
         });
@@ -71,7 +71,7 @@ const addEditOutcomeServices = (() => {
                 .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 10))
                 .slice(0, 10),
             effectiveDateEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
-            outcomeTypeName:'',
+            outcomeTypeName:'%',  
         };
     }
 
@@ -105,7 +105,7 @@ const addEditOutcomeServices = (() => {
         } else {
             btnWrap.appendChild(outcomeTypeBtnWrap);
             if (document.getElementById('outcomeTypeBtn') != null)
-                document.getElementById('outcomeTypeBtn').innerHTML = 'Outecome Type: ' + filterValues.outcomeTypeName;
+                document.getElementById('outcomeTypeBtn').innerHTML = 'Outcome Type: ' + filterValues.outcomeTypeName;
         } 
 
 
@@ -133,7 +133,7 @@ const addEditOutcomeServices = (() => {
 
         outcomeTypeBtn = button.build({
             id: 'outcomeTypeBtn',
-            text: 'Outecome Type: ' + filterValues.outcomeType,
+            text: 'Outcome Type: ' + filterValues.outcomeType,
             style: 'secondary',
             type: 'text',
             classNames: 'filterSelectionBtn',
@@ -175,9 +175,9 @@ const addEditOutcomeServices = (() => {
     function closeFilter(closeFilter) {
         if (closeFilter == 'outcomeTypeBtn') {
             filterValues.outcomeType = '%';
-            filterValues.outcomeTypeName = '';
+            filterValues.outcomeTypeName = '%';
             newFilterValues.outcomeType = '%'; 
-            newFilterValues.outcomeTypeName = ''; 
+            newFilterValues.outcomeTypeName = '%'; 
         }
         applyFilter();
     }
@@ -208,7 +208,7 @@ const addEditOutcomeServices = (() => {
             value: filterValues.effectiveDateEnd,
         });
 
-        if (IsShow == 'ALL' || IsShow == 'completedDateBtn') {
+        if (IsShow == 'ALL' || IsShow == 'effectiveDateBtn') {
             dateWrap.appendChild(effectiveDateStartInput);
             dateWrap.appendChild(effectiveDateEndInput);
         }
@@ -308,7 +308,7 @@ const addEditOutcomeServices = (() => {
         outcomeServicesData = await outcomesAjax.getOutcomeServicsPageData({
             token: $.session.Token,
             selectedConsumerId: selectedConsumer.id,
-            outcomeType: filterValues.outcomeType,
+            outcomeType: filterValues.outcomeTypeName == 'ALL' ? '%' : filterValues.outcomeTypeName,  
             effectiveDateStart: filterValues.effectiveDateStart,
             effectiveDateEnd: filterValues.effectiveDateEnd,
         });
@@ -331,7 +331,7 @@ const addEditOutcomeServices = (() => {
         mainHeading.classList.add('outcomeTable__header');
         mainHeading.innerHTML = `
       <div></div>
-      <div>Outecome Type</div>
+      <div>Outcome Type</div>
       <div>Outcome Statement</div>
       <div>Start Date</div>
       <div>End Date</div>  
