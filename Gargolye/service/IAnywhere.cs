@@ -4457,7 +4457,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getActiveAccount/")]
-        ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token, string consumerId);
+        ConsumerFinancesWorker.ActiveAccount[] getActiveAccount(string token, string consumerId, string accountPermission);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

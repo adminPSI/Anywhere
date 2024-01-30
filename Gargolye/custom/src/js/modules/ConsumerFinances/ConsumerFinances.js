@@ -22,6 +22,8 @@ const ConsumerFinances = (() => {
     let categoryBtnWrap;
     let enteredByBtnWrap;
     let isattachmentBtnWrap;
+    let accountPermission;
+    let tempAccountPer;
 
     //service filter options
     let selectedConsumerIds;
@@ -66,6 +68,8 @@ const ConsumerFinances = (() => {
             })
         ).getConsumerNameByIDResult;
 
+        getaccountPermission();
+
         selectedConsumersName = name[0].FullName;
         const topButton = buildHeaderButton(selectedConsumers[0]);
         landingPage.appendChild(topButton);
@@ -81,6 +85,34 @@ const ConsumerFinances = (() => {
         DOM.ACTIONCENTER.appendChild(landingPage);
     }
 
+    function getaccountPermission() {
+        accountPermission = '';
+        tempAccountPer = [];
+        if ($.session.CFViewChecking)
+            tempAccountPer.push('Checking');
+
+        if ($.session.CFViewCraditCard) {
+            tempAccountPer.push('Credit Card');
+        }
+
+        if ($.session.CFViewFoodStamp) {
+            tempAccountPer.push('Food Stamps');
+        }
+
+        if ($.session.CFViewPettyCash) {
+            tempAccountPer.push('Petty Cash');
+        }
+
+        if ($.session.CFViewShaving) {
+            tempAccountPer.push('Savings');
+        }
+        debugger;
+        if (tempAccountPer.length > 0)
+            accountPermission = tempAccountPer.map(x => "'" + x + "'").toString(); 
+        else
+            accountPermission = '';
+    }
+
     // build the listing of OOD Entries (based off of filter settings)
     async function buildConsumerFinanceEntriesTable(filterValues) {
         const tableOptions = {
@@ -90,7 +122,7 @@ const ConsumerFinances = (() => {
             columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By'],
             endIcon: true,
         };
-
+        debugger;
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
         let ConsumerFinancesEntries = await ConsumerFinancesAjax.getAccountTransectionEntriesAsync(
             selectedConsumerIds.join(", "),
@@ -118,7 +150,7 @@ const ConsumerFinances = (() => {
         let tableData = ConsumerFinancesEntries.getAccountTransectionEntriesResult.map((entry) => ({
             values: [entry.activityDate, entry.account, entry.payee, entry.category, '$' + entry.amount, entry.checkno, '$' + entry.balance, entry.enteredby],
             attributes: [{ key: 'registerId', value: entry.ID }, { key: 'data-plan-active', value: entry.isExpance }],
-            onClick: (e) => { 
+            onClick: (e) => {
                 handleAccountTableEvents(e.target.attributes.registerId.value)
             },
             endIcon: entry.AttachmentsID == 0 ? `${icons['Empty']}` : `${icons['attachmentSmall']}`,
@@ -213,7 +245,7 @@ const ConsumerFinances = (() => {
     async function populateAccountDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync(selectedConsumersId);
+        } = await ConsumerFinancesAjax.getActiveAccountAsync(selectedConsumersId, accountPermission);
         let data = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
@@ -235,7 +267,7 @@ const ConsumerFinances = (() => {
         }
 
         filteredBy.style.maxWidth = '100%';
-     
+
         if (filterValues.transectionType === '%' || filterValues.transectionType === 'ALL') {
             btnWrap.appendChild(transectionTypeBtnWrap);
             btnWrap.removeChild(transectionTypeBtnWrap);
@@ -472,7 +504,7 @@ const ConsumerFinances = (() => {
         btnWrap.appendChild(isattachmentBtnWrap);
     }
 
-    function closeFilter(closeFilter) {       
+    function closeFilter(closeFilter) {
         if (closeFilter == 'transectionTypeBtn') {
             filterValues.transectionType = '%';
         }
@@ -598,7 +630,7 @@ const ConsumerFinances = (() => {
         amountWrap.classList.add('dateWrap');
         if (IsShow == 'ALL' || IsShow == 'minamountBtn')
             amountWrap.appendChild(minAmountInput);
-        if (IsShow == 'ALL' || IsShow == 'maxamountBtn') 
+        if (IsShow == 'ALL' || IsShow == 'maxamountBtn')
             amountWrap.appendChild(maxAmountInput);
 
         // build popup
@@ -753,7 +785,7 @@ const ConsumerFinances = (() => {
     async function populateFilterDropdown() {
         const {
             getActiveAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getActiveAccountAsync(selectedConsumersId);
+        } = await ConsumerFinancesAjax.getActiveAccountAsync(selectedConsumersId, accountPermission);
         let accountData = accounts.map((account) => ({
             id: account.accountId,
             value: account.accountName,
@@ -828,14 +860,15 @@ const ConsumerFinances = (() => {
             locationName: '',
         }, {
             hideDate: true,
-        });  
+        });
 
-        roster2.showMiniRoster(); 
+        roster2.showMiniRoster();
     }
 
     return {
         init,
         handleActionNavEvent,
         loadConsumerFinanceLanding,
+        getaccountPermission,
     };
 })(); 
