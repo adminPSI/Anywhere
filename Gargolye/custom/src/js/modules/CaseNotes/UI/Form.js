@@ -66,18 +66,22 @@
           break;
         }
         case 'select': {
-          delete ele.type; // only needed for Form
-          inputInstance = new Select({ ...ele });
+          const tmpFix = { ...ele };
+          delete tmpFix.type; // only needed for Form
+
+          inputInstance = new Select({ ...tmpFix });
           break;
         }
         case 'textarea': {
-          delete ele.type; // only needed for Form
-          inputInstance = new Textarea({ ...ele });
+          const tmpFix = { ...ele };
+          delete tmpFix.type; // only needed for Form
+          inputInstance = new Textarea({ ...tmpFix });
           break;
         }
         case 'attachment': {
-          delete ele.type; // only needed for Form
-          inputInstance = new Attachments({ ...ele });
+          const tmpFix = { ...ele };
+          delete tmpFix.type; // only needed for Form
+          inputInstance = new Attachments({ ...tmpFix });
           break;
         }
         default: {
