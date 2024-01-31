@@ -36,6 +36,18 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return waitingLists;
         }
 
+        public string deleteFromWaitingList(string[] properties)
+        {
+            var i = 0;
+            foreach(string property in properties)
+            {
+                string[] parts = property.Split('|');
+                dg.deleteFromWaitingList(parts[0], parts[1]);
+            }
+
+            return "success";
+        }
+
         public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, char insertOrUpdate)
         {
             string tableName = "";

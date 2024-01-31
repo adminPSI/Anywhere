@@ -2798,6 +2798,11 @@ namespace Anywhere
         }
 
         //Waiting List Module
+        public string deleteFromWaitingList(string[] properties)
+        {
+           return wlw.deleteFromWaitingList(properties);
+        }
+
         public LandingPageInfo[] getLandingPageForConsumer(string token, double consumerId)
         {
             return wlw.getLandingPageForConsumer(token, consumerId);

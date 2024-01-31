@@ -4045,6 +4045,14 @@ namespace Anywhere
         Anywhere.service.Data.FormWorker.consumerForm[] getconsumerForms(string token, string userId, string consumerId, string hasAssignedFormTypes);
 
         //Waiting List Module
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/deleteFromWaitingList/")]
+        string deleteFromWaitingList(string[] properties);
+
         [WebInvoke(Method = "POST",
           BodyStyle = WebMessageBodyStyle.Wrapped,
           ResponseFormat = WebMessageFormat.Json,
