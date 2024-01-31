@@ -273,11 +273,11 @@ const addServicesForm = (() => {
         dropdown.populate("ServiceTypeDropdown", ServiceFrequencyData, ServiceType);
 
         const frequencyPeriodDropdownData = ([
-            { id: 'H', value: 1, text: 'per Hour' },
-            { id: 'D', value: 2, text: 'per Day' },
-            { id: 'W', value: 3, text: 'per Week' },
-            { id: 'M', value: 4, text: 'per Month' },
-            { id: 'Y', value: 4, text: 'per Year' },
+            { id: 'H', value: 'H', text: 'per Hour' },
+            { id: 'D', value: 'D', text: 'per Day' },
+            { id: 'W', value: 'W', text: 'per Week' },
+            { id: 'M', value: 'M', text: 'per Month' },
+            { id: 'Y', value: 'Y', text: 'per Year' },
         ]);
         frequencyPeriodDropdownData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("frequencyPeriodDropdown", frequencyPeriodDropdownData, frequencyPeriod);

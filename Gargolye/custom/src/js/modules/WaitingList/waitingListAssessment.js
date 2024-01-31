@@ -857,21 +857,21 @@ const WaitingListAssessment = (() => {
       // wlForms[formName].inputs[rMdescription].toggleDisabled(data ? true : false);
       // wlForms[formName].inputs[rMIsActionRequiredIn3oDays].toggleDisabled(data ? true : false);
     },
-    //TODO-ASH: icfDischarge
+    //TODO-ASH: icfDischarge [AI]
     TODO: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [icfDetermination] "Is the individual a resident..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "icfDischarge" before setting below
       wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
-    //TODO-ASH: intermittentSupports
+    //TODO-ASH: intermittentSupports [AI]
     TODO2: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [intSupDetermination] "Does the individual have an..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "intermittentSupports" before setting below
       wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
-    //TODO-ASH: childProtectionAgency
+    //TODO-ASH: childProtectionAgency [AI]
     TODO3: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
@@ -883,21 +883,21 @@ const WaitingListAssessment = (() => {
       const data = wlForms[formName].inputs[cpaIsReleasedNext12Months].getValue();
       wlForms[formName].inputs[cpaAnticipatedDate].toggleDisabled(data ? true : false);
     },
-    //TODO-ASH: adultDayEmployment
+    //TODO-ASH: adultDayEmployment [AI]
     TODO5: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [rwfWaiverFundingRequired] "Does the individual require..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "adultDayEmployment" before setting below
       wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
-    //TODO-ASH: dischargePlan
+    //TODO-ASH: dischargePlan [AI]
     TODO6: ({ name, value, formName }) => {
       // AI FIELD
       // (SET) [dischargeDetermination] "Does the individual have a viable..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
       //* going to have to check all inputs in form "dischargePlan" before setting below
       wlForms[formName].inputs[inputname].toggleDisabled(data ? true : false);
     },
-    //TODO-ASH: immediateNeeds
+    //TODO-ASH: immediateNeeds [AI??]
     TODO6: ({ name, value, formName }) => {
       // (SET) [immNeedsRequired] "Is there an immediate need..." to YES only when the page is enabled.  Otherwise, set it to NO
       wlForms[formName].inputs[immNeedsRequired].toggleDisabled(data ? true : false);
@@ -935,7 +935,7 @@ const WaitingListAssessment = (() => {
       // Save/Update
       if (wlFormIds[formName] === '') {
         wlFormIds[formName] = await wlData.insertAssessmentData({
-          id: 0,
+          id: formName === 'waitingListInfo' ? wlLinkID : 0,
           linkId: formName === 'waitingListInfo' ? 0 : wlLinkID,
           propertyName: name,
           value: value,
@@ -1010,6 +1010,7 @@ const WaitingListAssessment = (() => {
 
   async function init(wlDataInstance) {
     wlForms = {};
+    wlFormIds = {};
     wlData = wlDataInstance;
 
     loadPageSkeleton();

@@ -1,12 +1,15 @@
 using Anywhere.Data;
 using Anywhere.Log;
+using CrystalDecisions.Shared;
 using Newtonsoft.Json;
 using System;
 using System.Configuration;
 using System.Data;
 using System.Text;
 using System.Web.Script.Serialization;
+using static Anywhere.service.Data.AnywhereAbsentWorker;
 using static Anywhere.service.Data.Authorization.AuthorizationWorker;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Anywhere.service.Data
 {
@@ -327,14 +330,15 @@ namespace Anywhere.service.Data
         {
             try
             {
-
                 string jsonResult = "";
                 sb.Clear();
 
                 sb.Append("select Goal_ID as goal_id , gt.Goal_Type_Description as outcomeType, gs.Goal_Statement as outcomeStatement , gs.Start_Date as effectiveDateStart, gs.End_Date as effectiveDateEnd ");
                 sb.Append("from dba.goals gs ");
                 sb.Append("left outer join dba.Goal_Types gt on gs.Goal_Type_ID = gt.Goal_Type_ID ");
-
+                sb.AppendFormat("where(gs.Start_Date between '{0}' and '{1}') ", effectiveDateStart, effectiveDateEnd);
+                sb.AppendFormat("AND (gt.Goal_Type_Description like '{0}') ", outcomeType);
+                sb.AppendFormat("AND (gs.ID = {0}) ", selectedConsumerId);
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
 
@@ -356,11 +360,17 @@ namespace Anywhere.service.Data
             {
                 string jsonResult = "";
                 sb.Clear();
-
-                sb.Append("select  ROW_NUMBER() OVER(ORDER BY obj.Objective_id) AS itemnum, obj.Objective_ID as objective_Id, obj.goal_id as goal_id , case when obj.Objective_recurrance = 'M' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per month' when obj.Objective_recurrance = 'D' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per day' when obj.Objective_recurrance = 'W' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per week'  ");
-                sb.Append(" when obj.Objective_recurrance = 'H' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per hour' when obj.Objective_recurrance = 'Y' then cast(obj.Frequency_Occurance as varchar(30)) + 'x per year' end as frequency, ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.Start_Date as serviceStartDate, obj.End_Date as serviceEndDate");
-                sb.Append(" from Objectives  obj ");
-                sb.Append(" left outer join Code_Table ct on obj.Objective_Type =  ct.Code and Field_ID = 'Objective_Type' and Table_ID = 'Objectives'  ");
+               
+                sb.Append(" select ROW_NUMBER() OVER(ORDER BY obj.Objective_id) AS itemnum, obj.Objective_ID as objective_Id, obj.goal_id as goal_id , ");
+                sb.Append(" case when obj.Objective_recurrance = 'M' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per month' ");
+                sb.Append(" when obj.Objective_recurrance = 'D' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per day' ");
+                sb.Append(" when obj.Objective_recurrance = 'W' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per week' ");
+                sb.Append(" when obj.Objective_recurrance = 'H' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per hour' ");
+                sb.Append(" when obj.Objective_recurrance = 'Y' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per year' end as frequency, ");
+                sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.Start_Date as serviceStartDate, obj.End_Date as serviceEndDate ");
+                sb.Append(" from Objectives obj ");
+                sb.Append(" left outer join Code_Table ct on obj.Objective_Type = ct.Code and ct.Field_ID = 'Objective_Type' and ct.Table_ID = 'Objectives' ");
+                sb.Append(" left outer join Code_Table ctf on obj.Frequency_Modifier = ctf.Code and ctf.Field_ID = 'Frequency_Modifier' and ctf.Table_ID = 'Objectives' ");
 
                 DataTable dt = di.SelectRowsDS(sb.ToString()).Tables[0];
                 jsonResult = DataTableToJSONWithJSONNet(dt);
@@ -416,7 +426,7 @@ namespace Anywhere.service.Data
         }
 
         public OutcomesWorker.PDParentOutcome[] insertOutcomeInfo(string token, string startDate, string endDate, string outcomeType, string outcomeStatement, string userID, string goalId, string consumerId)
-        { 
+        {
             string insertOutcomeString = dg.insertOutcomeInfo(token, startDate, endDate, outcomeType, outcomeStatement, userID, goalId, consumerId);
             OutcomesWorker.PDParentOutcome[] insertOutcomeObj = js.Deserialize<OutcomesWorker.PDParentOutcome[]>(insertOutcomeString);
             return insertOutcomeObj;

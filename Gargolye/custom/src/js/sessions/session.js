@@ -303,6 +303,12 @@ $.session.CFInsertAccounts = false;
 $.session.CFUpdateEditAccounts = false;
 $.session.CFViewEditAccounts = false;
 
+$.session.CFViewChecking = false;
+$.session.CFViewCraditCard = false;
+$.session.CFViewFoodStamp = false;
+$.session.CFViewPettyCash = false;
+$.session.CFViewShaving = false;
+
 // Reset Password
 $.session.ResetPasswordView = false;
 $.session.ResetPasswordUpdate = false;
@@ -749,6 +755,26 @@ function setSessionVariables() {
                 $('#cfEditAccountDiv').removeClass('disabledModule');
                 $('#consumerfinancessettingsdiv').removeClass('disabledModule');
                 $.session.CFViewEditAccounts = true;
+            }
+
+            if (tmpPerm == 'View Checking' || $.session.isPSI == true) {
+                $.session.CFViewChecking = true;
+            }
+
+            if (tmpPerm == 'View Credit Card' || $.session.isPSI == true) {
+                $.session.CFViewCraditCard = true;
+            }
+
+            if (tmpPerm == 'View Food Stamps' || $.session.isPSI == true) {
+                $.session.CFViewFoodStamp = true;
+            }
+
+            if (tmpPerm == 'View Petty Cash' || $.session.isPSI == true) {
+                $.session.CFViewPettyCash = true;
+            }
+
+            if (tmpPerm == 'View Savings' || $.session.isPSI == true) {
+                $.session.CFViewShaving = true;
             }
         }
 
@@ -1405,7 +1431,7 @@ Date.prototype.getShortMonthName = function () {
 //     $(".hrtriangleright").remove();
 // }
 
-function setDefaultValue(type, value, event, name) {   
+function setDefaultValue(type, value, event, name) {
     event.stopPropagation();
     var mySrc = $(event.srcElement);
     mySrc.parents('locationpopupbox').hide();
@@ -1495,8 +1521,8 @@ function setDefaultValue(type, value, event, name) {
             }
             break;
         case 7:
-            typeName = 'Default MoneyManagement Location'; 
-            $('#moneyManagement7').text(event.srcElement.text); 
+            typeName = 'Default MoneyManagement Location';
+            $('#moneyManagement7').text(event.srcElement.text);
             if (value != 0 && name != null) {
                 createCookie('defaultMoneyManagementLocationName', name, 7);
                 createCookie('defaultMoneyManagementLocationValue', value, 7);

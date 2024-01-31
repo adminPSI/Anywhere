@@ -104,10 +104,16 @@
         }
       }
 
+      const isWorkingSectionComplete = planValidation.returnAssessmentValidationData();
+
       if (numOfQuestionsUnawnsered > 0) {
         numOfQuestionsUnawnseredDiv.innerText = numOfQuestionsUnawnsered;
         numOfQuestionsUnawnseredWrapDiv.classList.remove('hidden');
       } else {
+        numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
+      }
+
+      if (sectionKey === '41' && isWorkingSectionComplete.workingSectionComplete === true) {
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
       }
     });

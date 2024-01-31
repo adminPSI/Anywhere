@@ -22,7 +22,7 @@
     }
 
     &__roster {
-      // do stufff
+      min-width: 300px;
     }
   }
 
@@ -33,7 +33,7 @@
     }
 
     &__roster {
-      min-width: 330px;
+      min-width: 300px;
 
       .rosterPicker {
         max-height: calc(100vh - 95px);
