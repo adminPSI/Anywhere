@@ -76,6 +76,15 @@ $label_fontSize: $px14;
     }
   }
 
+  input,
+  select,
+  textarea {
+    &:disabled,
+    &[readonly] {
+      background: $gray;
+    }
+  }
+
   //===========================================
   // TEXTAREAS
   //-------------------------------------------

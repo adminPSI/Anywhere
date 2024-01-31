@@ -51,13 +51,6 @@
   };
 
   /**
-   * Handles radio change event
-   *
-   * @function
-   */
-  Radio.prototype.onChange = function () {};
-
-  /**
    * Renders the built Radio element to the specified DOM node.
    *
    * @function
@@ -79,7 +72,9 @@
    * Default configuration
    * @typ {Object}
    */
-  const DEFAULT_OPTIONS_2 = {};
+  const DEFAULT_OPTIONS_2 = {
+    disabled: false,
+  };
 
   /**
    * @constructor
@@ -87,6 +82,7 @@
   function RadioGroup(options) {
     // Data Init
     this.options = _UTIL.mergeObjects(DEFAULT_OPTIONS_2, options);
+    this.inputs = {};
 
     // DOM Ref
     this.rootElement = null;
@@ -108,7 +104,30 @@
     this.options.fields.forEach(field => {
       const inputInstance = new Radio({ ...field, name: this.options.id });
       this.rootElement.appendChild(inputInstance.rootElement);
+      this.inputs[field.id] = inputInstance;
     });
+  };
+
+  /**
+   * Check radio input by id
+   *
+   * @function
+   * @param {String | Number} value
+   */
+  RadioGroup.prototype.setValue = function (inputId) {
+    this.inputs[inputId].checked = true;
+  };
+
+  /**
+   * Toggles inputs disabled state, if true input is disabled
+   *
+   * @function
+   * @param {Boolean} isDisbled
+   */
+  RadioGroup.prototype.toggleDisabled = function (isDisbled) {
+    for (inputId in this.inputs) {
+      this.inputs[inputId].disabled = isDisbled;
+    }
   };
 
   return RadioGroup;

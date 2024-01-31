@@ -5,6 +5,7 @@ const WaitingListAssessment = (() => {
   let selectedConsumer;
   let wlLinkID;
   let wlFormIds;
+  let wlSectionActiveStatus;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -883,7 +884,8 @@ const WaitingListAssessment = (() => {
     );
     // (SET) [risksIsRiskToSelf] "Is the individual a child / adult currently engaging..." to "YES" (IF)
     // There is at least one checkbox checked in each of the first two groups of checkboxes NOT including the "Not applicable…" checkboxes
-    wlForms[formName].inputs['risksIsRiskToSelf'].setValue(hasCheckGroupOne && hasCheckGroupTwo ? true : false);
+    const inputId = hasCheckGroupOne && hasCheckGroupTwo ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
+    wlForms[formName].inputs['risksIsRiskToSelf'].setValue(inputId);
   }
   function physicalNeedsCheckboxes({ name, value, formName }) {
     const data = [
@@ -901,7 +903,8 @@ const WaitingListAssessment = (() => {
     wlForms[formName].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!hasCheck);
     // (SET) [physicalNeedsIsPhysicalCareNeeded] "Is the individual a child/adult with significant physical care needs?" to "YES" (IF)
     // There is at least one checkbox checked in the third group of checkboxes NOT including the "Not applicable…" checkboxes
-    wlForms[formName].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue();
+    const inputId = hasCheck ? 'physicalNeedsIsPhysicalCareNeededyes' : 'physicalNeedsIsPhysicalCareNeededno';
+    wlForms[formName].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue(inputId);
   }
   function medicalNeedsCheckboxes({ name, value, formName }) {
     const data = [
@@ -920,7 +923,8 @@ const WaitingListAssessment = (() => {
     wlForms[formName].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!hasCheck);
     // (SET) [medicalNeedsIsLifeThreatening] "Is the individual a child/adult with significant or life-threatening medical needs?" to "YES" (IF)
     // There is at least one checkbox checked in the fourth group of checkboxes NOT including the "Not applicable…" checkboxes
-    wlForms[formName].inputs['medicalNeedsIsLifeThreatening'].setValue();
+    const inputId = hasCheck ? 'medicalNeedsIsLifeThreateningyes' : 'medicalNeedsIsLifeThreateningno';
+    wlForms[formName].inputs['medicalNeedsIsLifeThreatening'].setValue(inputId);
   }
   function intermittentSupportsDetermination({ name, value, formName }) {
     // AI FIELD
@@ -932,7 +936,8 @@ const WaitingListAssessment = (() => {
     ];
 
     const allHaveCheck = data.every(element => element === true);
-    wlForms[formName].inputs['intSupDetermination'].setValue();
+    const inputId = allHaveCheck ? 'intSupDeterminationyes' : 'intSupDeterminationno';
+    wlForms[formName].inputs['intSupDetermination'].setValue(inputId);
   }
   function icfDischargeDetermination({ name, value, formName }) {
     // AI FIELD
@@ -942,7 +947,9 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['icfIsNoticeIssued'].getValue(),
       wlForms[formName].inputs['icfIsActionRequiredIn30Days'].getValue(),
     ];
-    wlForms[formName].inputs['icfDetermination'].setValue();
+    const allHaveCheck = data.every(element => element === true);
+    const inputId = allHaveCheck ? 'icfDeterminationyes' : 'icfDeterminationno';
+    wlForms[formName].inputs['icfDetermination'].setValue(inputId);
   }
   function childProtectionAgencyDetermination({ name, value, formName }) {
     // AI FIELD
@@ -951,7 +958,9 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue(),
       wlForms[formName].inputs['cpaHadUnaddressableNeeds'].getValue(),
     ];
-    wlForms[formName].inputs['cpaDetermination'].setValue();
+    const allHaveCheck = data.every(element => element === true);
+    const inputId = allHaveCheck ? 'cpaDeterminationyes' : 'cpaDeterminationno';
+    wlForms[formName].inputs['cpaDetermination'].setValue(inputId);
   }
   function adultDayEmploymentDetermination({ name, value, formName }) {
     // AI FIELD
@@ -961,8 +970,9 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['rwfNeedsServiceNotMetIDEA'].getValue(),
       wlForms[formName].inputs['rwfNeedsServiceNotMetOOD'].getValue(),
     ];
-    //* going to have to check all inputs in form "adultDayEmployment" before setting below
-    wlForms[formName].inputs['rwfWaiverFundingRequired'].setValue();
+    const allHaveCheck = data.every(element => element === true);
+    const inputId = allHaveCheck ? 'rwfWaiverFundingRequiredyes' : 'rwfWaiverFundingRequiredno';
+    wlForms[formName].inputs['rwfWaiverFundingRequired'].setValue(inputId);
   }
   function dischargePlanDetermination({ name, value, formName }) {
     // AI FIELD
@@ -972,7 +982,9 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['dischargeIsInterestedInMoving'].getValue(),
       wlForms[formName].inputs['dischargeHasDischargePlan'].getValue(),
     ];
-    wlForms[formName].inputs['dischargeDetermination'].setValue();
+    const allHaveCheck = data.every(element => element === true);
+    const inputId = allHaveCheck ? 'dischargeDeterminationyes' : 'dischargeDeterminationno';
+    wlForms[formName].inputs['dischargeDetermination'].setValue(inputId);
   }
   function immediateNeedsDetermination({ name, value, formName }) {
     // AI FIELD ??
@@ -1116,6 +1128,45 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(data === 'yes' ? false : true);
     },
   };
+  function updatePageActiveStatus() {
+    if ('conditions page inputs are all YES') {
+      //TODO-ASH: (ENABLE) needs page
+      //TODO-ASH: (ENABLE) waiverEnrollment page
+
+      if ('needs page [needsIsActionRequiredRequiredIn30Days] is Y') {
+        //TODO-ASH: (ENABLE) riskMitigation page
+      }
+
+      if ('riskMitigation page [rMIsActionRequiredIn3oDays] is Y') {
+        //TODO-ASH: (ENABLE) icfDischarge page
+        //TODO-ASH: (ENABLE) intermittentSupports page
+        //TODO-ASH: (ENABLE) childProtectionAgency page
+        //TODO-ASH: (ENABLE) adultDayEmployment page
+        //TODO-ASH: (ENABLE) dischargePlan page
+      }
+
+      if (
+        'needs page [needsIsActionRequiredRequiredIn30Days] is Y' ||
+        'riskMitigation page [rMIsActionRequiredIn3oDays] is Y'
+      ) {
+        if ('any checkbox is checked on riskMitigation page except not applicable') {
+          //TODO-ASH: (ENABLE) immediateNeeds page
+        }
+      }
+
+      if (
+        'needs page [needsIsActionRequiredRequiredIn30Days] is N' ||
+        'riskMitigation page [rMIsActionRequiredIn3oDays] is N'
+      ) {
+        //TODO-ASH: (ENABLE) currentNeeds page
+      }
+    }
+  }
+  const onChangeCallbacksFormWatch = {
+    conditions: updatePageActiveStatus,
+    needs: updatePageActiveStatus,
+    riskMitigation: updatePageActiveStatus,
+  };
   function onFormChange(form) {
     const formName = form;
 
@@ -1131,15 +1182,13 @@ const WaitingListAssessment = (() => {
         });
       }
 
-      if (onChangeCallbacks[formName]) {
-        onChangeCallbacks[formName]({
+      if (onChangeCallbacksFormWatch[formName]) {
+        onChangeCallbacksFormWatch[formName]({
           value,
           name,
           formName,
         });
       }
-
-      return;
 
       // Save/Update
       if (wlFormIds[formName] === '') {
@@ -1203,6 +1252,28 @@ const WaitingListAssessment = (() => {
 
   // INIT (data & defaults)
   //--------------------------------------------------
+  function initFormActiveStatuses() {
+    wlSectionActiveStatus = {
+      waitingListInfo: true,
+      conditions: true,
+      participants: true,
+      primaryCaregiver: true,
+      documentation: true,
+      // diabled at start
+      currentAvailableServices: false,
+      contributingCircumstances: false,
+      needs: false,
+      riskMitigation: false,
+      icfDischarge: false,
+      intermittentSupports: false,
+      childProtectionAgency: false,
+      adultDayEmployment: false,
+      dischargePlan: false,
+      immediateNeeds: false,
+      currentNeeds: false,
+      waiverEnrollment: false,
+    };
+  }
   function initComponents() {
     // Roster Picker
     rosterPicker = new RosterPicker({
@@ -1222,6 +1293,7 @@ const WaitingListAssessment = (() => {
     wlFormIds = {};
     wlData = wlDataInstance;
 
+    initFormActiveStatuses();
     loadPageSkeleton();
     initComponents();
     loadPage();
