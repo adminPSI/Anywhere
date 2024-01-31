@@ -234,7 +234,7 @@ namespace Anywhere.service.Data.ConsumerFinances
 
         }
 
-        public ActiveAccount[] getActiveAccount(string token, string consumerId)
+        public ActiveAccount[] getActiveAccount(string token, string consumerId, string accountPermission)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -242,7 +242,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getActiveAccount(transaction, consumerId));
+                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getActiveAccount(transaction, consumerId, accountPermission));
                     return accounts;
                 }
                 catch (Exception ex)

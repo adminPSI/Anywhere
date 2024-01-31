@@ -47,15 +47,15 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public string getActiveAccount(DistributedTransaction transaction, string consumerId)
+        public string getActiveAccount(DistributedTransaction transaction, string consumerId, string accountPermission)
         {
             try
             {
                 logger.debug("getActiveAccount");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
-
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getActiveAccounts(?)", args, ref transaction);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@accountPermission", DbType.String, accountPermission);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getActiveAccounts(?,?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)

@@ -51,8 +51,8 @@ var ConsumerFinancesAjax = (function () {
             throw new Error(error.responseText);
         }
     }
-    
-    async function getActiveAccountAsync(ConsumersId) {
+
+    async function getActiveAccountAsync(ConsumersId, accountPermission) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -67,7 +67,8 @@ var ConsumerFinancesAjax = (function () {
                     '/getActiveAccount/',
                 data: JSON.stringify({
                     token: $.session.Token,
-                    consumerId: ConsumersId, 
+                    consumerId: ConsumersId,
+                    accountPermission: accountPermission,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -93,7 +94,7 @@ var ConsumerFinancesAjax = (function () {
                     '/getPayees/',
                 data: JSON.stringify({
                     token: $.session.Token,
-                    consumerId: ConsumersId, 
+                    consumerId: ConsumersId,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -211,7 +212,7 @@ var ConsumerFinancesAjax = (function () {
                     state: payeestate,
                     zipcode: payeezipcode,
                     userId: $.session.UserId,
-                    consumerId: $.session.consumerId 
+                    consumerId: $.session.consumerId
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -338,7 +339,7 @@ var ConsumerFinancesAjax = (function () {
                 data: JSON.stringify({
                     token: $.session.Token,
 
-                }),              
+                }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
             });
@@ -405,7 +406,7 @@ var ConsumerFinancesAjax = (function () {
             });
         } catch (error) {
             console.log(error.responseText);
-        }      
+        }
     }
 
     async function getCFAttachmentsList(retrieveData) {
@@ -596,8 +597,8 @@ var ConsumerFinancesAjax = (function () {
                     dateOpened: dateOpened,
                     dateClosed: dateClosed,
                     openingBalance: openingBalance,
-                    description: description,                  
-                    userId: $.session.UserId                    
+                    description: description,
+                    userId: $.session.UserId
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -677,7 +678,7 @@ var ConsumerFinancesAjax = (function () {
         addCFAttachment,
         deleteCFAttachment,
         getCFAttachmentsList,
-        getConsumerNameByID, 
+        getConsumerNameByID,
         viewCFAttachment,
         getCategoriesSubCategoriesAsync,
         getEditAccountInfoByIdAsync,

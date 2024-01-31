@@ -2798,6 +2798,11 @@ namespace Anywhere
         }
 
         //Waiting List Module
+        public string deleteFromWaitingList(string[] properties)
+        {
+           return wlw.deleteFromWaitingList(properties);
+        }
+
         public LandingPageInfo[] getLandingPageForConsumer(string token, double consumerId)
         {
             return wlw.getLandingPageForConsumer(token, consumerId);
@@ -3408,9 +3413,9 @@ namespace Anywhere
             return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType);
         }
 
-        public ActiveAccount[] getActiveAccount(string token, string consumerId)
+        public ActiveAccount[] getActiveAccount(string token, string consumerId, string accountPermission)
         {
-            return cf.getActiveAccount(token, consumerId);
+            return cf.getActiveAccount(token, consumerId, accountPermission);
         }
 
         public Payees[] getPayees(string token, string consumerId)
