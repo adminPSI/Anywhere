@@ -1000,9 +1000,9 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['livingArrangementOther'].toggleDisabled(data === '5' ? false : true);
     },
     //* currentAvailableServices
-    isOtherService: ({ name, value, formName }) => {
+    isOtherService: ({ name, value, formName, id }) => {
       // (ENABLE) [otherDescription] the text field under "Other" only (IF) [isOtherService] the answer is "Yes" to Other
-      const data = wlForms[formName].inputs['isOtherService'].getValue();
+      const data = wlForms[formName].inputs['isOtherService'].getValue('isOtherServiceyes');
       wlForms[formName].inputs['otherDescription'].toggleDisabled(data === 'yes' ? false : true);
     },
     //* primaryCaregiver
@@ -1174,12 +1174,14 @@ const WaitingListAssessment = (() => {
     return async function inputChange(event) {
       const value = event.target.value;
       const name = event.target.name;
+      const id = event.target.id;
 
       if (onChangeCallbacks[name]) {
         onChangeCallbacks[name]({
           value,
           name,
           formName,
+          id,
         });
       }
 
@@ -1242,9 +1244,9 @@ const WaitingListAssessment = (() => {
   }
   function loadPage() {
     // ROSTER PICKER
-    reviewAssessmentBtn.renderTo(headerWrap);
-    testForErick1.renderTo(headerWrap);
-    testForErick2.renderTo(headerWrap);
+    reviewAssessmentBtn.renderTo(moduleHeader);
+    testForErick1.renderTo(moduleHeader);
+    testForErick2.renderTo(moduleHeader);
 
     // FORMS
     for (formElement in formElements) {
@@ -1269,16 +1271,22 @@ const WaitingListAssessment = (() => {
     rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
-    WaitingList.moduleWrap.innerHTML = '';
+    _DOM.ACTIONCENTER.innerHTML = '';
+    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
+    _DOM.setActiveModuleAttribute('waitingList');
 
-    // build DOM skeleton
+    moduleWrap = _DOM.createElement('div', { class: 'waitingList' });
+    moduleHeader = _DOM.createElement('div', { class: 'waitingList__header' });
+    moduleBody = _DOM.createElement('div', { class: 'waitingList__body' });
+    moduleWrap.appendChild(moduleHeader);
+    moduleWrap.appendChild(moduleBody);
+
     formWrap = _DOM.createElement('div', { class: 'waitingListForm' });
-    headerWrap = _DOM.createElement('div', { class: 'waitingListForm__header' });
-    rosterWrap = _DOM.createElement('div', { class: 'waitingListForm__roster' });
+    rosterWrap = _DOM.createElement('div', { class: 'waitingListRoster' });
+    moduleBody.appendChild(formWrap);
+    moduleBody.appendChild(rosterWrap);
 
-    WaitingList.moduleWrap.appendChild(headerWrap);
-    WaitingList.moduleWrap.appendChild(formWrap);
-    WaitingList.moduleWrap.appendChild(rosterWrap);
+    _DOM.ACTIONCENTER.appendChild(moduleWrap);
   }
 
   // INIT (data & defaults)
@@ -1330,10 +1338,10 @@ const WaitingListAssessment = (() => {
     });
   }
 
-  async function init(wlDataInstance) {
+  async function init() {
     wlForms = {};
     wlFormIds = {};
-    wlData = wlDataInstance;
+    wlData = new WaitingListData();
 
     initFormActiveStatuses();
     loadPageSkeleton();

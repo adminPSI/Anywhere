@@ -7,16 +7,29 @@
   display: flex;
   flex-grow: 1;
 
+  // MODULE WRAP
   .waitingList {
-    display: flex;
-    flex-flow: row wrap;
+    &__header {
+      display: flex;
+      flex-flow: row;
+      margin: 0 0 10px 0;
+    }
+
+    &__body {
+      display: flex;
+      flex-flow: row;
+    }
+  }
+
+  // ROSTER PICKER
+  .waitingListRoster {
+    min-width: 300px;
   }
 
   // MAIN ASSESSMENT
   .waitingListForm {
     display: flex;
     flex-flow: column;
-    flex-grow: 1;
 
     h2 {
       margin-bottom: 10px;
@@ -24,10 +37,6 @@
 
     form {
       flex-flow: column nowrap;
-    }
-
-    &__roster {
-      min-width: 300px;
     }
   }
 

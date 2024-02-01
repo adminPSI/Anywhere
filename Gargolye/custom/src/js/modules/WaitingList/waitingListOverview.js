@@ -45,14 +45,14 @@ const WaitingListOverview = (() => {
     rosterPicker.renderTo(wlRosterWrap);
   }
   function loadPageSkeleton() {
-    WaitingList.moduleWrap.innerHTML = '';
+    moduleWrap.innerHTML = '';
 
     // build DOM skeleton
     wlOverviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
     wlRosterWrap = _DOM.createElement('div', { class: 'waitingListOverview__roster' });
 
-    WaitingList.moduleWrap.appendChild(wlOverviewWrap);
-    WaitingList.moduleWrap.appendChild(wlRosterWrap);
+    moduleWrap.appendChild(wlOverviewWrap);
+    moduleWrap.appendChild(wlRosterWrap);
   }
 
   // INIT (data & defaults)
@@ -88,11 +88,13 @@ const WaitingListOverview = (() => {
     });
   }
 
-  async function init(consumerId) {
-    loadPageSkeleton();
-
+  async function init(consumerId, wlDataInstance, moduleWrapEle) {
     // init data
     selectedConsumer = consumerId;
+    wlData = wlDataInstance;
+    moduleWrap = moduleWrapEle;
+
+    loadPageSkeleton();
 
     initComponents();
     await loadPage();
