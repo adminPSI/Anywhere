@@ -48,18 +48,18 @@ const NewEntryCF = (() => {
     }
 
     async function buildNewEntryForm(registerId, attachment, attachmentID) {
-        prevAttachmentArray = [];  
-        numberOfRows = 5;  
+        prevAttachmentArray = [];
+        numberOfRows = 5;
         if (registerId) {
             splitAmount = [];
-            totalAmountSaved = 0;  
+            totalAmountSaved = 0;
             prevAttachmentArray = await consumerFinanceAttachment.getConsumerFinanceAttachments(registerId);
             BtnName = 'UPDATE'
             regId = registerId;
             const result = await ConsumerFinancesAjax.getAccountEntriesByIDAsync(registerId);
             const { getAccountEntriesByIdResult } = result;
             date = moment(getAccountEntriesByIdResult[0].activityDate).format('YYYY-MM-DD');
-            amount = getAccountEntriesByIdResult[0].amount;
+            amount = getAccountEntriesByIdResult[0].amount != '' ? parseFloat(getAccountEntriesByIdResult[0].amount).toFixed(2) : '';
             tempAmountval = getAccountEntriesByIdResult[0].amount;
             account = getAccountEntriesByIdResult[0].account;
             payee = getAccountEntriesByIdResult[0].payee;
@@ -81,7 +81,8 @@ const NewEntryCF = (() => {
                 if (splitAmount[i].amount != '')
                     sum += parseFloat(splitAmount[i].amount);
             }
-            totalAmount = sum;
+            totalAmount = sum.toFixed(2);
+            totalAmountSaved = totalAmount;  
         }
         else if (registerId == 0 && attachmentID) {
             regId = 0;
@@ -106,9 +107,9 @@ const NewEntryCF = (() => {
             IsDisabledBtn = false;
             categoryOldVal = '';
             totalAmount = 0;
-            tempAmountval = 0; 
-            splitAmount = [];           
-            totalAmountSaved = 0; 
+            tempAmountval = 0;
+            splitAmount = [];
+            totalAmountSaved = 0;
         }
 
         tempdate = '';
@@ -380,7 +381,7 @@ const NewEntryCF = (() => {
         if (splitAmount.length > 0) {
             document.getElementById('SPLIT_BTN').style.display = 'block';
         }
-    }  
+    }
 
     function enableDisabledInputs() {
         if (IsReconciled == 'Y') {
@@ -578,11 +579,12 @@ const NewEntryCF = (() => {
         });
 
         newAmountInput.addEventListener('focusout', event => {
+            debugger;   
             if (totalAmountSaved > 0 && totalAmountSaved != event.target.value) {
                 errorPopup(2);
             }
             if (document.getElementById('newAmountInput').value != '')
-                document.getElementById('newAmountInput').value = parseFloat(document.getElementById('newAmountInput').value);
+                document.getElementById('newAmountInput').value = parseFloat(document.getElementById('newAmountInput').value).toFixed(2);
         });
 
         newPayeeDropdown.addEventListener('change', event => {
@@ -608,13 +610,13 @@ const NewEntryCF = (() => {
             if (!newCategoryDropdown.classList.contains('disabled')) {
                 categoryID = event.target.options[event.target.selectedIndex].id;
                 category = event.target.options[event.target.selectedIndex].text;
-                if (category == '--Split--') {                                    
-                    getSplitdata(); 
+                if (category == '--Split--') {
+                    getSplitdata();
                 }
                 else {
                     document.getElementById('SPLIT_BTN').style.display = 'none';
-                    totalAmountSaved = '';  
-                    splitAmount = [];  
+                    totalAmountSaved = '';
+                    splitAmount = [];
                 }
                 tempcategory = 'ChangedValue';
                 subCategory = '';
@@ -1060,7 +1062,7 @@ const NewEntryCF = (() => {
             numberOfRows = splitAmount.length + 2;
         }
 
-        regTotalAmount = document.getElementById('newAmountInput').value != '' ? parseFloat(document.getElementById('newAmountInput').value) : 0;
+        regTotalAmount = document.getElementById('newAmountInput').value != '' ? parseFloat(document.getElementById('newAmountInput').value).toFixed(2) : 0;
         splitTransPopup = POPUP.build({
             header: "Split Transaction",
             hideX: true,
@@ -1179,7 +1181,7 @@ const NewEntryCF = (() => {
             });
             splitAmountInputN[i].addEventListener('focusout', event => {
                 if (splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value != '')
-                    splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value = parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value);
+                    splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value = parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value).toFixed(2);
             });
 
             splitDescriptionInputN[i].addEventListener('input', event => {
@@ -1260,11 +1262,11 @@ const NewEntryCF = (() => {
                 sum += parseFloat(splitAmountInputN[i].querySelector('#splitAmountInputN' + i).value);
         }
         totalAmount = sum;
-        document.getElementById('amountTotalInput').value = sum;
+        document.getElementById('amountTotalInput').value = sum.toFixed(2);
         if (document.getElementById('newAmountInput').value == '') {
-            document.getElementById('newAmountInput').value = sum;
-            document.getElementById('regAmountTotalInput').value = sum;
-            amount = sum;
+            document.getElementById('newAmountInput').value = sum.toFixed(2);
+            document.getElementById('regAmountTotalInput').value = sum.toFixed(2);
+            amount = sum.toFixed(2);
         }
     }
 
@@ -1291,8 +1293,8 @@ const NewEntryCF = (() => {
                 if (errorCode == 1) {
                     POPUP.hide(errorConfPOPUP);
                     POPUP.hide(splitTransPopup);
-                    document.getElementById('newAmountInput').value = totalAmount;
-                    amount = totalAmount;
+                    document.getElementById('newAmountInput').value = parseFloat(totalAmount).toFixed(2);
+                    amount = parseFloat(totalAmount).toFixed(2); 
                     splitTransSaveData();
                 }
                 else {
@@ -1310,8 +1312,8 @@ const NewEntryCF = (() => {
                     POPUP.hide(errorConfPOPUP);
                     POPUP.show(splitTransPopup);
                 } else {
-                    document.getElementById('newAmountInput').value = totalAmount;
-                    amount = totalAmount;
+                    document.getElementById('newAmountInput').value = parseFloat(totalAmount).toFixed(2);
+                    amount = parseFloat(totalAmount).toFixed(2);
                     POPUP.hide(errorConfPOPUP);
                 }
             },
