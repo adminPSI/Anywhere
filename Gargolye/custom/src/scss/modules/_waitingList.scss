@@ -33,9 +33,7 @@
 
   // ASSESSMENT OVERVIEW
   .waitingListOverview {
-    &__table {
-      flex-grow: 1;
-    }
+    flex-grow: 1;
 
     &__roster {
       min-width: 300px;

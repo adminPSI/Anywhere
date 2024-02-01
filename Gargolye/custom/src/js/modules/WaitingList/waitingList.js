@@ -1,6 +1,6 @@
 const WaitingList = (() => {
   let wlData;
-  let moduleWrap;
+  let moduleWrap = _DOM.createElement('div', { class: 'waitingList' });
 
   async function init() {
     // prep actioncenter
@@ -8,7 +8,6 @@ const WaitingList = (() => {
     _DOM.ACTIONCENTER.setAttribute('data-UI', true);
     _DOM.setActiveModuleAttribute('waitingList');
 
-    moduleWrap = _DOM.createElement('div', { class: 'waitingList' });
     _DOM.ACTIONCENTER.appendChild(moduleWrap);
 
     wlData = new WaitingListData();
