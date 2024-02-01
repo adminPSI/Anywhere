@@ -1242,9 +1242,9 @@ const WaitingListAssessment = (() => {
   }
   function loadPage() {
     // ROSTER PICKER
-    reviewAssessmentBtn.renderTo(_DOM.ACTIONCENTER);
-    testForErick1.renderTo(_DOM.ACTIONCENTER);
-    testForErick2.renderTo(_DOM.ACTIONCENTER);
+    reviewAssessmentBtn.renderTo(headerWrap);
+    testForErick1.renderTo(headerWrap);
+    testForErick2.renderTo(headerWrap);
 
     // FORMS
     for (formElement in formElements) {
@@ -1274,8 +1274,10 @@ const WaitingListAssessment = (() => {
 
     // build DOM skeleton
     formWrap = _DOM.createElement('div', { class: 'waitingListForm' });
+    headerWrap = _DOM.createElement('div', { class: 'waitingListForm__header' });
     rosterWrap = _DOM.createElement('div', { class: 'waitingListForm__roster' });
 
+    _DOM.ACTIONCENTER.appendChild(headerWrap);
     _DOM.ACTIONCENTER.appendChild(formWrap);
     _DOM.ACTIONCENTER.appendChild(rosterWrap);
   }
