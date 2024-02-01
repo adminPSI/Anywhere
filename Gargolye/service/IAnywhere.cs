@@ -4095,6 +4095,22 @@ namespace Anywhere
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/viewSupportingDocInBrowser/")]
         System.IO.MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/generateWaitingListAssessmentReport/")]
+        string generateWaitingListAssessmentReport(string token, string waitingListId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Wrapped,
+             ResponseFormat = WebMessageFormat.Json,
+             RequestFormat = WebMessageFormat.Json,
+             UriTemplate = "/sendWaitingListAssessmentReport/")]
+        string sendWaitingListAssessmentReport(string token, string reportScheduleId, string header, string body, string waitingListId);
         //OOD Module
 
         [WebInvoke(Method = "POST",
