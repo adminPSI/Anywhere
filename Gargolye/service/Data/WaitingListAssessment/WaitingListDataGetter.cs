@@ -11,6 +11,7 @@ using System.Web.Script.Serialization;
 using Anywhere.Log;
 using System.Configuration;
 using static Anywhere.service.Data.WaitingListAssessment.WaitingListWorker;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace Anywhere.service.Data.WaitingListAssessment
 {
@@ -119,11 +120,12 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string deleteFromWaitingList(string id, string tableName)
+        public string deleteFromWaitingList(string id, string tableName, string columnForId)
         {
             List<string> list = new List<string>();
             list.Add(id);
             list.Add(tableName);
+            list.Add(columnForId);
             string text = "CALL DBA.ANYW_WaitingList_DeleteFromWaitingList(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
