@@ -106,9 +106,10 @@ const ConsumerFinances = (() => {
         if ($.session.CFViewShaving) {
             tempAccountPer.push('Savings');
         }
-        debugger;
-        if (tempAccountPer.length > 0)
-            accountPermission = tempAccountPer.map(x => "'" + x + "'").toString(); 
+
+        if (tempAccountPer.length > 0) {
+            accountPermission = tempAccountPer.toString();
+        }
         else
             accountPermission = '';
     }
@@ -251,7 +252,8 @@ const ConsumerFinances = (() => {
             value: account.accountName,
             text: account.accountName + ' - $' + (account.totalBalance == '' ? '0.00' : account.totalBalance)
         }));
-        data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
+        if (data.length > 0)
+            data.unshift({ id: null, value: '%', text: 'ALL' }); //ADD Blank value
         dropdown.populate("accountDropdown", data, filterValues.accountName);
     }
 
