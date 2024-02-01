@@ -369,145 +369,76 @@ const servicesSupports = (() => {
   }
   
   async function populateMultiSelectServiceVendorsDropdown(dropdownEle, thisSelectedArray) {
-   var test =  dropdownEle;
-   let thisfundingSourceSelectedText;
-   let thisServiceNameSelectedText;
-
-   let completeVendorList = [];
-
-   for(let i = 0; i < thisSelectedArray.length; i++) {
-   
-    thisfundingSourceSelectedText = thisSelectedArray[i].fundingSourceName;
-    thisServiceNameSelectedText = thisSelectedArray[i].serviceName;
-
-    const { getPaidSupportsVendorsResult: vendorNumbers } =
-      await servicesSupportsAjax.getPaidSupportsVendors(
-        thisfundingSourceSelectedText,
-        thisServiceNameSelectedText,
-      );
-
-      completeVendorList.push(...vendorNumbers);
-   };
-
-   var test6 = {vendorId: "7500002", vendorName: "RMS of Ohio, Inc."};
-   var test7 = {vendorId: "7500001", vendorName: "IHS Services"};
-   var test8 = {vendorId: "7500002", vendorName: "XX"};
-   var test9 = {vendorId: "7500001", vendorName: "XXXX"};
- //  completeVendorList.push(test6);
-  // completeVendorList.push(test6);
- //  completeVendorList.push(test7);
-   //completeVendorList.push(test7);
-  // completeVendorList.push(test8);
-  // completeVendorList.push(test9);
-
-      // Filter original concat list to just the vendors that have more than one in the list
-      const duplicateVendors = completeVendorList.filter((item, index, self) => {
-        return self.findIndex(t => t.vendorId === item.vendorId) !== index;
+    var test =  dropdownEle;
+    let thisfundingSourceSelectedText;
+    let thisServiceNameSelectedText;
+ 
+    let completeVendorList = [];
+ 
+    for(let i = 0; i < thisSelectedArray.length; i++) {
+    
+     thisfundingSourceSelectedText = thisSelectedArray[i].fundingSourceName;
+     thisServiceNameSelectedText = thisSelectedArray[i].serviceName;
+ 
+     const { getPaidSupportsVendorsResult: vendorNumbers } =
+       await servicesSupportsAjax.getPaidSupportsVendors(
+         thisfundingSourceSelectedText,
+         thisServiceNameSelectedText,
+       );
+ 
+       completeVendorList.push(...vendorNumbers);
+    };
+ 
+    var test6 = {vendorId: "7500002", vendorName: "RMS of Ohio, Inc."};
+    var test7 = {vendorId: "7500001", vendorName: "IHS Services"};
+    var test8 = {vendorId: "7500002", vendorName: "XX"};
+    var test9 = {vendorId: "7500001", vendorName: "XXXX"};
+   // completeVendorList.push(test6);
+   // completeVendorList.push(test6);
+   // completeVendorList.push(test7);
+    //completeVendorList.push(test7);
+   // completeVendorList.push(test8);
+   // completeVendorList.push(test9);
+ 
+       // Filter original concat list to just the vendors that have more than one in the list
+       const duplicateVendors = completeVendorList.filter((item, index, self) => {
+         return self.findIndex(t => t.vendorId === item.vendorId) !== index;
+        });
+ 
+        // need to get duplicateVendors list down to just the vendors with the correct number of occurances
+        let minOccurancePaidSupports;
+       // thisSelectedArray.length = 3
+        if (thisSelectedArray.length > 2) {
+           minOccurancePaidSupports = removeDuplicatesBasedOnCount(duplicateVendors, 'vendorId', thisSelectedArray.length);
+        } else {
+           minOccurancePaidSupports = duplicateVendors;
+        }
+        
+        let minOccurancePaidSupportsFiltered = removeDuplicateObjects(minOccurancePaidSupports, 'vendorId')
+ 
+       let vendorArray = [];
+        // vendorArray contains the duplicate vendors data in Dropdown data formnat
+        minOccurancePaidSupportsFiltered.forEach(row => {
+         let thisVendorObject = {value: row.vendorId, text: row.vendorName }
+         vendorArray.push(thisVendorObject);
+        });
+ 
+        vendorArray.sort((a, b) => {
+         const textA = a.text.toUpperCase();
+         const textB = b.text.toUpperCase();
+         return textA < textB ? -1 : textA > textB ? 1 : 0;
        });
-
-       // need to get duplicateVendors list down to just the vendors with the correct number of occurances
-       let minOccurancePaidSupports;
-      // thisSelectedArray.length = 3
-       if (thisSelectedArray.length > 2) {
-          minOccurancePaidSupports = removeDuplicatesBasedOnCount(duplicateVendors, 'vendorId', thisSelectedArray.length);
+ 
+       if (vendorArray.length > 0) {
+         vendorArray.unshift({ value: '', text: '[SELECT A PROVIDER]' });
        } else {
-          minOccurancePaidSupports = duplicateVendors;
+         vendorArray.unshift({ value: '', text: 'No Common Provider' });
        }
-       
-       // this is the list of Common Providers from the Selected Paid Supports 
-       let minOccurancePaidSupportsFiltered = removeDuplicateObjects(minOccurancePaidSupports, 'vendorId')
-
-       // Guard Clause -- if there are no common Providers 
-       if (minOccurancePaidSupportsFiltered.length === 0) {
-        let vendorArray = [];
-        vendorArray.unshift({ value: '', text: 'No Common Provider' });
-        dropdown.populate(dropdownEle, vendorArray);
-        return;
-       }
-
-      // FROM HERE DOWN IS COPIED FROM function populateServiceVendorsDropdown() --  format the drop down with sections
-      const { getPaidSupportsVendorsResult: vendorNumbers } =
-      await servicesSupportsAjax.getPaidSupportsVendors(
-        fundingSourceDropdownSelectedText,
-        servicesDropdownSelectedText,
-      );
-
-     // const selectedVendorIds = getSelectedVendorIds();
-
-    //  const nonPaidSupportData = vendorNumbers.filter(
-    //    provider => minOccurancePaidSupportsFiltered.indexOf(provider.vendorId) < 0,
-    //   );
-
-      const nonPaidSupportData = vendorNumbers.filter(o => minOccurancePaidSupportsFiltered.some(({vendorId}) => o.vendorId === vendorId));
-
-      // const paidSupportData = vendorNumbers.filter(
-      //   provider => minOccurancePaidSupportsFiltered.indexOf(provider.vendorId) >= 0,
-      // );
-
-     const paidSupportData = vendorNumbers.filter(o => minOccurancePaidSupportsFiltered.some(({vendorId}) => o.vendorId === vendorId));
-
-      const nonPaidSupportDropdownData = nonPaidSupportData.map(dd => {
-        return {
-          value: dd.vendorId,
-          text: dd.vendorName,
-        };
-      });
-      const paidSupportDropdownData = paidSupportData.map(dd => {
-        return {
-          value: dd.vendorId,
-          text: dd.vendorName,
-        };
-      });
-
-      nonPaidSupportDropdownData.sort((a, b) => {
-        const textA = a.text.toUpperCase();
-        const textB = b.text.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-      paidSupportDropdownData.sort((a, b) => {
-        const textA = a.text.toUpperCase();
-        const textB = b.text.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-
-      const nonGroupedDropdownData = [{ value: '', text: '[SELECT A PROVIDER]' }];
-    const paidSupportGroup = {
-      groupLabel: 'Paid Support Providers',
-      groupId: 'isp_ss_providerDropdown_paidSupportProviders',
-      dropdownValues: paidSupportDropdownData,
-    };
-    const nonPaidSupportGroup = {
-      groupLabel: 'Other Providers',
-      groupId: 'isp_ss_providerDropdown_nonPaidSupportProviders',
-      dropdownValues: nonPaidSupportDropdownData,
-    };
-
-    const groupDropdownData = [];
-    if (paidSupportDropdownData.length > 0) {
-      groupDropdownData.push(paidSupportGroup);
-    }
-
-    //if there's no default value, and only one option, make that option the default
-   // if (!defaultValue) {
-      const tempData = [...nonPaidSupportDropdownData, ...paidSupportDropdownData];
-      if (tempData.length === 1) {
-        defaultValue = tempData[0].value;
-        saveUpdateProvider = defaultValue;
-        dropdownEle.classList.remove('error');
-      }
-   // }
-
-    groupDropdownData.push(nonPaidSupportGroup);
-
-    dropdown.groupingPopulate({
-      dropdown: dropdownEle,
-      data: groupDropdownData,
-      nonGroupedData: nonGroupedDropdownData,
-      defaultVal: null,
-    });
-
-        return;
-  }
+        
+       dropdown.populate(dropdownEle, vendorArray);
+ 
+         return;
+   }
 
   async function populateServiceVendorsDropdown(dropdownEle, defaultValue, ignoreGuardClauses) {
     // const data = dropdownData.serviceVendors.map(dd => {
