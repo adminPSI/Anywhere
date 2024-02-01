@@ -147,7 +147,19 @@
    * @param {String | Number} value
    */
   RadioGroup.prototype.getValue = function (inputId) {
-    this.inputs[inputId].getValue();
+    if (!inputId) {
+      let checkedInputId;
+
+      for (inputId in this.inputs) {
+        if (this.inputs[inputId].getValue()) {
+          checkedInputId = this.inputs[inputId].input.id;
+        }
+      }
+
+      return checkedInputId ? checkedInputId : '';
+    }
+
+    return this.inputs[inputId].getValue();
   };
 
   /**

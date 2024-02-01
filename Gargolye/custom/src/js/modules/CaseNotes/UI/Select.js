@@ -124,7 +124,7 @@
    * @returns {*} Value of select
    */
   Select.prototype.getValue = function () {
-    return this.input.value;
+    return this.select.value;
   };
 
   /**
