@@ -1269,17 +1269,16 @@ const WaitingListAssessment = (() => {
     rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
-    // prep actioncenter
-    _DOM.ACTIONCENTER.innerHTML = '';
+    WaitingList.moduleWrap.innerHTML = '';
 
     // build DOM skeleton
     formWrap = _DOM.createElement('div', { class: 'waitingListForm' });
     headerWrap = _DOM.createElement('div', { class: 'waitingListForm__header' });
     rosterWrap = _DOM.createElement('div', { class: 'waitingListForm__roster' });
 
-    _DOM.ACTIONCENTER.appendChild(headerWrap);
-    _DOM.ACTIONCENTER.appendChild(formWrap);
-    _DOM.ACTIONCENTER.appendChild(rosterWrap);
+    WaitingList.moduleWrap.appendChild(headerWrap);
+    WaitingList.moduleWrap.appendChild(formWrap);
+    WaitingList.moduleWrap.appendChild(rosterWrap);
   }
 
   // INIT (data & defaults)

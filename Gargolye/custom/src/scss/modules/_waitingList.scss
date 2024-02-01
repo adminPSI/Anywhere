@@ -7,6 +7,11 @@
   display: flex;
   flex-grow: 1;
 
+  .waitingList {
+    display: flex;
+    flex-flow: row wrap;
+  }
+
   // MAIN ASSESSMENT
   .waitingListForm {
     display: flex;
