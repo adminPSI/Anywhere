@@ -81,6 +81,7 @@
     element.append(fragment);
     return element;
   }
+
   /**
    * Asynchronously fetches attachment details based on the given event object.
    *

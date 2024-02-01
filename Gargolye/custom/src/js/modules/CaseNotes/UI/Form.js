@@ -11,6 +11,7 @@
   const DEFAULT_OPTIONS = {
     isReadOnly: false,
     hideAllButtons: false,
+    formName: '',
   };
 
   /**
@@ -45,7 +46,7 @@
    * @function
    */
   Form.prototype._build = function () {
-    this.form = _DOM.createElement('form', { name: this.options.formName ?? '' });
+    this.form = _DOM.createElement('form', { name: this.options.formName, id: this.options.formName });
 
     // Build form input fields
     this.options.fields.forEach(ele => {
@@ -66,18 +67,22 @@
           break;
         }
         case 'select': {
-          delete ele.type; // only needed for Form
-          inputInstance = new Select({ ...ele });
+          const tmpFix = { ...ele };
+          delete tmpFix.type; // only needed for Form
+
+          inputInstance = new Select({ ...tmpFix });
           break;
         }
         case 'textarea': {
-          delete ele.type; // only needed for Form
-          inputInstance = new Textarea({ ...ele });
+          const tmpFix = { ...ele };
+          delete tmpFix.type; // only needed for Form
+          inputInstance = new Textarea({ ...tmpFix });
           break;
         }
         case 'attachment': {
-          delete ele.type; // only needed for Form
-          inputInstance = new Attachments({ ...ele });
+          const tmpFix = { ...ele };
+          delete tmpFix.type; // only needed for Form
+          inputInstance = new Attachments({ ...tmpFix });
           break;
         }
         default: {

@@ -23,7 +23,7 @@
       insertOrUpdate: 'I',
     });
 
-    return data.insertUpdateWaitingListValueResult;
+    return JSON.parse(data.insertUpdateWaitingListValueResult);
   };
 
   WaitingListData.prototype.insertAssessmentData = async function ({ id, linkId, propertyName, value }) {
@@ -35,7 +35,7 @@
       insertOrUpdate: 'I',
     });
 
-    return data.getLandingPageForConsumerResult;
+    return data.insertUpdateWaitingListValueResult;
   };
 
   WaitingListData.prototype.updateAssessmentData = async function ({ id, linkId = 0, propertyName, value }) {
@@ -47,7 +47,7 @@
       insertOrUpdate: 'U',
     });
 
-    return data.getLandingPageForConsumerResult;
+    return data.insertUpdateWaitingListValueResult;
   };
 
   WaitingListData.prototype.getReviewDataByConsumer = async function (consumerId) {
