@@ -11,6 +11,7 @@
   const DEFAULT_OPTIONS = {
     isReadOnly: false,
     hideAllButtons: false,
+    formName: '',
   };
 
   /**
@@ -45,7 +46,7 @@
    * @function
    */
   Form.prototype._build = function () {
-    this.form = _DOM.createElement('form', { name: this.options.formName ?? '' });
+    this.form = _DOM.createElement('form', { name: this.options.formName, id: this.options.formName });
 
     // Build form input fields
     this.options.fields.forEach(ele => {

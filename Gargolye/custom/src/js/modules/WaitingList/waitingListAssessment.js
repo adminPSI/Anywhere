@@ -821,6 +821,10 @@ const WaitingListAssessment = (() => {
 
   // EVENTS
   //--------------------------------------------------
+  async function onReviewAssessmentBtnClick(e) {
+    // load review page
+    // init review page with selected consumer if there is one
+  }
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
 
@@ -828,6 +832,7 @@ const WaitingListAssessment = (() => {
 
     const resp = await wlData.insertWaitingListAssessment(selectedConsumer);
     wlLinkID = resp[0].newRecordId;
+    wlFormIds['waitingListInfo'] = wlLinkID;
   }
   function riskMitigationCheckboxes({ name, value, formName }) {
     const data = [
@@ -845,10 +850,6 @@ const WaitingListAssessment = (() => {
     // any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
     wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
   }
-  // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF) one of the following is true:
-  //   a.  A checkbox is checked in each of the first two groups of checkboxes (not including the "Not applicable…" checkboxes in each group) OR
-  //   b.  A checkbox is checked in the third group of checkboxes (not including the "Not applicable…" checkbox) OR
-  //   c.  A checkbox is checked in the fourth group of checkboxes (not including the "Not applicable…" checkbox)
   function behavioralNeedsCheckboxes({ name, value, formName }) {
     const checkboxGroupOne = [
       wlForms[formName].inputs['risksIsPhysicalAggression'].getValue(),
@@ -1193,8 +1194,8 @@ const WaitingListAssessment = (() => {
       // Save/Update
       if (wlFormIds[formName] === '') {
         wlFormIds[formName] = await wlData.insertAssessmentData({
-          id: formName === 'waitingListInfo' ? wlLinkID : 0,
-          linkId: formName === 'waitingListInfo' ? 0 : wlLinkID,
+          id: 0,
+          linkId: wlLinkID,
           propertyName: name,
           value: value,
         });
@@ -1213,9 +1214,38 @@ const WaitingListAssessment = (() => {
   //--------------------------------------------------
   function attachEvents() {
     rosterPicker.onConsumerSelect(onConsumerSelect);
-    reviewAssessmentBtn.onClick(() => {});
+    reviewAssessmentBtn.onClick(onReviewAssessmentBtnClick);
+    testForErick1.onClick(async () => {
+      const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
+        waitingListId: '10',
+      });
+
+      if (resp !== '1') return;
+
+      const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
+        header: 'Test header for WLID: 10',
+        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus arcu orci, cursus sit amet nunc nec, faucibus cursus metus. Suspendisse potenti. Curabitur blandit mauris ac tempor vulputate. ',
+      });
+    });
+    testForErick2.onClick(async () => {
+      const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
+        waitingListId: '16',
+      });
+
+      if (resp !== '1') return;
+
+      const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
+        header: 'Test header for WLID: 16',
+        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus arcu orci, cursus sit amet nunc nec, faucibus cursus metus. Suspendisse potenti. Curabitur blandit mauris ac tempor vulputate. ',
+      });
+    });
   }
   function loadPage() {
+    // ROSTER PICKER
+    reviewAssessmentBtn.renderTo(_DOM.ACTIONCENTER);
+    testForErick1.renderTo(_DOM.ACTIONCENTER);
+    testForErick2.renderTo(_DOM.ACTIONCENTER);
+
     // FORMS
     for (formElement in formElements) {
       if (formElements[formElement].length === 0) continue;
@@ -1283,6 +1313,17 @@ const WaitingListAssessment = (() => {
 
     reviewAssessmentBtn = new Button({
       text: 'Review Assessments',
+      style: 'primary',
+      styleType: 'contained',
+    });
+
+    testForErick1 = new Button({
+      text: 'Erick Test WLID: 10',
+      style: 'primary',
+      styleType: 'contained',
+    });
+    testForErick2 = new Button({
+      text: 'Erick Test WLID: 16',
       style: 'primary',
       styleType: 'contained',
     });

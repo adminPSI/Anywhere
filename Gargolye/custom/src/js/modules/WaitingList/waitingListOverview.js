@@ -42,7 +42,6 @@ const WaitingListOverview = (() => {
     }
   }
   async function loadPage() {
-    newAssessmentBtn.renderTo(wlOverviewWrap);
     wlReviewTable.renderTo(wlOverviewWrap);
     rosterPicker.renderTo(wlRosterWrap);
   }
