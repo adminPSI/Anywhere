@@ -123,7 +123,7 @@ const ConsumerFinances = (() => {
             columnHeadings: ['Date', 'Account', 'Payee', 'Category', 'Amount', 'Check No.', 'Balance', 'Entered By'],
             endIcon: true,
         };
-        debugger;
+
         selectedConsumerIds = selectedConsumers.map(function (x) { return x.id });
         let ConsumerFinancesEntries = await ConsumerFinancesAjax.getAccountTransectionEntriesAsync(
             selectedConsumerIds.join(", "),
