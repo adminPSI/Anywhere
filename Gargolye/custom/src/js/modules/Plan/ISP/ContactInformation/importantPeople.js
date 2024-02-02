@@ -211,9 +211,6 @@ const isp_ci_importantPeople = (() => {
         );
       } else {
         //Update
-        let thisPhone = (extVal !== '') ? UTIL.formatPhoneNumber(phoneVal) + '  ext. ' + extVal : UTIL.formatPhoneNumber(phoneVal);
-        let thisPhone2 = (phoneVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  : '';
-         thisPhone2 = (extVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  + '  ext. ' + extVal2 : UTIL.formatPhoneNumber(phoneVal2);
          
          // Validation check for rows with type other. places red '!' in row if no value is typeOther
          if (typeVal === 'Other' && typeOtherVal === '') {
