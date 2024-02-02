@@ -2833,9 +2833,19 @@ namespace Anywhere
             return wlw.viewSupportingDocInBrowser(token, supportingDocumentId);
         }
 
-            //OOD Module
+        public string generateWaitingListAssessmentReport(string token, string waitingListId)
+        {
+            return rbw.generateWaitingListAssessmentReport(token, waitingListId);
+        }
 
-            public string generateForm4(System.IO.Stream testInput)
+        public string sendWaitingListAssessmentReport(string token, string reportScheduleId, string header, string body, string waitingListId)
+        {
+            return rbw.sendWaitingListAssessmentReport(token, reportScheduleId, header, body, waitingListId);
+        }
+        
+        //OOD Module
+
+       public string generateForm4(System.IO.Stream testInput)
         {
             //(string token, string consumerIds, string serviceStartDate, string serviceEndDate, string userId, string serviceCode, string referenceNumber
             string token;

@@ -169,6 +169,11 @@ const isp_ci_importantPeople = (() => {
       const emailVal = document.getElementById('isp-ciip-emailInput').value;
       const typeOtherVal = document.getElementById('isp-ciip-typeOther').value;
 
+      let thisPhone = (extVal !== '') ? UTIL.formatPhoneNumber(phoneVal) + '  ext. ' + extVal : UTIL.formatPhoneNumber(phoneVal);
+      let thisPhone2 = (phoneVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  : '';
+       thisPhone2 = (extVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  + '  ext. ' + extVal2 : UTIL.formatPhoneNumber(phoneVal2);
+    
+
       if (isNew) {
         //Insert
         // UNSAVABLE NOTE TEXT IS REMOVED IN BACKEND ON INSERTS
@@ -195,7 +200,7 @@ const isp_ci_importantPeople = (() => {
           'isp_ci_importantPeopleTable',
           [
             {
-              values: [typeVal, nameVal, addressVal, emailVal, UTIL.formatPhoneNumber(phoneVal)],
+              values: [typeVal, nameVal, addressVal, emailVal, thisPhone + '\n' + thisPhone2],
               id: `ci-impPeople-${importantPersonId}`,
               onClick: () => {
                 tablePopup(data, false);
@@ -206,9 +211,6 @@ const isp_ci_importantPeople = (() => {
         );
       } else {
         //Update
-        let thisPhone = (extVal !== '') ? UTIL.formatPhoneNumber(phoneVal) + '  ext. ' + extVal : UTIL.formatPhoneNumber(phoneVal);
-        let thisPhone2 = (phoneVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  : '';
-         thisPhone2 = (extVal2 !== '') ? UTIL.formatPhoneNumber(phoneVal2)  + '  ext. ' + extVal2 : UTIL.formatPhoneNumber(phoneVal2);
          
          // Validation check for rows with type other. places red '!' in row if no value is typeOther
          if (typeVal === 'Other' && typeOtherVal === '') {
@@ -590,7 +592,11 @@ const isp_ci_importantPeople = (() => {
     const errors = document.getElementById('isp-ciip-mainPopup').querySelectorAll('.error');
     if (errors.length > 0) {
       saveBtn.classList.add('disabled');
-    } else saveBtn.classList.remove('disabled');
+      saveBtn.disabled = true;
+    } else {
+      saveBtn.classList.remove('disabled');
+      saveBtn.disabled = false;
+    }
   }
 
   function buildTableMarkup() {
