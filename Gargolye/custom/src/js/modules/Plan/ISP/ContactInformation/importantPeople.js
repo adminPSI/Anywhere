@@ -592,7 +592,11 @@ const isp_ci_importantPeople = (() => {
     const errors = document.getElementById('isp-ciip-mainPopup').querySelectorAll('.error');
     if (errors.length > 0) {
       saveBtn.classList.add('disabled');
-    } else saveBtn.classList.remove('disabled');
+      saveBtn.disabled = true;
+    } else {
+      saveBtn.classList.remove('disabled');
+      saveBtn.disabled = false;
+    }
   }
 
   function buildTableMarkup() {
