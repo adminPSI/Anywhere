@@ -283,10 +283,14 @@
    *
    * @function
    */
-  Form.prototype.disableFormInputs = function () {
+  Form.prototype.disableFormInputs = function (disable = true) {
     for (inputName in this.inputs) {
-      this.inputs[inputName].toggleDisabled(true);
+      this.inputs[inputName].toggleDisabled(disable);
     }
+  };
+
+  Form.prototype.toggleFormDisabled = function (disable) {
+    this.form.classList.toggle('readonly', disable);
   };
 
   /**

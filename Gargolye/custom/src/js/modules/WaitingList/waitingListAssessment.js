@@ -13,7 +13,10 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // DOM
   //--------------------------
-  let formWrap;
+  let assessmentWrap;
+  let moduleWrap;
+  let moduleHeader;
+  let moduleBody;
   //--------------------------
   // UI INSTANCES
   //--------------------------
@@ -821,9 +824,8 @@ const WaitingListAssessment = (() => {
 
   // EVENTS
   //--------------------------------------------------
-  async function onReviewAssessmentBtnClick(e) {
-    // load review page
-    // init review page with selected consumer if there is one
+  async function onReviewAssessmentBtnClick() {
+    WaitingListOverview.init({ wlData, moduleWrap, moduleHeader, moduleBody });
   }
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
@@ -1149,37 +1151,63 @@ const WaitingListAssessment = (() => {
     },
   };
   function updatePageActiveStatus() {
-    if ('conditions page inputs are all YES') {
-      //TODO-ASH: (ENABLE) needs page
-      //TODO-ASH: (ENABLE) waiverEnrollment page
+    // delete table: ['tableID|tableName'], deleteFromWaitingList
+    let conditionsPageAllYes, actionRequiredNeeds, actionRequiredRiskMitigation, riskMitigationHasCheckboxSelected;
 
-      if ('needs page [needsIsActionRequiredRequiredIn30Days] is Y') {
-        //TODO-ASH: (ENABLE) riskMitigation page
-      }
+    if ('conditions page inputs are NOT all YES') {
+      //TODO-ASH: (DISABLE) needs page
+      //TODO-ASH: (DISABLE) waiverEnrollment page
+      //TODO-ASH: (DISABLE) riskMitigation page
+      //TODO-ASH: (DISABLE) icfDischarge page
+      //TODO-ASH: (DISABLE) intermittentSupports page
+      //TODO-ASH: (DISABLE) childProtectionAgency page
+      //TODO-ASH: (DISABLE) adultDayEmployment page
+      //TODO-ASH: (DISABLE) dischargePlan page
+      //TODO-ASH: (DISABLE) immediateNeeds page
+      //TODO-ASH: (DISABLE) currentNeeds page
+      return;
+    }
 
-      if ('riskMitigation page [rMIsActionRequiredIn3oDays] is Y') {
-        //TODO-ASH: (ENABLE) icfDischarge page
-        //TODO-ASH: (ENABLE) intermittentSupports page
-        //TODO-ASH: (ENABLE) childProtectionAgency page
-        //TODO-ASH: (ENABLE) adultDayEmployment page
-        //TODO-ASH: (ENABLE) dischargePlan page
-      }
+    //TODO-ASH: (ENABLE) needs page
+    //TODO-ASH: (ENABLE) waiverEnrollment page
 
-      if (
-        'needs page [needsIsActionRequiredRequiredIn30Days] is Y' ||
-        'riskMitigation page [rMIsActionRequiredIn3oDays] is Y'
-      ) {
-        if ('any checkbox is checked on riskMitigation page except not applicable') {
-          //TODO-ASH: (ENABLE) immediateNeeds page
-        }
-      }
+    if ('needs page [needsIsActionRequiredRequiredIn30Days] is YES') {
+      //TODO-ASH: (ENABLE) riskMitigation page
+    } else {
+      //TODO-ASH: (DISABLE) riskMitigation page
+    }
 
-      if (
-        'needs page [needsIsActionRequiredRequiredIn30Days] is N' ||
-        'riskMitigation page [rMIsActionRequiredIn3oDays] is N'
-      ) {
-        //TODO-ASH: (ENABLE) currentNeeds page
-      }
+    if ('riskMitigation page [rMIsActionRequiredIn3oDays] is YES') {
+      //TODO-ASH: (ENABLE) icfDischarge page
+      //TODO-ASH: (ENABLE) intermittentSupports page
+      //TODO-ASH: (ENABLE) childProtectionAgency page
+      //TODO-ASH: (ENABLE) adultDayEmployment page
+      //TODO-ASH: (ENABLE) dischargePlan page
+    } else {
+      //TODO-ASH: (DISABLE) icfDischarge page
+      //TODO-ASH: (DISABLE) intermittentSupports page
+      //TODO-ASH: (DISABLE) childProtectionAgency page
+      //TODO-ASH: (DISABLE) adultDayEmployment page
+      //TODO-ASH: (DISABLE) dischargePlan page
+    }
+
+    if (
+      'needs page [needsIsActionRequiredRequiredIn30Days] is NO' ||
+      'riskMitigation page [rMIsActionRequiredIn3oDays] is NO'
+    ) {
+      //TODO-ASH: (ENABLE) currentNeeds page
+    } else {
+      //TODO-ASH: (DISABLE) currentNeeds page
+    }
+
+    if (
+      ('needs page [needsIsActionRequiredRequiredIn30Days] is YES' ||
+        'riskMitigation page [rMIsActionRequiredIn3oDays] is YES') &&
+      'any checkbox is checked on riskMitigation page except not applicable'
+    ) {
+      //TODO-ASH: (ENABLE) immediateNeeds page
+    } else {
+      //TODO-ASH: (DISABLE) immediateNeeds page
     }
   }
   const onChangeCallbacksFormWatch = {
@@ -1271,7 +1299,10 @@ const WaitingListAssessment = (() => {
     for (formElement in formElements) {
       if (formElements[formElement].length === 0) continue;
 
+      const formWrap = _DOM.createElement('div', { id: formElement });
       const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
+      formWrap.appendChild(formHeader);
+      assessmentWrap.appendChild(formWrap);
 
       wlFormIds[formElement] = '';
       wlForms[formElement] = new Form({
@@ -1280,7 +1311,6 @@ const WaitingListAssessment = (() => {
         formName: formElement,
       });
 
-      formWrap.appendChild(formHeader);
       wlForms[formElement].renderTo(formWrap);
 
       wlForms[formElement].onChange(onFormChange(formElement));
@@ -1290,22 +1320,14 @@ const WaitingListAssessment = (() => {
     rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
-    _DOM.ACTIONCENTER.innerHTML = '';
-    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
-    _DOM.setActiveModuleAttribute('waitingList');
+    moduleHeader.innerHTML = '';
+    moduleBody.innerHTML = '';
 
-    moduleWrap = _DOM.createElement('div', { class: 'waitingList' });
-    moduleHeader = _DOM.createElement('div', { class: 'waitingList__header' });
-    moduleBody = _DOM.createElement('div', { class: 'waitingList__body' });
-    moduleWrap.appendChild(moduleHeader);
-    moduleWrap.appendChild(moduleBody);
-
-    formWrap = _DOM.createElement('div', { class: 'waitingListForm' });
+    assessmentWrap = _DOM.createElement('div', { class: 'waitingListForm' });
     rosterWrap = _DOM.createElement('div', { class: 'waitingListRoster' });
-    moduleBody.appendChild(formWrap);
-    moduleBody.appendChild(rosterWrap);
 
-    _DOM.ACTIONCENTER.appendChild(moduleWrap);
+    moduleBody.appendChild(assessmentWrap);
+    moduleBody.appendChild(rosterWrap);
   }
 
   // INIT (data & defaults)
@@ -1357,10 +1379,13 @@ const WaitingListAssessment = (() => {
     });
   }
 
-  async function init() {
+  async function init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
     wlForms = {};
     wlFormIds = {};
-    wlData = new WaitingListData();
+    wlData = wlData;
+    moduleWrap = moduleWrapEle;
+    moduleHeader = moduleHeaderEle;
+    moduleBody = moduleBodyEle;
 
     initFormActiveStatuses();
     loadPageSkeleton();

@@ -14,9 +14,11 @@ const WaitingList = (() => {
   }
 
   async function init() {
-    // wlData = new WaitingListData();
+    loadPageSkeleton();
 
-    WaitingListAssessment.init();
+    wlData = new WaitingListData();
+
+    WaitingListAssessment.init({ wlData, moduleWrap, moduleHeader, moduleBody });
   }
 
   return {

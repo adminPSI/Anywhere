@@ -43,13 +43,5 @@
   // ASSESSMENT OVERVIEW
   .waitingListOverview {
     flex-grow: 1;
-
-    &__roster {
-      min-width: 300px;
-
-      .rosterPicker {
-        max-height: calc(100vh - 95px);
-      }
-    }
   }
 }

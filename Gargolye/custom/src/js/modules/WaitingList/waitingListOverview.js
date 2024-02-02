@@ -6,8 +6,8 @@ const WaitingListOverview = (() => {
   //--------------------------
   // DOM
   //--------------------------
-  let wlRosterWrap;
-  let wlOverview;
+  let rosterWrap;
+  let overviewWrap;
   //--------------------------
   // UI INSTANCES
   //--------------------------
@@ -41,18 +41,18 @@ const WaitingListOverview = (() => {
     }
   }
   async function loadPage() {
-    wlReviewTable.renderTo(wlOverviewWrap);
-    rosterPicker.renderTo(wlRosterWrap);
+    wlReviewTable.renderTo(overviewWrap);
+    rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
-    moduleWrap.innerHTML = '';
+    moduleHeader.innerHTML = '';
+    moduleBody.innerHTML = '';
 
-    // build DOM skeleton
-    wlOverviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
-    wlRosterWrap = _DOM.createElement('div', { class: 'waitingListOverview__roster' });
+    overviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
+    rosterWrap = _DOM.createElement('div', { class: 'waitingListRoster' });
 
-    moduleWrap.appendChild(wlOverviewWrap);
-    moduleWrap.appendChild(wlRosterWrap);
+    moduleBody.appendChild(overviewWrap);
+    moduleBody.appendChild(rosterWrap);
   }
 
   // INIT (data & defaults)
@@ -88,11 +88,13 @@ const WaitingListOverview = (() => {
     });
   }
 
-  async function init(consumerId, wlDataInstance, moduleWrapEle) {
+  async function init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
     // init data
     selectedConsumer = consumerId;
     wlData = wlDataInstance;
     moduleWrap = moduleWrapEle;
+    moduleHeader = moduleHeaderEle;
+    moduleBody = moduleBodyEle;
 
     loadPageSkeleton();
 
