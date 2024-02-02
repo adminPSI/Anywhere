@@ -6,7 +6,6 @@ const WaitingListOverview = (() => {
   //--------------------------
   // DOM
   //--------------------------
-  let moduleWrap;
   let wlRosterWrap;
   let wlOverview;
   //--------------------------
@@ -42,40 +41,18 @@ const WaitingListOverview = (() => {
     }
   }
   async function loadPage() {
-    newAssessmentBtn.renderTo(wlOverviewWrap);
     wlReviewTable.renderTo(wlOverviewWrap);
     rosterPicker.renderTo(wlRosterWrap);
   }
   function loadPageSkeleton() {
-    // prep actioncenter
-    _DOM.ACTIONCENTER.innerHTML = '';
+    moduleWrap.innerHTML = '';
 
     // build DOM skeleton
-    moduleWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
-    wlRosterWrap = _DOM.createElement('div', { class: 'waitingListOverview__roster' });
-    wlOverviewWrap = _DOM.createElement('div', { class: 'waitingListOverview__table' });
-
-    moduleWrap.appendChild(wlOverviewWrap);
-    moduleWrap.appendChild(wlRosterWrap);
-
-    _DOM.ACTIONCENTER.appendChild(moduleWrap);
-  }
-  async function reloadPage() {
-    _DOM.ACTIONCENTER.innerHTML = '';
-
-    // build DOM skeleton
-    moduleWrap = _DOM.createElement('div', { class: 'waitingListModule' });
-    wlRosterWrap = _DOM.createElement('div', { class: 'waitingListRosterPicker' });
     wlOverviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
+    wlRosterWrap = _DOM.createElement('div', { class: 'waitingListOverview__roster' });
 
     moduleWrap.appendChild(wlOverviewWrap);
     moduleWrap.appendChild(wlRosterWrap);
-
-    _DOM.ACTIONCENTER.appendChild(moduleWrap);
-
-    await loadPage();
-    await populatePage();
-    attachEvents();
   }
 
   // INIT (data & defaults)
@@ -111,11 +88,13 @@ const WaitingListOverview = (() => {
     });
   }
 
-  async function init(consumerId) {
-    loadPageSkeleton();
-
+  async function init(consumerId, wlDataInstance, moduleWrapEle) {
     // init data
     selectedConsumer = consumerId;
+    wlData = wlDataInstance;
+    moduleWrap = moduleWrapEle;
+
+    loadPageSkeleton();
 
     initComponents();
     await loadPage();

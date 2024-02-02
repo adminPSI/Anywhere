@@ -468,29 +468,47 @@ namespace Anywhere.service.Data.ReportBuilder
             }
         }
 
-        public string generateRelationshipsListReport(string token, string category, string title, string reportServerList, string location, string consumer, string fromDate, string toDate)
+        public string generateWaitingListAssessmentReport(string token, string category, string title, string reportServerList, string waitingListId)
         {
             if (tokenValidator(token) == false) return null;
-            logger.debug("generateRelationshipsListReport ");
+            logger.debug("generateWaitingListAssessmentReport ");
 
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(category);
             list.Add(title);
             list.Add(reportServerList);
-            list.Add(location);
-            list.Add(consumer);
-            list.Add(fromDate);
-            list.Add(toDate);
-            string text = "CALL DBA.ANYW_GenerateRelationshipsListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            list.Add(waitingListId);
+            string text = "CALL DBA.ANYW_WaitingList_GenerateWaitingListAssessmentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
             try
             {
                 return executeDataBaseCallJSON(text);
             }
             catch (Exception ex)
             {
-                logger.error("1ITR", ex.Message + "ANYW_GenerateRelationshipsListReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
-                return "1ITR: error ANYW_GenerateRelationshipsListReport";
+                logger.error("1ITR", ex.Message + "ANYW_WaitingList_GenerateWaitingListAssessmentReport(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_WaitingList_GenerateWaitingListAssessmentReport";
+            }
+        }
+
+        public string sendWaitingListReport(string token, string reportScheduleId, string header, string body, string waitingListId)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("sendWaitingListAssessmentReport  ");
+            List<string> list = new List<string>();
+            list.Add(reportScheduleId);
+            list.Add(header);
+            list.Add(body);
+            list.Add(waitingListId);
+            string text = "CALL DBA.ANYW_WaitingList_SendWaitingListAssessmentReport (" + string.Join(",", list.Select(x => string.Format("'{0}'", removeUnsavableNoteText(x))).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("1ITR", ex.Message + "ANYW_WaitingList_SendWaitingListAssessmentReport (" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "1ITR: error ANYW_WaitingList_SendWaitingListAssessmentReport ";
             }
         }
 

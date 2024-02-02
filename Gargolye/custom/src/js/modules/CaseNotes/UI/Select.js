@@ -118,6 +118,16 @@
   };
 
   /**
+   * Gets value of select
+   *
+   * @function
+   * @returns {*} Value of select
+   */
+  Select.prototype.getValue = function () {
+    return this.select.value;
+  };
+
+  /**
    * Clears select value, sets it to ''
    *
    * @function

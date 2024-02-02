@@ -24,6 +24,8 @@
 
     // DOM Ref
     this.rootElement = null;
+    this.input = null;
+    this.labelEle = null;
 
     this._build();
   }
@@ -48,6 +50,26 @@
     });
     this.rootElement.appendChild(this.input);
     this.rootElement.appendChild(this.labelEle);
+  };
+
+  /**
+   * Sets value of radio
+   *
+   * @function
+   * @param {String | Number} value
+   */
+  Input.prototype.setValue = function (value) {
+    this.input.checked = value;
+  };
+
+  /**
+   * Returns value of radio
+   *
+   * @function
+   * @returns {*} Value of radio
+   */
+  Radio.prototype.getValue = function () {
+    return this.input.checked;
   };
 
   /**
@@ -109,13 +131,35 @@
   };
 
   /**
-   * Check radio input by id
+   * Set radio input checked status by id
    *
    * @function
    * @param {String | Number} value
    */
   RadioGroup.prototype.setValue = function (inputId) {
-    this.inputs[inputId].checked = true;
+    this.inputs[inputId].setValue(true);
+  };
+
+  /**
+   * Get radio input checked status by id
+   *
+   * @function
+   * @param {String | Number} value
+   */
+  RadioGroup.prototype.getValue = function (inputId) {
+    if (!inputId) {
+      let checkedInputId;
+
+      for (inputId in this.inputs) {
+        if (this.inputs[inputId].getValue()) {
+          checkedInputId = this.inputs[inputId].input.id;
+        }
+      }
+
+      return checkedInputId ? checkedInputId : '';
+    }
+
+    return this.inputs[inputId].getValue();
   };
 
   /**
