@@ -262,7 +262,7 @@ var workshop = (function () {
         })
 
         dateSelection.addEventListener("change", event => {
-            workshopFilterListData.selectedDate = event.target.value; 
+            workshopFilterListData.selectedDate = event.target.value;
         })
 
     }
@@ -920,7 +920,7 @@ var workshop = (function () {
         updateJobDropdown(locationID, true);
 
         locationDropdownSelect = document.getElementById("locationDropdown");
-        jobDropdownSelect = document.getElementById("filterJobDropdown"); 
+        jobDropdownSelect = document.getElementById("filterJobDropdown");
 
         //Populate Dropdowns and Cache the selection
         dropdown.populate(
@@ -939,21 +939,29 @@ var workshop = (function () {
     }
 
     function filterApplyAction() {
-        displayDateIso = document.getElementById("date").value;
-        locationDropdown = document.getElementById("locationDropdown");
-        jobDropdown = document.getElementById("filterJobDropdown");
+        if (document.getElementById("date") != null) {
+            displayDateIso = document.getElementById("date").value;
+            workshopFilterListData.selectedDate = displayDateIso;
+        }
 
-        locationID = locationDropdown.options[locationDropdown.selectedIndex].value;
+        if (document.getElementById("filterJobDropdown") != null) {
+            jobDropdown = document.getElementById("filterJobDropdown");
+            workshopFilterListData.jobStepId = jobDropdown.options[jobDropdown.selectedIndex].value;
+            filterCache.jobStepSelectedOpt = jobDropdown.selectedIndex;
+        }
+        if (document.getElementById("locationDropdown") != null) {
+            locationDropdown = document.getElementById("locationDropdown");
+            workshopFilterListData.locationId = locationDropdown.options[locationDropdown.selectedIndex].value;
+            locationID = locationDropdown.options[locationDropdown.selectedIndex].value;
+            filterCache.locationSelectedOpt = locationDropdown.selectedIndex;
+        }
+        else {
+            workshopFilterListData.locationId = locationID;
+        }
+
         if (defaults.rememberLastLocation("workshop"))
             defaults.setLocation("workshop", locationID);
 
-        workshopFilterListData.selectedDate = displayDateIso;
-        workshopFilterListData.locationId =
-            locationDropdown.options[locationDropdown.selectedIndex].value;
-        workshopFilterListData.jobStepId =
-            jobDropdown.options[jobDropdown.selectedIndex].value;
-        filterCache.jobStepSelectedOpt = jobDropdown.selectedIndex;
-        filterCache.locationSelectedOpt = locationDropdown.selectedIndex;
         //Refresh roster date:
         roster2.updateSelectedDate(displayDateIso)
         //Update active Consumers based on filter - Date, LocaitonID, returns consumers (called employee_id).
@@ -974,7 +982,7 @@ var workshop = (function () {
         updateCurrentFilterDisplay();
     }
 
-    function updateCurrentFilterDisplay() { 
+    function updateCurrentFilterDisplay() {
         var currentFilterDisplay = document.querySelector('.filteredByData');
         if (!currentFilterDisplay) {
             workshopFilterListData.locationName = locationID == 0 ? "All" : mainLocationData[locationID].locName;
@@ -983,7 +991,7 @@ var workshop = (function () {
             currentFilterDisplay.classList.add('filteredByData');
             filterButtonSet();
             currentFilterDisplay.appendChild(btnWrap);
-        } 
+        }
 
         currentFilterDisplay.style.maxWidth = '100%';
 
@@ -1085,12 +1093,13 @@ var workshop = (function () {
         btnWrap.appendChild(serviceDateBtnWrap);
     }
 
-    function closeFilter(closeFilter) {
+    function closeFilter(closeFilter) { 
         if (closeFilter == 'jobStepBtn') {
-            workshopFilterListData.jobStepId = 0; 
+            workshopFilterListData.jobStepId = 0;  
         }
         if (closeFilter == 'locationBtn') {
-            workshopFilterListData.locationId = '0'; 
+            locationID = '0'; 
+            workshopFilterListData.locationId = '0';  
         }
         filterApplyAction();
     }

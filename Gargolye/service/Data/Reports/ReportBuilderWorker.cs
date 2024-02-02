@@ -97,13 +97,6 @@ namespace Anywhere.service.Data.ReportBuilder
                     reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
 
                     break;
-                //Case Load 
-                //case "Relationships List (Is a) - with page break by person":
-                //    result = generateRelationshipsListReport(token, reportType, reportData);
-
-                //    reportScheduleId = js.Deserialize<ReportScheduleId[]>(result);
-
-                //    break;
             }
 
             return reportScheduleId;
@@ -235,17 +228,22 @@ namespace Anywhere.service.Data.ReportBuilder
             return result;
         }
 
-        //public string generateRelationshipsListReport(string token, string reportType, ReportData reportData)
-        //{
-        //    string category = "Case Notes - Case Load";
-        //    string title = "Relationships List (Is a) - with page break by person";
-        //    string reportServerList = "Primary";
-        //    string result = "";
+        public string generateWaitingListAssessmentReport(string token, string waitingListId)
+        {
+            string category = "Waiting List";
+            string title = "Ohio Assessment for Immediate and Current Needs";
+            string reportServerList = "Primary";
+            string result = "";
 
-        //    result = rbdg.generateRelationshipsListReport(token, category, title, reportServerList, reportData.ITLocation, reportData.ITConsumer, reportData.ITFromDate, reportData.ITToDate);
+            result = rbdg.generateWaitingListAssessmentReport(token, category, title, reportServerList, waitingListId);
 
-        //    return result;
-        //}
+            return result;
+        }
+
+        public string sendWaitingListAssessmentReport(string token, string reportScheduleId, string header, string body, string waitingListId)
+        {
+            return rbdg.sendWaitingListReport(token, reportScheduleId, header, body, waitingListId);
+        }
 
         public void viewReport(string token, string reportScheduleId)
         {

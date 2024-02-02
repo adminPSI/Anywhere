@@ -333,21 +333,12 @@ const planValidation = (function () {
   
     // ASSESSMENT WORKING/NOT WORKING
     function workingSectionCheck(assessmentValidationCheck) {
-      const isFirstRowAnswerFilled = assessmentValidationCheck.workingNotWorking.some(obj => obj.answerRow === "1" && obj.answer !== "");
+      const isNotWorkingFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 605" && obj.answer !== "");
+      const isWorkingFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 606" && obj.answer !== "");
+      //const isWhoSaidItFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 607" && obj.answer !== "");
 
-      if (isFirstRowAnswerFilled) {
-        // Now, check if any object has an empty string for the key "606" in questionNumber
-        const isFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 605" && obj.answer !== "");
-      
-        if (isFilledOut) {
-          assessmentValidationCheck.workingSectionComplete = true;
-        } else {
-          assessmentValidationCheck.workingSectionComplete = false;
-        }
-      } else {
-        assessmentValidationCheck.workingSectionComplete = false;
-      }
-  
+      assessmentValidationCheck.workingSectionComplete = isWorkingFilledOut && isNotWorkingFilledOut;
+
       return assessmentValidationCheck;
     }
   

@@ -6,9 +6,8 @@ const WaitingListOverview = (() => {
   //--------------------------
   // DOM
   //--------------------------
-  let moduleWrap;
-  let wlRosterWrap;
-  let wlOverview;
+  let rosterWrap;
+  let overviewWrap;
   //--------------------------
   // UI INSTANCES
   //--------------------------
@@ -42,39 +41,18 @@ const WaitingListOverview = (() => {
     }
   }
   async function loadPage() {
-    wlReviewTable.renderTo(wlOverviewWrap);
-    rosterPicker.renderTo(wlRosterWrap);
+    wlReviewTable.renderTo(overviewWrap);
+    rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
-    // prep actioncenter
-    _DOM.ACTIONCENTER.innerHTML = '';
+    moduleHeader.innerHTML = '';
+    moduleBody.innerHTML = '';
 
-    // build DOM skeleton
-    moduleWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
-    wlRosterWrap = _DOM.createElement('div', { class: 'waitingListOverview__roster' });
-    wlOverviewWrap = _DOM.createElement('div', { class: 'waitingListOverview__table' });
+    overviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
+    rosterWrap = _DOM.createElement('div', { class: 'waitingListRoster' });
 
-    moduleWrap.appendChild(wlOverviewWrap);
-    moduleWrap.appendChild(wlRosterWrap);
-
-    _DOM.ACTIONCENTER.appendChild(moduleWrap);
-  }
-  async function reloadPage() {
-    _DOM.ACTIONCENTER.innerHTML = '';
-
-    // build DOM skeleton
-    moduleWrap = _DOM.createElement('div', { class: 'waitingListModule' });
-    wlRosterWrap = _DOM.createElement('div', { class: 'waitingListRosterPicker' });
-    wlOverviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
-
-    moduleWrap.appendChild(wlOverviewWrap);
-    moduleWrap.appendChild(wlRosterWrap);
-
-    _DOM.ACTIONCENTER.appendChild(moduleWrap);
-
-    await loadPage();
-    await populatePage();
-    attachEvents();
+    moduleBody.appendChild(overviewWrap);
+    moduleBody.appendChild(rosterWrap);
   }
 
   // INIT (data & defaults)
@@ -110,11 +88,15 @@ const WaitingListOverview = (() => {
     });
   }
 
-  async function init(consumerId) {
-    loadPageSkeleton();
-
+  async function init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
     // init data
     selectedConsumer = consumerId;
+    wlData = wlDataInstance;
+    moduleWrap = moduleWrapEle;
+    moduleHeader = moduleHeaderEle;
+    moduleBody = moduleBodyEle;
+
+    loadPageSkeleton();
 
     initComponents();
     await loadPage();

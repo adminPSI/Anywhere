@@ -13,7 +13,10 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // DOM
   //--------------------------
-  let formWrap;
+  let assessmentWrap;
+  let moduleWrap;
+  let moduleHeader;
+  let moduleBody;
   //--------------------------
   // UI INSTANCES
   //--------------------------
@@ -821,9 +824,8 @@ const WaitingListAssessment = (() => {
 
   // EVENTS
   //--------------------------------------------------
-  async function onReviewAssessmentBtnClick(e) {
-    // load review page
-    // init review page with selected consumer if there is one
+  async function onReviewAssessmentBtnClick() {
+    WaitingListOverview.init({ wlData, moduleWrap, moduleHeader, moduleBody });
   }
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
@@ -997,35 +999,42 @@ const WaitingListAssessment = (() => {
     currentLivingArrangement: ({ name, value, formName }) => {
       // (ENABLE) [] the "Other Living Arrangement" field only (IF) [currentLivingArrangement] "Other" is selected in the "Describe Current Living Arrangement" drodown
       const data = wlForms[formName].inputs['currentLivingArrangement'].getValue();
-      wlForms[formName].inputs['livingArrangementOther'].toggleDisabled(data === '5' ? false : true);
+      wlForms[formName].inputs['livingArrangementOther'].toggleDisabled(data === '0' ? false : true);
     },
     //* currentAvailableServices
-    isOtherService: ({ name, value, formName }) => {
+    isOtherService: ({ name, value, formName, id }) => {
       // (ENABLE) [otherDescription] the text field under "Other" only (IF) [isOtherService] the answer is "Yes" to Other
-      const data = wlForms[formName].inputs['isOtherService'].getValue();
-      wlForms[formName].inputs['otherDescription'].toggleDisabled(data === 'yes' ? false : true);
+      const isYesChecked = wlForms[formName].inputs['isOtherService'].getValue('isOtherServiceyes');
+      wlForms[formName].inputs['otherDescription'].toggleDisabled(!isYesChecked);
     },
     //* primaryCaregiver
     isPrimaryCaregiverUnavailable: ({ name, value, formName }) => {
       // (ENABLE) [unavailableDocumentation] "List documentation used to verify presence of declining..."  (IF) [isPrimaryCaregiverUnavailable] question above it is "Yes"
       // (ENABLE) [isActionRequiredIn30Days] "Is action required..." radio buttons                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." question is "Yes"
       // (ENABLE) [isIndividualSkillsDeclined] "Is there evidence of declining..."                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." answer is "No".
-      const data = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue();
-      wlForms[formName].inputs['unavailableDocumentation'].toggleDisabled(data === 'yes' ? false : true);
-      wlForms[formName].inputs['isActionRequiredIn30Days'].toggleDisabled(data === 'yes' ? false : true);
-      wlForms[formName].inputs['isIndividualSkillsDeclined'].toggleDisabled(data === 'no' ? false : true);
+      const isYesChecked = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue(
+        'isPrimaryCaregiverUnavailableyes',
+      );
+      const isNoChecked = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue(
+        'isPrimaryCaregiverUnavailableno',
+      );
+      wlForms[formName].inputs['unavailableDocumentation'].toggleDisabled(!isYesChecked);
+      wlForms[formName].inputs['isActionRequiredIn30Days'].toggleDisabled(!isYesChecked);
+      wlForms[formName].inputs['isIndividualSkillsDeclined'].toggleDisabled(!isNoChecked);
     },
     isActionRequiredIn30Days: ({ name, value, formName }) => {
       // (ENABLE) [actionRequiredDescription] "Describe action required." textbox (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
-      const data = wlForms[formName].inputs['isActionRequiredIn30Days'].getValue();
-      wlForms[formName].inputs['actionRequiredDescription'].toggleDisabled(data === 'yes' ? false : true);
+      const isYesChecked = wlForms[formName].inputs['isActionRequiredIn30Days'].getValue('isActionRequiredIn30Daysyes');
+      wlForms[formName].inputs['actionRequiredDescription'].toggleDisabled(!isYesChecked);
     },
     isIndividualSkillsDeclined: ({ name, value, formName }) => {
       // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox  (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
       // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox                                (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-      const data = wlForms[formName].inputs['isIndividualSkillsDeclined'].getValue();
-      wlForms[formName].inputs['declinedSkillsDocumentation'].toggleDisabled(data === 'yes' ? false : true);
-      wlForms[formName].inputs['declinedSkillsDescription'].toggleDisabled(data === 'yes' ? false : true);
+      const isYesChecked = wlForms[formName].inputs['isIndividualSkillsDeclined'].getValue(
+        'isIndividualSkillsDeclinedyes',
+      );
+      wlForms[formName].inputs['declinedSkillsDocumentation'].toggleDisabled(!isYesChecked);
+      wlForms[formName].inputs['declinedSkillsDescription'].toggleDisabled(!isYesChecked);
     },
     //* needs
     // (IF) "Is action required within the next 30 days..." radio buttons are disabled, the value of "No" should be selected, and the user should not be able to change it or delete it.
@@ -1058,13 +1067,18 @@ const WaitingListAssessment = (() => {
       // needsIsActionRequiredRequiredIn30Days
       //   a. The "Is action required within the next 30 days…" radio buttons are enabled AND
       //   b.  The answer to "Is action required within the next 30 days…" is "No"
-      const data = wlForms[formName].inputs['needsIsActionRequiredRequiredIn30Days'].getValue();
-      wlForms[formName].inputs['needsIsContinuousSupportRequired'].toggleDisabled(data === 'yes' ? false : true);
+      const isNoChecked = wlForms[formName].inputs['needsIsActionRequiredRequiredIn30Days'].getValue(
+        'needsIsActionRequiredRequiredIn30Daysno',
+      );
+      wlForms[formName].inputs['needsIsContinuousSupportRequired'].toggleDisabled(!isNoChecked);
     },
     //* riskMitigation
     rMIsActionRequiredIn3oDays: ({ name, value, formName }) => {
-      // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES" (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".  Otherwise, set to "NO"
-      const data = wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].getValue();
+      // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES"
+      // (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".Otherwise, set to "NO"
+      const isYesChecked = wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].getValue(
+        'rMIsActionRequiredIn3oDaysyes',
+      );
 
       wlForms[formName].inputs['rMIsSupportNeeded'].setValue();
     },
@@ -1082,9 +1096,11 @@ const WaitingListAssessment = (() => {
     intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
     //* childProtectionAgency [AI]
     cpaIsReleasedNext12Months: ({ name, value, formName }) => {
-      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
-      const data = wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue();
-      wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(data === 'yes' ? false : true);
+      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only
+      // (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
+      const isYesChecked =
+        wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes');
+      wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(!isYesChecked);
     },
     cpaIsReleasedNext12Months: childProtectionAgencyDetermination,
     cpaHadUnaddressableNeeds: childProtectionAgencyDetermination,
@@ -1100,14 +1116,16 @@ const WaitingListAssessment = (() => {
     TODO6: ({ name, value, formName }) => {},
     //* currentNeeds
     unmetNeedsSupports: ({ name, value, formName }) => {
-      // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only (IF) [unmetNeedsSupports] "If 'Yes', will any of those needs..." is YES
-      const data = wlForms[formName].inputs['unmetNeedsSupports'].getValue();
-      wlForms[formName].inputs['unmetNeedsDescription'].toggleDisabled(data === 'yes' ? false : true);
+      // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only
+      // (IF)[unmetNeedsSupports] "If 'Yes', will any of those needs..." is YES
+      const isYesChecked = wlForms[formName].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
+      wlForms[formName].inputs['unmetNeedsDescription'].toggleDisabled(isYesChecked);
     },
     unmetNeedsHas: ({ name, value, formName }) => {
-      // (ENABLE) [unmetNeedsSupports] "If 'Yes', will any of those needs..." only (IF) [unmetNeedsHas] "Does the individual have an identified need?" is YES
-      const data = wlForms[formName].inputs['unmetNeedsHas'].getValue();
-      wlForms[formName].inputs['unmetNeedsSupports'].toggleDisabled(data === 'yes' ? false : true);
+      // (ENABLE) [unmetNeedsSupports] "If 'Yes', will any of those needs..." only
+      // (IF)[unmetNeedsHas] "Does the individual have an identified need?" is YES
+      const isYesChecked = wlForms[formName].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
+      wlForms[formName].inputs['unmetNeedsSupports'].toggleDisabled(isYesChecked);
     },
     // (SET) [unmetNeedsHas] "Does the individual have an identified need?" to YES only when one of the following is true:
     //   a. ("Is there evidence that the primary…" is YES (AND) "Is action required…" is NO on the Primary Caregiver page) { OR }
@@ -1124,43 +1142,72 @@ const WaitingListAssessment = (() => {
     //   f. "Does the individual have a viable…" is YES on the Discharge Plan page
     //* waiverEnrollment
     waivEnrollWaiverEnrollmentIsRequired: ({ name, value, formName }) => {
-      // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only (IF) [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
-      const data = wlForms[formName].inputs['waivEnrollWaiverEnrollmentIsRequired'].getValue();
-      wlForms[formName].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(data === 'yes' ? false : true);
+      // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only
+      // (IF)[waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
+      const isYesChecked = wlForms[formName].inputs['waivEnrollWaiverEnrollmentIsRequired'].getValue(
+        'waivEnrollWaiverEnrollmentIsRequiredyes',
+      );
+      wlForms[formName].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(isYesChecked);
     },
   };
   function updatePageActiveStatus() {
-    if ('conditions page inputs are all YES') {
-      //TODO-ASH: (ENABLE) needs page
-      //TODO-ASH: (ENABLE) waiverEnrollment page
+    // delete table: ['tableID|tableName'], deleteFromWaitingList
+    let conditionsPageAllYes, actionRequiredNeeds, actionRequiredRiskMitigation, riskMitigationHasCheckboxSelected;
 
-      if ('needs page [needsIsActionRequiredRequiredIn30Days] is Y') {
-        //TODO-ASH: (ENABLE) riskMitigation page
-      }
+    if ('conditions page inputs are NOT all YES') {
+      //TODO-ASH: (DISABLE) needs page
+      //TODO-ASH: (DISABLE) waiverEnrollment page
+      //TODO-ASH: (DISABLE) riskMitigation page
+      //TODO-ASH: (DISABLE) icfDischarge page
+      //TODO-ASH: (DISABLE) intermittentSupports page
+      //TODO-ASH: (DISABLE) childProtectionAgency page
+      //TODO-ASH: (DISABLE) adultDayEmployment page
+      //TODO-ASH: (DISABLE) dischargePlan page
+      //TODO-ASH: (DISABLE) immediateNeeds page
+      //TODO-ASH: (DISABLE) currentNeeds page
+      return;
+    }
 
-      if ('riskMitigation page [rMIsActionRequiredIn3oDays] is Y') {
-        //TODO-ASH: (ENABLE) icfDischarge page
-        //TODO-ASH: (ENABLE) intermittentSupports page
-        //TODO-ASH: (ENABLE) childProtectionAgency page
-        //TODO-ASH: (ENABLE) adultDayEmployment page
-        //TODO-ASH: (ENABLE) dischargePlan page
-      }
+    //TODO-ASH: (ENABLE) needs page
+    //TODO-ASH: (ENABLE) waiverEnrollment page
 
-      if (
-        'needs page [needsIsActionRequiredRequiredIn30Days] is Y' ||
-        'riskMitigation page [rMIsActionRequiredIn3oDays] is Y'
-      ) {
-        if ('any checkbox is checked on riskMitigation page except not applicable') {
-          //TODO-ASH: (ENABLE) immediateNeeds page
-        }
-      }
+    if ('needs page [needsIsActionRequiredRequiredIn30Days] is YES') {
+      //TODO-ASH: (ENABLE) riskMitigation page
+    } else {
+      //TODO-ASH: (DISABLE) riskMitigation page
+    }
 
-      if (
-        'needs page [needsIsActionRequiredRequiredIn30Days] is N' ||
-        'riskMitigation page [rMIsActionRequiredIn3oDays] is N'
-      ) {
-        //TODO-ASH: (ENABLE) currentNeeds page
-      }
+    if ('riskMitigation page [rMIsActionRequiredIn3oDays] is YES') {
+      //TODO-ASH: (ENABLE) icfDischarge page
+      //TODO-ASH: (ENABLE) intermittentSupports page
+      //TODO-ASH: (ENABLE) childProtectionAgency page
+      //TODO-ASH: (ENABLE) adultDayEmployment page
+      //TODO-ASH: (ENABLE) dischargePlan page
+    } else {
+      //TODO-ASH: (DISABLE) icfDischarge page
+      //TODO-ASH: (DISABLE) intermittentSupports page
+      //TODO-ASH: (DISABLE) childProtectionAgency page
+      //TODO-ASH: (DISABLE) adultDayEmployment page
+      //TODO-ASH: (DISABLE) dischargePlan page
+    }
+
+    if (
+      'needs page [needsIsActionRequiredRequiredIn30Days] is NO' ||
+      'riskMitigation page [rMIsActionRequiredIn3oDays] is NO'
+    ) {
+      //TODO-ASH: (ENABLE) currentNeeds page
+    } else {
+      //TODO-ASH: (DISABLE) currentNeeds page
+    }
+
+    if (
+      ('needs page [needsIsActionRequiredRequiredIn30Days] is YES' ||
+        'riskMitigation page [rMIsActionRequiredIn3oDays] is YES') &&
+      'any checkbox is checked on riskMitigation page except not applicable'
+    ) {
+      //TODO-ASH: (ENABLE) immediateNeeds page
+    } else {
+      //TODO-ASH: (DISABLE) immediateNeeds page
     }
   }
   const onChangeCallbacksFormWatch = {
@@ -1174,12 +1221,14 @@ const WaitingListAssessment = (() => {
     return async function inputChange(event) {
       const value = event.target.value;
       const name = event.target.name;
+      const id = event.target.id;
 
       if (onChangeCallbacks[name]) {
         onChangeCallbacks[name]({
           value,
           name,
           formName,
+          id,
         });
       }
 
@@ -1242,15 +1291,18 @@ const WaitingListAssessment = (() => {
   }
   function loadPage() {
     // ROSTER PICKER
-    reviewAssessmentBtn.renderTo(_DOM.ACTIONCENTER);
-    testForErick1.renderTo(_DOM.ACTIONCENTER);
-    testForErick2.renderTo(_DOM.ACTIONCENTER);
+    reviewAssessmentBtn.renderTo(moduleHeader);
+    testForErick1.renderTo(moduleHeader);
+    testForErick2.renderTo(moduleHeader);
 
     // FORMS
     for (formElement in formElements) {
       if (formElements[formElement].length === 0) continue;
 
+      const formWrap = _DOM.createElement('div', { id: formElement });
       const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
+      formWrap.appendChild(formHeader);
+      assessmentWrap.appendChild(formWrap);
 
       wlFormIds[formElement] = '';
       wlForms[formElement] = new Form({
@@ -1259,7 +1311,6 @@ const WaitingListAssessment = (() => {
         formName: formElement,
       });
 
-      formWrap.appendChild(formHeader);
       wlForms[formElement].renderTo(formWrap);
 
       wlForms[formElement].onChange(onFormChange(formElement));
@@ -1269,15 +1320,14 @@ const WaitingListAssessment = (() => {
     rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
-    // prep actioncenter
-    _DOM.ACTIONCENTER.innerHTML = '';
+    moduleHeader.innerHTML = '';
+    moduleBody.innerHTML = '';
 
-    // build DOM skeleton
-    formWrap = _DOM.createElement('div', { class: 'waitingListForm' });
-    rosterWrap = _DOM.createElement('div', { class: 'waitingListForm__roster' });
+    assessmentWrap = _DOM.createElement('div', { class: 'waitingListForm' });
+    rosterWrap = _DOM.createElement('div', { class: 'waitingListRoster' });
 
-    _DOM.ACTIONCENTER.appendChild(formWrap);
-    _DOM.ACTIONCENTER.appendChild(rosterWrap);
+    moduleBody.appendChild(assessmentWrap);
+    moduleBody.appendChild(rosterWrap);
   }
 
   // INIT (data & defaults)
@@ -1329,10 +1379,13 @@ const WaitingListAssessment = (() => {
     });
   }
 
-  async function init(wlDataInstance) {
+  async function init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
     wlForms = {};
     wlFormIds = {};
-    wlData = wlDataInstance;
+    wlData = wlData;
+    moduleWrap = moduleWrapEle;
+    moduleHeader = moduleHeaderEle;
+    moduleBody = moduleBodyEle;
 
     initFormActiveStatuses();
     loadPageSkeleton();
