@@ -44,7 +44,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             foreach (string property in properties)
             {
                 string[] parts = property.Split('|');
-                switch (parts[0].ToString())
+                switch (parts[1].ToString())
                 {
                     case "WLA_Waiting_List_Information":
                         columnForId = "WLA_Waiting_List_Information_ID";
@@ -172,6 +172,10 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     // Handle areasPersonNeedsHelp
                     break;
                 case "participants":
+                    tableName = "WLA_Participants";
+                    columnName = "participants";
+                    idNameForWhere = "WLA_Participant_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
                     // Handle participants
                     return  "";
                     break;
