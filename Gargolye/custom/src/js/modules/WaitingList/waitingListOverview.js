@@ -27,7 +27,6 @@ const WaitingListOverview = (() => {
   //--------------------------------------------------
   function attachEvents() {
     rosterPicker.onConsumerSelect(onConsumerSelect);
-    newAssessmentBtn.onClick(onNewAssessmentBtnClick);
   }
   async function populatePage() {
     await rosterPicker.fetchConsumers();
@@ -91,7 +90,7 @@ const WaitingListOverview = (() => {
   async function init({ consumerId, wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
     // init data
     selectedConsumer = consumerId;
-    wlData = wlDataInstance;
+    wlData = wlData;
     moduleWrap = moduleWrapEle;
     moduleHeader = moduleHeaderEle;
     moduleBody = moduleBodyEle;
