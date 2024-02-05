@@ -1,7 +1,5 @@
 // [ ] participants table, with form for inserting them
 // [ ] documents table, with form for isnerting them
-// [x] wrap each form/table in parent div
-// [ ]
 
 // case "WLA_Waiting_List_Information":
 // case "WLA_Conditions":
