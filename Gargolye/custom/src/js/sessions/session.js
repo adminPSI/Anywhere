@@ -27,6 +27,10 @@ $.session.DemographicsViewResident = false;
 $.session.DemographicsViewSSN = false;
 $.session.GoalsView = false;
 $.session.GoalsUpdate = false;
+$.session.InsertOutcomes = false;
+$.session.UpdateOutcomes = false;
+$.session.InsertServices = false;
+$.session.UpdateServices = false;
 $.session.CaseNotesView = false;
 $.session.CaseNotesTablePermissionView = false;
 $.session.CaseNotesViewEntered = false;
@@ -469,6 +473,18 @@ function setSessionVariables() {
             }
             if (tmpPerm == 'Update') {
                 $.session.GoalsUpdate = true;
+            }
+            if (tmpPerm == 'Insert Outcomes') {
+                $.session.InsertOutcomes = true;
+            }
+            if (tmpPerm == 'Update Outcomes') {
+                $.session.UpdateOutcomes = true;
+            }
+            if (tmpPerm == 'Insert Services') {
+                $.session.InsertServices = true;
+            }
+            if (tmpPerm == 'Update Services') {
+                $.session.UpdateServices = true;
             }
         }
 

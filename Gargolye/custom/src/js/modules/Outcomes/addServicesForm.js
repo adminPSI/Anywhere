@@ -361,7 +361,7 @@ const addServicesForm = (() => {
             ServiceTypeDropdown.classList.remove('error');
         }
 
-        if (servicesStatementVal === '') {
+        if (servicesStatementVal.trim() === '') { 
             servicesStatementInput.classList.add('error');
         } else {
             servicesStatementInput.classList.remove('error');
@@ -384,7 +384,7 @@ const addServicesForm = (() => {
 
     function setBtnStatusOfAddOutcome() {
         var hasErrors = [].slice.call(document.querySelectorAll('.error'));
-        if (hasErrors.length !== 0) {
+        if (hasErrors.length > 0) {
             SAVE_BTN.classList.add('disabled');
             return;
         } else {

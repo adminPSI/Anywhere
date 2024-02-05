@@ -90,7 +90,7 @@ var outcomes = (function () {
     var tmpService;
     var tmpOutcome;
     var tmpOutcomeId;
-
+    let editOutcomeBtn;
 
     // Workers
     //------------------------------------
@@ -864,7 +864,7 @@ var outcomes = (function () {
         }
 
         let outcomeDd = document.getElementById('outcomeDropdown');
-        let outcomeTypeText = outcomeDd == null ? currOutcome : outcomeDd.options[outcomeDd.selectedIndex].innerHTML; 
+        let outcomeTypeText = outcomeDd == null ? currOutcome : outcomeDd.options[outcomeDd.selectedIndex].innerHTML;
         updateCurrentFilterDisplay(currService ? currService : "All", outcomeTypeText)
 
         setUpOutcomesTabSpans();
@@ -1745,7 +1745,7 @@ var outcomes = (function () {
             style: 'secondary',
             type: 'text',
             classNames: 'filterCloseBtn',
-            callback: () => { addServicesForm.init(selectedConsume, outcome.Objective_id) },  
+            callback: () => { addServicesForm.init(selectedConsume, outcome.Objective_id) },
         });
 
         var statement = document.createElement("p");
@@ -1828,10 +1828,11 @@ var outcomes = (function () {
         wrap1.appendChild(newBtn);
 
         var wrapEdit = document.createElement("div");
-        wrapEdit.classList.add("editBtnWrap");  
+        wrapEdit.classList.add("editBtnWrap");
         wrapEdit.appendChild(description);
-        wrapEdit.appendChild(editIconBtn);    
-
+        if ($.session.UpdateServices == true) {
+            wrapEdit.appendChild(editIconBtn);
+        }  
         overviewCard.appendChild(wrapEdit);
         overviewCard.appendChild(wrap1);
         overviewCard.appendChild(statement);
@@ -1971,7 +1972,7 @@ var outcomes = (function () {
     }
 
 
-    function loadCardView(selectedConsumer) { 
+    function loadCardView(selectedConsumer) {
         // DOM.scrollToTopOfPage();
         selectedConsume = selectedConsumer;
         DOM.clearActionCenter();
@@ -2001,7 +2002,7 @@ var outcomes = (function () {
                 icon: 'add',
                 style: 'secondary',
                 type: 'contained',
-                classNames: 'reportBtn', 
+                classNames: 'reportBtn',
                 callback: function () {
                     // Iterate through each item in the buttonsData array
                     buttonsData.forEach(function (buttonData) {
@@ -2020,7 +2021,11 @@ var outcomes = (function () {
                 style: 'secondary',
                 type: 'contained',
                 classNames: 'reportBtn',
-                callback: async () => { addEditOutcomeServices.init(selectedConsume) },
+                callback: async () => {
+                    if (!editOutcomeBtn.classList.contains('disabled')) {
+                        addEditOutcomeServices.init(selectedConsume)
+                    } 
+                },
             });
         }
 
@@ -2032,16 +2037,23 @@ var outcomes = (function () {
 
         reportsBtn = createMainReportButton([{ text: 'Documentation - Completed With Percentages', filterValues }, { text: 'Outcome Activity - With Community Integration by Employee, Consumer, Date', filterValues }])
         editOutcomeBtn = editOutcomesServicesButton();
-        topFilterDateWrap.appendChild(editOutcomeBtn);  
+        topFilterDateWrap.appendChild(editOutcomeBtn);
+        if ($.session.InsertOutcomes == true || $.session.UpdateOutcomes == true || $.session.InsertServices == true || $.session.UpdateServices == true) {
+            editOutcomeBtn.classList.remove('disabled');
+        }
+        else {
+            editOutcomeBtn.classList.add('disabled'); 
+        } 
+        
         if ($.session.applicationName === 'Advisor') {
             topFilterDateWrap.appendChild(reportsBtn);
-        } 
+        }
 
         if (!document.querySelector(".topOutcomeWrap")) {
             DOM.ACTIONCENTER.appendChild(topFilterDateWrap);
         }
 
-   
+
         var documentingForDiv = document.createElement("div");
         documentingForDiv.innerHTML = `<p class="currConsumerDisp">Documenting for: <span>${consumerName} </span></p>`;
         DOM.ACTIONCENTER.appendChild(documentingForDiv);
@@ -2054,9 +2066,9 @@ var outcomes = (function () {
         dayBackDateSpanWrap.appendChild(daysBackDiv);
 
         DOM.ACTIONCENTER.appendChild(dayBackDateSpanWrap);
-       
+
         const filteredBy = updateCurrentFilterDisplay();
-        DOM.ACTIONCENTER.appendChild(filteredBy);      
+        DOM.ACTIONCENTER.appendChild(filteredBy);
 
         //Main section & tabs
         var outcomesTabs = buildCardContainer(selectedConsumer);
@@ -2114,8 +2126,8 @@ var outcomes = (function () {
                 showAlertIcon: showAlert
             };
         });
- 
-        roster2.setAllowedConsumers(consumerIds); 
+
+        roster2.setAllowedConsumers(consumerIds);
         if (initLoad) {
             roster2.miniRosterinit(null, {
                 hideDate: true

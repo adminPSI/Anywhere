@@ -202,7 +202,7 @@ const addOutcomes = (() => {
             outcomeDropdown.classList.remove('error');
         }
 
-        if (outcomeStatementVal === '') {
+        if (outcomeStatementVal.trim() === '') {
             outcomeStatementInput.classList.add('error');
         } else {
             outcomeStatementInput.classList.remove('error');
@@ -213,7 +213,7 @@ const addOutcomes = (() => {
 
     function setBtnStatusOfAddOutcome() {
         var hasErrors = [].slice.call(document.querySelectorAll('.error'));
-        if (hasErrors.length !== 0) {
+        if (hasErrors.length > 0) {
             SAVE_BTN.classList.add('disabled');
             return;
         } else {
