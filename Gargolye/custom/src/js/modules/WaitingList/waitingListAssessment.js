@@ -1182,19 +1182,19 @@ const WaitingListAssessment = (() => {
 
         // needs is special
         if (formName === 'needs') {
-          if (wlFormInfo.behavioral.id) {
+          if (wlFormInfo.needs.behavioral.id) {
             formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
             wlFormInfo.needs.behavioral.id = '';
           }
-          if (wlFormInfo.physical.id) {
+          if (wlFormInfo.needs.physical.id) {
             formsToDelete.push(`${wlFormInfo.needs.physical.id}|${wlFormInfo.needs.physical.dbtable}`);
             wlFormInfo.needs.physical.id = '';
           }
-          if (wlFormInfo.medical.id) {
+          if (wlFormInfo.needs.medical.id) {
             formsToDelete.push(`${wlFormInfo.needs.medical.id}|${wlFormInfo.needs.medical.dbtable}`);
             wlFormInfo.needs.medical.id = '';
           }
-          if (wlFormInfo.other.id) {
+          if (wlFormInfo.needs.other.id) {
             formsToDelete.push(`${wlFormInfo.needs.other.id}|${wlFormInfo.needs.other.dbtable}`);
             wlFormInfo.needs.other.id = '';
           }
@@ -1211,11 +1211,11 @@ const WaitingListAssessment = (() => {
       return;
     }
 
-    // (ENABLE) needs page
-    // (ENABLE) waiverEnrollment page
+    // conditions page all inputs are yes
     wlForms['needs'].form.parentElement.classList.add('hiddenPage');
     wlForms['waiverEnrollment'].form.parentElement.classList.add('hiddenPage');
 
+    //-------------------------------------------------------------------------------------------------------
     const needsIsActionRequiredRequiredIn30DaysYES =
       wlForms['conditions'].inputs['needsIsActionRequiredRequiredIn30Daysyes'].getValue();
     const needsIsActionRequiredRequiredIn30DaysNO =
@@ -1231,31 +1231,19 @@ const WaitingListAssessment = (() => {
 
     // needs page [needsIsActionRequiredRequiredIn30Days] is YES
     if (needsIsActionRequiredRequiredIn30DaysYES) {
-      // (ENABLE) riskMitigation page
       wlForms['riskMitigation'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      // (DISABLE) riskMitigation page
       wlForms['riskMitigation'].form.parentElement.classList.add('hiddenPage');
     }
 
     // riskMitigation page [rMIsActionRequiredIn3oDays] is YES
     if (rMIsActionRequiredIn3oDays) {
-      // (ENABLE) icfDischarge page
-      // (ENABLE) intermittentSupports page
-      // (ENABLE) childProtectionAgency page
-      // (ENABLE) adultDayEmployment page
-      // (ENABLE) dischargePlan page
       wlForms['icfDischarge'].form.parentElement.classList.remove('hiddenPage');
       wlForms['intermittentSupports'].form.parentElement.classList.remove('hiddenPage');
       wlForms['childProtectionAgency'].form.parentElement.classList.remove('hiddenPage');
       wlForms['adultDayEmployment'].form.parentElement.classList.remove('hiddenPage');
       wlForms['dischargePlan'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      // (DISABLE) icfDischarge page
-      // (DISABLE) intermittentSupports page
-      // (DISABLE) childProtectionAgency page
-      // (DISABLE) adultDayEmployment page
-      // (DISABLE) dischargePlan page
       wlForms['icfDischarge'].form.parentElement.classList.add('hiddenPage');
       wlForms['intermittentSupports'].form.parentElement.classList.add('hiddenPage');
       wlForms['childProtectionAgency'].form.parentElement.classList.add('hiddenPage');
@@ -1266,10 +1254,8 @@ const WaitingListAssessment = (() => {
     // needs page [needsIsActionRequiredRequiredIn30Days] is NO ||
     // riskMitigation page [rMIsActionRequiredIn3oDays] is NO
     if (needsIsActionRequiredRequiredIn30DaysNO || rMIsActionRequiredIn3oDaysNO) {
-      // (ENABLE) currentNeeds page
       wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      // (DISABLE) currentNeeds page
       wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
     }
     // needs page [needsIsActionRequiredRequiredIn30Days] is YES ||
@@ -1279,10 +1265,8 @@ const WaitingListAssessment = (() => {
       (needsIsActionRequiredRequiredIn30DaysYES || rMIsActionRequiredIn3oDaysYES) &&
       riskMitigationCheckboxValues.some(element => element === true)
     ) {
-      // (ENABLE) immediateNeeds page
       wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      // (DISABLE) immediateNeeds page
       wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
     }
   }
@@ -1417,7 +1401,7 @@ const WaitingListAssessment = (() => {
   // INIT (data & defaults)
   //--------------------------------------------------
   function initFormInfo() {
-    wlFormInfo = {
+    return {
       adultDayEmployment: { dbtable: 'WLA_Require_Waiver_Fundings' },
       childProtectionAgency: { dbtable: 'WLA_Child_Protection_Agencies' },
       conditions: { dbtable: 'WLA_Conditions' },
@@ -1464,13 +1448,13 @@ const WaitingListAssessment = (() => {
     });
   }
 
-  async function init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
+  async function init(data) {
     wlForms = {};
     wlFormInfo = initFormInfo();
-    wlData = wlData;
-    moduleWrap = moduleWrapEle;
-    moduleHeader = moduleHeaderEle;
-    moduleBody = moduleBodyEle;
+    wlData = data.wlData;
+    moduleWrap = data.moduleWrapEle;
+    moduleHeader = data.moduleHeaderEle;
+    moduleBody = data.moduleBodyEle;
 
     loadPageSkeleton();
     initComponents();
