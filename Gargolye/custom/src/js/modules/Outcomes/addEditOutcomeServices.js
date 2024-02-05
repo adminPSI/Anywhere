@@ -35,9 +35,16 @@ const addEditOutcomeServices = (() => {
         addOutCome = addOutcomesButton();
 
         pageWrap.appendChild(consumerCard);
-        pageWrap.appendChild(addOutCome); 
+        pageWrap.appendChild(addOutCome);
         pageWrap.appendChild(filteredByData);
         DOM.ACTIONCENTER.appendChild(pageWrap);
+
+        if ($.session.InsertOutcomes == true) { 
+            addOutCome.classList.remove('disabled');
+        }
+        else {
+            addOutCome.classList.add('disabled');
+        }
 
         const spinner = PROGRESS.SPINNER.get('Gathering Data...');
         pageWrap.appendChild(spinner);
@@ -45,7 +52,7 @@ const addEditOutcomeServices = (() => {
         outcomeServicesData = await outcomesAjax.getOutcomeServicsPageData({
             token: $.session.Token,
             selectedConsumerId: selectedConsumer.id,
-            outcomeType: filterValues.outcomeTypeName, 
+            outcomeType: filterValues.outcomeTypeName,
             effectiveDateStart: filterValues.effectiveDateStart,
             effectiveDateEnd: filterValues.effectiveDateEnd,
         });
@@ -60,7 +67,11 @@ const addEditOutcomeServices = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'reportBtn',
-            callback: async () => { addOutcomes.init(selectedConsumer,0) },       
+            callback: async () => {
+                if (!addOutCome.classList.contains('disabled')) {
+                    addOutcomes.init(selectedConsumer, 0)
+                }
+            },
         });
     }
 
@@ -71,7 +82,7 @@ const addEditOutcomeServices = (() => {
                 .formatISO(dates.subYears(new Date(new Date().setHours(0, 0, 0, 0)), 10))
                 .slice(0, 10),
             effectiveDateEnd: dates.formatISO(new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 10),
-            outcomeTypeName:'%',  
+            outcomeTypeName: '%',
         };
     }
 
@@ -98,7 +109,7 @@ const addEditOutcomeServices = (() => {
             filterButtonSet();
             currentFilterDisplay.appendChild(btnWrap);
         }
-        
+
         if (filterValues.outcomeType === '%') {
             btnWrap.appendChild(outcomeTypeBtnWrap);
             btnWrap.removeChild(outcomeTypeBtnWrap);
@@ -106,7 +117,7 @@ const addEditOutcomeServices = (() => {
             btnWrap.appendChild(outcomeTypeBtnWrap);
             if (document.getElementById('outcomeTypeBtn') != null)
                 document.getElementById('outcomeTypeBtn').innerHTML = 'Outcome Type: ' + filterValues.outcomeTypeName;
-        } 
+        }
 
 
         if (effectiveDateStart == '' && effectiveDateEnd == '') {
@@ -176,8 +187,8 @@ const addEditOutcomeServices = (() => {
         if (closeFilter == 'outcomeTypeBtn') {
             filterValues.outcomeType = '%';
             filterValues.outcomeTypeName = '%';
-            newFilterValues.outcomeType = '%'; 
-            newFilterValues.outcomeTypeName = '%'; 
+            newFilterValues.outcomeType = '%';
+            newFilterValues.outcomeTypeName = '%';
         }
         applyFilter();
     }
@@ -190,7 +201,7 @@ const addEditOutcomeServices = (() => {
             dropdownId: 'outcomeTypeDropdown',
             label: 'Outcome Type',
             style: 'secondary',
-            value: filterValues.outcomeType,  
+            value: filterValues.outcomeType,
         });
 
         // Date Inputs
@@ -270,7 +281,9 @@ const addEditOutcomeServices = (() => {
         });
         applyFilterBtn.addEventListener('click', async e => {
             POPUP.hide(filterPopup);
-            applyFilter();
+            if (!applyFilterBtn.classList.contains('disabled')) {
+                applyFilter();
+            }
         });
     }
 
@@ -283,13 +296,13 @@ const addEditOutcomeServices = (() => {
             value: outcomeTypes.Goal_Type_ID,
             text: outcomeTypes.goal_type_description
         }));
-        outcomeTypeData.unshift({ id: '%', value: '%', text: 'ALL' });  
+        outcomeTypeData.unshift({ id: '%', value: '%', text: 'ALL' });
         dropdown.populate("outcomeTypeDropdown", outcomeTypeData, filterValues.outcomeType);
     }
 
     function checkFilterPopForErrors() {
         const errors = [...filterPopup.querySelectorAll('.error')];
-        const hasErrors = errors.legnth > 0 ? true : false;
+        const hasErrors = errors.length > 0 ? true : false; 
 
         if (hasErrors) {
             applyFilterBtn.classList.add('disabled');
@@ -304,11 +317,11 @@ const addEditOutcomeServices = (() => {
         const spinner = PROGRESS.SPINNER.get('Gathering Data...');
         pageWrap.removeChild(overviewTable);
         pageWrap.appendChild(spinner);
-  
+
         outcomeServicesData = await outcomesAjax.getOutcomeServicsPageData({
             token: $.session.Token,
             selectedConsumerId: selectedConsumer.id,
-            outcomeType: filterValues.outcomeTypeName == 'ALL' ? '%' : filterValues.outcomeTypeName,  
+            outcomeType: filterValues.outcomeTypeName == 'ALL' ? '%' : filterValues.outcomeTypeName,
             effectiveDateStart: filterValues.effectiveDateStart,
             effectiveDateEnd: filterValues.effectiveDateEnd,
         });
@@ -341,7 +354,7 @@ const addEditOutcomeServices = (() => {
 
         outcomeServicesData.pageDataParent.forEach(parent => {
             const goalID = parent.goal_id;
-            var eventName; 
+            var eventName;
             var startDate = parent.effectiveDateStart == null || '' ? '' : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(parent.effectiveDateStart.split('T')[0]),);
             var endDate = parent.effectiveDateEnd == null || '' ? '' : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(parent.effectiveDateEnd.split('T')[0]),)
             const rowWrap = document.createElement('div');
@@ -349,24 +362,30 @@ const addEditOutcomeServices = (() => {
 
             // TOP LEVEL ROW
             //---------------------------------
-            const mainDataRow = document.createElement('div');           
+            const mainDataRow = document.createElement('div');
             mainDataRow.classList.add('outcomeTable__mainDataRow', 'outcomeTable__dataRow');
             mainDataRow.value = parent.goal_id;
-            const endIcon = document.createElement('div');             
-            endIcon.classList.add('outcomeTable__endIcon');  
-            endIcon.innerHTML = icons['add'];    
+            const endIcon = document.createElement('div');
+            endIcon.classList.add('outcomeTable__endIcon');
+            
 
-            const toggleIcon = document.createElement('div');  
-            toggleIcon.id = 'authToggle';   
+            const toggleIcon = document.createElement('div');
+            toggleIcon.id = 'authToggle';
             toggleIcon.classList.add('outcomeTable__endIcon');
-            toggleIcon.innerHTML = icons['keyArrowRight'];    
+            toggleIcon.innerHTML = icons['keyArrowRight'];
             mainDataRow.innerHTML = `       
         <div>${parent.outcomeType}</div>
         <div>${parent.outcomeStatement}</div>
         <div>${startDate}</div>
         <div>${endDate}</div>               
       `;
-            mainDataRow.prepend(toggleIcon);  
+            mainDataRow.prepend(toggleIcon);
+            if ($.session.InsertServices == true) {
+                endIcon.innerHTML = icons['add'];
+            }
+            else {
+                endIcon.innerHTML = `<div></div>`; 
+            }
             mainDataRow.appendChild(endIcon);
             rowWrap.appendChild(mainDataRow);
 
@@ -391,7 +410,7 @@ const addEditOutcomeServices = (() => {
                 outcomeServicesData.pageDataChild[goalID].sort((a, b) => {
                     return parseInt(a.itemnum) - parseInt(b.itemnum);
                 });
-                 
+
                 outcomeServicesData.pageDataChild[goalID].forEach(child => {
                     const subDataRow = document.createElement('div');
                     var startDate = child.serviceStartDate == null || '' ? '' : UTIL.abbreviateDateYear(UTIL.formatDateFromIso(child.serviceStartDate.split('T')[0]),);
@@ -408,23 +427,24 @@ const addEditOutcomeServices = (() => {
                     subRowWrap.appendChild(subDataRow);
 
                     subDataRow.addEventListener('click', e => {
-                        addServicesForm.init(selectedConsumer, child.objective_Id);
-                    });    
+                        if ($.session.UpdateServices == true) {
+                            addServicesForm.init(selectedConsumer, child.objective_Id);
+                        }
+                    });
                 });
             }
 
             // EVENT
             //---------------------------------
             mainDataRow.addEventListener('click', e => {
-                var goalID = e.currentTarget.value; 
+                var goalID = e.currentTarget.value;
                 if (eventName != 'toggle' && eventName != 'add') {
-                    addOutcomes.init(selectedConsumer, goalID);
+                    if ($.session.UpdateOutcomes == true) {
+                        addOutcomes.init(selectedConsumer, goalID);
+                    }
                 }
-                eventName == ''; 
-            }); 
-
-              
-             
+                eventName == '';
+            });
 
             toggleIcon.addEventListener('click', e => {
                 const toggle = document.querySelector('#authToggle')
@@ -438,11 +458,11 @@ const addEditOutcomeServices = (() => {
                     subRowWrap.classList.add('active');
                     toggle.innerHTML = icons.keyArrowDown;
                 }
-            });  
+            });
 
             endIcon.addEventListener('click', e => {
-                eventName = 'add';   
-                addServicesForm.init(selectedConsumer,0);
+                eventName = 'add';
+                addServicesForm.init(selectedConsumer, 0);
             });
 
 
@@ -455,7 +475,7 @@ const addEditOutcomeServices = (() => {
         pageWrap.appendChild(overviewTable);
     }
 
-    
+
 
     function groupChildData() {
         if (!outcomeServicesData.pageDataChild) {
