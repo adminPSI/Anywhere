@@ -4,8 +4,6 @@ const WaitingListAssessment = (() => {
   //--------------------------
   let selectedConsumer;
   let wlLinkID;
-  let wlFormIds;
-  let wlSectionActiveStatus;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -840,7 +838,7 @@ const WaitingListAssessment = (() => {
 
     const resp = await wlData.insertWaitingListAssessment(selectedConsumer);
     wlLinkID = resp[0].newRecordId;
-    wlFormIds['waitingListInfo'] = wlLinkID;
+    wlFormInfo['waitingListInfo'].id = wlLinkID;
   }
   function riskMitigationCheckboxes({ name, value, formName }) {
     const data = [
@@ -1157,18 +1155,16 @@ const WaitingListAssessment = (() => {
     },
   };
   function updatePageActiveStatus() {
-    // delete table: ['tableID|tableName'], deleteFromWaitingList
-    // checkboxGroupTwo.some(element => element === true);
-    let actionRequiredNeeds, actionRequiredRiskMitigation, riskMitigationHasCheckboxSelected;
-
     const conditionsInputValues = [
-      wlForms[formName].inputs['otherThanMentalHealth'].getValue(),
-      wlForms[formName].inputs['before22'].getValue(),
-      wlForms[formName].inputs['isConditionIndefinite'].getValue(),
+      wlForms['conditions'].inputs['otherThanMentalHealth'].getValue(),
+      wlForms['conditions'].inputs['before22'].getValue(),
+      wlForms['conditions'].inputs['isConditionIndefinite'].getValue(),
     ];
 
     if (!conditionsInputValues.every(element => element === true)) {
       // conditions page inputs are NOT all YES
+      let formsToDelete = [];
+
       [
         'needs',
         'waiverEnrollment',
@@ -1181,52 +1177,113 @@ const WaitingListAssessment = (() => {
         'immediateNeeds',
         'currentNeeds',
       ].forEach(formName => {
-        wlFormIds[formName].form.parentElement.classList.add('hiddenPage');
+        // hide form
+        wlForms[formName].form.parentElement.classList.add('hiddenPage');
+
+        // needs is special
+        if (formName === 'needs') {
+          if (wlFormInfo.behavioral.id) {
+            formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
+            wlFormInfo.needs.behavioral.id = '';
+          }
+          if (wlFormInfo.physical.id) {
+            formsToDelete.push(`${wlFormInfo.needs.physical.id}|${wlFormInfo.needs.physical.dbtable}`);
+            wlFormInfo.needs.physical.id = '';
+          }
+          if (wlFormInfo.medical.id) {
+            formsToDelete.push(`${wlFormInfo.needs.medical.id}|${wlFormInfo.needs.medical.dbtable}`);
+            wlFormInfo.needs.medical.id = '';
+          }
+          if (wlFormInfo.other.id) {
+            formsToDelete.push(`${wlFormInfo.needs.other.id}|${wlFormInfo.needs.other.dbtable}`);
+            wlFormInfo.needs.other.id = '';
+          }
+        } else {
+          if (wlFormInfo[formName].id) {
+            formsToDelete.push(`${wlFormInfo[formName].id}|${wlFormInfo[formName].dbtable}`);
+            wlFormInfo[formName].id = '';
+          }
+        }
+
+        //TODO-ASH: delete forms formsToDelete
       });
 
       return;
     }
 
-    //TODO-ASH: (ENABLE) needs page
-    //TODO-ASH: (ENABLE) waiverEnrollment page
+    // (ENABLE) needs page
+    // (ENABLE) waiverEnrollment page
+    wlForms['needs'].form.parentElement.classList.add('hiddenPage');
+    wlForms['waiverEnrollment'].form.parentElement.classList.add('hiddenPage');
 
-    if ('needs page [needsIsActionRequiredRequiredIn30Days] is YES') {
-      //TODO-ASH: (ENABLE) riskMitigation page
+    const needsIsActionRequiredRequiredIn30DaysYES =
+      wlForms['conditions'].inputs['needsIsActionRequiredRequiredIn30Daysyes'].getValue();
+    const needsIsActionRequiredRequiredIn30DaysNO =
+      wlForms['conditions'].inputs['needsIsActionRequiredRequiredIn30Daysno'].getValue();
+    const rMIsActionRequiredIn3oDaysYES = wlForms['conditions'].inputs['rMIsActionRequiredIn3oDaysyes'].getValue();
+    const rMIsActionRequiredIn3oDaysNO = wlForms['conditions'].inputs['rMIsActionRequiredIn3oDaysno'].getValue();
+    const riskMitigationCheckboxValues = [
+      wlForms[formName].inputs['rMIsAdultProtectiveServiceInvestigation'].getValue(),
+      wlForms[formName].inputs['rMIsCountyBoardInvestigation'].getValue(),
+      wlForms[formName].inputs['rMIsLawEnforcementInvestigation'].getValue(),
+      wlForms[formName].inputs['rMIsOtherInvestigation'].getValue(),
+    ];
+
+    // needs page [needsIsActionRequiredRequiredIn30Days] is YES
+    if (needsIsActionRequiredRequiredIn30DaysYES) {
+      // (ENABLE) riskMitigation page
+      wlForms['riskMitigation'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      //TODO-ASH: (DISABLE) riskMitigation page
+      // (DISABLE) riskMitigation page
+      wlForms['riskMitigation'].form.parentElement.classList.add('hiddenPage');
     }
 
-    if ('riskMitigation page [rMIsActionRequiredIn3oDays] is YES') {
-      //TODO-ASH: (ENABLE) icfDischarge page
-      //TODO-ASH: (ENABLE) intermittentSupports page
-      //TODO-ASH: (ENABLE) childProtectionAgency page
-      //TODO-ASH: (ENABLE) adultDayEmployment page
-      //TODO-ASH: (ENABLE) dischargePlan page
+    // riskMitigation page [rMIsActionRequiredIn3oDays] is YES
+    if (rMIsActionRequiredIn3oDays) {
+      // (ENABLE) icfDischarge page
+      // (ENABLE) intermittentSupports page
+      // (ENABLE) childProtectionAgency page
+      // (ENABLE) adultDayEmployment page
+      // (ENABLE) dischargePlan page
+      wlForms['icfDischarge'].form.parentElement.classList.remove('hiddenPage');
+      wlForms['intermittentSupports'].form.parentElement.classList.remove('hiddenPage');
+      wlForms['childProtectionAgency'].form.parentElement.classList.remove('hiddenPage');
+      wlForms['adultDayEmployment'].form.parentElement.classList.remove('hiddenPage');
+      wlForms['dischargePlan'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      //TODO-ASH: (DISABLE) icfDischarge page
-      //TODO-ASH: (DISABLE) intermittentSupports page
-      //TODO-ASH: (DISABLE) childProtectionAgency page
-      //TODO-ASH: (DISABLE) adultDayEmployment page
-      //TODO-ASH: (DISABLE) dischargePlan page
+      // (DISABLE) icfDischarge page
+      // (DISABLE) intermittentSupports page
+      // (DISABLE) childProtectionAgency page
+      // (DISABLE) adultDayEmployment page
+      // (DISABLE) dischargePlan page
+      wlForms['icfDischarge'].form.parentElement.classList.add('hiddenPage');
+      wlForms['intermittentSupports'].form.parentElement.classList.add('hiddenPage');
+      wlForms['childProtectionAgency'].form.parentElement.classList.add('hiddenPage');
+      wlForms['adultDayEmployment'].form.parentElement.classList.add('hiddenPage');
+      wlForms['dischargePlan'].form.parentElement.classList.add('hiddenPage');
     }
 
+    // needs page [needsIsActionRequiredRequiredIn30Days] is NO ||
+    // riskMitigation page [rMIsActionRequiredIn3oDays] is NO
+    if (needsIsActionRequiredRequiredIn30DaysNO || rMIsActionRequiredIn3oDaysNO) {
+      // (ENABLE) currentNeeds page
+      wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
+    } else {
+      // (DISABLE) currentNeeds page
+      wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
+    }
+    // needs page [needsIsActionRequiredRequiredIn30Days] is YES ||
+    // riskMitigation page [rMIsActionRequiredIn3oDays] is YES &&
+    // any checkbox is checked on riskMitigation page except not applicable
     if (
-      'needs page [needsIsActionRequiredRequiredIn30Days] is NO' ||
-      'riskMitigation page [rMIsActionRequiredIn3oDays] is NO'
+      (needsIsActionRequiredRequiredIn30DaysYES || rMIsActionRequiredIn3oDaysYES) &&
+      riskMitigationCheckboxValues.some(element => element === true)
     ) {
-      //TODO-ASH: (ENABLE) currentNeeds page
+      // (ENABLE) immediateNeeds page
+      wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      //TODO-ASH: (DISABLE) currentNeeds page
-    }
-
-    if (
-      ('needs page [needsIsActionRequiredRequiredIn30Days] is YES' ||
-        'riskMitigation page [rMIsActionRequiredIn3oDays] is YES') &&
-      'any checkbox is checked on riskMitigation page except not applicable'
-    ) {
-      //TODO-ASH: (ENABLE) immediateNeeds page
-    } else {
-      //TODO-ASH: (DISABLE) immediateNeeds page
+      // (DISABLE) immediateNeeds page
+      wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
     }
   }
   const onChangeCallbacksFormWatch = {
@@ -1260,8 +1317,8 @@ const WaitingListAssessment = (() => {
       }
 
       // Save/Update
-      if (wlFormIds[formName] === '') {
-        wlFormIds[formName] = await wlData.insertAssessmentData({
+      if (wlFormInfo[formElement].id === '') {
+        wlFormInfo[formElement].id = await wlData.insertAssessmentData({
           id: 0,
           linkId: wlLinkID,
           propertyName: name,
@@ -1269,7 +1326,7 @@ const WaitingListAssessment = (() => {
         });
       } else {
         await wlData.updateAssessmentData({
-          id: wlFormIds[formName],
+          id: wlFormInfo[formElement].id,
           linkId: formName === 'waitingListInfo' ? 0 : wlLinkID,
           propertyName: name,
           value: value,
@@ -1318,12 +1375,11 @@ const WaitingListAssessment = (() => {
     for (formElement in formElements) {
       if (formElements[formElement].length === 0) continue;
 
-      const formWrap = _DOM.createElement('div', { id: formElement });
+      const formWrap = _DOM.createElement('div', { id: formElement, class: 'wlPage' });
       const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
       formWrap.appendChild(formHeader);
       assessmentWrap.appendChild(formWrap);
 
-      wlFormIds[formElement] = '';
       wlForms[formElement] = new Form({
         hideAllButtons: true,
         fields: formElements[formElement],
@@ -1333,6 +1389,15 @@ const WaitingListAssessment = (() => {
       wlForms[formElement].renderTo(formWrap);
 
       wlForms[formElement].onChange(onFormChange(formElement));
+
+      if (formElement === 'needs') {
+        wlFormInfo.needs.behavioral.id = '';
+        wlFormInfo.needs.physical.id = '';
+        wlFormInfo.needs.medical.id = '';
+        wlFormInfo.needs.other.id = '';
+      } else {
+        wlFormInfo[formElement].id = '';
+      }
     }
 
     // ROSTER PICKER
@@ -1351,26 +1416,27 @@ const WaitingListAssessment = (() => {
 
   // INIT (data & defaults)
   //--------------------------------------------------
-  function initFormActiveStatuses() {
-    wlSectionActiveStatus = {
-      waitingListInfo: true,
-      conditions: true,
-      participants: true,
-      primaryCaregiver: true,
-      documentation: true,
-      // diabled at start
-      currentAvailableServices: false,
-      contributingCircumstances: false,
-      needs: false,
-      riskMitigation: false,
-      icfDischarge: false,
-      intermittentSupports: false,
-      childProtectionAgency: false,
-      adultDayEmployment: false,
-      dischargePlan: false,
-      immediateNeeds: false,
-      currentNeeds: false,
-      waiverEnrollment: false,
+  function initFormInfo() {
+    wlFormInfo = {
+      adultDayEmployment: { dbtable: 'WLA_Require_Waiver_Fundings' },
+      childProtectionAgency: { dbtable: 'WLA_Child_Protection_Agencies' },
+      conditions: { dbtable: 'WLA_Conditions' },
+      currentAvailableServices: { dbtable: 'WLA_Active_Services' },
+      currentNeeds: { dbtable: 'WLA_Unmet_Needs' },
+      dischargePlan: { dbtable: 'WLA_Discharge_Plans' },
+      icfDischarge: { dbtable: 'WLA_ICF_Discharges' },
+      intermittentSupports: { dbtable: 'WLA_Intermitent_Supports' },
+      immediateNeeds: { dbtable: 'WLA_Immediate_Needs' },
+      primaryCaregiver: { dbtable: 'WLA_Primary_Caregivers' },
+      riskMitigation: { dbtable: 'WLA_Risk_Mitigations' },
+      waitingListInfo: { dbtable: 'WLA_Waiting_List_Information' },
+      waiverEnrollment: { dbtable: 'WLA_Waiver_Enrollments' },
+      needs: {
+        behavioral: { dbtable: 'WLA_Risks' },
+        physical: { dbtable: 'WLA_Physical_Needs' },
+        medical: { dbtable: 'WLA_Medical_Needs' },
+        other: { dbtable: 'WLA_Needs' },
+      },
     };
   }
   function initComponents() {
@@ -1400,13 +1466,12 @@ const WaitingListAssessment = (() => {
 
   async function init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
     wlForms = {};
-    wlFormIds = {};
+    wlFormInfo = initFormInfo();
     wlData = wlData;
     moduleWrap = moduleWrapEle;
     moduleHeader = moduleHeaderEle;
     moduleBody = moduleBodyEle;
 
-    initFormActiveStatuses();
     loadPageSkeleton();
     initComponents();
     loadPage();
