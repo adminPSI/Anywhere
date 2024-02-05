@@ -199,7 +199,7 @@ const csTeamMember = (() => {
       participatedNoRadio.classList.remove('disabled');
       parentOfMinorYesRadio.classList.remove('disabled');
       parentOfMinorNoRadio.classList.remove('disabled');
-      signatureTypeDropdown.classList.remove('disabled');
+      // signatureTypeDropdown.classList.remove('disabled');
       // set errors
       if (selectedMemberData.teamMember === '') {
         teamMemberDropdown.classList.add('error');
@@ -208,6 +208,12 @@ const csTeamMember = (() => {
         signatureTypeDropdown.classList.add('error');
       }
       radioDiv.classList.add('error');
+    }
+
+    if ($.session.planUpdate) {
+      signatureTypeDropdown.classList.remove('disabled');
+    } else {
+      signatureTypeDropdown.classList.add('disabled');
     }
 
     checkTeamMemberPopupForErrors();
@@ -967,7 +973,13 @@ const csTeamMember = (() => {
         participatedNoRadio.classList.remove('disabled');
         parentOfMinorYesRadio.classList.remove('disabled');
         parentOfMinorNoRadio.classList.remove('disabled');
+       // signatureTypeDropdown.classList.remove('disabled');
+      }
+
+      if ($.session.planUpdate) {
         signatureTypeDropdown.classList.remove('disabled');
+      } else {
+        signatureTypeDropdown.classList.add('disabled');
       }
 
       if ($.session.planSignatureUpdateDOB) {
@@ -1326,7 +1338,7 @@ const csTeamMember = (() => {
       parentOfMinorYesRadio.classList.add('disabled');
       parentOfMinorNoRadio.classList.add('disabled');
       // radioDiv.classList.remove('error');
-      signatureTypeDropdown.classList.add('disabled');
+     // signatureTypeDropdown.classList.add('disabled');
       saveTeamMemberBtn.classList.add('disabled');
       emailInput.classList.add('disabled');
     }
@@ -1372,12 +1384,18 @@ const csTeamMember = (() => {
         participatedNoRadio.classList.remove('disabled');
         parentOfMinorYesRadio.classList.remove('disabled');
         parentOfMinorNoRadio.classList.remove('disabled');
-        signatureTypeDropdown.classList.remove('disabled');
+       // signatureTypeDropdown.classList.remove('disabled');
       }
 
       if (!$.session.updateEmail) {
         emailInput.classList.add('disabled');
       }
+    }
+
+    if ($.session.planUpdate) {
+      signatureTypeDropdown.classList.remove('disabled');
+    } else {
+      signatureTypeDropdown.classList.add('disabled');
     }
 
     //* Add elements to popup
