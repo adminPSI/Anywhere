@@ -1,16 +1,20 @@
 const WaitingList = (() => {
+  let moduleWrapEle;
+  let moduleHeaderEle;
+  let moduleBodyEle;
+
   function loadPageSkeleton() {
     _DOM.ACTIONCENTER.innerHTML = '';
     _DOM.ACTIONCENTER.setAttribute('data-UI', true);
     _DOM.setActiveModuleAttribute('waitingList');
 
-    moduleWrap = _DOM.createElement('div', { class: 'waitingList' });
-    moduleHeader = _DOM.createElement('div', { class: 'waitingList__header' });
-    moduleBody = _DOM.createElement('div', { class: 'waitingList__body' });
-    moduleWrap.appendChild(moduleHeader);
-    moduleWrap.appendChild(moduleBody);
+    moduleWrapEle = _DOM.createElement('div', { class: 'waitingList' });
+    moduleHeaderEle = _DOM.createElement('div', { class: 'waitingList__header' });
+    moduleBodyEle = _DOM.createElement('div', { class: 'waitingList__body' });
+    moduleWrapEle.appendChild(moduleHeaderEle);
+    moduleWrapEle.appendChild(moduleBodyEle);
 
-    _DOM.ACTIONCENTER.appendChild(moduleWrap);
+    _DOM.ACTIONCENTER.appendChild(moduleWrapEle);
   }
 
   async function init() {
@@ -18,7 +22,7 @@ const WaitingList = (() => {
 
     wlData = new WaitingListData();
 
-    WaitingListAssessment.init({ wlData, moduleWrap, moduleHeader, moduleBody });
+    WaitingListAssessment.init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle });
   }
 
   return {
