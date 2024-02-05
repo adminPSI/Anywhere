@@ -88,7 +88,7 @@ const WaitingListOverview = (() => {
     });
   }
 
-  async function init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
+  async function init({ consumerId, wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
     // init data
     selectedConsumer = consumerId;
     wlData = wlDataInstance;

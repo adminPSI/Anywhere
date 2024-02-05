@@ -825,7 +825,13 @@ const WaitingListAssessment = (() => {
   // EVENTS
   //--------------------------------------------------
   async function onReviewAssessmentBtnClick() {
-    WaitingListOverview.init({ wlData, moduleWrap, moduleHeader, moduleBody });
+    WaitingListOverview.init({
+      wlData,
+      moduleWrapEle: moduleWrap,
+      moduleHeaderEle: moduleHeader,
+      moduleBodyEle: moduleBody,
+      consumerId: selectedConsumer ? selectedConsumer : '',
+    });
   }
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
@@ -1152,19 +1158,32 @@ const WaitingListAssessment = (() => {
   };
   function updatePageActiveStatus() {
     // delete table: ['tableID|tableName'], deleteFromWaitingList
-    let conditionsPageAllYes, actionRequiredNeeds, actionRequiredRiskMitigation, riskMitigationHasCheckboxSelected;
+    // checkboxGroupTwo.some(element => element === true);
+    let actionRequiredNeeds, actionRequiredRiskMitigation, riskMitigationHasCheckboxSelected;
 
-    if ('conditions page inputs are NOT all YES') {
-      //TODO-ASH: (DISABLE) needs page
-      //TODO-ASH: (DISABLE) waiverEnrollment page
-      //TODO-ASH: (DISABLE) riskMitigation page
-      //TODO-ASH: (DISABLE) icfDischarge page
-      //TODO-ASH: (DISABLE) intermittentSupports page
-      //TODO-ASH: (DISABLE) childProtectionAgency page
-      //TODO-ASH: (DISABLE) adultDayEmployment page
-      //TODO-ASH: (DISABLE) dischargePlan page
-      //TODO-ASH: (DISABLE) immediateNeeds page
-      //TODO-ASH: (DISABLE) currentNeeds page
+    const conditionsInputValues = [
+      wlForms[formName].inputs['otherThanMentalHealth'].getValue(),
+      wlForms[formName].inputs['before22'].getValue(),
+      wlForms[formName].inputs['isConditionIndefinite'].getValue(),
+    ];
+
+    if (!conditionsInputValues.every(element => element === true)) {
+      // conditions page inputs are NOT all YES
+      [
+        'needs',
+        'waiverEnrollment',
+        'riskMitigation',
+        'icfDischarge',
+        'intermittentSupports',
+        'childProtectionAgency',
+        'adultDayEmployment',
+        'dischargePlan',
+        'immediateNeeds',
+        'currentNeeds',
+      ].forEach(formName => {
+        wlFormIds[formName].form.parentElement.classList.add('hiddenPage');
+      });
+
       return;
     }
 
