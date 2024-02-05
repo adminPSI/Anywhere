@@ -1182,19 +1182,19 @@ const WaitingListAssessment = (() => {
 
         // needs is special
         if (formName === 'needs') {
-          if (wlFormInfo.behavioral.id) {
+          if (wlFormInfo.needs.behavioral.id) {
             formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
             wlFormInfo.needs.behavioral.id = '';
           }
-          if (wlFormInfo.physical.id) {
+          if (wlFormInfo.needs.physical.id) {
             formsToDelete.push(`${wlFormInfo.needs.physical.id}|${wlFormInfo.needs.physical.dbtable}`);
             wlFormInfo.needs.physical.id = '';
           }
-          if (wlFormInfo.medical.id) {
+          if (wlFormInfo.needs.medical.id) {
             formsToDelete.push(`${wlFormInfo.needs.medical.id}|${wlFormInfo.needs.medical.dbtable}`);
             wlFormInfo.needs.medical.id = '';
           }
-          if (wlFormInfo.other.id) {
+          if (wlFormInfo.needs.other.id) {
             formsToDelete.push(`${wlFormInfo.needs.other.id}|${wlFormInfo.needs.other.dbtable}`);
             wlFormInfo.needs.other.id = '';
           }
