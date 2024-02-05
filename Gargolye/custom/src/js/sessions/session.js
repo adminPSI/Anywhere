@@ -1722,6 +1722,7 @@ function disableModules() {
         $('#adminsingleentrysettingsdiv').css('display', 'none');
         $('#transportationsettingsdiv').css('display', 'none');
         $('#OODsettingsdiv').css('display', 'none');
+        $('#waitingListdiv').css('display', 'none');
 
         $('#customlinks').css('display', 'none');
     }
