@@ -19,8 +19,10 @@ const WaitingListAssessment = (() => {
   // UI INSTANCES
   //--------------------------
   let wlForms;
+  let participantsTable;
   let wlData;
   let rosterPicker;
+  let sendEmailButton;
   let reviewAssessmentBtn;
 
   const formElements = {
@@ -937,9 +939,9 @@ const WaitingListAssessment = (() => {
     // AI FIELD
     // (SET) [intSupDetermination] "Does the individual have an..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
     const data = [
-      wlForms[formName].inputs['intSupIsSupportNeededIn12Months'].getValue(),
-      wlForms[formName].inputs['intSupIsStayingLivingArrangement'].getValue(),
-      wlForms[formName].inputs['intSupIsActionRequiredIn30Days'].getValue(),
+      wlForms[formName].inputs['intSupIsSupportNeededIn12Months'].getValue('intSupIsSupportNeededIn12Monthsyes'),
+      wlForms[formName].inputs['intSupIsStayingLivingArrangement'].getValue('intSupIsStayingLivingArrangementyes'),
+      wlForms[formName].inputs['intSupIsActionRequiredIn30Days'].getValue('intSupIsActionRequiredIn30Daysyes'),
     ];
 
     const allHaveCheck = data.every(element => element === true);
@@ -950,9 +952,9 @@ const WaitingListAssessment = (() => {
     // AI FIELD
     // (SET) [icfDetermination] "Is the individual a resident..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
     const data = [
-      wlForms[formName].inputs['icfIsICFResident'].getValue(),
-      wlForms[formName].inputs['icfIsNoticeIssued'].getValue(),
-      wlForms[formName].inputs['icfIsActionRequiredIn30Days'].getValue(),
+      wlForms[formName].inputs['icfIsICFResident'].getValue('icfIsICFResidentyes'),
+      wlForms[formName].inputs['icfIsNoticeIssued'].getValue('icfIsNoticeIssuedyes'),
+      wlForms[formName].inputs['icfIsActionRequiredIn30Days'].getValue('icfIsActionRequiredIn30Days'),
     ];
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'icfDeterminationyes' : 'icfDeterminationno';
@@ -962,8 +964,8 @@ const WaitingListAssessment = (() => {
     // AI FIELD
     // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
     const data = [
-      wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue(),
-      wlForms[formName].inputs['cpaHadUnaddressableNeeds'].getValue(),
+      wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes'),
+      wlForms[formName].inputs['cpaHadUnaddressableNeeds'].getValue('cpaHadUnaddressableNeedsyes'),
     ];
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'cpaDeterminationyes' : 'cpaDeterminationno';
@@ -973,9 +975,9 @@ const WaitingListAssessment = (() => {
     // AI FIELD
     // (SET) [rwfWaiverFundingRequired] "Does the individual require..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
     const data = [
-      wlForms[formName].inputs['rwfNeedsMoreFrequency'].getValue(),
-      wlForms[formName].inputs['rwfNeedsServiceNotMetIDEA'].getValue(),
-      wlForms[formName].inputs['rwfNeedsServiceNotMetOOD'].getValue(),
+      wlForms[formName].inputs['rwfNeedsMoreFrequency'].getValue('rwfNeedsMoreFrequencyyes'),
+      wlForms[formName].inputs['rwfNeedsServiceNotMetIDEA'].getValue('rwfNeedsServiceNotMetIDEAyes'),
+      wlForms[formName].inputs['rwfNeedsServiceNotMetOOD'].getValue('rwfNeedsServiceNotMetOODyes'),
     ];
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'rwfWaiverFundingRequiredyes' : 'rwfWaiverFundingRequiredno';
@@ -985,9 +987,9 @@ const WaitingListAssessment = (() => {
     // AI FIELD
     // (SET) [dischargeDetermination] "Does the individual have a viable..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
     const data = [
-      wlForms[formName].inputs['dischargeIsICFResident'].getValue(),
-      wlForms[formName].inputs['dischargeIsInterestedInMoving'].getValue(),
-      wlForms[formName].inputs['dischargeHasDischargePlan'].getValue(),
+      wlForms[formName].inputs['dischargeIsICFResident'].getValue('dischargeIsICFResidentyes'),
+      wlForms[formName].inputs['dischargeIsInterestedInMoving'].getValue('dischargeIsInterestedInMovingyes'),
+      wlForms[formName].inputs['dischargeHasDischargePlan'].getValue('dischargeHasDischargePlanyes'),
     ];
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'dischargeDeterminationyes' : 'dischargeDeterminationno';
@@ -1156,9 +1158,9 @@ const WaitingListAssessment = (() => {
   };
   function updatePageActiveStatus() {
     const conditionsInputValues = [
-      wlForms['conditions'].inputs['otherThanMentalHealth'].getValue(),
-      wlForms['conditions'].inputs['before22'].getValue(),
-      wlForms['conditions'].inputs['isConditionIndefinite'].getValue(),
+      wlForms['conditions'].inputs['otherThanMentalHealth'].getValue('otherThanMentalHealthyes'),
+      wlForms['conditions'].inputs['before22'].getValue('before22yes'),
+      wlForms['conditions'].inputs['isConditionIndefinite'].getValue('isConditionIndefiniteyes'),
     ];
 
     if (!conditionsInputValues.every(element => element === true)) {
@@ -1216,12 +1218,17 @@ const WaitingListAssessment = (() => {
     wlForms['waiverEnrollment'].form.parentElement.classList.add('hiddenPage');
 
     //-------------------------------------------------------------------------------------------------------
-    const needsIsActionRequiredRequiredIn30DaysYES =
-      wlForms['conditions'].inputs['needsIsActionRequiredRequiredIn30Daysyes'].getValue();
-    const needsIsActionRequiredRequiredIn30DaysNO =
-      wlForms['conditions'].inputs['needsIsActionRequiredRequiredIn30Daysno'].getValue();
-    const rMIsActionRequiredIn3oDaysYES = wlForms['conditions'].inputs['rMIsActionRequiredIn3oDaysyes'].getValue();
-    const rMIsActionRequiredIn3oDaysNO = wlForms['conditions'].inputs['rMIsActionRequiredIn3oDaysno'].getValue();
+    const needsIsActionRequiredRequiredIn30DaysYES = wlForms['conditions'].inputs[
+      'needsIsActionRequiredRequiredIn30Days'
+    ].getValue('needsIsActionRequiredRequiredIn30Daysyes');
+    const needsIsActionRequiredRequiredIn30DaysNO = wlForms['conditions'].inputs[
+      'needsIsActionRequiredRequiredIn30Days'
+    ].getValue('needsIsActionRequiredRequiredIn30Daysno');
+    const rMIsActionRequiredIn3oDaysYES = wlForms['conditions'].inputs['rMIsActionRequiredIn3oDays'].getValue(
+      'rMIsActionRequiredIn3oDaysyes',
+    );
+    const rMIsActionRequiredIn3oDaysNO =
+      wlForms['conditions'].inputs['rMIsActionRequiredIn3oDays'].getValue('rMIsActionRequiredIn3oDaysno');
     const riskMitigationCheckboxValues = [
       wlForms[formName].inputs['rMIsAdultProtectiveServiceInvestigation'].getValue(),
       wlForms[formName].inputs['rMIsCountyBoardInvestigation'].getValue(),
@@ -1324,7 +1331,7 @@ const WaitingListAssessment = (() => {
   function attachEvents() {
     rosterPicker.onConsumerSelect(onConsumerSelect);
     reviewAssessmentBtn.onClick(onReviewAssessmentBtnClick);
-    testForErick1.onClick(async () => {
+    sendEmailButton.onClick(async () => {
       const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
         waitingListId: '10',
       });
@@ -1336,24 +1343,13 @@ const WaitingListAssessment = (() => {
         body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus arcu orci, cursus sit amet nunc nec, faucibus cursus metus. Suspendisse potenti. Curabitur blandit mauris ac tempor vulputate. ',
       });
     });
-    testForErick2.onClick(async () => {
-      const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
-        waitingListId: '16',
-      });
-
-      if (resp !== '1') return;
-
-      const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
-        header: 'Test header for WLID: 16',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus arcu orci, cursus sit amet nunc nec, faucibus cursus metus. Suspendisse potenti. Curabitur blandit mauris ac tempor vulputate. ',
-      });
-    });
+    documentsButton.onClick(() => {});
   }
   function loadPage() {
     // ROSTER PICKER
     reviewAssessmentBtn.renderTo(moduleHeader);
-    testForErick1.renderTo(moduleHeader);
-    testForErick2.renderTo(moduleHeader);
+    sendEmailButton.renderTo(moduleHeader);
+    documentsButton.renderTo(moduleHeader);
 
     // FORMS
     for (formElement in formElements) {
@@ -1363,6 +1359,10 @@ const WaitingListAssessment = (() => {
       const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
       formWrap.appendChild(formHeader);
       assessmentWrap.appendChild(formWrap);
+
+      if (!wlFormInfo[formElement].enabled) {
+        formWrap.classList.add('hiddenPage');
+      }
 
       wlForms[formElement] = new Form({
         hideAllButtons: true,
@@ -1384,6 +1384,12 @@ const WaitingListAssessment = (() => {
       }
     }
 
+    const tableWrap = _DOM.createElement('div', { id: 'participants', class: 'wlPage' });
+    const header = _DOM.createElement('h2', { text: 'Participants' });
+    tableWrap.appendChild(header);
+    participantsTable.renderTo(tableWrap);
+    assessmentWrap.appendChild(tableWrap);
+
     // ROSTER PICKER
     rosterPicker.renderTo(rosterWrap);
   }
@@ -1391,7 +1397,7 @@ const WaitingListAssessment = (() => {
     moduleHeader.innerHTML = '';
     moduleBody.innerHTML = '';
 
-    assessmentWrap = _DOM.createElement('div', { class: 'waitingListForm' });
+    assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
     rosterWrap = _DOM.createElement('div', { class: 'waitingListRoster' });
 
     moduleBody.appendChild(assessmentWrap);
@@ -1402,29 +1408,44 @@ const WaitingListAssessment = (() => {
   //--------------------------------------------------
   function initFormInfo() {
     return {
-      adultDayEmployment: { dbtable: 'WLA_Require_Waiver_Fundings' },
-      childProtectionAgency: { dbtable: 'WLA_Child_Protection_Agencies' },
-      conditions: { dbtable: 'WLA_Conditions' },
-      currentAvailableServices: { dbtable: 'WLA_Active_Services' },
-      currentNeeds: { dbtable: 'WLA_Unmet_Needs' },
-      dischargePlan: { dbtable: 'WLA_Discharge_Plans' },
-      icfDischarge: { dbtable: 'WLA_ICF_Discharges' },
-      intermittentSupports: { dbtable: 'WLA_Intermitent_Supports' },
-      immediateNeeds: { dbtable: 'WLA_Immediate_Needs' },
-      primaryCaregiver: { dbtable: 'WLA_Primary_Caregivers' },
-      riskMitigation: { dbtable: 'WLA_Risk_Mitigations' },
-      waitingListInfo: { dbtable: 'WLA_Waiting_List_Information' },
-      waiverEnrollment: { dbtable: 'WLA_Waiver_Enrollments' },
+      adultDayEmployment: { enabled: false, dbtable: 'WLA_Require_Waiver_Fundings' },
+      childProtectionAgency: { enabled: false, dbtable: 'WLA_Child_Protection_Agencies' },
+      conditions: { enabled: true, dbtable: 'WLA_Conditions' },
+      currentAvailableServices: { enabled: false, dbtable: 'WLA_Active_Services' },
+      currentNeeds: { enabled: false, dbtable: 'WLA_Unmet_Needs' },
+      dischargePlan: { enabled: false, dbtable: 'WLA_Discharge_Plans' },
+      icfDischarge: { enabled: false, dbtable: 'WLA_ICF_Discharges' },
+      intermittentSupports: { enabled: false, dbtable: 'WLA_Intermitent_Supports' },
+      immediateNeeds: { enabled: false, dbtable: 'WLA_Immediate_Needs' },
+      primaryCaregiver: { enabled: true, dbtable: 'WLA_Primary_Caregivers' },
+      riskMitigation: { enabled: false, dbtable: 'WLA_Risk_Mitigations' },
+      waitingListInfo: { enabled: true, dbtable: 'WLA_Waiting_List_Information' },
+      waiverEnrollment: { enabled: false, dbtable: 'WLA_Waiver_Enrollments' },
       needs: {
+        enabled: false,
         behavioral: { dbtable: 'WLA_Risks' },
         physical: { dbtable: 'WLA_Physical_Needs' },
         medical: { dbtable: 'WLA_Medical_Needs' },
         other: { dbtable: 'WLA_Needs' },
       },
+      //------
     };
   }
   function initComponents() {
-    // Roster Picker
+    participantsTable = new Table({
+      columnSortable: true,
+      headings: [
+        {
+          text: 'Name of Participant',
+          type: 'string',
+        },
+        {
+          text: 'Relationship to Individual',
+          type: 'string',
+        },
+      ],
+    });
+
     rosterPicker = new RosterPicker({
       allowMultiSelect: false,
       consumerRequired: true,
@@ -1436,13 +1457,14 @@ const WaitingListAssessment = (() => {
       styleType: 'contained',
     });
 
-    testForErick1 = new Button({
-      text: 'Erick Test WLID: 10',
+    sendEmailButton = new Button({
+      text: 'Send Email',
       style: 'primary',
       styleType: 'contained',
     });
-    testForErick2 = new Button({
-      text: 'Erick Test WLID: 16',
+
+    documentsButton = new Button({
+      text: 'Add New Documentation',
       style: 'primary',
       styleType: 'contained',
     });

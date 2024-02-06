@@ -27,24 +27,38 @@
   }
 
   // MAIN ASSESSMENT
-  .waitingListForm {
+  .waitingListAssessment {
     display: flex;
     flex-flow: column;
 
     .wlPage {
+      order: 10;
+
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      form {
+        flex-flow: column nowrap;
+      }
+
       &.hiddenPage {
         background-color: $error;
         pointer-events: none;
-        opacity: 0.4;
+        * {
+          opacity: 0.2;
+        }
       }
     }
 
-    h2 {
-      margin-bottom: 10px;
+    #waitingListInfo {
+      order: 1;
     }
-
-    form {
-      flex-flow: column nowrap;
+    #conditions {
+      order: 2;
+    }
+    #participants {
+      order: 3;
     }
   }
 
