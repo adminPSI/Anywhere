@@ -120,14 +120,24 @@ const generateReports = (() =>  {
   // Function to check if a report is ready at a specified interval
   function checkIfReportIsReadyInterval(res) {
     // Get the interval in seconds from the session and convert it to milliseconds
-    seconds = parseInt($.session.reportSeconds);
-    intSeconds = seconds * 250;
+    const seconds = parseInt($.session.reportSeconds);
+    const intSeconds = seconds * 250;
 
-    // Set up an interval to execute the checkCNReportExists function periodically
-    interval = setInterval(async () => {
-      await checkIfReportExists(res); // Call the function to check if the report exists
+    let counter = 0; // Initialize a counter variable
+
+    // Set up an interval to execute the checkIfReportExists function periodically
+    const interval = setInterval(async () => {
+        await checkIfReportExists(res); // Call the function to check if the report exists
+
+        counter++;
+
+        if (counter >= 3) {
+            clearInterval(interval); // Clear the interval
+            reportRunning = false;
+        }
     }, intSeconds); // The interval in milliseconds between checks
-  }
+}
+
 
   // Async function to check if a report exists
   async function checkIfReportExists(res) {

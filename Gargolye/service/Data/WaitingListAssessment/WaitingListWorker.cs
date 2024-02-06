@@ -51,67 +51,67 @@ namespace Anywhere.service.Data.WaitingListAssessment
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Conditions":
-                        columnForId = "WLA_Waiting_List_Information_ID";
+                        columnForId = "WLA_Condition_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Active_Services":
-                        columnForId = "WLA_Waiting_List_Information_ID";
+                        columnForId = "WLA_Active_Service_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Primary_Caregivers":
-                        columnForId = "WLA_Circumstance_ID";
+                        columnForId = "WLA_Primary_Caregiver_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Needs":
-                        columnForId = "WLA_Circumstance_ID";
+                        columnForId = "WLA_Needs_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Medical_Needs":
-                        columnForId = "WLA_Need_ID"; 
+                        columnForId = "WLA_Medical_Need_ID"; 
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId); 
                         break;
                     case "WLA_Physical_Needs":
-                        columnForId = "WLA_Need_ID";
+                        columnForId = "WLA_Physical_Need_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Risks":
-                        columnForId = "WLA_Need_ID";
+                        columnForId = "WLA_Risk_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Risk_Mitigations":
-                        columnForId = "WLA_Circumstance_ID"; 
+                        columnForId = "WLA_Risk_Mitigation_ID"; 
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_ICF_Discharges":                        
-                        columnForId = "WLA_Circumstance_ID";
+                        columnForId = "WLA_ICF_Discharge_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Intermitent_Supports":
-                        columnForId = "WLA_Circumstance_ID"; 
+                        columnForId = "WLA_Intermitent_Support_ID"; 
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Child_Protection_Agencies":
-                        columnForId = "WLA_Circumstance_ID"; 
+                        columnForId = "WLA_Child_Protection_Agency_ID"; 
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Require_Waiver_Fundings":
-                        columnForId = "WLA_Circumstance_ID";
+                        columnForId = "WLA_Require_Waiver_Funding_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Discharge_Plans":
-                        columnForId = "WLA_Circumstance_ID";
+                        columnForId = "WLA_Discharge_Plan_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Immediate_Needs":
-                        columnForId = "WLA_Waiting_List_Information_ID";
+                        columnForId = "WLA_Immediate_Need_ID";
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Waiver_Enrollments":
-                        columnForId = "WLA_Waiting_List_Information_ID"; 
+                        columnForId = "WLA_Waiver_Enrollment_ID"; 
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                     case "WLA_Unmet_Needs":
-                        columnForId = "WLA_Waiting_List_Information_ID"; 
+                        columnForId = "WLA_Unmet_Need_ID"; 
                         dg.deleteFromWaitingList(parts[0], parts[1], columnForId);
                         break;
                 }
@@ -1088,6 +1088,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string livingArrangementOther { get; set; }
             public string areasPersonNeedsHelp { get; set; }
             public string participants { get; set; }
+            public string conditionId { get; set; }
             public string otherThanMentalHealth { get; set; }
             public string before22 { get; set; }
             public string activeServiceId { get; set; }
