@@ -85,7 +85,7 @@
                 }
               }
            // };
-            if (answered)
+            if (answered || leaveblank)
               tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
 
           }
