@@ -55,7 +55,6 @@
       consumerId,
     });
 
-    // this.reviewData =
     // string wlInfoId
     // string interviewDate
     // string conclusionResult
@@ -63,11 +62,14 @@
     // string sentToDODD
 
     // TODO-ASH: replace conclusionResult id with name, get from dropdown data
-    return data.getLandingPageForConsumerResult.map(rd => {
-      return {
-        ...rd,
-      };
-    });
+    return data.getLandingPageForConsumerResult.map(
+      ({ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }) => {
+        return {
+          id: wlInfoId,
+          values: [interviewDate, conclusionResult, conclusionDate, sentToDODD],
+        };
+      },
+    );
   };
 
   return WaitingListData;
