@@ -254,7 +254,7 @@
                 rowElement,
               };
             }
-            if (answered) tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
+            if (answered || leaveblank) tableQuestionSets[questionSetKey][rowOrder].atLeastOneColumnAnswered = true;
           }
         });
 
