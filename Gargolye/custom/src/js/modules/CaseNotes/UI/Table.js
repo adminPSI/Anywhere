@@ -122,7 +122,7 @@
 
       // populate row
       row.values.forEach((rd, i) => {
-        const dataType = this.options.columns[i]?.type ?? '';
+        const dataType = this.options.headings[i]?.type ?? '';
         rd = dataType === 'date' ? formatDate(rd) : rd;
         const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
         rowEle.appendChild(cell);
