@@ -820,6 +820,44 @@ const WaitingListAssessment = (() => {
         disabled: true,
       },
     ],
+    conclusion: [
+      {
+        type: 'checkboxgroup',
+        id: 'todo',
+        groupLabel: 'There is currently an open investigation with: (Check all that apply):',
+        disabled: true,
+        fields: [
+          { type: 'checkbox', label: '', id: 'todo1' },
+          { type: 'checkbox', label: '', id: 'todo2' },
+          { type: 'checkbox', label: '', id: 'todo3' },
+          { type: 'checkbox', label: '', id: 'todo4' },
+        ],
+      },
+      {
+        type: 'text',
+        id: 'nopdc',
+        label: 'Name of person determining conclusion:',
+        disabled: true,
+      },
+      {
+        type: 'text',
+        id: 'topdc',
+        label: 'Title of person determining conclusion:',
+        disabled: true,
+      },
+      {
+        id: 'conclusionDate',
+        type: 'date',
+        label: 'Date conclusion determined:',
+        disabled: true,
+      },
+      {
+        label: 'Anticipated Waiver Type',
+        id: 'currentLivingArrangement',
+        type: 'select',
+        data: [{ value: '1', text: '' }],
+      },
+    ],
   };
 
   // EVENTS
@@ -1308,8 +1346,8 @@ const WaitingListAssessment = (() => {
       }
 
       // Save/Update
-      if (wlFormInfo[formElement].id === '') {
-        wlFormInfo[formElement].id = await wlData.insertAssessmentData({
+      if (wlFormInfo[formName].id === '') {
+        wlFormInfo[formName].id = await wlData.insertAssessmentData({
           id: 0,
           linkId: wlLinkID,
           propertyName: name,
@@ -1317,7 +1355,7 @@ const WaitingListAssessment = (() => {
         });
       } else {
         await wlData.updateAssessmentData({
-          id: wlFormInfo[formElement].id,
+          id: wlFormInfo[formName].id,
           linkId: formName === 'waitingListInfo' ? 0 : wlLinkID,
           propertyName: name,
           value: value,
@@ -1332,18 +1370,40 @@ const WaitingListAssessment = (() => {
     rosterPicker.onConsumerSelect(onConsumerSelect);
     reviewAssessmentBtn.onClick(onReviewAssessmentBtnClick);
     sendEmailButton.onClick(async () => {
-      const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
-        waitingListId: '10',
+      const emailDialog = new Dialog({});
+      const emailForm = new Form({
+        fields: [
+          {
+            type: 'text',
+            label: 'Email Header',
+            name: 'emailHeader',
+          },
+          {
+            type: 'text',
+            label: 'Email Body',
+            name: 'emailBody',
+          },
+        ],
       });
 
-      if (resp !== '1') return;
+      emailForm.onSubmit(async () => {
+        const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
+          waitingListId: '10',
+        });
 
-      const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
-        header: 'Test header for WLID: 10',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus arcu orci, cursus sit amet nunc nec, faucibus cursus metus. Suspendisse potenti. Curabitur blandit mauris ac tempor vulputate. ',
+        if (resp !== '1') return;
+
+        const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
+          header: 'Test header for WLID: 10',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus arcu orci, cursus sit amet nunc nec, faucibus cursus metus. Suspendisse potenti. Curabitur blandit mauris ac tempor vulputate. ',
+        });
       });
     });
     documentsButton.onClick(() => {});
+    participantsForm.onSubmit(() => {
+      // save particpants
+      // clear form
+    });
   }
   function loadPage() {
     // ROSTER PICKER
@@ -1384,9 +1444,11 @@ const WaitingListAssessment = (() => {
       }
     }
 
+    // Participants
     const tableWrap = _DOM.createElement('div', { id: 'participants', class: 'wlPage' });
     const header = _DOM.createElement('h2', { text: 'Participants' });
     tableWrap.appendChild(header);
+    participantsForm.renderTo(tableWrap);
     participantsTable.renderTo(tableWrap);
     assessmentWrap.appendChild(tableWrap);
 
@@ -1429,6 +1491,9 @@ const WaitingListAssessment = (() => {
         other: { dbtable: 'WLA_Needs' },
       },
       //------
+      conclusion: {
+        enabled: false,
+      },
     };
   }
   function initComponents() {
@@ -1442,6 +1507,20 @@ const WaitingListAssessment = (() => {
         {
           text: 'Relationship to Individual',
           type: 'string',
+        },
+      ],
+    });
+    participantsForm = new Form({
+      fields: [
+        {
+          type: 'text',
+          label: 'Name of Participant',
+          name: 'participantName',
+        },
+        {
+          type: 'text',
+          label: 'Relationship to Individual',
+          name: 'participantRelationship',
         },
       ],
     });
