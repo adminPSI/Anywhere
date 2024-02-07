@@ -18,8 +18,7 @@ const WaitingListOverview = (() => {
   //--------------------------------------------------
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
-    await wlData.fetchReviewDataByConsumer(selectedConsumer);
-    const tableData = wlData.getReviewDataForConsumer();
+    const tableData = await wlData.getReviewDataByConsumer(selectedConsumer);
     wlReviewTable.populate(tableData);
   }
 
