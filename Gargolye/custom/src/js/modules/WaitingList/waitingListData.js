@@ -66,7 +66,12 @@
       ({ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }) => {
         return {
           id: wlInfoId,
-          values: [interviewDate.split(' ')[0], conclusionResult, conclusionDate, sentToDODD.split(' ')[0]],
+          values: [
+            UTIL.formatDateToIso(interviewDate.split(' ')[0]),
+            conclusionResult,
+            conclusionDate,
+            UTIL.formatDateToIso(sentToDODD.split(' ')[0]),
+          ],
         };
       },
     );

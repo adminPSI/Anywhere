@@ -28,6 +28,7 @@
    * @param {String} dateString  dateString format must be ISO YYYY-MM-DD
    */
   const formatDate = dateString => {
+    if (!dateString) return '';
     const date = new Date(`${dateString}T00:00`);
     return new Intl.DateTimeFormat('en-US').format(date);
   };

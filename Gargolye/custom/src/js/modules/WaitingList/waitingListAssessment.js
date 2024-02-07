@@ -1537,7 +1537,7 @@ const WaitingListAssessment = (() => {
     });
 
     sendEmailButton = new Button({
-      text: 'Send Email',
+      text: 'Send Report',
       style: 'primary',
       styleType: 'contained',
     });
