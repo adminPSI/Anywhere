@@ -129,9 +129,12 @@ namespace Anywhere.service.Data.WaitingListAssessment
             string idNameForWhere = "";
             switch (propertyName)
             {
-                //case "wlInfoId":
-                //    // Handle wlInfoId
-                //    break;
+                case "getCircumstanceId":
+                    tableName = "WLA_Circumstances";
+                    columnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Waiting_List_Information_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    break;
                 case "consumerId":
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "id";
