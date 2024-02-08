@@ -35,7 +35,7 @@
       insertOrUpdate: 'I',
     });
 
-    return data.insertUpdateWaitingListValueResult;
+    return JSON.parse(data.insertUpdateWaitingListValueResult);
   };
 
   WaitingListData.prototype.updateAssessmentData = async function ({ id, linkId = 0, propertyName, value }) {

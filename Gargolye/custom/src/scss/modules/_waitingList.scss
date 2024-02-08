@@ -22,11 +22,15 @@
   }
 
   // ROSTER PICKER
-  .waitingListRoster {
+  .waitingList__roster {
     min-width: 300px;
   }
 
-  // MAIN ASSESSMENT
+  // MAIN (form / overview)
+  .waitingList__main {
+  }
+
+  // FORM
   .waitingListAssessment {
     display: flex;
     flex-flow: column;
@@ -62,7 +66,7 @@
     }
   }
 
-  // ASSESSMENT OVERVIEW
+  // OVERVIEW
   .waitingListOverview {
     flex-grow: 1;
   }

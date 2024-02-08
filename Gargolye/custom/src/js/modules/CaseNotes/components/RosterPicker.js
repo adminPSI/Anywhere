@@ -37,8 +37,10 @@
     this.rosterSearchInput = null;
     this.rosterCaseLoadInput = null;
     this.consumerCards = null;
+    this.mobileRosterBtn = null;
 
     this._build();
+    this._buildMobileButton();
     this._setupEvents();
   }
 
@@ -55,7 +57,11 @@
     this.messageEle = _DOM.createElement('p', {
       class: 'rosterPicker__message',
       node: this.messageEleIcon,
-      text: this.options.consumerRequired ? 'Consumer(s) is required' : 'Please select a consumer',
+      text: this.options.consumerRequired
+        ? this.options.allowMultiSelect
+          ? 'Consumer(s) is required'
+          : 'Consumer is required'
+        : 'Please select a consumer',
     });
     this.messageEle.classList.toggle(
       'error',
@@ -82,6 +88,13 @@
       this.rosterCaseLoadInput.rootElement,
       this.rosterWrapEle,
     );
+  };
+
+  RosterPicker.prototype._buildMobileButton = function () {
+    this.mobileRosterBtn = new Button({
+      icon: 'peopleGroup',
+      class: ['mobileRosterBtn'],
+    });
   };
 
   /**
@@ -142,6 +155,8 @@
       await this.fetchConsumers();
       this.populate();
     });
+
+    this.mobileRosterBtn.onClick(e => {});
   };
 
   /**

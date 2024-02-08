@@ -6,62 +6,46 @@ const WaitingListOverview = (() => {
   //--------------------------
   // DOM
   //--------------------------
-  let rosterWrap;
   let overviewWrap;
   //--------------------------
   // UI INSTANCES
   //--------------------------
-  let rosterPicker;
-  let wlForms = {};
+  let wlReviewTable;
 
   // EVENTS
   //--------------------------------------------------
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
-    const tableData = await wlData.getReviewDataByConsumer(selectedConsumer);
+    const tableData = await WaitingListAssessment.data.getReviewDataByConsumer(selectedConsumer);
     wlReviewTable.populate(tableData);
   }
 
   // MAIN
   //--------------------------------------------------
-  function attachEvents() {
-    rosterPicker.onConsumerSelect(onConsumerSelect);
-  }
+  function attachEvents() {}
   async function populatePage() {
-    await rosterPicker.fetchConsumers();
-    rosterPicker.populate();
-
     if (selectedConsumer) {
       rosterPicker.setSelectedConsumers(selectedConsumer);
-      await wlData.fetchReviewDataByConsumer(selectedConsumer);
-      const tableData = wlData.getReviewDataByConsumer();
+      await WaitingListAssessment.data.fetchReviewDataByConsumer(selectedConsumer);
+      const tableData = WaitingListAssessment.data.getReviewDataByConsumer();
       wlReviewTable.populate(tableData);
     }
   }
   async function loadPage() {
     wlReviewTable.renderTo(overviewWrap);
-    rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
     moduleHeader.innerHTML = '';
-    moduleBody.innerHTML = '';
+    moduleBodyMain.innerHTML = '';
 
     overviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
-    rosterWrap = _DOM.createElement('div', { class: 'waitingListRoster' });
 
-    moduleBody.appendChild(overviewWrap);
-    moduleBody.appendChild(rosterWrap);
+    moduleBodyMain.appendChild(overviewWrap);
   }
 
   // INIT (data & defaults)
   //--------------------------------------------------
   function initComponents() {
-    // Roster Picker
-    rosterPicker = new RosterPicker({
-      allowMultiSelect: false,
-      consumerRequired: true,
-    });
-
     // Review Table
     wlReviewTable = new Table({
       columnSortable: true,
@@ -86,23 +70,22 @@ const WaitingListOverview = (() => {
     });
   }
 
-  async function init({ consumerId, wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle }) {
-    // init data
-    selectedConsumer = consumerId;
-    wlData = wlData;
-    moduleWrap = moduleWrapEle;
-    moduleHeader = moduleHeaderEle;
-    moduleBody = moduleBodyEle;
+  async function init() {
+    wlData = WaitingList.getDataInstance();
+    rosterPicker = WaitingList.getRosterPickerInstance();
+    const htmlEle = WaitingList.getHTML();
+    moduleHeader = htmlEle.moduleHeader;
+    moduleBodyMain = htmlEle.moduleBodyMain;
 
     loadPageSkeleton();
 
     initComponents();
     await loadPage();
-    await populatePage();
     attachEvents();
   }
 
   return {
     init,
+    onConsumerSelect,
   };
 })();

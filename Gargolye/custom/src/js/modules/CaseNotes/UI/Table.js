@@ -111,32 +111,9 @@
   Table.prototype._setupEvents = function () {};
 
   /**
-   * @function
-   * @param {Array} data
-   */
-  Table.prototype.populate = function (data) {
-    //* populate table body
-    data.forEach((row, i) => {
-      const rowEle = _DOM.createElement('tr', { ...row.attributes, id: row.id });
-
-      this.rows[row.id] = rowEle;
-
-      // populate row
-      row.values.forEach((rd, i) => {
-        const dataType = this.options.headings[i]?.type ?? '';
-        rd = dataType === 'date' ? formatDate(rd) : rd;
-        const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
-        rowEle.appendChild(cell);
-      });
-
-      tableBody.appendChild(rowEle);
-    });
-  };
-
-  /**
    * Multi select rows w/bulk actions
    */
-  Table.prototype.multiSelect = function () {
+  Table.prototype._multiSelect = function () {
     //TODO add bulk action dropdown/list
 
     // add checkbox to header
@@ -178,7 +155,7 @@
   /**
    * Sort by column header
    */
-  Table.prototype.columnSort = function () {
+  Table.prototype._columnSort = function () {
     this.table.classList.add('colSort');
 
     this.table.tHead.addEventListener('click', e => {
@@ -248,7 +225,7 @@
   /**
    * Sort table rows (drag and drop)
    */
-  Table.prototype.rowSort = function () {
+  Table.prototype._rowSort = function () {
     //* This uses sortable.js
     //* https://github.com/SortableJS/Sortable
     return new Sortable(this.tableBody, {
@@ -278,6 +255,29 @@
       this.tableHeader.rows[0].insertBefore(td, this.tableHeader.rows[0].cells[0]);
       this.table.classList.add('sortable');
     }
+  };
+
+  /**
+   * @function
+   * @param {Array} data
+   */
+  Table.prototype.populate = function (data) {
+    //* populate table body
+    data.forEach((row, i) => {
+      const rowEle = _DOM.createElement('tr', { ...row.attributes, id: row.id });
+
+      this.rows[row.id] = rowEle;
+
+      // populate row
+      row.values.forEach((rd, i) => {
+        const dataType = this.options.headings[i]?.type ?? '';
+        rd = dataType === 'date' ? formatDate(rd) : rd;
+        const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
+        rowEle.appendChild(cell);
+      });
+
+      this.table.tBodies[0].appendChild(rowEle);
+    });
   };
 
   /**

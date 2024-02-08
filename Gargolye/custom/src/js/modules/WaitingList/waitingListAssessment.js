@@ -2,7 +2,6 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
-  let selectedConsumer;
   let wlLinkID;
   //--------------------------
   // PERMISSIONS
@@ -12,16 +11,13 @@ const WaitingListAssessment = (() => {
   // DOM
   //--------------------------
   let assessmentWrap;
-  let moduleWrap;
-  let moduleHeader;
-  let moduleBody;
   //--------------------------
   // UI INSTANCES
   //--------------------------
   let wlForms;
-  let participantsTable;
   let wlData;
   let rosterPicker;
+  let participantsTable;
   let sendEmailButton;
   let reviewAssessmentBtn;
 
@@ -863,13 +859,7 @@ const WaitingListAssessment = (() => {
   // EVENTS
   //--------------------------------------------------
   async function onReviewAssessmentBtnClick() {
-    WaitingListOverview.init({
-      wlData,
-      moduleWrapEle: moduleWrap,
-      moduleHeaderEle: moduleHeader,
-      moduleBodyEle: moduleBody,
-      consumerId: selectedConsumer ? selectedConsumer : '',
-    });
+    WaitingListOverview.init();
   }
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
@@ -1352,12 +1342,14 @@ const WaitingListAssessment = (() => {
       }
 
       if (wlFormInfo[formName].id === '') {
-        wlFormInfo[formName].id = await wlData.insertAssessmentData({
+        const resp = await wlData.insertAssessmentData({
           id: 0,
           linkId: wlLinkID,
           propertyName: name,
           value: value,
         });
+
+        wlFormInfo[formName].id = resp[0].newRecordId;
       } else {
         await wlData.updateAssessmentData({
           id: wlFormInfo[formName].id,
@@ -1372,8 +1364,8 @@ const WaitingListAssessment = (() => {
   // MAIN
   //--------------------------------------------------
   function attachEvents() {
-    rosterPicker.onConsumerSelect(onConsumerSelect);
     reviewAssessmentBtn.onClick(onReviewAssessmentBtnClick);
+
     sendEmailButton.onClick(async () => {
       const emailDialog = new Dialog({});
       const emailForm = new Form({
@@ -1404,7 +1396,9 @@ const WaitingListAssessment = (() => {
         });
       });
     });
+
     documentsButton.onClick(() => {});
+
     participantsForm.onSubmit(async (data, submitter) => {
       // save particpants
       const newParticiapntID = await wlData.updateAssessmentData({
@@ -1418,7 +1412,6 @@ const WaitingListAssessment = (() => {
     });
   }
   function loadPage() {
-    // ROSTER PICKER
     reviewAssessmentBtn.renderTo(moduleHeader);
     sendEmailButton.renderTo(moduleHeader);
     documentsButton.renderTo(moduleHeader);
@@ -1463,19 +1456,14 @@ const WaitingListAssessment = (() => {
     participantsForm.renderTo(tableWrap);
     participantsTable.renderTo(tableWrap);
     assessmentWrap.appendChild(tableWrap);
-
-    // ROSTER PICKER
-    rosterPicker.renderTo(rosterWrap);
   }
   function loadPageSkeleton() {
     moduleHeader.innerHTML = '';
-    moduleBody.innerHTML = '';
+    moduleBodyMain.innerHTML = '';
 
     assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
-    rosterWrap = _DOM.createElement('div', { class: 'waitingListRoster' });
 
-    moduleBody.appendChild(assessmentWrap);
-    moduleBody.appendChild(rosterWrap);
+    moduleBodyMain.appendChild(assessmentWrap);
   }
 
   // INIT (data & defaults)
@@ -1537,11 +1525,6 @@ const WaitingListAssessment = (() => {
       ],
     });
 
-    rosterPicker = new RosterPicker({
-      allowMultiSelect: false,
-      consumerRequired: true,
-    });
-
     reviewAssessmentBtn = new Button({
       text: 'Review Assessments',
       style: 'primary',
@@ -1561,23 +1544,21 @@ const WaitingListAssessment = (() => {
     });
   }
 
-  async function init(data) {
+  async function init() {
     wlForms = {};
     wlFormInfo = initFormInfo();
-    wlData = data.wlData;
-    moduleWrap = data.moduleWrapEle;
-    moduleHeader = data.moduleHeaderEle;
-    moduleBody = data.moduleBodyEle;
+    wlData = WaitingList.getDataInstance();
+    rosterPicker = WaitingList.getRosterPickerInstance();
+    const htmlEle = WaitingList.getHTML();
+    moduleHeader = htmlEle.moduleHeader;
+    moduleBodyMain = htmlEle.moduleBodyMain;
 
     loadPageSkeleton();
     initComponents();
     loadPage();
 
-    await rosterPicker.fetchConsumers();
-    rosterPicker.populate();
-
     attachEvents();
   }
 
-  return { init, formElements };
+  return { init, onConsumerSelect, formElements };
 })();

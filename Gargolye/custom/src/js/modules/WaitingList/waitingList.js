@@ -1,7 +1,39 @@
 const WaitingList = (() => {
+  //--------------------------
+  // SESSION DATA
+  //--------------------------
+  let activeWindow = 'form';
+  //--------------------------
+  // UI INSTANCES
+  //--------------------------
+  let wlData;
+  let rosterPicker;
+  //--------------------------
+  // DOM
+  //--------------------------
   let moduleWrapEle;
   let moduleHeaderEle;
   let moduleBodyEle;
+  let moduleBodyRosterWrapEle;
+  let moduleBodyMainWrapEle;
+
+  function getRosterPickerInstance() {
+    return rosterPicker;
+  }
+  function getDataInstance() {
+    return wlData;
+  }
+  function getHTML() {
+    return {
+      moduleHeader: moduleHeaderEle,
+      moduleBodyMain: moduleBodyMainWrapEle,
+    };
+  }
+
+  function setActiveWindow(active) {
+    // active = form || table
+    activeWindow = active;
+  }
 
   function loadPageSkeleton() {
     _DOM.ACTIONCENTER.innerHTML = '';
@@ -11,8 +43,13 @@ const WaitingList = (() => {
     moduleWrapEle = _DOM.createElement('div', { class: 'waitingList' });
     moduleHeaderEle = _DOM.createElement('div', { class: 'waitingList__header' });
     moduleBodyEle = _DOM.createElement('div', { class: 'waitingList__body' });
+    moduleBodyMainWrapEle = _DOM.createElement('div', { class: 'waitingList__main' });
+    moduleBodyRosterWrapEle = _DOM.createElement('div', { class: 'waitingList__roster' });
+
     moduleWrapEle.appendChild(moduleHeaderEle);
     moduleWrapEle.appendChild(moduleBodyEle);
+    moduleBodyEle.appendChild(moduleBodyMainWrapEle);
+    moduleBodyEle.appendChild(moduleBodyRosterWrapEle);
 
     _DOM.ACTIONCENTER.appendChild(moduleWrapEle);
   }
@@ -22,10 +59,32 @@ const WaitingList = (() => {
 
     wlData = new WaitingListData();
 
-    WaitingListAssessment.init({ wlData, moduleWrapEle, moduleHeaderEle, moduleBodyEle });
+    rosterPicker = new RosterPicker({
+      allowMultiSelect: false,
+      consumerRequired: true,
+    });
+    rosterPicker.renderTo(moduleBodyRosterWrapEle);
+
+    rosterPicker.onConsumerSelect(consumerId => {
+      if (activeWindow === 'form') {
+        WaitingListAssessment.onConsumerSelect(consumerId);
+        return;
+      }
+
+      WaitingListOverview.onConsumerSelect(consumerId);
+    });
+
+    await rosterPicker.fetchConsumers();
+    rosterPicker.populate();
+
+    WaitingListAssessment.init();
   }
 
   return {
     init,
+    setActiveWindow,
+    getRosterPickerInstance,
+    getDataInstance,
+    getHTML,
   };
 })();
