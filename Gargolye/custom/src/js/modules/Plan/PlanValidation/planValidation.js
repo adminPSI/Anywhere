@@ -333,22 +333,40 @@ const planValidation = (function () {
   
     // ASSESSMENT WORKING/NOT WORKING
     function workingSectionCheck(assessmentValidationCheck) {
+      const groupedByAnswerRow = {};
+      assessmentValidationCheck.workingNotWorking.forEach(obj => {
+          if (!groupedByAnswerRow[obj.answerRow]) {
+              groupedByAnswerRow[obj.answerRow] = [];
+          }
+          groupedByAnswerRow[obj.answerRow].push(obj);
+      });
+  
+      let isQuestion607NotEmpty = false;
+      let is605Or606NotEmpty = false;
+  
+      for (const answerRow in groupedByAnswerRow) {
+          if (groupedByAnswerRow[answerRow].some(obj => obj.questionNumber === "Question 607")) {
+              isQuestion607NotEmpty = groupedByAnswerRow[answerRow].some(obj => obj.questionNumber === "Question 607" && obj.answer !== '');
+          }
+          if (groupedByAnswerRow[answerRow].some(obj => obj.questionNumber === "Question 605" || obj.questionNumber === "Question 606")) {
+              is605Or606NotEmpty = groupedByAnswerRow[answerRow].some(obj => (obj.questionNumber === "Question 605" || obj.questionNumber === "Question 606") && obj.answer !== '');
+          }
+      }
+  
+      const additionalCheckResult = isQuestion607NotEmpty && is605Or606NotEmpty;
+  
       const isNotWorkingFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 605" && obj.answer !== "");
       const isWorkingFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 606" && obj.answer !== "");
-      //const isWhoSaidItFilledOut = assessmentValidationCheck.workingNotWorking.some(obj => obj.questionNumber === "Question 607" && obj.answer !== "");
-
-      assessmentValidationCheck.workingSectionComplete = isWorkingFilledOut && isNotWorkingFilledOut;
-
-      return assessmentValidationCheck;
-    }
   
-    function updateAnswerWorkingSection(answer, answerId) {
-      for (let i = 0; i < assessmentValidationCheck.workingNotWorking.length; i++) {
-        if (assessmentValidationCheck.workingNotWorking[i].answerid === answerId) {
-          assessmentValidationCheck.workingNotWorking[i].answer = answer;
-          break;
-        }
-      }
+      assessmentValidationCheck.workingSectionComplete = isWorkingFilledOut && isNotWorkingFilledOut && additionalCheckResult;
+  
+      return assessmentValidationCheck;
+  }
+  
+    async function updateAnswerWorkingSection(planId) {
+      const check = await getAssessmentValidation(planId);
+
+      workingSectionCheck(check);
   
       // checks entire assessments for validation errors
       planValidation.updatedAssessmenteValidation();

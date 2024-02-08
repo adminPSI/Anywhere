@@ -473,7 +473,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
 
             if (sectionId === '41') {
-              planValidation.updateAnswerWorkingSection(answer, answerId);
+              planValidation.updateAnswerWorkingSection(assessmentId);
             }
           }
         } else {
@@ -484,7 +484,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          planValidation.updateAnswerWorkingSection(answer, answerId);
+          planValidation.updateAnswerWorkingSection(assessmentId);
         }
       }
       if (type === 'select-one') {
@@ -500,7 +500,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = true;
           }
 
-          planValidation.updateAnswerWorkingSection(answer, answerId);
+          planValidation.updateAnswerWorkingSection(assessmentId);
         } else {
           addAnswer(answerId);
           if (!conditionalQuestions || conditionalQuestions.length === 0) {
@@ -508,7 +508,7 @@
             sectionQuestionCount[sectionId][setId][questionId].answered = false;
           }
 
-          planValidation.updateAnswerWorkingSection(answer, answerId);
+          planValidation.updateAnswerWorkingSection(assessmentId);
         }
       }
       if (type === 'date') {
@@ -1292,7 +1292,7 @@
                 return;
               }
             }
-
+ 
             addAnswer(answerId, answerText, answerRow);
 
             gridRow.appendChild(gridCell);
@@ -1310,6 +1310,11 @@
           }
           const colInput = firstCol.querySelector('.input-field__input');
           colInput.focus();
+
+          if (sectionId === '41') {
+            await planValidation.updateAnswerWorkingSection(assessmentId);
+            tableOfContents.showUnansweredQuestionCount();
+          }
         }
         if (target === deleteRowsBtn) {
           if (deleteRowsActive) {
@@ -1332,6 +1337,11 @@
               grid.classList.add('unanswered');
               toggleIntentionallyBlankCheckbox('', questionSetId, false);
             }
+
+            if (sectionId === '41') {
+              await planValidation.updateAnswerWorkingSection(assessmentId);
+              tableOfContents.showUnansweredQuestionCount();
+          }
           }
 
           deleteRowsActive = !deleteRowsActive;

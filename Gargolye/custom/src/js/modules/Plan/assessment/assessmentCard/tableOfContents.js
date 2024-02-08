@@ -104,8 +104,6 @@
         }
       }
 
-      const isWorkingSectionComplete = planValidation.returnAssessmentValidationData();
-
       if (numOfQuestionsUnawnsered > 0) {
         numOfQuestionsUnawnseredDiv.innerText = numOfQuestionsUnawnsered;
         numOfQuestionsUnawnseredWrapDiv.classList.remove('hidden');
@@ -113,7 +111,9 @@
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
       }
 
+      const isWorkingSectionComplete = planValidation.returnAssessmentValidationData();
       if (sectionKey === '41' && isWorkingSectionComplete.workingSectionComplete === true) {
+        numOfQuestionsUnawnsered = 0;
         numOfQuestionsUnawnseredWrapDiv.classList.add('hidden');
       }
     });
