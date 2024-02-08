@@ -1324,9 +1324,10 @@ const WaitingListAssessment = (() => {
     const formName = form;
 
     return async function inputChange(event) {
-      const value = event.target.value;
+      let value = event.target.value;
       const name = event.target.name;
       const id = event.target.id;
+      const type = event.target.type;
 
       if (onChangeCallbacks[name]) {
         onChangeCallbacks[name]({
@@ -1346,6 +1347,10 @@ const WaitingListAssessment = (() => {
       }
 
       // Save/Update
+      if (type === 'radio') {
+        value = value === 'yes' ? 1 : 0;
+      }
+
       if (wlFormInfo[formName].id === '') {
         wlFormInfo[formName].id = await wlData.insertAssessmentData({
           id: 0,
@@ -1386,7 +1391,7 @@ const WaitingListAssessment = (() => {
         ],
       });
 
-      emailForm.onSubmit(async () => {
+      emailForm.onSubmit(async (data, submitter) => {
         const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
           waitingListId: '10',
         });
@@ -1400,9 +1405,16 @@ const WaitingListAssessment = (() => {
       });
     });
     documentsButton.onClick(() => {});
-    participantsForm.onSubmit(() => {
+    participantsForm.onSubmit(async (data, submitter) => {
       // save particpants
+      const newParticiapntID = await wlData.updateAssessmentData({
+        id: 0,
+        linkId: wlLinkID,
+        propertyName: 'participants',
+        value: [`${data.participantName}|${data.participantRelationship}`],
+      });
       // clear form
+      // repop table
     });
   }
   function loadPage() {
