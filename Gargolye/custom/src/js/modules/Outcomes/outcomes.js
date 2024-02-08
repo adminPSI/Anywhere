@@ -340,7 +340,7 @@ var outcomes = (function () {
                 document.getElementById('serviceBtn').innerHTML = 'Service: ' + service;
 
         }
-
+ 
         if (outcomeType === '%' || outcomeType === 'All') {
             btnWrap.appendChild(outcomeTypeBtnWrap);
             btnWrap.removeChild(outcomeTypeBtnWrap);
@@ -418,6 +418,7 @@ var outcomes = (function () {
         }
         if (closeFilter == 'outcomeTypeBtn') {
             tmpOutcome = 'All';
+            tmpOutcomeId = '%'; 
         }
         applyOutComeFilter();
     }

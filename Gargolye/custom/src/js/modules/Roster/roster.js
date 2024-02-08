@@ -292,7 +292,7 @@ const roster2 = (function () {
             filteredBy1.classList.add('filteredByData');
             filterButtonSet();
             filteredBy1.appendChild(btnWrap);
-            filteredBy.appendChild(filteredBy1);  
+            filteredBy.appendChild(filteredBy1);
         }
 
         if (document.getElementById('filteredDateBtn') != null)
@@ -301,7 +301,7 @@ const roster2 = (function () {
         if (hideDateFilter) {
             btnWrap.removeChild(filteredDateBtnWrap);
         }
-         
+
         if (selectedLocationName === '%' || selectedLocationName === 'All') {
             btnWrap.appendChild(selectedLocationNameBtnWrap);
             btnWrap.removeChild(selectedLocationNameBtnWrap);
@@ -682,13 +682,17 @@ const roster2 = (function () {
         }
         populateRoster();
 
+        if (selectedDate === '') {
+            selectedDate = UTIL.getTodaysDate();
+        }
         var splitDate = selectedDate.split('-');
         filteredDate = `${UTIL.leadingZero(splitDate[1])}/${UTIL.leadingZero(splitDate[2])}/${splitDate[0].slice(
             2,
             4,
         )}`;
-
-        document.getElementById('filteredDateBtn').innerHTML = 'Date: ' + filteredDate;
+ 
+        if (document.getElementById('filteredDateBtn') != null)
+            document.getElementById('filteredDateBtn').innerHTML = 'Date: ' + filteredDate;
 
         if (selectedLocationName === '%' || selectedLocationName === 'All') {
             btnWrap.appendChild(selectedLocationNameBtnWrap);
@@ -945,7 +949,7 @@ const roster2 = (function () {
             } else {
                 consumerCard.classList.remove('disabled');
             }
-        } 
+        }
 
         const portrait = document.createElement('div');
         const details = document.createElement('div');
@@ -1183,7 +1187,7 @@ const roster2 = (function () {
         await getRosterConsumersData();
         populateRoster();
         document.getElementById('searchBtn').click();
-        filterApply();  
+        filterApply();
     }
     /**
      * Enables or disables the mini roster button.
@@ -1584,7 +1588,7 @@ const roster2 = (function () {
         await getRosterConsumersData();
         populateRoster();
         document.getElementById('searchBtn').click();
-        filterApply(); 
+        filterApply();
     }
 
     return {
