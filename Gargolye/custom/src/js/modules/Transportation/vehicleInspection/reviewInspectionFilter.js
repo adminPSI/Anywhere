@@ -3,6 +3,7 @@ const TRANS_reviewInspectionFilter = (function () {
     let fromDateInput, toDateInput, vehicleDropdown, enteredByDropdown;
     let filterOpts
     let IsShow;
+    let applyButton;  
     function createFilterElements() {
 
         fromDateInput = input.build({
@@ -42,7 +43,7 @@ const TRANS_reviewInspectionFilter = (function () {
             classNames: 'vehicleInspectionFilterPopup'
         })
 
-        const applyButton = button.build({
+        applyButton = button.build({
             text: 'APPLY',
             style: 'secondary',
             type: 'contained',
@@ -59,7 +60,7 @@ const TRANS_reviewInspectionFilter = (function () {
             popup.appendChild(dateWrap);
         if (IsShow == 'ALL' || IsShow == 'vehicleNumberBtn')
             popup.appendChild(vehicleDropdown)
-        if (IsShow == 'ALL' || IsShow == 'enteredByBtn')   
+        if (IsShow == 'ALL' || IsShow == 'enteredByBtn')
             popup.appendChild(enteredByDropdown)
         popup.appendChild(applyButton);
         POPUP.show(popup)
@@ -102,7 +103,8 @@ const TRANS_reviewInspectionFilter = (function () {
                     updateDates();
                 } else {
                     console.info('invalid date range');
-                    fromDateInput.classList.add('error')
+                    fromDateInput.classList.add('error');
+                    applyButton.classList.add('disabled');
                 }
             } else {
                 event.target.value = filterOpts.fromDate
@@ -116,6 +118,7 @@ const TRANS_reviewInspectionFilter = (function () {
                 } else {
                     console.info('invalid date range');
                     toDateInput.classList.add('error');
+                    applyButton.classList.add('disabled');
                 }
             } else {
                 event.target.value = filterOpts.toDate
@@ -138,6 +141,7 @@ const TRANS_reviewInspectionFilter = (function () {
             filterOpts.toDate = toDateInput.firstElementChild.value;
             fromDateInput.classList.remove('error');
             toDateInput.classList.remove('error');
+            applyButton.classList.remove('disabled');
         }
     }
 
