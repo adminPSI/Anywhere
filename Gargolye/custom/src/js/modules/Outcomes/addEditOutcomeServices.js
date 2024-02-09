@@ -454,11 +454,11 @@ const addEditOutcomeServices = (() => {
                 if (subRowWrap.classList.contains('active')) {
                     // close it
                     subRowWrap.classList.remove('active');
-                    toggle.innerHTML = icons.keyArrowRight;
+                    toggleIcon.innerHTML = icons.keyArrowRight;
                 } else {
                     // open it
                     subRowWrap.classList.add('active');
-                    toggle.innerHTML = icons.keyArrowDown;
+                    toggleIcon.innerHTML = icons.keyArrowDown; 
                 }
             });
 
