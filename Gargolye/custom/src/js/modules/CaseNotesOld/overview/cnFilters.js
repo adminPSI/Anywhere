@@ -717,7 +717,7 @@ const cnFilters = (function () {
         else {
             btnWrap.appendChild(billingServiceBtnWrap);
             if (document.getElementById('billingServiceCodeBtn') != null)
-                document.getElementById('billingServiceCodeBtn').innerHTML = $.session.applicationName === 'Gatekeeper' ? 'Billing Code: ' : 'Service Code: ' + billCodeText;
+                document.getElementById('billingServiceCodeBtn').innerHTML = $.session.applicationName === 'Gatekeeper' ? 'Billing Code: ' + billCodeText : 'Service Code: ' + billCodeText;
         }
 
         if (reviewStatusText === '%' || reviewStatusText === 'All') {
