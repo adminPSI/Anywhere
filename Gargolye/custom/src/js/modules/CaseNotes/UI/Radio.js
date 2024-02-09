@@ -9,13 +9,9 @@
 
   /**
    * @constructor
-   * @param {Object} options
-   * @param {String} options.id - Id for inputs
-   * @param {String} options.groupLabel - Text for label input
-   * @param {Array}  options.fields - Radio inputs
-   * @param {String} fields.id
-   * @param {String} fields.type
-   * @param {String} fields.label Text for label input
+   * @param {String} id
+   * @param {String} type
+   * @param {String} label
    */
   function Radio(options) {
     // Data Init
@@ -58,7 +54,7 @@
    * @function
    * @param {String | Number} value
    */
-  Input.prototype.setValue = function (value) {
+  Radio.prototype.setValue = function (value) {
     this.input.checked = value;
   };
 
@@ -100,6 +96,10 @@
 
   /**
    * @constructor
+   * @param {Object} options
+   * @param {String} options.id - Id for inputs
+   * @param {String} options.groupLabel - Text for label input
+   * @param {Array}  options.fields - Radio inputs
    */
   function RadioGroup(options) {
     // Data Init
