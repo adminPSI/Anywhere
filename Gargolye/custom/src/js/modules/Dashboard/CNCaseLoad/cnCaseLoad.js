@@ -6,6 +6,7 @@ const CN_CaseLoadWidget = (function () {
   var widget;
   var widgetBody;
   let consumerCountlbl;
+  let currentRowConsumerId;
   // Settings
   let viewNotesDaysBack, lastNoteEnteredDaysBack, viewEnteredByOtherUsers;
   // dates
@@ -198,6 +199,7 @@ const CN_CaseLoadWidget = (function () {
   }
 
   function rowPopup(consumerId) {
+    currentRowConsumerId = consumerId;
     // Demographics
     consumerName = `${demographicInfo.lastname}, ${demographicInfo.firstname}`;
     const popup = POPUP.build({
@@ -250,7 +252,7 @@ const CN_CaseLoadWidget = (function () {
         setActiveModuleSectionAttribute('caseNotes-new');
         UTIL.toggleMenuItemHighlight('casenotes');
         actioncenter.dataset.activeModule = 'casenotes';
-        note.init('new', null, null, { id: consumerId, name: consumerName });
+        CaseNotes.init(true);
       },
     });
 
@@ -306,6 +308,10 @@ const CN_CaseLoadWidget = (function () {
     });
   }
 
+  function getCurrentlyselectedConsumerId() {
+    return currentRowConsumerId;
+  }
+
   function setDefaultIfConfigNull() {
     widgetSettings.widgetConfig = {
       viewNotesDaysBack: 30,
@@ -347,5 +353,6 @@ const CN_CaseLoadWidget = (function () {
 
   return {
     init,
+    getCurrentlyselectedConsumerId
   };
 })();

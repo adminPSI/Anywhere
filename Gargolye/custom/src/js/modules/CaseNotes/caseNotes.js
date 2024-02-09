@@ -921,6 +921,9 @@ const CaseNotes = (() => {
     rosterPicker.populate();
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
+    if (selectedConsumers) {
+      rosterPicker.setSelectedConsumers(selectedConsumers);
+    }
   }
   async function loadPage() {
     dateNavigation.renderTo(cnDateNavWrap);
@@ -1120,11 +1123,14 @@ const CaseNotes = (() => {
     overlapPopup = new ConfirmationPopup({ className: 'overlapWarning' });
     overlapPopup.renderTo(_DOM.ACTIONCENTER);
   }
-  async function init() {
+  async function init(fromDashboard) {
     setPermissions();
 
     selectedDate = dates.getTodaysDateObj();
     caseManagerId = $.session.PeopleId;
+    if (fromDashboard === true) {
+      selectedConsumers = [CN_CaseLoadWidget.getCurrentlyselectedConsumerId()];
+    }
 
     loadPageSkeleton();
 
