@@ -3,6 +3,7 @@ const WaitingListAssessment = (() => {
   // SESSION DATA
   //--------------------------
   let wlLinkID;
+  let wlCircID;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -251,9 +252,9 @@ const WaitingListAssessment = (() => {
         disabled: true,
       },
     ],
-    contributingCircumstances: [
-      // This is a parent page so I think its empty except for its children
-    ],
+    // contributingCircumstances: [
+    //   // This is a parent page so I think its empty except for its children
+    // ],
     primaryCaregiver: [
       {
         type: 'radiogroup',
@@ -1184,7 +1185,7 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(isYesChecked);
     },
   };
-  function updatePageActiveStatus() {
+  async function updatePageActiveStatus() {
     const conditionsInputValues = [
       wlForms['conditions'].inputs['otherThanMentalHealth'].getValue('otherThanMentalHealthyes'),
       wlForms['conditions'].inputs['before22'].getValue('before22yes'),
@@ -1242,8 +1243,17 @@ const WaitingListAssessment = (() => {
     }
 
     // conditions page all inputs are yes
-    wlForms['needs'].form.parentElement.classList.add('hiddenPage');
-    wlForms['waiverEnrollment'].form.parentElement.classList.add('hiddenPage');
+    wlForms['needs'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['waiverEnrollment'].form.parentElement.classList.remove('hiddenPage');
+    wlLinkID;
+    // get circumstance id
+    const resp = await wlData.updateAssessmentData({
+      id: 0,
+      linkId: wlLinkID,
+      propertyName: 'getCircumstanceId',
+      value: '',
+    });
+    wlCircID = resp[0].newRecordId;
 
     //-------------------------------------------------------------------------------------------------------
     const needsIsActionRequiredRequiredIn30DaysYES = wlForms['conditions'].inputs[
@@ -1291,7 +1301,7 @@ const WaitingListAssessment = (() => {
     if (needsIsActionRequiredRequiredIn30DaysNO || rMIsActionRequiredIn3oDaysNO) {
       wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
+      wlForms['currentNeeds'].form.parentElement.classList.add('hiddenPage');
     }
     // needs page [needsIsActionRequiredRequiredIn30Days] is YES ||
     // riskMitigation page [rMIsActionRequiredIn3oDays] is YES &&
@@ -1302,7 +1312,7 @@ const WaitingListAssessment = (() => {
     ) {
       wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
     } else {
-      wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
+      wlForms['immediateNeeds'].form.parentElement.classList.add('hiddenPage');
     }
   }
   const onChangeCallbacksFormWatch = {
@@ -1341,10 +1351,29 @@ const WaitingListAssessment = (() => {
         value = value === 'yes' ? 1 : 0;
       }
 
+      // determine if we use wlLinkID or wlCircID
+      let linkIdForSaveUpdate;
+      if (
+        [
+          'needs',
+          'primaryCaregiver',
+          'riskMitigation',
+          'icfDischarge',
+          'intermittentSupports',
+          'childProtectionAgency',
+          'adultDayEmployment',
+          'dischargePlan',
+        ].includes(formName)
+      ) {
+        linkIdForSaveUpdate = wlCircID;
+      } else {
+        linkIdForSaveUpdate = wlLinkID;
+      }
+
       if (wlFormInfo[formName].id === '') {
         const resp = await wlData.insertAssessmentData({
           id: 0,
-          linkId: wlLinkID,
+          linkId: linkIdForSaveUpdate,
           propertyName: name,
           value: value,
         });
@@ -1353,7 +1382,7 @@ const WaitingListAssessment = (() => {
       } else {
         await wlData.updateAssessmentData({
           id: wlFormInfo[formName].id,
-          linkId: formName === 'waitingListInfo' ? 0 : wlLinkID,
+          linkId: formName === 'waitingListInfo' ? 0 : linkIdForSaveUpdate,
           propertyName: name,
           value: value,
         });
