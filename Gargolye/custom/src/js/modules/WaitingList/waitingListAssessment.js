@@ -1072,8 +1072,6 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['declinedSkillsDescription'].toggleDisabled(!isYesChecked);
     },
     //* needs
-    // (IF) "Is action required within the next 30 days..." radio buttons are disabled, the value of "No" should be selected, and the user should not be able to change it or delete it.
-    // (IF) "If No, do the significant..." radio buttons are disabled, the value of "No" should be selected, and the user should not be able to change it or delete it.
     // behavioral checkbox group 1
     risksIsPhysicalAggression: behavioralNeedsCheckboxes,
     risksIsSelfInjury: behavioralNeedsCheckboxes,
@@ -1245,15 +1243,17 @@ const WaitingListAssessment = (() => {
     // conditions page all inputs are yes
     wlForms['needs'].form.parentElement.classList.remove('hiddenPage');
     wlForms['waiverEnrollment'].form.parentElement.classList.remove('hiddenPage');
-    wlLinkID;
+
     // get circumstance id
-    const resp = await wlData.updateAssessmentData({
-      id: 0,
-      linkId: wlLinkID,
-      propertyName: 'getCircumstanceId',
-      value: '',
-    });
-    wlCircID = resp[0].newRecordId;
+    if (!wlCircID) {
+      const resp = await wlData.insertAssessmentData({
+        id: 0,
+        linkId: wlLinkID,
+        propertyName: 'getCircumstanceId',
+        value: '',
+      });
+      wlCircID = resp[0].newRecordId;
+    }
 
     //-------------------------------------------------------------------------------------------------------
     const needsIsActionRequiredRequiredIn30DaysYES = wlForms['conditions'].inputs[
@@ -1338,14 +1338,6 @@ const WaitingListAssessment = (() => {
         });
       }
 
-      if (onChangeCallbacksFormWatch[formName]) {
-        onChangeCallbacksFormWatch[formName]({
-          value,
-          name,
-          formName,
-        });
-      }
-
       // Save/Update
       if (type === 'radio') {
         value = value === 'yes' ? 1 : 0;
@@ -1385,6 +1377,14 @@ const WaitingListAssessment = (() => {
           linkId: formName === 'waitingListInfo' ? 0 : linkIdForSaveUpdate,
           propertyName: name,
           value: value,
+        });
+      }
+
+      if (onChangeCallbacksFormWatch[formName]) {
+        onChangeCallbacksFormWatch[formName]({
+          value,
+          name,
+          formName,
         });
       }
     };
