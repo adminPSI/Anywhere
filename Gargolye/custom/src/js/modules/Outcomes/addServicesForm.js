@@ -138,6 +138,12 @@ const addServicesForm = (() => {
             label: 'Frequency',
             style: 'secondary',
             value: frequency,
+            attributes: [               
+                {
+                    key: 'onkeypress',
+                    value: 'return event.charCode >= 48 && event.charCode <= 57',
+                },
+            ],
         });
 
         frequencyPeriodDropdown = dropdown.build({
