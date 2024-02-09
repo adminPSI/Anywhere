@@ -1452,7 +1452,8 @@ const WaitingListAssessment = (() => {
         id: 0,
         linkId: wlLinkID,
         propertyName: 'participants',
-        value: `${data.participantName}|${data.participantRelationship}`,
+        value: data.participantName,
+        valueTwo: data.participantRelationship,
       });
       // clear form
       participantsForm.clear();
