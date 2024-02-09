@@ -1430,11 +1430,11 @@ const WaitingListAssessment = (() => {
 
     participantsForm.onSubmit(async (data, submitter) => {
       // save particpants
-      const newParticiapntID = await wlData.updateAssessmentData({
+      const newParticiapntID = await wlData.insertAssessmentData({
         id: 0,
         linkId: wlLinkID,
         propertyName: 'participants',
-        value: [`${data.participantName}|${data.participantRelationship}`],
+        value: `${data.participantName}|${data.participantRelationship}`,
       });
       // clear form
       // repop table
