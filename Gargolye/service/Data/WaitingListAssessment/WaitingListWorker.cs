@@ -127,6 +127,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             string columnName = "";
             string linkColumnName = "";
             string idNameForWhere = "";
+            if (stringInjectionValidator(value) == false) return null;
             switch (propertyName)
             {
                 case "getCircumstanceId":
@@ -1059,7 +1060,23 @@ namespace Anywhere.service.Data.WaitingListAssessment
 
             return ms;
         }
-         
+
+        public bool stringInjectionValidator(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom)))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
         public class SupportingDocumentList
         {
             public string supportingDocumentId { get; set; }
