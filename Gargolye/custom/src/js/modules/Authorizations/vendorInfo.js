@@ -257,7 +257,16 @@ const vendorInfo = (function () {
 
         DDNumberBtn = button.build({
             id: 'DDNumberBtn',
-            text: 'DD Number: ' + filterValues.DDNumber,
+            text: 'DD ',
+            style: 'secondary',
+            type: 'text',
+            classNames: 'filterSelectionBtnVendorInfo',  
+            callback: () => { buildFilterPopUp('DDNumberBtn') },
+        });
+
+        DDNumberBtn2 = button.build({
+            id: 'DDNumberBtn2',
+            text: 'Number: ' + filterValues.DDNumber,
             style: 'secondary',
             type: 'text',
             classNames: 'filterSelectionBtn',
@@ -395,6 +404,7 @@ const vendorInfo = (function () {
         DDNumberBtnWrap = document.createElement('div');
         DDNumberBtnWrap.classList.add('filterSelectionBtnWrap');
         DDNumberBtnWrap.appendChild(DDNumberBtn);
+        DDNumberBtnWrap.appendChild(DDNumberBtn2);  
         DDNumberBtnWrap.appendChild(DDNumberCloseBtn)
         btnWrap.appendChild(DDNumberBtnWrap);
 
@@ -583,10 +593,10 @@ const vendorInfo = (function () {
             tmpVendor = event.target.value;
         });
         DDNumberInput.addEventListener('input', event => {
-            tmpDDNumber = event.target.value;
+            tmpDDNumber = event.target.value.trim();
         });
         localNumberInput.addEventListener('input', event => {
-            tmpLocalNumber = event.target.value;
+            tmpLocalNumber = event.target.value.trim(); 
         });
         goodStandingDropdown.addEventListener('change', event => {
             tmpGoodStanding = event.target.value;

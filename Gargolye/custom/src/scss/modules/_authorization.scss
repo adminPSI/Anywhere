@@ -239,6 +239,14 @@
         }
     }
 
+    .filterSelectionBtnVendorInfo {
+        margin: 0px 0px !important;
+        padding: 5px 0px 5px 5px !important;
+        font-size: .875rem !important;
+        font-weight: 500 !important;      
+    }
+
+
     #assessmentHistoryTable {
         .table__row {
             &.selected {
@@ -533,14 +541,14 @@
             }
 
             .width50Per {
-                width: 48.5%; 
+                width: 48.5%;
             }
 
             .width23Per {
                 width: 23%;
             }
 
-            .width18Per {                
+            .width18Per {
                 width: 18%;
             }
 

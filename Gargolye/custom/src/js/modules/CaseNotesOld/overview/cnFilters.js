@@ -136,6 +136,7 @@ const cnFilters = (function () {
         noteTextInput = input.build({
             label: 'Note Text',
             style: 'secondary',
+            value: filterValues.noteText == '%' ? '' : filterValues.noteText, 
         });
     }
 
@@ -336,7 +337,7 @@ const cnFilters = (function () {
         if ($.session.applicationName === 'Gatekeeper' && activeAdditionalFilters.attachments && (IsShow == 'ALL' || IsShow == 'attachmentsBtn'))
             additionalFilterContainer.appendChild(attachmentsDropdown);
         if (activeAdditionalFilters.noteText && (IsShow == 'ALL' || IsShow == 'noteTextBtn')) {
-            additionalFilterContainer.appendChild(noteTextDropdown); 
+            additionalFilterContainer.appendChild(noteTextDropdown);
             additionalFilterContainer.appendChild(noteTextInput);
             if (filterValues.noteText === '%' || filterValues.noteText === '') {
                 noteTextInput.style.display = 'none';
@@ -603,21 +604,21 @@ const cnFilters = (function () {
     function updateCurrentFilterDisplay() {
         var currentFilterDisplay = document.querySelector('.filteredByData');
         const billerName =
-            billersDropdown == undefined ? 'All' : billersDropdown.firstChild.options[billersDropdown.firstChild.selectedIndex].innerText;
+            billersDropdown != undefined && billersDropdown.firstChild.options[billersDropdown.firstChild.selectedIndex] != undefined ? billersDropdown.firstChild.options[billersDropdown.firstChild.selectedIndex].innerText : 'All';
         if (filterValues != undefined) filterValues.billerName = billerName;
         const consumerName =
-            consumerDropdown == undefined ? 'All' : consumerDropdown.firstChild.options[consumerDropdown.firstChild.selectedIndex].innerText;
+            consumerDropdown != undefined && consumerDropdown.firstChild.options[consumerDropdown.firstChild.selectedIndex] != undefined ? consumerDropdown.firstChild.options[consumerDropdown.firstChild.selectedIndex].innerText : 'All';
         if (filterValues != undefined) filterValues.consumerName = consumerName;
         const billCodeText =
-            billingCodeDropdown == undefined ? 'All' : billingCodeDropdown.firstChild.options[billingCodeDropdown.firstChild.selectedIndex]
-                .innerText;
+            billingCodeDropdown != undefined && billingCodeDropdown.firstChild.options[billingCodeDropdown.firstChild.selectedIndex] != undefined ? billingCodeDropdown.firstChild.options[billingCodeDropdown.firstChild.selectedIndex]
+                .innerText : 'All';
         if (filterValues != undefined) filterValues.billCodeText = billCodeText;
         const reviewStatusText =
-            reviewStatusDropdown == undefined ? 'All' : reviewStatusDropdown.firstChild.options[reviewStatusDropdown.firstChild.selectedIndex]
-                .innerText;
+            reviewStatusDropdown != undefined && reviewStatusDropdown.firstChild.options[reviewStatusDropdown.firstChild.selectedIndex] != undefined ? reviewStatusDropdown.firstChild.options[reviewStatusDropdown.firstChild.selectedIndex]
+                .innerText : 'All';
         const correctedText =
-            correctedDropdown == undefined ? 'All' : correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex]
-                .innerText;
+            correctedDropdown != undefined && correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex] != undefined ? correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex]
+                .innerText : 'All';
         const locationText =
             locationDropdown != undefined && locationDropdown.firstChild.options[locationDropdown.firstChild.selectedIndex] != undefined ? locationDropdown.firstChild.options[locationDropdown.firstChild.selectedIndex].innerText : 'All';
         if (filterValues != undefined) filterValues.locationText = locationText;
@@ -646,6 +647,7 @@ const cnFilters = (function () {
         } else {
             showOverlapsText = 'Yes';
         }
+
         const noteTextText =
             noteTextDropdown != undefined && noteTextDropdown.firstChild.options[noteTextDropdown.firstChild.selectedIndex] != undefined ? noteTextDropdown.firstChild.options[noteTextDropdown.firstChild.selectedIndex].innerText ===
                 'Contains'
@@ -717,7 +719,7 @@ const cnFilters = (function () {
         else {
             btnWrap.appendChild(billingServiceBtnWrap);
             if (document.getElementById('billingServiceCodeBtn') != null)
-                document.getElementById('billingServiceCodeBtn').innerHTML = $.session.applicationName === 'Gatekeeper' ? 'Billing Code: ' : 'Service Code: ' + billCodeText;
+                document.getElementById('billingServiceCodeBtn').innerHTML = $.session.applicationName === 'Gatekeeper' ? 'Billing Code: ' + billCodeText : 'Service Code: ' + billCodeText;
         }
 
         if (reviewStatusText === '%' || reviewStatusText === 'All') {
@@ -741,7 +743,7 @@ const cnFilters = (function () {
             }
         }
 
-        if (dispalyServiceDateStart === '' && dispalyServiceDateEnd === '') { 
+        if (dispalyServiceDateStart === '' && dispalyServiceDateEnd === '') {
             btnWrap.appendChild(serviceDatesBtnWrap);
             btnWrap.removeChild(serviceDatesBtnWrap);
         }
@@ -751,7 +753,7 @@ const cnFilters = (function () {
                 document.getElementById('serviceDatesBtn').innerHTML = 'Service Dates: ' + dispalyServiceDateStart + ' - ' + dispalyServiceDateEnd;
         }
 
-        if (displayDateEnteredStart === '' && dispalyDatesEnteredEnd === '') { 
+        if (displayDateEnteredStart === '' && dispalyDatesEnteredEnd === '') {
             btnWrap.appendChild(createdDatesBtnWrap);
             btnWrap.removeChild(createdDatesBtnWrap);
         }
@@ -1204,34 +1206,40 @@ const cnFilters = (function () {
     }
 
     function closeFilter(closeFilter) {
+
         if (closeFilter == 'billerBtn') {
             filterValues.billerId = '%';
             if (billersDropdown != undefined) {
                 billersDropdown.firstChild.value = 'All';
-                billersDropdown.firstChild.options[billersDropdown.firstChild.selectedIndex].innerText = 'All';
+                if (billersDropdown.firstChild.options[billersDropdown.firstChild.selectedIndex] != undefined)
+                    billersDropdown.firstChild.options[billersDropdown.firstChild.selectedIndex].innerText = 'All';
             }
 
         }
         if (closeFilter == 'consumerBtn') {
             filterValues.consumer = '%';
             consumerDropdown.firstChild.value = 'All';
-            consumerDropdown.firstChild.options[consumerDropdown.firstChild.selectedIndex].innerText = 'All';
+            if (consumerDropdown.firstChild.options[consumerDropdown.firstChild.selectedIndex] != undefined)
+                consumerDropdown.firstChild.options[consumerDropdown.firstChild.selectedIndex].innerText = 'All';
         }
         if (closeFilter == 'billingServiceCodeBtn') {
             filterValues.billingCode = '%';
             billingCodeDropdown.firstChild.value = 'All';
-            billingCodeDropdown.firstChild.options[billingCodeDropdown.firstChild.selectedIndex].innerText = 'All';
+            if (billingCodeDropdown.firstChild.options[billingCodeDropdown.firstChild.selectedIndex] != undefined)
+                billingCodeDropdown.firstChild.options[billingCodeDropdown.firstChild.selectedIndex].innerText = 'All';
         }
         if (closeFilter == 'reviewStatusBtn') {
             filterValues.reviewStatus = '%';
             reviewStatusDropdown.firstChild.value = 'All';
-            reviewStatusDropdown.firstChild.options[reviewStatusDropdown.firstChild.selectedIndex].innerText = 'All';
+            if (reviewStatusDropdown.firstChild.options[reviewStatusDropdown.firstChild.selectedIndex] != undefined)
+                reviewStatusDropdown.firstChild.options[reviewStatusDropdown.firstChild.selectedIndex].innerText = 'All';
         }
 
         if (closeFilter == 'correctedBtn') {
             filterValues.corrected = '%';
             correctedDropdown.firstChild.value = 'All';
-            correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex].innerText = 'All';
+            if (correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex] != undefined)
+                correctedDropdown.firstChild.options[correctedDropdown.firstChild.selectedIndex].innerText = 'All';
         }
 
         if (closeFilter == 'locationBtn') {

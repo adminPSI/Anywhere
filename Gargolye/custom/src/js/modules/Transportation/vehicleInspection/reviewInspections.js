@@ -121,7 +121,7 @@ const TRANS_inspectionReview = (function () {
             btnWrap.removeChild(vehicleNumberBtnWrap);
         } else {
             btnWrap.appendChild(vehicleNumberBtnWrap);
-            document.getElementById('vehicleNumberBtn').innerHTML = 'Vehicle Number: ' + vehicleNumber;
+            document.getElementById('vehicleNumberBtn').innerHTML = 'Vehicle: ' + vehicleNumber;
         }
 
         if (enteredBy === '%' || enteredBy === 'All') {
@@ -158,7 +158,7 @@ const TRANS_inspectionReview = (function () {
 
         vehicleNumberBtn = button.build({
             id: 'vehicleNumberBtn',
-            text: 'Vehicle Number: ' + vehicleNumber,
+            text: 'Vehicle: ' + vehicleNumber,
             style: 'secondary',
             type: 'text',
             classNames: 'filterSelectionBtn',

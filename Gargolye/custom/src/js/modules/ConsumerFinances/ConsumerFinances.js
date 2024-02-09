@@ -691,7 +691,8 @@ const ConsumerFinances = (() => {
                 document.getElementById('minAmountInput').value = minAmount.substring(0, minAmount.length - 1);
                 return;
             }
-            tmpminAmount = minAmount.replace('$', '');
+
+            tmpminAmount = minAmount.trim().replace('$', '');
         });
 
         maxAmountInput.addEventListener('keyup', event => {
@@ -705,7 +706,7 @@ const ConsumerFinances = (() => {
                 document.getElementById('maxAmountInput').value = maxAmount.substring(0, maxAmount.length - 1);
                 return;
             }
-            tmpmaxAmount = maxAmount.replace('$', '');
+            tmpmaxAmount = maxAmount.trim().replace('$', '');  
         });
 
         transectionTypeFilterDropdown.addEventListener('change', event => {

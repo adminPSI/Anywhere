@@ -16,10 +16,12 @@ const addServicesForm = (() => {
     let frequencyPeriod;
     let objectiveId;
     let BtnName;
+    let outcomeGoalId
 
-    async function init(selectedConsume, ObjectiveID) {
+    async function init(selectedConsume, ObjectiveID , goalId) {
         selectedConsumers = selectedConsume;
         objectiveId = ObjectiveID;
+        outcomeGoalId = goalId > 0 ? goalId : '';
         buildNewServicesForm();
     }
 
@@ -56,7 +58,7 @@ const addServicesForm = (() => {
         else {
             startDate = UTIL.getTodaysDate();
             endDate = '';
-            outcomeType = '';
+            outcomeType = outcomeGoalId;  
             servicesStatement = '';
             ServiceType = '';
             method = '';
@@ -136,6 +138,12 @@ const addServicesForm = (() => {
             label: 'Frequency',
             style: 'secondary',
             value: frequency,
+            attributes: [               
+                {
+                    key: 'onkeypress',
+                    value: 'return event.charCode >= 48 && event.charCode <= 57',
+                },
+            ],
         });
 
         frequencyPeriodDropdown = dropdown.build({

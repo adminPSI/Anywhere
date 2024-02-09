@@ -671,7 +671,7 @@ const assessmentHistory = (() => {
 
         priorAuthAmtFrom.addEventListener('input', event => {
             minAmount = event.target.value;
-            tmpPriorAuthAmtFrom = minAmount.replace('$', '');
+            tmpPriorAuthAmtFrom = minAmount.trim().replace('$', '');
             var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(minAmount)) {
                 document.getElementById('priorAuthAmtFrom').value = minAmount.substring(0, minAmount.length - 1);
@@ -686,7 +686,7 @@ const assessmentHistory = (() => {
 
         priorAuthAmtTo.addEventListener('input', event => {
             maxAmount = event.target.value;
-            tmpPriorAuthAmtTo = maxAmount.replace('$', '');
+            tmpPriorAuthAmtTo = maxAmount.trim().replace('$', '');
             var reg = new RegExp('^[0-9 . $ -]+$');
             if (!reg.test(maxAmount)) {
                 document.getElementById('priorAuthAmtTo').value = maxAmount.substring(0, maxAmount.length - 1);

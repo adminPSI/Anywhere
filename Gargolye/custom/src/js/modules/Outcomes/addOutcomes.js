@@ -85,6 +85,7 @@ const addOutcomes = (() => {
             type: 'contained',
             callback: async () => {
                 if (!SAVE_BTN.classList.contains('disabled')) {
+                    SAVE_BTN.classList.add('disabled');
                     await saveUpdateOutcomes();
                 }
             },

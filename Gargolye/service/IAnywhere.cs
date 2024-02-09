@@ -5051,7 +5051,7 @@ namespace Anywhere
               ResponseFormat = WebMessageFormat.Json,
               RequestFormat = WebMessageFormat.Json,
               UriTemplate = "/getOutcomeServicsPageData/")]
-        OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId);
+        OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId , string appName);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

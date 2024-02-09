@@ -55,6 +55,7 @@ const addEditOutcomeServices = (() => {
             outcomeType: filterValues.outcomeTypeName,
             effectiveDateStart: filterValues.effectiveDateStart,
             effectiveDateEnd: filterValues.effectiveDateEnd,
+            appName: $.session.applicationName,
         });
 
         pageWrap.removeChild(spinner);
@@ -324,6 +325,7 @@ const addEditOutcomeServices = (() => {
             outcomeType: filterValues.outcomeTypeName == 'ALL' ? '%' : filterValues.outcomeTypeName,
             effectiveDateStart: filterValues.effectiveDateStart,
             effectiveDateEnd: filterValues.effectiveDateEnd,
+            appName: $.session.applicationName,
         });
 
         pageWrap.removeChild(spinner);
@@ -428,7 +430,7 @@ const addEditOutcomeServices = (() => {
 
                     subDataRow.addEventListener('click', e => {
                         if ($.session.UpdateServices == true) {
-                            addServicesForm.init(selectedConsumer, child.objective_Id);
+                            addServicesForm.init(selectedConsumer, child.objective_Id ,0);
                         }
                     });
                 });
@@ -452,17 +454,17 @@ const addEditOutcomeServices = (() => {
                 if (subRowWrap.classList.contains('active')) {
                     // close it
                     subRowWrap.classList.remove('active');
-                    toggle.innerHTML = icons.keyArrowRight;
+                    toggleIcon.innerHTML = icons.keyArrowRight;
                 } else {
                     // open it
                     subRowWrap.classList.add('active');
-                    toggle.innerHTML = icons.keyArrowDown;
+                    toggleIcon.innerHTML = icons.keyArrowDown; 
                 }
             });
 
             endIcon.addEventListener('click', e => {
                 eventName = 'add';
-                addServicesForm.init(selectedConsumer, 0);
+                addServicesForm.init(selectedConsumer,0, goalID);
             });
 
 
