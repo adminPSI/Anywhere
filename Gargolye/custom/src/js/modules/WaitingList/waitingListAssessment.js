@@ -1363,6 +1363,9 @@ const WaitingListAssessment = (() => {
       }
 
       // save / update
+      if (formName === 'needs') {
+      }
+
       if (wlFormInfo[formName].id === '') {
         const resp = await wlData.insertAssessmentData({
           id: 0,
@@ -1546,12 +1549,12 @@ const WaitingListAssessment = (() => {
         {
           type: 'text',
           label: 'Name of Participant',
-          name: 'participantName',
+          id: 'participantName',
         },
         {
           type: 'text',
           label: 'Relationship to Individual',
-          name: 'participantRelationship',
+          id: 'participantRelationship',
         },
       ],
     });
