@@ -578,8 +578,7 @@ const NewEntryCF = (() => {
             }
         });
 
-        newAmountInput.addEventListener('focusout', event => {
-            debugger;   
+        newAmountInput.addEventListener('focusout', event => {  
             if (totalAmountSaved > 0 && totalAmountSaved != event.target.value) {
                 errorPopup(2);
             }

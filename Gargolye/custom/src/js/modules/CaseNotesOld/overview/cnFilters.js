@@ -136,6 +136,7 @@ const cnFilters = (function () {
         noteTextInput = input.build({
             label: 'Note Text',
             style: 'secondary',
+            value: filterValues.noteText == '%' ? '' : filterValues.noteText, 
         });
     }
 
@@ -600,9 +601,9 @@ const cnFilters = (function () {
     //   filterDisplayHTML: ''
     // }
 
-    function updateCurrentFilterDisplay() { 
+    function updateCurrentFilterDisplay() {
         var currentFilterDisplay = document.querySelector('.filteredByData');
-        const billerName = 
+        const billerName =
             billersDropdown != undefined && billersDropdown.firstChild.options[billersDropdown.firstChild.selectedIndex] != undefined ? billersDropdown.firstChild.options[billersDropdown.firstChild.selectedIndex].innerText : 'All';
         if (filterValues != undefined) filterValues.billerName = billerName;
         const consumerName =
@@ -665,7 +666,7 @@ const cnFilters = (function () {
 
     function ShowHideFilter(billerName, consumerName, billCodeText, reviewStatusText, correctedText, dispalyServiceDateStart, dispalyServiceDateEnd, displayDateEnteredStart, dispalyDatesEnteredEnd,
         locationText, serviceText, needText, contactText, confidentialText, billedText, attachmentsText, showOverlapsText, noteTextText) {
- 
+
         if (!filterValues) {
             filterValues = {
                 billerId: $.session.PeopleId,
