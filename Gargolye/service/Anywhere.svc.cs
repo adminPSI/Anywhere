@@ -3768,9 +3768,9 @@ namespace Anywhere
             return cf.getSplitRegisterAccountEntriesByID(token, registerId);
         }
 
-        public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
+        public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
         {
-            return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
+            return outcomesWorker.getOutcomeServicsPageData(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId , appName);
         }
 
         public OutcomesWorker.OutcomeTypeForFilter[] getOutcomeTypeDropDown(string token)

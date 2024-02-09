@@ -309,14 +309,14 @@ namespace Anywhere.service.Data
             public string serviceFrequencyType_name { get; set; }
         }
 
-        public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
+        public OutcomesWorker.OutComePageData getOutcomeServicsPageData(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
         {
             OutComePageData pageData = new OutComePageData();
             js.MaxJsonLength = Int32.MaxValue;
             string parentString = getOutcomeServicsPageDataParent(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
             PDParentOutcome[] parentObj = js.Deserialize<PDParentOutcome[]>(parentString);
 
-            string childString = getOutcomeServicsPageDataChildren(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId);
+            string childString = getOutcomeServicsPageDataChildren(outcomeType, effectiveDateStart, effectiveDateEnd, token, selectedConsumerId, appName);
             PDChildOutcome[] childObj = js.Deserialize<PDChildOutcome[]>(childString);
 
             pageData.pageDataParent = parentObj;
@@ -354,20 +354,23 @@ namespace Anywhere.service.Data
         }
 
         //Child
-        public string getOutcomeServicsPageDataChildren(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId)
+        public string getOutcomeServicsPageDataChildren(string outcomeType, string effectiveDateStart, string effectiveDateEnd, string token, string selectedConsumerId, string appName)
         {
             try
             {
                 string jsonResult = "";
                 sb.Clear();
-               
+
                 sb.Append(" select ROW_NUMBER() OVER(ORDER BY obj.Objective_id) AS itemnum, obj.Objective_ID as objective_Id, obj.goal_id as goal_id , ");
                 sb.Append(" case when obj.Objective_recurrance = 'M' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per month' ");
                 sb.Append(" when obj.Objective_recurrance = 'D' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per day' ");
                 sb.Append(" when obj.Objective_recurrance = 'W' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per week' ");
                 sb.Append(" when obj.Objective_recurrance = 'H' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per hour' ");
                 sb.Append(" when obj.Objective_recurrance = 'Y' then cast(ctf.Caption as varchar(30))+' ' + cast(obj.Frequency_Occurance as varchar(30)) + 'x per year' end as frequency, ");
-                sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.Start_Date as serviceStartDate, obj.End_Date as serviceEndDate ");
+                if (appName == "Gatekeeper")
+                    sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.objective_start as serviceStartDate, obj.objective_end as serviceEndDate ");
+                else
+                    sb.Append(" ct.Caption as serviceType, obj.Objective_Statement as serviceStatement, obj.Start_Date as serviceStartDate, obj.End_Date as serviceEndDate ");
                 sb.Append(" from Objectives obj ");
                 sb.Append(" left outer join Code_Table ct on obj.Objective_Type = ct.Code and ct.Field_ID = 'Objective_Type' and ct.Table_ID = 'Objectives' ");
                 sb.Append(" left outer join Code_Table ctf on obj.Frequency_Modifier = ctf.Code and ctf.Field_ID = 'Frequency_Modifier' and ctf.Table_ID = 'Objectives' ");

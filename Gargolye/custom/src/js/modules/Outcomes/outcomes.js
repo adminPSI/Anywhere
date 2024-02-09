@@ -1746,7 +1746,7 @@ var outcomes = (function () {
             style: 'secondary',
             type: 'text',
             classNames: 'filterCloseBtn',
-            callback: () => { addServicesForm.init(selectedConsume, outcome.Objective_id) },
+            callback: () => { addServicesForm.init(selectedConsume, outcome.Objective_id ,0) },
         });
 
         var statement = document.createElement("p");
