@@ -56,9 +56,10 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public string insertUpdateWaitingListValue(int id, int linkId, string tableName, string columnName, string linkColumnName, string idNameForWhere, string propertyValue, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(int id, int linkId, string tableName, string columnName, string linkColumnName, string idNameForWhere, string propertyValue, string propertyValueTwo, char insertOrUpdate)
         {
             if (stringInjectionValidator(propertyValue) == false) return null;
+            if(stringInjectionValidator(propertyValueTwo) == false) return null;
             List<string> list = new List<string>();
             list.Add(id.ToString());
             list.Add(linkId.ToString());
@@ -67,6 +68,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             list.Add(linkColumnName);
             list.Add(idNameForWhere);
             list.Add(propertyValue);
+            list.Add(propertyValueTwo);
             list.Add(insertOrUpdate.ToString());
             string text = "CALL DBA.ANYW_WaitingList_InsertUpdateWaitingListValue(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try

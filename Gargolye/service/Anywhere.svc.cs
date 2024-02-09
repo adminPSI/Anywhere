@@ -2813,9 +2813,9 @@ namespace Anywhere
             return wlw.getWaitingListAssessment(waitingListAssessmentId);
         }
 
-        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
         {
-            return wlw.insertUpdateWaitingListValue(id, linkId, propertyName, value, insertOrUpdate);
+            return wlw.insertUpdateWaitingListValue(id, linkId, propertyName, value, valueTwo, insertOrUpdate);
         }
 
         public SupportingDocument[] addWLSupportingDocument(string token, long waitingListInformationId, string description, char includeOnEmail, string attachmentType, string attachment)

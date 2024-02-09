@@ -121,7 +121,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return "success";
         }
 
-        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, char insertOrUpdate)
+        public string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, string valueTwo, char insertOrUpdate)
         {
             string tableName = "";
             string columnName = "";
@@ -134,20 +134,20 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Circumstances";
                     columnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     break;
                 case "consumerId":
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "id";
                     idNameForWhere = "WLA_Waiting_List_Information_ID"; 
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);                    
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);                    
                     // Handle personCompleting
                     break;
                 case "personCompleting":
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "assessor";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle personCompleting
                     break;
@@ -155,7 +155,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "assessor_title";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle personCompletingTitle
                     break;
@@ -163,7 +163,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "living_arrangement";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle currentLivingArrangement
                     break;
@@ -171,7 +171,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "areas_needed_help";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle areasPersonNeedsHelp
                     break;
@@ -179,7 +179,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     tableName = "WLA_Participants";
                     columnName = "participants";
                     idNameForWhere = "WLA_Participant_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     // Handle participants
                     return  "";
                     break;
@@ -188,7 +188,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "Is_Other_Than_Mental_Health";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Condition_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle otherThanMentalHealth
                     break;
@@ -197,7 +197,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_it_before_22";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Condition_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle before22
                     break;
@@ -206,7 +206,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_condition_indefinite";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Condition_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isConditionIndefinite
                     break;
@@ -215,7 +215,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_county_board_funding";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isCountyBoardFunding
                     break;
@@ -224,7 +224,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_Ohio_early_intervention_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isOhioEarlyInterventionService
                     break;
@@ -233,7 +233,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_BCMH_Service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isBCMHService
                     break;
@@ -242,7 +242,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_FCFC_Service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isFCFCService
                     break;
@@ -251,7 +251,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_ODE_Service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isODEService
                     break;
@@ -260,7 +260,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_OOD_Service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isOODService
                     break;
@@ -269,7 +269,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_children_services";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isChildrenServices
                     break;
@@ -278,7 +278,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_medicaid_state_plan_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isMedicaidStatePlanService
                     break;
@@ -287,7 +287,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_Ohio_home_care_waiver_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isOhioHomeCareWaiverservice
                     break;
@@ -296,7 +296,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_passport_waiver_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isPassportWaiverService
                     break;
@@ -305,7 +305,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_assisted_living_waiver_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isAssistedLivingWaiverService
                     break;
@@ -314,7 +314,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_mycare_waiver_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isMYCarewaiverService
                     break;
@@ -323,7 +323,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_medicaid_state_plan_home_health_aide_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isMedicaidStatePlanHomeHealthAideservice
                     break;
@@ -332,7 +332,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_medicaid_state_plan_home_health_nursing_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isMedicaidStatePlanHomeHealthNursingService
                     break;
@@ -341,7 +341,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_other_service";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isOtherService
                     break;
@@ -350,7 +350,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "other_description";
                     linkColumnName = "WLA_Waiting_List_Information_ID";
                     idNameForWhere = "WLA_Active_Service_Id";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle otherDescription
                     break;
@@ -362,7 +362,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_primary_caregiver_unavailable";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isPrimaryCaregiverUnavailable
                     break;
@@ -371,7 +371,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "unavailable_documentation";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle unavailableDocumentation
                     break;
@@ -380,7 +380,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "additional_comments_for_unavailable";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle additionalCommentsForUnavailable
                     break;
@@ -389,7 +389,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_action_required_in_30_days";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isActionRequiredIn30Days
                     break;
@@ -398,7 +398,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_individual_skills_declined";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle isIndividualSkillsDeclined
                     break;
@@ -407,7 +407,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "declined_skills_documentation";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle declinedSkillsDocumentation
                     break;
@@ -416,7 +416,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "declined_skills_description";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle declinedSkillsDescription
                     break;
@@ -425,7 +425,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "action_required_description";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_primary_caregiver_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle actionRequiredDescription
                     break;
@@ -434,7 +434,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_action_required_in_30_days";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle needsIsActionRequiredRequiredIn30Days
                     break;
@@ -443,7 +443,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_continuous_support_required";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle needsIsContinuousSupportRequired
                     break;
@@ -452,7 +452,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_life_threatening";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle medicalNeedsIsLifeThreatening
                     break;
@@ -461,7 +461,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_frequent_emergency_visit";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle medicalNeedsIsFrequentEmergencyVisit
                     break;
@@ -470,7 +470,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_ongoing_medical_care";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle medicalNeedsIsOngoingMedicalCare
                     break;
@@ -479,7 +479,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_specialized_care_give_needed";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle medicalNeedsIsSpecializedCareGiveNeeded
                     break;
@@ -488,7 +488,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_other";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle medicalNeedsIsOther
                     break;
@@ -497,7 +497,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_none";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle medicalNeedsIsNone
                     break;
@@ -506,7 +506,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "description";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Medical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle medicalNeedsIsNone
                     break;
@@ -515,7 +515,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_physical_care_needed";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle physicalNeedsIsPhysicalCareNeeded
                     break;
@@ -524,7 +524,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_personal_care_needed";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle physicalNeedsIsPersonalCareNeeded
                     break;
@@ -533,7 +533,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_risk_during_physical_care";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle physicalNeedsIsRiskDuringPhysicalCare
                     break;
@@ -542,7 +542,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_other";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle physicalNeedsIsOther
                     break;
@@ -551,7 +551,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_none";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle physicalNeedsIsNone
                     break;
@@ -560,7 +560,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "description";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Physical_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle physicalNeedsIsNone
                     break;
@@ -569,7 +569,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_risk_to_self";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksIsRiskToSelf
                     break;
@@ -578,7 +578,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_physical_aggression";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksIsPhysicalAggression
                     break;
@@ -587,7 +587,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_self_injury";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksIsSelfInjury
                     break;
@@ -596,7 +596,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_fire_setting";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksIsFireSetting
                     break;
@@ -605,7 +605,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_elopement";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksIsElopement
                     break;
@@ -614,7 +614,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_sexual_offending";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksIsSexualOffending
                     break;
@@ -623,7 +623,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_other";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksIsOther
                     break;
@@ -632,7 +632,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_none";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksIsNone
                     break;
@@ -641,7 +641,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "Frequency_Description";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksFrequencyDescription
                     break;
@@ -650,7 +650,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_police_report";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksHasPoliceReport
                     break;
@@ -659,7 +659,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_incident_report";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksHasIncidentReport
                     break;
@@ -668,7 +668,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_behavior_tracking";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksHasBehaviorTracking
                     break;
@@ -677,7 +677,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_psychological_assessment";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksHasPsychologicalAssessment
                     break;
@@ -686,7 +686,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_other_document";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksHasOtherDocument
                     break;
@@ -695,7 +695,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "other_document_description";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksOtherDocumentDescription
                     break;
@@ -704,7 +704,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_no_document";
                     linkColumnName = "WLA_Need_Id";
                     idNameForWhere = "WLA_Risk_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle risksHasNoDocument
                     break;
@@ -713,7 +713,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_support_needed";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rMIsSupportNeeded
                     break;
@@ -722,7 +722,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_county_board_investigation";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rMIsCountyBoardInvestigation
                     break;
@@ -731,7 +731,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_law_enforcement_investigation";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rMIsLawEnforcementInvestigation
                     break;
@@ -740,7 +740,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_adult_protective_service_investigation";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rMIsAdultProtectiveServiceInvestigation
                     break;
@@ -749,7 +749,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_other_investigation";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rMIsOtherInvestigation
                     break;
@@ -758,7 +758,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_none";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rMIsNone
                     break;
@@ -767,7 +767,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "description";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rMdescription
                     break;
@@ -776,7 +776,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_action_required_in_30_days";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Risk_Mitigation_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rMIsActionRequiredIn3oDays
                     break;
@@ -785,7 +785,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "determination";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_ICF_Discharge_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle icfDetermination
                     break;
@@ -794,7 +794,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_icf_resident";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_ICF_Discharge_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle icfIsICFResident
                     break;
@@ -803,7 +803,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_notice_issued";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_ICF_Discharge_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle icfIsNoticeIssued
                     break;
@@ -812,7 +812,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_action_required_in_30_days";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_ICF_Discharge_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle icfIsActionRequiredIn30Days
                     break;
@@ -821,7 +821,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "determination";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Intermitent_Support_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle intSupDetermination
                     break;
@@ -830,7 +830,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_support_needed_in_12_months";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Intermitent_Support_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle intSupIsSupportNeededIn12Months
                     break;
@@ -839,7 +839,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_staying_living_arrangement";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Intermitent_Support_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle intSupIsStayingLivingArrangement
                     break;
@@ -848,7 +848,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_action_required_in_30_days";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Intermitent_Support_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle intSupIsActionRequiredIn30Days
                     break;
@@ -857,7 +857,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "determination";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Child_Protection_Agency_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle cpaDetermination
                     break;
@@ -866,7 +866,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_released_next_12_months";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Child_Protection_Agency_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle cpaIsReleasedNext12Months
                     break;
@@ -875,7 +875,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "anticipate_release_date";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Child_Protection_Agency_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle cpaAnticipateDate
                     break;
@@ -884,7 +884,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_unaddressable_needs";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Child_Protection_Agency_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle cpaHadUnaddressableNeeds
                     break;
@@ -893,7 +893,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "waiver_funding_required";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Require_Waiver_funding_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rwfWaiverFundingRequired
                     break;
@@ -902,7 +902,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "needs_more_frequency";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Require_Waiver_funding_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rwfNeedsMoreFrequency
                     break;
@@ -911,7 +911,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "needs_services_not_met_idea";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Require_Waiver_funding_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rwfNeedsServiceNotMetIDEA
                     break;
@@ -920,7 +920,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "needs_services_not_met_ood";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Require_Waiver_funding_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle rwfNeedsServicesNotMetOOD
                     break;
@@ -929,7 +929,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "determination";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Discharge_Plan_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle dischargeDetermination
                     break;
@@ -938,7 +938,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_icf_resident";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Discharge_Plan_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle dischargeIsICFResident
                     break;
@@ -947,7 +947,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "is_interested_in_moving";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Discharge_Plan_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle dischargeIsInterestedInMoving
                     break;
@@ -956,7 +956,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_discharge_plan";
                     linkColumnName = "WLA_Circumstance_Id";
                     idNameForWhere = "WLA_Discharge_Plan_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     break;
                 case "immNeedsRequired":
@@ -964,7 +964,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "required";
                     linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Immediate_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle immNeedsRequired
                     break;
@@ -973,7 +973,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "description";
                     linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Immediate_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle immNeedsDescription
                     break;
@@ -982,7 +982,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "waiver_enrollment_is_required";
                     linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Waiver_Enrollment_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle waivEnrollWaiverEnrollmentIsRequired
                     break;
@@ -991,7 +991,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "waiver_enrollment_description";
                     linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Waiver_Enrollment_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle waivEnrollWaiverEnrollmentDescription
                     break;
@@ -1000,7 +1000,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_unmet_needs";
                     linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Unmet_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle immNeedsDescription
                     break;
@@ -1009,7 +1009,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "has_any_unmet_supports";
                     linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Unmet_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle waivEnrollWaiverEnrollmentIsRequired
                     break;
@@ -1018,7 +1018,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "description";
                     linkColumnName = "WLA_Waiting_List_Information_Id";
                     idNameForWhere = "WLA_Unmet_Need_ID";
-                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, insertOrUpdate);
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
                     // Handle waivEnrollWaiverEnrollmentDescription
                     break;
