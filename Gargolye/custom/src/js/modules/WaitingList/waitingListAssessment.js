@@ -1256,22 +1256,22 @@ const WaitingListAssessment = (() => {
     }
 
     //-------------------------------------------------------------------------------------------------------
-    const needsIsActionRequiredRequiredIn30DaysYES = wlForms['conditions'].inputs[
+    const needsIsActionRequiredRequiredIn30DaysYES = wlForms['needs'].inputs[
       'needsIsActionRequiredRequiredIn30Days'
     ].getValue('needsIsActionRequiredRequiredIn30Daysyes');
-    const needsIsActionRequiredRequiredIn30DaysNO = wlForms['conditions'].inputs[
+    const needsIsActionRequiredRequiredIn30DaysNO = wlForms['needs'].inputs[
       'needsIsActionRequiredRequiredIn30Days'
     ].getValue('needsIsActionRequiredRequiredIn30Daysno');
-    const rMIsActionRequiredIn3oDaysYES = wlForms['conditions'].inputs['rMIsActionRequiredIn3oDays'].getValue(
+    const rMIsActionRequiredIn3oDaysYES = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue(
       'rMIsActionRequiredIn3oDaysyes',
     );
     const rMIsActionRequiredIn3oDaysNO =
-      wlForms['conditions'].inputs['rMIsActionRequiredIn3oDays'].getValue('rMIsActionRequiredIn3oDaysno');
+      wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue('rMIsActionRequiredIn3oDaysno');
     const riskMitigationCheckboxValues = [
-      wlForms[formName].inputs['rMIsAdultProtectiveServiceInvestigation'].getValue(),
-      wlForms[formName].inputs['rMIsCountyBoardInvestigation'].getValue(),
-      wlForms[formName].inputs['rMIsLawEnforcementInvestigation'].getValue(),
-      wlForms[formName].inputs['rMIsOtherInvestigation'].getValue(),
+      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].getValue(),
+      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].getValue(),
+      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].getValue(),
+      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].getValue(),
     ];
 
     // needs page [needsIsActionRequiredRequiredIn30Days] is YES
