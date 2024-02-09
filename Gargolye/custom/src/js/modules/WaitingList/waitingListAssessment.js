@@ -1362,6 +1362,7 @@ const WaitingListAssessment = (() => {
         linkIdForSaveUpdate = wlLinkID;
       }
 
+      // save / update
       if (wlFormInfo[formName].id === '') {
         const resp = await wlData.insertAssessmentData({
           id: 0,
@@ -1380,6 +1381,7 @@ const WaitingListAssessment = (() => {
         });
       }
 
+      // enable / disable pages
       if (onChangeCallbacksFormWatch[formName]) {
         onChangeCallbacksFormWatch[formName]({
           value,
