@@ -20,30 +20,39 @@
       linkId: 0,
       propertyName: 'consumerId',
       value: consumerId,
+      valueTwo: '',
       insertOrUpdate: 'I',
     });
 
     return JSON.parse(data.insertUpdateWaitingListValueResult);
   };
 
-  WaitingListData.prototype.insertAssessmentData = async function ({ id, linkId, propertyName, value }) {
+  WaitingListData.prototype.insertAssessmentData = async function ({ id, linkId, propertyName, value, valueTwo = '' }) {
     const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
       id,
       linkId,
       propertyName,
       value,
+      valueTwo,
       insertOrUpdate: 'I',
     });
 
     return JSON.parse(data.insertUpdateWaitingListValueResult);
   };
 
-  WaitingListData.prototype.updateAssessmentData = async function ({ id, linkId = 0, propertyName, value }) {
+  WaitingListData.prototype.updateAssessmentData = async function ({
+    id,
+    linkId = 0,
+    propertyName,
+    value,
+    valueTwo = '',
+  }) {
     const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
       id,
       linkId,
       propertyName,
       value,
+      valueTwo,
       insertOrUpdate: 'U',
     });
 
