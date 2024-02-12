@@ -1,6 +1,6 @@
 var ConsumerFinancesAjax = (function () {
     // OOD Main/Landing Page
-    async function getAccountTransectionEntriesAsync(consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType) {
+    async function getAccountTransectionEntriesAsync(consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType, accountPermission) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -42,6 +42,8 @@ var ConsumerFinancesAjax = (function () {
                     isattachment +
                     '", "transectionType":"' +
                     transectionType +
+                    '", "accountPermission":"' +
+                    accountPermission +
                     '"}',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -609,7 +611,7 @@ var ConsumerFinancesAjax = (function () {
         }
     }
 
-    async function getEditAccountAsync(ConsumersId) {
+    async function getEditAccountAsync(ConsumersId, accountPermission) {
         try {
             const result = await $.ajax({
                 type: 'POST',
@@ -625,6 +627,7 @@ var ConsumerFinancesAjax = (function () {
                 data: JSON.stringify({
                     token: $.session.Token,
                     consumerId: ConsumersId,
+                    accountPermission: accountPermission,
                 }),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

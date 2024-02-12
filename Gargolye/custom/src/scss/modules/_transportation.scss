@@ -791,8 +791,18 @@
 
 [data-active-module="Employment"] {
 
+    .checkbox-mtd > span::after {
+        top: -22px !important;
+        left: 2px !important;
+    }
+
+
     .dropdown {
         margin: 0px 0px 20px;
+    }
+
+    .popup {
+        max-width: 420px !important;
     }
 
     .employmentDTWrap {
@@ -855,7 +865,7 @@
 
             .width22Per {
                 width: 22%;
-                margin-bottom:5px;
+                margin-bottom: 5px;
             }
         }
     }
@@ -875,6 +885,17 @@
             flex-grow: 1;
             margin: 0 5px 20px;
             width: 45%;
+        }
+    }
+
+    .chkWrap {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+
+        .checkbox-mtd {
+            display: flow !important;
         }
     }
 
@@ -1040,15 +1061,30 @@
     #employmentWorkScheduleTable {
         .endIcon {
             margin-left: 2px;
-            max-width: 25px !important;
+            max-width: 30px !important;
+
+            @media screen and (min-width: 560px) {
+                margin-left: 2px;
+                max-width: 85px !important;
+            }
         }
+
+        .secondendIcon {
+            margin-left: 2px;
+            max-width: 30px !important;
+
+            @media screen and (min-width: 560px) {
+                margin-left: 2px;
+                max-width: 45px !important;
+            }
+        } 
 
         .table__row {
             &[data-plan-active='true'] {
                 > div:nth-child(4) {
                     margin-right: 116px !important;
                 }
-            }
+            } 
 
             &.selected {
                 background: $secondary;
@@ -1072,13 +1108,16 @@
 
             > div:nth-child(4) {
                 display: none;
-                width: 86px;
+                width: 80px; 
             }
 
             > div:nth-child(5) {
-                width: 86px;
+                width: 70px;
             }
 
+            > div:nth-child(6) {
+                width:70px;
+            }
 
 
             @media screen and (min-width: 560px) {

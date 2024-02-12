@@ -13,6 +13,8 @@ const CFEditAccount = (() => {
     let page;
     let load;
     let IsDisabledAccount = false;
+    let accountPermission;
+    let tempAccountPer;
 
     // get the Consumers selected from the Roster
     async function handleActionNavEvent(target) {
@@ -46,7 +48,7 @@ const CFEditAccount = (() => {
 
         landingPage = document.createElement('div');
         var LineBr = document.createElement('br');
-
+        getaccountPermission();
         selectedConsumersId = selectedConsumers[selectedConsumers.length - 1].id;
         const name = (
             await ConsumerFinancesAjax.getConsumerNameByID({
@@ -57,7 +59,7 @@ const CFEditAccount = (() => {
 
         selectedConsumersName = name[selectedConsumers.length - 1].FullName;
 
-        const resultAccount = await ConsumerFinancesAjax.getEditAccountAsync(selectedConsumersId);
+        const resultAccount = await ConsumerFinancesAjax.getEditAccountAsync(selectedConsumersId, accountPermission);
         const { getEditAccountResult } = resultAccount;
         if (getEditAccountResult.length > 0 && load == 1) {
             account = getEditAccountResult[0].accountName;
@@ -404,7 +406,7 @@ const CFEditAccount = (() => {
     async function populateAccountDropdown() {
         const {
             getEditAccountResult: accounts,
-        } = await ConsumerFinancesAjax.getEditAccountAsync(selectedConsumersId);
+        } = await ConsumerFinancesAjax.getEditAccountAsync(selectedConsumersId, accountPermission);
 
         let dataAccount = accounts.map((account) => ({
             id: account.accountName,
@@ -445,7 +447,7 @@ const CFEditAccount = (() => {
     function eventListeners() {
         inputName.addEventListener('input', event => {
             nameTemp = 'Changed';
-            name = event.target.value.trim();  
+            name = event.target.value.trim();
             getRequiredFieldsOfAccountInfo();
         });
         inputNumber.addEventListener('input', event => {
@@ -479,7 +481,7 @@ const CFEditAccount = (() => {
                 document.getElementById('inputOpeningBal').value = minAmount.substring(0, minAmount.length - 1);
                 return;
             }
-            openingBalance = minAmount.replace('$', ''); 
+            openingBalance = minAmount.replace('$', '');
             openingBalanceTemp = 'Changed';
             getRequiredFieldsOfAccountInfo();
         });
@@ -511,7 +513,7 @@ const CFEditAccount = (() => {
     }
 
     function checkRequiredFieldsOfAccountInfo(nameVal, typeVal, statusVal, openDateVal, closeDateVal) {
-        if (nameVal.trim() === '') { 
+        if (nameVal.trim() === '') {
             inputName.classList.add('error');
         } else {
             inputName.classList.remove('error');
@@ -580,9 +582,9 @@ const CFEditAccount = (() => {
         if (page == 'Add') {
             accountId = '0';
         }
- 
+
         if (dateClosed == '')
-            dateClosed = null;  
+            dateClosed = null;
         const result = await ConsumerFinancesAjax.insertEditRegisterAccountAsync(selectedConsumersId, accountId, name, number == '' ? null : number, type, status, classofAccount == '' ? null : classofAccount, dateOpened, dateClosed, openingBalance, description == '' ? null : description);
         const { insertEditRegisterAccountResult } = result;
         if (insertEditRegisterAccountResult.accountId != null) {
@@ -606,7 +608,36 @@ const CFEditAccount = (() => {
             hideDate: true,
         });
 
-        roster2.showMiniRoster();  
+        roster2.showMiniRoster();
+    }
+
+    function getaccountPermission() {
+        accountPermission = '';
+        tempAccountPer = [];
+        if ($.session.CFViewChecking)
+            tempAccountPer.push('Checking');
+
+        if ($.session.CFViewCraditCard) {
+            tempAccountPer.push('Credit Card');
+        }
+
+        if ($.session.CFViewFoodStamp) {
+            tempAccountPer.push('Food Stamps');
+        }
+
+        if ($.session.CFViewPettyCash) {
+            tempAccountPer.push('Petty Cash');
+        }
+
+        if ($.session.CFViewShaving) {
+            tempAccountPer.push('Savings');
+        }
+
+        if (tempAccountPer.length > 0) {
+            accountPermission = tempAccountPer.toString();
+        }
+        else
+            accountPermission = '';
     }
 
     return {

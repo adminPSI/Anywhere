@@ -3418,9 +3418,9 @@ namespace Anywhere
             return dg.resetPassword(userId, hash, newPassword, changingToHashPassword);
         }
 
-        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType)
+        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType, string accountPermission)
         {
-            return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType);
+            return cf.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transectionType, accountPermission);
         }
 
         public ActiveAccount[] getActiveAccount(string token, string consumerId, string accountPermission)
@@ -3626,7 +3626,7 @@ namespace Anywhere
             return emp.getWagesCheckboxEntries(token, positionID);
         }
 
-        public WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
+        public WorkScheduleEntries insertWorkSchedule(string token, string[] dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
         {
             return emp.insertWorkSchedule(token, dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID);
         }
@@ -3723,9 +3723,9 @@ namespace Anywhere
             return cf.insertEditRegisterAccount(token, selectedConsumersId, accountId, name, number, type, status, classofAccount, dateOpened, dateClosed, openingBalance, description, userId);
         }
 
-        public ActiveAccount[] getEditAccount(string token, string consumerId)
+        public ActiveAccount[] getEditAccount(string token, string consumerId, string accountPermission)
         {
-            return cf.getEditAccount(token, consumerId);
+            return cf.getEditAccount(token, consumerId, accountPermission);
         }
 
         public ConsumerFinancesWorker.ConsumerFinanceEntriesWidget[] getConsumerFinanceWidgetEntriesData(string token, string consumerName, string locationName, string sortOrderName)
