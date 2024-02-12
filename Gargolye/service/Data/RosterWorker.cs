@@ -128,6 +128,9 @@ namespace Anywhere.service.Data
             public string MedicaidNumber { get; set; }
             public string MedicareNumber { get; set; }
             public string ResidentNumber { get; set; }
+            public string consumerNumber { get; set; }
+            public string localId { get; set; }
+
             public string County { get; set; }
             public string orgName { get; set; }
             public string orgAdd1 { get; set; }

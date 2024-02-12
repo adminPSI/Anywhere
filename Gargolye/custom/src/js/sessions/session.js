@@ -25,6 +25,8 @@ $.session.DemographicsViewMedicaid = false;
 $.session.DemographicsViewMedicare = false;
 $.session.DemographicsViewResident = false;
 $.session.DemographicsViewSSN = false;
+$.session.DemographicsViewLocalId = false;
+$.session.DemographicsViewConsumerNumber = false;
 $.session.GoalsView = false;
 $.session.GoalsUpdate = false;
 $.session.InsertOutcomes = false;
@@ -592,6 +594,12 @@ function setSessionVariables() {
       }
       if (tmpPerm == 'View SSN') {
         $.session.DemographicsViewSSN = true;
+      }
+      if (tmpPerm == 'View Consumer Number') {
+        $.session.DemographicsViewConsumerNumber = true;
+      }
+      if (tmpPerm == 'View Local ID') {
+        $.session.DemographicsViewLocalId = true;
       }
     }
 

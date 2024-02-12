@@ -145,7 +145,9 @@ const demographics = (function () {
             name === 'zip' ||
             name === 'medicaidNumber' ||
             name === 'medicareNumber' ||
-            name === 'residentNumber'
+            name === 'residentNumber' ||
+            name === 'localId' 
+           // name === 'consumerNumber'
         ) {
             input.type = 'number';
             input.pattern = '/^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/im';
@@ -243,6 +245,8 @@ const demographics = (function () {
         const medicaidNumber = data.MedicaidNumber;
         const medicareNumber = data.MedicareNumber;
         const residentNumber = data.ResidentNumber;
+        const consumerNumber = data.consumerNumber;
+        const localId = data.localId;
 
         // Organization Info
         const county = data.County;
@@ -294,6 +298,8 @@ const demographics = (function () {
                 medicaidNumber,
                 medicareNumber,
                 residentNumber,
+                localId,
+                consumerNumber,
                 ssn: socialSecurityNumber,
             },
             // Organization Info
@@ -588,7 +594,9 @@ const demographics = (function () {
                 prop === 'dateOfBirth' ||
                 prop === 'medicaidNumber' ||
                 prop === 'medicareNumber' ||
-                prop === 'residentNumber'
+                prop === 'residentNumber' ||
+                prop === 'consumerNumber' ||
+                prop === 'localId'
             ) {
                 viewEle.classList.add('hidden');
             }
@@ -626,6 +634,12 @@ const demographics = (function () {
                 if ($.session.DemographicsViewSSN) {
                     viewElements['ssn'].classList.remove('hidden');
                 }
+                if ($.session.DemographicsViewConsumerNumber) {
+                    viewElements['consumerNumber'].classList.remove('hidden');
+                }
+                if ($.session.DemographicsViewLocalId) {
+                    viewElements['localId'].classList.remove('hidden');
+                }
             } else {
                 e.target.innerText = 'Show Details';
 
@@ -634,6 +648,8 @@ const demographics = (function () {
                 viewElements['medicareNumber'].classList.add('hidden');
                 viewElements['residentNumber'].classList.add('hidden');
                 viewElements['ssn'].classList.add('hidden');
+                viewElements['consumerNumber'].classList.add('hidden');
+                viewElements['localId'].classList.add('hidden');
             }
         });
 
