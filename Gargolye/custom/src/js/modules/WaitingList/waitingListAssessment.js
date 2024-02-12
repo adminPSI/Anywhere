@@ -1187,7 +1187,7 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(isYesChecked);
     },
   };
-  async function updatePageActiveStatus() {
+  async function updatePageActiveStatus({ subForm }) {
     const conditionsInputValues = [
       wlForms['conditions'].inputs['otherThanMentalHealth'].getValue('otherThanMentalHealthyes'),
       wlForms['conditions'].inputs['before22'].getValue('before22yes'),
@@ -1211,10 +1211,14 @@ const WaitingListAssessment = (() => {
         'currentNeeds',
       ].forEach(formName => {
         // hide form
-        wlForms[formName].form.parentElement.classList.add('hiddenPage');
 
         // needs is special
         if (formName === 'needs') {
+          wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+          wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+          wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+          wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+
           if (wlFormInfo.needs.behavioral.id) {
             formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
             wlFormInfo.needs.behavioral.id = '';
@@ -1232,6 +1236,8 @@ const WaitingListAssessment = (() => {
             wlFormInfo.needs.other.id = '';
           }
         } else {
+          wlForms[formName].form.parentElement.classList.add('hiddenPage');
+
           if (wlFormInfo[formName].id) {
             formsToDelete.push(`${wlFormInfo[formName].id}|${wlFormInfo[formName].dbtable}`);
             wlFormInfo[formName].id = '';
@@ -1245,7 +1251,10 @@ const WaitingListAssessment = (() => {
     }
 
     // conditions page all inputs are yes
-    wlForms['needs'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['behavioral'].form.parentElement.classList.add('hiddenPage');
+    wlForms['physical'].form.parentElement.classList.add('hiddenPage');
+    wlForms['medical'].form.parentElement.classList.add('hiddenPage');
+    wlForms['other'].form.parentElement.classList.add('hiddenPage');
     wlForms['waiverEnrollment'].form.parentElement.classList.remove('hiddenPage');
 
     // get circumstance id
@@ -1344,8 +1353,10 @@ const WaitingListAssessment = (() => {
       }
 
       // Save/Update
-      if (type === 'radio') {
+      if (type === 'radio' || type === 'checkbox') {
         value = value === 'yes' ? 1 : 0;
+      } else {
+        value = `'${value}'`;
       }
 
       // determine if we use wlLinkID or wlCircID
@@ -1403,6 +1414,7 @@ const WaitingListAssessment = (() => {
           value,
           name,
           formName,
+          subForm,
         });
       }
     };
