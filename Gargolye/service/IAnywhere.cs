@@ -4473,7 +4473,7 @@ namespace Anywhere
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/getAccountTransectionEntries/")]
-        ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType);
+        ConsumerFinancesWorker.ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType, string accountPermission);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -4987,7 +4987,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/getEditAccount/")]
-        ConsumerFinancesWorker.ActiveAccount[] getEditAccount(string token, string consumerId);
+        ConsumerFinancesWorker.ActiveAccount[] getEditAccount(string token, string consumerId, string accountPermission);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

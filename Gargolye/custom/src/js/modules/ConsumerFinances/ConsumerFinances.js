@@ -139,6 +139,7 @@ const ConsumerFinances = (() => {
             filterValues.enteredBy,
             filterValues.isattachment,
             filterValues.transectionType,
+            accountPermission,
         );
 
         ConsumerFinancesEntries.getAccountTransectionEntriesResult.forEach(function (entry) {
