@@ -393,7 +393,8 @@ namespace Anywhere.Data
         public string getLogIn(string userId, string hash)
         {
             logger.trace("100", "getLogIn:" + userId);
-            if (stringInjectionValidator(hash) == false) return null;
+            if (stringInjectionValidatorLogin(hash) == false) return null;
+            if (stringInjectionValidatorLogin(userId) == false) return null;
             try
             {
                 return executeDataBaseCall("CALL DBA.ANYW_getLogIn('" + userId + "','" + hash + "');", "results", "permissions");
@@ -6063,6 +6064,23 @@ namespace Anywhere.Data
             string dropTable = "DROP TABLE";
             string deleteFrom = "DELETE FROM";
             if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(deleteFrom)))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        public bool stringInjectionValidatorLogin(string uncheckedString)
+        {
+            string waitFor = "WAITFOR DELAY";
+            string dropTable = "DROP TABLE";
+            string deleteFrom = "DELETE FROM";
+            string singleQuote = "'";
+            if (!string.IsNullOrWhiteSpace(uncheckedString) && (uncheckedString.ToUpper().Contains(waitFor) || uncheckedString.ToUpper().Contains(dropTable) || uncheckedString.ToUpper().Contains(singleQuote) || uncheckedString.ToUpper().Contains(deleteFrom)))
             {
                 return false;
             }
