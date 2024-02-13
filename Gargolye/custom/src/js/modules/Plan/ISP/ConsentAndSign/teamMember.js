@@ -133,6 +133,7 @@ const csTeamMember = (() => {
     selectedMemberData.name = relData.firstName;
     selectedMemberData.lastName = relData.lastName.split('|')[0];
     selectedMemberData.relationship = relData.relationship;
+    selectedMemberData.email = relData.email;
 
     // update inputs with selected data
     nameInput.childNodes[0].value = selectedMemberData.name;
