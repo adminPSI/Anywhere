@@ -225,7 +225,8 @@ var caseNotesAjax = (function () {
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       success: function (response, status, xhr) {
-        var res = JSON.stringify(response);
+     //  var res = JSON.stringify(response);
+       var res = response.getReviewRequiredForCaseManagerResult;
         callback(res);
       },
     });
