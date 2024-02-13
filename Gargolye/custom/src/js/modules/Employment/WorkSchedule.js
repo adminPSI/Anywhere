@@ -92,13 +92,13 @@ const WorkSchedule = (() => {
             plain: false,
             tableId: 'employmentWorkScheduleTable',
             columnHeadings: ['Day Of Week', 'Start Time', 'End Time', 'Hours'],
-            endIcon: $.session.EmploymentDelete == true ? true : false,
-            secondendIcon: $.session.EmploymentUpdate == true ? true : false,
+            endIcon: $.session.EmploymentUpdate == true ? true : false,
+            secondendIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
         let tableData = ScheduleEntries.getWorkScheduleEntriesResult.map((entry) => ({
             values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : entry.dayOfWeek == 7 ? 'Saturday' : '', UTIL.convertFromMilitary(entry.startTime), UTIL.convertFromMilitary(entry.endTime), entry.timeInHours],
-            attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }, { key: 'data-plan-active', value: entry.startTime == '' ? 'true' : 'false' }],
+            attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }, { key: 'data-plan-active', value: entry.startTime == '' ? 'true' : 'false' }, { key: 'deleteHide', value: $.session.EmploymentDelete == true ? 'true' : 'false' }, { key: 'copyHide', value: $.session.EmploymentUpdate == true ? 'true' : 'false' }],
             onClick: (e) => {
                 if ($.session.EmploymentUpdate && e.target.attributes[2].value == 'false') {
                     addWorkSchedulePopupBtn(e.target.attributes.WorkScheduleId.value, 'Edit')
