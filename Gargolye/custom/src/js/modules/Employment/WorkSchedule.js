@@ -8,6 +8,11 @@ const WorkSchedule = (() => {
     let name;
     let positionName;
     let selectedConsumersName;
+    let startTime;
+    let endTime;
+    let weekDaysSelection = [];
+    let nameOfEvent;
+    let toRemoveWeekName;
 
     async function init(positionId, Name, PositionName, SelectedConsumersName, ConsumersId) {
         PositionId = positionId;
@@ -59,7 +64,7 @@ const WorkSchedule = (() => {
             text: '+ ADD NEW SHIFT',
             style: 'secondary',
             type: 'contained',
-            callback: () => addWorkSchedulePopupBtn()
+            callback: () => addWorkSchedulePopupBtn(0, 'Add')
         });
         workScheduleEntriesTable = buildworkScheduleEntriesTable();
 
@@ -87,19 +92,24 @@ const WorkSchedule = (() => {
             plain: false,
             tableId: 'employmentWorkScheduleTable',
             columnHeadings: ['Day Of Week', 'Start Time', 'End Time', 'Hours'],
-            endIcon: $.session.EmploymentDelete == true ? true : false,
+            endIcon: $.session.EmploymentUpdate == true ? true : false,
+            secondendIcon: $.session.EmploymentDelete == true ? true : false,
         };
 
         let tableData = ScheduleEntries.getWorkScheduleEntriesResult.map((entry) => ({
             values: [entry.dayOfWeek == 1 ? 'Sunday' : entry.dayOfWeek == 2 ? 'Monday' : entry.dayOfWeek == 3 ? 'Tuesday' : entry.dayOfWeek == 4 ? 'Wednesday' : entry.dayOfWeek == 5 ? 'Thursday' : entry.dayOfWeek == 6 ? 'Friday' : entry.dayOfWeek == 7 ? 'Saturday' : '', UTIL.convertFromMilitary(entry.startTime), UTIL.convertFromMilitary(entry.endTime), entry.timeInHours],
-            attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }, { key: 'data-plan-active', value: entry.startTime == '' ? 'true' : 'false' }],
+            attributes: [{ key: 'WorkScheduleId', value: entry.WorkScheduleId }, { key: 'data-plan-active', value: entry.startTime == '' ? 'true' : 'false' }, { key: 'deleteHide', value: $.session.EmploymentDelete == true ? 'true' : 'false' }, { key: 'copyHide', value: $.session.EmploymentUpdate == true ? 'true' : 'false' }],
             onClick: (e) => {
                 if ($.session.EmploymentUpdate && e.target.attributes[2].value == 'false') {
-                    handleAccountTableEvents(e.target.attributes.WorkScheduleId.value)   
+                    addWorkSchedulePopupBtn(e.target.attributes.WorkScheduleId.value, 'Edit')
                 }
             },
-            endIcon: $.session.EmploymentDelete == true && entry.dayOfWeek != '' ? `${icons['delete']}` : `${icons['Empty']}`,
+            endIcon: $.session.EmploymentUpdate == true && entry.dayOfWeek != '' ? `${icons['copy']}` : `${icons['Empty']}`,
             endIconCallback: (e) => {
+                addWorkSchedulePopupBtn(entry.WorkScheduleId, 'Copy');
+            },
+            secondendIcon: $.session.EmploymentDelete == true && entry.dayOfWeek != '' ? `${icons['delete']}` : `${icons['Empty']}`,
+            secondendIconCallback: (e) => {
                 deleteWorkSchedulePOPUP(entry.WorkScheduleId);
             },
         }));
@@ -107,10 +117,6 @@ const WorkSchedule = (() => {
         table.populate(oTable, tableData);
 
         return oTable;
-    }
-
-    function handleAccountTableEvents(WorkScheduleId) {
-        addWorkSchedulePopupBtn(WorkScheduleId)
     }
 
     function deleteWorkSchedulePOPUP(WorkScheduleId) {
@@ -165,7 +171,7 @@ const WorkSchedule = (() => {
         );
     }
 
-    function addWorkSchedulePopupBtn(WorkScheduleId) {
+    function addWorkSchedulePopupBtn(WorkScheduleId, eventName) {
         if (WorkScheduleId == 0 || WorkScheduleId == undefined) {
             dayOfWeek = '';
             startTime = '';
@@ -174,6 +180,7 @@ const WorkSchedule = (() => {
         else {
             let workScheduleValue = ScheduleEntries.getWorkScheduleEntriesResult.find(x => x.WorkScheduleId == WorkScheduleId);
             dayOfWeek = workScheduleValue.dayOfWeek;
+            toRemoveWeekName = workScheduleValue.dayOfWeek;
             startTime = workScheduleValue.startTime;
             endTime = workScheduleValue.endTime;
         }
@@ -185,15 +192,75 @@ const WorkSchedule = (() => {
         const heading = document.createElement('h2');
         heading.style.marginTop = '-20px';
         heading.style.marginBottom = '20px';
-        if (WorkScheduleId) {
+        if (eventName == 'Edit') {
             heading.innerText = 'Update Shift';
             WorkScheduleID = WorkScheduleId;
+            nameOfEvent = 'Edit'
+        }
+        else if (eventName == 'Copy') {
+            heading.innerText = 'Copy Shift';
+            WorkScheduleID = WorkScheduleId;
+            nameOfEvent = 'Copy'
         }
         else {
             heading.innerText = 'New Shift';
             WorkScheduleID = 0;
+            nameOfEvent = 'Add'
         }
 
+        // Checkbox
+        var checkboxlable = document.createElement('div');
+        checkboxlable.innerHTML = `<h3 id="checkboxlable" >Day(s) Of Week</h3>`;
+
+        sundaychkBox = input.buildCheckbox({
+            text: 'Sun',
+            id: 'sundaychkBox',
+            isChecked: false,
+            style: 'secondary',
+            callback: () => checkRequiredFieldsOfPopup(),
+        });
+        mondaychkBox = input.buildCheckbox({
+            text: 'Mon',
+            id: 'mondaychkBox',
+            isChecked: false,
+            style: 'secondary',
+            callback: () => checkRequiredFieldsOfPopup(),
+        });
+        tuesdaychkBox = input.buildCheckbox({
+            text: 'Tue',
+            id: 'tuesdaychkBox',
+            isChecked: false,
+            style: 'secondary',
+            callback: () => checkRequiredFieldsOfPopup(),
+        });
+        wednesdaychkBox = input.buildCheckbox({
+            text: 'Wed',
+            id: 'wednesdaychkBox',
+            isChecked: false,
+            style: 'secondary',
+            callback: () => checkRequiredFieldsOfPopup(),
+        });
+        thursdaychkBox = input.buildCheckbox({
+            text: 'Thu',
+            id: 'thursdaychkBox',
+            isChecked: false,
+            style: 'secondary',
+            callback: () => checkRequiredFieldsOfPopup(),
+        });
+        fridaychkBox = input.buildCheckbox({
+            text: 'Fri',
+            id: 'fridaychkBox',
+            isChecked: false,
+            style: 'secondary',
+            callback: () => checkRequiredFieldsOfPopup(),
+        });
+        saturdaychkBox = input.buildCheckbox({
+            text: 'Sat',
+            id: 'saturdaychkBox',
+            isChecked: false,
+            style: 'secondary',
+            callback: () => checkRequiredFieldsOfPopup(),
+        });
 
         // dropdowns & inputs
         dayOfWeekDropdown = dropdown.build({
@@ -233,7 +300,23 @@ const WorkSchedule = (() => {
 
         addWorkSchedulePopup.appendChild(heading);
 
-        addWorkSchedulePopup.appendChild(dayOfWeekDropdown);
+
+        if (WorkScheduleId == 0 || WorkScheduleId == undefined) {
+            addWorkSchedulePopup.appendChild(checkboxlable);
+            var dayChkWrap = document.createElement('div');
+            dayChkWrap.classList.add('chkWrap');
+            dayChkWrap.appendChild(sundaychkBox);
+            dayChkWrap.appendChild(mondaychkBox);
+            dayChkWrap.appendChild(tuesdaychkBox);
+            dayChkWrap.appendChild(wednesdaychkBox);
+            dayChkWrap.appendChild(thursdaychkBox);
+            dayChkWrap.appendChild(fridaychkBox);
+            dayChkWrap.appendChild(saturdaychkBox);
+            addWorkSchedulePopup.appendChild(dayChkWrap);
+        } else {
+            addWorkSchedulePopup.appendChild(dayOfWeekDropdown);
+        }
+
 
         var timebtnWrap = document.createElement('div');
         timebtnWrap.classList.add('btnWrap');
@@ -259,8 +342,8 @@ const WorkSchedule = (() => {
 
         POPUP.show(addWorkSchedulePopup);
         PopupEventListeners();
-        checkRequiredFieldsOfPopup();
         populateWeekDaysDropdown();
+        checkRequiredFieldsOfPopup();
     }
 
     function PopupEventListeners() {
@@ -291,10 +374,39 @@ const WorkSchedule = (() => {
         var timeEnd = NewEndTime.querySelector('#NewEndTime');
         var timeStart = NewStartTime.querySelector('#NewStartTime');
 
-        if (dayOfWeek === '') {
-            dayOfWeekDropdown.classList.add('errorPopup');
-        } else {
-            dayOfWeekDropdown.classList.remove('errorPopup');
+        if (nameOfEvent == 'Add') {
+            var sundaychk = sundaychkBox.querySelector('#sundaychkBox');
+            var mondaychk = mondaychkBox.querySelector('#mondaychkBox');
+            var tuesdaychk = tuesdaychkBox.querySelector('#tuesdaychkBox');
+            var wednesdaychk = wednesdaychkBox.querySelector('#wednesdaychkBox');
+            var thursdaychk = thursdaychkBox.querySelector('#thursdaychkBox');
+            var fridaychk = fridaychkBox.querySelector('#fridaychkBox');
+            var saturdaychk = saturdaychkBox.querySelector('#saturdaychkBox');
+
+            var chklable = document.getElementById('checkboxlable');
+
+            if (!sundaychk.checked && !mondaychk.checked && !tuesdaychk.checked && !wednesdaychk.checked && !thursdaychk.checked && !fridaychk.checked && !saturdaychk.checked) {
+                chklable.classList.add('errorPopup');
+                chklable.classList.add('password-error');
+            }
+            else {
+                chklable.classList.remove('errorPopup');
+                chklable.classList.remove('password-error');
+            }
+        } else if (nameOfEvent == 'Edit') {
+            if (dayOfWeek === '') {
+                dayOfWeekDropdown.classList.add('errorPopup');
+            } else {
+                dayOfWeekDropdown.classList.remove('errorPopup');
+            }
+        }
+        else {
+            if (weekDay.value === '') {
+                dayOfWeekDropdown.classList.add('errorPopup');
+            } else {
+                dayOfWeekDropdown.classList.remove('errorPopup');
+            }
+
         }
 
         if (timeEnd.value === '' || timeStart.value > timeEnd.value) {
@@ -335,12 +447,34 @@ const WorkSchedule = (() => {
 
         ]);
         dayOfWeekDropdownData.unshift({ id: null, value: '', text: '' });
+        if (nameOfEvent == 'Copy') {
+            const index = dayOfWeekDropdownData.findIndex(x => x.value == toRemoveWeekName);
+            if (index > -1) {
+                dayOfWeekDropdownData.splice(index, 1);
+            }
+        }
         dropdown.populate("dayOfWeekDropdown", dayOfWeekDropdownData, dayOfWeek);
     }
 
 
     async function saveNewWagesPopup() {
-        const result = await EmploymentAjax.insertWorkScheduleAsync(dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
+        weekDaysSelection = []; 
+        if (nameOfEvent == 'Add') {
+            if (sundaychkBox.querySelector('#sundaychkBox').checked) weekDaysSelection.push(1)
+            if (mondaychkBox.querySelector('#mondaychkBox').checked) weekDaysSelection.push(2)
+            if (tuesdaychkBox.querySelector('#tuesdaychkBox').checked) weekDaysSelection.push(3)
+            if (wednesdaychkBox.querySelector('#wednesdaychkBox').checked) weekDaysSelection.push(4)
+            if (thursdaychkBox.querySelector('#thursdaychkBox').checked) weekDaysSelection.push(5)
+            if (fridaychkBox.querySelector('#fridaychkBox').checked) weekDaysSelection.push(6)
+            if (saturdaychkBox.querySelector('#saturdaychkBox').checked) weekDaysSelection.push(7)
+        } else if (nameOfEvent == 'Edit') {
+            weekDaysSelection.push(dayOfWeek)
+        } else {
+            weekDaysSelection.push(dayOfWeek)
+            WorkScheduleID = 0;  
+        }
+
+        const result = await EmploymentAjax.insertWorkScheduleAsync(weekDaysSelection, startTime, endTime, PositionId, WorkScheduleID, $.session.UserId);
         const { insertWorkScheduleResult } = result;
 
         var messagetext = document.getElementById('confirmMessage');
@@ -354,7 +488,6 @@ const WorkSchedule = (() => {
             POPUP.hide(addWorkSchedulePopup);
         }
     }
-
 
     return {
         init,

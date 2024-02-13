@@ -17,12 +17,12 @@ namespace Anywhere.service.Data.ConsumerFinances
         Anywhere.service.Data.WorkflowDataGetter wfdg = new Anywhere.service.Data.WorkflowDataGetter();
         Anywhere.Data.DataGetter dg = new Anywhere.Data.DataGetter();
 
-        public string getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, DistributedTransaction transaction, string transectionType)
+        public string getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, DistributedTransaction transaction, string transectionType, string accountPermission)
         {
             try
             {
                 logger.debug("getAccountTransectionEntries");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[13];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[14];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerIds", DbType.String, consumerIds);
                 args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@activityStartDate", DbType.String, activityStartDate);
                 args[2] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@activityEndDate", DbType.String, activityEndDate);
@@ -36,8 +36,8 @@ namespace Anywhere.service.Data.ConsumerFinances
                 args[10] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@enteredBy", DbType.String, enteredBy);
                 args[11] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@isattachment", DbType.String, isattachment);
                 args[12] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@transectionType", DbType.String, transectionType);
-
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinancesEntries(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
+                args[13] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@accountPermission", DbType.String, accountPermission);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getConsumerFinancesEntries(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)
@@ -333,15 +333,15 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public string getEditAccount(DistributedTransaction transaction, string consumerId)
+        public string getEditAccount(DistributedTransaction transaction, string consumerId, string accountPermission)
         {
             try
             {
                 logger.debug("getEditAccount");
-                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[1];
+                System.Data.Common.DbParameter[] args = new System.Data.Common.DbParameter[2];
                 args[0] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@consumerId", DbType.String, consumerId);
-
-                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getEditAccount(?)", args, ref transaction);
+                args[1] = (System.Data.Common.DbParameter)DbHelper.CreateParameter("@accountPermission", DbType.String, accountPermission);
+                System.Data.Common.DbDataReader returnMsg = DbHelper.ExecuteReader(System.Data.CommandType.StoredProcedure, "CALL DBA.ANYW_getEditAccount(?,?)", args, ref transaction);
                 return wfdg.convertToJSON(returnMsg);
             }
             catch (Exception ex)

@@ -3,6 +3,7 @@ using Bytescout.PDF;
 using OneSpanSign.Sdk;
 using pdftron.PDF;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
@@ -97,7 +98,7 @@ namespace Anywhere.service.Data.Employment
             [DataMember(Order = 16)]
             public string existingPathID { get; set; }
             [DataMember(Order = 17)]
-            public string typeOfEmployment { get; set; }            
+            public string typeOfEmployment { get; set; }
         }
 
 
@@ -759,18 +760,34 @@ namespace Anywhere.service.Data.Employment
             }
         }
 
-        public WorkScheduleEntries insertWorkSchedule(string token, string dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
+        public WorkScheduleEntries insertWorkSchedule(string token, string[] dayOfWeek, string startTime, string endTime, string PositionId, string WorkScheduleID, string userID)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    String WorkScheduleId;
+                    var tempWorkScheduleID = new List<string>();
+                    string WorkScheduleId = "";
                     WorkScheduleEntries addUpdateWorkSchedule = new WorkScheduleEntries();
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
 
-                    WorkScheduleId = Odg.insertWorkSchedule(token, dayOfWeek, startTime, endTime, PositionId, WorkScheduleID, userID, transaction);
-
+                    foreach (string weekdays in dayOfWeek)
+                    {
+                        WorkScheduleId = Odg.insertWorkSchedule(token, weekdays, startTime, endTime, PositionId, WorkScheduleID, userID, transaction);
+                        if (WorkScheduleId == "-1")
+                        {
+                            foreach (string WorkScheduleIDtoDelete in tempWorkScheduleID)
+                            {
+                                deleteWorkSchedule(token, WorkScheduleIDtoDelete);                              
+                            }
+                            addUpdateWorkSchedule.WorkScheduleId = WorkScheduleId;
+                            return addUpdateWorkSchedule; 
+                        }
+                        else
+                        {
+                            tempWorkScheduleID.Add(WorkScheduleId);
+                        }
+                    }
                     addUpdateWorkSchedule.WorkScheduleId = WorkScheduleId;
                     return addUpdateWorkSchedule;
                 }

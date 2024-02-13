@@ -214,13 +214,13 @@ namespace Anywhere.service.Data.ConsumerFinances
             public string Id { get; set; }
         }
 
-        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType)
+        public ConsumerFinancesEntry[] getAccountTransectionEntries(string token, string consumerIds, string activityStartDate, string activityEndDate, string accountName, string payee, string category, string minamount, string maxamount, string checkNo, string balance, string enteredBy, string isattachment, string transectionType, string accountPermission)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
                 try
                 {
-                    ConsumerFinancesEntry[] entries = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transaction, transectionType));
+                    ConsumerFinancesEntry[] entries = js.Deserialize<ConsumerFinancesEntry[]>(Odg.getAccountTransectionEntries(token, consumerIds, activityStartDate, activityEndDate, accountName, payee, category, minamount, maxamount, checkNo, balance, enteredBy, isattachment, transaction, transectionType, accountPermission));
 
                     return entries;
 
@@ -587,7 +587,7 @@ namespace Anywhere.service.Data.ConsumerFinances
             }
         }
 
-        public ActiveAccount[] getEditAccount(string token, string consumerId)
+        public ActiveAccount[] getEditAccount(string token, string consumerId, string accountPermission)
         {
             using (DistributedTransaction transaction = new DistributedTransaction(DbHelper.ConnectionString))
             {
@@ -595,7 +595,7 @@ namespace Anywhere.service.Data.ConsumerFinances
                 {
                     js.MaxJsonLength = Int32.MaxValue;
                     if (!wfdg.validateToken(token, transaction)) throw new Exception("invalid session token");
-                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getEditAccount(transaction, consumerId));
+                    ActiveAccount[] accounts = js.Deserialize<ActiveAccount[]>(Odg.getEditAccount(transaction, consumerId, accountPermission));
                     return accounts;
                 }
                 catch (Exception ex)
