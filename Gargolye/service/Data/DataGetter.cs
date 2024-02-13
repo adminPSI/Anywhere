@@ -409,7 +409,10 @@ namespace Anywhere.Data
         public string changeLogIn(string userId, string hash, string newPassword, string changingToHashPassword)
         {
             logger.trace("101", "changeLogIn:" + userId);
-
+            if (stringInjectionValidatorLogin(hash) == false) return null;
+            if (stringInjectionValidatorLogin(userId) == false) return null;
+            if (stringInjectionValidatorLogin(newPassword) == false) return null;
+            if (stringInjectionValidatorLogin(changingToHashPassword) == false) return null;
             try
             {
                 return executeDataBaseCall("CALL DBA.ANYW_ChangePassword('" + userId + "','" + hash + "','" + newPassword + "','" + changingToHashPassword + "');", "results", "permissions");
