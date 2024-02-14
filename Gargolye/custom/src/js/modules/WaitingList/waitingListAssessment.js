@@ -1055,18 +1055,21 @@ const WaitingListAssessment = (() => {
   }
   const onChangeCallbacks = {
     //* waitingListInfo
+    //*---------------------------------
     currentLivingArrangement: ({ name, value, formName }) => {
       // (ENABLE) [] the "Other Living Arrangement" field only (IF) [currentLivingArrangement] "Other" is selected in the "Describe Current Living Arrangement" drodown
       const data = wlForms[formName].inputs['currentLivingArrangement'].getValue();
       wlForms[formName].inputs['livingArrangementOther'].toggleDisabled(data === '0' ? false : true);
     },
     //* currentAvailableServices
+    //*---------------------------------
     isOtherService: ({ name, value, formName, id }) => {
       // (ENABLE) [otherDescription] the text field under "Other" only (IF) [isOtherService] the answer is "Yes" to Other
       const isYesChecked = wlForms[formName].inputs['isOtherService'].getValue('isOtherServiceyes');
       wlForms[formName].inputs['otherDescription'].toggleDisabled(!isYesChecked);
     },
     //* primaryCaregiver
+    //*---------------------------------
     isPrimaryCaregiverUnavailable: ({ name, value, formName }) => {
       // (ENABLE) [unavailableDocumentation] "List documentation used to verify presence of declining..."  (IF) [isPrimaryCaregiverUnavailable] question above it is "Yes"
       // (ENABLE) [isActionRequiredIn30Days] "Is action required..." radio buttons                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." question is "Yes"
@@ -1096,6 +1099,7 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['declinedSkillsDescription'].toggleDisabled(!isYesChecked);
     },
     //* needs
+    //*---------------------------------
     // behavioral checkbox group 1
     risksIsPhysicalAggression: behavioralNeedsCheckboxes,
     risksIsSelfInjury: behavioralNeedsCheckboxes,
@@ -1130,6 +1134,7 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['needsIsContinuousSupportRequired'].toggleDisabled(!isNoChecked);
     },
     //* riskMitigation
+    //*---------------------------------
     rMIsActionRequiredIn3oDays: ({ name, value, formName }) => {
       // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES"
       // (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".Otherwise, set to "NO"
@@ -1143,15 +1148,18 @@ const WaitingListAssessment = (() => {
     rMIsCountyBoardInvestigation: riskMitigationCheckboxes,
     rMIsLawEnforcementInvestigation: riskMitigationCheckboxes,
     rMIsOtherInvestigation: riskMitigationCheckboxes,
-    //* icfDischarge [AI]
+    //* icfDischarge
+    //*---------------------------------
     icfIsICFResident: icfDischargeDetermination,
     icfIsNoticeIssued: icfDischargeDetermination,
     icfIsActionRequiredIn30Days: icfDischargeDetermination,
-    //* intermittentSupports [AI]
+    //* intermittentSupports
+    //*---------------------------------
     intSupIsSupportNeededIn12Months: intermittentSupportsDetermination,
     intSupIsStayingLivingArrangement: intermittentSupportsDetermination,
     intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
-    //* childProtectionAgency [AI]
+    //* childProtectionAgency
+    //*---------------------------------
     cpaIsReleasedNext12Months: ({ name, value, formName }) => {
       // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only
       // (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
@@ -1161,15 +1169,18 @@ const WaitingListAssessment = (() => {
     },
     cpaIsReleasedNext12Months: childProtectionAgencyDetermination,
     cpaHadUnaddressableNeeds: childProtectionAgencyDetermination,
-    //* adultDayEmployment [AI]
+    //* adultDayEmployment
+    //*---------------------------------
     rwfNeedsMoreFrequency: adultDayEmploymentDetermination,
     rwfNeedsServiceNotMetIDEA: adultDayEmploymentDetermination,
     rwfNeedsServiceNotMetOOD: adultDayEmploymentDetermination,
-    //* dischargePlan [AI]
+    //* dischargePlan
+    //*---------------------------------
     dischargeIsICFResident: dischargePlanDetermination,
     dischargeIsInterestedInMoving: dischargePlanDetermination,
     dischargeHasDischargePlan: dischargePlanDetermination,
     //* currentNeeds
+    //*---------------------------------
     unmetNeedsSupports: ({ name, value, formName }) => {
       // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only
       // (IF)[unmetNeedsSupports] "If 'Yes', will any of those needs..." is YES
@@ -1196,6 +1207,7 @@ const WaitingListAssessment = (() => {
     //   e. "Does the individual require funding…" is YES on the Adult Day/Employment page
     //   f. "Does the individual have a viable…" is YES on the Discharge Plan page
     //* waiverEnrollment
+    //*---------------------------------
     waivEnrollWaiverEnrollmentIsRequired: ({ name, value, formName }) => {
       // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only
       // (IF)[waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
@@ -1373,8 +1385,6 @@ const WaitingListAssessment = (() => {
       // Save/Update
       if (type === 'radio' || type === 'checkbox') {
         value = value === 'yes' ? 1 : 0;
-      } else {
-        value = `'${value}'`;
       }
 
       // determine if we use wlLinkID or wlCircID
