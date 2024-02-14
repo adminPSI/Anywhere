@@ -14,6 +14,8 @@
     this.linkId = 0;
   }
 
+  //getWaitingListFundingSources
+
   WaitingListData.prototype.insertWaitingListAssessment = async function (consumerId) {
     const data = await _UTIL.fetchData('insertUpdateWaitingListValue', {
       id: 0,

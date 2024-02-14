@@ -874,7 +874,7 @@ const WaitingListAssessment = (() => {
       },
       {
         label: 'Anticipated Waiver Type',
-        id: 'currentLivingArrangement',
+        id: 'fundingSourceId',
         type: 'select',
         data: [{ value: '1', text: '' }],
       },
