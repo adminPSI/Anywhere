@@ -172,7 +172,26 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     columnName = "areas_needed_help";
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
                     return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
-                    
+                case "conclussionDeterminedBy":
+                    tableName = "WLA_Waiting_List_Information";
+                    columnName = "conclusion_determined_by";
+                    idNameForWhere = "WLA_Waiting_List_Information_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
+                case "conclusionDeterminedByTitle":
+                    tableName = "WLA_Waiting_List_Information";
+                    columnName = "Conclusion_Determined_By_Title";
+                    idNameForWhere = "WLA_Waiting_List_Information_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
+                case "conclusionDeterminedOn":
+                    tableName = "WLA_Waiting_List_Information";
+                    columnName = "conclusion_determined_on";
+                    idNameForWhere = "WLA_Waiting_List_Information_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
+                case "conclusionResult":
+                    tableName = "WLA_Waiting_List_Information";
+                    columnName = "conclusion_result";
+                    idNameForWhere = "WLA_Waiting_List_Information_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     // Handle areasPersonNeedsHelp
                     break;
                 case "participants":
@@ -1104,6 +1123,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string consumerId { get; set; }
             public string personCompleting { get; set; }
             public string personCompletingTitle { get; set; }
+            public string interviewDate { get; set; }
             public string currentLivingArrangement { get; set; }
             public string livingArrangementOther { get; set; }
             public string areasPersonNeedsHelp { get; set; }
@@ -1218,6 +1238,10 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string unmetNeedsHas { get; set; }
             public string unmetNeedsSupports { get; set; }
             public string unmetNeedsDescription { get; set; }
+            public string conclussionDeterminedBy { get; set; }
+            public string conclusionDeterminedByTitle { get; set; }
+            public string conclusionDeterminedOn { get; set; }
+            public string conclusionResult { get; set; }
         }
     }
 }
