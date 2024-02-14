@@ -36,6 +36,15 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return waitingLists;
         }
 
+        public FundingSources[] getWaitingListFundingSources()
+        {
+            string fundSourceString = "";
+            fundSourceString = dg.getWaitingListFundingSources();
+            FundingSources[] fundSourceObj = js.Deserialize<FundingSources[]>(fundSourceString);
+
+            return fundSourceObj;
+        }
+
         public string deleteFromWaitingList(string[] properties)
         {
             var i = 0;
@@ -165,6 +174,14 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     idNameForWhere = "WLA_Waiting_List_Information_ID";
                     return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
                     
+                    // Handle currentLivingArrangement
+                    break; 
+                case "fundingSourceId":
+                    tableName = "WLA_Waiting_List_Information";
+                    columnName = "funding_source_id";
+                    idNameForWhere = "WLA_Waiting_List_Information_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
+
                     // Handle currentLivingArrangement
                     break;
                 case "areasPersonNeedsHelp":
@@ -1117,6 +1134,12 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string supportingDocumentId { get; set; }
         }
 
+        public class FundingSources
+        {
+            public string fundingSourceId { get; set; }
+            public string description { get; set; }
+        }
+
         public class WaitingList
         {
             public string wlInfoId { get; set; }
@@ -1124,6 +1147,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             public string personCompleting { get; set; }
             public string personCompletingTitle { get; set; }
             public string interviewDate { get; set; }
+            public string fundingSourceId { get; set; }
             public string currentLivingArrangement { get; set; }
             public string livingArrangementOther { get; set; }
             public string areasPersonNeedsHelp { get; set; }
