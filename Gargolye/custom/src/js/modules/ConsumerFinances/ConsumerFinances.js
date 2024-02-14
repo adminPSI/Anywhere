@@ -694,6 +694,7 @@ const ConsumerFinances = (() => {
             }
 
             tmpminAmount = minAmount.trim().replace('$', '');
+            tmpminAmount = parseFloat(tmpminAmount).toFixed(2);
         });
 
         maxAmountInput.addEventListener('keyup', event => {
@@ -708,6 +709,7 @@ const ConsumerFinances = (() => {
                 return;
             }
             tmpmaxAmount = maxAmount.trim().replace('$', '');  
+            tmpmaxAmount = parseFloat(tmpmaxAmount).toFixed(2); 
         });
 
         transectionTypeFilterDropdown.addEventListener('change', event => {
