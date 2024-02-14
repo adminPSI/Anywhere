@@ -1,17 +1,20 @@
-.grid-container {
-  display: flex;
-  flex-flow: column;
+.mobileActive {
+  [data-ui] {
+    .waitingList__roster {
+      display: none;
+    }
+  }
 }
 
-[data-active-module='waitingList'] {
-  display: flex;
-  flex-grow: 1;
+[data-ui] {
+  // display: flex;
+  // flex-grow: 1;
 
   // MODULE WRAP
   .waitingList {
     &__header {
       display: flex;
-      flex-flow: row;
+      flex-flow: row wrap;
       margin: 0 0 10px 0;
     }
 
@@ -23,6 +26,7 @@
 
   // ROSTER PICKER
   .waitingList__roster {
+    display: block;
     min-width: 300px;
   }
 
@@ -34,6 +38,7 @@
   .waitingListAssessment {
     display: flex;
     flex-flow: column;
+    max-width: 1000px;
 
     .wlPage {
       order: 10;
@@ -47,11 +52,7 @@
       }
 
       &.hiddenPage {
-        background-color: $error;
-        pointer-events: none;
-        * {
-          opacity: 0.2;
-        }
+        display: none;
       }
     }
 
@@ -63,6 +64,9 @@
     }
     #participants {
       order: 3;
+    }
+    #contributingCircumstances {
+      order: 4;
     }
   }
 

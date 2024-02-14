@@ -1,3 +1,11 @@
+.mobileActive {
+  [data-ui] {
+    button.mobileRosterBtn {
+      display: block;
+    }
+  }
+}
+
 [data-ui] {
   .rosterPicker {
     display: flex;
@@ -87,6 +95,24 @@
           transition: rotate 0.3s ease-in;
         }
       }
+    }
+  }
+
+  button.mobileRosterBtn {
+    display: none;
+    border-radius: 50%;
+    bottom: 20px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    cursor: pointer;
+    height: 64px;
+    position: fixed;
+    right: 24px;
+    width: 64px;
+    z-index: 30;
+
+    span {
+      height: 100%;
+      width: 100%;
     }
   }
 }

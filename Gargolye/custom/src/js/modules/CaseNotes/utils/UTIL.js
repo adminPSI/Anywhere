@@ -102,44 +102,6 @@
   }
 
   /**
-   * Debounces a function, ensuring that it's not called until after the specified
-   * amount of time has passed since the last time it was invoked. Executes the
-   * function immediately upon the first call.
-   *
-   * @function
-   * @param {Function} func - The function to debounce.
-   * @param {Number} wait - The number of milliseconds to delay the function.
-   * @returns {Function} - Returns the debounced version of the provided function.
-   */
-  function debounce2(func, wait) {
-    let timeout;
-    let immediate = true;
-
-    return function executedFunction(...args) {
-      const context = this;
-
-      const later = function () {
-        timeout = null;
-        if (!immediate) {
-          func.apply(context, args);
-        }
-        immediate = true;
-      };
-
-      const callNow = immediate && !timeout;
-
-      clearTimeout(timeout);
-
-      timeout = setTimeout(later, wait);
-
-      if (callNow) {
-        immediate = false;
-        func.apply(context, args);
-      }
-    };
-  }
-
-  /**
    * Ajax call using native Fetch API
    *
    * @function
@@ -168,6 +130,20 @@
     } catch (error) {
       console.log(`There was a problem with ${service}`, error.message);
       throw error;
+    }
+  }
+
+  function getDeviceType() {
+    const ua = navigator.userAgent;
+
+    // Patterns to detect mobile and tablet devices
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const isTablet = /iPad|Android/i.test(ua) && !/Mobile/i.test(ua);
+
+    if (isMobile) {
+      return isTablet ? 'TABLET' : 'MOBILE';
+    } else {
+      return 'DESKTOP';
     }
   }
 
@@ -411,6 +387,7 @@
     asyncSetTimeout,
     convertCamelCaseToTitle,
     debounce,
+    getDeviceType,
     fetchData,
     localStorageHandler,
     mergeObjects,

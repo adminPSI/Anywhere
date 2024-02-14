@@ -824,14 +824,34 @@ const WaitingListAssessment = (() => {
     conclusion: [
       {
         type: 'checkboxgroup',
-        id: 'todo',
+        id: 'conclusion',
         groupLabel: 'There is currently an open investigation with: (Check all that apply):',
         disabled: true,
         fields: [
-          { type: 'checkbox', label: '', id: 'todo1' },
-          { type: 'checkbox', label: '', id: 'todo2' },
-          { type: 'checkbox', label: '', id: 'todo3' },
-          { type: 'checkbox', label: '', id: 'todo4' },
+          {
+            type: 'checkbox',
+            label:
+              'The individual has unmet needs that require enrollment in a waiver at this time to address circumstances presenting an immmediate risk of harm',
+            id: 'conclusionUnmetNeeds',
+          },
+          {
+            type: 'checkbox',
+            label:
+              'The individual has needs that are likely to require waiver-funded supports within the next 12 months and will be placed on the waiting list for Home and Community-Based Services at this time.',
+            id: 'conclusionWaiverFunded12Months',
+          },
+          {
+            type: 'checkbox',
+            label:
+              'The individual does not require waiver enrollment or placement on the waiting list for Home and Community-Based Services as either there are no assessed needs or alternate services are available to meet assessed needs.',
+            id: 'conclusionDoesNotRequireWaiver',
+          },
+          {
+            type: 'checkbox',
+            label:
+              'The individual is not eligible for waiver enrollment or placement on the Waiting List for Home and Community-Based Services, as he/she has no qualifying condition.',
+            id: 'conclusionNotEligibleForWaiver',
+          },
         ],
       },
       {
@@ -1149,8 +1169,6 @@ const WaitingListAssessment = (() => {
     dischargeIsICFResident: dischargePlanDetermination,
     dischargeIsInterestedInMoving: dischargePlanDetermination,
     dischargeHasDischargePlan: dischargePlanDetermination,
-    //TODO-ASH: immediateNeeds [AI??]
-    TODO6: ({ name, value, formName }) => {},
     //* currentNeeds
     unmetNeedsSupports: ({ name, value, formName }) => {
       // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only
@@ -1484,7 +1502,6 @@ const WaitingListAssessment = (() => {
       const formWrap = _DOM.createElement('div', { id: formElement, class: 'wlPage' });
       const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
       formWrap.appendChild(formHeader);
-      assessmentWrap.appendChild(formWrap);
 
       if (!wlFormInfo[formElement].enabled) {
         formWrap.classList.add('hiddenPage');
@@ -1496,6 +1513,7 @@ const WaitingListAssessment = (() => {
           fields: formElements[formElement],
           formName: formElement,
         });
+
         wlForms[formElement].renderTo(formWrap);
         wlForms[formElement].onChange(onFormChange(formElement));
         wlFormInfo[formElement].id = '';
@@ -1515,6 +1533,22 @@ const WaitingListAssessment = (() => {
         wlFormInfo.needs.medical.id = '';
         wlFormInfo.needs.other.id = '';
       }
+
+      if (
+        [
+          'primaryCaregiver',
+          'riskMitigation',
+          'icfDischarge',
+          'intermittentSupports',
+          'childProtectionAgency',
+          'adultDayEmployment',
+          'dischargePlan',
+        ].includes(formElement)
+      ) {
+        contributingCircumstancesWrap.appendChild(formWrap);
+      } else {
+        assessmentWrap.appendChild(formWrap);
+      }
     }
 
     // Participants
@@ -1530,7 +1564,9 @@ const WaitingListAssessment = (() => {
     moduleBodyMain.innerHTML = '';
 
     assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
+    contributingCircumstancesWrap = _DOM.createElement('div', { id: 'contributingCircumstances', class: 'wlPage' });
 
+    assessmentWrap.appendChild(contributingCircumstancesWrap);
     moduleBodyMain.appendChild(assessmentWrap);
   }
 
@@ -1560,7 +1596,8 @@ const WaitingListAssessment = (() => {
       },
       //------
       conclusion: {
-        enabled: false,
+        enabled: true,
+        dbtable: 'TODO',
       },
     };
   }

@@ -64,6 +64,7 @@ const WaitingList = (() => {
       consumerRequired: true,
     });
     rosterPicker.renderTo(moduleBodyRosterWrapEle);
+    rosterPicker.mobileRosterBtn.renderTo(_DOM.ACTIONCENTER);
 
     rosterPicker.onConsumerSelect(consumerId => {
       if (activeWindow === 'form') {
@@ -78,6 +79,12 @@ const WaitingList = (() => {
     rosterPicker.populate();
 
     WaitingListAssessment.init();
+
+    //TODO-ASH: MOVE THIS TO ROSTER??
+    if (document.body.dataset.mobile) {
+      const nav = document.getElementById('navigation');
+      nav.classList.add('actionBtnActive');
+    }
   }
 
   return {
