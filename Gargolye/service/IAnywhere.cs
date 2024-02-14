@@ -4071,6 +4071,13 @@ namespace Anywhere
           BodyStyle = WebMessageBodyStyle.Wrapped,
           ResponseFormat = WebMessageFormat.Json,
           RequestFormat = WebMessageFormat.Json,
+          UriTemplate = "/getWaitingListFundingSources/")]
+        FundingSources[] getWaitingListFundingSources();
+
+        [WebInvoke(Method = "POST",
+          BodyStyle = WebMessageBodyStyle.Wrapped,
+          ResponseFormat = WebMessageFormat.Json,
+          RequestFormat = WebMessageFormat.Json,
           UriTemplate = "/insertUpdateWaitingListValue/")]
         string insertUpdateWaitingListValue(int id, int linkId, string propertyName, string value, string valueTwo, char insertOrUpdate);
 

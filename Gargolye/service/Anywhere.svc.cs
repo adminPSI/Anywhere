@@ -2808,6 +2808,11 @@ namespace Anywhere
             return wlw.getLandingPageForConsumer(token, consumerId);
         }
 
+        public FundingSources[] getWaitingListFundingSources()
+        {
+            return wlw.getWaitingListFundingSources();  
+        }
+
         public WaitingList[] getWaitingListAssessment(int waitingListAssessmentId)
         {
             return wlw.getWaitingListAssessment(waitingListAssessmentId);

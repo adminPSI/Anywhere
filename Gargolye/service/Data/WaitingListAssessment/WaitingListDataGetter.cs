@@ -56,6 +56,21 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
+        public string getWaitingListFundingSources()
+        {
+            List<string> list = new List<string>();
+            string text = "CALL DBA.ANYW_WaitingList_GetFundingSources(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("2WL", ex.Message + "ANYW_WaitingList_GetFundingSources(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "2WL: error ANYW_WaitingList_GetFundingSources";
+            }
+        }
+
         public string insertUpdateWaitingListValue(int id, int linkId, string tableName, string columnName, string linkColumnName, string idNameForWhere, string propertyValue, string propertyValueTwo, char insertOrUpdate)
         {
             if (stringInjectionValidator(propertyValue) == false) return null;
