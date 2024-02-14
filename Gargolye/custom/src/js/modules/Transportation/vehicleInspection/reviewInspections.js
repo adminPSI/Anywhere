@@ -121,7 +121,8 @@ const TRANS_inspectionReview = (function () {
             btnWrap.removeChild(vehicleNumberBtnWrap);
         } else {
             btnWrap.appendChild(vehicleNumberBtnWrap);
-            document.getElementById('vehicleNumberBtn').innerHTML = 'Vehicle: ' + vehicleNumber;
+            if (document.getElementById('vehicleNumberBtn') != null)
+                document.getElementById('vehicleNumberBtn').innerHTML = 'Vehicle: ' + vehicleNumber;
         }
 
         if (enteredBy === '%' || enteredBy === 'All') {
@@ -129,7 +130,8 @@ const TRANS_inspectionReview = (function () {
             btnWrap.removeChild(enteredByBtnWrap);
         } else {
             btnWrap.appendChild(enteredByBtnWrap);
-            document.getElementById('enteredByBtn').innerHTML = 'Entered By: ' + enteredBy;
+            if (document.getElementById('enteredByBtn') != null)
+                document.getElementById('enteredByBtn').innerHTML = 'Entered By: ' + enteredBy;
         }
 
         return filteredBy;
