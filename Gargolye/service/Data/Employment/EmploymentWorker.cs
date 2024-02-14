@@ -778,8 +778,10 @@ namespace Anywhere.service.Data.Employment
                         {
                             foreach (string WorkScheduleIDtoDelete in tempWorkScheduleID)
                             {
-                                deleteWorkSchedule(token, WorkScheduleIDtoDelete);
+                                deleteWorkSchedule(token, WorkScheduleIDtoDelete);                              
                             }
+                            addUpdateWorkSchedule.WorkScheduleId = WorkScheduleId;
+                            return addUpdateWorkSchedule; 
                         }
                         else
                         {

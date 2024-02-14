@@ -227,6 +227,22 @@ const EmploymentInformation = (() => {
             },
         });
 
+        const addEmployerBtn = button.build({
+            text: '+ Add Employers',
+            style: 'secondary',
+            type: 'contained',
+            callback: async () => {
+                const redirectInfo = {
+                    positionId: PositionId,
+                    empName: employerName,
+                    posName: positionName,
+                    consumersName: selectedConsumersName,
+                    consumersId: consumersID
+                };
+                addEditEmployers.buildEmployerPopUp({}, 'insert', 'employmentInfo', redirectInfo);
+            },
+        });
+
         var LineBr = document.createElement('br');
 
 
@@ -270,7 +286,15 @@ const EmploymentInformation = (() => {
         addNewCard.innerHTML = `<div class="card__header">Employment Information</div>`;
         addNewCard.appendChild(addNewCardBody)
         column1.appendChild(addNewCard)
-        addNewCardBody.appendChild(employerDropdown);
+
+        const employerBtnWrap = document.createElement('div');
+        employerBtnWrap.classList.add('employmentBtnWrap');
+        employerDropdown.style.width = '80%';
+        addEmployerBtn.style.width = '19%';
+        employerBtnWrap.appendChild(employerDropdown);
+        employerBtnWrap.appendChild(addEmployerBtn);
+
+        addNewCardBody.appendChild(employerBtnWrap);
         addNewCardBody.appendChild(positionDropdown);
 
         var dropWrap = document.createElement('div');
@@ -289,9 +313,9 @@ const EmploymentInformation = (() => {
         drWrap.classList.add('employmentDTWrap');
         typeOfWorkDropdown.classList.add('width39Per');
         drWrap.appendChild(typeOfWorkDropdown);
-        isSelfEmployed.classList.add('width22Per'); 
+        isSelfEmployed.classList.add('width22Per');
         drWrap.appendChild(isSelfEmployed);
-        typeOfEmploymentDropdown.classList.add('width38Per'); 
+        typeOfEmploymentDropdown.classList.add('width38Per');
         drWrap.appendChild(typeOfEmploymentDropdown);
         addNewCardBody.appendChild(drWrap);
 
@@ -474,7 +498,7 @@ const EmploymentInformation = (() => {
             var selectedConsumerOption = event.target.options[event.target.selectedIndex];
             typeOfEmployment = selectedConsumerOption.id;
             temptypeOfEmployment = 'ChangeValue';
-            getRequiredFieldsOfEmployeeInfo(); 
+            getRequiredFieldsOfEmployeeInfo();
         });
         isSelfEmployed.addEventListener('change', event => {
             selfEmployed = event.target.checked == true ? 'Y' : 'N';
@@ -565,7 +589,7 @@ const EmploymentInformation = (() => {
         typeOfEmploymentData.unshift({ id: null, value: '', text: '' });
         dropdown.populate("typeOfEmploymentDropdown", typeOfEmploymentData, typeOfEmployment);
 
-        
+
     }
 
 
@@ -754,7 +778,7 @@ const EmploymentInformation = (() => {
         const { insertEmploymentInfoResult } = result;
         if (insertEmploymentInfoResult.positionID != null) {
             NewEmployment.refreshEmployment(insertEmploymentInfoResult.positionID, employerName, positionName, selectedConsumersName, consumersID, tabPositionIndex = 0);
-        }
+        }      
     }
 
     function CancleValidate() {
@@ -820,7 +844,7 @@ const EmploymentInformation = (() => {
     function createEmploymentPathPopupBtn() {
         pathToStartDate = '';
         pathToEmployment = '';
-        currentStatus = '';  
+        currentStatus = '';
 
         createPathPopup = POPUP.build({
             classNames: ['rosterFilterPopup'],
@@ -959,7 +983,7 @@ const EmploymentInformation = (() => {
             POPUP.hide(createPathPopup);
             NewEmployment.refreshEmployment(PositionId, employerName, positionName, selectedConsumersName, consumersID);
 
-        }
+        }      
     }
 
     return {

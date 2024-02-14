@@ -870,6 +870,10 @@
         }
     }
 
+    .entryBtn {
+        width: 49%;
+    }
+
     .employmentBtnWrap {
         display: flex;
         justify-content: space-between;
@@ -1077,14 +1081,26 @@
                 margin-left: 2px;
                 max-width: 45px !important;
             }
-        } 
+        }
 
         .table__row {
             &[data-plan-active='true'] {
                 > div:nth-child(4) {
                     margin-right: 116px !important;
                 }
-            } 
+            }
+
+            &[deleteHide='false'] {
+                > div:nth-child(6) {
+                    display: none;
+                }
+            }
+
+            &[copyHide='false'] {
+                > div:nth-child(5) {
+                    display: none;
+                }
+            }
 
             &.selected {
                 background: $secondary;
@@ -1108,7 +1124,7 @@
 
             > div:nth-child(4) {
                 display: none;
-                width: 80px; 
+                width: 80px;
             }
 
             > div:nth-child(5) {
@@ -1116,7 +1132,7 @@
             }
 
             > div:nth-child(6) {
-                width:70px;
+                width: 70px;
             }
 
 
