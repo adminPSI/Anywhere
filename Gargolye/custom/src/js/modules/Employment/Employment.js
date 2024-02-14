@@ -126,17 +126,23 @@ const Employment = (() => {
         buttonBar.classList.add('OODbuttonBar');
         buttonBar.style.maxHeight = '50px';
         buttonBar.style.minWidth = '100%';
-
-        const entryButtonBar = document.createElement('div');
-        entryButtonBar.style.width = '49%';
-
+       
         const newPositionBtn = button.build({
             text: '+ New Position',
             style: 'secondary',
             type: 'contained',
-            classNames: 'newEntryBtn',
+            classNames: 'entryBtn',
             callback: async () => { NewEmployment.refreshEmployment(positionId = undefined, '', '', selectedConsumersName, selectedConsumersId) },
         });
+
+        const editEmployerBtn = button.build({
+            text: 'Edit Employers',
+            style: 'secondary',
+            type: 'contained',
+            classNames: 'entryBtn',
+            callback: async () => { addEditEmployers.init(); },  
+        }); 
+
         if ($.session.EmploymentUpdate ) {
             newPositionBtn.classList.remove('disabled');
         }
@@ -144,12 +150,16 @@ const Employment = (() => {
             newPositionBtn.classList.add('disabled');
         }
         newPositionBtn.style.height = '50px';
-        newPositionBtn.style.minWidth = '100%';
 
         newFilterBtn = buildNewFilterBtn();
-        entryButtonBar.appendChild(newPositionBtn);
 
+        const entryButtonBar = document.createElement('div');
+        entryButtonBar.classList.add('employmentBtnWrap');
+        entryButtonBar.style.width = '100%';
+        entryButtonBar.appendChild(newPositionBtn);
+        entryButtonBar.appendChild(editEmployerBtn); 
         buttonBar.appendChild(entryButtonBar);
+
         return buttonBar;
     }
 

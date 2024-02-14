@@ -237,7 +237,8 @@ const TRANS_manageRoutes = (function () {
             btnWrap.removeChild(selectedDriverBtnWrap);
         } else {
             btnWrap.appendChild(selectedDriverBtnWrap);
-            document.getElementById('selectedDriverBtn').innerHTML = 'Driver: ' + selectedDriver;
+            if (document.getElementById('selectedDriverBtn') != null)
+                document.getElementById('selectedDriverBtn').innerHTML = 'Driver: ' + selectedDriver;
         }
 
         if (selectedLocation === '%' || selectedLocation === 'All') {
@@ -245,7 +246,8 @@ const TRANS_manageRoutes = (function () {
             btnWrap.removeChild(selectedLocationBtnWrap);
         } else {
             btnWrap.appendChild(selectedLocationBtnWrap);
-            document.getElementById('selectedLocationBtn').innerHTML = 'Location: ' + selectedLocation;
+            if (document.getElementById('selectedLocationBtn') != null)
+                document.getElementById('selectedLocationBtn').innerHTML = 'Location: ' + selectedLocation;
         }
 
         if (selectedRouteStatus === '%' || selectedRouteStatus === 'All') {
@@ -253,7 +255,8 @@ const TRANS_manageRoutes = (function () {
             btnWrap.removeChild(selectedRouteStatusBtnWrap);
         } else {
             btnWrap.appendChild(selectedRouteStatusBtnWrap);
-            document.getElementById('selectedRouteStatusBtn').innerHTML = 'Route Status: ' + selectedRouteStatus;
+            if (document.getElementById('selectedRouteStatusBtn') != null)
+                document.getElementById('selectedRouteStatusBtn').innerHTML = 'Route Status: ' + selectedRouteStatus;
         }
 
         if (selectedVehicle === '%' || selectedVehicle === 'All') {
@@ -261,7 +264,8 @@ const TRANS_manageRoutes = (function () {
             btnWrap.removeChild(selectedVehicleBtnWrap);
         } else {
             btnWrap.appendChild(selectedVehicleBtnWrap);
-            document.getElementById('selectedVehicleBtn').innerHTML = 'Vehicle: ' + selectedVehicle;
+            if (document.getElementById('selectedVehicleBtn') != null)
+                document.getElementById('selectedVehicleBtn').innerHTML = 'Vehicle: ' + selectedVehicle;
         }
 
         if (document.getElementById('totalRouteCountBtn') != null)

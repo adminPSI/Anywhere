@@ -870,6 +870,10 @@
         }
     }
 
+    .entryBtn {
+        width: 49%;
+    }
+
     .employmentBtnWrap {
         display: flex;
         justify-content: space-between;
@@ -1094,7 +1098,7 @@
 
             &[copyHide='false'] {
                 > div:nth-child(5) {
-                    display: none; 
+                    display: none;
                 }
             }
 
