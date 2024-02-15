@@ -16,7 +16,7 @@ const WaitingListOverview = (() => {
   //--------------------------------------------------
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
-    const tableData = await WaitingListAssessment.data.getReviewDataByConsumer(selectedConsumer);
+    const tableData = await wlData.getReviewDataByConsumer(selectedConsumer);
     wlReviewTable.populate(tableData);
   }
 
@@ -26,8 +26,8 @@ const WaitingListOverview = (() => {
   async function populatePage() {
     if (selectedConsumer) {
       rosterPicker.setSelectedConsumers(selectedConsumer);
-      await WaitingListAssessment.data.fetchReviewDataByConsumer(selectedConsumer);
-      const tableData = WaitingListAssessment.data.getReviewDataByConsumer();
+      await wlData.fetchReviewDataByConsumer(selectedConsumer);
+      const tableData = wlData.getReviewDataByConsumer();
       wlReviewTable.populate(tableData);
     }
   }

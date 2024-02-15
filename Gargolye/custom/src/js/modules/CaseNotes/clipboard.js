@@ -1015,3 +1015,87 @@ const formElements22 = {
     },
   ],
 };
+function loadPageOLD() {
+  // FORMS
+  for (formElement in formElements) {
+    if (formElements[formElement].length === 0) continue;
+
+    const formWrap = _DOM.createElement('div', { id: formElement, class: 'wlPage' });
+    const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
+    formWrap.appendChild(formHeader);
+
+    if (!wlFormInfo[formElement].enabled) {
+      formWrap.classList.add('hiddenPage');
+    }
+
+    if (formElement !== 'needs') {
+      wlForms[formElement] = new Form({
+        hideAllButtons: true,
+        fields: formElements[formElement],
+        formName: formElement,
+      });
+
+      wlForms[formElement].renderTo(formWrap);
+      wlForms[formElement].onChange(onFormChange(formElement));
+      wlFormInfo[formElement].id = '';
+    } else {
+      for (needSubForms in formElements[formElement]) {
+        wlForms[needSubForms] = new Form({
+          hideAllButtons: true,
+          fields: formElements[formElement][needSubForms],
+          formName: needSubForms,
+        });
+        wlForms[needSubForms].renderTo(formWrap);
+        wlForms[needSubForms].onChange(onFormChange(formElement, needSubForms));
+      }
+
+      wlFormInfo.needs.behavioral.id = '';
+      wlFormInfo.needs.physical.id = '';
+      wlFormInfo.needs.medical.id = '';
+      wlFormInfo.needs.other.id = '';
+    }
+
+    if (
+      [
+        'needs',
+        'primaryCaregiver',
+        'riskMitigation',
+        'icfDischarge',
+        'intermittentSupports',
+        'childProtectionAgency',
+        'adultDayEmployment',
+        'dischargePlan',
+      ].includes(formElement)
+    ) {
+      contributingCircumstancesWrap.appendChild(formWrap);
+    } else {
+      assessmentWrap.appendChild(formWrap);
+    }
+  }
+
+  // Participants
+  const tableWrap = _DOM.createElement('div', { id: 'participants', class: 'wlPage' });
+  const header = _DOM.createElement('h2', { text: 'Participants' });
+  tableWrap.appendChild(header);
+  participantsForm.renderTo(tableWrap);
+  participantsTable.renderTo(tableWrap);
+  assessmentWrap.appendChild(tableWrap);
+
+  // Table of Contents
+  sections.forEach(section => {
+    const sectionEle = _DOM.createElement('h3', { text: section.name, class: 'section' });
+    tableOFContents.appendChild(sectionEle);
+
+    if (section.subSections) {
+      section.subSections.forEach(subSection => {
+        const subSectionEle = _DOM.createElement('h4', { text: subSection.name, class: 'subsection' });
+        tableOFContents.appendChild(subSectionEle);
+      });
+    }
+  });
+
+  // Header
+  reviewAssessmentBtn.renderTo(moduleHeader);
+  sendEmailButton.renderTo(moduleHeader);
+  documentsButton.renderTo(moduleHeader);
+}

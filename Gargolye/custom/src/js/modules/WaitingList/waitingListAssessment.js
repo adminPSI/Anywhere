@@ -112,7 +112,7 @@ const WaitingListAssessment = (() => {
     },
     currentAvailableServices: {
       name: 'Current/Available Services',
-      enabled: false,
+      enabled: true,
       formElements: [
         {
           type: 'radiogroup',
@@ -1035,6 +1035,7 @@ const WaitingListAssessment = (() => {
   // EVENTS
   //--------------------------------------------------
   async function onReviewAssessmentBtnClick() {
+    WaitingList.setActiveWindow('table');
     WaitingListOverview.init();
   }
   async function onConsumerSelect(data) {
@@ -1670,47 +1671,53 @@ const WaitingListAssessment = (() => {
     });
   }
   function loadPage() {
+    // Header
     reviewAssessmentBtn.renderTo(moduleHeader);
     sendEmailButton.renderTo(moduleHeader);
     documentsButton.renderTo(moduleHeader);
 
-    // FORMS
-    for (formElement in formElements) {
-      if (formElements[formElement].length === 0) continue;
+    for (section in sections) {
+      const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });
+      const sectionHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(section) });
+      sectionWrap.appendChild(sectionHeader);
 
-      const formWrap = _DOM.createElement('div', { id: formElement, class: 'wlPage' });
-      const formHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(formElement) });
-      formWrap.appendChild(formHeader);
-
-      if (!wlFormInfo[formElement].enabled) {
-        formWrap.classList.add('hiddenPage');
+      if (!sections[section].enabled) {
+        sectionWrap.classList.add('hiddenPage');
       }
 
-      if (formElement !== 'needs') {
-        wlForms[formElement] = new Form({
-          hideAllButtons: true,
-          fields: formElements[formElement],
-          formName: formElement,
-        });
+      if (section === 'participants') {
+        participantsForm.renderTo(sectionWrap);
+        participantsTable.renderTo(sectionWrap);
+        continue;
+      }
 
-        wlForms[formElement].renderTo(formWrap);
-        wlForms[formElement].onChange(onFormChange(formElement));
-        wlFormInfo[formElement].id = '';
-      } else {
-        for (needSubForms in formElements[formElement]) {
+      if (section === 'needs') {
+        for (needSubForms in sections[section].formElements) {
           wlForms[needSubForms] = new Form({
             hideAllButtons: true,
-            fields: formElements[formElement][needSubForms],
+            fields: sections[section].formElements[needSubForms],
             formName: needSubForms,
           });
-          wlForms[needSubForms].renderTo(formWrap);
-          wlForms[needSubForms].onChange(onFormChange(formElement, needSubForms));
+          wlForms[needSubForms].renderTo(sectionWrap);
+          wlForms[needSubForms].onChange(onFormChange(section, needSubForms));
         }
 
         wlFormInfo.needs.behavioral.id = '';
         wlFormInfo.needs.physical.id = '';
         wlFormInfo.needs.medical.id = '';
         wlFormInfo.needs.other.id = '';
+      } else {
+        if (sections[section].formElements) {
+          wlForms[section] = new Form({
+            hideAllButtons: true,
+            fields: sections[section].formElements,
+            formName: section,
+          });
+
+          wlForms[section].renderTo(sectionWrap);
+          wlForms[section].onChange(onFormChange(section));
+          wlFormInfo[section].id = '';
+        }
       }
 
       if (
@@ -1723,34 +1730,13 @@ const WaitingListAssessment = (() => {
           'childProtectionAgency',
           'adultDayEmployment',
           'dischargePlan',
-        ].includes(formElement)
+        ].includes(section)
       ) {
-        contributingCircumstancesWrap.appendChild(formWrap);
+        contributingCircumstancesWrap.appendChild(sectionWrap);
       } else {
-        assessmentWrap.appendChild(formWrap);
+        assessmentWrap.appendChild(sectionWrap);
       }
     }
-
-    // Participants
-    const tableWrap = _DOM.createElement('div', { id: 'participants', class: 'wlPage' });
-    const header = _DOM.createElement('h2', { text: 'Participants' });
-    tableWrap.appendChild(header);
-    participantsForm.renderTo(tableWrap);
-    participantsTable.renderTo(tableWrap);
-    assessmentWrap.appendChild(tableWrap);
-
-    // Table of Contents
-    sections.forEach(section => {
-      const sectionEle = _DOM.createElement('h3', { text: section.name, class: 'section' });
-      tableOFContents.appendChild(sectionEle);
-
-      if (section.subSections) {
-        section.subSections.forEach(subSection => {
-          const subSectionEle = _DOM.createElement('h4', { text: subSection.name, class: 'subsection' });
-          tableOFContents.appendChild(subSectionEle);
-        });
-      }
-    });
   }
   function loadPageSkeleton() {
     moduleHeader.innerHTML = '';
@@ -1860,5 +1846,5 @@ const WaitingListAssessment = (() => {
     attachEvents();
   }
 
-  return { init, onConsumerSelect, formElements };
+  return { init, onConsumerSelect };
 })();
