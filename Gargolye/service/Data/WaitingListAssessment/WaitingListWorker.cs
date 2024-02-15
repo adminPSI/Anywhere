@@ -354,6 +354,24 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     
                     // Handle isMYCarewaiverService
                     break;
+                case "isSelfWaiverService":
+                    tableName = "WLA_Active_Services";
+                    columnName = "is_self_waiver_service";
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
+
+                    // Handle isMYCarewaiverService
+                    break;
+                case "isLevelOneWaiverService":
+                    tableName = "WLA_Active_Services";
+                    columnName = "is_level_one_waiver_service";
+                    linkColumnName = "WLA_Waiting_List_Information_ID";
+                    idNameForWhere = "WLA_Active_Service_Id";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
+
+                    // Handle isMYCarewaiverService
+                    break;
                 case "isMedicaidStatePlanHomeHealthAideservice":
                     tableName = "WLA_Active_Services";
                     columnName = "is_medicaid_state_plan_home_health_aide_service";
