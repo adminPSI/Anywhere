@@ -256,7 +256,7 @@ const WaitingListAssessment = (() => {
         },
         {
           type: 'radiogroup',
-          id: 'unknownId1',
+          id: 'isSelfWaiverService',
           groupLabel: 'Self-Empowered Life Funding Waiver',
           required: true,
           fields: [
@@ -266,7 +266,7 @@ const WaitingListAssessment = (() => {
         },
         {
           type: 'radiogroup',
-          id: 'unknownId2',
+          id: 'isLevelOneWaiverService',
           groupLabel: 'Level One Waiver',
           required: true,
           fields: [
@@ -1411,10 +1411,10 @@ const WaitingListAssessment = (() => {
 
         // needs is special
         if (formName === 'needs') {
-          wlForms[subForm].form.parentElement.classList.add('hiddenPage');
-          wlForms[subForm].form.parentElement.classList.add('hiddenPage');
-          wlForms[subForm].form.parentElement.classList.add('hiddenPage');
-          wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+          // wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+          // wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+          // wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+          // wlForms[subForm].form.parentElement.classList.add('hiddenPage');
 
           if (wlFormInfo.needs.behavioral.id) {
             formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
