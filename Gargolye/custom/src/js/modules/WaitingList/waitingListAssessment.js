@@ -1046,6 +1046,10 @@ const WaitingListAssessment = (() => {
     const resp = await wlData.insertWaitingListAssessment(selectedConsumer);
     wlLinkID = resp[0].newRecordId;
     wlFormInfo['waitingListInfo'].id = wlLinkID;
+
+    if (!wlLinkID) {
+      alert('This consumer has already been used for today, pick someone else.');
+    }
   }
 
   // Form
