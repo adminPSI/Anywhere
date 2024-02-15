@@ -1,15 +1,4 @@
-.mobileActive {
-  [data-ui] {
-    .waitingList__roster {
-      display: none;
-    }
-  }
-}
-
 [data-ui] {
-  // display: flex;
-  // flex-grow: 1;
-
   // MODULE WRAP
   .waitingList {
     &__header {
@@ -32,6 +21,8 @@
 
   // MAIN (form / overview)
   .waitingList__main {
+    display: flex;
+    flex-flow: row;
   }
 
   // FORM
@@ -67,6 +58,16 @@
     }
     #contributingCircumstances {
       order: 4;
+    }
+  }
+  .waitingListTableOFContents {
+    cursor: pointer;
+
+    .section {
+      margin: 0 0 10px 0;
+    }
+    .subsection {
+      margin: 0 0 6px 0;
     }
   }
 
