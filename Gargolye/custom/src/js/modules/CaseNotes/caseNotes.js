@@ -751,20 +751,21 @@ const CaseNotes = (() => {
   }
   async function onFormSubmit(data, submitter) {
     const buttonName = submitter.name.toLowerCase();
-
+  
     const overlaps = await timeOverlapCheck(data.startTime, data.endTime);
     if (overlaps.length) {
       const continueSave = await overlapPopup.show(
-        `The times you have entered for this note overlap with the following consumer(s), ${overlaps.join(
-          ',',
-        )}. Click OK to continue with save or CANCEL to go back to note.`,
+        `The times you have entered for this note overlap with the following consumer(s), ${overlaps.join(',')}. Click OK to continue with save or CANCEL to go back to note.`,
       );
-
+  
       if (continueSave === 'cancel') {
         return;
       }
     }
-
+  
+    // Fetch reviewRequired data
+    const reviewRequiredData = await cnData.fetchCaseManagerReviewData(caseManagerId);
+  
     const saveData = {
       caseManagerId,
       caseNote: data.noteText ? _UTIL.removeUnsavableNoteText(data.noteText) : '',
@@ -779,7 +780,7 @@ const CaseNotes = (() => {
       locationCode: data.location ?? '',
       noteId: caseNoteId ?? 0,
       needCode: data.need ?? '',
-      reviewRequired: '',
+      reviewRequired: reviewRequiredData.reviewRequired,
       serviceDate: dates.formatISO(selectedDate, { representation: 'date' }),
       serviceCode: data.service ?? '',
       serviceLocationCode: data.serviceLocation ?? '',
@@ -788,23 +789,24 @@ const CaseNotes = (() => {
       vendorId: data.vendor ?? '',
     };
     const attachmentsForSave = await processAttachmentsForSave(data);
-
+  
     const { isNewGroup } = await saveNote(saveData, attachmentsForSave);
-
+  
     await cnOverview.fetchData(selectedDate);
     cnOverview.populate();
     cnFormToast.close();
-
+  
     if (buttonName === 'saveandnew' || isNewGroup) {
       resetNoteData();
       cnForm.clear();
       rosterPicker.setSelectedConsumers([]);
-
+  
       if ($.session.applicationName === 'Gatekeeper') {
         cnDocTimer.clear();
       }
     }
   }
+  
 
   // ROSTER
   //--------------------------------------------------
