@@ -105,6 +105,10 @@
     } else {
       this.toggleDisabled(false);
     }
+
+    if (defaultValue) {
+      this.select.value = defaultValue;
+    }
   };
 
   /**

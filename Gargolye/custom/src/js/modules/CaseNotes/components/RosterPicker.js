@@ -37,7 +37,6 @@
     this.rosterSearchInput = null;
     this.rosterCaseLoadInput = null;
     this.consumerCards = null;
-    this.mobileRosterBtn = null;
 
     this._build();
     this._setupEvents();
@@ -154,8 +153,6 @@
       await this.fetchConsumers();
       this.populate();
     });
-
-    this.mobileRosterBtn.onClick(e => {});
   };
 
   /**
