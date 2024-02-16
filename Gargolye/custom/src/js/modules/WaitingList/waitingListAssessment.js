@@ -1100,6 +1100,61 @@ const WaitingListAssessment = (() => {
 
     return data.insertUpdateWaitingListValueResult;
   }
+  async function insertUpdateAssessment({ value, type, formName, subFormName }) {
+    // set radio/checkbox value
+    if (type === 'radio' || type === 'checkbox') {
+      value = value === 'yes' ? 1 : 0;
+    }
+
+    // determine if we use wlLinkID or wlCircID
+    let linkIdForSaveUpdate;
+    if (
+      [
+        'needs',
+        'primaryCaregiver',
+        'riskMitigation',
+        'icfDischarge',
+        'intermittentSupports',
+        'childProtectionAgency',
+        'adultDayEmployment',
+        'dischargePlan',
+      ].includes(formName)
+    ) {
+      linkIdForSaveUpdate = wlCircID;
+    } else {
+      linkIdForSaveUpdate = wlLinkID;
+    }
+
+    // save / update
+    let hasId = false;
+    if (formName === 'needs') {
+      hasId = wlFormInfo[formName][subFormName].id === '' ? false : true;
+    } else {
+      hasId = wlFormInfo[formName].id === '' ? false : true;
+    }
+
+    if (!hasId) {
+      const resp = await insertAssessmentData({
+        id: 0,
+        linkId: linkIdForSaveUpdate,
+        propertyName: name,
+        value: value,
+      });
+
+      if (formName === 'needs') {
+        wlFormInfo[formName][subFormName].id = resp[0].newRecordId;
+      } else {
+        wlFormInfo[formName].id = resp[0].newRecordId;
+      }
+    } else {
+      await updateAssessmentData({
+        id: wlFormInfo[formName].id,
+        linkId: formName === 'waitingListInfo' || formName === 'conclusion' ? 0 : linkIdForSaveUpdate,
+        propertyName: name,
+        value: value,
+      });
+    }
+  }
 
   // EVENTS
   //--------------------------------------------------
@@ -1128,8 +1183,8 @@ const WaitingListAssessment = (() => {
     // any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
     wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
   }
-  function behavioralNeedsCheckboxes({ name, value, formName, subForm }) {
-    const checkboxGroupOne = [
+  function needsCheckboxes({ name, value, formName, subForm }) {
+    const behaviorCheckboxGroupOne = [
       wlForms['behavioral'].inputs['risksIsPhysicalAggression'].getValue(),
       wlForms['behavioral'].inputs['risksIsSelfInjury'].getValue(),
       wlForms['behavioral'].inputs['risksIsFireSetting'].getValue(),
@@ -1138,72 +1193,71 @@ const WaitingListAssessment = (() => {
       wlForms['behavioral'].inputs['risksIsOther'].getValue(),
     ];
 
-    const checkboxGroupTwo = [
+    const behaviorCheckboxGroupTwo = [
       wlForms['behavioral'].inputs['risksHasPoliceReport'].getValue(),
       wlForms['behavioral'].inputs['risksHasIncidentReport'].getValue(),
       wlForms['behavioral'].inputs['risksHasBehaviorTracking'].getValue(),
       wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].getValue(),
       wlForms['behavioral'].inputs['risksHasOtherDocument'].getValue(),
     ];
-
-    const hasCheckGroupOne = checkboxGroupOne.some(element => element === true);
-    const hasCheckGroupTwo = checkboxGroupTwo.some(element => element === true);
-
-    // (ENABLE) [risksFrequencyDescription] the "Describe type, frequency, and intensity of behavioral..." textbox (IF)
-    // any of the checkboxes are checked in the first group of checkboxes EXCEPT the "Not applicable...checkbox"
-    wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(!hasCheckGroupOne);
-    // (ENABLE) [risksOtherDocumentDescription] the second textbox (under the second group of checkboxes" as long as the "Other" checkbox is checked in the second group of checkboxes.
-    wlForms['behavioral'].inputs['risksOtherDocumentDescription'].toggleDisabled(
-      wlForms['behavioral'].inputs['risksHasOtherDocument'].getValue() === true ? false : true,
-    );
-    // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF)
-    //  A checkbox is checked in each of the first two groups of checkboxes (not including the "Not applicable…" checkboxes in each group)
-    wlForms['behavioral'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(
-      !hasCheckGroupOne && !hasCheckGroupTwo,
-    );
-    // (SET) [risksIsRiskToSelf] "Is the individual a child / adult currently engaging..." to "YES" (IF)
-    // There is at least one checkbox checked in each of the first two groups of checkboxes NOT including the "Not applicable…" checkboxes
-    const inputId = hasCheckGroupOne && hasCheckGroupTwo ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
-    wlForms['behavioral'].inputs['risksIsRiskToSelf'].setValue(inputId);
-  }
-  function physicalNeedsCheckboxes({ name, value, formName }) {
-    const data = [
+    const physicalCheckboxGroup = [
       wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].getValue(),
       wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].getValue(),
       wlForms['physical'].inputs['physicalNeedsIsOther'].getValue(),
     ];
-    const hasCheck = data.some(element => element === true);
-
-    // (ENABLE) [physicalNeedsDescription] the "Describe type, frequency, and intensity of physical..." textbox (IF)
-    // any of the checkboxes are checked in the third group of checkboxes EXCEPT the "Not applicable...checkbox"
-    wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(!hasCheck);
-    // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF)
-    // A checkbox is checked in the third group of checkboxes (not including the "Not applicable…" checkbox)
-    wlForms['physical'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!hasCheck);
-    // (SET) [physicalNeedsIsPhysicalCareNeeded] "Is the individual a child/adult with significant physical care needs?" to "YES" (IF)
-    // There is at least one checkbox checked in the third group of checkboxes NOT including the "Not applicable…" checkboxes
-    const inputId = hasCheck ? 'physicalNeedsIsPhysicalCareNeededyes' : 'physicalNeedsIsPhysicalCareNeededno';
-    wlForms['physical'].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue(inputId);
-  }
-  function medicalNeedsCheckboxes({ name, value, formName }) {
-    const data = [
+    const medicalCheckboxGroup = [
       wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].getValue(),
       wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].getValue(),
       wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].getValue(),
       wlForms['medical'].inputs['medicalNeedsIsOther'].getValue(),
     ];
-    const hasCheck = data.some(element => element === true);
+
+    const hasCheckBehaviorOne = behaviorCheckboxGroupOne.some(element => element === true);
+    const hasCheckBehaviorTwo = behaviorCheckboxGroupTwo.some(element => element === true);
+    const hasCheckPhysical = physicalCheckboxGroup.some(element => element === true);
+    const hasCheckMedical = medicalCheckboxGroup.some(element => element === true);
+
+    // (ENABLE) [risksFrequencyDescription] the "Describe type, frequency, and intensity of behavioral..." textbox (IF)
+    // any of the checkboxes are checked in the first group of checkboxes EXCEPT the "Not applicable...checkbox"
+    wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(!hasCheckBehaviorOne);
+
+    // (ENABLE) [risksOtherDocumentDescription] the second textbox (under the second group of checkboxes" as long as the "Other" checkbox is checked in the second group of checkboxes.
+    wlForms['behavioral'].inputs['risksOtherDocumentDescription'].toggleDisabled(
+      wlForms['behavioral'].inputs['risksHasOtherDocument'].getValue() === true ? false : true,
+    );
+
+    // (SET) [risksIsRiskToSelf] "Is the individual a child / adult currently engaging..." to "YES" (IF)
+    // There is at least one checkbox checked in each of the first two groups of checkboxes NOT including the "Not applicable…" checkboxes
+    const risksIsRiskToSelfInputId =
+      hasCheckBehaviorOne && hasCheckBehaviorTwo ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
+    wlForms['behavioral'].inputs['risksIsRiskToSelf'].setValue(risksIsRiskToSelfInputId);
+
+    // (ENABLE) [physicalNeedsDescription] the "Describe type, frequency, and intensity of physical..." textbox (IF)
+    // any of the checkboxes are checked in the third group of checkboxes EXCEPT the "Not applicable...checkbox"
+    wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(!hasCheckPhysical);
+
+    // (SET) [physicalNeedsIsPhysicalCareNeeded] "Is the individual a child/adult with significant physical care needs?" to "YES" (IF)
+    // There is at least one checkbox checked in the third group of checkboxes NOT including the "Not applicable…" checkboxes
+    const physicalNeedsIsPhysicalCareNeededInputId = hasCheckPhysical
+      ? 'physicalNeedsIsPhysicalCareNeededyes'
+      : 'physicalNeedsIsPhysicalCareNeededno';
+    wlForms['physical'].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue(physicalNeedsIsPhysicalCareNeededInputId);
 
     // (ENABLE) [medicalNeedsDescription] the "Describe type, frequency, and intensity of medical..." textbox (IF)
     // any of the checkboxes are checked in the fourth group of checkboxes EXCEPT the "Not applicable..." checkbox
-    wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(!hasCheck);
-    // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF)
-    // A checkbox is checked in the fourth group of checkboxes (not including the "Not applicable…" checkbox)
-    wlForms['medical'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!hasCheck);
+    wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(!hasCheckMedical);
+
     // (SET) [medicalNeedsIsLifeThreatening] "Is the individual a child/adult with significant or life-threatening medical needs?" to "YES" (IF)
     // There is at least one checkbox checked in the fourth group of checkboxes NOT including the "Not applicable…" checkboxes
-    const inputId = hasCheck ? 'medicalNeedsIsLifeThreateningyes' : 'medicalNeedsIsLifeThreateningno';
+    const inputId = hasCheckMedical ? 'medicalNeedsIsLifeThreateningyes' : 'medicalNeedsIsLifeThreateningno';
     wlForms['medical'].inputs['medicalNeedsIsLifeThreatening'].setValue(inputId);
+
+    // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF)
+    // A checkbox is checked in each of the first two groups of checkboxes (not including the "Not applicable…" checkboxes in each group) (OR)
+    // A checkbox is checked in the third group of checkboxes (not including the "Not applicable…" checkbox) (OR)
+    // A checkbox is checked in the fourth group of checkboxes (not including the "Not applicable…" checkbox) (OR)
+    const needsIsActionDisabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
+    wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!needsIsActionDisabled);
   }
   function intermittentSupportsDetermination({ name, value, formName }) {
     // AI FIELD
@@ -1270,170 +1324,6 @@ const WaitingListAssessment = (() => {
     // (SET) [immNeedsRequired] "Is there an immediate need..." to YES only when the page is enabled.  Otherwise, set it to NO
     wlForms[formName].inputs['immNeedsRequired'].setValue();
   }
-  const onChangeCallbacks = {
-    //* waitingListInfo
-    //*---------------------------------
-    currentLivingArrangement: ({ name, value, formName }) => {
-      // (ENABLE) [] the "Other Living Arrangement" field only (IF) [currentLivingArrangement] "Other" is selected in the "Describe Current Living Arrangement" drodown
-      const data = wlForms[formName].inputs['currentLivingArrangement'].getValue();
-      wlForms[formName].inputs['livingArrangementOther'].toggleDisabled(data === '0' ? false : true);
-    },
-    //* currentAvailableServices
-    //*---------------------------------
-    isOtherService: ({ name, value, formName, id }) => {
-      // (ENABLE) [otherDescription] the text field under "Other" only (IF) [isOtherService] the answer is "Yes" to Other
-      const isYesChecked = wlForms[formName].inputs['isOtherService'].getValue('isOtherServiceyes');
-      wlForms[formName].inputs['otherDescription'].toggleDisabled(!isYesChecked);
-    },
-    //* primaryCaregiver
-    //*---------------------------------
-    isPrimaryCaregiverUnavailable: ({ name, value, formName }) => {
-      // (ENABLE) [unavailableDocumentation] "List documentation used to verify presence of declining..."  (IF) [isPrimaryCaregiverUnavailable] question above it is "Yes"
-      // (ENABLE) [isActionRequiredIn30Days] "Is action required..." radio buttons                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." question is "Yes"
-      // (ENABLE) [isIndividualSkillsDeclined] "Is there evidence of declining..."                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." answer is "No".
-      const isYesChecked = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue(
-        'isPrimaryCaregiverUnavailableyes',
-      );
-      const isNoChecked = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue(
-        'isPrimaryCaregiverUnavailableno',
-      );
-      wlForms[formName].inputs['unavailableDocumentation'].toggleDisabled(!isYesChecked);
-      wlForms[formName].inputs['isActionRequiredIn30Days'].toggleDisabled(!isYesChecked);
-      wlForms[formName].inputs['isIndividualSkillsDeclined'].toggleDisabled(!isNoChecked);
-    },
-    isActionRequiredIn30Days: ({ name, value, formName }) => {
-      // (ENABLE) [actionRequiredDescription] "Describe action required." textbox (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
-      const isYesChecked = wlForms[formName].inputs['isActionRequiredIn30Days'].getValue('isActionRequiredIn30Daysyes');
-      wlForms[formName].inputs['actionRequiredDescription'].toggleDisabled(!isYesChecked);
-    },
-    isIndividualSkillsDeclined: ({ name, value, formName }) => {
-      // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox  (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-      // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox                                (IF) [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-      const isYesChecked = wlForms[formName].inputs['isIndividualSkillsDeclined'].getValue(
-        'isIndividualSkillsDeclinedyes',
-      );
-      wlForms[formName].inputs['declinedSkillsDocumentation'].toggleDisabled(!isYesChecked);
-      wlForms[formName].inputs['declinedSkillsDescription'].toggleDisabled(!isYesChecked);
-    },
-    //* needs
-    //*---------------------------------
-    // behavioral checkbox group 1
-    risksIsPhysicalAggression: behavioralNeedsCheckboxes,
-    risksIsSelfInjury: behavioralNeedsCheckboxes,
-    risksIsFireSetting: behavioralNeedsCheckboxes,
-    risksIsElopement: behavioralNeedsCheckboxes,
-    risksIsSexualOffending: behavioralNeedsCheckboxes,
-    risksIsOther: behavioralNeedsCheckboxes,
-    // behavioral checkbox group 2
-    risksHasPoliceReport: behavioralNeedsCheckboxes,
-    risksHasIncidentReport: behavioralNeedsCheckboxes,
-    risksHasBehaviorTracking: behavioralNeedsCheckboxes,
-    risksHasPsychologicalAssessment: behavioralNeedsCheckboxes,
-    risksHasOtherDocument: behavioralNeedsCheckboxes,
-    // physical checkbox group
-    physicalNeedsIsPersonalCareNeeded: physicalNeedsCheckboxes,
-    physicalNeedsIsRiskDuringPhysicalCare: physicalNeedsCheckboxes,
-    physicalNeedsIsOther: physicalNeedsCheckboxes,
-    // medical checkbox group
-    medicalNeedsIsFrequentEmergencyVisit: medicalNeedsCheckboxes,
-    medicalNeedsIsOngoingMedicalCare: medicalNeedsCheckboxes,
-    medicalNeedsIsSpecializedCareGiveNeeded: medicalNeedsCheckboxes,
-    medicalNeedsIsOther: medicalNeedsCheckboxes,
-    // needs other section
-    needsIsActionRequiredRequiredIn30Days: ({ name, value, formName }) => {
-      // (ENABLE) [needsIsContinuousSupportRequired] the "If No, do the significant..." radio buttons only (IF) the following are ALL true:
-      // needsIsActionRequiredRequiredIn30Days
-      //   a. The "Is action required within the next 30 days…" radio buttons are enabled AND
-      //   b.  The answer to "Is action required within the next 30 days…" is "No"
-      const isNoChecked = wlForms[formName].inputs['needsIsActionRequiredRequiredIn30Days'].getValue(
-        'needsIsActionRequiredRequiredIn30Daysno',
-      );
-      wlForms[formName].inputs['needsIsContinuousSupportRequired'].toggleDisabled(!isNoChecked);
-    },
-    //* riskMitigation
-    //*---------------------------------
-    rMIsActionRequiredIn3oDays: ({ name, value, formName }) => {
-      // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES"
-      // (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".Otherwise, set to "NO"
-      const isYesChecked = wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].getValue(
-        'rMIsActionRequiredIn3oDaysyes',
-      );
-
-      wlForms[formName].inputs['rMIsSupportNeeded'].setValue();
-    },
-    rMIsAdultProtectiveServiceInvestigation: riskMitigationCheckboxes,
-    rMIsCountyBoardInvestigation: riskMitigationCheckboxes,
-    rMIsLawEnforcementInvestigation: riskMitigationCheckboxes,
-    rMIsOtherInvestigation: riskMitigationCheckboxes,
-    //* icfDischarge
-    //*---------------------------------
-    icfIsICFResident: icfDischargeDetermination,
-    icfIsNoticeIssued: icfDischargeDetermination,
-    icfIsActionRequiredIn30Days: icfDischargeDetermination,
-    //* intermittentSupports
-    //*---------------------------------
-    intSupIsSupportNeededIn12Months: intermittentSupportsDetermination,
-    intSupIsStayingLivingArrangement: intermittentSupportsDetermination,
-    intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
-    //* childProtectionAgency
-    //*---------------------------------
-    cpaIsReleasedNext12Months: ({ name, value, formName }) => {
-      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only
-      // (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
-      const isYesChecked =
-        wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes');
-      wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(!isYesChecked);
-    },
-    cpaIsReleasedNext12Months: childProtectionAgencyDetermination,
-    cpaHadUnaddressableNeeds: childProtectionAgencyDetermination,
-    //* adultDayEmployment
-    //*---------------------------------
-    rwfNeedsMoreFrequency: adultDayEmploymentDetermination,
-    rwfNeedsServiceNotMetIDEA: adultDayEmploymentDetermination,
-    rwfNeedsServiceNotMetOOD: adultDayEmploymentDetermination,
-    //* dischargePlan
-    //*---------------------------------
-    dischargeIsICFResident: dischargePlanDetermination,
-    dischargeIsInterestedInMoving: dischargePlanDetermination,
-    dischargeHasDischargePlan: dischargePlanDetermination,
-    //* currentNeeds
-    //*---------------------------------
-    unmetNeedsSupports: ({ name, value, formName }) => {
-      // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only
-      // (IF)[unmetNeedsSupports] "If 'Yes', will any of those needs..." is YES
-      const isYesChecked = wlForms[formName].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
-      wlForms[formName].inputs['unmetNeedsDescription'].toggleDisabled(isYesChecked);
-    },
-    unmetNeedsHas: ({ name, value, formName }) => {
-      // (ENABLE) [unmetNeedsSupports] "If 'Yes', will any of those needs..." only
-      // (IF)[unmetNeedsHas] "Does the individual have an identified need?" is YES
-      const isYesChecked = wlForms[formName].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
-      wlForms[formName].inputs['unmetNeedsSupports'].toggleDisabled(isYesChecked);
-    },
-    // (SET) [unmetNeedsHas] "Does the individual have an identified need?" to YES only when one of the following is true:
-    //   a. ("Is there evidence that the primary…" is YES (AND) "Is action required…" is NO on the Primary Caregiver page) { OR }
-    //      ("Is there evidence of declining…" is NO (AND) "Is there evidence of declining skills…" is YES on the Primary Caregiver page)
-    //
-    //   b. ("Is the individual a child/adult currently engaging…" is YES on the Needs page { OR }
-    //      ("Is the individual a child/adult with significant physical…" is YES on the Needs page { OR }
-    //      ("Is the individual a child/adult with significant { OR }
-    //      (life- threatening…" is YES on the Needs page) (AND) ("If No, do the significant behavioral, physical care, and / or medical needs…" is YES on the Needs page)
-    //
-    //   c. "Does the individual have an ongoing need…" is YES on the Intermittent Supports page
-    //   d. "Is the individual reaching the age…" is YES on the Child Protection Agency page
-    //   e. "Does the individual require funding…" is YES on the Adult Day/Employment page
-    //   f. "Does the individual have a viable…" is YES on the Discharge Plan page
-    //* waiverEnrollment
-    //*---------------------------------
-    waivEnrollWaiverEnrollmentIsRequired: ({ name, value, formName }) => {
-      // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only
-      // (IF)[waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
-      const isYesChecked = wlForms[formName].inputs['waivEnrollWaiverEnrollmentIsRequired'].getValue(
-        'waivEnrollWaiverEnrollmentIsRequiredyes',
-      );
-      wlForms[formName].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(isYesChecked);
-    },
-  };
   async function updatePageActiveStatus(subForm) {
     const conditionsInputValues = [
       wlForms['conditions'].inputs['otherThanMentalHealth'].getValue('otherThanMentalHealthyes'),
@@ -1578,6 +1468,163 @@ const WaitingListAssessment = (() => {
       wlForms['immediateNeeds'].form.parentElement.classList.add('hiddenPage');
     }
   }
+  const onChangeCallbacks = {
+    //* waitingListInfo
+    currentLivingArrangement: ({ name, value, formName }) => {
+      // (ENABLE) [livingArrangementOther] the "Other Living Arrangement" field only (IF)
+      // [currentLivingArrangement] "Other" is selected in the "Describe Current Living Arrangement" drodown
+      const data = wlForms[formName].inputs['currentLivingArrangement'].getValue();
+      wlForms[formName].inputs['livingArrangementOther'].toggleDisabled(data === '0' ? false : true);
+    },
+    //* currentAvailableServices
+    isOtherService: ({ name, value, formName, id }) => {
+      // (ENABLE) [otherDescription] the text field under "Other" only (IF)
+      // [isOtherService] the answer is "Yes" to Other
+      const isYesChecked = wlForms[formName].inputs['isOtherService'].getValue('isOtherServiceyes');
+      wlForms[formName].inputs['otherDescription'].toggleDisabled(!isYesChecked);
+    },
+    //* primaryCaregiver
+    isPrimaryCaregiverUnavailable: ({ name, value, formName }) => {
+      // (ENABLE) [unavailableDocumentation] "List documentation used to verify presence of declining..."  (IF) [isPrimaryCaregiverUnavailable] question above it is "Yes"
+      // (ENABLE) [isActionRequiredIn30Days] "Is action required..." radio buttons                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." question is "Yes"
+      // (ENABLE) [isIndividualSkillsDeclined] "Is there evidence of declining..."                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." answer is "No".
+      const isYesChecked = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue(
+        'isPrimaryCaregiverUnavailableyes',
+      );
+      const isNoChecked = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue(
+        'isPrimaryCaregiverUnavailableno',
+      );
+      wlForms[formName].inputs['unavailableDocumentation'].toggleDisabled(!isYesChecked);
+      wlForms[formName].inputs['isActionRequiredIn30Days'].toggleDisabled(!isYesChecked);
+      wlForms[formName].inputs['isIndividualSkillsDeclined'].toggleDisabled(!isNoChecked);
+    },
+    isActionRequiredIn30Days: ({ name, value, formName }) => {
+      // (ENABLE) [actionRequiredDescription] "Describe action required." textbox (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
+      const isYesChecked = wlForms[formName].inputs['isActionRequiredIn30Days'].getValue('isActionRequiredIn30Daysyes');
+      wlForms[formName].inputs['actionRequiredDescription'].toggleDisabled(!isYesChecked);
+    },
+    isIndividualSkillsDeclined: ({ name, value, formName }) => {
+      // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox (IF)
+      // [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
+      // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox (IF)
+      // [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
+      const isYesChecked = wlForms[formName].inputs['isIndividualSkillsDeclined'].getValue(
+        'isIndividualSkillsDeclinedyes',
+      );
+      wlForms[formName].inputs['declinedSkillsDocumentation'].toggleDisabled(!isYesChecked);
+      wlForms[formName].inputs['declinedSkillsDescription'].toggleDisabled(!isYesChecked);
+    },
+    //* needs
+    // behavioral checkbox group 1
+    risksIsPhysicalAggression: needsCheckboxes,
+    risksIsSelfInjury: needsCheckboxes,
+    risksIsFireSetting: needsCheckboxes,
+    risksIsElopement: needsCheckboxes,
+    risksIsSexualOffending: needsCheckboxes,
+    risksIsOther: needsCheckboxes,
+    // behavioral checkbox group 2
+    risksHasPoliceReport: needsCheckboxes,
+    risksHasIncidentReport: needsCheckboxes,
+    risksHasBehaviorTracking: needsCheckboxes,
+    risksHasPsychologicalAssessment: needsCheckboxes,
+    risksHasOtherDocument: needsCheckboxes,
+    // physical checkbox group
+    physicalNeedsIsPersonalCareNeeded: needsCheckboxes,
+    physicalNeedsIsRiskDuringPhysicalCare: needsCheckboxes,
+    physicalNeedsIsOther: needsCheckboxes,
+    // medical checkbox group
+    medicalNeedsIsFrequentEmergencyVisit: needsCheckboxes,
+    medicalNeedsIsOngoingMedicalCare: needsCheckboxes,
+    medicalNeedsIsSpecializedCareGiveNeeded: needsCheckboxes,
+    medicalNeedsIsOther: needsCheckboxes,
+    // needs other section
+    needsIsActionRequiredRequiredIn30Days: ({ name, value, formName }) => {
+      // (ENABLE) [needsIsContinuousSupportRequired] the "If No, do the significant..." radio buttons only (IF) the following are ALL true:
+      // needsIsActionRequiredRequiredIn30Days
+      //   a. The "Is action required within the next 30 days…" radio buttons are enabled AND
+      //   b.  The answer to "Is action required within the next 30 days…" is "No"
+      const isNoChecked = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue(
+        'needsIsActionRequiredRequiredIn30Daysno',
+      );
+      wlForms[formName].inputs['needsIsContinuousSupportRequired'].toggleDisabled(!isNoChecked);
+    },
+    //* riskMitigation
+    rMIsActionRequiredIn3oDays: ({ name, value, formName }) => {
+      // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES"
+      // (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".Otherwise, set to "NO"
+      const isYesChecked = wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].getValue(
+        'rMIsActionRequiredIn3oDaysyes',
+      );
+
+      wlForms[formName].inputs['rMIsSupportNeeded'].setValue();
+    },
+    rMIsAdultProtectiveServiceInvestigation: riskMitigationCheckboxes,
+    rMIsCountyBoardInvestigation: riskMitigationCheckboxes,
+    rMIsLawEnforcementInvestigation: riskMitigationCheckboxes,
+    rMIsOtherInvestigation: riskMitigationCheckboxes,
+    //* icfDischarge
+    icfIsICFResident: icfDischargeDetermination,
+    icfIsNoticeIssued: icfDischargeDetermination,
+    icfIsActionRequiredIn30Days: icfDischargeDetermination,
+    //* intermittentSupports
+    intSupIsSupportNeededIn12Months: intermittentSupportsDetermination,
+    intSupIsStayingLivingArrangement: intermittentSupportsDetermination,
+    intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
+    //* childProtectionAgency
+    cpaIsReleasedNext12Months: ({ name, value, formName }) => {
+      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only
+      // (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
+      const isYesChecked =
+        wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes');
+      wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(!isYesChecked);
+    },
+    cpaIsReleasedNext12Months: childProtectionAgencyDetermination,
+    cpaHadUnaddressableNeeds: childProtectionAgencyDetermination,
+    //* adultDayEmployment
+    rwfNeedsMoreFrequency: adultDayEmploymentDetermination,
+    rwfNeedsServiceNotMetIDEA: adultDayEmploymentDetermination,
+    rwfNeedsServiceNotMetOOD: adultDayEmploymentDetermination,
+    //* dischargePlan
+    dischargeIsICFResident: dischargePlanDetermination,
+    dischargeIsInterestedInMoving: dischargePlanDetermination,
+    dischargeHasDischargePlan: dischargePlanDetermination,
+    //* currentNeeds
+    unmetNeedsSupports: ({ name, value, formName }) => {
+      // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only
+      // (IF)[unmetNeedsSupports] "If 'Yes', will any of those needs..." is YES
+      const isYesChecked = wlForms[formName].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
+      wlForms[formName].inputs['unmetNeedsDescription'].toggleDisabled(isYesChecked);
+    },
+    unmetNeedsHas: ({ name, value, formName }) => {
+      // (ENABLE) [unmetNeedsSupports] "If 'Yes', will any of those needs..." only
+      // (IF)[unmetNeedsHas] "Does the individual have an identified need?" is YES
+      const isYesChecked = wlForms[formName].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
+      wlForms[formName].inputs['unmetNeedsSupports'].toggleDisabled(isYesChecked);
+    },
+    // (SET) [unmetNeedsHas] "Does the individual have an identified need?" to YES only when one of the following is true:
+    //   a. ("Is there evidence that the primary…" is YES (AND) "Is action required…" is NO on the Primary Caregiver page) { OR }
+    //      ("Is there evidence of declining…" is NO (AND) "Is there evidence of declining skills…" is YES on the Primary Caregiver page)
+    //
+    //   b. ("Is the individual a child/adult currently engaging…" is YES on the Needs page { OR }
+    //      ("Is the individual a child/adult with significant physical…" is YES on the Needs page { OR }
+    //      ("Is the individual a child/adult with significant { OR }
+    //      (life- threatening…" is YES on the Needs page) (AND) ("If No, do the significant behavioral, physical care, and / or medical needs…" is YES on the Needs page)
+    //
+    //   c. "Does the individual have an ongoing need…" is YES on the Intermittent Supports page
+    //   d. "Is the individual reaching the age…" is YES on the Child Protection Agency page
+    //   e. "Does the individual require funding…" is YES on the Adult Day/Employment page
+    //   f. "Does the individual have a viable…" is YES on the Discharge Plan page
+    //* waiverEnrollment
+    //*---------------------------------
+    waivEnrollWaiverEnrollmentIsRequired: ({ name, value, formName }) => {
+      // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only
+      // (IF)[waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
+      const isYesChecked = wlForms[formName].inputs['waivEnrollWaiverEnrollmentIsRequired'].getValue(
+        'waivEnrollWaiverEnrollmentIsRequiredyes',
+      );
+      wlForms[formName].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(isYesChecked);
+    },
+  };
   const onChangeCallbacksFormWatch = {
     conditions: ({ name, value, formName, subForm }) => {
       updatePageActiveStatus(subForm);
@@ -1589,6 +1636,27 @@ const WaitingListAssessment = (() => {
       updatePageActiveStatus(subForm);
     },
   };
+  function handleInputSpecificOnChange({ value, name, formName, subForm, id }) {
+    if (onChangeCallbacks[name]) {
+      onChangeCallbacks[name]({
+        value,
+        name,
+        formName,
+        subForm,
+        id,
+      });
+    }
+  }
+  function handleFormSpecificOnChange({ value, name, formName, subForm }) {
+    if (onChangeCallbacksFormWatch[formName]) {
+      onChangeCallbacksFormWatch[formName]({
+        value,
+        name,
+        formName,
+        subForm,
+      });
+    }
+  }
   function onFormChange(form, subForm) {
     const formName = form;
     const subFormName = subForm;
@@ -1599,80 +1667,11 @@ const WaitingListAssessment = (() => {
       const id = event.target.id;
       const type = event.target.type;
 
-      // input level on change
-      if (onChangeCallbacks[name]) {
-        onChangeCallbacks[name]({
-          value,
-          name,
-          formName,
-          subForm,
-          id,
-        });
-      }
+      handleInputSpecificOnChange({ value, name, formName, subForm, id });
 
-      // set radio/checkbox value
-      if (type === 'radio' || type === 'checkbox') {
-        value = value === 'yes' ? 1 : 0;
-      }
+      await insertUpdateAssessment({ value, type, formName, subFormName });
 
-      // determine if we use wlLinkID or wlCircID
-      let linkIdForSaveUpdate;
-      if (
-        [
-          'needs',
-          'primaryCaregiver',
-          'riskMitigation',
-          'icfDischarge',
-          'intermittentSupports',
-          'childProtectionAgency',
-          'adultDayEmployment',
-          'dischargePlan',
-        ].includes(formName)
-      ) {
-        linkIdForSaveUpdate = wlCircID;
-      } else {
-        linkIdForSaveUpdate = wlLinkID;
-      }
-
-      // save / update
-      let hasId = false;
-      if (formName === 'needs') {
-        hasId = wlFormInfo[formName][subFormName].id === '' ? false : true;
-      } else {
-        hasId = wlFormInfo[formName].id === '' ? false : true;
-      }
-
-      if (!hasId) {
-        const resp = await insertAssessmentData({
-          id: 0,
-          linkId: linkIdForSaveUpdate,
-          propertyName: name,
-          value: value,
-        });
-
-        if (formName === 'needs') {
-          wlFormInfo[formName][subFormName].id = resp[0].newRecordId;
-        } else {
-          wlFormInfo[formName].id = resp[0].newRecordId;
-        }
-      } else {
-        await updateAssessmentData({
-          id: wlFormInfo[formName].id,
-          linkId: formName === 'waitingListInfo' || formName === 'conclusion' ? 0 : linkIdForSaveUpdate,
-          propertyName: name,
-          value: value,
-        });
-      }
-
-      // form level on change
-      if (onChangeCallbacksFormWatch[formName]) {
-        onChangeCallbacksFormWatch[formName]({
-          value,
-          name,
-          formName,
-          subForm,
-        });
-      }
+      handleFormSpecificOnChange({ value, name, formName, subForm });
     };
   }
 
@@ -1888,6 +1887,15 @@ const WaitingListAssessment = (() => {
       text: 'Send Report',
       style: 'primary',
       styleType: 'contained',
+    });
+    sendEmailForm = new Form({
+      hideAllButtons: true,
+      fields: [
+        {
+          label: 'Document',
+          type: 'file',
+        },
+      ],
     });
     documentsButton = new Button({
       text: 'Add New Documentation',
