@@ -1729,6 +1729,7 @@ const WaitingListAssessment = (() => {
       participantsForm.clear();
 
       // repop table
+      participantsTable.clear();
       participantsTable.populate(partCache);
     });
   }
