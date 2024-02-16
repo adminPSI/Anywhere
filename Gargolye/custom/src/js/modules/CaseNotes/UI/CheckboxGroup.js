@@ -18,6 +18,8 @@
    *
    * @constructor
    * @param {Object} options
+   * @param {Boolean} [options.disabled]
+   * @param {Boolean} [options.required]
    * @returns {CheckboxGroup}
    */
   function CheckboxGroup(options) {
@@ -38,7 +40,7 @@
     this.rootElement.appendChild(this.groupLabelEle);
 
     this.options.fields.forEach(field => {
-      let inputInstance = new Checkbox({ ...field });
+      let inputInstance = new Checkbox({ ...field, disabled: this.options.disabled, required: this.options.required });
       this.rootElement.appendChild(inputInstance.rootElement);
       this.inputs[field.id] = inputInstance;
     });

@@ -1128,22 +1128,22 @@ const WaitingListAssessment = (() => {
     // any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
     wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
   }
-  function behavioralNeedsCheckboxes({ name, value, formName }) {
+  function behavioralNeedsCheckboxes({ name, value, formName, subForm }) {
     const checkboxGroupOne = [
-      wlForms[formName].inputs['risksIsPhysicalAggression'].getValue(),
-      wlForms[formName].inputs['risksIsSelfInjury'].getValue(),
-      wlForms[formName].inputs['risksIsFireSetting'].getValue(),
-      wlForms[formName].inputs['risksIsElopement'].getValue(),
-      wlForms[formName].inputs['risksIsSexualOffending'].getValue(),
-      wlForms[formName].inputs['risksIsOther'].getValue(),
+      wlForms['behavioral'].inputs['risksIsPhysicalAggression'].getValue(),
+      wlForms['behavioral'].inputs['risksIsSelfInjury'].getValue(),
+      wlForms['behavioral'].inputs['risksIsFireSetting'].getValue(),
+      wlForms['behavioral'].inputs['risksIsElopement'].getValue(),
+      wlForms['behavioral'].inputs['risksIsSexualOffending'].getValue(),
+      wlForms['behavioral'].inputs['risksIsOther'].getValue(),
     ];
 
     const checkboxGroupTwo = [
-      wlForms[formName].inputs['risksHasPoliceReport'].getValue(),
-      wlForms[formName].inputs['risksHasIncidentReport'].getValue(),
-      wlForms[formName].inputs['risksHasBehaviorTracking'].getValue(),
-      wlForms[formName].inputs['risksHasPsychologicalAssessment'].getValue(),
-      wlForms[formName].inputs['risksHasOtherDocument'].getValue(),
+      wlForms['behavioral'].inputs['risksHasPoliceReport'].getValue(),
+      wlForms['behavioral'].inputs['risksHasIncidentReport'].getValue(),
+      wlForms['behavioral'].inputs['risksHasBehaviorTracking'].getValue(),
+      wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].getValue(),
+      wlForms['behavioral'].inputs['risksHasOtherDocument'].getValue(),
     ];
 
     const hasCheckGroupOne = checkboxGroupOne.some(element => element === true);
@@ -1151,59 +1151,59 @@ const WaitingListAssessment = (() => {
 
     // (ENABLE) [risksFrequencyDescription] the "Describe type, frequency, and intensity of behavioral..." textbox (IF)
     // any of the checkboxes are checked in the first group of checkboxes EXCEPT the "Not applicable...checkbox"
-    wlForms[formName].inputs['risksFrequencyDescription'].toggleDisabled(!hasCheckGroupOne);
+    wlForms['behavioral'].inputs['risksFrequencyDescription'].toggleDisabled(!hasCheckGroupOne);
     // (ENABLE) [risksOtherDocumentDescription] the second textbox (under the second group of checkboxes" as long as the "Other" checkbox is checked in the second group of checkboxes.
-    wlForms[formName].inputs['risksOtherDocumentDescription'].toggleDisabled(
-      wlForms[formName].inputs['risksHasOtherDocument'].getValue() === true ? false : true,
+    wlForms['behavioral'].inputs['risksOtherDocumentDescription'].toggleDisabled(
+      wlForms['behavioral'].inputs['risksHasOtherDocument'].getValue() === true ? false : true,
     );
     // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF)
     //  A checkbox is checked in each of the first two groups of checkboxes (not including the "Not applicable…" checkboxes in each group)
-    wlForms[formName].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(
+    wlForms['behavioral'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(
       !hasCheckGroupOne && !hasCheckGroupTwo,
     );
     // (SET) [risksIsRiskToSelf] "Is the individual a child / adult currently engaging..." to "YES" (IF)
     // There is at least one checkbox checked in each of the first two groups of checkboxes NOT including the "Not applicable…" checkboxes
     const inputId = hasCheckGroupOne && hasCheckGroupTwo ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
-    wlForms[formName].inputs['risksIsRiskToSelf'].setValue(inputId);
+    wlForms['behavioral'].inputs['risksIsRiskToSelf'].setValue(inputId);
   }
   function physicalNeedsCheckboxes({ name, value, formName }) {
     const data = [
-      wlForms[formName].inputs['physicalNeedsIsPersonalCareNeeded'].getValue(),
-      wlForms[formName].inputs['physicalNeedsIsRiskDuringPhysicalCare'].getValue(),
-      wlForms[formName].inputs['physicalNeedsIsOther'].getValue(),
+      wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].getValue(),
+      wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].getValue(),
+      wlForms['physical'].inputs['physicalNeedsIsOther'].getValue(),
     ];
     const hasCheck = data.some(element => element === true);
 
     // (ENABLE) [physicalNeedsDescription] the "Describe type, frequency, and intensity of physical..." textbox (IF)
     // any of the checkboxes are checked in the third group of checkboxes EXCEPT the "Not applicable...checkbox"
-    wlForms[formName].inputs['physicalNeedsDescription'].toggleDisabled(!hasCheck);
+    wlForms['physical'].inputs['physicalNeedsDescription'].toggleDisabled(!hasCheck);
     // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF)
     // A checkbox is checked in the third group of checkboxes (not including the "Not applicable…" checkbox)
-    wlForms[formName].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!hasCheck);
+    wlForms['physical'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!hasCheck);
     // (SET) [physicalNeedsIsPhysicalCareNeeded] "Is the individual a child/adult with significant physical care needs?" to "YES" (IF)
     // There is at least one checkbox checked in the third group of checkboxes NOT including the "Not applicable…" checkboxes
     const inputId = hasCheck ? 'physicalNeedsIsPhysicalCareNeededyes' : 'physicalNeedsIsPhysicalCareNeededno';
-    wlForms[formName].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue(inputId);
+    wlForms['physical'].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue(inputId);
   }
   function medicalNeedsCheckboxes({ name, value, formName }) {
     const data = [
-      wlForms[formName].inputs['medicalNeedsIsFrequentEmergencyVisit'].getValue(),
-      wlForms[formName].inputs['medicalNeedsIsOngoingMedicalCare'].getValue(),
-      wlForms[formName].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].getValue(),
-      wlForms[formName].inputs['medicalNeedsIsOther'].getValue(),
+      wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].getValue(),
+      wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].getValue(),
+      wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].getValue(),
+      wlForms['medical'].inputs['medicalNeedsIsOther'].getValue(),
     ];
     const hasCheck = data.some(element => element === true);
 
     // (ENABLE) [medicalNeedsDescription] the "Describe type, frequency, and intensity of medical..." textbox (IF)
     // any of the checkboxes are checked in the fourth group of checkboxes EXCEPT the "Not applicable..." checkbox
-    wlForms[formName].inputs['medicalNeedsDescription'].toggleDisabled(!hasCheck);
+    wlForms['medical'].inputs['medicalNeedsDescription'].toggleDisabled(!hasCheck);
     // (ENABLE) [needsIsActionRequiredRequiredIn30Days] the "Is action required within the next 30 days..." radio buttons only (IF)
     // A checkbox is checked in the fourth group of checkboxes (not including the "Not applicable…" checkbox)
-    wlForms[formName].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!hasCheck);
+    wlForms['medical'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!hasCheck);
     // (SET) [medicalNeedsIsLifeThreatening] "Is the individual a child/adult with significant or life-threatening medical needs?" to "YES" (IF)
     // There is at least one checkbox checked in the fourth group of checkboxes NOT including the "Not applicable…" checkboxes
     const inputId = hasCheck ? 'medicalNeedsIsLifeThreateningyes' : 'medicalNeedsIsLifeThreateningno';
-    wlForms[formName].inputs['medicalNeedsIsLifeThreatening'].setValue(inputId);
+    wlForms['medical'].inputs['medicalNeedsIsLifeThreatening'].setValue(inputId);
   }
   function intermittentSupportsDetermination({ name, value, formName }) {
     // AI FIELD
@@ -1605,6 +1605,7 @@ const WaitingListAssessment = (() => {
           value,
           name,
           formName,
+          subForm,
           id,
         });
       }
@@ -1657,7 +1658,7 @@ const WaitingListAssessment = (() => {
       } else {
         await updateAssessmentData({
           id: wlFormInfo[formName].id,
-          linkId: formName === 'waitingListInfo' ? 0 : linkIdForSaveUpdate,
+          linkId: formName === 'waitingListInfo' || formName === 'conclusion' ? 0 : linkIdForSaveUpdate,
           propertyName: name,
           value: value,
         });
@@ -1819,12 +1820,7 @@ const WaitingListAssessment = (() => {
 
     tableOfContents = _DOM.createElement('div', { class: 'waitingListTableOFContents' });
     assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
-    // contributingCircumstancesFormsWrap = _DOM.createElement('div', {
-    //   id: 'contributingCircumstances',
-    //   class: 'wlPage',
-    // });
 
-    // assessmentWrap.appendChild(contributingCircumstancesFormsWrap);
     moduleBody.appendChild(tableOfContents);
     moduleBody.appendChild(assessmentWrap);
   }
@@ -1915,6 +1911,7 @@ const WaitingListAssessment = (() => {
     const resp = await insertNewWaitingListAssessment(selectedConsumer);
     wlLinkID = resp[0].newRecordId;
     wlFormInfo['waitingListInfo'].id = wlLinkID;
+    wlFormInfo['conclusion'].id = wlLinkID;
   }
 
   return { init };
