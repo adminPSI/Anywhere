@@ -785,8 +785,13 @@ var defaults = (function () {
         //=====
         //MONEY MANAGEMENT
         moneyManagementLocationDropdown.addEventListener('change', () => {
-            setLocation('moneyManagement', event.target.options[event.target.selectedIndex].value);
-        });
+            if (!moneyManagementLocationDropdown.classList.contains('disabled')) {
+                setLocation('moneyManagement', event.target.options[event.target.selectedIndex].value);
+            }
+            else { 
+                document.getElementById('defaultMoneyManagementLocation').value = $.session.defaultMoneyManagementLocationValue;
+            }
+        }); 
         moneyManagementRLLCheckBox.addEventListener('change', () => {
             moneyManagementRLL = !moneyManagementRLL;
             setRememberLastLocation('moneyManagement');
