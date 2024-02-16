@@ -1801,7 +1801,7 @@ const WaitingListAssessment = (() => {
       // Build TOC
       const className = isContributingCircumstancesSubSection ? 'subsection' : 'section';
       const tocSubsection = _DOM.createElement('p', { id: section, class: className });
-      const tocSectionLink = _DOM.createElement('a', { href: section, text: sections[section].name });
+      const tocSectionLink = _DOM.createElement('a', { href: `#${section}`, text: sections[section].name });
       tocSubsection.appendChild(tocSectionLink);
       tableOfContents.appendChild(tocSubsection);
     }
