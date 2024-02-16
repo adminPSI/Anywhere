@@ -1100,7 +1100,7 @@ const WaitingListAssessment = (() => {
 
     return data.insertUpdateWaitingListValueResult;
   }
-  async function insertUpdateAssessment({ value, type, formName, subFormName }) {
+  async function insertUpdateAssessment({ value, name, type, formName, subFormName }) {
     // set radio/checkbox value
     if (type === 'radio' || type === 'checkbox') {
       value = value === 'yes' ? 1 : 0;
