@@ -1738,6 +1738,7 @@ const WaitingListAssessment = (() => {
     documentsButton.renderTo(moduleHeader);
 
     for (section in sections) {
+      // Build Form
       const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });
       const sectionHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(section) });
       sectionWrap.appendChild(sectionHeader);
@@ -1779,33 +1780,43 @@ const WaitingListAssessment = (() => {
         }
       }
 
-      if (
-        [
-          'needs',
-          'primaryCaregiver',
-          'riskMitigation',
-          'icfDischarge',
-          'intermittentSupports',
-          'childProtectionAgency',
-          'adultDayEmployment',
-          'dischargePlan',
-        ].includes(section)
-      ) {
-        contributingCircumstancesWrap.appendChild(sectionWrap);
+      const isContributingCircumstancesSubSection = [
+        'needs',
+        'primaryCaregiver',
+        'riskMitigation',
+        'icfDischarge',
+        'intermittentSupports',
+        'childProtectionAgency',
+        'adultDayEmployment',
+        'dischargePlan',
+      ].includes(section);
+
+      if (isContributingCircumstancesSubSection) {
+        contributingCircumstancesFormsWrap.appendChild(sectionWrap);
       } else {
         assessmentWrap.appendChild(sectionWrap);
       }
+
+      // Build TOC
+      const className = isContributingCircumstancesSubSection ? 'subsection' : 'section';
+      const tocSubsection = _DOM.createElement('p', { id: section, class: className });
+      const tocSectionLink = _DOM.createElement('a', { href: section, text: sections[section].name });
+      tocSubsection.appendChild(tocSectionLink);
+      tableOfContents.appendChild(tocSubsection);
     }
   }
   function loadPageSkeleton() {
     moduleBody.innerHTML = '';
     moduleHeader.innerHTML = '';
 
-    assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
     tableOfContents = _DOM.createElement('div', { class: 'waitingListTableOFContents' });
-    contributingCircumstancesWrap = _DOM.createElement('div', { id: 'contributingCircumstances', class: 'wlPage' });
+    assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
+    contributingCircumstancesFormsWrap = _DOM.createElement('div', {
+      id: 'contributingCircumstances',
+      class: 'wlPage',
+    });
 
-    assessmentWrap.appendChild(contributingCircumstancesWrap);
+    assessmentWrap.appendChild(contributingCircumstancesFormsWrap);
     moduleBody.appendChild(tableOfContents);
     moduleBody.appendChild(assessmentWrap);
   }

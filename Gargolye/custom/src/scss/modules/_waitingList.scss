@@ -65,7 +65,13 @@
   }
   .waitingListTableOFContents {
     cursor: pointer;
+    display: flex;
+    flex-flow: column;
+    min-width: 250px;
 
+    a {
+      color: $black;
+    }
     .section {
       margin: 0 0 10px 0;
     }
