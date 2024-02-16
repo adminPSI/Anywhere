@@ -12,6 +12,7 @@ const WaitingListAssessment = (() => {
   // DOM
   //--------------------------
   let assessmentWrap;
+  let tableOfContents;
   //--------------------------
   // UI INSTANCES
   //--------------------------
