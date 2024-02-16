@@ -201,7 +201,7 @@ const addEditEmployers = (() => {
 
     function popUpEventHandlers() {
         employerInput.addEventListener('input', event => {
-            employerName = event.target.value;
+            employerName = event.target.value.trim(); 
             checkRequiredFields();
         });
 
@@ -228,7 +228,7 @@ const addEditEmployers = (() => {
 
     function checkRequiredFields() {
         var employrInput = employerInput.querySelector('#employerInput');
-        if (employrInput.value === '') {
+        if (employrInput.value.trim() === '') { 
             employerInput.classList.add('error');
         } else {
             employerInput.classList.remove('error');

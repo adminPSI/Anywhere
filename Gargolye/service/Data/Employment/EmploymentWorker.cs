@@ -185,6 +185,8 @@ namespace Anywhere.service.Data.Employment
             public string other { get; set; }
             [DataMember(Order = 5)]
             public string otherText { get; set; }
+            [DataMember(Order = 6)]
+            public string eligibleBenefits { get; set; }
 
         }
 

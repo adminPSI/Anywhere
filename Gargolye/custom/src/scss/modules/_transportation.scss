@@ -791,18 +791,17 @@
 
 [data-active-module="Employment"] {
 
-    .checkbox-mtd > span::after {
-        top: -22px !important;
-        left: 2px !important;
-    }
-
-
     .dropdown {
         margin: 0px 0px 20px;
     }
 
     .popup {
         max-width: 420px !important;
+
+        .checkbox-mtd > span::after {
+            top: -22px !important;
+            left: 2px !important;
+        }
     }
 
     .employmentDTWrap {
