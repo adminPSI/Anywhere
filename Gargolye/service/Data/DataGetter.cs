@@ -603,6 +603,7 @@ namespace Anywhere.Data
                 logger.error("524", ex.Message + " ANYW_GetStrongPassword()");
                 return "524: Error Getting Strong Password Requirements";
             }
+        
         }
 
         public string getCustomTextAndAnywhereVersion()

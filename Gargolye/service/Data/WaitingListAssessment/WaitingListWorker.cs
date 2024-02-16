@@ -176,6 +176,12 @@ namespace Anywhere.service.Data.WaitingListAssessment
                     
                     // Handle currentLivingArrangement
                     break; 
+                case "livingArrangementOther":
+                    tableName = "WLA_Waiting_List_Information";
+                    columnName = "living_arrangement_other";
+                    idNameForWhere = "WLA_Waiting_List_Information_ID";
+                    return dg.insertUpdateWaitingListValue(id, linkId, tableName, columnName, linkColumnName, idNameForWhere, value, valueTwo, insertOrUpdate);
+
                 case "fundingSourceId":
                     tableName = "WLA_Waiting_List_Information";
                     columnName = "funding_source_id";
