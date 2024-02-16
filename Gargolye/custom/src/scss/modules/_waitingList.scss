@@ -1,59 +1,3 @@
-// [data-ui] {
-//   // MODULE WRAP
-
-//   // MAIN (form / overview)
-//   .waitingList__main {
-//     display: flex;
-//     flex-flow: row;
-//   }
-
-//   // FORM
-//   .waitingListAssessment {
-//     display: flex;
-//     flex-flow: column;
-//     max-width: 1000px;
-
-//     .wlPage {
-//       order: 10;
-
-//       h2 {
-//         margin-bottom: 10px;
-//       }
-
-//       form {
-//         flex-flow: column nowrap;
-//       }
-
-//       &.hiddenPage {
-//         display: none;
-//       }
-//     }
-
-//     #waitingListInfo {
-//       order: 1;
-//     }
-//     #conditions {
-//       order: 2;
-//     }
-//     #participants {
-//       order: 3;
-//     }
-//     #contributingCircumstances {
-//       order: 4;
-//     }
-//   }
-//   .waitingListTableOFContents {
-//     cursor: pointer;
-
-//     .section {
-//       margin: 0 0 10px 0;
-//     }
-//     .subsection {
-//       margin: 0 0 6px 0;
-//     }
-//   }
-// }
-
 [data-ui] {
   .waitingList {
     &__header {
@@ -81,6 +25,52 @@
     .rosterPicker {
       min-width: 300px;
       max-height: calc(100vh - 200px);
+    }
+  }
+
+  // FORM
+  .waitingListAssessment {
+    display: flex;
+    flex-flow: column;
+    max-width: 1000px;
+
+    .wlPage {
+      order: 10;
+
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      form {
+        flex-flow: column nowrap;
+      }
+
+      &.hiddenPage {
+        display: none;
+      }
+    }
+
+    #waitingListInfo {
+      order: 1;
+    }
+    #conditions {
+      order: 2;
+    }
+    #participants {
+      order: 3;
+    }
+    #contributingCircumstances {
+      order: 4;
+    }
+  }
+  .waitingListTableOFContents {
+    cursor: pointer;
+
+    .section {
+      margin: 0 0 10px 0;
+    }
+    .subsection {
+      margin: 0 0 6px 0;
     }
   }
 }

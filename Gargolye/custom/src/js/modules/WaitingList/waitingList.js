@@ -1,16 +1,4 @@
 const WaitingList = (() => {
-  function loadPageSkeleton() {
-    moduleBodyMainWrapEle = _DOM.createElement('div', { class: 'waitingList__main' });
-    moduleBodyRosterWrapEle = _DOM.createElement('div', { class: 'waitingList__roster' });
-
-    moduleWrapEle.appendChild(moduleHeaderEle);
-    moduleWrapEle.appendChild(moduleBodyEle);
-    moduleBodyEle.appendChild(moduleBodyMainWrapEle);
-    moduleBodyEle.appendChild(moduleBodyRosterWrapEle);
-
-    _DOM.ACTIONCENTER.appendChild(moduleWrapEle);
-  }
-
   async function load() {
     _DOM.ACTIONCENTER.innerHTML = '';
     _DOM.ACTIONCENTER.setAttribute('data-UI', true);

@@ -29,6 +29,7 @@
    */
   const formatDate = dateString => {
     if (!dateString) return '';
+    dateString = dateString.split(' ')[0];
     const date = new Date(`${dateString}T00:00`);
     return new Intl.DateTimeFormat('en-US').format(date);
   };
@@ -271,7 +272,7 @@
       // populate row
       row.values.forEach((rd, i) => {
         const dataType = this.options.headings[i]?.type ?? '';
-        rd = dataType === 'date' ? formatDate(rd) : rd;
+        // rd = dataType === 'date' ? formatDate(rd) : rd;
         const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
         rowEle.appendChild(cell);
       });

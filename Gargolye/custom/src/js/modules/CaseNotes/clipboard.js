@@ -14,3 +14,9 @@
 //   a. "Will the unmet immeidate need…" is NO on the WAIVER ENROLLMENT page
 // 5.  "The individual is not eligible..." should always be uneditable and also should be selected if ALL of the following are true:
 //   a.  Any of the questions on the CONDITIONS page have an answer of "NO"
+
+// const tocSectionWrap = _DOM.createElement('p', { id: section, class: 'section' });
+// const tocSubsection = _DOM.createElement('p', { id: section, class: 'subsection' });
+// const tocSectionWrap = _DOM.createElement('div', { id: section, class: 'section' });
+// const tocSectionLink = _DOM.createElement('a', { href: section, text: sections[section].name });
+// tocSectionWrap.appendChild(tocSectionLink);

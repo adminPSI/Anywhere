@@ -1058,6 +1058,9 @@ const WaitingListAssessment = (() => {
     },
   };
 
+  // UTILS
+  //--------------------------------------------------
+
   // DATA
   //--------------------------------------------------
   async function insertNewWaitingListAssessment(consumerId) {
@@ -1750,7 +1753,7 @@ const WaitingListAssessment = (() => {
         for (needSubForms in sections[section].formElements) {
           wlForms[needSubForms] = new Form({
             hideAllButtons: true,
-            fields: sections[section].formElements[needSubForms],
+            fields: sections[section].formElements[needSubForms].formElements,
             formName: needSubForms,
           });
           wlForms[needSubForms].renderTo(sectionWrap);
@@ -1794,16 +1797,16 @@ const WaitingListAssessment = (() => {
     }
   }
   function loadPageSkeleton() {
+    moduleBody.innerHTML = '';
     moduleHeader.innerHTML = '';
-    moduleBodyMain.innerHTML = '';
 
     assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
-    tableOFContents = _DOM.createElement('div', { class: 'waitingListTableOFContents' });
+    tableOfContents = _DOM.createElement('div', { class: 'waitingListTableOFContents' });
     contributingCircumstancesWrap = _DOM.createElement('div', { id: 'contributingCircumstances', class: 'wlPage' });
 
     assessmentWrap.appendChild(contributingCircumstancesWrap);
-    moduleBodyMain.appendChild(tableOFContents);
-    moduleBodyMain.appendChild(assessmentWrap);
+    moduleBody.appendChild(tableOfContents);
+    moduleBody.appendChild(assessmentWrap);
   }
 
   // INIT (data & defaults)
