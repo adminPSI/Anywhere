@@ -1669,7 +1669,7 @@ const WaitingListAssessment = (() => {
 
       handleInputSpecificOnChange({ value, name, formName, subForm, id });
 
-      await insertUpdateAssessment({ value, type, formName, subFormName });
+      await insertUpdateAssessment({ value, name, type, formName, subFormName });
 
       handleFormSpecificOnChange({ value, name, formName, subForm });
     };
