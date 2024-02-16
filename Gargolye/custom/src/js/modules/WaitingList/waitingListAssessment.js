@@ -1462,6 +1462,7 @@ const WaitingListAssessment = (() => {
         // needs is special
         if (formName === 'needs') {
           // conditions page all inputs are yes
+          contributingCircumstancesFormsWrap.classList.add('hiddenPage');
           wlForms['behavioral'].form.parentElement.classList.add('hiddenPage');
           wlForms['physical'].form.parentElement.classList.add('hiddenPage');
           wlForms['medical'].form.parentElement.classList.add('hiddenPage');
@@ -1499,6 +1500,7 @@ const WaitingListAssessment = (() => {
     }
 
     // conditions page all inputs are yes
+    contributingCircumstancesFormsWrap.classList.remove('hiddenPage');
     wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
     wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
     wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
@@ -1740,6 +1742,24 @@ const WaitingListAssessment = (() => {
     documentsButton.renderTo(moduleHeader);
 
     for (section in sections) {
+      const isContributingCircumstancesSubSection = [
+        'needs',
+        'primaryCaregiver',
+        'riskMitigation',
+        'icfDischarge',
+        'intermittentSupports',
+        'childProtectionAgency',
+        'adultDayEmployment',
+        'dischargePlan',
+      ].includes(section);
+
+      // Build TOC
+      const className = isContributingCircumstancesSubSection ? 'subsection' : 'section';
+      const tocSubsection = _DOM.createElement('p', { class: className });
+      const tocSectionLink = _DOM.createElement('a', { href: `#${section}`, text: sections[section].name });
+      tocSubsection.appendChild(tocSectionLink);
+      tableOfContents.appendChild(tocSubsection);
+
       // Build Form
       const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });
       const sectionHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(section) });
@@ -1751,6 +1771,10 @@ const WaitingListAssessment = (() => {
         participantsForm.renderTo(sectionWrap);
         assessmentWrap.appendChild(sectionWrap);
         continue;
+      }
+
+      if (section === 'contributingCircumstances') {
+        contributingCircumstancesFormsWrap = sectionWrap;
       }
 
       if (section === 'needs') {
@@ -1782,29 +1806,11 @@ const WaitingListAssessment = (() => {
         }
       }
 
-      const isContributingCircumstancesSubSection = [
-        'needs',
-        'primaryCaregiver',
-        'riskMitigation',
-        'icfDischarge',
-        'intermittentSupports',
-        'childProtectionAgency',
-        'adultDayEmployment',
-        'dischargePlan',
-      ].includes(section);
-
       if (isContributingCircumstancesSubSection) {
         contributingCircumstancesFormsWrap.appendChild(sectionWrap);
       } else {
         assessmentWrap.appendChild(sectionWrap);
       }
-
-      // Build TOC
-      const className = isContributingCircumstancesSubSection ? 'subsection' : 'section';
-      const tocSubsection = _DOM.createElement('p', { id: section, class: className });
-      const tocSectionLink = _DOM.createElement('a', { href: `#${section}`, text: sections[section].name });
-      tocSubsection.appendChild(tocSectionLink);
-      tableOfContents.appendChild(tocSubsection);
     }
   }
   function loadPageSkeleton() {
@@ -1813,12 +1819,12 @@ const WaitingListAssessment = (() => {
 
     tableOfContents = _DOM.createElement('div', { class: 'waitingListTableOFContents' });
     assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
-    contributingCircumstancesFormsWrap = _DOM.createElement('div', {
-      id: 'contributingCircumstances',
-      class: 'wlPage',
-    });
+    // contributingCircumstancesFormsWrap = _DOM.createElement('div', {
+    //   id: 'contributingCircumstances',
+    //   class: 'wlPage',
+    // });
 
-    assessmentWrap.appendChild(contributingCircumstancesFormsWrap);
+    // assessmentWrap.appendChild(contributingCircumstancesFormsWrap);
     moduleBody.appendChild(tableOfContents);
     moduleBody.appendChild(assessmentWrap);
   }

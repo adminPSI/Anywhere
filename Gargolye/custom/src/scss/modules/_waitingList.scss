@@ -58,6 +58,10 @@
     }
     #participants {
       order: 3;
+
+      .ui_table {
+        margin: 0 0 10px 0;
+      }
     }
     #contributingCircumstances {
       order: 4;

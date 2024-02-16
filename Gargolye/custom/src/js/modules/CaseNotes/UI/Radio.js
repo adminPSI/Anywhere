@@ -5,13 +5,18 @@
    * Default configuration
    * @typ {Object}
    */
-  const DEFAULT_OPTIONS = {};
+  const DEFAULT_OPTIONS = {
+    disabled: false,
+    required: false,
+  };
 
   /**
    * @constructor
    * @param {String} id
    * @param {String} type
    * @param {String} label
+   * @param {Boolean} [options.disabled]
+   * @param {Boolean} [options.required]
    */
   function Radio(options) {
     // Data Init
@@ -92,6 +97,7 @@
    */
   const DEFAULT_OPTIONS_2 = {
     disabled: false,
+    required: false,
   };
 
   /**
@@ -100,6 +106,8 @@
    * @param {String} options.id - Id for inputs
    * @param {String} options.groupLabel - Text for label input
    * @param {Array}  options.fields - Radio inputs
+   * @param {Boolean} [options.disabled]
+   * @param {Boolean} [options.required]
    */
   function RadioGroup(options) {
     // Data Init
@@ -124,7 +132,12 @@
     this.rootElement.appendChild(this.groupLabelEle);
 
     this.options.fields.forEach(field => {
-      const inputInstance = new Radio({ ...field, name: this.options.id });
+      const inputInstance = new Radio({
+        ...field,
+        name: this.options.id,
+        disabled: this.options.disabled,
+        required: this.options.required,
+      });
       this.rootElement.appendChild(inputInstance.rootElement);
       this.inputs[field.id] = inputInstance;
     });
