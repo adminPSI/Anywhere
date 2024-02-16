@@ -1461,10 +1461,11 @@ const WaitingListAssessment = (() => {
 
         // needs is special
         if (formName === 'needs') {
-          // wlForms[subForm].form.parentElement.classList.add('hiddenPage');
-          // wlForms[subForm].form.parentElement.classList.add('hiddenPage');
-          // wlForms[subForm].form.parentElement.classList.add('hiddenPage');
-          // wlForms[subForm].form.parentElement.classList.add('hiddenPage');
+          // conditions page all inputs are yes
+          wlForms['behavioral'].form.parentElement.classList.add('hiddenPage');
+          wlForms['physical'].form.parentElement.classList.add('hiddenPage');
+          wlForms['medical'].form.parentElement.classList.add('hiddenPage');
+          wlForms['other'].form.parentElement.classList.add('hiddenPage');
 
           if (wlFormInfo.needs.behavioral.id) {
             formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
@@ -1498,10 +1499,10 @@ const WaitingListAssessment = (() => {
     }
 
     // conditions page all inputs are yes
-    // wlForms['behavioral'].form.parentElement.classList.add('hiddenPage');
-    // wlForms['physical'].form.parentElement.classList.add('hiddenPage');
-    // wlForms['medical'].form.parentElement.classList.add('hiddenPage');
-    // wlForms['other'].form.parentElement.classList.add('hiddenPage');
+    wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['other'].form.parentElement.classList.remove('hiddenPage');
     wlForms['waiverEnrollment'].form.parentElement.classList.remove('hiddenPage');
 
     // get circumstance id
@@ -1516,10 +1517,10 @@ const WaitingListAssessment = (() => {
     }
 
     //-------------------------------------------------------------------------------------------------------
-    const needsIsActionRequiredRequiredIn30DaysYES = wlForms['needs'].inputs[
+    const needsIsActionRequiredRequiredIn30DaysYES = wlForms['other'].inputs[
       'needsIsActionRequiredRequiredIn30Days'
     ].getValue('needsIsActionRequiredRequiredIn30Daysyes');
-    const needsIsActionRequiredRequiredIn30DaysNO = wlForms['needs'].inputs[
+    const needsIsActionRequiredRequiredIn30DaysNO = wlForms['other'].inputs[
       'needsIsActionRequiredRequiredIn30Days'
     ].getValue('needsIsActionRequiredRequiredIn30Daysno');
     const rMIsActionRequiredIn3oDaysYES = wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].getValue(
@@ -1542,7 +1543,7 @@ const WaitingListAssessment = (() => {
     }
 
     // riskMitigation page [rMIsActionRequiredIn3oDays] is YES
-    if (rMIsActionRequiredIn3oDays) {
+    if (rMIsActionRequiredIn3oDaysYES) {
       wlForms['icfDischarge'].form.parentElement.classList.remove('hiddenPage');
       wlForms['intermittentSupports'].form.parentElement.classList.remove('hiddenPage');
       wlForms['childProtectionAgency'].form.parentElement.classList.remove('hiddenPage');
@@ -1746,8 +1747,8 @@ const WaitingListAssessment = (() => {
       sectionWrap.classList.toggle('hiddenPage', !sections[section].enabled);
 
       if (section === 'participants') {
-        participantsForm.renderTo(sectionWrap);
         participantsTable.renderTo(sectionWrap);
+        participantsForm.renderTo(sectionWrap);
         assessmentWrap.appendChild(sectionWrap);
         continue;
       }
