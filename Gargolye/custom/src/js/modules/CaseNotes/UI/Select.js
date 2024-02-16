@@ -106,9 +106,8 @@
       this.toggleDisabled(false);
     }
 
-    if (defaultValue) {
-      this.select.value = defaultValue;
-    }
+    const dv = defaultValue ? defaultValue : this.options.defaultValue;
+    this.select.value = dv;
   };
 
   /**
