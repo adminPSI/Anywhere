@@ -98,7 +98,7 @@
     this.options.headings.forEach(heading => {
       const cell = _DOM.createElement('th', {
         text: heading.text,
-        class: 'sortable',
+        class: this.options.columnSortable ? 'sortable' : '',
         'data-type': heading.type,
       });
       tableHeader.rows[0].appendChild(cell);
@@ -278,6 +278,10 @@
 
       this.table.tBodies[0].appendChild(rowEle);
     });
+  };
+
+  Table.prototype.clear = function () {
+    this.table.tBodies[0].innerHTML = '';
   };
 
   /**

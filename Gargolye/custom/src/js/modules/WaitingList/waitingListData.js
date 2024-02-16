@@ -10,9 +10,7 @@
    * @constructor
    * @returns {WaitingListData}
    */
-  function WaitingListData() {
-    this.linkId = 0;
-  }
+  function WaitingListData() {}
 
   //getWaitingListFundingSources
 

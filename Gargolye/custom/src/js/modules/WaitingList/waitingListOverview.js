@@ -6,41 +6,80 @@ const WaitingListOverview = (() => {
   //--------------------------
   // DOM
   //--------------------------
+  let moduleWrap;
   let overviewWrap;
   //--------------------------
   // UI INSTANCES
   //--------------------------
   let wlReviewTable;
 
+  // DATA
+  //--------------------------------------------------
+  async function getReviewDataByConsumer(consumerId) {
+    const data = await _UTIL.fetchData('getLandingPageForConsumer', {
+      consumerId,
+    });
+
+    // string wlInfoId
+    // string interviewDate
+    // string conclusionResult
+    // string conclusionDate
+    // string sentToDODD
+
+    // TODO-ASH: replace conclusionResult id with name, get from dropdown data
+    return data.getLandingPageForConsumerResult.map(
+      ({ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }) => {
+        return {
+          id: wlInfoId,
+          values: [
+            UTIL.formatDateToIso(interviewDate.split(' ')[0]),
+            conclusionResult,
+            conclusionDate,
+            UTIL.formatDateToIso(sentToDODD.split(' ')[0]),
+          ],
+        };
+      },
+    );
+  }
+
   // EVENTS
   //--------------------------------------------------
   async function onConsumerSelect(data) {
     selectedConsumer = data[0];
-    const tableData = await wlData.getReviewDataByConsumer(selectedConsumer);
+
+    wlReviewTable.clear();
+    newAssessmentBtn.toggleDisabled(!selectedConsumer);
+
+    if (!selectedConsumer) return;
+
+    const tableData = await getReviewDataByConsumer(selectedConsumer);
     wlReviewTable.populate(tableData);
+    newAssessmentBtn.toggleDisabled(false);
+  }
+  function attachEvents() {
+    newAssessmentBtn.onClick(() => {
+      WaitingListAssessment.init({ selectedConsumer, moduleHeaderEle, moduleBodyEle });
+    });
+    rosterPicker.onConsumerSelect(onConsumerSelect);
   }
 
   // MAIN
   //--------------------------------------------------
-  function attachEvents() {}
-  async function populatePage() {
-    if (selectedConsumer) {
-      rosterPicker.setSelectedConsumers(selectedConsumer);
-      await wlData.fetchReviewDataByConsumer(selectedConsumer);
-      const tableData = wlData.getReviewDataByConsumer();
-      wlReviewTable.populate(tableData);
-    }
-  }
   async function loadPage() {
-    wlReviewTable.renderTo(overviewWrap);
+    await rosterPicker.fetchConsumers();
+    rosterPicker.populate();
   }
   function loadPageSkeleton() {
+    moduleBody.innerHTML = '';
     moduleHeader.innerHTML = '';
-    moduleBodyMain.innerHTML = '';
 
     overviewWrap = _DOM.createElement('div', { class: 'waitingListOverview' });
 
-    moduleBodyMain.appendChild(overviewWrap);
+    moduleBody.appendChild(overviewWrap);
+
+    wlReviewTable.renderTo(overviewWrap);
+    rosterPicker.renderTo(overviewWrap);
+    newAssessmentBtn.renderTo(moduleHeader);
   }
 
   // INIT (data & defaults)
@@ -68,20 +107,34 @@ const WaitingListOverview = (() => {
         },
       ],
     });
-  }
 
-  async function init() {
-    wlData = WaitingList.getDataInstance();
-    rosterPicker = WaitingList.getRosterPickerInstance();
-    const htmlEle = WaitingList.getHTML();
-    moduleHeader = htmlEle.moduleHeader;
-    moduleBodyMain = htmlEle.moduleBodyMain;
+    rosterPicker = new RosterPicker({
+      allowMultiSelect: false,
+      consumerRequired: true,
+    });
+
+    newAssessmentBtn = new Button({
+      text: 'New Assessment',
+      style: 'primary',
+      styleType: 'contained',
+      disabled: true,
+    });
+  }
+  async function load() {
+    initComponents();
 
     loadPageSkeleton();
 
-    initComponents();
     await loadPage();
+
     attachEvents();
+  }
+
+  async function init({ moduleHeaderEle, moduleBodyEle }) {
+    moduleHeader = moduleHeaderEle;
+    moduleBody = moduleBodyEle;
+
+    load();
   }
 
   return {

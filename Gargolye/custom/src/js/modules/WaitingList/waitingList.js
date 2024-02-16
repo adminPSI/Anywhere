@@ -1,48 +1,5 @@
 const WaitingList = (() => {
-  //--------------------------
-  // SESSION DATA
-  //--------------------------
-  let activeWindow = 'form';
-  //--------------------------
-  // UI INSTANCES
-  //--------------------------
-  let wlData;
-  let rosterPicker;
-  //--------------------------
-  // DOM
-  //--------------------------
-  let moduleWrapEle;
-  let moduleHeaderEle;
-  let moduleBodyEle;
-  let moduleBodyRosterWrapEle;
-  let moduleBodyMainWrapEle;
-
-  function getRosterPickerInstance() {
-    return rosterPicker;
-  }
-  function getDataInstance() {
-    return wlData;
-  }
-  function getHTML() {
-    return {
-      moduleHeader: moduleHeaderEle,
-      moduleBodyMain: moduleBodyMainWrapEle,
-    };
-  }
-
-  function setActiveWindow(active) {
-    // active = form || table
-    activeWindow = active;
-  }
-
   function loadPageSkeleton() {
-    _DOM.ACTIONCENTER.innerHTML = '';
-    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
-    _DOM.setActiveModuleAttribute('waitingList');
-
-    moduleWrapEle = _DOM.createElement('div', { class: 'waitingList' });
-    moduleHeaderEle = _DOM.createElement('div', { class: 'waitingList__header' });
-    moduleBodyEle = _DOM.createElement('div', { class: 'waitingList__body' });
     moduleBodyMainWrapEle = _DOM.createElement('div', { class: 'waitingList__main' });
     moduleBodyRosterWrapEle = _DOM.createElement('div', { class: 'waitingList__roster' });
 
@@ -54,37 +11,23 @@ const WaitingList = (() => {
     _DOM.ACTIONCENTER.appendChild(moduleWrapEle);
   }
 
-  async function init() {
-    loadPageSkeleton();
+  async function load() {
+    _DOM.ACTIONCENTER.innerHTML = '';
+    _DOM.ACTIONCENTER.setAttribute('data-UI', true);
+    _DOM.setActiveModuleAttribute('waitingList');
 
-    wlData = new WaitingListData();
+    moduleWrapEle = _DOM.createElement('div', { class: 'waitingList' });
+    moduleHeaderEle = _DOM.createElement('div', { class: 'waitingList__header' });
+    moduleBodyEle = _DOM.createElement('div', { class: 'waitingList__body' });
 
-    rosterPicker = new RosterPicker({
-      allowMultiSelect: false,
-      consumerRequired: true,
-    });
-    rosterPicker.renderTo(moduleBodyRosterWrapEle);
+    moduleWrapEle.appendChild(moduleHeaderEle);
+    moduleWrapEle.appendChild(moduleBodyEle);
+    _DOM.ACTIONCENTER.appendChild(moduleWrapEle);
 
-    rosterPicker.onConsumerSelect(consumerId => {
-      if (activeWindow === 'form') {
-        WaitingListAssessment.onConsumerSelect(consumerId);
-        return;
-      }
-
-      WaitingListOverview.onConsumerSelect(consumerId);
-    });
-
-    await rosterPicker.fetchConsumers();
-    rosterPicker.populate();
-
-    WaitingListAssessment.init();
+    WaitingListOverview.init({ moduleWrapEle, moduleHeaderEle, moduleBodyEle });
   }
 
   return {
-    init,
-    setActiveWindow,
-    getRosterPickerInstance,
-    getDataInstance,
-    getHTML,
+    init: load,
   };
 })();

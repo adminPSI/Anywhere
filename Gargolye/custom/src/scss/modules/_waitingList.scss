@@ -1,5 +1,60 @@
+// [data-ui] {
+//   // MODULE WRAP
+
+//   // MAIN (form / overview)
+//   .waitingList__main {
+//     display: flex;
+//     flex-flow: row;
+//   }
+
+//   // FORM
+//   .waitingListAssessment {
+//     display: flex;
+//     flex-flow: column;
+//     max-width: 1000px;
+
+//     .wlPage {
+//       order: 10;
+
+//       h2 {
+//         margin-bottom: 10px;
+//       }
+
+//       form {
+//         flex-flow: column nowrap;
+//       }
+
+//       &.hiddenPage {
+//         display: none;
+//       }
+//     }
+
+//     #waitingListInfo {
+//       order: 1;
+//     }
+//     #conditions {
+//       order: 2;
+//     }
+//     #participants {
+//       order: 3;
+//     }
+//     #contributingCircumstances {
+//       order: 4;
+//     }
+//   }
+//   .waitingListTableOFContents {
+//     cursor: pointer;
+
+//     .section {
+//       margin: 0 0 10px 0;
+//     }
+//     .subsection {
+//       margin: 0 0 6px 0;
+//     }
+//   }
+// }
+
 [data-ui] {
-  // MODULE WRAP
   .waitingList {
     &__header {
       display: flex;
@@ -13,66 +68,19 @@
     }
   }
 
-  // ROSTER PICKER
-  .waitingList__roster {
-    display: block;
-    min-width: 300px;
-  }
-
-  // MAIN (form / overview)
-  .waitingList__main {
-    display: flex;
-    flex-flow: row;
-  }
-
-  // FORM
-  .waitingListAssessment {
-    display: flex;
-    flex-flow: column;
-    max-width: 1000px;
-
-    .wlPage {
-      order: 10;
-
-      h2 {
-        margin-bottom: 10px;
-      }
-
-      form {
-        flex-flow: column nowrap;
-      }
-
-      &.hiddenPage {
-        display: none;
-      }
-    }
-
-    #waitingListInfo {
-      order: 1;
-    }
-    #conditions {
-      order: 2;
-    }
-    #participants {
-      order: 3;
-    }
-    #contributingCircumstances {
-      order: 4;
-    }
-  }
-  .waitingListTableOFContents {
-    cursor: pointer;
-
-    .section {
-      margin: 0 0 10px 0;
-    }
-    .subsection {
-      margin: 0 0 6px 0;
-    }
-  }
-
-  // OVERVIEW
   .waitingListOverview {
-    flex-grow: 1;
+    display: flex;
+    column-gap: 10px;
+    flex-flow: row;
+    width: 100%;
+
+    .ui_table {
+      flex-grow: 1;
+    }
+
+    .rosterPicker {
+      min-width: 300px;
+      max-height: calc(100vh - 200px);
+    }
   }
 }
