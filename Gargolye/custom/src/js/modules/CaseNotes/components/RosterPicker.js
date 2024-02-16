@@ -40,7 +40,6 @@
     this.mobileRosterBtn = null;
 
     this._build();
-    this._buildMobileButton();
     this._setupEvents();
   }
 

@@ -60,7 +60,7 @@
       type: this.options.attributes.type,
       name: this.options.attributes.name,
       value: this.options.attributes.value,
-      disabled: this.options.disabled,
+      disabled: this.options.attributes.disabled,
     });
 
     if (this.options.icon) {

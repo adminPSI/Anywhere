@@ -1167,23 +1167,25 @@ const WaitingListAssessment = (() => {
 
     return conditionsInputValues.every(element => element === true);
   }
-  function riskMitigationCheckboxes({ name, value, formName }) {
+  function riskMitigationCheckboxes() {
     const data = [
-      wlForms[formName].inputs['rMIsAdultProtectiveServiceInvestigation'].getValue(),
-      wlForms[formName].inputs['rMIsCountyBoardInvestigation'].getValue(),
-      wlForms[formName].inputs['rMIsLawEnforcementInvestigation'].getValue(),
-      wlForms[formName].inputs['rMIsOtherInvestigation'].getValue(),
+      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].getValue(),
+      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].getValue(),
+      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].getValue(),
+      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].getValue(),
     ];
+
     const hasCheck = data.some(element => element === true);
 
     // (ENABLE) [rMdescription] the "Describe incident under..." textbox (IF)
     // any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
-    wlForms[formName].inputs['rMdescription'].toggleDisabled(!hasCheck);
+    wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!hasCheck);
+
     // (ENABLE) [rMIsActionRequiredIn3oDays] the "Is action required..." radio buttons (IF)
     // any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
-    wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
+    wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
   }
-  function needsCheckboxes({ name, value, formName, subForm }) {
+  function needsCheckboxes() {
     const behaviorCheckboxGroupOne = [
       wlForms['behavioral'].inputs['risksIsPhysicalAggression'].getValue(),
       wlForms['behavioral'].inputs['risksIsSelfInjury'].getValue(),
@@ -1259,70 +1261,91 @@ const WaitingListAssessment = (() => {
     const needsIsActionDisabled = (hasCheckBehaviorOne && hasCheckBehaviorTwo) || hasCheckPhysical || hasCheckMedical;
     wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].toggleDisabled(!needsIsActionDisabled);
   }
-  function intermittentSupportsDetermination({ name, value, formName }) {
+  function intermittentSupportsDetermination() {
     // AI FIELD
     // (SET) [intSupDetermination] "Does the individual have an..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+
     const data = [
-      wlForms[formName].inputs['intSupIsSupportNeededIn12Months'].getValue('intSupIsSupportNeededIn12Monthsyes'),
-      wlForms[formName].inputs['intSupIsStayingLivingArrangement'].getValue('intSupIsStayingLivingArrangementyes'),
-      wlForms[formName].inputs['intSupIsActionRequiredIn30Days'].getValue('intSupIsActionRequiredIn30Daysyes'),
+      wlForms['intermittentSupports'].inputs['intSupIsSupportNeededIn12Months'].getValue(
+        'intSupIsSupportNeededIn12Monthsyes',
+      ),
+      wlForms['intermittentSupports'].inputs['intSupIsStayingLivingArrangement'].getValue(
+        'intSupIsStayingLivingArrangementyes',
+      ),
+      wlForms['intermittentSupports'].inputs['intSupIsActionRequiredIn30Days'].getValue(
+        'intSupIsActionRequiredIn30Daysyes',
+      ),
     ];
 
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'intSupDeterminationyes' : 'intSupDeterminationno';
-    wlForms[formName].inputs['intSupDetermination'].setValue(inputId);
+
+    wlForms['intermittentSupports'].inputs['intSupDetermination'].setValue(inputId);
   }
-  function icfDischargeDetermination({ name, value, formName }) {
+  function icfDischargeDetermination() {
     // AI FIELD
     // (SET) [icfDetermination] "Is the individual a resident..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+
     const data = [
-      wlForms[formName].inputs['icfIsICFResident'].getValue('icfIsICFResidentyes'),
-      wlForms[formName].inputs['icfIsNoticeIssued'].getValue('icfIsNoticeIssuedyes'),
-      wlForms[formName].inputs['icfIsActionRequiredIn30Days'].getValue('icfIsActionRequiredIn30Days'),
+      wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue('icfIsICFResidentyes'),
+      wlForms['icfDischarge'].inputs['icfIsNoticeIssued'].getValue('icfIsNoticeIssuedyes'),
+      wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue('icfIsActionRequiredIn30Days'),
     ];
+
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'icfDeterminationyes' : 'icfDeterminationno';
-    wlForms[formName].inputs['icfDetermination'].setValue(inputId);
+
+    wlForms['icfDischarge'].inputs['icfDetermination'].setValue(inputId);
   }
-  function childProtectionAgencyDetermination({ name, value, formName }) {
+  function childProtectionAgencyDetermination() {
     // AI FIELD
     // (SET) [cpaDetermination] "Is the individual reaching..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+
     const data = [
-      wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes'),
-      wlForms[formName].inputs['cpaHadUnaddressableNeeds'].getValue('cpaHadUnaddressableNeedsyes'),
+      wlForms['childProtectionAgency'].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes'),
+      wlForms['childProtectionAgency'].inputs['cpaHadUnaddressableNeeds'].getValue('cpaHadUnaddressableNeedsyes'),
     ];
+
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'cpaDeterminationyes' : 'cpaDeterminationno';
-    wlForms[formName].inputs['cpaDetermination'].setValue(inputId);
+
+    wlForms['childProtectionAgency'].inputs['cpaDetermination'].setValue(inputId);
   }
-  function adultDayEmploymentDetermination({ name, value, formName }) {
+  function adultDayEmploymentDetermination() {
     // AI FIELD
     // (SET) [rwfWaiverFundingRequired] "Does the individual require..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+
     const data = [
-      wlForms[formName].inputs['rwfNeedsMoreFrequency'].getValue('rwfNeedsMoreFrequencyyes'),
-      wlForms[formName].inputs['rwfNeedsServiceNotMetIDEA'].getValue('rwfNeedsServiceNotMetIDEAyes'),
-      wlForms[formName].inputs['rwfNeedsServiceNotMetOOD'].getValue('rwfNeedsServiceNotMetOODyes'),
+      wlForms['adultDayEmployment'].inputs['rwfNeedsMoreFrequency'].getValue('rwfNeedsMoreFrequencyyes'),
+      wlForms['adultDayEmployment'].inputs['rwfNeedsServiceNotMetIDEA'].getValue('rwfNeedsServiceNotMetIDEAyes'),
+      wlForms['adultDayEmployment'].inputs['rwfNeedsServiceNotMetOOD'].getValue('rwfNeedsServiceNotMetOODyes'),
     ];
+
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'rwfWaiverFundingRequiredyes' : 'rwfWaiverFundingRequiredno';
-    wlForms[formName].inputs['rwfWaiverFundingRequired'].setValue(inputId);
+
+    wlForms['adultDayEmployment'].inputs['rwfWaiverFundingRequired'].setValue(inputId);
   }
-  function dischargePlanDetermination({ name, value, formName }) {
+  function dischargePlanDetermination() {
     // AI FIELD
     // (SET) [dischargeDetermination] "Does the individual have a viable..." to "YES" (IF) all radio-button answers on this page are "Yes".. Otherwise, set to "NO"
+
     const data = [
-      wlForms[formName].inputs['dischargeIsICFResident'].getValue('dischargeIsICFResidentyes'),
-      wlForms[formName].inputs['dischargeIsInterestedInMoving'].getValue('dischargeIsInterestedInMovingyes'),
-      wlForms[formName].inputs['dischargeHasDischargePlan'].getValue('dischargeHasDischargePlanyes'),
+      wlForms['dischargePlan'].inputs['dischargeIsICFResident'].getValue('dischargeIsICFResidentyes'),
+      wlForms['dischargePlan'].inputs['dischargeIsInterestedInMoving'].getValue('dischargeIsInterestedInMovingyes'),
+      wlForms['dischargePlan'].inputs['dischargeHasDischargePlan'].getValue('dischargeHasDischargePlanyes'),
     ];
+
     const allHaveCheck = data.every(element => element === true);
     const inputId = allHaveCheck ? 'dischargeDeterminationyes' : 'dischargeDeterminationno';
-    wlForms[formName].inputs['dischargeDetermination'].setValue(inputId);
+
+    wlForms['dischargePlan'].inputs['dischargeDetermination'].setValue(inputId);
   }
-  function immediateNeedsDetermination({ name, value, formName }) {
+  function immediateNeedsDetermination() {
     // AI FIELD ??
     // (SET) [immNeedsRequired] "Is there an immediate need..." to YES only when the page is enabled.  Otherwise, set it to NO
-    wlForms[formName].inputs['immNeedsRequired'].setValue();
+
+    wlForms['immediateNeeds'].inputs['immNeedsRequired'].setValue();
   }
   async function updatePageActiveStatus(subForm) {
     const conditionsInputValues = [
@@ -1468,18 +1491,56 @@ const WaitingListAssessment = (() => {
       wlForms['immediateNeeds'].form.parentElement.classList.add('hiddenPage');
     }
   }
+  function setConclusionUnmetNeeds() {
+    // [conclusionUnmetNeeds] "The individual has unmet..." should always be uneditable and also be selected if ALL of the following are true:
+    //   a.  All Questions on the CONDITIONS page have an answer of "YES"
+    const conditionPageAllYes = isConditionInputsAllYes();
+    //   b.  [immNeedsRequired] "Is there an immediate need identified…" is YES on the IMMEDIATE NEEDS page
+    //   c.  [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
+    const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
+      'waivEnrollWaiverEnrollmentIsRequired'
+    ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
+  }
+  function setConclusionWaiverFunded12Months() {
+    // [conclusionWaiverFunded12Months] "The individual has needs..." should always be uneditable and also should be selected if ALL of the following are true:
+    //   a.   All Questions on the CONDITIONS page have an answer of "YES"
+    const conditionPageAllYes = isConditionInputsAllYes();
+    //   b.  [unmetNeedsHas] "Does the individual have an identified need?" is YES on the CURRENT NEEDS page
+    const isUnmetNeedsHasYes = wlForms['currentNeeds'].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
+    //   c.  [unmetNeedsSupports] "If 'Yes', will any of those needs…" is YES on the CURRENT NEEDS page
+    const isUnmetNeedsSupportsYes =
+      wlForms['currentNeeds'].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
+    //   d.  [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
+    const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
+      'waivEnrollWaiverEnrollmentIsRequired'
+    ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
+  }
+  function setConclusionDoesNotRequireWaiver() {
+    // [conclusionDoesNotRequireWaiver] "The individual does not require waiver..." should always be uneditable and also should be selected if ALL of the following are true:
+    //   a. [waivEnrollWaiverEnrollmentIsRequired] "Will the unmet immeidate need…" is NO on the WAIVER ENROLLMENT page
+    const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
+      'waivEnrollWaiverEnrollmentIsRequired'
+    ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
+  }
+  function setConclusionNotEligibleForWaiver() {
+    // [conclusionNotEligibleForWaiver] "The individual is not eligible..." should always be uneditable and also should be selected if ALL of the following are true:
+    const conditionPageAllYes = isConditionInputsAllYes();
+    //   a.  Any of the questions on the CONDITIONS page have an answer of "NO"
+  }
   const onChangeCallbacks = {
     //* waitingListInfo
     currentLivingArrangement: ({ name, value, formName }) => {
       // (ENABLE) [livingArrangementOther] the "Other Living Arrangement" field only (IF)
       // [currentLivingArrangement] "Other" is selected in the "Describe Current Living Arrangement" drodown
-      const data = wlForms[formName].inputs['currentLivingArrangement'].getValue();
-      wlForms[formName].inputs['livingArrangementOther'].toggleDisabled(data === '0' ? false : true);
+
+      const data = wlForms['waitingListInfo'].inputs['currentLivingArrangement'].getValue();
+      wlForms['waitingListInfo'].inputs['livingArrangementOther'].toggleDisabled(data === '0' ? false : true);
     },
     //* currentAvailableServices
     isOtherService: ({ name, value, formName, id }) => {
       // (ENABLE) [otherDescription] the text field under "Other" only (IF)
       // [isOtherService] the answer is "Yes" to Other
+
       const isYesChecked = wlForms[formName].inputs['isOtherService'].getValue('isOtherServiceyes');
       wlForms[formName].inputs['otherDescription'].toggleDisabled(!isYesChecked);
     },
@@ -1488,18 +1549,21 @@ const WaitingListAssessment = (() => {
       // (ENABLE) [unavailableDocumentation] "List documentation used to verify presence of declining..."  (IF) [isPrimaryCaregiverUnavailable] question above it is "Yes"
       // (ENABLE) [isActionRequiredIn30Days] "Is action required..." radio buttons                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." question is "Yes"
       // (ENABLE) [isIndividualSkillsDeclined] "Is there evidence of declining..."                         (IF) [isPrimaryCaregiverUnavailable] "Is there evidence that the primary caregiver..." answer is "No".
+
       const isYesChecked = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue(
         'isPrimaryCaregiverUnavailableyes',
       );
       const isNoChecked = wlForms[formName].inputs['isPrimaryCaregiverUnavailable'].getValue(
         'isPrimaryCaregiverUnavailableno',
       );
+
       wlForms[formName].inputs['unavailableDocumentation'].toggleDisabled(!isYesChecked);
       wlForms[formName].inputs['isActionRequiredIn30Days'].toggleDisabled(!isYesChecked);
       wlForms[formName].inputs['isIndividualSkillsDeclined'].toggleDisabled(!isNoChecked);
     },
     isActionRequiredIn30Days: ({ name, value, formName }) => {
       // (ENABLE) [actionRequiredDescription] "Describe action required." textbox (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
+
       const isYesChecked = wlForms[formName].inputs['isActionRequiredIn30Days'].getValue('isActionRequiredIn30Daysyes');
       wlForms[formName].inputs['actionRequiredDescription'].toggleDisabled(!isYesChecked);
     },
@@ -1508,9 +1572,11 @@ const WaitingListAssessment = (() => {
       // [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
       // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox (IF)
       // [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
+
       const isYesChecked = wlForms[formName].inputs['isIndividualSkillsDeclined'].getValue(
         'isIndividualSkillsDeclinedyes',
       );
+
       wlForms[formName].inputs['declinedSkillsDocumentation'].toggleDisabled(!isYesChecked);
       wlForms[formName].inputs['declinedSkillsDescription'].toggleDisabled(!isYesChecked);
     },
@@ -1592,30 +1658,24 @@ const WaitingListAssessment = (() => {
     unmetNeedsSupports: ({ name, value, formName }) => {
       // (ENABLE) [unmetNeedsDescription] "If 'Yes', describe the unmet need:" text box only
       // (IF)[unmetNeedsSupports] "If 'Yes', will any of those needs..." is YES
+
       const isYesChecked = wlForms[formName].inputs['unmetNeedsSupports'].getValue('unmetNeedsSupportsyes');
       wlForms[formName].inputs['unmetNeedsDescription'].toggleDisabled(isYesChecked);
+
+      setConclusionWaiverFunded12Months({ name, value, formName });
     },
     unmetNeedsHas: ({ name, value, formName }) => {
       // (ENABLE) [unmetNeedsSupports] "If 'Yes', will any of those needs..." only
-      // (IF)[unmetNeedsHas] "Does the individual have an identified need?" is YES
+      // (IF) [unmetNeedsHas] "Does the individual have an identified need?" is YES
+
       const isYesChecked = wlForms[formName].inputs['unmetNeedsHas'].getValue('unmetNeedsHasyes');
       wlForms[formName].inputs['unmetNeedsSupports'].toggleDisabled(isYesChecked);
+
+      setConclusionWaiverFunded12Months({ name, value, formName });
     },
-    // (SET) [unmetNeedsHas] "Does the individual have an identified need?" to YES only when one of the following is true:
-    //   a. ("Is there evidence that the primary…" is YES (AND) "Is action required…" is NO on the Primary Caregiver page) { OR }
-    //      ("Is there evidence of declining…" is NO (AND) "Is there evidence of declining skills…" is YES on the Primary Caregiver page)
-    //
-    //   b. ("Is the individual a child/adult currently engaging…" is YES on the Needs page { OR }
-    //      ("Is the individual a child/adult with significant physical…" is YES on the Needs page { OR }
-    //      ("Is the individual a child/adult with significant { OR }
-    //      (life- threatening…" is YES on the Needs page) (AND) ("If No, do the significant behavioral, physical care, and / or medical needs…" is YES on the Needs page)
-    //
-    //   c. "Does the individual have an ongoing need…" is YES on the Intermittent Supports page
-    //   d. "Is the individual reaching the age…" is YES on the Child Protection Agency page
-    //   e. "Does the individual require funding…" is YES on the Adult Day/Employment page
-    //   f. "Does the individual have a viable…" is YES on the Discharge Plan page
+    //* immediateNeeds
+    immNeedsRequired: setConclusionUnmetNeeds,
     //* waiverEnrollment
-    //*---------------------------------
     waivEnrollWaiverEnrollmentIsRequired: ({ name, value, formName }) => {
       // (ENABLE) [waivEnrollWaiverEnrollmentDescription] the "If 'No', describe the...' textbox only
       // (IF)[waivEnrollWaiverEnrollmentIsRequired] "Will the unmet need..." is YES on the same page.
@@ -1623,11 +1683,18 @@ const WaitingListAssessment = (() => {
         'waivEnrollWaiverEnrollmentIsRequiredyes',
       );
       wlForms[formName].inputs['waivEnrollWaiverEnrollmentDescription'].toggleDisabled(isYesChecked);
+
+      setConclusionUnmetNeeds({ name, value, formName });
+      setConclusionWaiverFunded12Months({ name, value, formName });
+      setConclusionDoesNotRequireWaiver({ name, value, formName });
     },
   };
   const onChangeCallbacksFormWatch = {
     conditions: ({ name, value, formName, subForm }) => {
       updatePageActiveStatus(subForm);
+      setConclusionUnmetNeeds({ name, value, formName, subForm });
+      setConclusionWaiverFunded12Months({ name, value, formName, subForm });
+      setConclusionNotEligibleForWaiver({ name, value, formName, subForm });
     },
     needs: ({ name, value, formName, subForm }) => {
       updatePageActiveStatus(subForm);

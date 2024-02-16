@@ -1,22 +1,16 @@
 // when calling [input].setValue() we need to run insert/update assessment anwser
 // lock form down until they select a consumer
 
-// The individual has unmet..." should always be uneditable and also be selected if ALL of the following are true:
-//   a.  All Questions on the CONDITIONS page have an answer of "YES"
-//   b.  "Is there an immediate need identified…" is YES on the IMMEDIATE NEEDS page
-//   c.  "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
-// 3.  "The individual has needs..." should always be uneditable and also should be selected if ALL of the following are true:
-//   a.   All Questions on the CONDITIONS page have an answer of "YES"
-//   b.  "Does the individual have an identified need?" is YES on the CURRENT NEEDS page
-//   c.  "If 'Yes', will any of those needs…" is YES on the CURRENT NEEDS page
-//   d.  "Will the unmet immeidate need…" is YES on the WAIVER ENROLLMENT page
-// 4.  "The individual does not require waiver..." should always be uneditable and also should be selected if ALL of the following are true:
-//   a. "Will the unmet immeidate need…" is NO on the WAIVER ENROLLMENT page
-// 5.  "The individual is not eligible..." should always be uneditable and also should be selected if ALL of the following are true:
-//   a.  Any of the questions on the CONDITIONS page have an answer of "NO"
-
-// const tocSectionWrap = _DOM.createElement('p', { id: section, class: 'section' });
-// const tocSubsection = _DOM.createElement('p', { id: section, class: 'subsection' });
-// const tocSectionWrap = _DOM.createElement('div', { id: section, class: 'section' });
-// const tocSectionLink = _DOM.createElement('a', { href: section, text: sections[section].name });
-// tocSectionWrap.appendChild(tocSectionLink);
+// (SET) [unmetNeedsHas] "Does the individual have an identified need?" to YES only when one of the following is true:
+//   a. ("Is there evidence that the primary…" is YES (AND) "Is action required…" is NO on the Primary Caregiver page) { OR }
+//      ("Is there evidence of declining…" is NO (AND) "Is there evidence of declining skills…" is YES on the Primary Caregiver page)
+//
+//   b. ("Is the individual a child/adult currently engaging…" is YES on the Needs page { OR }
+//      ("Is the individual a child/adult with significant physical…" is YES on the Needs page { OR }
+//      ("Is the individual a child/adult with significant { OR }
+//      (life- threatening…" is YES on the Needs page) (AND) ("If No, do the significant behavioral, physical care, and / or medical needs…" is YES on the Needs page)
+//
+//   c. "Does the individual have an ongoing need…" is YES on the Intermittent Supports page
+//   d. "Is the individual reaching the age…" is YES on the Child Protection Agency page
+//   e. "Does the individual require funding…" is YES on the Adult Day/Employment page
+//   f. "Does the individual have a viable…" is YES on the Discharge Plan page
