@@ -20,11 +20,23 @@ const WaitingListOverview = (() => {
       consumerId,
     });
 
+    // 0 - No qualifying condition
+    // 1 - Immediate Need
+    // 2 - Current Need
+    // 3 - Neither Immediate Need nor Current Need
+
     // string wlInfoId
     // string interviewDate
     // string conclusionResult
     // string conclusionDate
     // string sentToDODD
+
+    const conclusionResults = {
+      0: 'No qualifying condition',
+      1: 'Immediate Need',
+      2: 'Current Need',
+      3: 'Neither Immediate Need nor Current Need',
+    };
 
     let alreadyHasAssessmentForToday = false;
 
@@ -32,14 +44,14 @@ const WaitingListOverview = (() => {
     const tableData = data.getLandingPageForConsumerResult.map(
       ({ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }) => {
         console.log('Interview Date:', interviewDate);
-        const isToday = new Date().setHours(0, 0, 0, 0) !== new Date(interviewDate).setHours(0, 0, 0, 0);
+        const isToday = new Date().setHours(0, 0, 0, 0) === new Date(interviewDate).setHours(0, 0, 0, 0);
         if (isToday) alreadyHasAssessmentForToday = true;
 
         return {
           id: wlInfoId,
           values: [
             UTIL.formatDateToIso(interviewDate.split(' ')[0]),
-            conclusionResult,
+            conclusionResults[conclusionResult],
             UTIL.formatDateToIso(conclusionDate.split(' ')[0]),
             UTIL.formatDateToIso(sentToDODD.split(' ')[0]),
           ],

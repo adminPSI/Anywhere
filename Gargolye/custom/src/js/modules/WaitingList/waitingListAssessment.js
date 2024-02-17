@@ -1501,6 +1501,9 @@ const WaitingListAssessment = (() => {
     const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
+
+    const isChecked = conditionPageAllYes && isWaiverEnrollRequiredYes;
+    wlForms['conclusion'].inputs['conclusionUnmetNeeds'].setValue(isChecked);
   }
   function setConclusionWaiverFunded12Months() {
     // [conclusionWaiverFunded12Months] "The individual has needs..." should always be uneditable and also should be selected if ALL of the following are true:
@@ -1515,6 +1518,9 @@ const WaitingListAssessment = (() => {
     const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
+
+    const isChecked = conditionPageAllYes && isUnmetNeedsHasYes && isUnmetNeedsSupportsYes && isWaiverEnrollRequiredYes;
+    wlForms['conclusion'].inputs['conclusionWaiverFunded12Months'].setValue(isChecked);
   }
   function setConclusionDoesNotRequireWaiver() {
     // [conclusionDoesNotRequireWaiver] "The individual does not require waiver..." should always be uneditable and also should be selected if ALL of the following are true:
@@ -1522,11 +1528,15 @@ const WaitingListAssessment = (() => {
     const isWaiverEnrollRequiredYes = wlForms['waiverEnrollment'].inputs[
       'waivEnrollWaiverEnrollmentIsRequired'
     ].getValue('waivEnrollWaiverEnrollmentIsRequiredyes');
+
+    wlForms['conclusion'].inputs['conclusionDoesNotRequireWaiver'].setValue(isWaiverEnrollRequiredYes);
   }
   function setConclusionNotEligibleForWaiver() {
-    // [conclusionNotEligibleForWaiver] "The individual is not eligible..." should always be uneditable and also should be selected if ALL of the following are true:
-    const conditionPageAllYes = isConditionInputsAllYes();
+    // [conclusionNotEligibleForWaiver] "The individual is not eligible..." should be selected if ALL of the following are true:
     //   a.  Any of the questions on the CONDITIONS page have an answer of "NO"
+    const conditionPageAllYes = isConditionInputsAllYes();
+
+    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(conditionPageAllYes);
   }
   const onChangeCallbacks = {
     //* waitingListInfo
@@ -1823,10 +1833,11 @@ const WaitingListAssessment = (() => {
 
       // Build TOC
       const className = isContributingCircumstancesSubSection ? 'subsection' : 'section';
-      const tocSubsection = _DOM.createElement('p', { class: className });
+      const tocSection = _DOM.createElement('p', { class: className });
       const tocSectionLink = _DOM.createElement('a', { href: `#${section}`, text: sections[section].name });
-      tocSubsection.appendChild(tocSectionLink);
-      tableOfContents.appendChild(tocSubsection);
+      tocSection.appendChild(tocSectionLink);
+      tableOfContents.appendChild(tocSection);
+      tocSection.classList.toggle('hiddenPage', !sections[section].enabled);
 
       // Build Form
       const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });

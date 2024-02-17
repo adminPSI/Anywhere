@@ -79,6 +79,12 @@
     a {
       color: $black;
     }
+    p {
+      &.hiddenPage {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
     .section {
       margin: 0 0 10px 0;
     }
