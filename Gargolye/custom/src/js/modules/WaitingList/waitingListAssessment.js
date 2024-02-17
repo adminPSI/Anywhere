@@ -44,6 +44,7 @@ const WaitingListAssessment = (() => {
           type: 'select',
           required: true,
           data: [
+            { value: '0', text: '' },
             { value: '1', text: 'Lives Alone' },
             { value: '2', text: 'Lives with Family or Other Caregivers' },
             { value: '3', text: 'Lives With Others Who Are Not Caregivers' },
@@ -1053,7 +1054,7 @@ const WaitingListAssessment = (() => {
           id: 'fundingSourceId',
           type: 'select',
           required: true,
-          data: [{ value: '1', text: '' }],
+          includeBlankOption: true,
         },
       ],
     },
@@ -1987,6 +1988,16 @@ const WaitingListAssessment = (() => {
     wlLinkID = resp[0].newRecordId;
     wlFormInfo['waitingListInfo'].id = wlLinkID;
     wlFormInfo['conclusion'].id = wlLinkID;
+
+    const fundingSources = await _UTIL.fetchData('getWaitingListFundingSources');
+    wlForms['conclusion'].inputs['fundingSourceId'].populate(
+      fundingSources.map(fs => {
+        return {
+          value: fs.fundingSourceId,
+          text: fs.description,
+        };
+      }),
+    );
   }
 
   return { init };

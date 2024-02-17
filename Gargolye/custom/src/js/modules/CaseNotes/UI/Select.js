@@ -13,6 +13,7 @@
     hidden: false,
     note: null,
     required: false,
+    includeBlankOption: false,
   };
 
   /**
@@ -25,6 +26,7 @@
    * @param {Boolean} [options.required] Whether select is required for submission
    * @param {String} [options.note] Text for select note/message, displayed underneath select field
    * @param {Boolean} [options.hidden] Whether to show or hide the select
+   * @param {Boolean} [options.includeBlankOption]
    * @returns {Select}
    *
    * @example
