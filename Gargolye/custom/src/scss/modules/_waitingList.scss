@@ -53,18 +53,21 @@
     #waitingListInfo {
       order: 1;
     }
-    #conditions {
-      order: 2;
-    }
     #participants {
-      order: 3;
+      order: 2;
 
       .ui_table {
         margin: 0 0 10px 0;
       }
     }
-    #contributingCircumstances {
+    #conditions {
+      order: 3;
+    }
+    #currentAvailableServices {
       order: 4;
+    }
+    #contributingCircumstances {
+      order: 5;
     }
   }
   .waitingListTableOFContents {

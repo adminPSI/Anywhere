@@ -26,20 +26,28 @@ const WaitingListOverview = (() => {
     // string conclusionDate
     // string sentToDODD
 
+    let alreadyHasAssessmentForToday = false;
+
     // TODO-ASH: replace conclusionResult id with name, get from dropdown data
-    return data.getLandingPageForConsumerResult.map(
+    const tableData = data.getLandingPageForConsumerResult.map(
       ({ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }) => {
+        console.log('Interview Date:', interviewDate);
+        const isToday = new Date().setHours(0, 0, 0, 0) !== new Date(interviewDate).setHours(0, 0, 0, 0);
+        if (isToday) alreadyHasAssessmentForToday = true;
+
         return {
           id: wlInfoId,
           values: [
             UTIL.formatDateToIso(interviewDate.split(' ')[0]),
             conclusionResult,
-            conclusionDate,
+            UTIL.formatDateToIso(conclusionDate.split(' ')[0]),
             UTIL.formatDateToIso(sentToDODD.split(' ')[0]),
           ],
         };
       },
     );
+
+    return { tableData, alreadyHasAssessmentForToday };
   }
 
   // EVENTS
@@ -52,9 +60,10 @@ const WaitingListOverview = (() => {
 
     if (!selectedConsumer) return;
 
-    const tableData = await getReviewDataByConsumer(selectedConsumer);
+    const { tableData, alreadyHasAssessmentForToday } = await getReviewDataByConsumer(selectedConsumer);
     wlReviewTable.populate(tableData);
     newAssessmentBtn.toggleDisabled(false);
+    newAssessmentBtn.toggleDisabled(alreadyHasAssessmentForToday);
   }
   function attachEvents() {
     newAssessmentBtn.onClick(() => {
