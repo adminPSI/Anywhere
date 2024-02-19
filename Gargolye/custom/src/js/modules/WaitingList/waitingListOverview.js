@@ -20,11 +20,6 @@ const WaitingListOverview = (() => {
       consumerId,
     });
 
-    // 0 - No qualifying condition
-    // 1 - Immediate Need
-    // 2 - Current Need
-    // 3 - Neither Immediate Need nor Current Need
-
     // string wlInfoId
     // string interviewDate
     // string conclusionResult

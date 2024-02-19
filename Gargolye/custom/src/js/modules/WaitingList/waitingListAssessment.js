@@ -13,6 +13,8 @@ const WaitingListAssessment = (() => {
   //--------------------------
   let assessmentWrap;
   let tableOfContents;
+  let contributingCircumstancesFormsWrap;
+  let needsWrap;
   //--------------------------
   // UI INSTANCES
   //--------------------------
@@ -114,7 +116,7 @@ const WaitingListAssessment = (() => {
     currentAvailableServices: {
       name: 'Current/Available Services',
       dbtable: 'WLA_Active_Services',
-      enabled: true,
+      enabled: false,
       formElements: [
         {
           type: 'radiogroup',
@@ -313,7 +315,7 @@ const WaitingListAssessment = (() => {
     primaryCaregiver: {
       name: 'Primary Caregiver',
       dbtable: 'WLA_Primary_Caregivers',
-      enabled: false,
+      enabled: true,
       formElements: [
         {
           type: 'radiogroup',
@@ -393,214 +395,211 @@ const WaitingListAssessment = (() => {
     needs: {
       name: 'Needs',
       enabled: false,
-      formElements: {
-        behavioral: {
-          dbtable: 'WLA_Risks',
-          enabled: false,
-          formElements: [
-            {
-              disabled: true,
-              type: 'radiogroup',
-              id: 'risksIsRiskToSelf',
-              groupLabel:
-                'Is the individual a child / adult currently engaging in a pattern of behavior that creates a substantial risk to self / others?',
-              note: 'This field is filled out by AI',
-              fields: [
-                { type: 'radio', label: 'Yes', value: 'yes', id: 'risksIsRiskToSelfyes' },
-                { type: 'radio', label: 'No', value: 'no', id: 'risksIsRiskToSelfno' },
-              ],
-            },
-            {
-              type: 'checkboxgroup',
-              id: 'behavioral',
-              groupLabel: 'Check all that apply:',
-              fields: [
-                {
-                  type: 'checkbox',
-                  label: 'Not applicable; there is currently no pattern of behavior that creates a substantial risk.',
-                  id: 'risksIsNone',
-                },
-                { type: 'checkbox', label: 'Physical Aggression', id: 'risksIsPhysicalAggression' },
-                { type: 'checkbox', label: 'Self-Injury', id: 'risksIsSelfInjury' },
-                { type: 'checkbox', label: 'Fire-setting', id: 'risksIsFireSetting' },
-                { type: 'checkbox', label: 'Elopement', id: 'risksIsElopement' },
-                { type: 'checkbox', label: 'Sexual Offending', id: 'risksIsSexualOffending' },
-                { type: 'checkbox', label: 'Other', id: 'risksIsOther' },
-              ],
-              required: true,
-            },
-            {
-              label: 'Describe type, frequency, and intensity of behavioral needs:',
-              id: 'risksFrequencyDescription',
-              fullscreen: true,
-              type: 'textarea',
-              disabled: true,
-              required: true,
-            },
-            {
-              type: 'checkboxgroup',
-              id: 'unknownId3',
-              groupLabel: 'Documentation available (Select at least one):',
-              fields: [
-                {
-                  type: 'checkbox',
-                  label: 'Not applicable; there is currently no pattern of behavior that creats a substantial risk',
-                  id: 'risksHasNoDocument',
-                },
-                { type: 'checkbox', label: 'Police Report(s)', id: 'risksHasPoliceReport' },
-                { type: 'checkbox', label: 'Incident Report(s)', id: 'risksHasIncidentReport' },
-                { type: 'checkbox', label: 'Behavior Tracking Sheets(s)', id: 'risksHasBehaviorTracking' },
-                { type: 'checkbox', label: 'Psychological Assessment', id: 'risksHasPsychologicalAssessment' },
-                { type: 'checkbox', label: 'Other', id: 'risksHasOtherDocument' },
-              ],
-              required: true,
-            },
-            {
-              label: 'Other:',
-              id: 'risksOtherDocumentDescription',
-              fullscreen: true,
-              type: 'textarea',
-              disabled: true,
-              required: true,
-            },
+    },
+    behavioral: {
+      name: 'behavioral',
+      dbtable: 'WLA_Risks',
+      formElements: [
+        {
+          disabled: true,
+          type: 'radiogroup',
+          id: 'risksIsRiskToSelf',
+          groupLabel:
+            'Is the individual a child / adult currently engaging in a pattern of behavior that creates a substantial risk to self / others?',
+          note: 'This field is filled out by AI',
+          fields: [
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'risksIsRiskToSelfyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'risksIsRiskToSelfno' },
           ],
         },
-        physical: {
-          dbtable: 'WLA_Physical_Needs',
-          enabled: false,
-          formElements: [
+        {
+          type: 'checkboxgroup',
+          id: 'behavioral',
+          groupLabel: 'Check all that apply:',
+          fields: [
             {
-              disabled: true,
-              type: 'radiogroup',
-              id: 'physicalNeedsIsPhysicalCareNeeded',
-              groupLabel: 'Is the individual a child / adult with significant physical care needs?',
-              note: 'This field is filled out by AI',
-              fields: [
-                { type: 'radio', label: 'Yes', value: 'yes', id: 'physicalNeedsIsPhysicalCareNeededyes' },
-                { type: 'radio', label: 'No', value: 'no', id: 'physicalNeedsIsPhysicalCareNeededno' },
-              ],
+              type: 'checkbox',
+              label: 'Not applicable; there is currently no pattern of behavior that creates a substantial risk.',
+              id: 'risksIsNone',
             },
+            { type: 'checkbox', label: 'Physical Aggression', id: 'risksIsPhysicalAggression' },
+            { type: 'checkbox', label: 'Self-Injury', id: 'risksIsSelfInjury' },
+            { type: 'checkbox', label: 'Fire-setting', id: 'risksIsFireSetting' },
+            { type: 'checkbox', label: 'Elopement', id: 'risksIsElopement' },
+            { type: 'checkbox', label: 'Sexual Offending', id: 'risksIsSexualOffending' },
+            { type: 'checkbox', label: 'Other', id: 'risksIsOther' },
+          ],
+          required: true,
+        },
+        {
+          label: 'Describe type, frequency, and intensity of behavioral needs:',
+          id: 'risksFrequencyDescription',
+          fullscreen: true,
+          type: 'textarea',
+          disabled: true,
+          required: true,
+        },
+        {
+          type: 'checkboxgroup',
+          id: 'unknownId3',
+          groupLabel: 'Documentation available (Select at least one):',
+          fields: [
             {
-              type: 'checkboxgroup',
-              id: 'physicalNeeds',
-              groupLabel: 'Check all that apply:',
-              fields: [
-                {
-                  type: 'checkbox',
-                  label: 'Not applicable; there are no significant physical care needs',
-                  id: 'physicalNeedsIsNone',
-                },
-                {
-                  type: 'checkbox',
-                  label:
-                    'Frequent hands-on support required with activities of daily living throughout the day and night',
-                  id: 'physicalNeedsIsPersonalCareNeeded',
-                },
-                {
-                  type: 'checkbox',
-                  label: 'Size / Condition of the individual creates a risk of injury during physical care',
-                  id: 'physicalNeedsIsRiskDuringPhysicalCare',
-                },
-                { type: 'checkbox', label: 'Other', id: 'physicalNeedsIsOther' },
-              ],
-              required: true,
+              type: 'checkbox',
+              label: 'Not applicable; there is currently no pattern of behavior that creats a substantial risk',
+              id: 'risksHasNoDocument',
             },
-            {
-              label: 'Describe type, frequency, and intensity of physical care needs:',
-              id: 'physicalNeedsDescription',
-              fullscreen: true,
-              type: 'textarea',
-              disabled: true,
-              required: true,
-            },
+            { type: 'checkbox', label: 'Police Report(s)', id: 'risksHasPoliceReport' },
+            { type: 'checkbox', label: 'Incident Report(s)', id: 'risksHasIncidentReport' },
+            { type: 'checkbox', label: 'Behavior Tracking Sheets(s)', id: 'risksHasBehaviorTracking' },
+            { type: 'checkbox', label: 'Psychological Assessment', id: 'risksHasPsychologicalAssessment' },
+            { type: 'checkbox', label: 'Other', id: 'risksHasOtherDocument' },
+          ],
+          required: true,
+        },
+        {
+          label: 'Other:',
+          id: 'risksOtherDocumentDescription',
+          fullscreen: true,
+          type: 'textarea',
+          disabled: true,
+          required: true,
+        },
+      ],
+    },
+    physical: {
+      name: 'physical',
+      dbtable: 'WLA_Physical_Needs',
+      formElements: [
+        {
+          disabled: true,
+          type: 'radiogroup',
+          id: 'physicalNeedsIsPhysicalCareNeeded',
+          groupLabel: 'Is the individual a child / adult with significant physical care needs?',
+          note: 'This field is filled out by AI',
+          fields: [
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'physicalNeedsIsPhysicalCareNeededyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'physicalNeedsIsPhysicalCareNeededno' },
           ],
         },
-        medical: {
-          dbtable: 'WLA_Medical_Needs',
-          enabled: false,
-          formElements: [
+        {
+          type: 'checkboxgroup',
+          id: 'physicalNeeds',
+          groupLabel: 'Check all that apply:',
+          fields: [
             {
-              disabled: true,
-              type: 'radiogroup',
-              id: 'medicalNeedsIsLifeThreatening',
-              groupLabel: 'Is the individual a child / adult with significant or life-threatening medical needs?',
-              note: 'This field is filled out by AI',
-              fields: [
-                { type: 'radio', label: 'Yes', value: 'yes', id: 'medicalNeedsIsLifeThreateningyes' },
-                { type: 'radio', label: 'No', value: 'no', id: 'medicalNeedsIsLifeThreateningno' },
-              ],
+              type: 'checkbox',
+              label: 'Not applicable; there are no significant physical care needs',
+              id: 'physicalNeedsIsNone',
             },
             {
-              type: 'checkboxgroup',
-              id: 'medicalNeedsCheckboxes',
-              required: true,
-              groupLabel: ' (Check all that apply)',
-              fields: [
-                {
-                  type: 'checkbox',
-                  label: 'Not applicable; there are no significant or life-threatening medical needs',
-                  id: 'medicalNeedsIsNone',
-                },
-                {
-                  type: 'checkbox',
-                  label: 'Frequent hospitalizations or emergency room visits for life-sustaining treatment',
-                  id: 'medicalNeedsIsFrequentEmergencyVisit',
-                },
-                {
-                  type: 'checkbox',
-                  label:
-                    'Ongoing medical care provided by caregivers to prevent hospitalization or emergency room intervention',
-                  id: 'medicalNeedsIsOngoingMedicalCare',
-                },
-                {
-                  type: 'checkbox',
-                  label: 'Need for specialized training of caregivers to prevent emergency medical intervention',
-                  id: 'medicalNeedsIsSpecializedCareGiveNeeded',
-                },
-                { type: 'checkbox', label: 'Other', id: 'medicalNeedsIsOther' },
-              ],
+              type: 'checkbox',
+              label: 'Frequent hands-on support required with activities of daily living throughout the day and night',
+              id: 'physicalNeedsIsPersonalCareNeeded',
             },
             {
-              label: 'Describe type, frequency, and intensity of medical needs:',
-              id: 'medicalNeedsDescription',
-              fullscreen: true,
-              type: 'textarea',
-              disabled: true,
-              required: true,
+              type: 'checkbox',
+              label: 'Size / Condition of the individual creates a risk of injury during physical care',
+              id: 'physicalNeedsIsRiskDuringPhysicalCare',
             },
+            { type: 'checkbox', label: 'Other', id: 'physicalNeedsIsOther' },
+          ],
+          required: true,
+        },
+        {
+          label: 'Describe type, frequency, and intensity of physical care needs:',
+          id: 'physicalNeedsDescription',
+          fullscreen: true,
+          type: 'textarea',
+          disabled: true,
+          required: true,
+        },
+      ],
+    },
+    medical: {
+      name: 'medical',
+      dbtable: 'WLA_Medical_Needs',
+      formElements: [
+        {
+          disabled: true,
+          type: 'radiogroup',
+          id: 'medicalNeedsIsLifeThreatening',
+          groupLabel: 'Is the individual a child / adult with significant or life-threatening medical needs?',
+          note: 'This field is filled out by AI',
+          fields: [
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'medicalNeedsIsLifeThreateningyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'medicalNeedsIsLifeThreateningno' },
           ],
         },
-        other: {
-          dbtable: 'WLA_Needs',
-          enabled: false,
-          formElements: [
+        {
+          type: 'checkboxgroup',
+          id: 'medicalNeedsCheckboxes',
+          required: true,
+          groupLabel: ' (Check all that apply)',
+          fields: [
             {
-              type: 'radiogroup',
-              id: 'needsIsActionRequiredRequiredIn30Days',
-              groupLabel:
-                'Is action required within the next 30 days to reduce the risk(s) presented by the behaviorl, physical, and / or medical needs?',
-              fields: [
-                { type: 'radio', label: 'Yes', value: 'yes', id: 'needsIsActionRequiredRequiredIn30Daysyes' },
-                { type: 'radio', label: 'No', value: 'no', id: 'needsIsActionRequiredRequiredIn30Daysno' },
-              ],
-              disabled: true,
-              required: true,
+              type: 'checkbox',
+              label: 'Not applicable; there are no significant or life-threatening medical needs',
+              id: 'medicalNeedsIsNone',
             },
             {
-              type: 'radiogroup',
-              id: 'needsIsContinuousSupportRequired',
-              groupLabel:
-                'If No, do the significant behavioral, physical care, and / or medical needs identified require continuous support to reduce risk?',
-              fields: [
-                { type: 'radio', label: 'Yes', value: 'yes', id: 'needsIsContinuousSupportRequiredyes' },
-                { type: 'radio', label: 'No', value: 'no', id: 'needsIsContinuousSupportRequiredno' },
-              ],
-              disabled: true,
-              required: true,
+              type: 'checkbox',
+              label: 'Frequent hospitalizations or emergency room visits for life-sustaining treatment',
+              id: 'medicalNeedsIsFrequentEmergencyVisit',
             },
+            {
+              type: 'checkbox',
+              label:
+                'Ongoing medical care provided by caregivers to prevent hospitalization or emergency room intervention',
+              id: 'medicalNeedsIsOngoingMedicalCare',
+            },
+            {
+              type: 'checkbox',
+              label: 'Need for specialized training of caregivers to prevent emergency medical intervention',
+              id: 'medicalNeedsIsSpecializedCareGiveNeeded',
+            },
+            { type: 'checkbox', label: 'Other', id: 'medicalNeedsIsOther' },
           ],
         },
-      },
+        {
+          label: 'Describe type, frequency, and intensity of medical needs:',
+          id: 'medicalNeedsDescription',
+          fullscreen: true,
+          type: 'textarea',
+          disabled: true,
+          required: true,
+        },
+      ],
+    },
+    other: {
+      name: 'other',
+      dbtable: 'WLA_Needs',
+      formElements: [
+        {
+          type: 'radiogroup',
+          id: 'needsIsActionRequiredRequiredIn30Days',
+          groupLabel:
+            'Is action required within the next 30 days to reduce the risk(s) presented by the behaviorl, physical, and / or medical needs?',
+          fields: [
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'needsIsActionRequiredRequiredIn30Daysyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'needsIsActionRequiredRequiredIn30Daysno' },
+          ],
+          disabled: true,
+          required: true,
+        },
+        {
+          type: 'radiogroup',
+          id: 'needsIsContinuousSupportRequired',
+          groupLabel:
+            'If No, do the significant behavioral, physical care, and / or medical needs identified require continuous support to reduce risk?',
+          fields: [
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'needsIsContinuousSupportRequiredyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'needsIsContinuousSupportRequiredno' },
+          ],
+          disabled: true,
+          required: true,
+        },
+      ],
     },
     riskMitigation: {
       name: 'Risk Mitigation',
@@ -1128,11 +1127,11 @@ const WaitingListAssessment = (() => {
 
     // save / update
     let hasId = false;
-    if (formName === 'needs') {
-      hasId = wlFormInfo[formName][subFormName].id === '' ? false : true;
-    } else {
-      hasId = wlFormInfo[formName].id === '' ? false : true;
-    }
+    // if (formName === 'needs') {
+    //   hasId = wlFormInfo[formName][subFormName].id === '' ? false : true;
+    // } else {
+    hasId = wlFormInfo[formName].id === '' ? false : true;
+    // }
 
     if (!hasId) {
       const resp = await insertAssessmentData({
@@ -1142,11 +1141,11 @@ const WaitingListAssessment = (() => {
         value: value,
       });
 
-      if (formName === 'needs') {
-        wlFormInfo[formName][subFormName].id = resp[0].newRecordId;
-      } else {
-        wlFormInfo[formName].id = resp[0].newRecordId;
-      }
+      // if (formName === 'needs') {
+      //   wlFormInfo[formName][subFormName].id = resp[0].newRecordId;
+      // } else {
+      wlFormInfo[formName].id = resp[0].newRecordId;
+      // }
     } else {
       await updateAssessmentData({
         id: wlFormInfo[formName].id,
@@ -1360,7 +1359,10 @@ const WaitingListAssessment = (() => {
       let formsToDelete = [];
 
       [
-        'needs',
+        'behavioral',
+        'physical',
+        'medical',
+        'other',
         'waiverEnrollment',
         'riskMitigation',
         'icfDischarge',
@@ -1370,55 +1372,60 @@ const WaitingListAssessment = (() => {
         'dischargePlan',
         'immediateNeeds',
         'currentNeeds',
+        'currentAvailableServices',
       ].forEach(formName => {
         // hide form
 
         // needs is special
-        if (formName === 'needs') {
-          // conditions page all inputs are yes
-          contributingCircumstancesFormsWrap.classList.add('hiddenPage');
-          wlForms['behavioral'].form.parentElement.classList.add('hiddenPage');
-          wlForms['physical'].form.parentElement.classList.add('hiddenPage');
-          wlForms['medical'].form.parentElement.classList.add('hiddenPage');
-          wlForms['other'].form.parentElement.classList.add('hiddenPage');
+        // if (formName === 'needs') {
+        //   // conditions page all inputs are yes
+        //   contributingCircumstancesFormsWrap.classList.add('hiddenPage');
+        //   needsWrap.classList.add('hiddenPage');
+        //   // wlForms['behavioral'].form.parentElement.classList.add('hiddenPage');
+        //   // wlForms['physical'].form.parentElement.classList.add('hiddenPage');
+        //   // wlForms['medical'].form.parentElement.classList.add('hiddenPage');
+        //   // wlForms['other'].form.parentElement.classList.add('hiddenPage');
 
-          if (wlFormInfo.needs.behavioral.id) {
-            formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
-            wlFormInfo.needs.behavioral.id = '';
-          }
-          if (wlFormInfo.needs.physical.id) {
-            formsToDelete.push(`${wlFormInfo.needs.physical.id}|${wlFormInfo.needs.physical.dbtable}`);
-            wlFormInfo.needs.physical.id = '';
-          }
-          if (wlFormInfo.needs.medical.id) {
-            formsToDelete.push(`${wlFormInfo.needs.medical.id}|${wlFormInfo.needs.medical.dbtable}`);
-            wlFormInfo.needs.medical.id = '';
-          }
-          if (wlFormInfo.needs.other.id) {
-            formsToDelete.push(`${wlFormInfo.needs.other.id}|${wlFormInfo.needs.other.dbtable}`);
-            wlFormInfo.needs.other.id = '';
-          }
-        } else {
-          wlForms[formName].form.parentElement.classList.add('hiddenPage');
+        //   if (wlFormInfo.needs.behavioral.id) {
+        //     formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
+        //     wlFormInfo.needs.behavioral.id = '';
+        //   }
+        //   if (wlFormInfo.needs.physical.id) {
+        //     formsToDelete.push(`${wlFormInfo.needs.physical.id}|${wlFormInfo.needs.physical.dbtable}`);
+        //     wlFormInfo.needs.physical.id = '';
+        //   }
+        //   if (wlFormInfo.needs.medical.id) {
+        //     formsToDelete.push(`${wlFormInfo.needs.medical.id}|${wlFormInfo.needs.medical.dbtable}`);
+        //     wlFormInfo.needs.medical.id = '';
+        //   }
+        //   if (wlFormInfo.needs.other.id) {
+        //     formsToDelete.push(`${wlFormInfo.needs.other.id}|${wlFormInfo.needs.other.dbtable}`);
+        //     wlFormInfo.needs.other.id = '';
+        //   }
+        // } else {
+        wlForms[formName].form.parentElement.classList.add('hiddenPage');
 
-          if (wlFormInfo[formName].id) {
-            formsToDelete.push(`${wlFormInfo[formName].id}|${wlFormInfo[formName].dbtable}`);
-            wlFormInfo[formName].id = '';
-          }
+        if (wlFormInfo[formName].id) {
+          formsToDelete.push(`${wlFormInfo[formName].id}|${wlFormInfo[formName].dbtable}`);
+          wlFormInfo[formName].id = '';
         }
-
-        //TODO-ASH: delete forms formsToDelete
+        // }
       });
+
+      if (formsToDelete.length === 0) return;
+
+      await _UTIL.fetchData('deleteFromWaitingList', { properties: formsToDelete });
 
       return;
     }
 
     // conditions page all inputs are yes
     contributingCircumstancesFormsWrap.classList.remove('hiddenPage');
-    wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
-    wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
-    wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
-    wlForms['other'].form.parentElement.classList.remove('hiddenPage');
+    needsWrap.classList.remove('hiddenPage');
+    // wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
+    // wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
+    // wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
+    // wlForms['other'].form.parentElement.classList.remove('hiddenPage');
     wlForms['waiverEnrollment'].form.parentElement.classList.remove('hiddenPage');
 
     // get circumstance id
@@ -1787,7 +1794,15 @@ const WaitingListAssessment = (() => {
       });
     });
 
-    documentsButton.onClick(() => {});
+    documentsButton.onClick(() => {
+      // _UTIL.fetchData('addWlSupportingDocument', {
+      //   waitingListInformationId: '',
+      //   description: '',
+      //   includeOnEmail: '',
+      //   attachmentType: '',
+      //   attachment: '',
+      // });
+    });
 
     let partCache = [];
 
@@ -1819,6 +1834,7 @@ const WaitingListAssessment = (() => {
     sendEmailButton.renderTo(moduleHeader);
     documentsButton.renderTo(moduleHeader);
 
+    // Assessment
     for (section in sections) {
       const isContributingCircumstancesSubSection = [
         'needs',
@@ -1830,6 +1846,7 @@ const WaitingListAssessment = (() => {
         'adultDayEmployment',
         'dischargePlan',
       ].includes(section);
+      const isNeedsSubSection = ['behavioral', 'physical', 'medical', 'other'].includes(section);
 
       // Build TOC
       const className = isContributingCircumstancesSubSection ? 'subsection' : 'section';
@@ -1855,38 +1872,26 @@ const WaitingListAssessment = (() => {
       if (section === 'contributingCircumstances') {
         contributingCircumstancesFormsWrap = sectionWrap;
       }
-
       if (section === 'needs') {
-        for (needSubForms in sections[section].formElements) {
-          wlForms[needSubForms] = new Form({
-            hideAllButtons: true,
-            fields: sections[section].formElements[needSubForms].formElements,
-            formName: needSubForms,
-          });
-          wlForms[needSubForms].renderTo(sectionWrap);
-          wlForms[needSubForms].onChange(onFormChange(section, needSubForms));
-        }
+        needsWrap = sectionWrap;
+      }
 
-        wlFormInfo.needs.behavioral.id = '';
-        wlFormInfo.needs.physical.id = '';
-        wlFormInfo.needs.medical.id = '';
-        wlFormInfo.needs.other.id = '';
-      } else {
-        if (sections[section].formElements) {
-          wlForms[section] = new Form({
-            hideAllButtons: true,
-            fields: sections[section].formElements,
-            formName: section,
-          });
+      if (sections[section].formElements) {
+        wlForms[section] = new Form({
+          hideAllButtons: true,
+          fields: sections[section].formElements,
+          formName: section,
+        });
 
-          wlForms[section].renderTo(sectionWrap);
-          wlForms[section].onChange(onFormChange(section));
-          wlFormInfo[section].id = '';
-        }
+        wlForms[section].renderTo(sectionWrap);
+        wlForms[section].onChange(onFormChange(section));
+        wlFormInfo[section].id = '';
       }
 
       if (isContributingCircumstancesSubSection) {
         contributingCircumstancesFormsWrap.appendChild(sectionWrap);
+      } else if (isNeedsSubSection) {
+        needsWrap.appendChild(sectionWrap);
       } else {
         assessmentWrap.appendChild(sectionWrap);
       }
@@ -1907,31 +1912,25 @@ const WaitingListAssessment = (() => {
   //--------------------------------------------------
   function initFormInfo() {
     return {
-      waitingListInfo: { enabled: true, dbtable: 'WLA_Waiting_List_Information' },
-      conditions: { enabled: true, dbtable: 'WLA_Conditions' },
-      primaryCaregiver: { enabled: true, dbtable: 'WLA_Primary_Caregivers' },
-      adultDayEmployment: { enabled: false, dbtable: 'WLA_Require_Waiver_Fundings' },
-      childProtectionAgency: { enabled: false, dbtable: 'WLA_Child_Protection_Agencies' },
-      currentAvailableServices: { enabled: false, dbtable: 'WLA_Active_Services' },
-      currentNeeds: { enabled: false, dbtable: 'WLA_Unmet_Needs' },
-      dischargePlan: { enabled: false, dbtable: 'WLA_Discharge_Plans' },
-      icfDischarge: { enabled: false, dbtable: 'WLA_ICF_Discharges' },
-      intermittentSupports: { enabled: false, dbtable: 'WLA_Intermitent_Supports' },
-      immediateNeeds: { enabled: false, dbtable: 'WLA_Immediate_Needs' },
-      riskMitigation: { enabled: false, dbtable: 'WLA_Risk_Mitigations' },
-      waiverEnrollment: { enabled: false, dbtable: 'WLA_Waiver_Enrollments' },
-      needs: {
-        enabled: false,
-        behavioral: { dbtable: 'WLA_Risks' },
-        physical: { dbtable: 'WLA_Physical_Needs' },
-        medical: { dbtable: 'WLA_Medical_Needs' },
-        other: { dbtable: 'WLA_Needs' },
-      },
+      waitingListInfo: { dbtable: 'WLA_Waiting_List_Information' },
+      conditions: { dbtable: 'WLA_Conditions' },
+      primaryCaregiver: { dbtable: 'WLA_Primary_Caregivers' },
+      adultDayEmployment: { dbtable: 'WLA_Require_Waiver_Fundings' },
+      childProtectionAgency: { dbtable: 'WLA_Child_Protection_Agencies' },
+      currentAvailableServices: { dbtable: 'WLA_Active_Services' },
+      currentNeeds: { dbtable: 'WLA_Unmet_Needs' },
+      dischargePlan: { dbtable: 'WLA_Discharge_Plans' },
+      icfDischarge: { dbtable: 'WLA_ICF_Discharges' },
+      intermittentSupports: { dbtable: 'WLA_Intermitent_Supports' },
+      immediateNeeds: { dbtable: 'WLA_Immediate_Needs' },
+      riskMitigation: { dbtable: 'WLA_Risk_Mitigations' },
+      waiverEnrollment: { dbtable: 'WLA_Waiver_Enrollments' },
+      behavioral: { dbtable: 'WLA_Risks' },
+      physical: { dbtable: 'WLA_Physical_Needs' },
+      medical: { dbtable: 'WLA_Medical_Needs' },
+      other: { dbtable: 'WLA_Needs' },
       //------
-      conclusion: {
-        enabled: true,
-        dbtable: 'TODO',
-      },
+      conclusion: { dbtable: 'WLA_Waiting_List_Information' },
     };
   }
   function initComponents() {
@@ -2000,7 +1999,8 @@ const WaitingListAssessment = (() => {
     wlFormInfo['waitingListInfo'].id = wlLinkID;
     wlFormInfo['conclusion'].id = wlLinkID;
 
-    const fundingSources = await _UTIL.fetchData('getWaitingListFundingSources');
+    const resp2 = await _UTIL.fetchData('getWaitingListFundingSources');
+    const fundingSources = resp2.getWaitingListFundingSourcesResult;
     wlForms['conclusion'].inputs['fundingSourceId'].populate(
       fundingSources.map(fs => {
         return {

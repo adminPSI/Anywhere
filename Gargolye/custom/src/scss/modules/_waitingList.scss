@@ -71,7 +71,6 @@
     }
   }
   .waitingListTableOFContents {
-    cursor: pointer;
     display: flex;
     flex-flow: column;
     min-width: 250px;
@@ -80,7 +79,10 @@
       color: $black;
     }
     p {
+      cursor: pointer;
+
       &.hiddenPage {
+        cursor: default;
         pointer-events: none;
         opacity: 0.5;
       }
