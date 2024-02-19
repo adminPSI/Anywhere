@@ -208,7 +208,7 @@ const WagesBenefits = (() => {
         });
     }
 
-    function disableCheckBox() {
+    function disableCheckBox() { 
         if ($.session.EmploymentUpdate && eligibleBenefits == 'Y') {
             vacationSickchkBox.classList.remove('disabled');
             medicalVisionchkbox.classList.remove('disabled');
@@ -585,7 +585,7 @@ const WagesBenefits = (() => {
             type: 'outlined',
             callback: () => {
                 POPUP.hide(confirmPopup);
-                eligibleBenefits = true;
+                eligibleBenefits = 'Y';   
                 eligibleBenefitschkBox.querySelector('#chkEligibleBenefits').checked = true;
                 saveWagesChecked('EligibleForBenifit', true, null);
                 disableCheckBox(); 
