@@ -315,7 +315,7 @@ const WaitingListAssessment = (() => {
     primaryCaregiver: {
       name: 'Primary Caregiver',
       dbtable: 'WLA_Primary_Caregivers',
-      enabled: true,
+      enabled: false,
       formElements: [
         {
           type: 'radiogroup',
@@ -399,6 +399,7 @@ const WaitingListAssessment = (() => {
     behavioral: {
       name: 'behavioral',
       dbtable: 'WLA_Risks',
+      enabled: false,
       formElements: [
         {
           disabled: true,
@@ -470,6 +471,7 @@ const WaitingListAssessment = (() => {
     physical: {
       name: 'physical',
       dbtable: 'WLA_Physical_Needs',
+      enabled: false,
       formElements: [
         {
           disabled: true,
@@ -519,6 +521,7 @@ const WaitingListAssessment = (() => {
     medical: {
       name: 'medical',
       dbtable: 'WLA_Medical_Needs',
+      enabled: false,
       formElements: [
         {
           disabled: true,
@@ -574,6 +577,7 @@ const WaitingListAssessment = (() => {
     other: {
       name: 'other',
       dbtable: 'WLA_Needs',
+      enabled: false,
       formElements: [
         {
           type: 'radiogroup',
@@ -1127,11 +1131,7 @@ const WaitingListAssessment = (() => {
 
     // save / update
     let hasId = false;
-    // if (formName === 'needs') {
-    //   hasId = wlFormInfo[formName][subFormName].id === '' ? false : true;
-    // } else {
     hasId = wlFormInfo[formName].id === '' ? false : true;
-    // }
 
     if (!hasId) {
       const resp = await insertAssessmentData({
@@ -1141,11 +1141,7 @@ const WaitingListAssessment = (() => {
         value: value,
       });
 
-      // if (formName === 'needs') {
-      //   wlFormInfo[formName][subFormName].id = resp[0].newRecordId;
-      // } else {
       wlFormInfo[formName].id = resp[0].newRecordId;
-      // }
     } else {
       await updateAssessmentData({
         id: wlFormInfo[formName].id,
@@ -1373,43 +1369,16 @@ const WaitingListAssessment = (() => {
         'immediateNeeds',
         'currentNeeds',
         'currentAvailableServices',
+        'primaryCaregiver',
       ].forEach(formName => {
         // hide form
 
-        // needs is special
-        // if (formName === 'needs') {
-        //   // conditions page all inputs are yes
-        //   contributingCircumstancesFormsWrap.classList.add('hiddenPage');
-        //   needsWrap.classList.add('hiddenPage');
-        //   // wlForms['behavioral'].form.parentElement.classList.add('hiddenPage');
-        //   // wlForms['physical'].form.parentElement.classList.add('hiddenPage');
-        //   // wlForms['medical'].form.parentElement.classList.add('hiddenPage');
-        //   // wlForms['other'].form.parentElement.classList.add('hiddenPage');
-
-        //   if (wlFormInfo.needs.behavioral.id) {
-        //     formsToDelete.push(`${wlFormInfo.needs.behaviorl.id}|${wlFormInfo.needs.behaviorl.dbtable}`);
-        //     wlFormInfo.needs.behavioral.id = '';
-        //   }
-        //   if (wlFormInfo.needs.physical.id) {
-        //     formsToDelete.push(`${wlFormInfo.needs.physical.id}|${wlFormInfo.needs.physical.dbtable}`);
-        //     wlFormInfo.needs.physical.id = '';
-        //   }
-        //   if (wlFormInfo.needs.medical.id) {
-        //     formsToDelete.push(`${wlFormInfo.needs.medical.id}|${wlFormInfo.needs.medical.dbtable}`);
-        //     wlFormInfo.needs.medical.id = '';
-        //   }
-        //   if (wlFormInfo.needs.other.id) {
-        //     formsToDelete.push(`${wlFormInfo.needs.other.id}|${wlFormInfo.needs.other.dbtable}`);
-        //     wlFormInfo.needs.other.id = '';
-        //   }
-        // } else {
         wlForms[formName].form.parentElement.classList.add('hiddenPage');
 
         if (wlFormInfo[formName].id) {
           formsToDelete.push(`${wlFormInfo[formName].id}|${wlFormInfo[formName].dbtable}`);
           wlFormInfo[formName].id = '';
         }
-        // }
       });
 
       if (formsToDelete.length === 0) return;
@@ -1421,11 +1390,12 @@ const WaitingListAssessment = (() => {
 
     // conditions page all inputs are yes
     contributingCircumstancesFormsWrap.classList.remove('hiddenPage');
+    wlForms['primaryCaregiver'].form.parentElement.classList.remove('hiddenPage');
     needsWrap.classList.remove('hiddenPage');
-    // wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
-    // wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
-    // wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
-    // wlForms['other'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['other'].form.parentElement.classList.remove('hiddenPage');
     wlForms['waiverEnrollment'].form.parentElement.classList.remove('hiddenPage');
 
     // get circumstance id
