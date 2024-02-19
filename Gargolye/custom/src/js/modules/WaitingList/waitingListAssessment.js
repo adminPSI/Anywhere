@@ -4,6 +4,7 @@ const WaitingListAssessment = (() => {
   //--------------------------
   let wlLinkID;
   let wlCircID;
+  let wlNeedID;
   //--------------------------
   // PERMISSIONS
   //--------------------------
@@ -1110,7 +1111,7 @@ const WaitingListAssessment = (() => {
       value = value === 'yes' ? 1 : 0;
     }
 
-    // determine if we use wlLinkID or wlCircID
+    // determine if we use wlLinkID or wlCircID or wlNeedID
     let linkIdForSaveUpdate;
     if (
       [
