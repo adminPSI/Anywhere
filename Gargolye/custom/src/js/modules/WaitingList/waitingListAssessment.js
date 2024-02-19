@@ -1114,7 +1114,10 @@ const WaitingListAssessment = (() => {
     let linkIdForSaveUpdate;
     if (
       [
-        'needs',
+        'behavioral',
+        'physical',
+        'medical',
+        'other',
         'primaryCaregiver',
         'riskMitigation',
         'icfDischarge',
