@@ -397,7 +397,7 @@ const WaitingListAssessment = (() => {
       enabled: false,
     },
     behavioral: {
-      name: 'behavioral',
+      name: 'Behavioral',
       dbtable: 'WLA_Risks',
       enabled: false,
       formElements: [
@@ -469,7 +469,7 @@ const WaitingListAssessment = (() => {
       ],
     },
     physical: {
-      name: 'physical',
+      name: 'Physical',
       dbtable: 'WLA_Physical_Needs',
       enabled: false,
       formElements: [
@@ -519,7 +519,7 @@ const WaitingListAssessment = (() => {
       ],
     },
     medical: {
-      name: 'medical',
+      name: 'Medical',
       dbtable: 'WLA_Medical_Needs',
       enabled: false,
       formElements: [
@@ -575,7 +575,7 @@ const WaitingListAssessment = (() => {
       ],
     },
     other: {
-      name: 'other',
+      name: 'Other',
       dbtable: 'WLA_Needs',
       enabled: false,
       formElements: [
@@ -1114,10 +1114,6 @@ const WaitingListAssessment = (() => {
     let linkIdForSaveUpdate;
     if (
       [
-        'behavioral',
-        'physical',
-        'medical',
-        'other',
         'primaryCaregiver',
         'riskMitigation',
         'icfDischarge',
@@ -1128,6 +1124,8 @@ const WaitingListAssessment = (() => {
       ].includes(formName)
     ) {
       linkIdForSaveUpdate = wlCircID;
+    } else if (['other', 'behavioral', 'physical', 'medical'].includes(formName)) {
+      linkIdForSaveUpdate = wlNeedID;
     } else {
       linkIdForSaveUpdate = wlLinkID;
     }
@@ -1387,6 +1385,8 @@ const WaitingListAssessment = (() => {
       if (formsToDelete.length === 0) return;
 
       await _UTIL.fetchData('deleteFromWaitingList', { properties: formsToDelete });
+      wlCircID = '';
+      wlNeedID = '';
 
       return;
     }
@@ -1410,6 +1410,16 @@ const WaitingListAssessment = (() => {
         value: '',
       });
       wlCircID = resp[0].newRecordId;
+    }
+    // get needs id
+    if (!wlNeedID && wlCircID) {
+      const resp = await insertAssessmentData({
+        id: 0,
+        linkId: wlCircID,
+        propertyName: 'needsIsActionRequiredRequiredIn30Days',
+        value: '',
+      });
+      wlNeedID = resp[0].newRecordId;
     }
 
     //-------------------------------------------------------------------------------------------------------
