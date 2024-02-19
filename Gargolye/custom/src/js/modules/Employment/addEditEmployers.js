@@ -109,6 +109,7 @@ const addEditEmployers = (() => {
         else
             openedPage = 'employer';
 
+        var headingEmployer;
         if (employerdata && Object.keys(employerdata).length !== 0) {
             employerId = employerdata[0].employerId;
             employerName = employerdata[0].employerName;
@@ -117,7 +118,7 @@ const addEditEmployers = (() => {
             employercity = employerdata[0].city;
             employerstate = employerdata[0].state;
             employerzipcode = employerdata[0].zipcode;
-
+            headingEmployer = 'Edit this Employer';
         } else {
             employerId = '';
             employerName = '';
@@ -126,10 +127,11 @@ const addEditEmployers = (() => {
             employercity = '';
             employerstate = '';
             employerzipcode = '';
-        }
+            headingEmployer = 'Add Employer';
+        } 
 
         let editEmployerPopup = POPUP.build({
-            header: "Edit this Employer",
+            header: headingEmployer,
             hideX: true,
             id: "editEmployerPopup"
         });
