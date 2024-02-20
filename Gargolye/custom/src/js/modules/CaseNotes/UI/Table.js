@@ -23,13 +23,28 @@
     return Array.from(node.parentNode.children).indexOf(node);
   };
 
+  function checkDateFormat(dateString) {
+    // Regex pattern for ISO date format (YYYY-MM-DD)
+    const isoFormatPattern = /^\d{4}-\d{2}-\d{2}$/;
+    // Regex pattern for Standard format (MM/DD/YYYY)
+    const standardFormatPattern = /^\d{2}\/\d{2}\/\d{4}$/;
+
+    if (isoFormatPattern.test(dateString)) {
+      return 'ISO';
+    } else if (standardFormatPattern.test(dateString)) {
+      return 'Standard';
+    } else {
+      return 'Unknown format';
+    }
+  }
+
   /**
    * Formats the date for table view
    * @param {String} dateString  dateString format must be ISO YYYY-MM-DD
    */
   const formatDate = dateString => {
     if (!dateString) return '';
-    dateString = dateString.split(' ')[0];
+    if (checkDateFormat(dateString) !== 'ISO') return '';
     const date = new Date(`${dateString}T00:00`);
     return new Intl.DateTimeFormat('en-US').format(date);
   };
@@ -111,10 +126,11 @@
    */
   Table.prototype._setupEvents = function () {
     this.table.tBodies[0].addEventListener('click', e => {
-      console.log(e.target);
+      debugger;
+      console.log(e.target.closest('tr'));
 
-      // const customEvent = new CustomEvent('onClick', { detail: e });
-      // this.table.tBodies[0].dispatchEvent(customEvent);
+      const customEvent = new CustomEvent('onRowClick', { detail: e });
+      this.table.tBodies[0].dispatchEvent(customEvent);
     });
   };
 
@@ -279,7 +295,7 @@
       // populate row
       row.values.forEach((rd, i) => {
         const dataType = this.options.headings[i]?.type ?? '';
-        // rd = dataType === 'date' ? formatDate(rd) : rd;
+        rd = dataType === 'date' ? formatDate(rd) : rd;
         const cell = _DOM.createElement('td', { text: rd, 'data-type': dataType });
         rowEle.appendChild(cell);
       });
@@ -304,7 +320,7 @@
    * @param {Function} cbFunc Callback function to call
    */
   Table.prototype.onRowClick = function (cbFunc) {
-    this.table.tBodies[0].addEventListener('onClick', e => {
+    this.table.tBodies[0].addEventListener('onRowClick', e => {
       cbFunc(e);
     });
   };

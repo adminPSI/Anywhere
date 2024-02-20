@@ -1707,7 +1707,16 @@ const WaitingListAssessment = (() => {
       setConclusionWaiverFunded12Months({ name, value, formName, subForm });
       setConclusionNotEligibleForWaiver({ name, value, formName, subForm });
     },
-    needs: ({ name, value, formName, subForm }) => {
+    behavioral: ({ name, value, formName, subForm }) => {
+      updatePageActiveStatus(subForm);
+    },
+    physical: ({ name, value, formName, subForm }) => {
+      updatePageActiveStatus(subForm);
+    },
+    medical: ({ name, value, formName, subForm }) => {
+      updatePageActiveStatus(subForm);
+    },
+    other: ({ name, value, formName, subForm }) => {
       updatePageActiveStatus(subForm);
     },
     riskMitigation: ({ name, value, formName, subForm }) => {
@@ -1788,6 +1797,9 @@ const WaitingListAssessment = (() => {
     });
 
     documentsButton.onClick(() => {
+      const docPopup = new Dialog({});
+      const docForm = new Form({ fields: [{ type: 'file', id: 'test' }] });
+
       // _UTIL.fetchData('addWlSupportingDocument', {
       //   waitingListInformationId: '',
       //   description: '',

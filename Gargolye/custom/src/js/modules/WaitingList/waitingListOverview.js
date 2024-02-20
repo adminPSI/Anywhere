@@ -35,10 +35,8 @@ const WaitingListOverview = (() => {
 
     let alreadyHasAssessmentForToday = false;
 
-    // TODO-ASH: replace conclusionResult id with name, get from dropdown data
     const tableData = data.getLandingPageForConsumerResult.map(
       ({ wlInfoId, interviewDate, conclusionResult, conclusionDate, sentToDODD }) => {
-        console.log('Interview Date:', interviewDate);
         const isToday = new Date().setHours(0, 0, 0, 0) === new Date(interviewDate).setHours(0, 0, 0, 0);
         if (isToday) alreadyHasAssessmentForToday = true;
 
@@ -77,6 +75,10 @@ const WaitingListOverview = (() => {
       WaitingListAssessment.init({ selectedConsumer, moduleHeaderEle, moduleBodyEle });
     });
     rosterPicker.onConsumerSelect(onConsumerSelect);
+    wlReviewTable.onRowClick(async e => {
+      // do stuff
+      // const resp = await _UTIL.fetchData('', {});
+    });
   }
 
   // MAIN

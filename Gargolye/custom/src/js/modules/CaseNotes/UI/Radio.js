@@ -183,7 +183,7 @@
    */
   RadioGroup.prototype.toggleDisabled = function (isDisbled) {
     for (inputId in this.inputs) {
-      this.inputs[inputId].disabled = isDisbled;
+      this.inputs[inputId].input.disabled = isDisbled;
     }
   };
 
