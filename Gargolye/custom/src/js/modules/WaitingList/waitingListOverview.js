@@ -75,9 +75,9 @@ const WaitingListOverview = (() => {
       WaitingListAssessment.init({ selectedConsumer, moduleHeaderEle, moduleBodyEle });
     });
     rosterPicker.onConsumerSelect(onConsumerSelect);
-    wlReviewTable.onRowClick(async e => {
+    wlReviewTable.onRowClick(async rowId => {
       // do stuff
-      const resp = await _UTIL.fetchData('getWaitingListAssessment', { waitingListAssessmentId: parseInt(e.id) });
+      const resp = await _UTIL.fetchData('getWaitingListAssessment', { waitingListAssessmentId: parseInt(rowId) });
       console.log(resp);
       WaitingListAssessment.init({ wlData: resp, selectedConsumer, moduleHeaderEle, moduleBodyEle });
     });
