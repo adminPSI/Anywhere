@@ -1,4 +1,8 @@
 const WaitingList = (() => {
+  function unload() {
+    _DOM.ACTIONCENTER.removeAttribute('data-ui');
+  }
+
   async function load() {
     _DOM.ACTIONCENTER.innerHTML = '';
     _DOM.ACTIONCENTER.setAttribute('data-UI', true);
@@ -17,5 +21,6 @@ const WaitingList = (() => {
 
   return {
     init: load,
+    unload,
   };
 })();

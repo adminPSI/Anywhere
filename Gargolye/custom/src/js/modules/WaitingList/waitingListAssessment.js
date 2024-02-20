@@ -1978,6 +1978,7 @@ const WaitingListAssessment = (() => {
 
   async function init(opts) {
     wlForms = {};
+    tocLinks = {};
     wlFormInfo = initFormInfo();
     selectedConsumer = opts.selectedConsumer;
     moduleHeader = opts.moduleHeaderEle;

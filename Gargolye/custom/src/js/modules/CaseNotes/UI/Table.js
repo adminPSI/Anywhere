@@ -109,7 +109,14 @@
   /**
    * @function
    */
-  Table.prototype._setupEvents = function () {};
+  Table.prototype._setupEvents = function () {
+    this.table.tBodies[0].addEventListener('click', e => {
+      console.log(e.target);
+
+      // const customEvent = new CustomEvent('onClick', { detail: e });
+      // this.table.tBodies[0].dispatchEvent(customEvent);
+    });
+  };
 
   /**
    * Multi select rows w/bulk actions
@@ -281,8 +288,25 @@
     });
   };
 
+  /**
+   * Clears table body
+   *
+   * @function
+   */
   Table.prototype.clear = function () {
     this.table.tBodies[0].innerHTML = '';
+  };
+
+  /**
+   * Handles click event for table
+   *
+   * @function
+   * @param {Function} cbFunc Callback function to call
+   */
+  Table.prototype.onRowClick = function (cbFunc) {
+    this.table.tBodies[0].addEventListener('onClick', e => {
+      cbFunc(e);
+    });
   };
 
   /**

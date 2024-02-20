@@ -2,7 +2,7 @@ const WaitingListOverview = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
-  let selectedConsumer = null;
+  let selectedConsumer;
   //--------------------------
   // DOM
   //--------------------------
