@@ -16,6 +16,7 @@ const WaitingListAssessment = (() => {
   let tableOfContents;
   let contributingCircumstancesFormsWrap;
   let needsWrap;
+  let tocLinks;
   //--------------------------
   // UI INSTANCES
   //--------------------------
@@ -1345,6 +1346,7 @@ const WaitingListAssessment = (() => {
 
     wlForms['immediateNeeds'].inputs['immNeedsRequired'].setValue();
   }
+  //
   async function updatePageActiveStatus(subForm) {
     const conditionsInputValues = [
       wlForms['conditions'].inputs['otherThanMentalHealth'].getValue('otherThanMentalHealthyes'),
@@ -1483,6 +1485,7 @@ const WaitingListAssessment = (() => {
       wlForms['immediateNeeds'].form.parentElement.classList.add('hiddenPage');
     }
   }
+  //
   function setConclusionUnmetNeeds() {
     // [conclusionUnmetNeeds] "The individual has unmet..." should always be uneditable and also be selected if ALL of the following are true:
     //   a.  All Questions on the CONDITIONS page have an answer of "YES"
@@ -1529,6 +1532,7 @@ const WaitingListAssessment = (() => {
 
     wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(conditionPageAllYes);
   }
+  //
   const onChangeCallbacks = {
     //* waitingListInfo
     currentLivingArrangement: ({ name, value, formName }) => {
@@ -1611,15 +1615,18 @@ const WaitingListAssessment = (() => {
       // needsIsActionRequiredRequiredIn30Days
       //   a. The "Is action required within the next 30 days…" radio buttons are enabled AND
       //   b.  The answer to "Is action required within the next 30 days…" is "No"
+
       const isNoChecked = wlForms['other'].inputs['needsIsActionRequiredRequiredIn30Days'].getValue(
         'needsIsActionRequiredRequiredIn30Daysno',
       );
+
       wlForms[formName].inputs['needsIsContinuousSupportRequired'].toggleDisabled(!isNoChecked);
     },
     //* riskMitigation
     rMIsActionRequiredIn3oDays: ({ name, value, formName }) => {
       // (SET) [rMIsSupportNeeded] "Is the individual an adult who..." to "YES"
       // (IF) [rMIsActionRequiredIn3oDays] the "Is action required..." radio button at the bottom of the page is set to "YES".Otherwise, set to "NO"
+
       const isYesChecked = wlForms[formName].inputs['rMIsActionRequiredIn3oDays'].getValue(
         'rMIsActionRequiredIn3oDaysyes',
       );
@@ -1642,8 +1649,10 @@ const WaitingListAssessment = (() => {
     cpaIsReleasedNext12Months: ({ name, value, formName }) => {
       // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only
       // (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
+
       const isYesChecked =
         wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes');
+
       wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(!isYesChecked);
     },
     cpaIsReleasedNext12Months: childProtectionAgencyDetermination,
@@ -1839,6 +1848,7 @@ const WaitingListAssessment = (() => {
       tocSection.appendChild(tocSectionLink);
       tableOfContents.appendChild(tocSection);
       tocSection.classList.toggle('hiddenPage', !sections[section].enabled);
+      tocLinks[section] = tocSection;
 
       // Build Form
       const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });
