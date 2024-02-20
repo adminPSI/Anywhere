@@ -1797,16 +1797,24 @@ const WaitingListAssessment = (() => {
     });
 
     documentsButton.onClick(() => {
-      const docPopup = new Dialog({});
+      const docPopup = new Dialog({ className: 'wlDocumentPopup' });
       const docForm = new Form({ fields: [{ type: 'file', id: 'test' }] });
+      docForm.renderTo(docPopup);
+      docPopup.renderTo(moduleHeader);
+      docPopup.show();
 
-      // _UTIL.fetchData('addWlSupportingDocument', {
-      //   waitingListInformationId: '',
-      //   description: '',
-      //   includeOnEmail: '',
-      //   attachmentType: '',
-      //   attachment: '',
-      // });
+      docForm.onSubmit(data => {
+        // _UTIL.fetchData('addWlSupportingDocument', {
+        //   waitingListInformationId: '',
+        //   description: '',
+        //   includeOnEmail: '',
+        //   attachmentType: '',
+        //   attachment: '',
+        // });
+      });
+
+      docPopup.close();
+      docPopup.dialog.remove();
     });
 
     let partCache = [];
