@@ -796,7 +796,7 @@ const WaitingListAssessment = (() => {
         },
         {
           type: 'radiogroup',
-          id: 'cpaHadUnaddressableNeeds',
+          id: 'cpaHasUnaddressableNeeds',
           required: true,
           groupLabel: 'Does the individual have needs that cannot be addressed through alternative services?',
           fields: [
@@ -1289,7 +1289,7 @@ const WaitingListAssessment = (() => {
     const data = [
       wlForms['icfDischarge'].inputs['icfIsICFResident'].getValue('icfIsICFResidentyes'),
       wlForms['icfDischarge'].inputs['icfIsNoticeIssued'].getValue('icfIsNoticeIssuedyes'),
-      wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue('icfIsActionRequiredIn30Days'),
+      wlForms['icfDischarge'].inputs['icfIsActionRequiredIn30Days'].getValue('icfIsActionRequiredIn30Daysyes'),
     ];
 
     const allHaveCheck = data.every(element => element === true);
@@ -1446,7 +1446,7 @@ const WaitingListAssessment = (() => {
     ];
 
     // needs page [needsIsActionRequiredRequiredIn30Days] is YES
-    if (needsIsActionRequiredRequiredIn30DaysYES) {
+    if (needsIsActionRequiredRequiredIn30DaysNO) {
       wlForms['riskMitigation'].form.parentElement.classList.remove('hiddenPage');
     } else {
       wlForms['riskMitigation'].form.parentElement.classList.add('hiddenPage');

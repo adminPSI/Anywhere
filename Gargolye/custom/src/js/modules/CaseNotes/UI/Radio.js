@@ -141,6 +141,9 @@
       this.rootElement.appendChild(inputInstance.rootElement);
       this.inputs[field.id] = inputInstance;
     });
+
+    this.inputNote = _DOM.createElement('div', { class: 'inputGroup__note', text: this.options.note ?? '' });
+    this.rootElement.append(this.inputNote);
   };
 
   /**

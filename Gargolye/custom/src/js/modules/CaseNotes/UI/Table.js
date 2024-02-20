@@ -126,9 +126,6 @@
    */
   Table.prototype._setupEvents = function () {
     this.table.tBodies[0].addEventListener('click', e => {
-      debugger;
-      console.log(e.target.closest('tr'));
-
       const customEvent = new CustomEvent('onRowClick', { detail: e });
       this.table.tBodies[0].dispatchEvent(customEvent);
     });
@@ -321,7 +318,7 @@
    */
   Table.prototype.onRowClick = function (cbFunc) {
     this.table.tBodies[0].addEventListener('onRowClick', e => {
-      cbFunc(e);
+      cbFunc(e.target.closest('tr'));
     });
   };
 
