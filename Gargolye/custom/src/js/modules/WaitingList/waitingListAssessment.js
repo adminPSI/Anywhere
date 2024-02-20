@@ -2,6 +2,7 @@ const WaitingListAssessment = (() => {
   //--------------------------
   // SESSION DATA
   //--------------------------
+  let wlData;
   let wlLinkID;
   let wlCircID;
   let wlNeedID;
@@ -1631,7 +1632,8 @@ const WaitingListAssessment = (() => {
         'rMIsActionRequiredIn3oDaysyes',
       );
 
-      wlForms[formName].inputs['rMIsSupportNeeded'].setValue();
+      const inputId = isYesChecked ? 'rMIsSupportNeededyes' : 'rMIsSupportNeededno';
+      wlForms[formName].inputs['rMIsSupportNeeded'].setValue(inputId);
     },
     rMIsAdultProtectiveServiceInvestigation: riskMitigationCheckboxes,
     rMIsCountyBoardInvestigation: riskMitigationCheckboxes,
@@ -2000,6 +2002,7 @@ const WaitingListAssessment = (() => {
     wlForms = {};
     tocLinks = {};
     wlFormInfo = initFormInfo();
+    wlData = opts.wlData;
     selectedConsumer = opts.selectedConsumer;
     moduleHeader = opts.moduleHeaderEle;
     moduleBody = opts.moduleBodyEle;

@@ -77,7 +77,9 @@ const WaitingListOverview = (() => {
     rosterPicker.onConsumerSelect(onConsumerSelect);
     wlReviewTable.onRowClick(async e => {
       // do stuff
-      // const resp = await _UTIL.fetchData('', {});
+      const resp = await _UTIL.fetchData('getWaitingListAssessment', { waitingListAssessmentId: parseInt(e.id) });
+      console.log(resp);
+      WaitingListAssessment.init({ wlData: resp, selectedConsumer, moduleHeaderEle, moduleBodyEle });
     });
   }
 
