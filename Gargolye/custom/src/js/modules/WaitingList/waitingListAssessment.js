@@ -1813,10 +1813,10 @@ const WaitingListAssessment = (() => {
         //   attachmentType: '',
         //   attachment: '',
         // });
-      });
 
-      docPopup.close();
-      docPopup.dialog.remove();
+        docPopup.close();
+        docPopup.dialog.remove();
+      });
     });
 
     let partCache = [];
