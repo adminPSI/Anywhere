@@ -1068,6 +1068,9 @@ const WaitingListAssessment = (() => {
 
   // UTILS
   //--------------------------------------------------
+  function mapDataBySection(assessmentData) {
+    if (!assessmentData) return '';
+  }
 
   // DATA
   //--------------------------------------------------
@@ -1154,6 +1157,16 @@ const WaitingListAssessment = (() => {
         value: value,
       });
     }
+  }
+  async function getFundingSources() {
+    const resp = await _UTIL.fetchData('getWaitingListFundingSources');
+    const fundingSources = resp.getWaitingListFundingSourcesResult;
+    return fundingSources.map(fs => {
+      return {
+        value: fs.fundingSourceId,
+        text: fs.description,
+      };
+    });
   }
 
   // EVENTS
@@ -2041,7 +2054,7 @@ const WaitingListAssessment = (() => {
     wlForms = {};
     tocLinks = {};
     wlFormInfo = initFormInfo();
-    wlData = opts.wlData;
+    wlData = mapDataBySection(opts.wlData);
     selectedConsumer = opts.selectedConsumer;
     moduleHeader = opts.moduleHeaderEle;
     moduleBody = opts.moduleBodyEle;
@@ -2051,23 +2064,18 @@ const WaitingListAssessment = (() => {
     loadPage();
     attachEvents();
 
-    if (!wlData) {
-      const resp = await insertNewWaitingListAssessment(selectedConsumer);
-      wlLinkID = resp[0].newRecordId;
-      wlFormInfo['waitingListInfo'].id = wlLinkID;
-      wlFormInfo['conclusion'].id = wlLinkID;
+    const fundingSources = await getFundingSources();
+
+    if (wlData) {
+      wlForms['conclusion'].inputs['fundingSourceId'].populate(fundingSources, 'defaultValueFrom wlData');
+      return;
     }
 
-    const resp2 = await _UTIL.fetchData('getWaitingListFundingSources');
-    const fundingSources = resp2.getWaitingListFundingSourcesResult;
-    wlForms['conclusion'].inputs['fundingSourceId'].populate(
-      fundingSources.map(fs => {
-        return {
-          value: fs.fundingSourceId,
-          text: fs.description,
-        };
-      }),
-    );
+    const resp = await insertNewWaitingListAssessment(selectedConsumer);
+    wlLinkID = resp[0].newRecordId;
+    wlFormInfo['waitingListInfo'].id = wlLinkID;
+    wlFormInfo['conclusion'].id = wlLinkID;
+    wlForms['conclusion'].inputs['fundingSourceId'].populate(fundingSources);
   }
 
   return { init };
