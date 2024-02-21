@@ -35,7 +35,8 @@
     flex-flow: column;
     max-width: 1000px;
     height: calc(100vh - 167px);
-    padding: 0 0 20px 0;
+    padding: 0 10px 20px;
+    overflow-y: scroll;
 
     .wlPage {
       order: 10;

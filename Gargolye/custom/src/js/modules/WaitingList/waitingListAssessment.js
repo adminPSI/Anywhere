@@ -1405,6 +1405,7 @@ const WaitingListAssessment = (() => {
     wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
     wlForms['other'].form.parentElement.classList.remove('hiddenPage');
     wlForms['waiverEnrollment'].form.parentElement.classList.remove('hiddenPage');
+    wlForms['currentAvailableServices'].form.parentElement.classList.remove('hiddenPage');
 
     tocLinks['contributingCircumstances'].classList.remove('hiddenPage');
     tocLinks['primaryCaregiver'].classList.remove('hiddenPage');
@@ -1414,6 +1415,7 @@ const WaitingListAssessment = (() => {
     tocLinks['medical'].classList.remove('hiddenPage');
     tocLinks['other'].classList.remove('hiddenPage');
     tocLinks['waiverEnrollment'].classList.remove('hiddenPage');
+    wlForms['currentAvailableServices'].form.parentElement.classList.remove('hiddenPage');
 
     // get circumstance id
     if (!wlCircID) {
@@ -1561,7 +1563,7 @@ const WaitingListAssessment = (() => {
     //   a.  Any of the questions on the CONDITIONS page have an answer of "NO"
     const conditionPageAllYes = isConditionInputsAllYes();
 
-    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(conditionPageAllYes);
+    wlForms['conclusion'].inputs['conclusionNotEligibleForWaiver'].setValue(!conditionPageAllYes);
   }
   //
   const onChangeCallbacks = {
@@ -1830,19 +1832,26 @@ const WaitingListAssessment = (() => {
 
     documentsButton.onClick(() => {
       const docPopup = new Dialog({ className: 'wlDocumentPopup' });
-      const docForm = new Form({ fields: [{ type: 'file', id: 'test' }] });
-      docForm.renderTo(docPopup);
-      docPopup.renderTo(moduleHeader);
+      const docForm = new Form({
+        fields: [
+          { type: 'file', id: 'test', label: 'Document Upload' },
+          { type: 'checkbox', id: 'email', label: 'Include in email?' },
+        ],
+      });
+      docForm.renderTo(docPopup.dialog);
+      docPopup.renderTo(_DOM.ACTIONCENTER);
       docPopup.show();
 
-      docForm.onSubmit(data => {
-        // _UTIL.fetchData('addWlSupportingDocument', {
-        //   waitingListInformationId: '',
-        //   description: '',
-        //   includeOnEmail: '',
-        //   attachmentType: '',
-        //   attachment: '',
-        // });
+      docForm.onSubmit(async data => {
+        const attachDetails = _DOM.getAttachmentDetails(data['test']);
+
+        await _UTIL.fetchData('addWlSupportingDocument', {
+          waitingListInformationId: wlLinkID,
+          description: attachDetails.description,
+          includeOnEmail: data['email'],
+          attachmentType: attachDetails.type,
+          attachment: attachDetails.attachment,
+        });
 
         docPopup.close();
         docPopup.dialog.remove();
