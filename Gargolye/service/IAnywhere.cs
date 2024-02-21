@@ -5116,6 +5116,13 @@ namespace Anywhere
         UriTemplate = "/insertOutcomeServiceInfo/")]
         OutcomesWorker.PDChildOutcome[] insertOutcomeServiceInfo(string token, string startDate, string endDate, string outcomeType, string servicesStatement, string ServiceType, string method, string success, string frequencyModifier, string frequency, string frequencyPeriod, string userID, string objectiveId, string consumerId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           BodyStyle = WebMessageBodyStyle.Wrapped,
+           ResponseFormat = WebMessageFormat.Json,
+           RequestFormat = WebMessageFormat.Json,
+           UriTemplate = "/updateUserWidgetOrderSettings/")]
+        string updateUserWidgetOrderSettings(string token, string[] updatedListOrder);
     }
 
 
