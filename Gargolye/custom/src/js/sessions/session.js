@@ -337,6 +337,7 @@ $.session.deviceGUID = '';
 $.session.azureSTTApi = '';
 $.session.isActiveUsers = true; // to get active and inactive user both
 
+$.session.activeModule = '';
 $(window).resize(function () {
   //resizeActionCenter();
 });

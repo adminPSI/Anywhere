@@ -740,6 +740,7 @@
         function setActiveModuleAttribute(appName) {
             var actioncenter = document.getElementById('actioncenter');
             actioncenter.setAttribute('data-active-module', appName);
+            $.session.activeModule = appName;
         }
 
         function setActiveModuleSectionAttribute(sectionName) {

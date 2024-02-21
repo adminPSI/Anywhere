@@ -6012,6 +6012,26 @@ namespace Anywhere.Data
             }
         }
 
+        public string updateUserWidgetOrderSettings(string token, string listName, string orderCount)
+        {
+            if (tokenValidator(token) == false) return null;
+            logger.debug("updateUserWidgetShowHide ");
+            List<string> list = new List<string>();
+            list.Add(token);
+            list.Add(listName);
+            list.Add(orderCount);
+            string text = "CALL DBA.ANYW_Dashboard_updateUserWidgetOrderSettings(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallJSON(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("742", ex.Message + "ANYW_Dashboard_updateUserWidgetOrderSettings(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "742: error ANYW_Dashboard_updateUserWidgetOrderSettings";
+            }
+        }
+
         public string removeUnsavableNoteText(string note)
         {
             if (note == "" || note is null)

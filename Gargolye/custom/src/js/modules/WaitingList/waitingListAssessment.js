@@ -800,8 +800,8 @@ const WaitingListAssessment = (() => {
           required: true,
           groupLabel: 'Does the individual have needs that cannot be addressed through alternative services?',
           fields: [
-            { type: 'radio', label: 'Yes', value: 'yes', id: 'cpaHadUnaddressableNeedsyes' },
-            { type: 'radio', label: 'No', value: 'no', id: 'cpaHadUnaddressableNeedsno' },
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'cpaHasUnaddressableNeedsyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'cpaHasUnaddressableNeedsno' },
           ],
         },
       ],
@@ -1303,7 +1303,7 @@ const WaitingListAssessment = (() => {
 
     const data = [
       wlForms['childProtectionAgency'].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes'),
-      wlForms['childProtectionAgency'].inputs['cpaHadUnaddressableNeeds'].getValue('cpaHadUnaddressableNeedsyes'),
+      wlForms['childProtectionAgency'].inputs['cpaHasUnaddressableNeeds'].getValue('cpaHasUnaddressableNeedsyes'),
     ];
 
     const allHaveCheck = data.every(element => element === true);
@@ -1379,6 +1379,7 @@ const WaitingListAssessment = (() => {
         // hide form
 
         wlForms[formName].form.parentElement.classList.add('hiddenPage');
+        tocLinks[formName].classList.add('hiddenPage');
 
         if (wlFormInfo[formName].id) {
           formsToDelete.push(`${wlFormInfo[formName].id}|${wlFormInfo[formName].dbtable}`);
@@ -1404,6 +1405,15 @@ const WaitingListAssessment = (() => {
     wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
     wlForms['other'].form.parentElement.classList.remove('hiddenPage');
     wlForms['waiverEnrollment'].form.parentElement.classList.remove('hiddenPage');
+
+    tocLinks['contributingCircumstances'].classList.remove('hiddenPage');
+    tocLinks['primaryCaregiver'].classList.remove('hiddenPage');
+    tocLinks['needs'].classList.remove('hiddenPage');
+    tocLinks['behavioral'].classList.remove('hiddenPage');
+    tocLinks['physical'].classList.remove('hiddenPage');
+    tocLinks['medical'].classList.remove('hiddenPage');
+    tocLinks['other'].classList.remove('hiddenPage');
+    tocLinks['waiverEnrollment'].classList.remove('hiddenPage');
 
     // get circumstance id
     if (!wlCircID) {
@@ -1448,8 +1458,10 @@ const WaitingListAssessment = (() => {
     // needs page [needsIsActionRequiredRequiredIn30Days] is YES
     if (needsIsActionRequiredRequiredIn30DaysNO) {
       wlForms['riskMitigation'].form.parentElement.classList.remove('hiddenPage');
+      tocLinks['riskMitigation'].classList.remove('hiddenPage');
     } else {
       wlForms['riskMitigation'].form.parentElement.classList.add('hiddenPage');
+      tocLinks['riskMitigation'].classList.add('hiddenPage');
     }
 
     // riskMitigation page [rMIsActionRequiredIn3oDays] is YES
@@ -1459,20 +1471,36 @@ const WaitingListAssessment = (() => {
       wlForms['childProtectionAgency'].form.parentElement.classList.remove('hiddenPage');
       wlForms['adultDayEmployment'].form.parentElement.classList.remove('hiddenPage');
       wlForms['dischargePlan'].form.parentElement.classList.remove('hiddenPage');
+
+      tocLinks['icfDischarge'].classList.remove('hiddenPage');
+      tocLinks['intermittentSupports'].classList.remove('hiddenPage');
+      tocLinks['childProtectionAgency'].classList.remove('hiddenPage');
+      tocLinks['adultDayEmployment'].classList.remove('hiddenPage');
+      tocLinks['dischargePlan'].classList.remove('hiddenPage');
     } else {
       wlForms['icfDischarge'].form.parentElement.classList.add('hiddenPage');
       wlForms['intermittentSupports'].form.parentElement.classList.add('hiddenPage');
       wlForms['childProtectionAgency'].form.parentElement.classList.add('hiddenPage');
       wlForms['adultDayEmployment'].form.parentElement.classList.add('hiddenPage');
       wlForms['dischargePlan'].form.parentElement.classList.add('hiddenPage');
+
+      tocLinks['icfDischarge'].classList.add('hiddenPage');
+      tocLinks['intermittentSupports'].classList.add('hiddenPage');
+      tocLinks['childProtectionAgency'].classList.add('hiddenPage');
+      tocLinks['adultDayEmployment'].classList.add('hiddenPage');
+      tocLinks['dischargePlan'].classList.add('hiddenPage');
     }
 
     // needs page [needsIsActionRequiredRequiredIn30Days] is NO ||
     // riskMitigation page [rMIsActionRequiredIn3oDays] is NO
     if (needsIsActionRequiredRequiredIn30DaysNO || rMIsActionRequiredIn3oDaysNO) {
       wlForms['currentNeeds'].form.parentElement.classList.remove('hiddenPage');
+
+      tocLinks['currentNeeds'].classList.remove('hiddenPage');
     } else {
       wlForms['currentNeeds'].form.parentElement.classList.add('hiddenPage');
+
+      tocLinks['currentNeeds'].classList.add('hiddenPage');
     }
     // needs page [needsIsActionRequiredRequiredIn30Days] is YES ||
     // riskMitigation page [rMIsActionRequiredIn3oDays] is YES &&
@@ -1482,8 +1510,10 @@ const WaitingListAssessment = (() => {
       riskMitigationCheckboxValues.some(element => element === true)
     ) {
       wlForms['immediateNeeds'].form.parentElement.classList.remove('hiddenPage');
+      tocLinks['immediateNeeds'].classList.remove('hiddenPage');
     } else {
       wlForms['immediateNeeds'].form.parentElement.classList.add('hiddenPage');
+      tocLinks['immediateNeeds'].classList.add('hiddenPage');
     }
   }
   //
@@ -1658,7 +1688,7 @@ const WaitingListAssessment = (() => {
       wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(!isYesChecked);
     },
     cpaIsReleasedNext12Months: childProtectionAgencyDetermination,
-    cpaHadUnaddressableNeeds: childProtectionAgencyDetermination,
+    cpaHasUnaddressableNeeds: childProtectionAgencyDetermination,
     //* adultDayEmployment
     rwfNeedsMoreFrequency: adultDayEmploymentDetermination,
     rwfNeedsServiceNotMetIDEA: adultDayEmploymentDetermination,
@@ -1813,10 +1843,10 @@ const WaitingListAssessment = (() => {
         //   attachmentType: '',
         //   attachment: '',
         // });
-      });
 
-      docPopup.close();
-      docPopup.dialog.remove();
+        docPopup.close();
+        docPopup.dialog.remove();
+      });
     });
 
     let partCache = [];
