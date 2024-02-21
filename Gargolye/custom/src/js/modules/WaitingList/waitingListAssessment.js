@@ -1071,7 +1071,30 @@ const WaitingListAssessment = (() => {
   function mapDataBySection(assessmentData) {
     if (!assessmentData) return '';
 
-    return {};
+    wlLinkID = assessmentData.wlInfoId;
+    wlCircID = assessmentData.circumstanceId;
+    wlNeedID = assessmentData.circumstanceId;
+
+    return {
+      waitingListInfo: {},
+      conditions: {},
+      currentAvailableServices: {},
+      primaryCaregiver: {},
+      behavioral: {},
+      physical: {},
+      medical: {},
+      other: {},
+      riskMitigation: {},
+      icfDischarge: {},
+      intermittentSupports: {},
+      childProtectionAgency: {},
+      adultDayEmployment: {},
+      dischargePlan: {},
+      immediateNeeds: {},
+      currentNeeds: {},
+      waiverEnrollment: {},
+      conclusion: {},
+    };
   }
 
   // DATA
@@ -1818,7 +1841,7 @@ const WaitingListAssessment = (() => {
   //--------------------------------------------------
   function attachEvents() {
     sendEmailButton.onClick(async () => {
-      const emailDialog = new Dialog({});
+      const emailPopup = new Dialog({});
       const emailForm = new Form({
         fields: [
           {
@@ -1833,18 +1856,24 @@ const WaitingListAssessment = (() => {
           },
         ],
       });
+      emailForm.renderTo(emailPopup.dialog);
+      emailPopup.renderTo(_DOM.ACTIONCENTER);
+      emailPopup.show();
 
       emailForm.onSubmit(async (data, submitter) => {
         const resp = await _UTIL.fetchData('generateWaitingListAssessmentReport', {
-          waitingListId: '10',
+          waitingListId: wlLinkID,
         });
 
         if (resp !== '1') return;
 
         const resp2 = await _UTIL.fetchData('sendWaitingListAssessmentReport', {
-          header: 'Test header for WLID: 10',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus arcu orci, cursus sit amet nunc nec, faucibus cursus metus. Suspendisse potenti. Curabitur blandit mauris ac tempor vulputate. ',
+          header: data['emailHeader'],
+          body: data['emailBody'],
         });
+
+        emailPopup.close();
+        emailPopup.dialog.remove();
       });
     });
 
