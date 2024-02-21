@@ -3812,5 +3812,10 @@ namespace Anywhere
         {
             return outcomesWorker.insertOutcomeServiceInfo(token,startDate, endDate, outcomeType, servicesStatement, ServiceType, method, success, frequencyModifier, frequency, frequencyPeriod, userID, objectiveId, consumerId);
         }
+
+        public string updateUserWidgetOrderSettings(string token, string[] updatedListOrder)
+        {
+            return dashWork.updateUserWidgetOrderSettings(token, updatedListOrder);
+        }
     }
 }
