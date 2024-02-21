@@ -2051,10 +2051,12 @@ const WaitingListAssessment = (() => {
     loadPage();
     attachEvents();
 
-    const resp = await insertNewWaitingListAssessment(selectedConsumer);
-    wlLinkID = resp[0].newRecordId;
-    wlFormInfo['waitingListInfo'].id = wlLinkID;
-    wlFormInfo['conclusion'].id = wlLinkID;
+    if (!wlData) {
+      const resp = await insertNewWaitingListAssessment(selectedConsumer);
+      wlLinkID = resp[0].newRecordId;
+      wlFormInfo['waitingListInfo'].id = wlLinkID;
+      wlFormInfo['conclusion'].id = wlLinkID;
+    }
 
     const resp2 = await _UTIL.fetchData('getWaitingListFundingSources');
     const fundingSources = resp2.getWaitingListFundingSourcesResult;
