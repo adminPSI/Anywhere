@@ -1070,6 +1070,8 @@ const WaitingListAssessment = (() => {
   //--------------------------------------------------
   function mapDataBySection(assessmentData) {
     if (!assessmentData) return '';
+
+    return {};
   }
 
   // DATA
@@ -1400,6 +1402,9 @@ const WaitingListAssessment = (() => {
         }
       });
 
+      contributingCircumstancesFormsWrap.classList.add('hiddenPage');
+      needsWrap.classList.add('hiddenPage');
+
       if (formsToDelete.length === 0) return;
 
       await _UTIL.fetchData('deleteFromWaitingList', { properties: formsToDelete });
@@ -1411,8 +1416,8 @@ const WaitingListAssessment = (() => {
 
     // conditions page all inputs are yes
     contributingCircumstancesFormsWrap.classList.remove('hiddenPage');
-    wlForms['primaryCaregiver'].form.parentElement.classList.remove('hiddenPage');
     needsWrap.classList.remove('hiddenPage');
+    wlForms['primaryCaregiver'].form.parentElement.classList.remove('hiddenPage');
     wlForms['behavioral'].form.parentElement.classList.remove('hiddenPage');
     wlForms['physical'].form.parentElement.classList.remove('hiddenPage');
     wlForms['medical'].form.parentElement.classList.remove('hiddenPage');
@@ -1428,7 +1433,7 @@ const WaitingListAssessment = (() => {
     tocLinks['medical'].classList.remove('hiddenPage');
     tocLinks['other'].classList.remove('hiddenPage');
     tocLinks['waiverEnrollment'].classList.remove('hiddenPage');
-    wlForms['currentAvailableServices'].form.parentElement.classList.remove('hiddenPage');
+    tocLinks['currentAvailableServices'].classList.remove('hiddenPage');
 
     // get circumstance id
     if (!wlCircID) {
@@ -1856,7 +1861,7 @@ const WaitingListAssessment = (() => {
       docPopup.show();
 
       docForm.onSubmit(async data => {
-        const attachDetails = _DOM.getAttachmentDetails(data['test']);
+        const attachDetails = await _DOM.getAttachmentDetails(data['test']);
 
         await _UTIL.fetchData('addWlSupportingDocument', {
           waitingListInformationId: wlLinkID,
