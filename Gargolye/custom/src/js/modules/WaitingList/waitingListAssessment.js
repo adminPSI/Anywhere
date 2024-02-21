@@ -1847,12 +1847,12 @@ const WaitingListAssessment = (() => {
           {
             type: 'text',
             label: 'Email Header',
-            name: 'emailHeader',
+            id: 'emailHeader',
           },
           {
             type: 'text',
             label: 'Email Body',
-            name: 'emailBody',
+            id: 'emailBody',
           },
         ],
       });
