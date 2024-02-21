@@ -1866,7 +1866,7 @@ const WaitingListAssessment = (() => {
         await _UTIL.fetchData('addWlSupportingDocument', {
           waitingListInformationId: wlLinkID,
           description: attachDetails.description,
-          includeOnEmail: data['email'],
+          includeOnEmail: data['email'] === 'on' ? 'Y' : 'N',
           attachmentType: attachDetails.type,
           attachment: attachDetails.attachment,
         });
