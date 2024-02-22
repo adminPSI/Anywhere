@@ -210,8 +210,3 @@
 //   // any of the checkboxes are checked EXCEPT the "Not applicable..." checkbox.
 //   wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!hasCheck);
 // }
-
-// rMIsAdultProtectiveServiceInvestigation: riskMitigationCheckboxes,
-// rMIsCountyBoardInvestigation: riskMitigationCheckboxes,
-// rMIsLawEnforcementInvestigation: riskMitigationCheckboxes,
-// rMIsOtherInvestigation: riskMitigationCheckboxes,
