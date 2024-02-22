@@ -541,6 +541,8 @@
           }
         }
       }
+      
+      tableOfContents.showUnansweredQuestionCount();
 
       return;
     }
