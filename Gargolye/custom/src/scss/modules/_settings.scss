@@ -59,55 +59,15 @@
         margin: 0 0 10px;
         border-radius: 4px;
         width: 100%;
+        transform: translateY(-100%);
+        max-height: 0px;
+        opacity: 0;
 
-        // settings order based off widget order
-        &.customlinks {
-            order: 1;
-        }
-        &.absentconsumers {
-            order: 2;
-        }
-        &.casenoteproductivity {
-            order: 3;
-        }
-        &.mycaseload {
-            order: 4;
-        }
-        &.rejectedcasenotes {
-            order: 5;
-        }
-        &.planto-dolist {
-            order: 6;
-        }
-        &.locationprogressnotes {
-            order: 7;
-        }
-        &.myunapprovedtimeentries {
-            order: 8;
-        }
-        &.consumerprogressnotes {
-            order: 9;
-        }
-        &.timeentryreview {
-            order: 10;
-        }
-        &.dayservicetimeclock {
-            order: 11;
-        }
-        &.hoursworked {
-            order: 12;
-        }
-        &.myschedule {
-            order: 13;
-        }
-        &.dailyservices {
-            order: 14;
-        }
-        &.dayservices {
-            order: 15;
-        }
-        &.incidenttracking {
-            order: 16;
+
+        &.active {
+            transform: translateY(0);
+            max-height: fit-content;
+            opacity: 1;
         }
     }
 
@@ -131,10 +91,7 @@
 
     .widgetBody {
         background-color: $btn-light;
-        transform: translateY(-100%);
         transition: all 200ms linear;
-        max-height: 0px;
-        opacity: 0;
 
         .widgetBody__Inner {
             padding: 20px 5px 10px;
@@ -147,18 +104,10 @@
                 }
             }
 
-            button {
-                margin: 0 0 5px;
-            }
-        }
-
-        &.active {
-            transform: translateY(0);
-            max-height: fit-content;
-            opacity: 1;
+            
         }
     }
-}
+} 
 
 
 // My Information
@@ -217,6 +166,15 @@
 #settingTable {
     box-shadow: none !important;
     min-width: 340px;
+    transform: translateY(-100%);
+    max-height: 0px;
+    opacity: 0; 
+
+    &.active {
+        transform: translateY(0);
+        max-height: fit-content;
+        opacity: 1;
+    }
 
     .checkbox-mtd > span {
         font-size: 14px;
@@ -280,6 +238,9 @@
             }
         }
     }
-   
-    margin-bottom: 20px;
 }
+
+.btnWrap {
+    display: flex;
+    justify-content: space-between;  
+}  

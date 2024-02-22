@@ -2,6 +2,10 @@ const widgetSettings = (function () {
     let widgetSettingsPage;
     let sectionreorder = [];
     let updatedListOrder = [];
+    let widgetsContainer;
+    let newTable;
+
+    //let sectionBody;
     const sections = {
         // pre existing, need new ids, idk what that'll do to existing data?
         1: {
@@ -104,9 +108,26 @@ const widgetSettings = (function () {
 
                         // update settings
                         await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
-                        dashboard.refreshWidgetSettings();
+                        dashboard.load();
                     },
                 });
+
+                const backBtn = button.build({
+                    id: 'cnProductivityBack',
+                    text: 'Back',
+                    type: 'contained',
+                    style: 'secondary',
+                    callback: async () => {
+                        const toggle = document.querySelector('#build-1');
+                        toggle.classList.remove('active');
+                        newTable.classList.add('active');
+                    },
+                });
+
+                const btnWrap = document.createElement("div");
+                btnWrap.classList.add("btnWrap");
+                btnWrap.appendChild(saveBtn);
+                btnWrap.appendChild(backBtn);
 
                 group1.appendChild(daysBackInput);
                 group1.appendChild(workHoursPerDay);
@@ -114,7 +135,7 @@ const widgetSettings = (function () {
 
                 widgetBody.appendChild(group1);
                 widgetBody.appendChild(group2);
-                widgetBody.appendChild(saveBtn);
+                widgetBody.appendChild(btnWrap);
 
                 return widgetBody;
             },
@@ -222,9 +243,26 @@ const widgetSettings = (function () {
 
                         // update settings
                         await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
-                        dashboard.refreshWidgetSettings();
+                        dashboard.load();
                     },
                 });
+
+                const backBtn = button.build({
+                    id: 'cnCaseLoadBack',
+                    text: 'Back',
+                    type: 'contained',
+                    style: 'secondary',
+                    callback: async () => {
+                        const toggle = document.querySelector('#build-2');
+                        toggle.classList.remove('active');
+                        newTable.classList.add('active');
+                    },
+                });
+
+                const btnWrap = document.createElement("div");
+                btnWrap.classList.add("btnWrap");
+                btnWrap.appendChild(saveBtn);
+                btnWrap.appendChild(backBtn);
 
                 if ($.session.CaseNotesViewEntered) {
                     widgetBody.appendChild(viewNotesByOtherUsersCheckBox);
@@ -235,7 +273,7 @@ const widgetSettings = (function () {
                 widgetBody.appendChild(viewNotesByOtherUsersCheckBox);
                 widgetBody.appendChild(lastNoteDaysBackInput);
                 widgetBody.appendChild(reviewNotesDaysBackInput);
-                widgetBody.appendChild(saveBtn);
+                widgetBody.appendChild(btnWrap);
 
                 return widgetBody;
             },
@@ -295,12 +333,30 @@ const widgetSettings = (function () {
 
                         // update settings
                         await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
-                        dashboard.refreshWidgetSettings();
+                        dashboard.load();
                     },
                 });
 
+                const backBtn = button.build({
+                    id: 'cnRejectedBack',
+                    text: 'Back',
+                    type: 'contained',
+                    style: 'secondary',
+                    // classNames: ['widgetSettingsSaveBtn'],
+                    callback: async () => {
+                        const toggle = document.querySelector('#build-3');
+                        toggle.classList.remove('active');
+                        newTable.classList.add('active');
+                    },
+                });
+
+                const btnWrap = document.createElement("div");
+                btnWrap.classList.add("btnWrap");
+                btnWrap.appendChild(saveBtn);
+                btnWrap.appendChild(backBtn);
+
                 widgetBody.appendChild(daysBackInput);
-                widgetBody.appendChild(saveBtn);
+                widgetBody.appendChild(btnWrap);
 
                 return widgetBody;
             },
@@ -358,12 +414,29 @@ const widgetSettings = (function () {
 
                         // update settings
                         await widgetSettingsAjax.setWidgetSettingConfig(saveID, configString, that.showHide);
-                        dashboard.refreshWidgetSettings();
+                        dashboard.load();
                     },
                 });
 
+                const backBtn = button.build({
+                    id: 'wfPlanBack',
+                    text: 'Back',
+                    type: 'contained',
+                    style: 'secondary',
+                    callback: async () => {
+                        const toggle = document.querySelector('#build-4');
+                        toggle.classList.remove('active');
+                        newTable.classList.add('active');
+                    },
+                });
+
+                const btnWrap = document.createElement("div");
+                btnWrap.classList.add("btnWrap");
+                btnWrap.appendChild(saveBtn);
+                btnWrap.appendChild(backBtn);
+
                 widgetBody.appendChild(dueDateDropdown);
-                widgetBody.appendChild(saveBtn);
+                widgetBody.appendChild(btnWrap);
 
                 return widgetBody;
             },
@@ -479,79 +552,38 @@ const widgetSettings = (function () {
     }
 
     function populatePage() {
-
-        const widgetsContainer = document.createElement('div');
+        const appName = $.session.applicationName === 'Advisor' ? 'adv' : 'gk';
+        widgetsContainer = document.createElement('div');
         widgetsContainer.classList.add('widgetsContainer');
 
-        const newTable = buildTeamMemberTable();
+        newTable = buildTeamMemberTable();
+        newTable.classList.add('active');
         widgetsContainer.appendChild(newTable);
 
-        //for (const sec in sections) {
-        //    if (!sections[sec].application.includes(appName)) {
-        //        continue;
-        //    }
+        for (const sec in sections) {
+            if (!sections[sec].application.includes(appName)) {
+                continue;
+            }
+            setWidgetSettings(sec);
+            if (sections[sec].build) {
+                const sectionWrap = document.createElement('div');
+                sectionWrap.classList.add('widgetWrap');
+                sectionWrap.id = `build-${sections[sec].id}`;
 
-        //    setWidgetSettings(sec);
+                const sectionHeader = document.createElement('div');
+                sectionHeader.classList.add('widgetHeader');
 
-        //    const sectionWrap = document.createElement('div');
-        //    sectionWrap.classList.add(
-        //        'widgetWrap',
-        //        `${sections[sec].name.replaceAll(' ', '').toLowerCase()}`,
-        //    );
-
-        //    const sectionHeader = document.createElement('div');
-        //    sectionHeader.classList.add('widgetHeader');
-
-        //    const sectionBody = document.createElement('div');
-        //    sectionBody.classList.add('widgetBody');
-
-        //    const title = document.createElement('p');
-        //    title.innerText = sections[sec].name;
-
-        //    const checkbox = input.buildCheckbox({
-        //        text: 'show',
-        //        isChecked: sections[sec].showHide === 'Y' ? true : false,
-        //    });
-        //    checkbox.addEventListener('change', async e => {
-        //        sections[sec].showHide = e.target.checked ? 'Y' : 'N';
-
-        //        const configString = JSON.stringify(sections[sec].settings);
-        //        const sectionID = parseInt(sec);
-        //        await widgetSettingsAjax.setWidgetSettingConfig(
-        //            sectionID,
-        //            configString,
-        //            sections[sec].showHide,
-        //        );
-        //        dashboard.refreshWidgetSettings();
-
-        //        // update widget data-show attribute
-        //        const widget = document.querySelector(`[data-widgetId='${sec}']`);
-        //        widget.setAttribute('data-show', sections[sec].showHide);
-        //    });
-
-        //    sectionHeader.appendChild(title);
-        //    sectionHeader.appendChild(checkbox);
-
-        //    if (sections[sec].build) {
-        //        sectionBody.appendChild(buildWidgetBodyInnerHTML(sec));
-        //    }
-
-        //    sectionWrap.appendChild(sectionHeader);
-        //    sectionWrap.appendChild(sectionBody);
-
-        //    widgetsContainer.appendChild(sectionWrap);
-
-        //    sectionHeader.addEventListener('click', e => {
-        //        if (sectionBody.classList.contains('active')) {
-        //            sectionBody.classList.remove('active');
-        //        } else {
-        //            const currAct = widgetSettingsPage.querySelector('.active');
-        //            if (currAct) currAct.classList.remove('active');
-        //            sectionBody.classList.add('active');
-        //        }
-        //    });
-        //}
-
+                const sectionBody = document.createElement('div');
+                sectionBody.classList.add('widgetBody');
+                const title = document.createElement('p');
+                title.innerText = sections[sec].name;
+                sectionHeader.appendChild(title);
+                sectionBody.appendChild(buildWidgetBodyInnerHTML(sec));
+                sectionWrap.appendChild(sectionHeader);
+                sectionWrap.appendChild(sectionBody);
+                widgetsContainer.appendChild(sectionWrap);
+            }
+        }       
         widgetSettingsPage.appendChild(widgetsContainer);
     }
 
@@ -582,7 +614,6 @@ const widgetSettings = (function () {
                 if (!sections[sec].application.includes(appName)) {
                     continue;
                 }
-
                 setWidgetSettings(sec);
                 sectionreorder.push(sections[sec]);
             };
@@ -606,7 +637,12 @@ const widgetSettings = (function () {
                     id: `sig-${m.id}-${m.order}`,
                     endIcon: m.name == 'System Messages' ? '' : activeCheckbox.outerHTML,
                     onClick: async e => {
-
+                        var id = e.target.id.split('-')[1];
+                        if (sections[parseInt(m.id)].build) {
+                            const toggle = document.querySelector('#build-' + id);
+                            toggle.classList.add('active');
+                            newTable.classList.remove('active');
+                        }
                     },
                 };
 
