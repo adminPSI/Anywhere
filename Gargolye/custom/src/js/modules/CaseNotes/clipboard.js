@@ -15,25 +15,6 @@
 // wlInfoId
 // consumerId
 // circumstanceId
-// fundingSourceId
 // interviewDate
-//
-// activeServiceId
-// primaryCaregiverId
-// conditionId
-// needId
-// medicalNeedId
-// physicalNeedId
-// riskId
-// riskMitigationId
-// icfDischargeId
-// dischargePlanId
-// unmetNeedId
-// immediateNeedId
-// intermitentSupportsId
-// childProtectionId
-// requireWaiverFundingId
-// waiverEnrollmentId
-//
 
 // participants

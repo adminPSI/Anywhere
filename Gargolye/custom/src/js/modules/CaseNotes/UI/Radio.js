@@ -153,6 +153,8 @@
    * @param {String | Number} value
    */
   RadioGroup.prototype.setValue = function (inputId) {
+    if (!inputId) return;
+
     this.inputs[inputId].setValue(true);
   };
 
@@ -160,7 +162,7 @@
    * Get radio input checked status by id
    *
    * @function
-   * @param {String | Number} value
+   * @param {String} [inputId]
    */
   RadioGroup.prototype.getValue = function (inputId) {
     if (!inputId) {
@@ -176,6 +178,12 @@
     }
 
     return this.inputs[inputId].getValue();
+  };
+
+  RadioGroup.prototype.clear = function () {
+    for (inputId in this.inputs) {
+      this.inputs[inputId].setValue(false);
+    }
   };
 
   /**

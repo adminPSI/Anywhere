@@ -100,4 +100,14 @@
       margin: 0 0 6px 0;
     }
   }
+  dialog.wlEmailPopup,
+  dialog.wlDocumentPopup {
+    padding: 20px;
+  }
+
+  dialog.wlDocumentPopup {
+    .ui_table {
+      margin: 0 0 20px;
+    }
+  }
 }
