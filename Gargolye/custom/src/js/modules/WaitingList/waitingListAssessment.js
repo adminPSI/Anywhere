@@ -20,6 +20,7 @@ const WaitingListAssessment = (() => {
   let contributingCircumstancesWrap;
   let needsWrap;
   let tocLinks;
+  let doucmentsList;
   //--------------------------
   // UI INSTANCES
   //--------------------------
@@ -34,7 +35,6 @@ const WaitingListAssessment = (() => {
   let documentsButton;
   let documentsForm;
   let documentsPopup;
-  let documentsTable;
 
   const sections = {
     waitingListInfo: {
@@ -2259,11 +2259,9 @@ const WaitingListAssessment = (() => {
     });
 
     documentsButton.onClick(() => {
-      documentsTable.clear();
-      documentsTable.populate(wlDocuments);
       documentsPopup.show();
 
-      documentsForm.onSubmit(async data => {
+      documentsForm.onSubmit(async (data, submitter, formId) => {
         const attachDetails = await _DOM.getAttachmentDetails(data['test']);
 
         const resp = await _UTIL.fetchData('addWlSupportingDocument', {
@@ -2273,15 +2271,18 @@ const WaitingListAssessment = (() => {
           attachmentType: attachDetails.type,
           attachment: attachDetails.attachment,
         });
+        const documentId = _UTIL.autoIncrementId('documentID');
 
-        wlDocuments.push({
+        const fileName = _UTIL.truncateFilename(attachDetails.description, 10);
+        wlDocuments[documentId] = {
           id: 'test',
-          values: [_UTIL.truncateFilename(attachDetails.description, 10), attachDetails.type],
-        });
+          values: [fileName, attachDetails.type],
+        };
+
+        const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
+        doucmentsList.appendChild(documentItem);
 
         documentsForm.clear();
-        documentsTable.clear();
-        documentsTable.populate(wlDocuments);
       });
       documentsForm.onReset(() => {
         documentsPopup.close();
@@ -2341,7 +2342,7 @@ const WaitingListAssessment = (() => {
     sendEmailForm.renderTo(sendEmailPopup.dialog);
     sendEmailPopup.renderTo(_DOM.ACTIONCENTER);
 
-    documentsTable.renderTo(documentsPopup.dialog);
+    documentsPopup.dialog.appendChild(doucmentsList);
     documentsForm.renderTo(documentsPopup.dialog);
     documentsPopup.renderTo(_DOM.ACTIONCENTER);
 
@@ -2415,6 +2416,7 @@ const WaitingListAssessment = (() => {
 
     tableOfContents = _DOM.createElement('div', { class: 'waitingListTableOFContents' });
     assessmentWrap = _DOM.createElement('div', { class: 'waitingListAssessment' });
+    doucmentsList = _DOM.createElement('div', { class: 'docList' });
 
     moduleBody.appendChild(tableOfContents);
     moduleBody.appendChild(assessmentWrap);
@@ -2512,18 +2514,6 @@ const WaitingListAssessment = (() => {
       ],
     });
     documentsPopup = new Dialog({ className: 'wlDocumentPopup' });
-    documentsTable = new Table({
-      headings: [
-        {
-          text: 'Name',
-          type: 'string',
-        },
-        {
-          text: 'Type',
-          type: 'string',
-        },
-      ],
-    });
   }
 
   async function init(opts) {
