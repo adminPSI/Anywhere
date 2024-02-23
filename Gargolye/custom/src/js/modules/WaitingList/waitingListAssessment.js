@@ -2280,7 +2280,14 @@ const WaitingListAssessment = (() => {
         };
 
         const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
+        const deleteIcon = Icon.getIcon('delete');
+        documentItem.appendChild(deleteIcon);
         doucmentsList.appendChild(documentItem);
+        documentItem.addEventListener('click', e => {
+          console.log(e.target);
+          console.log(e.target === documentItem);
+          console.log(e.target === deleteIcon);
+        });
 
         documentsForm.clear();
       });
