@@ -132,7 +132,7 @@
 // Consumer Section
 .incidentSection[data-card-page="consumers"] {
   .incidentSection__body {
-    display:flow;
+    display:flex; 
     flex-flow:wrap-reverse;
 
     > * {
