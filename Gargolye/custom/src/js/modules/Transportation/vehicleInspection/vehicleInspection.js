@@ -200,9 +200,10 @@ const TRANS_vehicleInspection = (function () {
     questionResponses = new Map();
     questions.forEach((val, key) => {
         const questionContainer = document.createElement('div');
+        questionContainer.classList.add('questionWrapWord'); 
         const questionTitle = document.createElement('h4');
         questionTitle.innerText = val.desc;
-        let passCheck = false;
+        let passCheck = false; 
         let failCheck = false;
         let naCheck = false;
         let allowNA = val.allowNA === 'Y' ? true : false;
