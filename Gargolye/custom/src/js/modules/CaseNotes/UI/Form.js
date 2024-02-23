@@ -207,7 +207,7 @@
 
       this.clear();
 
-      cbFunc(data, e.submitter);
+      cbFunc();
     });
   };
 

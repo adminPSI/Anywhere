@@ -35,7 +35,7 @@
   }
 
   CheckboxGroup.prototype._build = function () {
-    this.rootElement = _DOM.createElement('fieldset');
+    this.rootElement = _DOM.createElement('fieldset', { id: this.options.id });
     this.groupLabelEle = _DOM.createElement('legend', { text: this.options.groupLabel });
     this.rootElement.appendChild(this.groupLabelEle);
 
