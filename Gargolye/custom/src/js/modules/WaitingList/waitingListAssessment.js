@@ -2048,8 +2048,8 @@ const WaitingListAssessment = (() => {
     intSupIsStayingLivingArrangement: intermittentSupportsDetermination,
     intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
     //* childProtectionAgency
-    cpaIsReleasedNext12Months: ({ name, value, formName }) => {
-      wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(value === 'yes' ? false : true);
+    cpaIsReleasedNext12Months: ({ name, value }) => {
+      wlForms['childProtectionAgency'].inputs['cpaAnticipatedDate'].toggleDisabled(value === 'yes' ? false : true);
       childProtectionAgencyDetermination();
     },
     cpaHasUnaddressableNeeds: childProtectionAgencyDetermination,
