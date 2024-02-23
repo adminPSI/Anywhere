@@ -240,6 +240,20 @@ const dates = (function () {
     return false;
   }
   // FORMAT
+  function checkFormat(dateString) {
+    // Regex pattern for ISO date format (YYYY-MM-DD)
+    const isoFormatPattern = /^\d{4}-\d{2}-\d{2}$/;
+    // Adjusted Regex pattern for Standard format (M/D/YYYY or MM/DD/YYYY)
+    const standardFormatPattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+
+    if (isoFormatPattern.test(dateString)) {
+      return 'ISO';
+    } else if (standardFormatPattern.test(dateString)) {
+      return 'Standard';
+    } else {
+      return 'Unknown format';
+    }
+  }
   function formatISO(dirtyDate, dirtyOptions) {
     if (arguments.length < 1) {
       throw new TypeError(`1 argument required, but only ${arguments.length} present`);
@@ -311,6 +325,67 @@ const dates = (function () {
     }
 
     return result;
+  }
+  /**
+   * Converts the given date to ISO format
+   * @example
+   * // returns 2020-01-01
+   * UTIL.formatDateToIso('01/01/2020')
+   * @param {string} dirtyDate Date you would like to be converted to ISO format. Acceptable formats are:
+   * - MM/DD/YYYY
+   * - MM-DD-YYYY
+   * @returns {string} Returns the string of the date in ISO Format
+   */
+  function formateToISO(dirtyDate) {
+    if (!dirtyDate) return;
+
+    let splitBy;
+
+    if (dirtyDate.indexOf('/') !== -1) {
+      splitBy = '/';
+    } else if (dirtyDate.indexOf('-') !== -1) {
+      splitBy = '-';
+    } else {
+      return 'Invalid Date String';
+    }
+
+    const date = dirtyDate.split(splitBy);
+
+    if (date[0].length === 4) {
+      return dirtyDate;
+    }
+
+    const YYYY = date[2];
+    const MM = leadingZero(date[0]);
+    const DD = leadingZero(date[1]);
+
+    return `${YYYY}-${MM}-${DD}`;
+  }
+  /**
+   * Converts the given ISO date to a more readable format
+   * @example
+   * // returns 01-01-2020
+   * UTIL.formatDateFromIso('2020-01-01', '-')
+   * @example
+   * // returns 01/01/2020
+   * UTIL.formatDateFromIso('2020-01-01')
+   * @param {string} dirtyDate - Date you would like to be converted from ISO format
+   * - Must be YYYY-MM-DD
+   * @param {string} [joinBy='/'] - Character you would like to seperate the MM DD and YYYY
+   * @returns {string} Returns the cleaned date
+   */
+  function formateToStandard(dirtyDate, joinBy, opts) {
+    var shorten = opts ? opts.shortenYear : false;
+    var date = dirtyDate.split('-');
+    var MM = leadingZero(date[1]);
+    var DD = leadingZero(date[2]);
+    var YYYY = shorten ? date[0].substring(0, 2) : date[0];
+
+    if (joinBy) {
+      return `${MM}${joinBy}${DD}${joinBy}${YYYY}`;
+    }
+
+    return `${MM}/${DD}/${YYYY}`;
   }
   // INTERVALS
   function eachDayOfInterval(interval, options) {
@@ -476,7 +551,10 @@ const dates = (function () {
     isEqual,
     isDateInCurrentWeek,
     isDateInFuture,
+    checkFormat,
     formatISO,
+    formateToISO,
+    formateToStandard,
     eachDayOfInterval,
     // TIME
     convertFromMilitary,

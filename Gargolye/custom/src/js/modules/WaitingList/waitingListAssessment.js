@@ -856,7 +856,7 @@ const WaitingListAssessment = (() => {
         },
         {
           type: 'radiogroup',
-          id: 'rwfNeedsServiceNotMetOOD',
+          id: 'rwfNeedsServicesNotMetOOD',
           required: true,
           groupLabel:
             'Are the needed services beyond what is available to the individual through Vocational Rehabilitation / Opportunities for Ohioans with Disabilities or other resources?',
@@ -1219,14 +1219,14 @@ const WaitingListAssessment = (() => {
       childProtectionAgency: {
         cpaDetermination: assessmentData.cpaDetermination,
         cpaIsReleasedNext12Months: assessmentData.cpaIsReleasedNext12Months,
-        cpaAnticipatedDate: assessmentData.cpaAnticipatedDate.split(' ')[0],
+        cpaAnticipatedDate: assessmentData.cpaAnticipatedDate ? assessmentData.cpaAnticipatedDate.split(' ')[0] : '',
         cpaHasUnaddressableNeeds: assessmentData.cpaHasUnaddressableNeeds,
       },
       adultDayEmployment: {
         rwfWaiverFundingRequired: assessmentData.rwfWaiverFundingRequired,
         rwfNeedsMoreFrequency: assessmentData.rwfNeedsMoreFrequency,
         rwfNeedsServiceNotMetIDEA: assessmentData.rwfNeedsServiceNotMetIDEA,
-        rwfNeedsServiceNotMetOOD: assessmentData.rwfNeedsServiceNotMetOOD,
+        rwfNeedsServicesNotMetOOD: assessmentData.rwfNeedsServicesNotMetOOD,
       },
       dischargePlan: {
         dischargeDetermination: assessmentData.dischargeDetermination,
@@ -1254,7 +1254,7 @@ const WaitingListAssessment = (() => {
         conclusionNotEligibleForWaiver: assessmentData.conclusionNotEligibleForWaiver,
         conclussionDeterminedBy: assessmentData.conclussionDeterminedBy,
         conclusionDeterminedByTitle: assessmentData.conclusionDeterminedByTitle,
-        conclusionDeterminedOn: assessmentData.conclusionDeterminedOn.split(' ')[0],
+        conclusionDeterminedOn: assessmentData.conclusionDeterminedOn,
         fundingSourceId: assessmentData.fundingSourceId,
       },
     };
@@ -1596,7 +1596,7 @@ const WaitingListAssessment = (() => {
     const data = [
       wlForms['adultDayEmployment'].inputs['rwfNeedsMoreFrequency'].getValue('rwfNeedsMoreFrequencyyes'),
       wlForms['adultDayEmployment'].inputs['rwfNeedsServiceNotMetIDEA'].getValue('rwfNeedsServiceNotMetIDEAyes'),
-      wlForms['adultDayEmployment'].inputs['rwfNeedsServiceNotMetOOD'].getValue('rwfNeedsServiceNotMetOODyes'),
+      wlForms['adultDayEmployment'].inputs['rwfNeedsServicesNotMetOOD'].getValue('rwfNeedsServiceNotMetOODyes'),
     ];
 
     const allHaveCheck = data.every(element => element === true);
@@ -1980,7 +1980,7 @@ const WaitingListAssessment = (() => {
       const inputId = showImmediateNeeds ? 'immNeedsRequiredyes' : 'immNeedsRequiredno';
       wlForms['immediateNeeds'].inputs['immNeedsRequired'].setValue(inputId);
       insertUpdateAssessment({
-        value: allHaveCheck ? 'yes' : 'no',
+        value: showImmediateNeeds ? 'yes' : 'no',
         name: 'immNeedsRequired',
         type: 'radio',
         formName: 'immediateNeeds',
@@ -2033,7 +2033,7 @@ const WaitingListAssessment = (() => {
       const inputId = isRisksActionRequired ? 'rMIsSupportNeededyes' : 'rMIsSupportNeededno';
       wlForms['riskMitigation'].inputs['rMIsSupportNeeded'].setValue(inputId);
       insertUpdateAssessment({
-        value: allHaveCheck ? 'yes' : 'no',
+        value: isRisksActionRequired ? 'yes' : 'no',
         name: 'rMIsSupportNeeded',
         type: 'radio',
         formName: 'riskMitigation',
@@ -2049,20 +2049,14 @@ const WaitingListAssessment = (() => {
     intSupIsActionRequiredIn30Days: intermittentSupportsDetermination,
     //* childProtectionAgency
     cpaIsReleasedNext12Months: ({ name, value, formName }) => {
-      // (ENABLE) [cpaAnticipatedDate] the "Anticipated Date" field only
-      // (IF) [cpaIsReleasedNext12Months] "Is individual being released..." is answered "Yes".
-
-      const isYesChecked =
-        wlForms[formName].inputs['cpaIsReleasedNext12Months'].getValue('cpaIsReleasedNext12Monthsyes');
-
-      wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(!isYesChecked);
+      wlForms[formName].inputs['cpaAnticipatedDate'].toggleDisabled(value === 'yes' ? false : true);
+      childProtectionAgencyDetermination();
     },
-    cpaIsReleasedNext12Months: childProtectionAgencyDetermination,
     cpaHasUnaddressableNeeds: childProtectionAgencyDetermination,
     //* adultDayEmployment
     rwfNeedsMoreFrequency: adultDayEmploymentDetermination,
     rwfNeedsServiceNotMetIDEA: adultDayEmploymentDetermination,
-    rwfNeedsServiceNotMetOOD: adultDayEmploymentDetermination,
+    rwfNeedsServicesNotMetOOD: adultDayEmploymentDetermination,
     //* dischargePlan
     dischargeIsICFResident: dischargePlanDetermination,
     dischargeIsInterestedInMoving: dischargePlanDetermination,
@@ -2375,7 +2369,9 @@ const WaitingListAssessment = (() => {
 
       // Build Form
       const sectionWrap = _DOM.createElement('div', { id: section, class: 'wlPage' });
-      const sectionHeader = _DOM.createElement('h2', { text: _UTIL.convertCamelCaseToTitle(section) });
+      const sectionHeader = _DOM.createElement('h2', {
+        text: section === 'icfDischarge' ? 'ICF Discharge' : _UTIL.convertCamelCaseToTitle(section),
+      });
       sectionWrap.appendChild(sectionHeader);
       sectionWrap.classList.toggle('hiddenPage', !sections[section].enabled);
 
