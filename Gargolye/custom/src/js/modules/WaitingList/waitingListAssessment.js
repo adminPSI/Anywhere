@@ -1219,7 +1219,7 @@ const WaitingListAssessment = (() => {
       childProtectionAgency: {
         cpaDetermination: assessmentData.cpaDetermination,
         cpaIsReleasedNext12Months: assessmentData.cpaIsReleasedNext12Months,
-        cpaAnticipatedDate: assessmentData.cpaAnticipatedDate,
+        cpaAnticipatedDate: assessmentData.cpaAnticipatedDate.split(' ')[0],
         cpaHasUnaddressableNeeds: assessmentData.cpaHasUnaddressableNeeds,
       },
       adultDayEmployment: {
@@ -1254,7 +1254,7 @@ const WaitingListAssessment = (() => {
         conclusionNotEligibleForWaiver: assessmentData.conclusionNotEligibleForWaiver,
         conclussionDeterminedBy: assessmentData.conclussionDeterminedBy,
         conclusionDeterminedByTitle: assessmentData.conclusionDeterminedByTitle,
-        conclusionDeterminedOn: assessmentData.conclusionDeterminedOn,
+        conclusionDeterminedOn: assessmentData.conclusionDeterminedOn.split(' ')[0],
         fundingSourceId: assessmentData.fundingSourceId,
       },
     };
@@ -2250,11 +2250,9 @@ const WaitingListAssessment = (() => {
         });
 
         sendEmailPopup.close();
-        sendEmailPopup.dialog.remove();
       });
       sendEmailForm.onReset(() => {
         sendEmailPopup.close();
-        sendEmailPopup.dialog.remove();
       });
     });
 
@@ -2280,20 +2278,19 @@ const WaitingListAssessment = (() => {
         };
 
         const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
-        const deleteIcon = Icon.getIcon('delete');
-        documentItem.appendChild(deleteIcon);
+        //const deleteIcon = Icon.getIcon('delete');
+        //documentItem.appendChild(deleteIcon);
         doucmentsList.appendChild(documentItem);
         documentItem.addEventListener('click', e => {
-          console.log(e.target);
-          console.log(e.target === documentItem);
-          console.log(e.target === deleteIcon);
+          if (e.target === deleteIcon) {
+            return;
+          }
         });
 
         documentsForm.clear();
       });
       documentsForm.onReset(() => {
         documentsPopup.close();
-        documentsPopup.dialog.remove();
       });
     });
 
