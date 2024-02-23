@@ -1692,27 +1692,14 @@ const WaitingListAssessment = (() => {
     },
     //* primaryCaregiver
     isPrimaryCaregiverUnavailable: ({ name, value }) => {
-      // ENABLE [unavailableDocumentation]   IF [isPrimaryCaregiverUnavailable] === "Yes"
-      // ENABLE [isActionRequiredIn30Days]   IF [isPrimaryCaregiverUnavailable] === "Yes"
-      // ENABLE [isIndividualSkillsDeclined] IF [isPrimaryCaregiverUnavailable] === "No"
-
       wlForms['primaryCaregiver'].inputs['unavailableDocumentation'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].toggleDisabled(value === 'yes' ? false : true);
       wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].toggleDisabled(value === 'no' ? false : true);
     },
     isActionRequiredIn30Days: ({ name, value }) => {
-      // (ENABLE) [actionRequiredDescription] "Describe action required." textbox (IF) [isActionRequiredIn30Days] "Is action required..." question is "Yes"
-
-      const isYesChecked =
-        wlForms['primaryCaregiver'].inputs['isActionRequiredIn30Days'].getValue('isActionRequiredIn30Daysyes');
-      wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(!isYesChecked);
+      wlForms['primaryCaregiver'].inputs['actionRequiredDescription'].toggleDisabled(value === 'yes' ? false : true);
     },
     isIndividualSkillsDeclined: ({ name, value }) => {
-      // (ENABLE) [declinedSkillsDocumentation] "List documentation used to verify presence..." textbox (IF)
-      // [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-      // (ENABLE) [declinedSkillsDescription] "Describe decline." textbox (IF)
-      // [isIndividualSkillsDeclined] "Is there evidence of declining..." question is "Yes".
-
       const isYesChecked = wlForms['primaryCaregiver'].inputs['isIndividualSkillsDeclined'].getValue(
         'isIndividualSkillsDeclinedyes',
       );
@@ -1733,14 +1720,26 @@ const WaitingListAssessment = (() => {
       // There is at least one checkbox checked in first two groups of checkboxes
       const risksIsRiskToSelfInputId = hasCheck && hasCheckDocs ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
       wlForms['behavioral'].inputs['risksIsRiskToSelf'].setValue(risksIsRiskToSelfInputId);
+      insertUpdateAssessment({
+        value: hasCheck && hasCheckDocs ? 'yes' : 'no',
+        name: 'risksIsRiskToSelf',
+        type: 'radio',
+        formName: 'behavioral',
+      });
 
-      wlForms['behavioral'].inputs['risksIsNone'].toggleRequired(!hasCheck);
-      wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleRequired(!hasCheck);
-      wlForms['behavioral'].inputs['risksIsSelfInjury'].toggleRequired(!hasCheck);
-      wlForms['behavioral'].inputs['risksIsFireSetting'].toggleRequired(!hasCheck);
-      wlForms['behavioral'].inputs['risksIsElopement'].toggleRequired(!hasCheck);
-      wlForms['behavioral'].inputs['risksIsSexualOffending'].toggleRequired(!hasCheck);
-      wlForms['behavioral'].inputs['risksIsOther'].toggleRequired(!hasCheck);
+      if (hasCheck) {
+        wlForms['behavioral'].inputs['risksIsNone'].setValue(false);
+      }
+
+      const isNotAppChecked = wlForms['behavioral'].inputs['risksIsNone'].getValue();
+      const isRequired = hasCheck || isNotAppChecked ? false : true;
+      wlForms['behavioral'].inputs['risksIsNone'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsPhysicalAggression'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsSelfInjury'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsFireSetting'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsElopement'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsSexualOffending'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
     },
@@ -1752,13 +1751,25 @@ const WaitingListAssessment = (() => {
       // There is at least one checkbox checked in first two groups of checkboxes
       const risksIsRiskToSelfInputId = hasCheck && hasCheckDocs ? 'risksIsRiskToSelfyes' : 'risksIsRiskToSelfno';
       wlForms['behavioral'].inputs['risksIsRiskToSelf'].setValue(risksIsRiskToSelfInputId);
+      insertUpdateAssessment({
+        value: hasCheck && hasCheckDocs ? 'yes' : 'no',
+        name: 'risksIsRiskToSelf',
+        type: 'radio',
+        formName: 'behavioral',
+      });
 
-      wlForms['behavioral'].inputs['risksHasNoDocument'].toggleRequired(!hasCheckDocs);
-      wlForms['behavioral'].inputs['risksHasPoliceReport'].toggleRequired(!hasCheckDocs);
-      wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleRequired(!hasCheckDocs);
-      wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleRequired(!hasCheckDocs);
-      wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleRequired(!hasCheckDocs);
-      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(!hasCheckDocs);
+      if (hasCheckDocs) {
+        wlForms['behavioral'].inputs['risksHasNoDocument'].setValue(false);
+      }
+
+      const isNotAppChecked = wlForms['behavioral'].inputs['risksHasNoDocument'].getValue();
+      const isRequired = hasCheckDocs || isNotAppChecked ? false : true;
+      wlForms['behavioral'].inputs['risksHasNoDocument'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasPoliceReport'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasIncidentReport'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasBehaviorTracking'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasPsychologicalAssessment'].toggleRequired(isRequired);
+      wlForms['behavioral'].inputs['risksHasOtherDocument'].toggleRequired(isRequired);
 
       needsOtherCheck();
     },
@@ -1771,14 +1782,17 @@ const WaitingListAssessment = (() => {
         'risksIsSexualOffending',
         'risksIsOther',
       ].forEach(inputId => {
-        wlForms['behavioral'].inputs[inputId].setValue(false);
-        wlForms['behavioral'].inputs[inputId].toggleDisabled(value === 'on' ? true : false);
-        insertUpdateAssessment({
-          value: 'off',
-          name: inputId,
-          type: 'checkbox',
-          formName: 'behavioral',
-        });
+        wlForms['behavioral'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
+
+        if (value === 'on') {
+          wlForms['behavioral'].inputs[inputId].setValue(false);
+          insertUpdateAssessment({
+            value: 'off',
+            name: inputId,
+            type: 'checkbox',
+            formName: 'behavioral',
+          });
+        }
       });
     },
     risksHasNoDocument: ({ value }) => {
@@ -1789,7 +1803,7 @@ const WaitingListAssessment = (() => {
         'risksHasPsychologicalAssessment',
         'risksHasOtherDocument',
       ].forEach(inputId => {
-        wlForms['behavioral'].inputs[inputId].toggleDisabled(value === 'on' ? true : false);
+        wlForms['behavioral'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
 
         if (value === 'on') {
           wlForms['behavioral'].inputs[inputId].setValue(false);
@@ -1824,18 +1838,30 @@ const WaitingListAssessment = (() => {
       wlForms['physical'].inputs['physicalNeedsIsPhysicalCareNeeded'].setValue(
         physicalNeedsIsPhysicalCareNeededInputId,
       );
+      insertUpdateAssessment({
+        value: hasCheck ? 'yes' : 'no',
+        name: 'physicalNeedsIsPhysicalCareNeeded',
+        type: 'radio',
+        formName: 'physical',
+      });
 
-      wlForms['physical'].inputs['physicalNeedsIsNone'].toggleRequired(!hasCheck);
-      wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleRequired(!hasCheck);
-      wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].toggleRequired(!hasCheck);
-      wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(!hasCheck);
+      if (hasCheck) {
+        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
+      }
+
+      const isNotAppChecked = wlForms['physical'].inputs['physicalNeedsIsNone'].getValue();
+      const isRequired = hasCheck || isNotAppChecked ? false : true;
+      wlForms['physical'].inputs['physicalNeedsIsNone'].toggleRequired(isRequired);
+      wlForms['physical'].inputs['physicalNeedsIsPersonalCareNeeded'].toggleRequired(isRequired);
+      wlForms['physical'].inputs['physicalNeedsIsRiskDuringPhysicalCare'].toggleRequired(isRequired);
+      wlForms['physical'].inputs['physicalNeedsIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
     },
     physicalNeedsIsNone: ({ value }) => {
       ['physicalNeedsIsPersonalCareNeeded', 'physicalNeedsIsRiskDuringPhysicalCare', 'physicalNeedsIsOther'].forEach(
         inputId => {
-          wlForms['physical'].inputs[inputId].toggleDisabled(value === 'on' ? true : false);
+          wlForms['physical'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
 
           if (value === 'on') {
             wlForms['physical'].inputs[inputId].setValue(false);
@@ -1861,12 +1887,24 @@ const WaitingListAssessment = (() => {
       // There is at least one checkbox checked in the fourth group of checkboxes NOT including the "Not applicable…" checkboxes
       const inputId = hasCheck ? 'medicalNeedsIsLifeThreateningyes' : 'medicalNeedsIsLifeThreateningno';
       wlForms['medical'].inputs['medicalNeedsIsLifeThreatening'].setValue(inputId);
+      insertUpdateAssessment({
+        value: hasCheck ? 'yes' : 'no',
+        name: 'medicalNeedsIsLifeThreatening',
+        type: 'radio',
+        formName: 'medical',
+      });
 
-      wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(!hasCheck);
-      wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(!hasCheck);
-      wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].toggleRequired(!hasCheck);
-      wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleRequired(!hasCheck);
-      wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(!hasCheck);
+      if (hasCheck) {
+        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
+      }
+
+      const isNotAppChecked = wlForms['medical'].inputs['medicalNeedsIsNone'].getValue();
+      const isRequired = hasCheck || isNotAppChecked ? false : true;
+      wlForms['medical'].inputs['medicalNeedsIsNone'].toggleRequired(isRequired);
+      wlForms['medical'].inputs['medicalNeedsIsFrequentEmergencyVisit'].toggleRequired(isRequired);
+      wlForms['medical'].inputs['medicalNeedsIsOngoingMedicalCare'].toggleRequired(isRequired);
+      wlForms['medical'].inputs['medicalNeedsIsSpecializedCareGiveNeeded'].toggleRequired(isRequired);
+      wlForms['medical'].inputs['medicalNeedsIsOther'].toggleRequired(isRequired);
 
       needsOtherCheck();
     },
@@ -1877,7 +1915,7 @@ const WaitingListAssessment = (() => {
         'medicalNeedsIsSpecializedCareGiveNeeded',
         'medicalNeedsIsOther',
       ].forEach(inputId => {
-        wlForms['medical'].inputs[inputId].toggleDisabled(value === 'on' ? true : false);
+        wlForms['medical'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
 
         if (value === 'on') {
           wlForms['medical'].inputs[inputId].setValue(false);
@@ -1892,8 +1930,6 @@ const WaitingListAssessment = (() => {
     },
     //* other
     needsIsActionRequiredRequiredIn30Days: ({ value }) => {
-      debugger;
-
       const isNeedsActionRequiredYes = value === 'yes' ? true : false;
       wlForms['other'].inputs['needsIsContinuousSupportRequired'].toggleDisabled(isNeedsActionRequiredYes);
       wlForms['riskMitigation'].form.parentElement.classList.toggle('hiddenPage', isNeedsActionRequiredYes);
@@ -1926,11 +1962,17 @@ const WaitingListAssessment = (() => {
       wlForms['riskMitigation'].inputs['rMdescription'].toggleDisabled(!isRMChecked);
       wlForms['riskMitigation'].inputs['rMIsActionRequiredIn3oDays'].toggleDisabled(!isRMChecked);
 
-      wlForms['riskMitigation'].inputs['rMIsNone'].toggleRequired(!isRMChecked);
-      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleRequired(!isRMChecked);
-      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].toggleRequired(!isRMChecked);
-      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].toggleRequired(!isRMChecked);
-      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].toggleRequired(!isRMChecked);
+      if (isRMChecked) {
+        wlForms['physical'].inputs['physicalNeedsIsNone'].setValue(false);
+      }
+
+      const isNotAppChecked = wlForms['riskMitigation'].inputs['rMIsNone'].getValue() === false;
+      const isRequired = isRMChecked || isNotAppChecked ? false : true;
+      wlForms['riskMitigation'].inputs['rMIsNone'].toggleRequired(isRequired);
+      wlForms['riskMitigation'].inputs['rMIsAdultProtectiveServiceInvestigation'].toggleRequired(isRequired);
+      wlForms['riskMitigation'].inputs['rMIsCountyBoardInvestigation'].toggleRequired(isRequired);
+      wlForms['riskMitigation'].inputs['rMIsLawEnforcementInvestigation'].toggleRequired(isRequired);
+      wlForms['riskMitigation'].inputs['rMIsOtherInvestigation'].toggleRequired(isRequired);
 
       // AI FIELD ??
       // (SET) [immNeedsRequired] "Is there an immediate need..." to YES
@@ -1951,7 +1993,7 @@ const WaitingListAssessment = (() => {
         'rMIsLawEnforcementInvestigation',
         'rMIsOtherInvestigation',
       ].forEach(inputId => {
-        wlForms['riskMitigation'].inputs[inputId].toggleDisabled(value === 'on' ? true : false);
+        wlForms['riskMitigation'].inputs[inputId].toggleRequired(value === 'on' ? false : true);
 
         if (value === 'on') {
           wlForms['riskMitigation'].inputs[inputId].setValue(false);
@@ -2159,21 +2201,6 @@ const WaitingListAssessment = (() => {
       setConclusionWaiverFunded12Months();
       setConclusionNotEligibleForWaiver();
     },
-    behavioral: ({ name, value }) => {
-      // do stuff maybe?
-    },
-    physical: ({ name, value }) => {
-      // do stuff maybe?
-    },
-    medical: ({ name, value }) => {
-      // do stuff maybe?
-    },
-    other: ({ name, value }) => {
-      // do stuff maybe?
-    },
-    riskMitigation: ({ name, value }) => {
-      // do stuff maybe?
-    },
   };
   async function onFormChange(event) {
     const type = event.target.type;
@@ -2191,7 +2218,6 @@ const WaitingListAssessment = (() => {
     if (type === 'checkbox') {
       const checkboxGroupId = event.target.closest('fieldset')?.id;
       if (onChangeCallbacks[checkboxGroupId]) {
-        debugger;
         onChangeCallbacks[checkboxGroupId]({ value: event.target.checked ? 'on' : 'off', name });
       }
     }
@@ -2305,9 +2331,6 @@ const WaitingListAssessment = (() => {
         },
         rowId,
       );
-
-      cnForm.buttons['submit'].toggleVisibility(false);
-      cnForm.buttons['update'].toggleVisibility(true);
     });
   }
   function loadPage() {
@@ -2452,15 +2475,6 @@ const WaitingListAssessment = (() => {
           required: true,
         },
       ],
-      buttons: [
-        {
-          type: 'submit',
-          text: 'Update',
-          icon: 'save',
-          name: 'update',
-          hidden: true,
-        },
-      ],
     });
 
     // Reports
@@ -2538,6 +2552,12 @@ const WaitingListAssessment = (() => {
       }
 
       wlForms['conclusion'].inputs['fundingSourceId'].populate(fundingSources, wlData['conclusion'].fundingSourceId);
+
+      setConclusionUnmetNeeds();
+      setConclusionWaiverFunded12Months();
+      setConclusionDoesNotRequireWaiver();
+      setConclusionNotEligibleForWaiver();
+
       return;
     }
 
