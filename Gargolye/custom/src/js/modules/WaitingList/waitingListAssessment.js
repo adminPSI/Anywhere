@@ -2259,48 +2259,47 @@ const WaitingListAssessment = (() => {
 
     documentsButton.onClick(() => {
       documentsPopup.show();
+    });
+    documentsForm.onSubmit(async (data, submitter, formId) => {
+      const attachDetails = await _DOM.getAttachmentDetails(data['test']);
 
-      documentsForm.onSubmit(async (data, submitter, formId) => {
-        const attachDetails = await _DOM.getAttachmentDetails(data['test']);
-
-        const resp = await _UTIL.fetchData('addWlSupportingDocument', {
-          waitingListInformationId: wlLinkID,
-          description: attachDetails.description,
-          includeOnEmail: data['email'] === 'on' ? 'Y' : 'N',
-          attachmentType: attachDetails.type,
-          attachment: attachDetails.attachment,
-        });
-        const documentId = resp.addWLSupportingDocumentResult[0].supportingDocumentId;
-
-        const fileName = _UTIL.truncateFilename(attachDetails.description, 10);
-        wlDocuments[documentId] = {
-          id: 'test',
-          values: [fileName, attachDetails.type],
-        };
-
-        const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
-        const deleteIcon = Icon.getIcon('delete');
-        documentItem.appendChild(deleteIcon);
-        doucmentsList.appendChild(documentItem);
-        documentItem.addEventListener('click', async e => {
-          if (e.target === deleteIcon) {
-            await _UTIL.fetchData('deleteSupportingDocument', { attachmentId: documentId });
-            return;
-          }
-
-          const viewDocResp = await _UTIL.fetchData('viewSupportingDocInBrowser', { attachmentId: documentId });
-          var arr = viewDocResp.viewSupportingDocInBrowserResult._buffer;
-          var byteArray = new Uint8Array(arr);
-          var blob = new Blob([byteArray], { type: 'application/pdf' });
-          var fileURL = URL.createObjectURL(blob);
-          window.open(fileURL);
-        });
-
-        documentsForm.clear();
+      const resp = await _UTIL.fetchData('addWlSupportingDocument', {
+        waitingListInformationId: wlLinkID,
+        description: attachDetails.description,
+        includeOnEmail: data['email'] === 'on' ? 'Y' : 'N',
+        attachmentType: attachDetails.type,
+        attachment: attachDetails.attachment,
       });
-      documentsForm.onReset(() => {
-        documentsPopup.close();
+      const documentId = resp.addWLSupportingDocumentResult[0].supportingDocumentId;
+
+      const fileName = _UTIL.truncateFilename(attachDetails.description, 10);
+      wlDocuments[documentId] = {
+        id: 'test',
+        values: [fileName, attachDetails.type],
+      };
+
+      const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
+      const deleteIcon = Icon.getIcon('delete');
+      documentItem.appendChild(deleteIcon);
+      doucmentsList.appendChild(documentItem);
+      documentItem.addEventListener('click', async e => {
+        if (e.target === deleteIcon) {
+          await _UTIL.fetchData('deleteSupportingDocument', { attachmentId: documentId });
+          return;
+        }
+
+        const viewDocResp = await _UTIL.fetchData('viewSupportingDocInBrowser', { attachmentId: documentId });
+        var arr = viewDocResp.viewSupportingDocInBrowserResult._buffer;
+        var byteArray = new Uint8Array(arr);
+        var blob = new Blob([byteArray], { type: 'application/pdf' });
+        var fileURL = URL.createObjectURL(blob);
+        window.open(fileURL);
       });
+
+      documentsForm.clear();
+    });
+    documentsForm.onReset(() => {
+      documentsPopup.close();
     });
 
     participantsForm.onSubmit(async (data, submitter, formId) => {
