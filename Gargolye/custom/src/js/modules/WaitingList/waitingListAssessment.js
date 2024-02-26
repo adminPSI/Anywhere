@@ -148,8 +148,8 @@ const WaitingListAssessment = (() => {
           groupLabel: 'Help Me Grow / Ohio Early Intervention',
           required: true,
           fields: [
-            { type: 'radio', label: 'Yes', value: 'yes', id: 'radiogroupyes' },
-            { type: 'radio', label: 'No', value: 'no', id: 'radiogroupno' },
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'isOhioEarlyInterventionServiceyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'isOhioEarlyInterventionServiceno' },
           ],
         },
         {
@@ -278,8 +278,8 @@ const WaitingListAssessment = (() => {
           groupLabel: 'Self-Empowered Life Funding Waiver',
           required: true,
           fields: [
-            { type: 'radio', label: 'Yes', value: 'yes', id: 'unknownId1yes' },
-            { type: 'radio', label: 'No', value: 'no', id: 'unknownId1no' },
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'isSelfWaiverServiceyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'isSelfWaiverServiceno' },
           ],
         },
         {
@@ -288,8 +288,8 @@ const WaitingListAssessment = (() => {
           groupLabel: 'Level One Waiver',
           required: true,
           fields: [
-            { type: 'radio', label: 'Yes', value: 'yes', id: 'unknownId2yes' },
-            { type: 'radio', label: 'No', value: 'no', id: 'unknownId2no' },
+            { type: 'radio', label: 'Yes', value: 'yes', id: 'isLevelOneWaiverServiceyes' },
+            { type: 'radio', label: 'No', value: 'no', id: 'isLevelOneWaiverServiceno' },
           ],
         },
         {
@@ -1081,6 +1081,12 @@ const WaitingListAssessment = (() => {
         fieldtype = element.type;
         break;
       }
+      if (element.type === 'checkboxgroup') {
+        if (element.fields.some(f => f.id === targetId)) {
+          fieldtype = 'checkboxgroup';
+          break;
+        }
+      }
     }
 
     return fieldtype;
@@ -1271,12 +1277,22 @@ const WaitingListAssessment = (() => {
         const fieldType = findFieldTypeById(sections[d].formElements, dd);
 
         if (fieldType === 'radiogroup') {
-          if (data[d][dd] === '0') {
+          if (data[d][dd] === '' || data[d][dd] === '0') {
             data[d][dd] = `${dd}no`;
           }
 
           if (data[d][dd] === '1') {
             data[d][dd] = `${dd}yes`;
+          }
+        }
+
+        if (fieldType === 'checkboxgroup') {
+          if (data[d][dd] === '' || data[d][dd] === '0') {
+            data[d][dd] = false;
+          }
+
+          if (data[d][dd] === '1') {
+            data[d][dd] = true;
           }
         }
       }
@@ -2260,10 +2276,10 @@ const WaitingListAssessment = (() => {
   };
   async function onFormChange(event) {
     const type = event.target.type;
-    const value = event.target.value;
     const name = event.target.name;
     const id = event.target.id;
     const formName = event.target.form.name;
+    let value = event.target.value;
     let checkboxGroupId;
 
     if (type === 'checkbox') {
@@ -2274,11 +2290,11 @@ const WaitingListAssessment = (() => {
     await insertUpdateAssessment({ value, name, type, formName });
 
     if (onChangeCallbacks[name]) {
-      onChangeCallbacks[name]({ value: event.target.checked ? 'on' : 'off', name });
+      onChangeCallbacks[name]({ value, name });
     }
 
     if (onChangeCallbacks[checkboxGroupId]) {
-      onChangeCallbacks[checkboxGroupId]({ value: event.target.checked ? 'on' : 'off', name });
+      onChangeCallbacks[checkboxGroupId]({ value, name });
     }
 
     if (onChangeCallbacksFormWatch[formName]) {
