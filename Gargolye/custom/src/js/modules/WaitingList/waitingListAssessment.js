@@ -2289,6 +2289,11 @@ const WaitingListAssessment = (() => {
           }
 
           const viewDocResp = await _UTIL.fetchData('viewSupportingDocInBrowser', { attachmentId: documentId });
+          var arr = viewDocResp.viewSupportingDocInBrowserResult._buffer;
+          var byteArray = new Uint8Array(arr);
+          var blob = new Blob([byteArray], { type: 'application/pdf' });
+          var fileURL = URL.createObjectURL(blob);
+          window.open(fileURL);
         });
 
         documentsForm.clear();
