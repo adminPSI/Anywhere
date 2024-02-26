@@ -3299,6 +3299,23 @@ namespace Anywhere.Data
             }
         }
 
+        public string getWaitingListAttachmentFileName(string attachmentId)
+        {
+            logger.debug("GetIndividualAttachment " + attachmentId);
+            List<string> list = new List<string>();
+            list.Add(attachmentId);
+            string text = "CALL DBA.ANYW_WaitingList_GetAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            try
+            {
+                return executeDataBaseCallRaw(text);
+            }
+            catch (Exception ex)
+            {
+                logger.error("640.1", ex.Message + "ANYW_WaitingList_GetAttachmentFileName(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                return "640.1: error ANYW_WaitingList_GetAttachmentFileName";
+            }
+        }
+
         public string getPlanAttachmentFileName(string attachmentId, string section)
         {
             logger.debug("GetIndividualAttachment " + attachmentId);

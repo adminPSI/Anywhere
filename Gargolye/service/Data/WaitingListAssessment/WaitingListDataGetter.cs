@@ -173,13 +173,13 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
         }
 
-        public MemoryStream viewSupportingDocInBrowser(string token, long attachmentId)
+        public MemoryStream viewSupportingDocInBrowser(string token, string attachmentId)
         {
             logger.debug("viewSupportingDocInBrowser " + attachmentId);
             List<string> list = new List<string>();
             list.Add(token);
             list.Add(attachmentId.ToString());
-            string text = "CALL DBA.ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
+            string text = "CALL DBA.ANYW_WaitingList_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")";
             try
             {
                 //MemoryStream temp = new MemoryStream();
@@ -189,7 +189,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
             catch (Exception ex)
             {
-                logger.error("640", ex.Message + "ANYW_Roster_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
+                logger.error("640", ex.Message + "ANYW_WaitingList_GetAttachmentData(" + string.Join(",", list.Select(x => string.Format("'{0}'", x)).ToList()) + ")");
                 return null;
             }
         }

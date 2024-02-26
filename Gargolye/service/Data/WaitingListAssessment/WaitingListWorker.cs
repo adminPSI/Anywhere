@@ -1106,7 +1106,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             return docObj;
         }
 
-        public MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId)
+        public MemoryStream viewSupportingDocInBrowser(string token, string supportingDocumentId)
         {
             MemoryStream ms = null;
             try
@@ -1123,7 +1123,7 @@ namespace Anywhere.service.Data.WaitingListAssessment
             }
 
             return ms;
-        }
+        }   
 
         public bool stringInjectionValidator(string uncheckedString)
         {

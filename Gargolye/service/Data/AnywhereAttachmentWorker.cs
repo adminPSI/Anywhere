@@ -144,6 +144,27 @@ namespace Anywhere.service.Data
             displayAttachment(attachment);
         }
 
+        public void viewWaitingListAttachment(string token, string attachmentId)
+        {
+            Attachment attachment = new Attachment();
+            attachment.filename = "";
+            attachment.data = null;
+            bool isTokenValid = anywhereWorker.ValidateToken(token);
+            if (isTokenValid)
+            {
+                try
+                {
+                    attachment.filename = dg.getWaitingListAttachmentFileName(attachmentId);
+                    attachment.data = dg.GetAttachmentData(attachmentId);//reused
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            displayAttachment(attachment);
+        }
+
         public void displayAttachment(Attachment attachment)
         {
             var current = System.Web.HttpContext.Current;

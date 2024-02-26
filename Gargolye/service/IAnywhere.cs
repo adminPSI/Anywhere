@@ -506,6 +506,13 @@ namespace Anywhere
         //void viewCaseNoteAttachment(string attachmentId);
         void viewCaseNoteAttachment(System.IO.Stream testInput);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             BodyStyle = WebMessageBodyStyle.Bare,
+             UriTemplate = "/viewWaitingListAttachment/")]
+        //void viewCaseNoteAttachment(string attachmentId);
+        void viewWaitingListAttachment(System.IO.Stream testInput);
+
         //[OperationContract]
         //[WebInvoke(Method = "POST",
         //     BodyStyle = WebMessageBodyStyle.Wrapped,
@@ -4109,7 +4116,7 @@ namespace Anywhere
              ResponseFormat = WebMessageFormat.Json,
              RequestFormat = WebMessageFormat.Json,
              UriTemplate = "/viewSupportingDocInBrowser/")]
-        System.IO.MemoryStream viewSupportingDocInBrowser(string token, long supportingDocumentId);
+        System.IO.MemoryStream viewSupportingDocInBrowser(string token, string supportingDocumentId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
