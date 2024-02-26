@@ -140,7 +140,11 @@ const Employment = (() => {
             style: 'secondary',
             type: 'contained',
             classNames: 'entryBtn',
-            callback: async () => { addEditEmployers.init(); },  
+            callback: async () => {
+                if (!editEmployerBtn.classList.contains('disabled')) {
+                    addEditEmployers.init();
+                }
+            },  
         }); 
 
         if ($.session.EmploymentUpdate ) {
@@ -157,6 +161,10 @@ const Employment = (() => {
         entryButtonBar.classList.add('employmentBtnWrap');
         entryButtonBar.style.width = '100%';
         entryButtonBar.appendChild(newPositionBtn);
+
+        if (!$.session.InsertEmployers && !$.session.UpdateEmployers) {
+            editEmployerBtn.classList.add('disabled');
+        }   
         entryButtonBar.appendChild(editEmployerBtn); 
         buttonBar.appendChild(entryButtonBar);
 
