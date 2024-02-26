@@ -2270,7 +2270,7 @@ const WaitingListAssessment = (() => {
           attachmentType: attachDetails.type,
           attachment: attachDetails.attachment,
         });
-        const documentId = _UTIL.autoIncrementId('documentID');
+        const documentId = resp[0].supportingDocumentId;
 
         const fileName = _UTIL.truncateFilename(attachDetails.description, 10);
         wlDocuments[documentId] = {
@@ -2279,13 +2279,16 @@ const WaitingListAssessment = (() => {
         };
 
         const documentItem = _DOM.createElement('p', { class: 'docList__Item', text: fileName });
-        //const deleteIcon = Icon.getIcon('delete');
-        //documentItem.appendChild(deleteIcon);
+        const deleteIcon = Icon.getIcon('delete');
+        documentItem.appendChild(deleteIcon);
         doucmentsList.appendChild(documentItem);
-        documentItem.addEventListener('click', e => {
+        documentItem.addEventListener('click', async e => {
           if (e.target === deleteIcon) {
+            await _UTIL.fetchData('deleteSupportingDocument', { attachmentId: documentId });
             return;
           }
+
+          await _UTIL.fetchData('viewSupportingDocInBrowser', { attachmentId: documentId });
         });
 
         documentsForm.clear();
@@ -2338,7 +2341,7 @@ const WaitingListAssessment = (() => {
       );
     });
   }
-  function loadPage(isReview) {
+  function loadPage() {
     // Header
     sendEmailButton.renderTo(moduleHeader);
     documentsButton.renderTo(moduleHeader);
