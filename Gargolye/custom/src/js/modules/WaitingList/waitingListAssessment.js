@@ -1092,7 +1092,14 @@ const WaitingListAssessment = (() => {
     wlCircID = assessmentData.circumstanceId;
     wlNeedID = assessmentData.needId;
 
-    wlParticipants = assessmentData.participants;
+    wlParticipants = {};
+    for (const participantData of assessmentData.participants.split('||')) {
+      const particpant = participantData.split('|');
+      wlParticipants[particpant[2]] = {
+        id: particpant[2],
+        values: [particpant[0], particpant[1]],
+      };
+    }
 
     wlFormInfo['waitingListInfo'].id = wlLinkID;
     wlFormInfo['conditions'].id = assessmentData.conditionId;

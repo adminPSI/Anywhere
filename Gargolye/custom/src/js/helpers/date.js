@@ -59,6 +59,12 @@ const dates = (function () {
     return !isNaN(date);
   }
 
+  function leadingZero(number) {
+    var num = String(number);
+    if (num.length > 1) return num;
+    return `0${num}`;
+  }
+
   // PUBLIC
   //------------------------------------
   // GET
@@ -326,16 +332,6 @@ const dates = (function () {
 
     return result;
   }
-  /**
-   * Converts the given date to ISO format
-   * @example
-   * // returns 2020-01-01
-   * UTIL.formatDateToIso('01/01/2020')
-   * @param {string} dirtyDate Date you would like to be converted to ISO format. Acceptable formats are:
-   * - MM/DD/YYYY
-   * - MM-DD-YYYY
-   * @returns {string} Returns the string of the date in ISO Format
-   */
   function formateToISO(dirtyDate) {
     if (!dirtyDate) return;
 
@@ -361,19 +357,6 @@ const dates = (function () {
 
     return `${YYYY}-${MM}-${DD}`;
   }
-  /**
-   * Converts the given ISO date to a more readable format
-   * @example
-   * // returns 01-01-2020
-   * UTIL.formatDateFromIso('2020-01-01', '-')
-   * @example
-   * // returns 01/01/2020
-   * UTIL.formatDateFromIso('2020-01-01')
-   * @param {string} dirtyDate - Date you would like to be converted from ISO format
-   * - Must be YYYY-MM-DD
-   * @param {string} [joinBy='/'] - Character you would like to seperate the MM DD and YYYY
-   * @returns {string} Returns the cleaned date
-   */
   function formateToStandard(dirtyDate, joinBy, opts) {
     var shorten = opts ? opts.shortenYear : false;
     var date = dirtyDate.split('-');
