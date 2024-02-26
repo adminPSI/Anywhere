@@ -2287,12 +2287,31 @@ const WaitingListAssessment = (() => {
           return;
         }
 
-        const viewDocResp = await _UTIL.fetchData('viewSupportingDocInBrowser', { supportingDocumentId: documentId });
-        var arr = viewDocResp.viewSupportingDocInBrowserResult._buffer;
-        var byteArray = new Uint8Array(arr);
-        var blob = new Blob([byteArray], { type: 'application/pdf' });
-        var fileURL = URL.createObjectURL(blob);
-        window.open(fileURL);
+        var form = document.createElement('form');
+        form.setAttribute(
+          'action',
+          `${$.webServer.protocol}://${$.webServer.address}:${$.webServer.port}/${$.webServer.serviceName}/viewWaitingListAttachment/`,
+        );
+        form.setAttribute('method', 'POST');
+        form.setAttribute('target', '_blank');
+        form.setAttribute('enctype', 'application/json');
+        form.setAttribute('success', () => {});
+        var tokenInput = document.createElement('input');
+        tokenInput.setAttribute('name', 'token');
+        tokenInput.setAttribute('value', $.session.Token);
+        tokenInput.id = 'token';
+        var attachmentInput = document.createElement('input');
+        attachmentInput.setAttribute('name', 'attachmentId');
+        attachmentInput.setAttribute('value', documentId);
+        attachmentInput.id = 'attachmentId';
+
+        form.appendChild(tokenInput);
+        form.appendChild(attachmentInput);
+        form.style.position = 'absolute';
+        form.style.opacity = '0';
+        document.body.appendChild(form);
+
+        form.submit();
       });
 
       documentsForm.clear();
